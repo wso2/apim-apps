@@ -1,0 +1,19 @@
+{
+  "name": "apim4_integration_tests",
+  "version": "1.0.0",
+  "description": "Integration tests written in cypress.io for WSO2 API Manager 4.x versions",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run",
+    "test:gui": "cypress run --headed"
+  },
+  "keywords": [
+    "cypress.io"
+  ],
+  "author": "tmkasun",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^6.6.0",
+    "eslint-plugin-cypress": "^2.11.2"
+  }
+}
