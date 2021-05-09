@@ -1,10 +1,10 @@
 {
-    "name": "developer_portal",
+    "name": "@wso2apim/devportal",
     "version": "1.0.0",
     "description": "WSO2 API Manager Developer Portal Web App Note: reverted the swagger-ui version from 3.24.3 to 3.22.2 as POST was not working within swagger console",
     "main": "source/src/index.js",
     "scripts": {
-        "test": "shx jest",
+        "test": "jest --silent",
         "test:integration": "jest -c source/Tests/Integration/jest.config.js",
         "test:coverage": "jest --coverage",
         "build:prod": "rimraf site/public/dist/ && npm rum i18n && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",

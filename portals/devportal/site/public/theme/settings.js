@@ -38,3 +38,8 @@ const Settings = {
         ],
     },
 };
+
+
+if (typeof module !== 'undefined') {
+    module.exports = Settings; // For Jest unit tests
+}
