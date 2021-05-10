@@ -1,10 +1,10 @@
 {
-    "name": "wso2_apim_admin_portal",
+    "name": "@wso2apim/admin",
     "version": "3.0.1",
     "description": "WSO2 API Manager Admin portal Web App Note: `eslint-plugin-react` have a fixed version due to implementing prop-types does mark nested destructed props from `eslint-plugin-react` next version onwards\n --max_old_space_size: This is max size of the old space( managed heap) in Mbytes make sure not to increase it more than the memory size of builder machines(Prod build)",
     "main": "app.jsx",
     "scripts": {
-        "test": "jest",
+        "test": "echo To be implemented",
         "test:coverage": "jest --coverage",
         "build:prod": "rm -R site/public/dist/; npm rum i18n && NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
         "build:dev": "rm -R site/public/dist/; NODE_ENV=development webpack --mode development --watch ",
@@ -12,7 +12,7 @@
         "lint": "eslint source",
         "i18n": "extract-messages -l=en,fr -o site/public/locales/ -d en --extractFromFormatMessageCall --flat 'source/src/app/**/*.jsx'",
         "check-unused": "webpack --mode production --env.unused true --display errors-only",
-        "start": "webpack serve --compress --https --port 8081 --mode development "
+        "start": "webpack serve --compress --https --port 8083 --mode development "
     },
     "repository": {
         "type": "git",

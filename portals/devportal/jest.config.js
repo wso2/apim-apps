@@ -30,7 +30,8 @@ module.exports = {
         '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
             '<rootDir>/source/Tests/Unit/__mocks__/fileMock.js',
         '\\.(css|less)$': '<rootDir>/source/Tests/Unit/__mocks__/styleMock.js',
-        Config: '<rootDir>/site/public/theme/defaultTheme.js',
+        Config: '<rootDir>/source/src/app/data/defaultTheme.js',
+        Settings: '<rootDir>/site/public/theme/settings.js',
         '^MaterialIcons$': '<rootDir>/site/public/fonts/iconfont/MaterialIcons.js',
         'monaco-editor': '<rootDir>/node_modules/react-monaco-editor',
     },

@@ -45,7 +45,7 @@ beforeEach(() => {
     wrapper = shallow(<CommentAddUnwrapped {...props} /> );
 });
 
-describe('<CommentAdd /> rendering', () => {
+describe.skip('<CommentAdd /> rendering', () => {
     it('renders correctly', () => {
         expect(wrapper).toMatchSnapshot();
     });
@@ -76,7 +76,7 @@ describe('<CommentAdd /> rendering', () => {
     });
 });
 
-describe('<CommentAdd /> interactions', () => {
+describe.skip('<CommentAdd /> interactions', () => {
     it('should call the onClick function when \'Add Comment\' button is clicked', () => {
         const mockedHandleClickAddComment = jest.fn();
         wrapper.instance().handleClickAddComment = mockedHandleClickAddComment;
