@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.wso2.carbon.apimgt</groupId>
-        <artifactId>apim-apps</artifactId>
+        <artifactId>org.wso2.carbon.apimgt.ui</artifactId>
         <version>9.0.182-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -89,7 +89,7 @@
                         </goals>
                         <phase>test</phase>
                         <configuration>
-                            <skip>${npm.test.skip}</skip>
+                            <skip>${maven.test.skip}</skip>
                             <workingDirectory>./</workingDirectory>
                             <executable>${npm.executable}</executable>
                             <arguments>

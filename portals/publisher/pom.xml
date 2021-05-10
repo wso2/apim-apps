@@ -19,7 +19,7 @@
 
     <parent>
         <groupId>org.wso2.carbon.apimgt</groupId>
-        <artifactId>apim-apps</artifactId>
+        <artifactId>org.wso2.carbon.apimgt.ui</artifactId>
         <version>9.0.182-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -46,8 +46,8 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.apimgt.publisher</id>
-                            <propertiesFile>../../etc/feature.properties</propertiesFile>
+                            <id>org.wso2.carbon.apimgt.publisher-portal.feature</id>
+                            <propertiesFile>../build/etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:server
@@ -88,7 +88,7 @@
                         </goals>
                         <phase>test</phase>
                         <configuration>
-                            <skip>${npm.test.skip}</skip>
+                            <skip>${maven.test.skip}</skip>
                             <workingDirectory>./</workingDirectory>
                             <executable>${npm.executable}</executable>
                             <arguments>

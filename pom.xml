@@ -5,10 +5,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.apimgt</groupId>
-    <artifactId>apim-apps</artifactId>
+    <artifactId>org.wso2.carbon.apimgt.ui</artifactId>
     <packaging>pom</packaging>
     <version>9.0.182-SNAPSHOT</version>
-    <name>WSO2 API Manager Portals - Parent</name>
+    <name>WSO2 API Manager UI - Parent</name>
     <url>https://wso2.org</url>
 
 
@@ -29,6 +29,7 @@
         <module>portals/publisher</module>
         <module>portals/devportal</module>
         <module>portals/admin</module>
+        <module>portals</module>
     </modules>
 
     <build>
@@ -60,7 +61,7 @@
                     <environmentVariables>
                         <!-- The following parameters create an NPM sandbox for CI -->
                         <NPM_CONFIG_PREFIX>${basedir}/npm</NPM_CONFIG_PREFIX>
-                        <NPM_CONFIG_CACHE>${NPM_CONFIG_PREFIX}/cache</NPM_CONFIG_CACHE>
+                        <NPM_CONFIG_CACHE>${basedir}/npm/cache</NPM_CONFIG_CACHE>
                         <NPM_CONFIG_TMP>${project.build.directory}/npmtmp</NPM_CONFIG_TMP>
                     </environmentVariables>
                 </configuration>
@@ -80,23 +81,8 @@
                 <artifactId>maven-deploy-plugin</artifactId>
             </plugin>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.1</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
             </plugin>
         </plugins>
     </build>
@@ -176,5 +162,7 @@
 
     <properties>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+        <!-- APIM UI Component Version -->
+        <carbon.apimgt.ui.version>9.0.182-SNAPSHOT</carbon.apimgt.ui.version>
     </properties>
 </project>
