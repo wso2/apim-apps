@@ -26,7 +26,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>admin-portal</artifactId>
+    <artifactId>org.wso2.carbon.apimgt.ui.admin</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 API Manager - Admin portal UI</name>
     <url>http://wso2.org</url>
@@ -47,7 +47,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.apimgt.admin</id>
+                            <id>org.wso2.carbon.apimgt.ui.admin</id>
                             <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
