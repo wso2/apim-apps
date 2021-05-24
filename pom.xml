@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.apimgt</groupId>
     <artifactId>org.wso2.carbon.apimgt.ui</artifactId>
     <packaging>pom</packaging>
-    <version>9.0.182-SNAPSHOT</version>
+    <version>9.0.182</version>
     <name>WSO2 API Manager UI - Parent</name>
     <url>https://wso2.org</url>
 
@@ -22,7 +21,7 @@
         <url>https://github.com/wso2/apim-apps.git</url>
         <developerConnection>scm:git:https://github.com/wso2/apim-apps.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/apim-apps.git</connection>
-        <tag>HEAD</tag>
+        <tag>v9.0.182</tag>
     </scm>
 
     <modules>
