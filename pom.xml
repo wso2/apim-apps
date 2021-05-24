@@ -162,6 +162,6 @@
     <properties>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <!-- APIM UI Component Version -->
-        <carbon.apimgt.ui.version>9.0.182-SNAPSHOT</carbon.apimgt.ui.version>
+        <carbon.apimgt.ui.version>${project.version}</carbon.apimgt.ui.version>
     </properties>
 </project>
