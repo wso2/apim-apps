@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.wso2.carbon.apimgt</groupId>
         <artifactId>org.wso2.carbon.apimgt.ui</artifactId>
-        <version>9.0.182</version>
+        <version>9.0.183-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.apimgt.ui.portals</artifactId>
     <packaging>pom</packaging>
-    <version>9.0.182</version>
+    <version>9.0.183-SNAPSHOT</version>
     <name>WSO2 API Manager UI Portals - Parent</name>
     <url>https://wso2.org</url>
 
