@@ -20,19 +20,19 @@
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.ui.publisher</artifactId>
-            <version>${carbon.apimgt.ui.version}</version>
+            <version>${project.parent.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.ui.devportal</artifactId>
-            <version>${carbon.apimgt.ui.version}</version>
+            <version>${project.parent.version}</version>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
             <artifactId>org.wso2.carbon.apimgt.ui.admin</artifactId>
-            <version>${carbon.apimgt.ui.version}</version>
+            <version>${project.parent.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -55,13 +55,13 @@
                             <propertiesFile>portals/build/etc/feature.properties</propertiesFile>
                             <includedFeatures>
                                 <includedFeatureDef>
-                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.publisher:${carbon.apimgt.ui.version}
+                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.publisher:${project.parent.version}
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.devportal:${carbon.apimgt.ui.version}
+                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.devportal:${project.parent.version}
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.admin:${carbon.apimgt.ui.version}
+                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.admin:${project.parent.version}
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>
