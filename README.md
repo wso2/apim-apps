@@ -3,12 +3,17 @@
 
 ---
 
-[![Build Status](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/badge/icon)](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/)
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![stackoverflow](https://img.shields.io/badge/stackoverflow-wso2am-orange)](https://stackoverflow.com/tags/wso2-am/)
 [![slack](https://img.shields.io/badge/slack-wso2--apim-blueviolet)](https://join.slack.com/t/wso2-apim/shared_invite/enQtNzEzMzk5Njc5MzM0LTgwODI3NmQ1MjI0ZDQyMGNmZGI4ZjdkZmI1ZWZmMjNkY2E0NmY3ZmExYjkxYThjNzNkOTU2NWJmYzM4YzZiOWU?src=sidebar)
 
 ---
+
+|  Branch / Status | Jenkins | Travis CI |
+| :------------ |:------------- |:-------------
+| master      | [![Build Status](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/badge/icon)](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/) | [![Build Status](https://travis-ci.com/wso2/apim-apps.svg?branch=main)](https://travis-ci.org/wso2/apim-apps) |
+
 
 WSO2 API Manager apps consists of several loosely coupled modules.
 
