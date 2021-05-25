@@ -25,7 +25,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./services/dev_proxy/auth_login.js');
 
-// When exporting a function, Current mode is received as the first arg to the function
+// When exporting a function, Current mode is received as the first arg to the function.
 // https://github.com/webpack/webpack/issues/6460#issuecomment-364286147
 module.exports = (env, argv) => {
     const isDevelopmentBuild = argv.mode === 'development';
