@@ -3,8 +3,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon.apimgt</groupId>
-    <artifactId>org.wso2.carbon.apimgt.ui</artifactId>
+    <groupId>org.wso2.carbon.apimgt.ui</groupId>
+    <artifactId>apim.ui.apps</artifactId>
     <packaging>pom</packaging>
     <version>9.0.183-SNAPSHOT</version>
     <name>WSO2 API Manager UI - Parent</name>
