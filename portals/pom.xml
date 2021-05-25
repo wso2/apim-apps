@@ -55,13 +55,13 @@
                             <propertiesFile>portals/build/etc/feature.properties</propertiesFile>
                             <includedFeatures>
                                 <includedFeatureDef>
-                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.publisher:${carbon.apimgt.ui.version}
+                                    org.wso2.carbon.apimgt.ui:org.wso2.carbon.apimgt.ui.publisher:${carbon.apimgt.ui.version}
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.devportal:${carbon.apimgt.ui.version}
+                                    org.wso2.carbon.apimgt.ui:org.wso2.carbon.apimgt.ui.devportal:${carbon.apimgt.ui.version}
                                 </includedFeatureDef>
                                 <includedFeatureDef>
-                                    org.wso2.carbon.apimgt:org.wso2.carbon.apimgt.ui.admin:${carbon.apimgt.ui.version}
+                                    org.wso2.carbon.apimgt.ui:org.wso2.carbon.apimgt.ui.admin:${carbon.apimgt.ui.version}
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>
