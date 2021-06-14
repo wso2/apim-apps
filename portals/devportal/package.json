@@ -13,7 +13,7 @@
         "lint": "eslint source/**/*.js source/**/*.jsx source/src/app/**/*.jsx",
         "i18n": "extract-messages -l=en -o site//public//locales// -d en --extractFromFormatMessageCall --flat 'source//src//app//**//*.jsx'",
         "check-unused": "webpack --mode production --env.unused true --display errors-only",
-        "start": "webpack serve --compress --https --port 8082 --mode development "
+        "start": "webpack serve --compress --https --port 8084 --mode development "
     },
     "repository": {
         "type": "git",
