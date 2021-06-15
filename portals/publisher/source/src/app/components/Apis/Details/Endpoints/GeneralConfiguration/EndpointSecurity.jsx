@@ -38,6 +38,8 @@ import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import APIValidation from 'AppData/APIValidation';
 import Alert from 'AppComponents/Shared/Alert';
+import CONSTS from 'AppData/Constants';
+
 import EditableParameterRow from './EditableParameterRow';
 
 const styles = () => ({
@@ -81,16 +83,7 @@ function EndpointSecurity(props) {
         saveEndpointSecurityConfig,
         closeEndpointSecurityConfig,
     } = props;
-    const [endpointSecurityInfo, setEndpointSecurityInfo] = useState({
-        type: '',
-        username: '',
-        password: '',
-        grantType: '',
-        tokenUrl: '',
-        clientId: '',
-        clientSecret: '',
-        customParameters: {},
-    });
+    const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
     const [securityValidity, setSecurityValidity] = useState();
 
     const [showAddParameter, setShowAddParameter] = useState(false);
@@ -193,8 +186,6 @@ function EndpointSecurity(props) {
             }
             setSecurityValidity({ ...securityValidity, [field]: validity });
         }
-        const type = isProduction ? 'production' : 'sandbox';
-        onChangeEndpointAuth(endpointSecurityInfo, type);
     };
 
     /**

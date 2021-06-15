@@ -39,6 +39,17 @@ const CONSTS = {
         websubHttpPort: 9021,
         websubHttpsPort: 8021,
     },
+    DEFAULT_ENDPOINT_SECURITY: {
+        enabled: false,
+        type: '',
+        username: '',
+        password: null, // has to use null to differentiate the returned '' (empty) password vs no password provided
+        grantType: '',
+        tokenUrl: '',
+        clientId: null,
+        clientSecret: null, // same as above password case
+        customParameters: {},
+    },
 };
 
 export default CONSTS;

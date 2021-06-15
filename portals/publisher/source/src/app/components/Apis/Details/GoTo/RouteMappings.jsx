@@ -18,6 +18,14 @@
 const suggestions = {
     common: [
         {
+            label: 'comments',
+            route: 'comments',
+        },
+        {
+            label: 'Gateway URLs',
+            route: 'deployments',
+        },
+        {
             label: 'Overview',
             route: 'overview',
         },
