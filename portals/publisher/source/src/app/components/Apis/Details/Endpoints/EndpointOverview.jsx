@@ -33,6 +33,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Progress } from 'AppComponents/Shared';
+import CONSTS from 'AppData/Constants';
 
 import cloneDeep from 'lodash.clonedeep';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
@@ -161,28 +162,8 @@ function EndpointOverview(props) {
 
     const handleToggleEndpointSecurity = () => {
         const tmpSecurityInfo = !endpointSecurityInfo ? {
-            production: {
-                enabled: false,
-                type: null,
-                username: null,
-                password: null,
-                grantType: null,
-                tokenUrl: null,
-                clientId: null,
-                clientSecret: null,
-                customParameters: {},
-            },
-            sandbox: {
-                enabled: false,
-                type: null,
-                username: null,
-                password: null,
-                grantType: null,
-                tokenUrl: null,
-                clientId: null,
-                clientSecret: null,
-                customParameters: {},
-            },
+            production: CONSTS.DEFAULT_ENDPOINT_SECURITY,
+            sandbox: CONSTS.DEFAULT_ENDPOINT_SECURITY,
         } : endpointSecurityInfo;
         setEndpointSecurityInfo(tmpSecurityInfo);
     };
@@ -536,15 +517,16 @@ function EndpointOverview(props) {
     };
 
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
+        const { type } = endpointSecurityObj;
+        let newEndpointSecurityObj = endpointSecurityObj;
+        if (type === 'NONE') {
+            newEndpointSecurityObj = { ...CONSTS.DEFAULT_ENDPOINT_SECURITY, type };
+        }
         endpointsDispatcher({
             action: 'endpointSecurity',
             value: {
                 ...endpointSecurityInfo,
-                [enType]: {
-                    ...endpointSecurityInfo[enType],
-                    enabled: endpointSecurityObj.type !== 'NONE'
-                        ? endpointSecurityInfo[enType].enabled = true : endpointSecurityInfo[enType].enabled = false,
-                },
+                [enType]: newEndpointSecurityObj,
             },
         });
         setEndpointSecurityConfig({ open: false });

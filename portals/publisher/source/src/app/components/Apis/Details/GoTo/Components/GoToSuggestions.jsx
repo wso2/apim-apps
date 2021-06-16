@@ -34,6 +34,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         left: 0,
         right: 0,
+        maxHeight: '60vh',
+        overflowY: 'scroll',
     },
 }));
 
@@ -61,7 +63,7 @@ function getSuggestions(value, isAPIProduct, isGraphQL, { showEmpty = false } = 
     return inputLength === 0 && !showEmpty
         ? []
         : newSuggestions.filter((suggestion) => {
-            const keep = count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+            const keep = count < 15 && suggestion.label.match(new RegExp(inputValue, 'gi'));
 
             if (keep) {
                 count += 1;

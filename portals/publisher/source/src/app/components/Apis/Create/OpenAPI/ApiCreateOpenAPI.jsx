@@ -35,6 +35,39 @@ import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import ProvideOpenAPI from './Steps/ProvideOpenAPI';
 
 /**
+     *
+     * Reduce the events triggered from API input fields to current state
+     * @param {*} currentState
+     * @param {*} inputAction
+     * @returns
+     */
+function apiInputsReducer(currentState, inputAction) {
+    const { action, value } = inputAction;
+    switch (action) {
+        case 'type':
+        case 'inputValue':
+        case 'name':
+        case 'version':
+        case 'endpoint':
+        case 'context':
+        case 'policies':
+        case 'isFormValid':
+            return { ...currentState, [action]: value };
+        case 'inputType':
+            return { ...currentState, [action]: value, inputValue: value === 'url' ? '' : null };
+        case 'preSetAPI':
+            return {
+                ...currentState,
+                name: value.name.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, ''),
+                version: value.version,
+                context: value.context,
+                endpoint: value.endpoints && value.endpoints[0],
+            };
+        default:
+            return currentState;
+    }
+}
+/**
  * Handle API creation from OpenAPI Definition.
  *
  * @export
@@ -44,40 +77,6 @@ import ProvideOpenAPI from './Steps/ProvideOpenAPI';
 export default function ApiCreateOpenAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history } = props;
-
-    /**
-     *
-     * Reduce the events triggered from API input fields to current state
-     * @param {*} currentState
-     * @param {*} inputAction
-     * @returns
-     */
-    function apiInputsReducer(currentState, inputAction) {
-        const { action, value } = inputAction;
-        switch (action) {
-            case 'type':
-            case 'inputValue':
-            case 'name':
-            case 'version':
-            case 'endpoint':
-            case 'context':
-            case 'policies':
-            case 'isFormValid':
-                return { ...currentState, [action]: value };
-            case 'inputType':
-                return { ...currentState, [action]: value, inputValue: value === 'url' ? '' : null };
-            case 'preSetAPI':
-                return {
-                    ...currentState,
-                    name: value.name.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, ''),
-                    version: value.version,
-                    context: value.context,
-                    endpoint: value.endpoints && value.endpoints[0],
-                };
-            default:
-                return currentState;
-        }
-    }
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateOpenAPI',
