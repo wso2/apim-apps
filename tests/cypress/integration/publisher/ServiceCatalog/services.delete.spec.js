@@ -1,4 +1,4 @@
-import Utils from "../../../support/utils";
+import Utils from "@support/utils";
 
 const CARBON_ORIGIN = Utils.getAppOrigin();
 describe("Service catalog delete flow", () => {

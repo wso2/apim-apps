@@ -279,11 +279,11 @@
         ],
     },
     'x-wso2-production-endpoints': {
-        urls: ['https://localhost:9443/am/sample/pizzashack/v1/api/'],
+        urls: ['https://sample.wso2.com/am/sample/pizzashack/v1/api/'],
         type: 'http',
     },
     'x-wso2-sandbox-endpoints': {
-        urls: ['https://localhost:9443/am/sample/pizzashack/v1/api/'],
+        urls: ['https://sample.wso2.com/am/sample/pizzashack/v1/api/'],
         type: 'http',
     },
     'x-wso2-basePath': '/pizzashack/1.0.0',
@@ -397,10 +397,10 @@ const getSampleAPIData = () => {
         endpointConfig: {
             endpoint_type: 'http',
             sandbox_endpoints: {
-                url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+                url: 'https://sample.wso2.com/am/sample/pizzashack/v1/api/',
             },
             production_endpoints: {
-                url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+                url: 'https://sample.wso2.com/am/sample/pizzashack/v1/api/',
             },
         },
         operations: [
@@ -437,13 +437,14 @@ const getSampleAPIData = () => {
         ],
     };
 };
-
+// To test against internal Pizzashak endpoint 
+// change https://sample.wso2.com to https://localhost:9443
 const getSampleServiceMeta = () => ({
     name: 'Pizzashack-Endpoint',
     description: 'A Catalog Entry that exposes a REST endpoint',
     version: 'v1',
     serviceKey: 'Pizzashack-Endpoint-1.0.0',
-    serviceUrl: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+    serviceUrl: 'https://sample.wso2.com/am/sample/pizzashack/v1/api/',
     definitionType: 'OAS3',
 });
 

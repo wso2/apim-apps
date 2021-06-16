@@ -1,4 +1,4 @@
-import Utils from "../../../../../support/utils"
+import Utils from "@support/utils";
 
 describe("API detail pages smoke test", () => {
     const username = 'admin'

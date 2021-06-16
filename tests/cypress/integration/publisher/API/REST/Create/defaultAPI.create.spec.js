@@ -1,4 +1,4 @@
-import Utils from "../../../../../support/utils"
+import Utils from "@support/utils";
 
 describe("API Create flow", () => {
     const username = 'admin'
@@ -22,8 +22,8 @@ describe("API Create flow", () => {
     })
 
 
-    it("Create 3~5 APIs", () => {
-        let i = Utils.getRandomRange(10, 13);
+    it("Create 2~4 APIs", () => {
+        let i = Utils.getRandomRange(2, 4);
         while (i > 0) {
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
             cy.get('#itest-create-api-menu-button').click()
