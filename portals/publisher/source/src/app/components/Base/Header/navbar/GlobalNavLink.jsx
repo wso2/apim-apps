@@ -98,7 +98,7 @@ const styles = (theme) => ({
  */
 function GlobalNavLinks(props) {
     const {
-        classes, active, title, children, to, type, icon, isExternalLink,
+        classes, active, title, children, id, to, type, icon, isExternalLink,
     } = props;
     const theme = useTheme();
     let tooltipTitle = title;
@@ -109,6 +109,7 @@ function GlobalNavLinks(props) {
     const iconWidth = 25;
     return (
         <Link
+            id={id}
             underline='none'
             component={!isExternalLink && RouterLink}
             to={!isExternalLink && to}

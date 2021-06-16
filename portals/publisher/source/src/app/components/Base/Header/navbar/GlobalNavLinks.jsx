@@ -91,6 +91,7 @@ function GlobalNavLinks(props) {
                     </GlobalNavLink>
                 )}
             <GlobalNavLink
+                id='scope'
                 to='/scopes'
                 type='scopes'
                 title='Scopes'
