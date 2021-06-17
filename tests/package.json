@@ -1,7 +1,7 @@
 {
-  "name": "apim4_integration_tests",
+  "name": "apim3.2.0_ui_integration_tests",
   "version": "1.0.0",
-  "description": "Integration tests written in cypress.io for WSO2 API Manager 4.x versions",
+  "description": "Integration tests written in cypress.io for WSO2 API Manager 3.2.0 versions",
   "main": "index.js",
   "scripts": {
     "test": "cypress run",
