@@ -118,9 +118,14 @@ class APIClient {
      */
     _fixSpec(spec) {
         const url = new URL(spec.servers[0].url);
-        url.host = this.host;
-        spec.servers[0].url = String(url);
-        spec.security = [{ OAuth2Security: ['apim:api_subscribe'] }];
+        if (this.host !== url.host) {
+            url.host = this.host;
+            if (Settings.app.proxy_context_path && Settings.app.proxy_context_path !== '') {
+                url.pathname = Settings.app.proxy_context_path + url.pathname;
+            }
+            spec.servers[0].url = String(url);
+            spec.security = [{ OAuth2Security: ['apim:api_subscribe'] }];
+        }
         return spec;
     }
 

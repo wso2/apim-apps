@@ -115,8 +115,13 @@ class APIClient {
     _fixSpec(spec) {
         const updatedSpec = spec;
         const url = new URL(spec.servers[0].url);
-        url.host = this.environment.host;
-        updatedSpec.servers[0].url = String(url);
+        if (this.environment.host !== url.host) {
+            url.host = this.environment.host;
+            if (Configurations.app.proxy_context_path && Configurations.app.proxy_context_path !== '') {
+                url.pathname = Configurations.app.proxy_context_path + url.pathname;
+            }
+            updatedSpec.servers[0].url = String(url);
+        }
         return updatedSpec;
     }
 
