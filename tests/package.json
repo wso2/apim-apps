@@ -10,9 +10,11 @@
   "keywords": [
     "cypress.io"
   ],
-  "author": "tmkasun",
-  "license": "ISC",
+  "author": "wso2",
+  "license": "Apache-2.0",
   "devDependencies": {
+    "@cypress/browserify-preprocessor": "^3.0.1",
+    "babel-plugin-module-resolver": "^4.1.0",
     "cypress": "^6.6.0",
     "eslint-plugin-cypress": "^2.11.2"
   }

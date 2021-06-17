@@ -1,3 +1,5 @@
+import Utils from "@support/utils";
+
 describe("Basic login to carbon console", () => {
     const username = 'admin'
     const password = 'admin'
@@ -9,8 +11,8 @@ describe("Basic login to carbon console", () => {
         "devdas": ["Internal/devops"]
     }
     it("How show no apis message", () => {
-        cy.visit('https://localhost:9443/devportal');
-        cy.url().should('contains', 'https://localhost:9443/devportal/apis');
+        cy.visit(`${Utils.getAppOrigin()}/devportal`);
+        cy.url().should('contains', `${Utils.getAppOrigin()}/devportal/apis`);
         cy.get("#itest-no-apis").should('be.visible') ;
     })
 })

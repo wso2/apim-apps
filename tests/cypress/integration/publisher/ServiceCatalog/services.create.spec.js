@@ -1,7 +1,8 @@
 
 
 import { getSampleServiceMeta, getSampleOpenAPI } from '../../../support/mockData/serviceCatalog';
-import Utils from '../../../support/utils';
+import Utils from "@support/utils";
+
 
 const CARBON_ORIGIN = Utils.getAppOrigin();
 describe("Service catalog create flow", () => {

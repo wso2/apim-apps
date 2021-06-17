@@ -1,3 +1,5 @@
+import Utils from "@support/utils";
+
 describe("Developer portal smoke tests", () => {
     const username = 'admin'
     const password = 'admin'
@@ -8,7 +10,7 @@ describe("Developer portal smoke tests", () => {
         cy.loginToDevportal(username, password)
     })
     it.skip("Create an application", () => {
-        cy.visit('https://localhost:9443/devportal/applications');
+        cy.visit(`${Utils.getAppOrigin()}/devportal/applications`);
         cy.get('#itest-link-to-applications').click();
         cy.get('#itest-application-create-link').click();
         cy.get('#application-name').type(appName);
@@ -30,7 +32,7 @@ describe("Developer portal smoke tests", () => {
     it.skip("Should delete all apps", () => {
         let maxApps = 50;
         while (maxApps > 0) {
-            cy.visit('https://localhost:9443/devportal/applications');
+            cy.visit(`${Utils.getAppOrigin()}/devportal/applications`);
             cy.get('#itest-application-list-table .itest-application-delete-button').first().click();
             cy.get('#itest-confirm-application-delete').click();
             maxApps -= 1;
