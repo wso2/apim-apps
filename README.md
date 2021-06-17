@@ -59,7 +59,7 @@ Building & Running
 
 ### Run
 
-7. Extract the wso2am-4.0.0.zip and go to the 'bin' directory
+7. Extract the wso2am-3.2.0.zip and go to the 'bin' directory
 
 8. Run the api-manager.sh or api-manager.bat script based on you operating system.
 

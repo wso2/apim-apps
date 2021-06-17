@@ -22,9 +22,9 @@ Cypress.Commands.add('portalLogin', (username, password, portal) => {
         cy.get('#itest-devportal-sign-in').click();
     }
     cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
-    cy.get('[data-testid=login-page-username-input]').click();
-    cy.get('[data-testid=login-page-username-input]').type('admin');
-    cy.get('[data-testid=login-page-password-input]').type('admin');
+    cy.get('#usernameUserInput').click();
+    cy.get('#usernameUserInput').type('admin');
+    cy.get('#password').type('admin');
     cy.get('#loginForm').submit();
     cy.url().should('contains', `${Utils.getAppOrigin()}/${portal}`);
 })
