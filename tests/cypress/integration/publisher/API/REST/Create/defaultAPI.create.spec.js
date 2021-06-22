@@ -65,7 +65,6 @@ describe("API Create flow", () => {
         cy.get('#itest-id-openapi').click();
         cy.get('#itest-openapi-archive-select').click();
         cy.get('#itest-select-swagger').then(function (el) {
-            // convert the logo base64 string to a blob
             const filepath = 'api_artifacts/swagger_2.0.json'
             cy.get('input[type="file"]').attachFile(filepath)            
         })
@@ -99,12 +98,10 @@ describe("API Create flow", () => {
         cy.get('#itest-id-openapi').click();
         cy.get('#itest-openapi-archive-select').click();
         cy.get('#itest-select-swagger').then(function (el) {
-            // convert the logo base64 string to a blob
             const filepath = 'api_artifacts/petstore_open_api_3.json'
             cy.get('input[type="file"]').attachFile(filepath)            
         })
         cy.get('#itest-create-open-api-w1').click();
-        cy.get('#itest-id-apiname-input').type('4');
         cy.get('#itest-id-apicontext-input').type('/abc4');
         cy.get('#itest-id-apiversion-input').type('4');
         cy.get('#itest-create-open-api-w2').click();
@@ -119,16 +116,16 @@ describe("API Create flow", () => {
         cy.get('#itest-id-createapi').click();
         cy.get('#itest-id-graphql').click();
         cy.get('#itest-select-graphql').then(function (el) {
-            // convert the logo base64 string to a blob
-            const filepath = 'api_artifacts/petstore_open_api_3.json'
+            const filepath = 'api_artifacts/schema_graphql.graphql'
             cy.get('input[type="file"]').attachFile(filepath)            
         })
+        cy.get('#itest-create-graphql-api-w1').click();
         cy.get('#itest-id-apiname-input').type('GraphQLAPI');
         cy.get('#itest-id-apicontext-input').type('/graphql1');
         cy.get('#itest-id-apiversion-input').type('v3');
         cy.get('#itest-id-apiendpoint-input').type('https://graphql.api.wso2.com');
-        cy.get('.MuiButton-contained-2732 > .MuiButton-label-2725').click();
-        cy.get('#itest-id-deleteapi-icon-button > .MuiTypography-root-2948').click();
-        cy.get('#itest-id-deleteconf > .MuiButton-label-3424').click();
+        //cy.get('.MuiButton-contained-2732').click();
+        cy.get('#itest-id-deleteapi-icon-button').click();
+        cy.get('#itest-id-deleteconf').click();
     });
 })
