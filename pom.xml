@@ -6,8 +6,8 @@
     <groupId>org.wso2.carbon.apimgt.ui</groupId>
     <artifactId>apim.ui.apps</artifactId>
     <packaging>pom</packaging>
-    <version>9.0.188-SNAPSHOT</version>
-    <name>WSO2 API Manager 3.2.o UI - Test  Parent</name>
+    <version>9.0.190-SNAPSHOT</version>
+    <name>WSO2 API Manager 3.2.0 UI - Test  Parent</name>
     <url>https://wso2.org</url>
 
 
