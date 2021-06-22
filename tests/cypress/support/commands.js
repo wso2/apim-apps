@@ -1,4 +1,5 @@
 import Utils from "@support/utils";
+import 'cypress-file-upload';
 
 Cypress.Commands.add('carbonLogin', (username, password) => {
     Cypress.log({
@@ -41,7 +42,7 @@ Cypress.Commands.add('deploySampleAPI', () => {
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
     cy.get('#itest-rest-api-create-menu').click()
     cy.get('#itest-id-deploy-sample').click()
-    cy.get('#itest-api-name-version', { timeout: 10000 }).should('be.visible');
+    cy.get('#itest-api-name-version').should('be.visible');
     cy.url().should('contains', '/overview');
     cy.get("#itest-api-name-version").contains('PizzaShackAPI');
     return cy.location('pathname').then((pathName) => {
@@ -51,12 +52,12 @@ Cypress.Commands.add('deploySampleAPI', () => {
     })
 })
 
-Cypress.Commands.add('createAnAPI', (name, type = 'REST') => {
+Cypress.Commands.add('createAPIByRestAPIDesign', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
     const randomName = `sample_api_${random_number}`;
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
-    cy.get('#itest-create-api-menu-button').click()
-    cy.get('#itest-id-landing-rest-create-default').click()
+    cy.get('#itest-id-createapi').click()
+    cy.get('#itest-id-createdefault').click()
     cy.get('#itest-id-apiname-input').type(name || randomName);
     cy.get('#itest-id-apicontext-input').click();
     cy.get('#itest-id-apicontext-input').type(`/sample_context_${random_number}`);
@@ -65,12 +66,12 @@ Cypress.Commands.add('createAnAPI', (name, type = 'REST') => {
     cy.get('#itest-id-apiendpoint-input').click();
     cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('#itest-create-default-api-button').click();
-    cy.get("#itest-api-name-version").contains(`sample_api_${random_number}`);
+    cy.get('#itest-api-name-version').should('be.visible');
+    cy.get("#itest-api-name-version").contains(`sample_api_${random_number}`);    
     return cy.location('pathname').then((pathName) => {
         const pathSegments = pathName.split('/');
         const apiUUID = pathSegments[pathSegments.length - 2];
-        return { uuid: apiUUID, name: randomName };
+        return { uuid: apiUUID };
     })
 
 })
-
