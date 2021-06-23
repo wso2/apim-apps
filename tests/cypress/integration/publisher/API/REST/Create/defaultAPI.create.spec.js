@@ -7,9 +7,9 @@ describe("API Create flow", () => {
         // login before each test
         cy.loginToPublisher(username, password)
     })
-    it("Deploy sample API", () => {
+    it.only("Deploy sample API", () => {
         cy.viewport(1920, 980)
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+        cy.visit(`/publisher/apis`);
         cy.get('#itest-id-deploy-sample-api').click();
         cy.get('#itest-api-name-version').should('be.visible');
         cy.url().should('contains', '/overview');
@@ -26,7 +26,7 @@ describe("API Create flow", () => {
     it("Create 2~4 APIs", () => {
         let i = Utils.getRandomRange(2, 4);
         while (i > 0) {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+            cy.visit(`/publisher/apis`);
             cy.get('#itest-id-createapi').click()
             cy.get('#itest-id-createdefault').click()
             const random_number = Math.round(Math.random() * 1000);
@@ -46,7 +46,7 @@ describe("API Create flow", () => {
     });
 
     it("Create API from swagger URL", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+        cy.visit(`/publisher/apis`);
         cy.get('#itest-id-createapi').click();
         cy.get('#itest-id-openapi').click();
         cy.get('#outlined-full-width').type('https://petstore.swagger.io/v2/swagger.json');
@@ -60,7 +60,7 @@ describe("API Create flow", () => {
 
 
     it("Create API from swagger from file", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+        cy.visit(`/publisher/apis`);
         cy.get('#itest-id-createapi').click();
         cy.get('#itest-id-openapi').click();
         cy.get('#itest-openapi-archive-select').click();
@@ -77,7 +77,7 @@ describe("API Create flow", () => {
     });
     
     it("Create API from Open API 3", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+        cy.visit(`/publisher/apis`);
         cy.get('#itest-id-createapi').click();
         cy.get('#itest-id-openapi').click();
         cy.get('#outlined-full-width').type('https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.json');
@@ -93,7 +93,7 @@ describe("API Create flow", () => {
     });
 
     it("Create API from Open API from file", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+        cy.visit(`/publisher/apis`);
         cy.get('#itest-id-createapi').click();
         cy.get('#itest-id-openapi').click();
         cy.get('#itest-openapi-archive-select').click();
