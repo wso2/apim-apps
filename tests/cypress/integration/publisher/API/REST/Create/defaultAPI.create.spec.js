@@ -119,7 +119,7 @@ describe("API Create flow", () => {
 
     /*
     it("Create API from GraphQL API file", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+        cy.visit(`/publisher/apis`)
         cy.get('#itest-id-createapi').click();
         cy.get('#itest-id-graphql').click();
         cy.get('#itest-select-graphql').then(function (el) {

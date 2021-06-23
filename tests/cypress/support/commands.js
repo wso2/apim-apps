@@ -1,4 +1,3 @@
-import Utils from "@support/utils";
 import 'cypress-file-upload';
 
 Cypress.Commands.add('carbonLogin', (username, password) => {
@@ -7,7 +6,7 @@ Cypress.Commands.add('carbonLogin', (username, password) => {
         message: `${username} | ${password}`,
     })
 
-    cy.visit(`${Utils.getAppOrigin()}/carbon/admin/login.jsp`);
+    cy.visit(`/carbon/admin/login.jsp`);
     cy.get('#txtUserName').type(username);
     cy.get('#txtPassword').type(password);
     cy.get('form').submit();
@@ -18,16 +17,16 @@ Cypress.Commands.add('portalLogin', (username, password, portal) => {
         message: `${username} | ${password}`,
     })
 
-    cy.visit(`${Utils.getAppOrigin()}/${portal}`);
+    cy.visit(`${portal}`);
     if (portal === 'devportal') {
         cy.get('#itest-devportal-sign-in').click();
     }
-    cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
+    cy.url().should('contains', `/authenticationendpoint/login.do`);
     cy.get('#usernameUserInput').click();
     cy.get('#usernameUserInput').type('admin');
     cy.get('#password').type('admin');
     cy.get('#loginForm').submit();
-    cy.url().should('contains', `${Utils.getAppOrigin()}/${portal}`);
+    cy.url().should('contains', `${portal}`);
 })
 
 Cypress.Commands.add('loginToPublisher', (username, password) => {
@@ -39,7 +38,7 @@ Cypress.Commands.add('loginToDevportal', (username, password) => {
 })
 
 Cypress.Commands.add('deploySampleAPI', () => {
-    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+    cy.visit(`/publisher/apis`)
     cy.get('#itest-rest-api-create-menu').click()
     cy.get('#itest-id-deploy-sample').click()
     cy.get('#itest-api-name-version').should('be.visible');
@@ -55,7 +54,7 @@ Cypress.Commands.add('deploySampleAPI', () => {
 Cypress.Commands.add('createAPIByRestAPIDesign', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
     const randomName = `sample_api_${random_number}`;
-    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+    cy.visit(`/publisher/apis`)
     cy.get('#itest-id-createapi').click()
     cy.get('#itest-id-createdefault').click()
     cy.get('#itest-id-apiname-input').type(name || randomName);
