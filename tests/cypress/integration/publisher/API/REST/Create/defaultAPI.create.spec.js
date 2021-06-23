@@ -8,10 +8,10 @@ describe("API Create flow", () => {
     //     cy.loginToPublisher(username, password)
     // })
 
-    t.only("Login to publisher", () => {
+    it.only("Login to publisher", () => {
         cy.loginToPublisher(username, password)
     })
-    
+
     /*
     it.only("Deploy sample API", () => {
         cy.viewport(1920, 980)
