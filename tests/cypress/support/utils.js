@@ -13,7 +13,7 @@ export default class Utils {
     }
 
     static getAppOrigin() {
-        return "https://localhost:9443";
+        return process.env.PublisherUrl;
     }
 
     static capFirst(string) {
