@@ -1,5 +1,6 @@
 {
     "chromeWebSecurity": false,
     "pageLoadTimeout": 1000000,
-    "defaultCommandTimeout": 1000000
+    "defaultCommandTimeout": 100000,
+    "baseUrl": "https://localhost:9443"
 }
