@@ -13,7 +13,7 @@ export default class Utils {
     }
 
     static getAppOrigin() {
-        return process.env.PublisherUrl;
+        return process.env.PublisherUrl
     }
 
     static capFirst(string) {
