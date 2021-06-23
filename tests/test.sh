@@ -9,4 +9,3 @@ VAR=`grep "PublisherUrl" ../../../../data-bucket/deployment.properties |cut -d'=
 VAR2=${VAR//[\\]}
 export CYPRESS_BASE_URL=${VAR2//\/publisher}
 npm run test
-sleep 600
