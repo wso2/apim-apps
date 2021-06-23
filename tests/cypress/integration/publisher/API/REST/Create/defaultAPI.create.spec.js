@@ -69,9 +69,9 @@ describe("API Create flow", () => {
             cy.get('input[type="file"]').attachFile(filepath)            
         })
         cy.get('#itest-create-open-api-w1').click();
-        cy.get('#itest-id-apiversion-input').type('1');
+        cy.get('#itest-id-apiversion-input').type('11');
         cy.get('#itest-create-open-api-w2').click();
-        cy.get("#itest-api-name-version").contains('SwaggerPetstore:1.0.01');
+        cy.get("#itest-api-name-version").contains('SwaggerPetstore:1.0.011');
         cy.get('#itest-id-deleteapi-icon-button').click();
         cy.get('#itest-id-deleteconf').click();
     });
@@ -110,8 +110,8 @@ describe("API Create flow", () => {
         cy.get('#itest-id-deleteconf').click();
     });
 
-
-    it.only("Create API from GraphQL API file", () => {
+    /*
+    it("Create API from GraphQL API file", () => {
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
         cy.get('#itest-id-createapi').click();
         cy.get('#itest-id-graphql').click();
@@ -128,4 +128,5 @@ describe("API Create flow", () => {
         cy.get('#itest-id-deleteapi-icon-button').click();
         cy.get('#itest-id-deleteconf').click();
     });
+    */
 })
