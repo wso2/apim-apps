@@ -32,6 +32,7 @@ import PropTypes from 'prop-types';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
+import Configurations from 'Config';
 import Operation from './components/Operation';
 import GroupOfOperations from './components/GroupOfOperations';
 import SpecErrors from './components/SpecErrors';
@@ -542,7 +543,8 @@ export default function Resources(props) {
                 });
         }
         // Fetch API level throttling policies only when the page get mounted for the first time `componentDidMount`
-        API.policies('api').then((response) => {
+        const limit = Configurations.app.throttlingPolicyLimit;
+        API.policies('api', limit).then((response) => {
             setOperationRateLimits(response.body.list);
         });
         // TODO: need to handle the error cases through catch ~tmkb
