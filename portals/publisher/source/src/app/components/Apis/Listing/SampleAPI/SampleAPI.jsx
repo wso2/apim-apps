@@ -81,7 +81,9 @@ const SampleAPI = (props) => {
     const [newSampleAPI, setNewSampleAPI] = useState();
     const classes = useStyles();
     const publisherSettings = usePublisherSettings();
-
+    // const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
+    const defaultAdvancePolicy = '50KPerMin';
+    const defaultSubscriptionPolicy = 'Bronze';
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
 
@@ -105,13 +107,17 @@ const SampleAPI = (props) => {
         setShowStatus(true);
         const restApi = new API();
 
-        const sampleAPIObj = new API(getSampleAPIData());
+        const sampleAPIObj = new API(getSampleAPIData(defaultAdvancePolicy || 'Unlimited',
+            defaultSubscriptionPolicy || 'Unlimited'));
         // Creat the sample API -- 1st API call
         const sampleAPI = await taskManager(sampleAPIObj.save(), 'create');
         setNewSampleAPI(sampleAPI);
 
         // Update the sample API -- 2nd API call
-        await taskManager(sampleAPI.updateSwagger(getSampleOpenAPI()), 'update');
+        await taskManager(sampleAPI
+            .updateSwagger(
+                getSampleOpenAPI(defaultAdvancePolicy || 'Unlimited'),
+            ), 'update');
 
         if (!AuthManager.isNotPublisher()) {
             const revisionPayload = {

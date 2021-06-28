@@ -3,7 +3,7 @@
  * if you are changing anything here!
  */
 
-const getSampleOpenAPI = () => ({
+const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
     openapi: '3.0.0',
     info: {
         description: 'This is a RESTFul API for Pizza Shack online pizza delivery store.\n',
@@ -77,7 +77,7 @@ const getSampleOpenAPI = () => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': 'Unlimited',
+                'x-throttling-tier': defaultSubscriptionPolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -112,7 +112,7 @@ const getSampleOpenAPI = () => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': 'Unlimited',
+                'x-throttling-tier': defaultSubscriptionPolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -161,7 +161,7 @@ const getSampleOpenAPI = () => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': 'Unlimited',
+                'x-throttling-tier': defaultSubscriptionPolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -218,7 +218,7 @@ const getSampleOpenAPI = () => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': 'Unlimited',
+                'x-throttling-tier': defaultSubscriptionPolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -248,7 +248,7 @@ const getSampleOpenAPI = () => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': 'Unlimited',
+                'x-throttling-tier': defaultSubscriptionPolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -376,7 +376,7 @@ const getSampleOpenAPI = () => ({
     },
 });
 
-const getSampleAPIData = () => {
+const getSampleAPIData = (defaultAdvancePolicy, defaultSubscriptionPolicy) => {
     return {
         name: 'PizzaShackAPI',
         description: 'This is a simple API for Pizza Shack online pizza delivery store.',
@@ -384,7 +384,7 @@ const getSampleAPIData = () => {
         version: '1.0.0',
         transport: ['http', 'https'],
         tags: ['pizza'],
-        policies: ['Unlimited'],
+        policies: [defaultSubscriptionPolicy],
         securityScheme: ['oauth2'],
         visibility: 'PUBLIC',
         businessInformation: {
@@ -406,31 +406,31 @@ const getSampleAPIData = () => {
             {
                 target: '/order/{orderId}',
                 verb: 'GET',
-                throttlingPolicy: 'Unlimited',
+                throttlingPolicy: defaultAdvancePolicy,
                 authType: 'Application & Application User',
             },
             {
                 target: '/order/{orderId}',
                 verb: 'DELETE',
-                throttlingPolicy: 'Unlimited',
+                throttlingPolicy: defaultAdvancePolicy,
                 authType: 'Application & Application User',
             },
             {
                 target: '/order/{orderId}',
                 verb: 'PUT',
-                throttlingPolicy: 'Unlimited',
+                throttlingPolicy: defaultAdvancePolicy,
                 authType: 'Application & Application User',
             },
             {
                 target: '/menu',
                 verb: 'GET',
-                throttlingPolicy: 'Unlimited',
+                throttlingPolicy: defaultAdvancePolicy,
                 authType: 'Application & Application User',
             },
             {
                 target: '/order',
                 verb: 'POST',
-                throttlingPolicy: 'Unlimited',
+                throttlingPolicy: defaultAdvancePolicy,
                 authType: 'Application & Application User',
             },
         ],
