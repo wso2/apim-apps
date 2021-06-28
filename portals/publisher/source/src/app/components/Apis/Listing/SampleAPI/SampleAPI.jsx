@@ -81,9 +81,7 @@ const SampleAPI = (props) => {
     const [newSampleAPI, setNewSampleAPI] = useState();
     const classes = useStyles();
     const publisherSettings = usePublisherSettings();
-    // const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
-    const defaultAdvancePolicy = '50KPerMin';
-    const defaultSubscriptionPolicy = 'Bronze';
+    const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
 
