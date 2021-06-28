@@ -17,7 +17,7 @@
  */
 
 import CONSTS from 'AppData/Constants';
-
+import Configurations from 'Config';
 /**
  * Utility class for Publisher application
  */
@@ -183,7 +183,16 @@ class Utils {
      * @memberof Utils
      */
     static getSwaggerURL() {
-        return 'https://' + Utils.getCurrentEnvironment().host + Utils.CONST.SWAGGER_YAML;
+        if (Configurations.app.proxy_context_path) {
+            return 'https://'
+            + Utils.getCurrentEnvironment().host
+            + Configurations.app.proxy_context_path
+            + Utils.CONST.SWAGGER_YAML;
+        } else {
+            return 'https://'
+            + Utils.getCurrentEnvironment().host
+            + Utils.CONST.SWAGGER_YAML;
+        }
     }
 
     /**

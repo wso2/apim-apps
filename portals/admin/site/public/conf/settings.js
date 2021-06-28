@@ -5,6 +5,12 @@
 const AppConfig = {
     app: {
         context: '/admin', // Note the leading `/` and no trailing `/`
+        /*
+        If the proxy context path is configured, it's required to provide it here as well.
+        for example, to serve https://company.com/apim/admin/ URL the context and proxy_context_path will be as follows.
+        context: '/apim/admin',
+        proxy_context_path: '/apim',
+        */
         customUrl: { // Dynamically set the redirect origin according to the forwardedHeader host|proxyPort combination
             enabled: false,
             forwardedHeader: 'X-Forwarded-For',
@@ -24,10 +30,6 @@ const AppConfig = {
             timeout: 2000, // Defines the timeout for the above periodical session status check
         },
         docUrl: 'https://apim.docs.wso2.com/en/4.0.0/',
-    },
-    idp: {
-        origin: 'https://localhost:9443',
-        checkSessionEndpoint: 'https://localhost:9443/oidc/checksession',
     },
 };
 
