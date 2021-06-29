@@ -213,6 +213,7 @@ class TokenManager extends React.Component {
             providedConsumerSecret: '',
             validating: false,
             importDisabled: false,
+            mode: null,
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -332,7 +333,8 @@ class TokenManager extends React.Component {
                         };
                         this.setState({
                             keys, keyRequest: newRequest, keyManagers: responseKeyManagerList, selectedTab,
-                            importDisabled: mode === 'MAPPED',
+                            importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
+                            mode,
                         });
                     } else {
                         const selectdKMGrants = selectdKM.availableGrantTypes || [];
@@ -620,7 +622,7 @@ class TokenManager extends React.Component {
         const {
             keys, keyRequest, isLoading, isKeyJWT, providedConsumerKey,
             providedConsumerSecret, selectedTab, keyManagers, validating, hasError, initialToken,
-            initialValidityTime, initialScopes, importDisabled,
+            initialValidityTime, initialScopes, importDisabled, mode,
         } = this.state;
         if (keyManagers && keyManagers.length === 0) {
             return (
@@ -767,7 +769,6 @@ class TokenManager extends React.Component {
                                     selectedTab={selectedTab}
                                     keyType={keyType}
                                     keys={keys}
-                                    isKeyJWT={isKeyJWT}
                                     selectedGrantTypes={keyRequest.selectedGrantTypes}
                                     isUserOwner={isUserOwner}
                                     hashEnabled={keymanager.enableTokenHashing || hashEnabled}
@@ -841,7 +842,7 @@ class TokenManager extends React.Component {
                                                     color='primary'
                                                     className={classes.button}
                                                     onClick={key ? this.updateKeys : this.generateKeys}
-                                                    disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation) || importDisabled}
+                                                    disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation) || (mode && mode === 'MAPPED')}
                                                 >
                                                     {key ? 'Update' : 'Generate Keys'}
                                                     {isLoading && <CircularProgress size={20} />}

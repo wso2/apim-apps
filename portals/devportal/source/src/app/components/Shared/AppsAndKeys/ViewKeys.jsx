@@ -518,6 +518,9 @@ class ViewKeys extends React.Component {
                 </Grid>
             );
         }
+
+        // Get the grant types for the generated keys
+        const { supportedGrantTypes: supportedGrantTypesUnchanged } = keys.get(selectedTab);
         return consumerKey && (
             <div className={classes.inputWrapper}>
                 <Grid container spacing={3}>
@@ -525,7 +528,7 @@ class ViewKeys extends React.Component {
                     <Grid item xs={12}>
                         <Dialog
                             fullScreen={fullScreen}
-                            open={(open || isKeyJWT) && selectedGrantTypes.includes('client_credentials')}
+                            open={(open || (isKeyJWT && tokenDetails))}
                             onClose={this.handleClose}
                             aria-labelledby='responsive-dialog-title'
                             className={classes.dialogWrapper}
@@ -592,7 +595,7 @@ class ViewKeys extends React.Component {
                         {!hashEnabled && (
                             <div className={classes.tokenSection}>
                                 {keyManagerConfig.enableTokenGeneration
-                                    && selectedGrantTypes.find((a) => a.includes('client_credentials'))
+                                    && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials'))
                                     && (
                                         <Button
                                             variant='outlined'
@@ -600,7 +603,7 @@ class ViewKeys extends React.Component {
                                             color='primary'
                                             className={classes.margin}
                                             onClick={this.handleClickOpen}
-                                            disabled={!selectedGrantTypes.includes('client_credentials')}
+                                            disabled={!supportedGrantTypesUnchanged.includes('client_credentials')}
                                         >
                                             <FormattedMessage
                                                 id='Shared.AppsAndKeys.ViewKeys.generate.access.token'
@@ -622,7 +625,7 @@ class ViewKeys extends React.Component {
                                 </Button>
                             </div>
                         )}
-                        {!selectedGrantTypes.includes('client_credentials') && !hashEnabled && (
+                        {!supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
                             <Typography variant='caption' gutterBottom>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.client.enable.client.credentials'
