@@ -189,11 +189,7 @@ class Subscriptions extends React.Component {
      * @memberof Subscriptions
      */
     componentDidMount() {
-        const {
-            match: {
-                params: { applicationId },
-            },
-        } = this.props;
+        const { applicationId } = this.props.application;
         this.updateSubscriptions(applicationId);
     }
 
@@ -254,6 +250,7 @@ class Subscriptions extends React.Component {
                     }
                 }
                 this.setState({ subscriptions });
+                this.props.getApplication();
             })
             .catch((error) => {
                 const { status } = error;
@@ -275,11 +272,7 @@ class Subscriptions extends React.Component {
      * @memberof Subscriptions
      */
     handleSubscriptionUpdate(apiId, subscriptionId, currentThrottlingPolicy, status, requestedThrottlingPolicy) {
-        const {
-            match: {
-                params: { applicationId },
-            },
-        } = this.props;
+        const { applicationId } = this.props.application;
         const client = new Subscription();
         const promisedUpdate = client.updateSubscription(
             applicationId,
@@ -299,6 +292,7 @@ class Subscriptions extends React.Component {
                 }
                 Alert.info('Business Plan updated successfully!');
                 this.updateSubscriptions(applicationId);
+                this.props.getApplication();
             })
             .catch((error) => {
                 const { status: statusInner } = error;
@@ -349,6 +343,7 @@ class Subscriptions extends React.Component {
                         }));
                     }
                     this.updateSubscriptions(applicationId);
+                    this.props.getApplication();
                 }
             })
             .catch((error) => {
@@ -397,11 +392,7 @@ class Subscriptions extends React.Component {
         const {
             subscriptions, apisNotFound, subscriptionsNotFound,
         } = this.state;
-        const {
-            match: {
-                params: { applicationId },
-            },
-        } = this.props;
+        const { applicationId } = this.props.application;
         const { classes, intl } = this.props;
 
         if (subscriptions) {
@@ -607,11 +598,6 @@ class Subscriptions extends React.Component {
 }
 Subscriptions.propTypes = {
     classes: PropTypes.shape({}).isRequired,
-    match: PropTypes.shape({
-        params: PropTypes.shape({
-            applicationId: PropTypes.string,
-        }).isRequired,
-    }).isRequired,
     intl: PropTypes.shape({}).isRequired,
 };
 

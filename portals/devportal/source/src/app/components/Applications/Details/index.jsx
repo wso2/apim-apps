@@ -161,6 +161,7 @@ class Details extends Component {
         this.state = {
             application: null,
         };
+        this.getApplication = this.getApplication.bind(this);
     }
 
     /**
@@ -169,12 +170,18 @@ class Details extends Component {
      * @memberof Details
      */
     componentDidMount() {
-        const { match } = this.props;
+        this.getApplication();
+    }
+
+    getApplication = () => {
         const client = new API();
-        const promisedApplication = client.getApplication(match.params.application_uuid);
+        const applicationId = this.props.match.params.application_uuid;
+        const promisedApplication = client.getApplication(applicationId);
         promisedApplication
             .then((response) => {
                 this.setState({ application: response.obj });
+                const promisedPolicy = client.getTierByName(response.obj.throttlingPolicy, 'application');
+                return Promise.all([response, promisedPolicy]);
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -420,6 +427,7 @@ class Details extends Component {
                 </nav>
                 <div className={classes.content}>
                     <InfoBar
+                        application={application}
                         applicationId={match.params.application_uuid}
                         innerRef={(node) => { this.infoBar = node; }}
                     />
@@ -455,7 +463,12 @@ class Details extends Component {
                                 path='/applications/:applicationId/sandboxkeys/apikey'
                                 component={() => (this.renderManager(application, 'SANDBOX', 'apikey'))}
                             />
-                            <Route path='/applications/:applicationId/subscriptions' component={Subscriptions} />
+                            <Route
+                                path='/applications/:applicationId/subscriptions'
+                                render={() => (
+                                    <Subscriptions application={application} getApplication={this.getApplication} />
+                                )}
+                            />
                             <Route component={ResourceNotFound} />
                         </Switch>
                     </div>

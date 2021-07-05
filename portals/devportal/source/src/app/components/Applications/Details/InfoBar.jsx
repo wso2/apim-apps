@@ -28,7 +28,6 @@ import Loading from 'AppComponents/Base/Loading/Loading';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import Grid from '@material-ui/core/Grid';
-import API from 'AppData/api';
 import Application from 'AppData/Application';
 import Alert from 'AppComponents/Shared/Alert';
 import AuthManager from 'AppData/AuthManager';
@@ -256,44 +255,12 @@ class InfoBar extends React.Component {
             notFound: false,
             showOverview: true,
             isDeleteOpen: false,
-            applicationOwner: '',
         };
         this.toggleOverview = this.toggleOverview.bind(this);
         this.handleAppDelete = this.handleAppDelete.bind(this);
         this.handleDeleteConfimation = this.handleDeleteConfimation.bind(this);
         this.toggleDeleteConfirmation = this.toggleDeleteConfirmation.bind(this);
     }
-
-    /**
-     * @memberof InfoBar
-     */
-    componentDidMount() {
-        const client = new API();
-        const { applicationId } = this.props;
-        // Get application
-        const promisedApplication = client.getApplication(applicationId);
-
-        promisedApplication
-            .then((response) => {
-                this.setState({ applicationOwner: response.obj.owner });
-                const promisedPolicy = client.getTierByName(response.obj.throttlingPolicy, 'application');
-                return Promise.all([response, promisedPolicy]);
-            })
-            .then((response) => {
-                const [application] = response.map((data) => data.obj);
-                this.setState({ application });
-            })
-            .catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.error(error);
-                }
-                const { status } = error;
-                if (status === 404) {
-                    this.setState({ notFound: true });
-                }
-            });
-    }
-
 
     toggleDeleteConfirmation = () => {
         this.setState(({ isDeleteOpen }) => ({ isDeleteOpen: !isDeleteOpen }));
@@ -304,8 +271,7 @@ class InfoBar extends React.Component {
      * @memberof InfoBar
      */
     handleAppDelete() {
-        const { applicationId, intl } = this.props;
-        const { application } = this.state;
+        const { applicationId, intl, application } = this.props;
         const promisedDelete = Application.deleteApp(applicationId);
         let message = intl.formatMessage({
             defaultMessage: 'Application {name} deleted successfully!',
@@ -355,10 +321,11 @@ class InfoBar extends React.Component {
      */
     render() {
         const {
-            classes, theme, applicationId,
+            classes, theme, applicationId, application,
         } = this.props;
+        const applicationOwner = this.props.application.owner;
         const {
-            application, notFound, isDeleteOpen, applicationOwner,
+            notFound, isDeleteOpen,
         } = this.state;
 
         if (notFound) {
