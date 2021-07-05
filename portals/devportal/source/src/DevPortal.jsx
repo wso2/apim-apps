@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -19,16 +20,16 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import {
-    StylesProvider, jssPreset, MuiThemeProvider, createMuiTheme,
-} from '@material-ui/core/styles';
+import { StylesProvider as StylesProviderCore, jssPreset as jssPresetCore } from '@material-ui/core/styles';
+import { StylesProvider as StylesProviderPlain, jssPreset as jssPresetPlain } from '@material-ui/styles';
 import { IntlProvider } from 'react-intl';
 import Configurations from 'Config';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import { create } from 'jss';
 import rtl from 'jss-rtl';
-
+import { MuiThemeProvider as ThemeProviderWithMui, createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider as ThemeProviderPlain } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
 import Settings from 'Settings';
 import DefaultConfigurations from 'AppData/defaultTheme';
@@ -39,6 +40,10 @@ import API from './app/data/api';
 import BrowserRouter from './app/components/Base/CustomRouter/BrowserRouter';
 import AuthManager from './app/data/AuthManager';
 import CONSTS from './app/data/Constants';
+
+const MuiThemeProvider = ThemeProviderPlain || ThemeProviderWithMui;
+const StylesProvider = StylesProviderCore || StylesProviderPlain;
+const jssPreset = jssPresetPlain || jssPresetCore;
 
 const protectedApp = lazy(() => import('./app/ProtectedApp' /* webpackChunkName: "ProtectedApp" */));
 

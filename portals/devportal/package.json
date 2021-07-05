@@ -24,8 +24,8 @@
     "dependencies": {
         "@asyncapi/react-component": "^0.17.11",
         "@hapi/joi": "^16.1.7",
-        "@material-ui/core": "^4.4.3",
-        "@material-ui/icons": "^4.4.3",
+        "@material-ui/core": "^4.11.3",
+        "@material-ui/icons": "^4.9.1",
         "@material-ui/lab": "^4.0.0-alpha.29",
         "@mdi/js": "^5.9.55",
         "@mdi/react": "^1.4.0",
