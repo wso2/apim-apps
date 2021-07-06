@@ -885,14 +885,17 @@
   "Apis.Details.Configuration.components.Subscription.signingAlgorithm": {
     "defaultMessage": "Signing Algortithm"
   },
+  "Apis.Details.Configuration.components.Tags.error": {
+    "defaultMessage": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = | < > , ' \" \\\\ / ) ."
+  },
   "Apis.Details.Configuration.components.Tags.helper": {
     "defaultMessage": "Press `Enter` after typing the tag name to add a new tag"
   },
+  "Apis.Details.Configuration.components.Tags.limit.error": {
+    "defaultMessage": "The tag exceeds the maximum length of 30 characters"
+  },
   "Apis.Details.Configuration.components.Tags.title": {
     "defaultMessage": "Tags"
-  },
-  "Apis.Details.Configuration.components.Tags.validation.error": {
-    "defaultMessage": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = } | < > , ' \" \\\\ / ) ."
   },
   "Apis.Details.Configuration.components.Transports.tooltip": {
     "defaultMessage": "API will be exposed in selected transport(s) in the gateway(s) If Mutual SSL option is selected, a trusted client certificate should be presented to access the API"
