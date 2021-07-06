@@ -27,6 +27,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
+import withSettings from 'AppComponents/Shared/withSettingsContext';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Comment from './Comment';
 import CommentAdd from './CommentAdd';
@@ -34,7 +35,7 @@ import API from '../../../../data/api';
 import { ApiContext } from '../ApiContext';
 import AuthManager from '../../../../data/AuthManager';
 
-const styles = theme => ({
+const styles = (theme) => ({
     root: {
         display: 'flex',
         alignItems: 'center',
@@ -126,7 +127,7 @@ class Comments extends Component {
             apiId, theme, match, intl, isOverview, setCount,
         } = this.props;
         if (match) apiId = match.params.apiUuid;
-        this.setState({ apiId: apiId });
+        this.setState({ apiId });
 
         const restApi = new API();
         const limit = theme.custom.commentsLimit;
@@ -145,8 +146,8 @@ class Comments extends Component {
                 this.setState({
                     allComments: commentList,
                     comments: commentList,
-                    totalComments: result.body.pagination.total
-                 });
+                    totalComments: result.body.pagination.total,
+                });
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -207,7 +208,7 @@ class Comments extends Component {
 
     /**
      * Update a specific comment in the comment list
-     * @param {any} comment updated comment 
+     * @param {any} comment updated comment
      * @memberof Comments
      */
     updateComment(comment) {
@@ -273,17 +274,13 @@ class Comments extends Component {
      * @param {*} currentUser current logged in user
      * @returns {boolean} true or false
      */
-    isCrossTenant(apiProvider, currentUser) {
-        let tenantDomain = null;
+    isCrossTenant(currentUser) {
+        const { tenantDomain } = this.props;
+        if (!tenantDomain) {
+            return false;
+        }
         let loggedInUserDomain = null;
         const loggedInUser = currentUser.name;
-
-        if (apiProvider.includes('@')) {
-            const splitDomain = apiProvider.split('@');
-            tenantDomain = splitDomain[splitDomain.length - 1];
-        } else {
-            tenantDomain = 'carbon.super';
-        }
 
         if (loggedInUser.includes('@')) {
             const splitLoggedInUser = loggedInUser.split('@');
@@ -302,13 +299,14 @@ class Comments extends Component {
     toggleCommentAdd() {
         this.setState((prevState) => ({ showCommentAdd: !prevState.showCommentAdd }));
     }
+
     /**
      * Render method of the component
      * @returns {React.Component} Comment html component
      * @memberof Comments
      */
     render() {
-        const { classes, isOverview, } = this.props;
+        const { classes, isOverview } = this.props;
         const {
             comments, allComments, totalComments, showCommentAdd,
         } = this.state;
@@ -321,19 +319,22 @@ class Comments extends Component {
                             { [classes.contentWrapperOverview]: isOverview },
                         )}
                     >
-                        {!isOverview && (<div className={classes.root}>
-                            <Typography variant='h4' component='h2' className={classes.titleSub}>
-                                {totalComments + (' ')}
-                                <FormattedMessage id='Apis.Details.Comments.title' defaultMessage='Comments' />
-                            </Typography>
-                        </div>)}
+                        {!isOverview && (
+                            <div className={classes.root}>
+                                <Typography variant='h4' component='h2' className={classes.titleSub}>
+                                    {totalComments + (' ')}
+                                    <FormattedMessage id='Apis.Details.Comments.title' defaultMessage='Comments' />
+                                </Typography>
+                            </div>
+                        )}
 
-                        {AuthManager.getUser() &&
-                            !this.isCrossTenant(api.provider, AuthManager.getUser()) && (
-                                <Box mt={2} ml={1}>
-                                    {!showCommentAdd && (<Button
-                                        color="primary"
-                                        size="small"
+                        {AuthManager.getUser()
+                            && !this.isCrossTenant(AuthManager.getUser()) && (
+                            <Box mt={2} ml={1}>
+                                {!showCommentAdd && (
+                                    <Button
+                                        color='primary'
+                                        size='small'
                                         className={classes.button}
                                         startIcon={<AddCircleOutlineIcon />}
                                         onClick={this.toggleCommentAdd}
@@ -342,8 +343,10 @@ class Comments extends Component {
                                             id='Apis.Details.Comments.write.a.new.comment'
                                             defaultMessage='Write a New Comment'
                                         />
-                                    </Button>)}
-                                    {showCommentAdd && (<CommentAdd
+                                    </Button>
+                                )}
+                                {showCommentAdd && (
+                                    <CommentAdd
                                         apiId={api.id}
                                         commentsUpdate={this.addComment}
                                         addComment={this.addComment}
@@ -351,38 +354,40 @@ class Comments extends Component {
                                         replyTo={null}
                                         cancelCallback={this.toggleCommentAdd}
                                         cancelButton
-                                    />)}
-                                </Box>
-                            )}
+                                    />
+                                )}
+                            </Box>
+                        )}
                         {!allComments && (
                             <Paper className={classes.paperProgress}>
                                 <CircularProgress size={24} />
                             </Paper>
                         )}
-                        {allComments && totalComments === 0 &&
-                            <Box mt={2} mb={2} ml={1}>
-                                <InlineMessage
-                                    type='info'
-                                    title={
-                                        <FormattedMessage
-                                            id='Apis.Details.Comments.no.comments'
-                                            defaultMessage='No Comments Yet'
-                                        />
-                                    }
-                                >
-                                    <Typography component='p'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Comments.no.comments.content'
-                                            defaultMessage='No comments available for this API yet'
-                                        />
-                                    </Typography>
-                                </InlineMessage>
-                            </Box>
-                        }
+                        {allComments && totalComments === 0
+                            && (
+                                <Box mt={2} mb={2} ml={1}>
+                                    <InlineMessage
+                                        type='info'
+                                        title={(
+                                            <FormattedMessage
+                                                id='Apis.Details.Comments.no.comments'
+                                                defaultMessage='No Comments Yet'
+                                            />
+                                        )}
+                                    >
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Comments.no.comments.content'
+                                                defaultMessage='No comments available for this API yet'
+                                            />
+                                        </Typography>
+                                    </InlineMessage>
+                                </Box>
+                            )}
                         <Comment
                             comments={comments}
-                            crossTenentUser={AuthManager.getUser() ? 
-                                this.isCrossTenant(api.provider, AuthManager.getUser()) : null}
+                            crossTenentUser={AuthManager.getUser()
+                                ? this.isCrossTenant(api.provider, AuthManager.getUser()) : null}
                             apiId={api.id}
                             allComments={allComments}
                             onDeleteComment={this.onDeleteComment}
@@ -427,4 +432,4 @@ Comments.propTypes = {
     setCount: PropTypes.func,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(Comments));
+export default withSettings(injectIntl(withStyles(styles, { withTheme: true })(Comments)));
