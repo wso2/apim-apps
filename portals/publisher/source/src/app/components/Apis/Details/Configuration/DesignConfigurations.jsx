@@ -225,7 +225,7 @@ export default function DesignConfigurations() {
     ],
     [apiConfig.additionalProperties]);
     const invalidTagsExist = apiConfig.tags.find((tag) => {
-        return (/([~!@#;%^&*+=|\\<>"'/,])/.test(tag));
+        return (/([~!@#;%^&*+=|\\<>"'/,])/.test(tag)) || (tag.length > 30);
     });
     const handleChange = (event) => {
         const type = event.target.value;
