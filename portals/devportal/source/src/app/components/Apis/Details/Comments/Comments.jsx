@@ -432,4 +432,4 @@ Comments.propTypes = {
     setCount: PropTypes.func,
 };
 
-export default withSettings(injectIntl(withStyles(styles, { withTheme: true })(Comments)));
+export default injectIntl(withStyles(styles, { withTheme: true })(withSettings(Comments)));
