@@ -134,9 +134,9 @@ const definition = {
         });
         return tmpErrors;
     }),
-    apiContext: Joi.string().max(60).regex(/(?!.*\/t\/.*|.*\/t$)^[^~!@#:%^&*+=|\\<>"',&\s[\]]*$/).required()
+    apiContext: Joi.string().max(200).regex(/(?!.*\/t\/.*|.*\/t$)^[^~!@#:%^&*+=|\\<>"',&\s[\]]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Context ' + getMessage(error.type, 60) }));
+            return errors.map((error) => ({ ...error, message: 'Context ' + getMessage(error.type, 200) }));
         }),
     documentName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
         .error((errors) => {
