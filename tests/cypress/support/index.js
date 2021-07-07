@@ -18,3 +18,13 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+import addContext from "mochawesome/addContext";
+
+import 'cypress-mochawesome-reporter/register';
+
+const titleToFileName = (title) => title.replace(/[:\/]/g, "");
+
+Cypress.on('after:run', (results) => {
+  console.log("Asdada");
+})

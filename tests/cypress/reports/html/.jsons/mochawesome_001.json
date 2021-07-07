@@ -1,0 +1,132 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 1,
+    "pending": 0,
+    "failures": 1,
+    "start": "2021-07-07T12:07:07.958Z",
+    "end": "2021-07-07T12:07:31.144Z",
+    "duration": 23186,
+    "testsRegistered": 2,
+    "passPercent": 50,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "7ae9bae1-8820-45e7-923a-3eccbbf6027e",
+      "title": "",
+      "fullFile": "cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js",
+      "file": "cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "cf56443c-3094-4acc-9f3e-1d5d04c6441f",
+          "title": "API Create flow",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Create an API",
+              "fullTitle": "API Create flow Create an API",
+              "timedOut": null,
+              "duration": 9744,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.createAPIByRestAPIDesign();",
+              "err": {},
+              "uuid": "61e709da-b0d3-42f1-becb-f3d019f3a345",
+              "parentUUID": "cf56443c-3094-4acc-9f3e-1d5d04c6441f",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Create API from GraphQL API file",
+              "fullTitle": "API Create flow Create API from GraphQL API file",
+              "timedOut": null,
+              "duration": 13327,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"Failed screenshot\",\n  \"value\": \"screenshots/publisher/API/REST/Create/defaultAPI.create.spec.js/API Create flow -- Create API from GraphQL API file (failed).png\"\n}",
+              "code": "cy.visit(\"/publisher/apis\");\ncy.get('#itest-id-createapi').click();\ncy.get('#itest-id-graphql').click();\ncy.get('#itest-select-graphql').then(function (el) {\n  var filepath = 'api_artifacts/schema_graphql.graphql';\n  cy.get('input[type=\"file\"]').attachFile(filepath);\n});\ncy.get('#itest-create-graphql-api-w1').click();\ncy.get('#itest-id-apiname-input').type('GraphQLAPI');\ncy.get('#itest-id-apicontext-input').type('/graphql1');\ncy.get('#itest-id-apiversion-input').type('v3');\ncy.get('#itest-id-apiendpoint-input').type('https://graphql.api.wso2.com'); //cy.get('.MuiButton-contained-2732').click();\ncy.get('#itest-id-deleteapi-icon-button').click();\ncy.get('#itest-id-deleteconf').click();",
+              "err": {
+                "message": "CypressError: Timed out retrying after 10050ms: `cy.click()` failed because this element is detached from the DOM.\n\n`<button class=\"MuiButtonBase-root-1103 MuiButton-root-1393 MuiButton-contained-1401 MuiButton-containedPrimary-1402\" tabindex=\"0\" type=\"button\" id=\"itest-create-graphql-api-w1\">...</button>`\n\nCypress requires elements be attached in the DOM to interact with them.\n\nThe previous command that ran was:\n\n  > `cy.get()`\n\nThis DOM element likely became detached somewhere between the previous and current command.\n\nCommon situations why this happens:\n  - Your JS framework re-rendered asynchronously\n  - Your app code reacted to an event firing and removed the element\n\nYou typically need to re-query for the element or add 'guards' which delay Cypress from running new commands.\n\nhttps://on.cypress.io/element-has-detached-from-dom",
+                "estack": "CypressError: Timed out retrying after 10050ms: `cy.click()` failed because this element is detached from the DOM.\n\n`<button class=\"MuiButtonBase-root-1103 MuiButton-root-1393 MuiButton-contained-1401 MuiButton-containedPrimary-1402\" tabindex=\"0\" type=\"button\" id=\"itest-create-graphql-api-w1\">...</button>`\n\nCypress requires elements be attached in the DOM to interact with them.\n\nThe previous command that ran was:\n\n  > `cy.get()`\n\nThis DOM element likely became detached somewhere between the previous and current command.\n\nCommon situations why this happens:\n  - Your JS framework re-rendered asynchronously\n  - Your app code reacted to an event firing and removed the element\n\nYou typically need to re-query for the element or add 'guards' which delay Cypress from running new commands.\n\nhttps://on.cypress.io/element-has-detached-from-dom\n    at $Cy.ensureAttached (https://localhost:9443/__cypress/runner/cypress_runner.js:162581:24)\n    at runAllChecks (https://localhost:9443/__cypress/runner/cypress_runner.js:151376:12)\n    at retryActionability (https://localhost:9443/__cypress/runner/cypress_runner.js:151453:16)\n    at tryCatcher (https://localhost:9443/__cypress/runner/cypress_runner.js:10765:23)\n    at Function.Promise.attempt.Promise.try (https://localhost:9443/__cypress/runner/cypress_runner.js:8039:29)\n    at tryFn (https://localhost:9443/__cypress/runner/cypress_runner.js:167065:21)\n    at whenStable (https://localhost:9443/__cypress/runner/cypress_runner.js:167103:12)\n    at https://localhost:9443/__cypress/runner/cypress_runner.js:166598:16\n    at tryCatcher (https://localhost:9443/__cypress/runner/cypress_runner.js:10765:23)\n    at Promise._settlePromiseFromHandler (https://localhost:9443/__cypress/runner/cypress_runner.js:8700:31)\n    at Promise._settlePromise (https://localhost:9443/__cypress/runner/cypress_runner.js:8757:18)\n    at Promise._settlePromise0 (https://localhost:9443/__cypress/runner/cypress_runner.js:8802:10)\n    at Promise._settlePromises (https://localhost:9443/__cypress/runner/cypress_runner.js:8882:18)\n    at Promise._fulfill (https://localhost:9443/__cypress/runner/cypress_runner.js:8826:18)\n    at https://localhost:9443/__cypress/runner/cypress_runner.js:10440:46\nFrom Your Spec Code:\n    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js:474:44)",
+                "diff": null
+              },
+              "uuid": "b9cf8220-705b-42cc-b348-9b5051f5bb0e",
+              "parentUUID": "cf56443c-3094-4acc-9f3e-1d5d04c6441f",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "61e709da-b0d3-42f1-becb-f3d019f3a345"
+          ],
+          "failures": [
+            "b9cf8220-705b-42cc-b348-9b5051f5bb0e"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 23071,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

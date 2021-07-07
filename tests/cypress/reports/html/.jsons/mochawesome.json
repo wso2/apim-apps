@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2021-07-07T12:07:03.575Z",
+    "end": "2021-07-07T12:07:05.581Z",
+    "duration": 2006,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "27806167-8a6f-4e86-93b3-d431d1284ea4",
+      "title": "",
+      "fullFile": "cypress/integration/publisher/API/REST/API.create.spec.js",
+      "file": "cypress/integration/publisher/API/REST/API.create.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "63824f7a-9477-4601-a531-ff9554474fff",
+          "title": "API Create flow two",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Log into Publisher",
+              "fullTitle": "API Create flow two Log into Publisher",
+              "timedOut": null,
+              "duration": 1948,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(username, password);",
+              "err": {},
+              "uuid": "acd83f17-05aa-460f-a6f5-73fad19d494e",
+              "parentUUID": "63824f7a-9477-4601-a531-ff9554474fff",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "acd83f17-05aa-460f-a6f5-73fad19d494e"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 1948,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

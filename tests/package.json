@@ -3,9 +3,18 @@
   "version": "1.0.0",
   "description": "Integration tests written in cypress.io for WSO2 API Manager 3.2.0 versions",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wso2/apim-apps.git"
+  },
   "scripts": {
-    "test": "cypress run",
-    "test:gui": "cypress run --headed"
+    "test:gui": "cypress run --headed",
+    "delete:reportFolderHTML": "rm -rf reports/html/*",
+    "delete:reportFolderJUnit": "rm -rf reports/junit/*",
+    "delete:reportFolderReport": "rm -rf reports/mochawesome-bundle.json", 
+    "test": "npm run delete:reportFolderHTML && npm run delete:reportFolderJUnit && npm run delete:reportFolderReport && cypress run",
+    "report:merge": "mochawesome-merge  --reportDir cypress/reports/html/.jsons/*.json > cypress/reports/mochawesome-bundle.json",
+    "report:generate": "marge --inline cypress/reports/mochawesome-bundle.json -o cypress/reports/html"
   },
   "keywords": [
     "cypress.io"
@@ -17,6 +26,17 @@
     "babel-plugin-module-resolver": "^4.1.0",
     "cypress": "^6.9.1",
     "cypress-file-upload": "^5.0.8",
-    "eslint-plugin-cypress": "^2.11.2"
+    "cypress-mochawesome-reporter": "^2.2.0",
+    "cypress-multi-reporters": "^1.5.0",
+    "mocha": "^9.0.2",
+    "mocha-junit-reporter": "^2.0.0",
+    "mochawesome": "^6.2.2",
+    "mochawesome-merge": "^4.2.0",
+    "mochawesome-report-generator": "^5.2.0",
+    "nodemailer": "^6.6.2"
+  },
+  "dependencies": {
+    "require-text": "0.0.1",
+    "styliner": "^1.1.0"
   }
 }
