@@ -66,4 +66,8 @@ const uploadFile = (fileName) => {
   });
 };
 
+
+console.log(accessKeyId);
+console.log(secretAccessKey);
+console.log(testPlanId)
 uploadFile('./cypress/reports/html/mochawesome-bundle.html');
