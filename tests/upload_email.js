@@ -56,13 +56,13 @@ const uploadFile = (fileName) => {
       }
 
 
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
-      });
+      // transporter.sendMail(mailOptions, function(error, info){
+      //   if (error) {
+      //     console.log(error);
+      //   } else {
+      //     console.log('Email sent: ' + info.response);
+      //   }
+      // });
   });
 };
 
@@ -70,4 +70,4 @@ const uploadFile = (fileName) => {
 console.log(accessKeyId);
 console.log(secretAccessKey);
 console.log(testPlanId)
-uploadFile('./cypress/reports/html/mochawesome-bundle.html');
+uploadFile('./cypress/reports/html/mochawesome-bundle-' + testPlanId + '.html');
