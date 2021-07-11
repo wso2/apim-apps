@@ -34,4 +34,5 @@ npm run test
 sleep 1500
 npm run report:merge
 npm run report:generate
+mv  ./cypress/reports/html/mochawesome-bundle.html  ./cypress/reports/html/mochawesome-bundle-${TEST_PLAN_ID}.html
 node ./upload_email
