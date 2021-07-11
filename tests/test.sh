@@ -31,6 +31,7 @@ npm run delete:reportFolderJUnit
 npm run delete:reportFolderReport
 npm run pre-test
 npm run test
+sleep 1500
 npm run report:merge
 npm run report:generate
 node ./upload_email
