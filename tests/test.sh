@@ -1,4 +1,6 @@
 #!/bin/bash
+
+echo "tesh.sh executing started.."
 sleep 1500
 curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh | sudo bash
 sudo apt-get update -y
