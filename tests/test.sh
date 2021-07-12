@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "tesh.sh executing started.."
-sleep 1500
+echo "tesh.sh executing started..."
+# sleep 1500
 curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh | sudo bash
-sudo apt-get update -y
+# sudo apt-get update -y
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt-get install -y nodejs
 npm install cypress
