@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="TestNgMavenSampleSuite" parallel="false">
+  <test name="TestNgMavenTest">
+    <classes>
+      <class name="org.wso2.carbon.apim.sample.project.TestNgMaven"/>
+    </classes>
+  </test>
+</suite>
