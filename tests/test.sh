@@ -38,6 +38,6 @@ npm run report:merge
 npm run report:generate
 mv  ./cypress/reports/html/mochawesome-bundle.html  ./cypress/reports/html/mochawesome-bundle-${TEST_PLAN_ID}.html
 sleep 1500
-node ./upload_email
+#node ./upload_email
 cd ../scenarios
 mvn clean install
