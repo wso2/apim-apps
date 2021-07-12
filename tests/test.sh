@@ -1,7 +1,6 @@
 #!/bin/bash
-
 echo "tesh.sh executing started..."
-# sleep 1500
+sleep 1500
 curl -s https://packagecloud.io/install/repositories/grafana/stable/script.deb.sh | sudo bash
 # sudo apt-get update -y
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
@@ -37,7 +36,6 @@ npm run test
 npm run report:merge
 npm run report:generate
 mv  ./cypress/reports/html/mochawesome-bundle.html  ./cypress/reports/html/mochawesome-bundle-${TEST_PLAN_ID}.html
-sleep 1500
 #node ./upload_email
 cd ../scenarios
 mvn clean install
