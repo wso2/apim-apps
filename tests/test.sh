@@ -43,6 +43,8 @@ mv  ./cypress/reports/html/mochawesome-bundle.html  ./cypress/reports/html/mocha
 #node ./upload_email
 cd ../scenarios
 mvn clean install
+
+sleep 1500
 #=============== Copy Surefire Reports ===========================================
 
 echo "Copying surefire-reports to ${OUTPUT_DIR}/scenarios"
