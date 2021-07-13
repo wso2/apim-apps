@@ -16,17 +16,18 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<!-- 
     <parent>
         <artifactId>product-scenarios</artifactId>
         <groupId>org.wso2.am</groupId>
         <version>3.2.0</version>
         <relativePath>../pom.xml</relativePath>
-    </parent>
+    </parent> -->
 
     <modelVersion>4.0.0</modelVersion>
     <version>3.2.0</version>
     <name>WSO2 API Manager - Code Coverage POM</name>
+    <groupId>org.wso2.am</groupId>
     <artifactId>code-coverage</artifactId>
     <packaging>pom</packaging>
     <url>http://wso2.org</url>
