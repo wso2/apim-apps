@@ -84,7 +84,6 @@ else
     PRODUCT_VERSION="-$PRODUCT_VERSION"
 fi
 
-cd ../scenarios
 mvn clean install
 
 echo `pwd`
@@ -96,9 +95,6 @@ find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios
 find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios \;
 
 #=============== Code Coverage Report Generation ===========================================
-
-sleep 1500
-
 
 echo "Generating Scenario Code Coverage Reports"
 source ${HOME}/../scenarios/code-coverage/code-coverage.sh
