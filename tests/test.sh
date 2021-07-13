@@ -138,8 +138,5 @@ find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/
 
 echo "Generating Scenario Code Coverage Reports"
 source ${HOME}/../scenarios/code-coverage/code-coverage.sh
-echo "11111"
-sleep 1200
 generate_code_coverage ${INPUT_DIR} ${OUTPUT_DIR}
-echo "22222"
-sleep 1200
+sleep 1500
