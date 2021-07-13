@@ -123,7 +123,7 @@ npm run test
 npm run report:merge
 npm run report:generate
 mv  ./cypress/reports/html/mochawesome-bundle.html  ./cypress/reports/html/mochawesome-bundle-${TEST_PLAN_ID}.html
-node ./upload_email
+#node ./upload_email
 cd ../scenarios
 mvn clean install
 
@@ -139,4 +139,3 @@ find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/
 echo "Generating Scenario Code Coverage Reports"
 source ${HOME}/../scenarios/code-coverage/code-coverage.sh
 generate_code_coverage ${INPUT_DIR} ${OUTPUT_DIR}
-sleep 1500
