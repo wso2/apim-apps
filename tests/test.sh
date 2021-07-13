@@ -84,13 +84,12 @@ else
     PRODUCT_VERSION="-$PRODUCT_VERSION"
 fi
 
-
-
-
-
 cd ../scenarios
 mvn clean install
 
+cd ../tests/
+
+echo `pwd`
 #=============== Copy Surefire Reports ===========================================
 
 echo "Copying surefire-reports to ${OUTPUT_DIR}/scenarios"
