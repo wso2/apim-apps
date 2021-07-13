@@ -92,7 +92,6 @@ sudo dpkg --configure -a
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt install -y npm
 sudo apt-get install -y nodejs
-sudo apt install nodejs-legacy
 npm install cypress
 npm install --save-dev cypress-file-upload
 npm install --save  nodemailer
