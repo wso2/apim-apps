@@ -87,8 +87,6 @@ fi
 cd ../scenarios
 mvn clean install
 
-cd ../tests/
-
 echo `pwd`
 #=============== Copy Surefire Reports ===========================================
 
