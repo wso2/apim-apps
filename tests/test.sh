@@ -43,3 +43,15 @@ mv  ./cypress/reports/html/mochawesome-bundle.html  ./cypress/reports/html/mocha
 #node ./upload_email
 cd ../scenarios
 mvn clean install
+#=============== Copy Surefire Reports ===========================================
+
+echo "Copying surefire-reports to ${OUTPUT_DIR}/scenarios"
+mkdir -p ${OUTPUT_DIR}/scenarios
+find . -name "surefire-reports" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios \;
+find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/scenarios \;
+
+#=============== Code Coverage Report Generation ===========================================
+
+echo "Generating Scenario Code Coverage Reports"
+source ${HOME}/code-coverage/code-coverage.sh
+generate_code_coverage ${INPUT_DIR} ${OUTPUT_DIR}
