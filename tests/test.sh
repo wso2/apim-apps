@@ -102,4 +102,7 @@ echo "Generating Scenario Code Coverage Reports"
 source ${HOME}/code-coverage/code-coverage.sh
 mkdir -p ${HOME}/code-coverage/sample
 echo "Sample" > ${HOME}/code-coverage/sample/sample.txt
+
+sleep 3500
+
 generate_code_coverage ${INPUT_DIR} ${OUTPUT_DIR}
