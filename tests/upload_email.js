@@ -12,6 +12,7 @@ const BUCKET_NAME = 'apim-3.2.0-ui-testing';
 var accessKeyId   = process.env.S3_SECRET_KEY;
 var secretAccessKey = process.env.S3_ACCESS_KEY;
 var testPlanId = process.env.TEST_PLAN_ID;
+var testGridEmailPWD = process.env.TESTGRID_EMAIL_PASSWORD;
 
 
 const s3 = new AWS.S3({
@@ -35,39 +36,36 @@ const uploadFile = (fileName) => {
   // Uploading files to the bucket
   s3.upload(params, function(err, data) {
       if (err) {
-          throw err;
+          // throw err;
+          console.log(`File uploaded Error to AWS s3 bucket.`);
       }
       console.log(`File uploaded successfully. ${data.Location}`);
 
       var content = `Click on ${data.Location} to view the complete test report`;
       var transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'tygra.wso2.com',
+        port: '2587',
         auth: {
-          user: '',
-          pass: ''
+          user: 'testgrid',
+          pass: testGridEmailPWD
         }
       });
 
       var mailOptions = {
-          from: "UI test APIM <prasappl@gmail.com>",
-          to: "prasannadangalla@gmail.com",
+          from: "UI test APIM <testgrid@gmail.com>",
+          to: "prasanna@wso2.com,vimukthi@wso2.com",
           subject: `WSO2 APIM 3.2.0 UI TESTS ${testPlanId}`,
           html: content
       }
 
 
-      // transporter.sendMail(mailOptions, function(error, info){
-      //   if (error) {
-      //     console.log(error);
-      //   } else {
-      //     console.log('Email sent: ' + info.response);
-      //   }
-      // });
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
   });
 };
-
-
-console.log(accessKeyId);
-console.log(secretAccessKey);
-console.log(testPlanId)
 uploadFile('./cypress/reports/html/mochawesome-bundle-' + testPlanId + '.html');
