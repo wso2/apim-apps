@@ -94,8 +94,10 @@ curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 npm -v
 if [[$$? -ne 0 ]]
 then
+    echo "NPM exists and removing existing version."
     sudo apt-get remove nodejs npm
 else
+    echo "NPM Deos NOT exists and installing existing version."
     sudo apt install -y npm
 fi
 sudo apt-get install -y nodejs
