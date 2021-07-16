@@ -92,7 +92,7 @@ sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 npm -v
-if [[$$? -ne 0 ]]
+if [[$? -ne 0 ]]
 then
     echo "NPM exists and removing existing version."
     sudo apt-get remove nodejs npm
