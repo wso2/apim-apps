@@ -84,8 +84,6 @@ else
     PRODUCT_VERSION="-$PRODUCT_VERSION"
 fi
 
-sleep 1000
-
 ######
 export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update -y
@@ -97,12 +95,18 @@ npm -v
 if [[$? -ne 0 ]]
 then
     echo "NPM exists and removing existing version."
-    sudo apt-get remove nodejs npm
+    sudo apt-get purge nodejs -y
+    sudo apt-get purge npm -y
 else
     echo "NPM Deos NOT exists and installing existing version."
-    sudo apt install -y npm
 fi
-sudo apt-get install -y nodejs
+
+cd ~/
+wget https://nodejs.org/dist/latest-v12.x/node-v12.22.3-linux-x64.tar.gz
+sudo ln -s ~/node-v12.22.3-linux-x64/bin/node /usr/bin/node
+sudo ln -s ~/node-v12.22.3-linux-x64/bin/npm /usr/bin/npm
+sudo ln -s ~/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
+cd $HOME
 npm install cypress
 npm install --save-dev cypress-file-upload
 npm install --save  nodemailer
