@@ -103,9 +103,13 @@ fi
 
 cd ~/
 wget https://nodejs.org/dist/latest-v12.x/node-v12.22.3-linux-x64.tar.gz
-sudo ln -s ~/node-v12.22.3-linux-x64/bin/node /usr/bin/node
-sudo ln -s ~/node-v12.22.3-linux-x64/bin/npm /usr/bin/npm
-sudo ln -s ~/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
+tar -xvf node-v12.22.3-linux-x64.tar.gz
+sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/node /usr/bin/node
+sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npm /usr/bin/npm
+sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
+sudo apt install libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3-dev libxss-dev -y
+sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
+export LC_CTYPE="en_US.UTF-8"
 cd $HOME
 npm install cypress
 npm install --save-dev cypress-file-upload
@@ -113,6 +117,8 @@ npm install --save  nodemailer
 npm install --save require-text
 npm install styliner
 npm i --save-dev cypress-mochawesome-reporter
+npm i --save-dev mocha-junit-reporter
+npm i --save-dev cypress-multi-reporters
 VAR=`grep "PublisherUrl" ../../../../data-bucket/deployment.properties |cut -d'=' -f2`
 VAR2=${VAR//[\\]}
 export CYPRESS_BASE_URL=${VAR2//\/publisher}
@@ -160,7 +166,5 @@ find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/
 
 echo "Generating Scenario Code Coverage Reports"
 source ${HOME}/code-coverage/code-coverage.sh
-
-sleep 500
 
 generate_code_coverage ${INPUT_DIR} ${OUTPUT_DIR}
