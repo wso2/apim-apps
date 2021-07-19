@@ -84,6 +84,8 @@ else
     PRODUCT_VERSION="-$PRODUCT_VERSION"
 fi
 
+sleep 1000
+
 ######
 export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update -y
@@ -155,6 +157,6 @@ find . -name "aggregate-surefire-report" -exec cp --parents -r {} ${OUTPUT_DIR}/
 echo "Generating Scenario Code Coverage Reports"
 source ${HOME}/code-coverage/code-coverage.sh
 
-sleep 1500
+sleep 500
 
 generate_code_coverage ${INPUT_DIR} ${OUTPUT_DIR}
