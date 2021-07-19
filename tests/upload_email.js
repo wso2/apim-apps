@@ -9,8 +9,8 @@ const SECRET = '';
 
 // The name of the bucket that you have created
 const BUCKET_NAME = 'apim-3.2.0-ui-testing';
-var accessKeyId   = process.env.S3_SECRET_KEY;
-var secretAccessKey = process.env.S3_ACCESS_KEY;
+var secretAccessKey = process.env.S3_SECRET_KEY;
+var accessKeyId = process.env.S3_ACCESS_KEY;
 var testPlanId = process.env.TEST_PLAN_ID;
 var testGridEmailPWD = process.env.TESTGRID_EMAIL_PASSWORD;
 
