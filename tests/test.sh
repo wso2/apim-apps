@@ -92,7 +92,7 @@ sudo killall apt apt-get dpkg
 sudo dpkg --configure -a
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 npm -v
-if [[$? -ne 0 ]]
+if [[ $? -ne 0 ]]
 then
     echo "NPM exists and removing existing version."
     sudo apt-get purge nodejs -y
@@ -101,13 +101,11 @@ else
     echo "NPM Deos NOT exists and installing existing version."
 fi
 
-cd ~/
 wget https://nodejs.org/dist/latest-v12.x/node-v12.22.3-linux-x64.tar.gz
 tar -xvf node-v12.22.3-linux-x64.tar.gz
 sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/node /usr/bin/node
 sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npm /usr/bin/npm
 sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
-sudo apt install libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3-dev libxss-dev -y
 sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
 export LC_CTYPE="en_US.UTF-8"
 cd $HOME
@@ -131,7 +129,7 @@ export S3_ACCESS_KEY=${VAR4}
 VAR5=`grep "TEST_PLAN_ID" ../../../../data-bucket/deployment.properties |cut -d'=' -f2`
 export TEST_PLAN_ID=${VAR5}
 
-VAR6=`grep "TESTGRID_EMAIL_PASSWORD" ../../../../data-bucket/deployment.properties |cut -d'=' -f2`
+VAR6=`grep "TESTGRID_EMAIL_PASSWORD" ../../../../data-bucket/deployment.properties | head -1 | cut -d'=' -f2`
 export TESTGRID_EMAIL_PASSWORD=${VAR6}
 
 npm install --save-dev cypress-multi-reporters mocha-junit-reporter
