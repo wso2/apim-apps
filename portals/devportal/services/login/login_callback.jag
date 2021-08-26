@@ -21,6 +21,7 @@
     include("/services/constants.jag");
     var appUtils = require("/services/utils.js");
     var app = require("/site/public/theme/settings.js").Settings.app;
+    var userTheme = require("/site/public/theme/userTheme.js");
     var log = new Log();
     log.debug("Login Callback Endpoint");
     app.context = appUtils.getTenantBaseStoreContext();
@@ -37,7 +38,12 @@
             serverUrl = utils.getServerURL();
         }
     }
-    var referrer = "/apis";
+
+    if (userTheme.Configurations.custom && userTheme.Configurations.custom.landingPage && userTheme.Configurations.custom.landingPage.active) {
+        var referrer = "/home";
+    } else {
+        var referrer = "/apis";
+    }
     var state = request.getParameter("state");
     if (state != null) {
         var tenant = state.split("?")[1];
