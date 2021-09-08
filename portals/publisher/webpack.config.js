@@ -110,10 +110,6 @@ module.exports = (env, argv) => {
                 OverrideData: path.resolve(__dirname, 'override/src/app/data/'),
                 OverrideComponents: path.resolve(__dirname, 'override/src/app/components/'),
                 AppTests: path.resolve(__dirname, 'source/Tests/'),
-                react: fs.existsSync('../../../../../node_modules/react')
-                    ? path.resolve('../../../../../node_modules/react') : path.resolve('../node_modules/react'),
-                reactDom: fs.existsSync('../../../../../node_modules/react-dom')
-                    ? path.resolve('../../../../../node_modules/react-dom') : path.resolve('../node_modules/react-dom'),
             },
             extensions: ['.js', '.jsx'],
         },
