@@ -61,12 +61,11 @@ const useStyles = makeStyles((theme) => ({
 function APIRateLimiting(props) {
     const {
         updateAPI, operationRateLimits, onChange, value: currentApiThrottlingPolicy, isAPIProduct,
-        setFocusOperationLevel, focusOperationLevel, operationsDispatcher,
+        setFocusOperationLevel, focusOperationLevel, checkBoxOnChange, isChecked,
     } = props;
     const classes = useStyles();
     const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(currentApiThrottlingPolicy);
     const [isSaving, setIsSaving] = useState(false);
-    const [isChecked, setChecked] = useState(false);
 
     const isResourceLevel = apiThrottlingPolicy === null;
     const rateLimitingLevel = isResourceLevel ? RateLimitingLevels.RESOURCE : RateLimitingLevels.API;
@@ -84,10 +83,6 @@ function APIRateLimiting(props) {
         }
     }, [onChange, currentApiThrottlingPolicy]); // Do not expect to change the onChange during the runtime
 
-    const checkBoxOnChange = () => {
-        setChecked(!isChecked);
-        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: !isChecked } });
-    };
     /**
      *
      *

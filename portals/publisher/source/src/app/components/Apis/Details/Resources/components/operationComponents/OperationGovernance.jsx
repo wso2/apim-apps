@@ -84,7 +84,7 @@ export default function OperationGovernance(props) {
                             <Switch
                                 checked={operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none'}
                                 onChange={({ target: { checked } }) => operationsDispatcher({
-                                    action: 'removeAllSecurity',
+                                    action: 'authType',
                                     data: { target, verb, value: checked },
                                 })}
                                 size='small'

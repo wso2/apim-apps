@@ -99,6 +99,8 @@ export default function Resources(props) {
         return nextResourcePolicies;
     }
     const [resourcePolicies, resourcePoliciesDispatcher] = useReducer(resourcePoliciesReducer, null);
+    const [isChecked, setChecked] = useState(false);
+
 
     /**
      *
@@ -125,10 +127,22 @@ export default function Resources(props) {
         if (action === 'removeAllSecurity') {
             newData = cloneDeep(openAPISpec.paths);
         }
+        if (action === 'init') {
+            newData = data || openAPISpec.paths;
+        }
+        let flag = true;
         switch (action) {
             case 'init':
                 setSelectedOperation({});
-                return data || openAPISpec.paths;
+                Object.entries(newData).forEach(([, verbObj]) => {
+                    Object.entries(verbObj).forEach(([, operation]) => {
+                        if (operation['x-auth-type'] !== 'None') {
+                            flag = false;
+                        }
+                    });
+                });
+                setChecked(flag);
+                return newData;
             case 'removeAllSecurity':
                 setSelectedOperation({});
                 return Object.entries(newData).reduce((resourceAcc, [resourceKey, verbObj]) => {
@@ -148,7 +162,23 @@ export default function Resources(props) {
                 updatedOperation[action] = value;
                 break;
             case 'authType':
-                updatedOperation['x-auth-type'] = value ? 'Any' : 'None';
+                if (value) {
+                    updatedOperation['x-auth-type'] = 'Any';
+                    setChecked(false);
+                } else {
+                    updatedOperation['x-auth-type'] = 'None';
+                    Object.entries(currentOperations).forEach(([resourceKey, verbObj]) => {
+                        Object.entries(verbObj).forEach(([verbKey, operation]) => {
+                            if (resourceKey === target && verbKey === verb) {
+                                return;
+                            }
+                            if (operation['x-auth-type'] !== 'None') {
+                                flag = false;
+                            }
+                        });
+                    });
+                    setChecked(flag);
+                }
                 break;
             case 'parameter':
                 if (updatedOperation.parameters) {
@@ -254,6 +284,10 @@ export default function Resources(props) {
         return { ...currentOperations, [target]: { ...currentOperations[target], [verb]: updatedOperation } };
     }
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
+    const checkBoxOnChange = () => {
+        setChecked(!isChecked);
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: !isChecked } });
+    };
     /**
      *
      *
@@ -594,7 +628,8 @@ export default function Resources(props) {
                         isAPIProduct={api.isAPIProduct()}
                         focusOperationLevel={focusOperationLevel}
                         setFocusOperationLevel={setFocusOperationLevel}
-                        operationsDispatcher={operationsDispatcher}
+                        checkBoxOnChange={checkBoxOnChange}
+                        isChecked={isChecked}
                     />
                 </Grid>
             )}
