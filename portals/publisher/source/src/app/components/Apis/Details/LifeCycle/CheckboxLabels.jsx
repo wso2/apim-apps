@@ -170,7 +170,7 @@ export default function CheckboxLabels(props) {
                             ) }
                         </>
                     </Grid>
-                    { api.type !== 'GRAPHQL' && (
+                    {/* { api.type !== 'GRAPHQL' && (
                         <>
                             <Grid xs={12} className={classes.labelsGrid}>
                                 <Typography variant='subtitle2'>
@@ -206,10 +206,10 @@ export default function CheckboxLabels(props) {
                                 )}
                             </Grid>
                         </>
-                    )}
+                    )} */}
                 </>
             )}
-            {api.lifeCycleStatus === 'PUBLISHED' && (
+            {/* {api.lifeCycleStatus === 'PUBLISHED' && (
                 <>
                     <Grid xs={12} className={classes.labelsGrid}>
                         <Typography variant='subtitle2'>
@@ -238,7 +238,7 @@ export default function CheckboxLabels(props) {
                         </Grid>
                     </Grid>
                 </>
-            )}
+            )} */}
         </Paper>
     );
 }

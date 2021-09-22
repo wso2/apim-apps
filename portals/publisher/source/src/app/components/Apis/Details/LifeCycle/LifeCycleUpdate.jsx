@@ -233,7 +233,7 @@ class LifeCycleUpdate extends Component {
                 }
                 return {
                     ...state,
-                    disabled: !isPrototype || (api.type !== 'WEBSUB' && api.endpointConfig == null),
+                    disabled: (api.type !== 'WEBSUB' && api.endpointConfig == null),
                 };
             }
             if (state.event === 'Publish') {

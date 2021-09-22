@@ -225,7 +225,7 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'address', value: 'HTTP/SOAP Endpoint' },
                 { key: 'default', value: 'Dynamic Endpoints' },
-                { key: 'prototyped', value: 'Prototype Endpoint' },
+                // { key: 'prototyped', value: 'Prototype Endpoint' },
             ];
         } else if (type === 'SSE') {
             supportedEndpointTypes = [
@@ -236,7 +236,7 @@ function EndpointOverview(props) {
                 { key: 'http', value: 'HTTP/REST Endpoint' },
                 { key: 'address', value: 'HTTP/SOAP Endpoint' },
                 { key: 'default', value: 'Dynamic Endpoints' },
-                { key: 'prototyped', value: 'Prototype Endpoint' },
+                // { key: 'prototyped', value: 'Prototype Endpoint' },
                 { key: 'INLINE', value: 'Prototype Implementation' },
                 { key: 'awslambda', value: 'AWS Lambda' },
             ];

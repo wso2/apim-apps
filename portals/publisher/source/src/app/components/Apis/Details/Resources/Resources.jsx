@@ -121,11 +121,28 @@ export default function Resources(props) {
         } else {
             addedOperations = cloneDeep(currentOperations);
         }
-
+        let newData = {};
+        if (action === 'removeAllSecurity') {
+            newData = cloneDeep(openAPISpec.paths);
+        }
         switch (action) {
             case 'init':
                 setSelectedOperation({});
                 return data || openAPISpec.paths;
+            case 'removeAllSecurity':
+                setSelectedOperation({});
+                return Object.entries(newData).reduce((resourceAcc, [resourceKey, verbObj]) => {
+                    const verbList = Object.entries(verbObj).reduce((verbListAcc, [verbKey, operation]) => {
+                        const newOperation = { ...operation };
+                        newOperation['x-auth-type'] = data.disable ? 'None' : 'Any';
+                        const newVerbListAcc = { ...verbListAcc };
+                        newVerbListAcc[verbKey] = newOperation;
+                        return newVerbListAcc;
+                    }, {});
+                    const newResourceListAcc = { ...resourceAcc };
+                    newResourceListAcc[resourceKey] = verbList;
+                    return newResourceListAcc;
+                }, {});
             case 'description':
             case 'summary':
                 updatedOperation[action] = value;
@@ -577,6 +594,7 @@ export default function Resources(props) {
                         isAPIProduct={api.isAPIProduct()}
                         focusOperationLevel={focusOperationLevel}
                         setFocusOperationLevel={setFocusOperationLevel}
+                        operationsDispatcher={operationsDispatcher}
                     />
                 </Grid>
             )}
