@@ -218,7 +218,6 @@ class LifeCycleUpdate extends Component {
         lcMap.set('Blocked', 'Block');
         lcMap.set('Created', 'Create');
         lcMap.set('Retired', 'Retire');
-        const isPrototype = api.endpointConfig && api.endpointConfig.implementation_status === 'prototyped';
         const isMutualSSLEnabled = api.securityScheme.includes(API_SECURITY_MUTUAL_SSL_MANDATORY);
         const isAppLayerSecurityMandatory = api.securityScheme.includes(
             API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY,

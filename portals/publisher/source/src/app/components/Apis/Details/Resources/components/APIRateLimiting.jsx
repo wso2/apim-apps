@@ -37,7 +37,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Checkbox from '@material-ui/core/Checkbox';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 const RateLimitingLevels = {
     API: 'api',
@@ -161,7 +161,12 @@ function APIRateLimiting(props) {
                 <Grid item md={1} xs={1} />
                 <Grid item md={5} xs={11}>
                     <FormControl component='fieldset'>
-                        <FormLabel component='legend'>Rate limiting level</FormLabel>
+                        <FormLabel component='legend'>
+                            <FormattedMessage
+                                id='Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level'
+                                defaultMessage='Rate limiting level'
+                            />
+                        </FormLabel>
                         <RadioGroup
                             aria-label='Apply rate limiting in'
                             value={rateLimitingLevel}
@@ -223,7 +228,12 @@ function APIRateLimiting(props) {
                 <Grid item md={1} xs={1} />
                 <Grid item md={6} xs={12}>
                     <FormControl component='fieldset'>
-                        <FormLabel component='legend'>Security configuration</FormLabel>
+                        <FormLabel component='legend'>
+                            <FormattedMessage
+                                id='Apis.Details.Resources.components.APIRateLimiting.security.config'
+                                defaultMessage='Security configuration'
+                            />
+                        </FormLabel>
                         <FormControlLabel
                             className={classes.checkBox}
                             control={(
@@ -238,7 +248,7 @@ function APIRateLimiting(props) {
                             )}
                             label={(
                                 <FormattedMessage
-                                    id='Apis.Details.Resources.components.APIRateLimiting.disable.all,security'
+                                    id='Apis.Details.Resources.components.APIRateLimiting.disable.all.security'
                                     defaultMessage='Disable all security'
                                 />
                             )}
