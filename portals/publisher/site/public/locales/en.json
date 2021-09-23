@@ -5225,22 +5225,10 @@
       "value": "Error occurred while updating API"
     }
   ],
-  "Apis.Details.Resources.components.APIRateLimiting.disable.all.security": [
-    {
-      "type": 0,
-      "value": "Disable all security"
-    }
-  ],
   "Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level": [
     {
       "type": 0,
       "value": "Rate limiting level"
-    }
-  ],
-  "Apis.Details.Resources.components.APIRateLimiting.security.config": [
-    {
-      "type": 0,
-      "value": "Security configuration"
     }
   ],
   "Apis.Details.Resources.components.AddOperation.add.tooltip": [
@@ -5303,6 +5291,18 @@
       "value": "Delete operation"
     }
   ],
+  "Apis.Details.Resources.components.Operation.disable.security.when.used.in.api.products": [
+    {
+      "type": 0,
+      "value": "No security"
+    }
+  ],
+  "Apis.Details.Resources.components.Operation.security.operation": [
+    {
+      "type": 0,
+      "value": "Security"
+    }
+  ],
   "Apis.Details.Resources.components.Operation.this.operation.used.in.products": [
     {
       "type": 0,
@@ -5321,6 +5321,12 @@
     {
       "type": 0,
       "value": "Undo Delete"
+    }
+  ],
+  "Apis.Details.Resources.components.enabled.security": [
+    {
+      "type": 0,
+      "value": "Security enabled"
     }
   ],
   "Apis.Details.Resources.components.operationComponents.AWSLambdaSettings.Title": [

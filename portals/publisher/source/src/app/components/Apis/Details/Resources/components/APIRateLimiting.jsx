@@ -36,7 +36,6 @@ import HelpOutline from '@material-ui/icons/HelpOutline';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import Checkbox from '@material-ui/core/Checkbox';
 import { FormattedMessage } from 'react-intl';
 
 const RateLimitingLevels = {
@@ -61,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 function APIRateLimiting(props) {
     const {
         updateAPI, operationRateLimits, onChange, value: currentApiThrottlingPolicy, isAPIProduct,
-        setFocusOperationLevel, focusOperationLevel, checkBoxOnChange, isChecked,
+        setFocusOperationLevel, focusOperationLevel,
     } = props;
     const classes = useStyles();
     const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(currentApiThrottlingPolicy);
@@ -224,36 +223,6 @@ function APIRateLimiting(props) {
                             </TextField>
                         )}
                     </Box>
-                </Grid>
-                <Grid item md={1} xs={1} />
-                <Grid item md={6} xs={12}>
-                    <FormControl component='fieldset'>
-                        <FormLabel component='legend'>
-                            <FormattedMessage
-                                id='Apis.Details.Resources.components.APIRateLimiting.security.config'
-                                defaultMessage='Security configuration'
-                            />
-                        </FormLabel>
-                        <FormControlLabel
-                            className={classes.checkBox}
-                            control={(
-                                <Checkbox
-                                    checked={isChecked}
-                                    onChange={checkBoxOnChange}
-                                    value={isChecked}
-                                    inputProps={{
-                                        name: 'Disable all security',
-                                    }}
-                                />
-                            )}
-                            label={(
-                                <FormattedMessage
-                                    id='Apis.Details.Resources.components.APIRateLimiting.disable.all.security'
-                                    defaultMessage='Disable all security'
-                                />
-                            )}
-                        />
-                    </FormControl>
                 </Grid>
                 {/* If onChange handler is provided we assume that component is getting controlled by its parent
                 so that, hide the save cancel action */}

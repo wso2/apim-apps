@@ -27,7 +27,8 @@ import ClearAllIcon from '@material-ui/icons/ClearAll';
 import Tooltip from '@material-ui/core/Tooltip';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-
+import LockIcon from '@material-ui/icons//Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 /**
  *
  *
@@ -35,7 +36,9 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
  * @returns
  */
 export default function OperationsSelector(props) {
-    const { selectedOperations, setSelectedOperation, operations } = props;
+    const {
+        selectedOperations, setSelectedOperation, operations, enableSecurity, disableSecurity,
+    } = props;
     const [apiFromContext] = useAPI();
 
     // TODO: Following logic introduce a limitation in showing `indeterminate` icon state if user
@@ -53,7 +56,31 @@ export default function OperationsSelector(props) {
         <Grid container direction='row' justify='space-between' alignItems='center'>
             <Grid item />
             <Grid item>
-                <Box mr={17.25}>
+                <Box mr={17.25} display='flex'>
+                    <Tooltip title='Disable security for all'>
+                        <div>
+                            <IconButton
+                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                onClick={disableSecurity}
+                                aria-label='disable security for all'
+                                size='large'
+                            >
+                                <LockIcon />
+                            </IconButton>
+                        </div>
+                    </Tooltip>
+                    <Tooltip title='Enable security for all'>
+                        <div>
+                            <IconButton
+                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                onClick={enableSecurity}
+                                aria-label='enable security for all'
+                                size='large'
+                            >
+                                <LockOpenIcon />
+                            </IconButton>
+                        </div>
+                    </Tooltip>
                     <Tooltip title={isIndeterminate ? 'Clear selections' : 'Mark all for delete'}>
                         <div>
                             <IconButton

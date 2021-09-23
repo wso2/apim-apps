@@ -284,9 +284,18 @@ export default function Resources(props) {
         return { ...currentOperations, [target]: { ...currentOperations[target], [verb]: updatedOperation } };
     }
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
-    const checkBoxOnChange = () => {
-        setChecked(!isChecked);
-        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: !isChecked } });
+
+    const enableSecurity = () => {
+        if (isChecked === true) {
+            setChecked(!isChecked);
+            operationsDispatcher({ action: 'removeAllSecurity', data: { disable: !isChecked } });
+        }
+    };
+    const disableSecurity = () => {
+        if (isChecked === false) {
+            setChecked(!isChecked);
+            operationsDispatcher({ action: 'removeAllSecurity', data: { disable: !isChecked } });
+        }
     };
     /**
      *
@@ -628,8 +637,6 @@ export default function Resources(props) {
                         isAPIProduct={api.isAPIProduct()}
                         focusOperationLevel={focusOperationLevel}
                         setFocusOperationLevel={setFocusOperationLevel}
-                        checkBoxOnChange={checkBoxOnChange}
-                        isChecked={isChecked}
                     />
                 </Grid>
             )}
@@ -646,6 +653,8 @@ export default function Resources(props) {
                             operations={operations}
                             selectedOperations={markedOperations}
                             setSelectedOperation={setSelectedOperation}
+                            enableSecurity={enableSecurity}
+                            disableSecurity={disableSecurity}
                         />
                     )}
                     {Object.entries(operations).map(([target, verbObject]) => (

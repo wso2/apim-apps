@@ -120,7 +120,7 @@ const endpointTypes = [
     { key: 'default', value: 'Dynamic Endpoints' },
     { key: 'address', value: 'HTTP/SOAP Endpoint' },
     { key: 'prototyped', value: 'Prototype Endpoint' },
-    { key: 'INLINE', value: 'Prototype Implementation' },
+    { key: 'INLINE', value: 'Mock Implementation' },
     { key: 'awslambda', value: 'AWS Lambda' },
 ];
 
@@ -225,7 +225,6 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'address', value: 'HTTP/SOAP Endpoint' },
                 { key: 'default', value: 'Dynamic Endpoints' },
-                // { key: 'prototyped', value: 'Prototype Endpoint' },
             ];
         } else if (type === 'SSE') {
             supportedEndpointTypes = [
@@ -236,8 +235,7 @@ function EndpointOverview(props) {
                 { key: 'http', value: 'HTTP/REST Endpoint' },
                 { key: 'address', value: 'HTTP/SOAP Endpoint' },
                 { key: 'default', value: 'Dynamic Endpoints' },
-                // { key: 'prototyped', value: 'Prototype Endpoint' },
-                { key: 'INLINE', value: 'Prototype Implementation' },
+                { key: 'INLINE', value: 'Mock Implementation' },
                 { key: 'awslambda', value: 'AWS Lambda' },
             ];
         }
@@ -588,8 +586,8 @@ function EndpointOverview(props) {
      *
      * @param {*} event
      */
-    function epCategoryOnChangeHandler(event) {
-        handleOnChangeEndpointCategoryChange('prod', event);
+    function epCategoryOnChangeHandler() {
+        handleOnChangeEndpointCategoryChange('prod');
     }
 
     return (
@@ -606,49 +604,18 @@ function EndpointOverview(props) {
                                 onChange={handleEndpointTypeSelect}
                             >
                                 {supportedEnpointTypes.map((endpoint) => {
-                                    if (api.lifeCycleStatus === 'CREATED') {
-                                        return (
-                                            <FormControlLabel
-                                                value={endpoint.key}
-                                                control={(
-                                                    <Radio
-                                                        disabled={(isRestricted(['apim:api_create'], api))}
-                                                        color='primary'
-                                                    />
-                                                )}
-                                                label={endpoint.value}
-                                            />
-                                        );
-                                    } else if (api.lifeCycleStatus === 'PROTOTYPED') {
-                                        if (endpoint.key === 'prototyped' || endpoint.key === 'INLINE') {
-                                            return (
-                                                <FormControlLabel
-                                                    value={endpoint.key}
-                                                    control={(
-                                                        <Radio
-                                                            disabled={(isRestricted(['apim:api_create'], api))}
-                                                            color='primary'
-                                                        />
-                                                    )}
-                                                    label={endpoint.value}
+                                    return (
+                                        <FormControlLabel
+                                            value={endpoint.key}
+                                            control={(
+                                                <Radio
+                                                    disabled={(isRestricted(['apim:api_create'], api))}
+                                                    color='primary'
                                                 />
-                                            );
-                                        }
-                                    } else if (endpoint.key !== 'prototyped' && endpoint.key !== 'INLINE') {
-                                        return (
-                                            <FormControlLabel
-                                                value={endpoint.key}
-                                                control={(
-                                                    <Radio
-                                                        disabled={(isRestricted(['apim:api_create'], api))}
-                                                        color='primary'
-                                                    />
-                                                )}
-                                                label={endpoint.value}
-                                            />
-                                        );
-                                    }
-                                    return <div />;
+                                            )}
+                                            label={endpoint.value}
+                                        />
+                                    );
                                 })}
                             </RadioGroup>
                         </FormControl>
@@ -830,9 +797,9 @@ function EndpointOverview(props) {
                                                                     checked={endpointCategory.sandbox}
                                                                     value='sandbox'
                                                                     color='primary'
-                                                                    onChange={(event) => (
+                                                                    onChange={() => (
                                                                         handleOnChangeEndpointCategoryChange(
-                                                                            'sandbox', event,
+                                                                            'sandbox',
                                                                         ))}
                                                                 />
                                                             )}

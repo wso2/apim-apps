@@ -2481,14 +2481,8 @@
   "Apis.Details.Resources.Resources.something.went.wrong.while.updating.the.api": {
     "defaultMessage": "Error occurred while updating API"
   },
-  "Apis.Details.Resources.components.APIRateLimiting.disable.all.security": {
-    "defaultMessage": "Disable all security"
-  },
   "Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level": {
     "defaultMessage": "Rate limiting level"
-  },
-  "Apis.Details.Resources.components.APIRateLimiting.security.config": {
-    "defaultMessage": "Security configuration"
   },
   "Apis.Details.Resources.components.AddOperation.add.tooltip": {
     "defaultMessage": "Add new operation"
@@ -2520,11 +2514,20 @@
   "Apis.Details.Resources.components.Operation.delete.operation": {
     "defaultMessage": "Delete operation"
   },
+  "Apis.Details.Resources.components.Operation.disable.security.when.used.in.api.products": {
+    "defaultMessage": "No security"
+  },
+  "Apis.Details.Resources.components.Operation.security.operation": {
+    "defaultMessage": "Security"
+  },
   "Apis.Details.Resources.components.Operation.this.operation.used.in.products": {
     "defaultMessage": "This operation is used in {isUsedInAPIProduct} API product(s)"
   },
   "Apis.Details.Resources.components.Operation.undo.delete": {
     "defaultMessage": "Undo Delete"
+  },
+  "Apis.Details.Resources.components.enabled.security": {
+    "defaultMessage": "Security enabled"
   },
   "Apis.Details.Resources.components.operationComponents.AWSLambdaSettings.Title": {
     "defaultMessage": "AWS Lambda Settings"

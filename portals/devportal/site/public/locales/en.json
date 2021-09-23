@@ -71,7 +71,6 @@
   "Apis.Details.Credentials.Credentials.subscribe.to.application.sign.in": "Sign In to Subscribe",
   "Apis.Details.Credentials.Credentials.subscribed.successfully": "Subscribed successfully",
   "Apis.Details.Credentials.Credentials.subscription.deleted.successfully": "Subscription deleted successfully!",
-  "Apis.Details.Credentials.Credentials.you.do.not.need.credentials.to.access.prototyped.api": "You do not need credentials to access Prototyped APIs",
   "Apis.Details.Credentials.SubscibeButtonPanel.subscribe.btn": "Subscribe",
   "Apis.Details.Credentials.SubscibeButtonPanel.subscribe.wizard.with.new.app": "Subscription & Key Generation Wizard",
   "Apis.Details.Credentials.SubscriptionTableRow.manage.app": "MANAGE APP",
