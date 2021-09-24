@@ -150,6 +150,7 @@ function CreateApi(props) {
         definitionType,
         serviceVersion,
         serviceUrl,
+        servieDefinitionType,
         usage,
     } = props;
     const classes = useStyles();
@@ -398,13 +399,23 @@ function CreateApi(props) {
                             defaultMessage='Create API'
                         />
                     </Typography>
-                    <Typography variant='caption'>
-                        <FormattedMessage
-                            id='ServiceCatalog.CreateApi.create.api.dialog.helper'
-                            defaultMessage='Create API from service {serviceName}'
-                            values={{ serviceName: serviceDisplayName }}
-                        />
-                    </Typography>
+                    {servieDefinitionType === 'WSDL1' ? (
+                        <Typography variant='caption'>
+                            <FormattedMessage
+                                id='ServiceCatalog.CreateSoapPassthroughApi.create.api.dialog.helper'
+                                defaultMessage='Create SOAP Passthrough API from service {serviceName}'
+                                values={{ serviceName: serviceDisplayName }}
+                            />
+                        </Typography>
+                    ) : (
+                        <Typography variant='caption'>
+                            <FormattedMessage
+                                id='ServiceCatalog.CreateApi.create.api.dialog.helper'
+                                defaultMessage='Create API from service {serviceName}'
+                                values={{ serviceName: serviceDisplayName }}
+                            />
+                        </Typography>
+                    )}
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
@@ -633,6 +644,7 @@ CreateApi.propTypes = {
     definitionType: PropTypes.string.isRequired,
     serviceVersion: PropTypes.string.isRequired,
     serviceUrl: PropTypes.string.isRequired,
+    servieDefinitionType: PropTypes.string.isRequired,
     isOverview: PropTypes.bool,
 };
 

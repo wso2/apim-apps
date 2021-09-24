@@ -7797,6 +7797,16 @@
       "value": "Creating API ..."
     }
   ],
+  "ServiceCatalog.CreateSoapPassthroughApi.create.api.dialog.helper": [
+    {
+      "type": 0,
+      "value": "Create SOAP Passthrough API from service "
+    },
+    {
+      "type": 1,
+      "value": "serviceName"
+    }
+  ],
   "ServiceCatalog.Listing.Delete.cancel": [
     {
       "type": 0,
