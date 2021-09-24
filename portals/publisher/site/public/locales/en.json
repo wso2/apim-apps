@@ -1969,22 +1969,28 @@
       "value": "Signing Algortithm"
     }
   ],
+  "Apis.Details.Configuration.components.Tags.error": [
+    {
+      "type": 0,
+      "value": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = | < > , ' \" \\\\ / ) ."
+    }
+  ],
   "Apis.Details.Configuration.components.Tags.helper": [
     {
       "type": 0,
       "value": "Press `Enter` after typing the tag name to add a new tag"
     }
   ],
+  "Apis.Details.Configuration.components.Tags.limit.error": [
+    {
+      "type": 0,
+      "value": "The tag exceeds the maximum length of 30 characters"
+    }
+  ],
   "Apis.Details.Configuration.components.Tags.title": [
     {
       "type": 0,
       "value": "Tags"
-    }
-  ],
-  "Apis.Details.Configuration.components.Tags.validation.error": [
-    {
-      "type": 0,
-      "value": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = } | < > , ' \" \\\\ / ) ."
     }
   ],
   "Apis.Details.Configuration.components.Transports.tooltip": [
@@ -5259,6 +5265,12 @@
     {
       "type": 0,
       "value": "HTTP Verb"
+    }
+  ],
+  "Apis.Details.Resources.components.AddOperation.operation.target.cannot.contains.white.spaces": [
+    {
+      "type": 0,
+      "value": "Operation target cannot contains white spaces"
     }
   ],
   "Apis.Details.Resources.components.AddOperation.operation.target.or.verb.cannot.be.empty.warning": [
