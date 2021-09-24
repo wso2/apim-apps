@@ -303,8 +303,8 @@ function Operation(props) {
                                     aria-label='Security'
                                 >
                                     {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? <LockOpenIcon fontSize='small' />
-                                        : <LockIcon fontSize='small' />}
+                                        ? <LockIcon fontSize='small' />
+                                        : <LockOpenIcon fontSize='small' />}
                                 </IconButton>
                             </Tooltip>
 

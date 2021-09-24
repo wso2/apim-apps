@@ -241,7 +241,9 @@ class LifeCycleUpdate extends Component {
                     disabled:
                         (api.type !== 'WEBSUB' && api.endpointConfig === null)
                         || (isMutualSSLEnabled && !isCertAvailable)
-                        || (isAppLayerSecurityMandatory && !isBusinessPlanAvailable),
+                        || (isAppLayerSecurityMandatory && !isBusinessPlanAvailable)
+                        || (api.type !== 'WEBSUB' && api.endpointConfig != null
+                            && api.endpointConfig.implementation_status === 'prototyped'),
                 };
             }
             return {
