@@ -65,7 +65,7 @@ export default function OperationsSelector(props) {
                                 aria-label='disable security for all'
                                 size='large'
                             >
-                                <LockIcon />
+                                <LockOpenIcon />
                             </IconButton>
                         </div>
                     </Tooltip>
@@ -77,7 +77,7 @@ export default function OperationsSelector(props) {
                                 aria-label='enable security for all'
                                 size='large'
                             >
-                                <LockOpenIcon />
+                                <LockIcon />
                             </IconButton>
                         </div>
                     </Tooltip>

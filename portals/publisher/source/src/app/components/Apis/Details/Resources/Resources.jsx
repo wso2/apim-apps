@@ -99,7 +99,7 @@ export default function Resources(props) {
         return nextResourcePolicies;
     }
     const [resourcePolicies, resourcePoliciesDispatcher] = useReducer(resourcePoliciesReducer, null);
-    const [isChecked, setChecked] = useState(false);
+    const [isChecked, setChecked] = useState(true);
 
 
     /**
