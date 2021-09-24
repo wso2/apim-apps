@@ -110,31 +110,14 @@ function NewEndpointCreate(props) {
             type: 'prototyped',
             name: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint',
-                defaultMessage: 'Prototype Endpoint',
+                defaultMessage: 'Mock Implementation',
             }),
             description: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint.description',
-                defaultMessage: 'Use the inbuilt JavaScript engine to prototype the API or provide an endpoint'
-                    + ' to a prototype API. The inbuilt JavaScript engine does support prototype SOAP APIs',
+                defaultMessage: 'Use the inbuilt JavaScript engine to prototype the API '
+                + 'The inbuilt JavaScript engine does support prototype SOAP APIs',
             }),
-            options: [
-                {
-                    type: 'mock',
-                    name: intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.NewEndpointCreate.prototype.implementation',
-                        defaultMessage: 'Prototype Implementation',
-                    }),
-                    disabled: ['SOAP', 'SOAPTOREST', 'SSE'],
-                },
-                {
-                    type: 'prototyped',
-                    name: intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.NewEndpointCreate.default.prototype.endpoints',
-                        defaultMessage: 'Prototype Endpoint',
-                    }),
-                    disabled: [],
-                },
-            ],
+            options: null,
             disabled: ['GRAPHQL', 'SSE'],
         },
         {

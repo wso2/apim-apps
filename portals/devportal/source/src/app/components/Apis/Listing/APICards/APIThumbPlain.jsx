@@ -227,7 +227,7 @@ function APIThumbPlain(props) {
                             )}
                             {(api.lifeCycleStatus === 'PROTOTYPED') && (
                                 <Chip
-                                    label={api.apiType === 'APIProduct' ? api.state : api.lifeCycleStatus}
+                                    label={api.apiType === 'APIProduct' ? api.state : 'PROTOTYPE'}
                                     color='default'
                                 />
                             )}

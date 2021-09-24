@@ -420,12 +420,11 @@ class ApiConsole extends React.Component {
                 authorizationHeader = 'apikey';
             }
         }
-        const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
         return (
             <>
                 <Paper className={classes.paper}>
                     <Grid container className={classes.grid}>
-                        {!isPrototypedAPI && !user && (
+                        {!user && (
                             <Grid item md={6}>
                                 <Paper className={classes.userNotificationPaper}>
                                     <Typography variant='h5' component='h3'>
