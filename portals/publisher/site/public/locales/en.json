@@ -135,6 +135,12 @@
       "value": "Input Type"
     }
   ],
+  "Apis.Create.Components.DefaultAPIForm.api.channel": [
+    {
+      "type": 0,
+      "value": "Channel"
+    }
+  ],
   "Apis.Create.Components.DefaultAPIForm.api.context": [
     {
       "type": 0,
@@ -527,6 +533,12 @@
     {
       "type": 0,
       "value": "Protocol"
+    }
+  ],
+  "Apis.Details.\n                                                                                Environments.deploy.vhost": [
+    {
+      "type": 0,
+      "value": "VHost"
     }
   ],
   "Apis.Details.APIDefinition.APIDefinition.api.definition": [
@@ -1969,22 +1981,28 @@
       "value": "Signing Algortithm"
     }
   ],
+  "Apis.Details.Configuration.components.Tags.error": [
+    {
+      "type": 0,
+      "value": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = | < > , ' \" \\\\ / ) ."
+    }
+  ],
   "Apis.Details.Configuration.components.Tags.helper": [
     {
       "type": 0,
       "value": "Press `Enter` after typing the tag name to add a new tag"
     }
   ],
+  "Apis.Details.Configuration.components.Tags.limit.error": [
+    {
+      "type": 0,
+      "value": "The tag exceeds the maximum length of 30 characters"
+    }
+  ],
   "Apis.Details.Configuration.components.Tags.title": [
     {
       "type": 0,
       "value": "Tags"
-    }
-  ],
-  "Apis.Details.Configuration.components.Tags.validation.error": [
-    {
-      "type": 0,
-      "value": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = } | < > , ' \" \\\\ / ) ."
     }
   ],
   "Apis.Details.Configuration.components.Transports.tooltip": [
@@ -3675,10 +3693,22 @@
       "value": "Script"
     }
   ],
-  "Apis.Details.Environments\n                                                                                .deploy.vhost": [
+  "Apis.Details.Environments\n                                                                                    .deploy.vhost": [
     {
       "type": 0,
       "value": "VHost"
+    }
+  ],
+  "Apis.Details.Environments.\n                                                                            Environments.select.table": [
+    {
+      "type": 0,
+      "value": "Select Revision"
+    }
+  ],
+  "Apis.Details.Environments.\n                                                        Environments.gateway.deployed.revision": [
+    {
+      "type": 0,
+      "value": "Deployed Revision"
     }
   ],
   "Apis.Details.Environments.Environments\n                                                                    .select.table": [
@@ -3694,6 +3724,12 @@
     }
   ],
   "Apis.Details.Environments.Environments\n                                                                .deploy.button": [
+    {
+      "type": 0,
+      "value": "Deploy"
+    }
+  ],
+  "Apis.Details.Environments.Environments.\n                                                                deploy.button": [
     {
       "type": 0,
       "value": "Deploy"
@@ -3783,6 +3819,12 @@
       "value": "Display Gateway Access URLs in developer portal."
     }
   ],
+  "Apis.Details.Environments.Environments.display.in.devportal": [
+    {
+      "type": 0,
+      "value": "Display in Developer Portal"
+    }
+  ],
   "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": [
     {
       "type": 0,
@@ -3801,7 +3843,7 @@
       "value": "Action"
     }
   ],
-  "Apis.Details.Environments.Environments.revision\n                                                    .description.deploy": [
+  "Apis.Details.Environments.Environments.revision\n                                                        .description.deploy": [
     {
       "type": 0,
       "value": "Add a description to the revision"
@@ -3861,6 +3903,12 @@
     {
       "type": 0,
       "value": "Revision Deleted Successfully"
+    }
+  ],
+  "Apis.Details.Environments.Environments.revision.description.\n                                                        deploy": [
+    {
+      "type": 0,
+      "value": "Add a description to the revision"
     }
   ],
   "Apis.Details.Environments.Environments.revision.description.create": [
@@ -3949,6 +3997,12 @@
       "value": "count"
     }
   ],
+  "Apis.Details.Environments.Environments.solace.platform.environments.heading": [
+    {
+      "type": 0,
+      "value": "Solace Platform Environments"
+    }
+  ],
   "Apis.Details.Environments.Environments.undeploy.btn": [
     {
       "type": 0,
@@ -3959,12 +4013,6 @@
     {
       "type": 0,
       "value": "Gateway URL Visibility"
-    }
-  ],
-  "Apis.Details.Environments.deploy.vhost": [
-    {
-      "type": 0,
-      "value": "VHost"
     }
   ],
   "Apis.Details.ExternalStores.ExternalStores.cancel": [
@@ -4511,6 +4559,12 @@
       "value": "Restricted by roles : The API can be viewable and modifiable by only specific publishers and creators with the roles that you specify"
     }
   ],
+  "Apis.Details.NewOverview.MetaData.channel:": [
+    {
+      "type": 0,
+      "value": "Channel:"
+    }
+  ],
   "Apis.Details.NewOverview.MetaData.config": [
     {
       "type": 0,
@@ -4559,12 +4613,6 @@
       "value": "-"
     }
   ],
-  "Apis.Details.NewOverview.MetaData.metadata": [
-    {
-      "type": 0,
-      "value": "Metadata"
-    }
-  ],
   "Apis.Details.NewOverview.MetaData.provider": [
     {
       "type": 0,
@@ -4587,6 +4635,12 @@
     {
       "type": 0,
       "value": "OAuth2 is used as the default security schema."
+    }
+  ],
+  "Apis.Details.NewOverview.MetaData.solace.transports": [
+    {
+      "type": 0,
+      "value": "Available Protocols"
     }
   ],
   "Apis.Details.NewOverview.MetaData.tags": [
@@ -5995,6 +6049,12 @@
       "value": "Threat Protection Policies"
     }
   ],
+  "Apis.Details.Solace.Platform.Environments": [
+    {
+      "type": 0,
+      "value": "Solace Platform Environments"
+    }
+  ],
   "Apis.Details.Subscriptions.Listing.column.header.application": [
     {
       "type": 0,
@@ -6203,6 +6263,36 @@
     {
       "type": 0,
       "value": "Error while retrieving the subscriptions"
+    }
+  ],
+  "Apis.Details.Third.Party.Brokers.broker.displayName": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
+  "Apis.Details.Third.Party.Brokers.broker.endpoints": [
+    {
+      "type": 0,
+      "value": "Access Endpoints"
+    }
+  ],
+  "Apis.Details.Third.Party.Brokers.broker.environment": [
+    {
+      "type": 0,
+      "value": "Environment"
+    }
+  ],
+  "Apis.Details.Third.Party.Brokers.broker.name": [
+    {
+      "type": 0,
+      "value": "Provider"
+    }
+  ],
+  "Apis.Details.Third.Party.Brokers.broker.type": [
+    {
+      "type": 0,
+      "value": "Organization"
     }
   ],
   "Apis.Details.Topics.components.AddOperation.op.type": [

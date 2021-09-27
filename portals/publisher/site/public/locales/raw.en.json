@@ -59,6 +59,9 @@
   "Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.type": {
     "defaultMessage": "Input Type"
   },
+  "Apis.Create.Components.DefaultAPIForm.api.channel": {
+    "defaultMessage": "Channel"
+  },
   "Apis.Create.Components.DefaultAPIForm.api.context": {
     "defaultMessage": "Context"
   },
@@ -223,6 +226,9 @@
   },
   "Apis.Create.streaming.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Protocol"
+  },
+  "Apis.Details.\n                                                                                Environments.deploy.vhost": {
+    "defaultMessage": "VHost"
   },
   "Apis.Details.APIDefinition.APIDefinition.api.definition": {
     "defaultMessage": "API Definition"
@@ -1737,8 +1743,14 @@
   "Apis.Details.Endpoints.Prototype.InlineEndpoints.script": {
     "defaultMessage": "Script"
   },
-  "Apis.Details.Environments\n                                                                                .deploy.vhost": {
+  "Apis.Details.Environments\n                                                                                    .deploy.vhost": {
     "defaultMessage": "VHost"
+  },
+  "Apis.Details.Environments.\n                                                                            Environments.select.table": {
+    "defaultMessage": "Select Revision"
+  },
+  "Apis.Details.Environments.\n                                                        Environments.gateway.deployed.revision": {
+    "defaultMessage": "Deployed Revision"
   },
   "Apis.Details.Environments.Environments\n                                                                    .select.table": {
     "defaultMessage": "Select Revision"
@@ -1747,6 +1759,9 @@
     "defaultMessage": "Select Access URL"
   },
   "Apis.Details.Environments.Environments\n                                                                .deploy.button": {
+    "defaultMessage": "Deploy"
+  },
+  "Apis.Details.Environments.Environments.\n                                                                deploy.button": {
     "defaultMessage": "Deploy"
   },
   "Apis.Details.Environments.Environments.APIGateways": {
@@ -1791,6 +1806,9 @@
   "Apis.Details.Environments.Environments.display.devportal": {
     "defaultMessage": "Display Gateway Access URLs in developer portal."
   },
+  "Apis.Details.Environments.Environments.display.in.devportal": {
+    "defaultMessage": "Display in Developer Portal"
+  },
   "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": {
     "defaultMessage": "Deployed Revision"
   },
@@ -1800,7 +1818,7 @@
   "Apis.Details.Environments.Environments.gateway.action": {
     "defaultMessage": "Action"
   },
-  "Apis.Details.Environments.Environments.revision\n                                                    .description.deploy": {
+  "Apis.Details.Environments.Environments.revision\n                                                        .description.deploy": {
     "defaultMessage": "Add a description to the revision"
   },
   "Apis.Details.Environments.Environments.revision.create.heading": {
@@ -1826,6 +1844,9 @@
   },
   "Apis.Details.Environments.Environments.revision.delete.success": {
     "defaultMessage": "Revision Deleted Successfully"
+  },
+  "Apis.Details.Environments.Environments.revision.description.\n                                                        deploy": {
+    "defaultMessage": "Add a description to the revision"
   },
   "Apis.Details.Environments.Environments.revision.description.create": {
     "defaultMessage": "Brief description of the new revision"
@@ -1860,14 +1881,14 @@
   "Apis.Details.Environments.Environments.select.rev.warning": {
     "defaultMessage": "Please delete a revision as the number of revisions have reached a maximum of {count}"
   },
+  "Apis.Details.Environments.Environments.solace.platform.environments.heading": {
+    "defaultMessage": "Solace Platform Environments"
+  },
   "Apis.Details.Environments.Environments.undeploy.btn": {
     "defaultMessage": "Undeploy"
   },
   "Apis.Details.Environments.Environments.visibility.in.devportal": {
     "defaultMessage": "Gateway URL Visibility"
-  },
-  "Apis.Details.Environments.deploy.vhost": {
-    "defaultMessage": "VHost"
   },
   "Apis.Details.ExternalStores.ExternalStores.cancel": {
     "defaultMessage": "Cancel"
@@ -2127,6 +2148,9 @@
   "Apis.Details.NewOverview.MetaData.access.control.tooltip": {
     "defaultMessage": "Restricted by roles : The API can be viewable and modifiable by only specific publishers and creators with the roles that you specify"
   },
+  "Apis.Details.NewOverview.MetaData.channel:": {
+    "defaultMessage": "Channel:"
+  },
   "Apis.Details.NewOverview.MetaData.config": {
     "defaultMessage": "Configuration"
   },
@@ -2151,9 +2175,6 @@
   "Apis.Details.NewOverview.MetaData.lastUpdatedTime.not.set": {
     "defaultMessage": "-"
   },
-  "Apis.Details.NewOverview.MetaData.metadata": {
-    "defaultMessage": "Metadata"
-  },
   "Apis.Details.NewOverview.MetaData.provider": {
     "defaultMessage": "Provider"
   },
@@ -2165,6 +2186,9 @@
   },
   "Apis.Details.NewOverview.MetaData.securityScheme.tooltip": {
     "defaultMessage": "OAuth2 is used as the default security schema."
+  },
+  "Apis.Details.NewOverview.MetaData.solace.transports": {
+    "defaultMessage": "Available Protocols"
   },
   "Apis.Details.NewOverview.MetaData.tags": {
     "defaultMessage": "Tags"
@@ -2865,6 +2889,9 @@
   "Apis.Details.Security.SecurityOverview.threat.protection.policies": {
     "defaultMessage": "Threat Protection Policies"
   },
+  "Apis.Details.Solace.Platform.Environments": {
+    "defaultMessage": "Solace Platform Environments"
+  },
   "Apis.Details.Subscriptions.Listing.column.header.application": {
     "defaultMessage": "Application"
   },
@@ -2957,6 +2984,21 @@
   },
   "Apis.Details.Subscriptions.SubscriptionsTable.subscriptions.error": {
     "defaultMessage": "Error while retrieving the subscriptions"
+  },
+  "Apis.Details.Third.Party.Brokers.broker.displayName": {
+    "defaultMessage": "Name"
+  },
+  "Apis.Details.Third.Party.Brokers.broker.endpoints": {
+    "defaultMessage": "Access Endpoints"
+  },
+  "Apis.Details.Third.Party.Brokers.broker.environment": {
+    "defaultMessage": "Environment"
+  },
+  "Apis.Details.Third.Party.Brokers.broker.name": {
+    "defaultMessage": "Provider"
+  },
+  "Apis.Details.Third.Party.Brokers.broker.type": {
+    "defaultMessage": "Organization"
   },
   "Apis.Details.Topics.components.AddOperation.op.type": {
     "defaultMessage": "Type"

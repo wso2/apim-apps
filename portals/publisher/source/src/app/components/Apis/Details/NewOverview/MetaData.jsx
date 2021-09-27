@@ -42,10 +42,17 @@ function MetaData(props) {
     return (
         <>
             <Typography variant='h5' component='h3' className={parentClasses.title}>
-                <FormattedMessage
-                    id='Apis.Details.NewOverview.MetaData.metadata'
-                    defaultMessage='Metadata'
-                />
+                {api.type === 'WS' ? (
+                    <FormattedMessage
+                        id='Apis.Details.NewOverview.MetaData.channel:'
+                        defaultMessage='Channel:'
+                    />
+                ) : (
+                    <FormattedMessage
+                        id='Apis.Details.NewOverview.MetaData.context:'
+                        defaultMessage='Context:'
+                    />
+                )}
             </Typography>
             <Box p={1}>
                 <Grid container spacing={1}>
@@ -128,7 +135,7 @@ function MetaData(props) {
                         </>
                     )}
                     {/* Type */}
-                    {api.apiType === API.CONSTS.APIProduct ? null : (
+                    {api.apiType === API.CONSTS.APIProduct ? null : (api.gatewayVendor === 'wso2') && (
                         <>
                             <Grid item xs={12} md={6} lg={4}>
                                 <>

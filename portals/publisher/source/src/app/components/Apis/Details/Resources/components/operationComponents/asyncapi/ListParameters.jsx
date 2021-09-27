@@ -49,7 +49,7 @@ const useStyles = makeStyles({
  */
 export default function ListParameters(props) {
     const {
-        operation, operationsDispatcher, target, verb, disableUpdate,
+        operation, operationsDispatcher, target, verb, disableUpdate, disableForSolace,
     } = props;
     const classes = useStyles();
     const [editingParameter, setEditingParameter] = useState(null);
@@ -63,6 +63,7 @@ export default function ListParameters(props) {
                     verb={verb}
                     editingParameter={editingParameter}
                     setEditingParameter={setEditingParameter}
+                    disableForSolaceAPI={disableForSolace}
                 />
             )}
             <Table className={classes.table} aria-label='parameters list'>
@@ -133,6 +134,7 @@ export default function ListParameters(props) {
 
 ListParameters.defaultProps = {
     disableUpdate: false,
+    disableForSolace: false,
 };
 ListParameters.propTypes = {
     operation: PropTypes.shape({}).isRequired,
@@ -142,4 +144,5 @@ ListParameters.propTypes = {
     verb: PropTypes.string.isRequired,
     disableUpdate: PropTypes.bool,
     resolvedSpec: PropTypes.shape({}).isRequired,
+    disableForSolace: PropTypes.bool,
 };

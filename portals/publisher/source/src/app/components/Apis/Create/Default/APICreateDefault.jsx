@@ -128,7 +128,7 @@ function APICreateDefault(props) {
     function createAPI() {
         setIsCreating(true);
         const {
-            name, version, context, endpoint,
+            name, version, context, endpoint,gatewayVendor,
         } = apiInputs;
         let promisedCreatedAPI;
         const apiData = {
@@ -136,6 +136,7 @@ function APICreateDefault(props) {
             version,
             context,
             policies,
+            gatewayVendor,
         };
         if (endpoint) {
             apiData.endpointConfig = {
