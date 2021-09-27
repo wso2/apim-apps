@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import 'react-tagsinput/react-tagsinput.css';
@@ -64,6 +64,8 @@ import API from 'AppData/api';
 import { ConfirmDialog } from 'AppComponents/Shared/index';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
+import { parse } from '@asyncapi/parser';
+import { upperCaseString } from 'AppData/stringFormatter';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
 
@@ -215,7 +217,7 @@ const useStyles = makeStyles((theme) => ({
     },
     cardHeight: {
         boxShadow: 1,
-        height: '90%',
+        height: '100%',
     },
     cardContentHeight: {
         boxShadow: 1,
@@ -246,7 +248,7 @@ const useStyles = makeStyles((theme) => ({
     },
     dialogPaper: {
         width: '800px',
-        height: '500px',
+        maxHeight: '800px',
     },
     createRevisionDialogStyle: {
         width: '800px',
@@ -341,10 +343,80 @@ export default function Environments() {
     const [revisionToRestore, setRevisionToRestore] = useState([]);
     const [currentLength, setCurrentLength] = useState(0);
     const [openDeployPopup, setOpenDeployPopup] = useState(history.location.state === 'deploy');
+    const [externalEnvEndpoints, setExternalEnvEndpoints] = useState(null);
+    const triggerEffect = true;
 
     // allEnvDeployments represents all deployments of the API with mapping
     // environment -> {revision deployed to env, vhost deployed to env with revision}
     const allEnvDeployments = Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision);
+
+    //TODO: once default.json is changed to add default provider value the condition should be changed as !includes('wso2')
+    const externalGateways = settings.environment.filter(p =>
+        p.provider.toLowerCase().includes('solace')
+    )
+
+    const allExternalEnvironmentsMap = [];
+    const allExternalEnvironments = [];
+    settings.environment.forEach((env) => {
+        // TODO: once default.json is changed to add default provider value the condition should be changed as !=='wso2'
+        if (env.provider === 'solace'){
+            const revision = allEnvRevision && allEnvRevision.find(
+                (r) => r.deploymentInfo.some((e) => e.name === env.name),
+            );
+            console.log('revision', revision)
+            const envDetails = revision && revision.deploymentInfo.find((e) => e.name === env.name);
+            const disPlayDevportal = envDetails && envDetails.displayOnDevportal;
+            allExternalEnvironmentsMap[env.name] = { revision, disPlayDevportal };
+            allExternalEnvironments.push(env);
+        }
+
+    });
+
+
+
+    const gatewayEnvWithEndpoints = [];
+    useEffect(() => {
+        const promise = restApi.getAsyncAPIDefinition(api.id);
+        promise.then(async (response) => {
+            const doc = await parse(response.data);
+            const protocolBindings = [];
+            // eslint-disable-next-line array-callback-return
+            doc.channelNames().map((channelName) => {
+                if (doc.channel(channelName).hasPublish()) {
+                    // eslint-disable-next-line array-callback-return
+                    doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
+                        if (!protocolBindings.includes(protocol)) {
+                            protocolBindings.push(protocol);
+                        }
+                    });
+                }
+                if (doc.channel(channelName).hasSubscribe()) {
+                    // eslint-disable-next-line array-callback-return
+                    doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
+                        if (!protocolBindings.includes(protocol)) {
+                            protocolBindings.push(protocol);
+                        }
+                    });
+                }
+            });
+            // eslint-disable-next-line array-callback-return
+            allExternalEnvironments.map((env) => {
+                const endpoints = [];
+                // eslint-disable-next-line array-callback-return
+                env.endpointURIs.map((endpoint) => {
+                    // eslint-disable-next-line array-callback-return
+                    protocolBindings.map((protocol) => {
+                        if (protocol === endpoint.protocol) {
+                            const uri = endpoint.endpointURI;
+                            endpoints.push({ protocol, uri });
+                        }
+                    });
+                });
+                gatewayEnvWithEndpoints[env.name] = endpoints;
+            });
+            setExternalEnvEndpoints(gatewayEnvWithEndpoints);
+        });
+    }, [triggerEffect]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
         setRevisionToDelete([revisionName, revisionId]);
@@ -386,6 +458,31 @@ export default function Environments() {
         revisions.push({ env: event.target.name, revision: event.target.value, displayOnDevPortal });
         setRevision(revisions);
     };
+
+    const handleSelectForBrokers = (event) => {
+        const revisions = selectedRevision.filter((r) => r.env !== event.target.name);
+        const oldRevision = selectedRevision.find((r) => r.env === event.target.name);
+        let displayOnDevPortal = true;
+        if (oldRevision) {
+            displayOnDevPortal = oldRevision.displayOnDevPortal;
+        }
+        revisions.push({ env: event.target.name, revision: event.target.value, displayOnDevPortal });
+        setRevision(revisions);
+    };
+
+    /* const isDisplayOnDevPortalCheckedForThirdPartyEnv = (env) => {
+        if (allExternalEnvironmentsMap[env].revision) {
+            return allExternalEnvironmentsMap[env].revision.deploymentInfo.find(
+                (r) => r.name === env,
+            ).displayOnDevportal;
+        }
+        const oldRevision = selectedRevision.find((r) => r.env === env);
+        let displayOnDevPortal = true;
+        if (oldRevision) {
+            displayOnDevPortal = oldRevision.displayOnDevPortal;
+        }
+        return displayOnDevPortal;
+    }; */
 
     const handleVhostSelect = (event) => {
         const vhosts = selectedVhosts.filter((v) => v.env !== event.target.name);
@@ -692,7 +789,8 @@ export default function Environments() {
                     for (let i = 0; i < envList.length; i++) {
                         body1.push({
                             name: envList[i],
-                            vhost: vhostList.find((v) => v.env === envList[i]).vhost,
+                            vhost: api.gatewayVendor === 'wso2' ? vhostList.find((v) => v.env === envList[i]).vhost
+                                : ' ',
                             displayOnDevportal: true,
                         });
                     }
@@ -1283,6 +1381,7 @@ export default function Environments() {
                     createDeployRevision={createDeployRevision}
                     description
                     setDescription={setDescription}
+                    gatewayVendor={api.gatewayVendor}
                 />
             )}
             {allRevisions && allRevisions.length !== 0 && (
@@ -1301,7 +1400,7 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0
+            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2'
             && (
                 <Grid container>
                     <Button
@@ -1428,113 +1527,116 @@ export default function Environments() {
                                 {currentLength + '/' + maxCommentLength}
                             </Typography>
                         </Box>
-                        <Box mt={2}>
-                            <Typography variant='h6' align='left' className={classes.sectionTitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.Environments.Environments.api.gateways.heading'
-                                    defaultMessage='API Gateways'
-                                />
-                            </Typography>
-                            <Grid
-                                container
-                                spacing={3}
-                            >
-                                {settings.environment.map((row) => (
-                                    <Grid item xs={4}>
-                                        <Card
-                                            className={clsx(SelectedEnvironment
+                        {api.gatewayVendor === 'wso2' && (
+                            <Box mt={2}>
+                                <Typography variant='h6' align='left' className={classes.sectionTitle}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.Environments.api.gateways.heading'
+                                        defaultMessage='API Gateways'
+                                    />
+                                </Typography>
+                                <Grid
+                                    container
+                                    spacing={3}
+                                >
+                                    {settings.environment.map((row) => (
+                                        <Grid item xs={4}>
+                                            <Card
+                                                className={clsx(SelectedEnvironment
                                                 && SelectedEnvironment.includes(row.name)
-                                                ? (classes.changeCard) : (classes.noChangeCard), classes.cardHeight)}
-                                            variant='outlined'
-                                        >
-                                            <Box height='100%'>
-                                                <CardHeader
-                                                    action={(
-                                                        <Checkbox
-                                                            id={row.name.split(' ').join('')}
-                                                            value={row.name}
-                                                            checked={SelectedEnvironment.includes(row.name)}
-                                                            onChange={handleChange}
-                                                            color='primary'
-                                                            icon={<RadioButtonUncheckedIcon />}
-                                                            checkedIcon={<CheckCircleIcon color='primary' />}
-                                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                        />
-                                                    )}
-                                                    title={(
-                                                        <Typography variant='subtitle2'>
-                                                            {row.displayName}
-                                                        </Typography>
-                                                    )}
-                                                    subheader={(
-                                                        <Typography
-                                                            variant='body2'
-                                                            color='textSecondary'
-                                                            gutterBottom
-                                                        >
-                                                            {row.type}
-                                                        </Typography>
-                                                    )}
-                                                />
-                                                <CardContent className={classes.cardContentHeight}>
-                                                    <Grid
-                                                        container
-                                                        direction='column'
-                                                        spacing={2}
-                                                    >
-                                                        <Grid item xs={12}>
-                                                            <Tooltip
-                                                                title={(
-                                                                    <>
-                                                                        <Typography color='inherit'>
-                                                                            {getVhostHelperText(row.name,
-                                                                                selectedVhostDeploy)}
-                                                                        </Typography>
-                                                                    </>
-                                                                )}
-                                                                placement='bottom'
+                                                    ? (classes.changeCard)
+                                                    : (classes.noChangeCard), classes.cardHeight)}
+                                                variant='outlined'
+                                            >
+                                                <Box height='100%'>
+                                                    <CardHeader
+                                                        action={(
+                                                            <Checkbox
+                                                                id={row.name.split(' ').join('')}
+                                                                value={row.name}
+                                                                checked={SelectedEnvironment.includes(row.name)}
+                                                                onChange={handleChange}
+                                                                color='primary'
+                                                                icon={<RadioButtonUncheckedIcon />}
+                                                                checkedIcon={<CheckCircleIcon color='primary' />}
+                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                            />
+                                                        )}
+                                                        title={(
+                                                            <Typography variant='subtitle2'>
+                                                                {row.displayName}
+                                                            </Typography>
+                                                        )}
+                                                        subheader={(
+                                                            <Typography
+                                                                variant='body2'
+                                                                color='textSecondary'
+                                                                gutterBottom
                                                             >
-                                                                <TextField
-                                                                    id='vhost-selector'
-                                                                    select
-                                                                    label={(
-                                                                        <FormattedMessage
-                                                                            id='Apis.Details.Environments.deploy.vhost'
-                                                                            defaultMessage='VHost'
-                                                                        />
+                                                                {row.type}
+                                                            </Typography>
+                                                        )}
+                                                    />
+                                                    <CardContent className={classes.cardContentHeight}>
+                                                        <Grid
+                                                            container
+                                                            direction='column'
+                                                            spacing={2}
+                                                        >
+                                                            <Grid item xs={12}>
+                                                                <Tooltip
+                                                                    title={(
+                                                                        <>
+                                                                            <Typography color='inherit'>
+                                                                                {getVhostHelperText(row.name,
+                                                                                    selectedVhostDeploy)}
+                                                                            </Typography>
+                                                                        </>
                                                                     )}
-                                                                    SelectProps={{
-                                                                        MenuProps: {
-                                                                            anchorOrigin: {
-                                                                                vertical: 'bottom',
-                                                                                horizontal: 'left',
-                                                                            },
-                                                                            getContentAnchorEl: null,
-                                                                        },
-                                                                    }}
-                                                                    name={row.name}
-                                                                    value={selectedVhostDeploy.find(
-                                                                        (v) => v.env === row.name,
-                                                                    ).vhost}
-                                                                    onChange={handleVhostDeploySelect}
-                                                                    margin='dense'
-                                                                    variant='outlined'
-                                                                    fullWidth
-                                                                    helperText={getVhostHelperText(row.name,
-                                                                        selectedVhostDeploy, true)}
+                                                                    placement='bottom'
                                                                 >
-                                                                    {row.vhosts.map(
-                                                                        (vhost) => (
-                                                                            <MenuItem value={vhost.host}>
-                                                                                {vhost.host}
-                                                                            </MenuItem>
-                                                                        ),
-                                                                    )}
-                                                                </TextField>
-                                                            </Tooltip>
-                                                        </Grid>
-                                                        <Grid item>
-                                                            {allEnvRevision
+                                                                    <TextField
+                                                                        id='vhost-selector'
+                                                                        select
+                                                                        label={(
+                                                                            <FormattedMessage
+                                                                                id='Apis.Details.
+                                                                                Environments.deploy.vhost'
+                                                                                defaultMessage='VHost'
+                                                                            />
+                                                                        )}
+                                                                        SelectProps={{
+                                                                            MenuProps: {
+                                                                                anchorOrigin: {
+                                                                                    vertical: 'bottom',
+                                                                                    horizontal: 'left',
+                                                                                },
+                                                                                getContentAnchorEl: null,
+                                                                            },
+                                                                        }}
+                                                                        name={row.name}
+                                                                        value={selectedVhostDeploy.find(
+                                                                            (v) => v.env === row.name,
+                                                                        ).vhost}
+                                                                        onChange={handleVhostDeploySelect}
+                                                                        margin='dense'
+                                                                        variant='outlined'
+                                                                        fullWidth
+                                                                        helperText={getVhostHelperText(row.name,
+                                                                            selectedVhostDeploy, true)}
+                                                                    >
+                                                                        {row.vhosts.map(
+                                                                            (vhost) => (
+                                                                                <MenuItem value={vhost.host}>
+                                                                                    {vhost.host}
+                                                                                </MenuItem>
+                                                                            ),
+                                                                        )}
+                                                                    </TextField>
+                                                                </Tooltip>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                {allEnvRevision
                                                                 && allEnvRevision.filter(
                                                                     (o1) => {
                                                                         if (o1.deploymentInfo.filter(
@@ -1545,36 +1647,125 @@ export default function Environments() {
                                                                         return null;
                                                                     },
                                                                 ).length !== 0 ? (
-                                                                    allEnvRevision && allEnvRevision.filter(
-                                                                        (o1) => {
-                                                                            if (o1.deploymentInfo.filter(
-                                                                                (o2) => o2.name === row.name,
-                                                                            ).length > 0) {
-                                                                                return o1;
-                                                                            }
-                                                                            return null;
-                                                                        },
-                                                                    ).map((o3) => (
-                                                                        <div>
-                                                                            <Chip
-                                                                                label={o3.displayName}
-                                                                                style={{ backgroundColor: '#15B8CF' }}
-                                                                            />
-                                                                        </div>
-                                                                    ))) : (
-                                                                // eslint-disable-next-line react/jsx-indent
-                                                                    <div />
-                                                                )}
+                                                                        allEnvRevision && allEnvRevision.filter(
+                                                                            (o1) => {
+                                                                                if (o1.deploymentInfo.filter(
+                                                                                    (o2) => o2.name === row.name,
+                                                                                ).length > 0) {
+                                                                                    return o1;
+                                                                                }
+                                                                                return null;
+                                                                            },
+                                                                        ).map((o3) => (
+                                                                            <div>
+                                                                                <Chip
+                                                                                    label={o3.displayName}
+                                                                                    style={{
+                                                                                        backgroundColor: '#15B8CF',
+                                                                                    }}
+                                                                                />
+                                                                            </div>
+                                                                        ))) : (
+                                                                        // eslint-disable-next-line react/jsx-indent
+                                                                        <div />
+                                                                    )}
+                                                            </Grid>
+                                                            <Grid item />
                                                         </Grid>
-                                                        <Grid item />
-                                                    </Grid>
-                                                </CardContent>
-                                            </Box>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Box>
+                                                    </CardContent>
+                                                </Box>
+                                            </Card>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        )}
+                        {(api.gatewayVendor === 'solace') && (allExternalEnvironments.length > 0) && (
+                            <Box mt={2}>
+                                <Typography variant='h6' align='left' className={classes.sectionTitle}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.Environments.solace.platform.environments.heading'
+                                        defaultMessage='Solace Platform Environments'
+                                    />
+                                </Typography>
+                                <Grid
+                                    container
+                                    spacing={3}
+                                >
+                                    {externalGateways.map((row) => (
+                                        <Grid item xs={4}>
+                                            <Card
+                                                className={clsx(SelectedEnvironment
+                                                && SelectedEnvironment.includes(row.name)
+                                                    ? (classes.changeCard)
+                                                    : (classes.noChangeCard), classes.cardHeight)}
+                                                variant='outlined'
+                                            >
+                                                <Box height='100%'>
+                                                    <CardHeader
+                                                        title={(
+                                                            <Typography variant='subtitle2'>
+                                                                {row.displayName}
+                                                            </Typography>
+                                                        )}
+                                                        subheader={(
+                                                            <Typography
+                                                                variant='body2'
+                                                                color='textSecondary'
+                                                                gutterBottom
+                                                            >
+                                                                {row.provider}
+                                                            </Typography>
+                                                        )}
+                                                        action={(
+                                                            <Checkbox
+                                                                id={row.name.split(' ').join('')}
+                                                                value={row.name}
+                                                                checked={SelectedEnvironment.includes(row.name)}
+                                                                onChange={handleChange}
+                                                                color='primary'
+                                                                icon={<RadioButtonUncheckedIcon />}
+                                                                checkedIcon={<CheckCircleIcon color='primary' />}
+                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                            />
+                                                        )}
+                                                    />
+                                                    <CardContent>
+                                                        <Grid
+                                                            container
+                                                            direction='column'
+                                                            spacing={2}
+                                                        >
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    id='Api.Details.Third.party,environment.name'
+                                                                    label='Environment'
+                                                                    variant='outlined'
+                                                                    disabled
+                                                                    fullWidth
+                                                                    margin='dense'
+                                                                    value={row.name}
+                                                                />
+                                                                <TextField
+                                                                    id='Api.Details.
+                                                                        Third.party,environment.organization'
+                                                                    label='Organization'
+                                                                    variant='outlined'
+                                                                    disabled
+                                                                    fullWidth
+                                                                    margin='dense'
+                                                                    value={row.organization}
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                    </CardContent>
+                                                </Box>
+                                            </Card>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        )}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseDeployPopup}>
@@ -1602,7 +1793,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && (
+            {allRevisions && allRevisions.length !== 0 && (api.gatewayVendor === 'wso2' ) && (
                 <>
                     <Grid
                         container
@@ -1781,7 +1972,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && (
+            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
                 <Box mx='auto' mt={5}>
                     <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage
@@ -2023,6 +2214,219 @@ export default function Environments() {
                                                             ).vhost, selectedRevision.find(
                                                                 (r) => r.env === row.name,
                                                             ).displayOnDevPortal)}
+                                                        >
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Environments.Environments.
+                                                                deploy.button'
+                                                                defaultMessage='Deploy'
+                                                            />
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                        </TableCell>
+                                        <TableCell align='left'>
+                                            <DisplayDevportal
+                                                name={row.name}
+                                                api={api}
+                                                EnvDeployments={allEnvDeployments[row.name]}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            )}
+            {allRevisions && allRevisions.length !== 0 && (api.gatewayVendor === 'solace')
+            && (allExternalEnvironments.length > 0) && (
+                <Box mx='auto' mt={5}>
+                    <Typography variant='h6' className={classes.sectionTitle}>
+                        <FormattedMessage
+                            id='Apis.Details.Solace.Platform.Environments'
+                            defaultMessage='Solace Platform Environments'
+                        />
+                    </Typography>
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Third.Party.Brokers.broker.displayName'
+                                            defaultMessage='Name'
+                                        />
+                                    </TableCell>
+                                    {externalEnvEndpoints && (
+                                        <TableCell align='left'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Third.Party.Brokers.broker.endpoints'
+                                                defaultMessage='Access Endpoints'
+                                            />
+                                        </TableCell>
+                                    )}
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Third.Party.Brokers.broker.environment'
+                                            defaultMessage='Environment'
+                                        />
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Third.Party.Brokers.broker.type'
+                                            defaultMessage='Organization'
+                                        />
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Third.Party.Brokers.broker.name'
+                                            defaultMessage='Provider'
+                                        />
+                                    </TableCell>
+                                    {api && api.isDefaultVersion !== true
+                                        ? (
+                                            <TableCell align='left'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.
+                                                        Environments.gateway.deployed.revision'
+                                                    defaultMessage='Deployed Revision'
+                                                />
+                                            </TableCell>
+                                        )
+                                        : (
+                                            <TableCell align='left'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.gateway.action'
+                                                    defaultMessage='Action'
+                                                />
+                                            </TableCell>
+                                        )}
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.display.in.devportal'
+                                            defaultMessage='Display in Developer Portal'
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {externalGateways.map((row) => (
+                                    <TableRow key={row.name}>
+                                        <TableCell component='th' scope='row'>
+                                            {row.displayName}
+                                        </TableCell>
+                                        {externalEnvEndpoints && (
+                                            <TableCell align='left'>
+                                                {externalEnvEndpoints[row.name].map((e) => {
+                                                    return (
+                                                        <Grid container spacing={2}>
+                                                            <Grid item>
+                                                                <Chip
+                                                                    label={upperCaseString(e.protocol)}
+                                                                    size='small'
+                                                                    color='primary'
+                                                                    variant='outlined'
+                                                                />
+                                                            </Grid>
+                                                            <Grid
+                                                                item
+                                                                style={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                }}
+                                                            >
+                                                                {e.uri}
+                                                            </Grid>
+                                                        </Grid>
+                                                    );
+                                                })}
+                                            </TableCell>
+                                        )}
+                                        <TableCell align='left'>
+                                            {row.name}
+                                        </TableCell>
+                                        <TableCell align='left'>
+                                            {row.organization}
+                                        </TableCell>
+                                        <TableCell align='left'>
+                                            {row.provider}
+                                        </TableCell>
+                                        <TableCell align='left' style={{ width: '300px' }}>
+                                            {allExternalEnvironmentsMap[row.name].revision != null
+                                                ? (
+                                                    <div>
+                                                        <Chip
+                                                            label={allExternalEnvironmentsMap[row.name]
+                                                                .revision.displayName}
+                                                            style={{ backgroundColor: '#15B8CF' }}
+                                                        />
+                                                        <Button
+                                                            className={classes.button1}
+                                                            variant='outlined'
+                                                            disabled={api.isRevision}
+                                                            onClick={() => undeployRevision(
+                                                                allExternalEnvironmentsMap[row.name]
+                                                                    .revision.id, row.name,
+                                                            )}
+                                                            size='small'
+                                                        >
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Environments.Environments.undeploy.btn'
+                                                                defaultMessage='Undeploy'
+                                                            />
+                                                        </Button>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <TextField
+                                                            id='revision-selector'
+                                                            select
+                                                            label={(
+                                                                <FormattedMessage
+                                                                    id='Apis.Details.Environments.
+                                                                            Environments.select.table'
+                                                                    defaultMessage='Select Revision'
+                                                                />
+                                                            )}
+                                                            SelectProps={{
+                                                                MenuProps: {
+                                                                    anchorOrigin: {
+                                                                        vertical: 'bottom',
+                                                                        horizontal: 'left',
+                                                                    },
+                                                                    getContentAnchorEl: null,
+                                                                },
+                                                            }}
+                                                            name={row.name}
+                                                            onChange={handleSelectForBrokers}
+                                                            margin='dense'
+                                                            variant='outlined'
+                                                            style={{ width: '50%' }}
+                                                            disabled={api.isRevision
+                                                            || !allRevisions || allRevisions.length === 0}
+                                                        >
+                                                            {allRevisions && allRevisions.length !== 0
+                                                            && allRevisions.map(
+                                                                (number) => (
+                                                                    <MenuItem value={number.id}>
+                                                                        {number.displayName}
+                                                                    </MenuItem>
+                                                                ),
+                                                            )}
+                                                        </TextField>
+                                                        <Button
+                                                            className={classes.button2}
+                                                            disabled={api.isRevision || !selectedRevision.some(
+                                                                (r) => r.env === row.name && r.revision,
+                                                            )}
+                                                            variant='outlined'
+                                                            onClick={() => deployRevision(selectedRevision.find(
+                                                                (r) => r.env === row.name,
+                                                            ).revision, row.name,
+                                                            ' ', selectedRevision.find(
+                                                                (r) => r.env === row.name,
+                                                            ).displayOnDevPortal)}
 
                                                         >
                                                             <FormattedMessage
@@ -2038,7 +2442,7 @@ export default function Environments() {
                                             <DisplayDevportal
                                                 name={row.name}
                                                 api={api}
-                                                EnvDeployments={allEnvDeployments[row.name]}
+                                                EnvDeployments={allExternalEnvironmentsMap[row.name]}
                                             />
                                         </TableCell>
                                     </TableRow>

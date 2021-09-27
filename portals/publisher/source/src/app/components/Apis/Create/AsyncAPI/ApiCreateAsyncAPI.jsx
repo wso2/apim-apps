@@ -37,6 +37,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Chip from '@material-ui/core/Chip';
+import { upperCaseString } from 'AppData/stringFormatter';
 import ProvideAsyncAPI from './Steps/ProvideAsyncAPI';
 
 /**
@@ -68,6 +70,8 @@ export default function ApiCreateAsyncAPI(props) {
             case 'name':
             case 'version':
             case 'endpoint':
+            case 'gatewayVendor':
+            case 'asyncTransportProtocols':
             case 'protocol':
             case 'context':
             case 'policies':
@@ -82,6 +86,8 @@ export default function ApiCreateAsyncAPI(props) {
                     version: value.version,
                     context: value.context,
                     endpoint: value.endpoints && value.endpoints[0],
+                    gatewayVendor: value.gatewayVendor,
+                    asyncTransportProtocols: value.asyncTransportProtocols,
                 };
             default:
                 return currentState;
@@ -158,6 +164,7 @@ export default function ApiCreateAsyncAPI(props) {
     }
 
     const [isCreating, setCreating] = useState();
+
     /**
      *
      *
@@ -166,7 +173,7 @@ export default function ApiCreateAsyncAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, policies, inputValue, inputType, protocol,
+            name, version, context, endpoint, policies, inputValue, inputType, protocol, gatewayVendor,
         } = apiInputs;
         const additionalProperties = {
             name,
@@ -174,7 +181,11 @@ export default function ApiCreateAsyncAPI(props) {
             context,
             policies,
             type: protocolKeys[protocol],
+            gatewayVendor,
         };
+        if (gatewayVendor === 'solace') {
+            additionalProperties.type = protocolKeys.WebSub;
+        }
         if (endpoint) {
             additionalProperties.endpointConfig = {
                 endpoint_type: 'http',
@@ -267,43 +278,77 @@ export default function ApiCreateAsyncAPI(props) {
                             endpointPlaceholderText='Streaming Provider'
                             appendChildrenBeforeEndpoint
                         >
-                            <TextField
-                                fullWidth
-                                select
-                                label={(
+                            <Grid container spacing={2}>
+                                {apiInputs.gatewayVendor === 'solace'
+                                && apiInputs.asyncTransportProtocols.length !== 0 && (
                                     <>
-                                        <FormattedMessage
-                                            id='Apis.Create.asyncAPI.Components.SelectPolicies.business.plans'
-                                            defaultMessage='Protocol'
-                                        />
-                                        <sup className={classes.mandatoryStar}>*</sup>
+                                        <Grid item xs={12} md={6} lg={3}>
+                                            <Typography component='p' variant='subtitle2'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.NewOverview.MetaData.solace.transports'
+                                                    defaultMessage='Available Protocols'
+                                                />
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12} md={6} lg={9}>
+                                            {apiInputs.asyncTransportProtocols.map((protocol) => (
+                                                <Chip
+                                                    key={protocol}
+                                                    label={upperCaseString(protocol)}
+                                                    style={{
+                                                        'font-size': 13,
+                                                        height: 20,
+                                                        marginRight: 5,
+                                                    }}
+                                                    color='primary'
+                                                />
+                                            ))}
+                                        </Grid>
                                     </>
                                 )}
-                                value={apiInputs.protocol}
-                                name='protocol'
-                                SelectProps={{
-                                    multiple: false,
-                                    renderValue: (selected) => (selected),
-                                }}
-                                margin='normal'
-                                variant='outlined'
-                                InputProps={{
-                                    id: 'itest-id-apipolicies-input',
-                                }}
-                                onChange={handleOnChangeForProtocol}
-                            >
-                                {protocols.map((protocol) => (
-                                    <MenuItem
-                                        dense
-                                        disableGutters={false}
-                                        id={protocol.name}
-                                        key={protocol.name}
-                                        value={protocol.displayName}
-                                    >
-                                        <ListItemText primary={protocol.displayName} secondary={protocol.description} />
-                                    </MenuItem>
-                                ))}
-                            </TextField>
+                            </Grid>
+                            {apiInputs.gatewayVendor === 'wso2' && (
+                                <TextField
+                                    fullWidth
+                                    select
+                                    label={(
+                                        <>
+                                            <FormattedMessage
+                                                id='Apis.Create.asyncAPI.Components.SelectPolicies.business.plans'
+                                                defaultMessage='Protocol'
+                                            />
+                                            <sup className={classes.mandatoryStar}>*</sup>
+                                        </>
+                                    )}
+                                    value={apiInputs.protocol}
+                                    name='protocol'
+                                    SelectProps={{
+                                        multiple: false,
+                                        renderValue: (selected) => (selected),
+                                    }}
+                                    margin='normal'
+                                    variant='outlined'
+                                    InputProps={{
+                                        id: 'itest-id-apipolicies-input',
+                                    }}
+                                    onChange={handleOnChangeForProtocol}
+                                >
+                                    {protocols.map((protocol) => (
+                                        <MenuItem
+                                            dense
+                                            disableGutters={false}
+                                            id={protocol.name}
+                                            key={protocol.name}
+                                            value={protocol.displayName}
+                                        >
+                                            <ListItemText
+                                                primary={protocol.displayName}
+                                                secondary={protocol.description}
+                                            />
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
                         </DefaultAPIForm>
                     )}
                 </Grid>

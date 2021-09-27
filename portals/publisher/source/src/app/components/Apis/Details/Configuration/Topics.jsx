@@ -482,7 +482,8 @@ export default function Topics(props) {
                     <Banner onClose={() => setPageError(null)} disableActions type='error' message={pageError} />
                 </Grid>
             )}
-            {!isRestricted(['apim:api_create'], api) && !disableAddOperation && api.type === 'WEBSUB' && (
+            {!isRestricted(['apim:api_create'], api) && !disableAddOperation
+            && api.type === 'WEBSUB' && (api.gatewayVendor === 'wso2') && (
                 <Grid item md={12} xs={12}>
                     <SubscriptionConfig
                         websubSubscriptionConfigDispatcher={websubSubscriptionConfigDispatcher}
@@ -490,7 +491,8 @@ export default function Topics(props) {
                     />
                 </Grid>
             )}
-            {!isRestricted(['apim:api_create'], api) && !disableAddOperation && (
+            {!isRestricted(['apim:api_create'], api) && !disableAddOperation
+            && (api.gatewayVendor === 'wso2') && (
                 <Grid item md={12} xs={12}>
                     <AddOperation operationsDispatcher={operationsDispatcher} isAsyncAPI={isAsyncAPI} api={api} />
                 </Grid>
@@ -520,6 +522,23 @@ export default function Topics(props) {
                                                 sharedScopes={sharedScopes}
                                                 markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].subscribe)}
+                                                    onMarkAsDelete={onMarkAsDelete}
+                                                    disableDelete={api.gatewayVendor === 'solace'}
+                                                />
+                                            </Grid>
+                                        )}
+                                        {operation.publish && (
+                                            <Grid key={target + '_publish'} item md={12}>
+                                                <AsyncOperation
+                                                    target={target}
+                                                    verb='publish'
+                                                    highlight
+                                                    operation={operation}
+                                                    spec={asyncAPISpec}
+                                                    api={api}
+                                                    operationsDispatcher={operationsDispatcher}
+                                                    sharedScopes={sharedScopes}
+                                                    markAsDelete={Boolean(markedOperations[target]
                                                 onMarkAsDelete={onMarkAsDelete}
                                             />
                                         </Grid>
@@ -537,12 +556,13 @@ export default function Topics(props) {
                                                 sharedScopes={sharedScopes}
                                                 markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].publish)}
-                                                onMarkAsDelete={onMarkAsDelete}
-                                            />
-                                        </Grid>
-                                    )}
-                                </Grid>
-                            </GroupOfOperations>
+                                                    onMarkAsDelete={onMarkAsDelete}
+                                                    disableDelete={api.gatewayVendor === 'solace'}
+                                                />
+                                            </Grid>
+                                        )}
+                                    </Grid>
+                                </GroupOfOperations>
                         ))
                     }
                 </Paper>
