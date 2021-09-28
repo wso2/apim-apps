@@ -81,7 +81,7 @@ const AppConfiguration = (props) => {
         classes, config, isUserOwner, previousValue, handleChange,
     } = props;
 
-    const [selectedValue, setSelectedValue] = useState(previousValue);
+    let [selectedValue, setSelectedValue] = useState(previousValue);
 
     /**
      * This method is used to handle the updating of key generation
@@ -100,6 +100,11 @@ const AppConfiguration = (props) => {
     useEffect(() => {
         setSelectedValue(previousValue);
     }, [previousValue])
+
+    if (config.type === 'checkbox' && typeof selectedValue === 'string'){
+        selectedValue = selectedValue === 'true'
+    }
+    
     return (
         <>
             <TableRow>
@@ -108,6 +113,7 @@ const AppConfiguration = (props) => {
                 </TableCell>
                 <TableCell>
                     <Box maxWidth={600}>
+                        
                     {config.type === 'select' && config.multiple === false ? (
                         <TextField
                             classes={{
@@ -197,6 +203,26 @@ const AppConfiguration = (props) => {
                             variant='outlined'
                             disabled={!isUserOwner}
                         />
+                    ) : (config.type === 'checkbox') ? (
+                        <Checkbox
+                        classes={{
+                            root: classes.removeHelperPadding,
+                        }}
+                            fullWidth
+                            id={config.name}
+                            label={config.label}
+                            checked={selectedValue}                            
+                            name={config.name}
+                            onChange={e => handleAppRequestChange(e)}
+                            helperText={
+                                <Typography variant='caption'>
+                                    {config.tooltip}
+                                </Typography>
+                            }
+                            margin='dense'
+                            variant='outlined'
+                            disabled={!isUserOwner}
+                            />
                     ) : (
                                     <TextField
                                         classes={{

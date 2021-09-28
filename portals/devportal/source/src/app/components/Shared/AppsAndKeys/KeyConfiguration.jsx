@@ -142,6 +142,12 @@ const KeyConfiguration = (props) => {
                 defaultMessage: 'Call back URL can not be empty when Implicit or Authorization Code grants are selected.',
                 id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.empty.error.text',
             }));
+        } else if (Validation.url.validate(callbackUrl).error) {
+            updateHasError(true);
+            setCallbackHelper(intl.formatMessage({
+                defaultMessage: 'Invalid URL. Please enter a valid URL.',
+                id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.url.error.text',
+            }));
         } else {
             setCallbackHelper(false);
             updateHasError(false);
@@ -181,7 +187,12 @@ const KeyConfiguration = (props) => {
                 break;
             case 'additionalProperties':
                 const clonedAdditionalProperties = newRequest.additionalProperties;
-                clonedAdditionalProperties[currentTarget.name] = currentTarget.value;
+
+                if(currentTarget.type === 'checkbox') {
+                    clonedAdditionalProperties[currentTarget.name] = currentTarget.checked + "";
+                } else {
+                    clonedAdditionalProperties[currentTarget.name] = currentTarget.value;
+                }
                 newRequest.additionalProperties = clonedAdditionalProperties;
                 break;
             default:
