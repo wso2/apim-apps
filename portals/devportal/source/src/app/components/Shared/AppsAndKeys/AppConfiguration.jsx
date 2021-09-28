@@ -81,7 +81,7 @@ const AppConfiguration = (props) => {
         classes, config, isUserOwner, previousValue, handleChange,
     } = props;
 
-    let [selectedValue, setSelectedValue] = useState(previousValue);
+    const [selectedValue, setSelectedValue] = useState(previousValue);
 
     /**
      * This method is used to handle the updating of key generation
@@ -97,14 +97,15 @@ const AppConfiguration = (props) => {
     /**
      * Update the state when new props are available
      */
-    useEffect(() => {
-        setSelectedValue(previousValue);
+    useEffect(() => {        
+        if (config.type === 'checkbox' && typeof selectedValue === 'string'){
+            setSelectedValue(selectedValue === 'true');
+        } else {
+            setSelectedValue(previousValue);
+        }  
     }, [previousValue])
 
-    if (config.type === 'checkbox' && typeof selectedValue === 'string'){
-        selectedValue = selectedValue === 'true'
-    }
-    
+
     return (
         <>
             <TableRow>
