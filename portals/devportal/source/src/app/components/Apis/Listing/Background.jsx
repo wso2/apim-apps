@@ -77,7 +77,7 @@ function Background(props) {
     }
     const primeColor = '#' + colorPair.prime.toString(16);
     return (
-        <svg width={width} height={height} className={classes.svgImage}>
+        <svg width={width} height={height} className={classes.svgImage} aria-hidden='true'>
             <rect {...thumbnailBox} fill={getColorWithoutAlpha(primeColor)} fillOpacity={aHexToOpacity(primeColor)} />
             {rects}
         </svg>

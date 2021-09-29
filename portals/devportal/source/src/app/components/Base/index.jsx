@@ -503,6 +503,7 @@ class Layout extends React.Component {
                                                 onClick={this.handleToggleUserMenu}
                                                 className={classes.userLink}
                                                 id='userToggleButton'
+                                                aria-label='user menu'
                                             >
                                                 <Icon className={classes.icons}>person</Icon>
                                                 {username}
@@ -566,12 +567,15 @@ class Layout extends React.Component {
                                     </>
                                 ) : (
                                     <div className={classes.linkWrapper}>
-                                        <a href={app.context + '/services/configs'}>
-                                            <Button id='itest-devportal-sign-in' className={classes.userLink}>
-                                                <Icon>person</Icon>
-                                                <FormattedMessage id='Base.index.sign.in' defaultMessage=' Sign-in' />
-                                            </Button>
-                                        </a>
+                                        <Button
+                                            id='itest-devportal-sign-in'
+                                            className={classes.userLink}
+                                            component='a'
+                                            href={app.context + '/services/configs'}
+                                        >
+                                            <Icon>person</Icon>
+                                            <FormattedMessage id='Base.index.sign.in' defaultMessage=' Sign-in' />
+                                        </Button>
                                     </div>
                                 )}
                             </Toolbar>

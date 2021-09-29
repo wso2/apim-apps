@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import 'swagger-ui-react/swagger-ui.css';
 import SwaggerUILib from 'swagger-ui-react';
@@ -50,7 +50,31 @@ const SwaggerUI = (props) => {
         defaultModelExpandDepth: -1,
         plugins: [disableAuthorizeAndInfoPlugin],
     };
-    return <SwaggerUILib {...componentProps} />;
+    const [render, setRender] = useState();
+    const [layoutRender, setlayoutRender] = useState();
+
+    useEffect(() => {
+        if (!layoutRender) return;
+        const len = document.querySelectorAll('.opblock .authorization__btn');
+        let i = 0;
+        for (; i < len.length; i++) {
+            len[i].remove();
+        }
+        document.querySelector('.schemes select').setAttribute('id', 'schemes');
+        document.getElementById('unlocked').parentNode.parentNode.remove();
+        setlayoutRender(false);
+    }, [layoutRender]);
+
+    useEffect(() => {
+        setlayoutRender(true);
+    }, [render]);
+
+    return (
+        <>
+            <SwaggerUILib {...componentProps} />
+            {setRender}
+        </>
+    );
 };
 
 SwaggerUI.propTypes = {

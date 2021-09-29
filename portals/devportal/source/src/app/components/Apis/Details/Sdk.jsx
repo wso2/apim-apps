@@ -196,10 +196,11 @@ class Sdk extends React.Component {
                     <>
                         {filteredLanguageList.map((language, index) => index < 3 && (
                             <Grid item xs={4} key={language}>
-                                <a
+                                <Button
                                     onClick={(event) => this.handleClick(event, language)}
                                     onKeyDown={(event) => this.handleClick(event, language)}
                                     style={{ cursor: 'pointer' }}
+                                    aria-label={'Download ' + language + ' SDK'}
                                 >
                                     <img
                                         alt={language}
@@ -215,7 +216,7 @@ class Sdk extends React.Component {
                                             margin: 10,
                                         }}
                                     />
-                                </a>
+                                </Button>
                             </Grid>
                         ))}
                     </>
