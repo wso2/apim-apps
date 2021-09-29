@@ -328,7 +328,9 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
-    const defaultVhosts = settings.environment.map(
+    const externalGateways = settings.environment.filter((p) => p.provider.toLowerCase().includes('solace'));
+    const internalGateways = settings.environment.filter((p) => !p.provider.toLowerCase().includes('solace'));
+    const defaultVhosts = internalGateways.map(
         (e) => (e.vhosts && e.vhosts.length > 0 ? { env: e.name, vhost: e.vhosts[0].host } : undefined),
     );
     const [selectedVhosts, setVhosts] = useState(defaultVhosts);
@@ -350,31 +352,19 @@ export default function Environments() {
     // environment -> {revision deployed to env, vhost deployed to env with revision}
     const allEnvDeployments = Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision);
 
-    //TODO: once default.json is changed to add default provider value the condition should be changed as !includes('wso2')
-    const externalGateways = settings.environment.filter(p =>
-        p.provider.toLowerCase().includes('solace')
-    )
-
-    const allExternalEnvironmentsMap = [];
-    const allExternalEnvironments = [];
-    settings.environment.forEach((env) => {
-        // TODO: once default.json is changed to add default provider value the condition should be changed as !=='wso2'
-        if (env.provider === 'solace'){
-            const revision = allEnvRevision && allEnvRevision.find(
-                (r) => r.deploymentInfo.some((e) => e.name === env.name),
-            );
-            console.log('revision', revision)
-            const envDetails = revision && revision.deploymentInfo.find((e) => e.name === env.name);
-            const disPlayDevportal = envDetails && envDetails.displayOnDevportal;
-            allExternalEnvironmentsMap[env.name] = { revision, disPlayDevportal };
-            allExternalEnvironments.push(env);
-        }
-
+    const allExternalGatewaysMap = [];
+    const allExternalGateways = [];
+    externalGateways.forEach((env) => {
+        const revision = allEnvRevision && allEnvRevision.find(
+            (r) => r.deploymentInfo.some((e) => e.name === env.name),
+        );
+        const envDetails = revision && revision.deploymentInfo.find((e) => e.name === env.name);
+        const disPlayDevportal = envDetails && envDetails.displayOnDevportal;
+        allExternalGatewaysMap[env.name] = { revision, disPlayDevportal };
+        allExternalGateways.push(env);
     });
 
-
-
-    const gatewayEnvWithEndpoints = [];
+    const externalEnvWithEndpoints = [];
     useEffect(() => {
         const promise = restApi.getAsyncAPIDefinition(api.id);
         promise.then(async (response) => {
@@ -400,7 +390,7 @@ export default function Environments() {
                 }
             });
             // eslint-disable-next-line array-callback-return
-            allExternalEnvironments.map((env) => {
+            allExternalGateways.map((env) => {
                 const endpoints = [];
                 // eslint-disable-next-line array-callback-return
                 env.endpointURIs.map((endpoint) => {
@@ -412,9 +402,9 @@ export default function Environments() {
                         }
                     });
                 });
-                gatewayEnvWithEndpoints[env.name] = endpoints;
+                externalEnvWithEndpoints[env.name] = endpoints;
             });
-            setExternalEnvEndpoints(gatewayEnvWithEndpoints);
+            setExternalEnvEndpoints(externalEnvWithEndpoints);
         });
     }, [triggerEffect]);
 
@@ -471,8 +461,8 @@ export default function Environments() {
     };
 
     /* const isDisplayOnDevPortalCheckedForThirdPartyEnv = (env) => {
-        if (allExternalEnvironmentsMap[env].revision) {
-            return allExternalEnvironmentsMap[env].revision.deploymentInfo.find(
+        if (allExternalGatewaysMap[env].revision) {
+            return allExternalGatewaysMap[env].revision.deploymentInfo.find(
                 (r) => r.name === env,
             ).displayOnDevportal;
         }
@@ -787,12 +777,14 @@ export default function Environments() {
                     Alert.info('Revision Created Successfully');
                     const body1 = [];
                     for (let i = 0; i < envList.length; i++) {
-                        body1.push({
-                            name: envList[i],
-                            vhost: api.gatewayVendor === 'wso2' ? vhostList.find((v) => v.env === envList[i]).vhost
-                                : ' ',
-                            displayOnDevportal: true,
-                        });
+                        if (settings.environment.includes(envList[i])) {
+                            body1.push({
+                                name: envList[i],
+                                vhost: api.gatewayVendor !== 'solace'
+                                    ? vhostList.find((v) => v.env === envList[i]).vhost : ' ',
+                                displayOnDevportal: true,
+                            });
+                        }
                     }
                     restApi.deployRevision(api.id, response.body.id, body1)
                         .then(() => {
@@ -828,7 +820,8 @@ export default function Environments() {
                     for (let i = 0; i < envList.length; i++) {
                         body1.push({
                             name: envList[i],
-                            vhost: vhostList.find((v) => v.env === envList[i]).vhost,
+                            vhost: api.gatewayVendor !== 'solace' ? vhostList.find((v) => v.env === envList[i]).vhost
+                                : ' ',
                             displayOnDevportal: true,
                         });
                     }
@@ -868,6 +861,7 @@ export default function Environments() {
      * @param {Object} length the length of the list
      */
     function handleCreateAndDeployRevision(envList, vhostList) {
+        console.log('envList', envList);
         if (extraRevisionToDelete) {
             deleteRevision(extraRevisionToDelete[0])
                 .then(() => {
@@ -912,6 +906,21 @@ export default function Environments() {
             open={confirmDeleteOpen}
         />
     );
+
+    /**
+     * Get Organization value of external gateways
+     * @param {Object} additionalProperties the additionalProperties list
+     * @return String organization name
+     */
+    function getOrganizationFromAdditionalProperties(additionalProperties) {
+        let organization;
+        additionalProperties.forEach((property) => {
+            if (property.key === 'Organization') {
+                organization = property.value;
+            }
+        });
+        return organization;
+    }
 
     const confirmRestoreDialog = (
         <ConfirmDialog
@@ -1352,7 +1361,7 @@ export default function Environments() {
     function getVhostHelperText(env, selectionList, shorten, maxTextLen) {
         const selected = selectionList && selectionList.find((v) => v.env === env);
         if (selected) {
-            const vhost = settings.environment.find((e) => e.name === env).vhosts.find(
+            const vhost = internalGateways.find((e) => e.name === env).vhosts.find(
                 (v) => v.host === selected.vhost,
             );
 
@@ -1400,7 +1409,7 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2'
+            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor !== 'solace'
             && (
                 <Grid container>
                     <Button
@@ -1527,7 +1536,7 @@ export default function Environments() {
                                 {currentLength + '/' + maxCommentLength}
                             </Typography>
                         </Box>
-                        {api.gatewayVendor === 'wso2' && (
+                        {api.gatewayVendor !== 'solace' && (
                             <Box mt={2}>
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
@@ -1539,7 +1548,7 @@ export default function Environments() {
                                     container
                                     spacing={3}
                                 >
-                                    {settings.environment.map((row) => (
+                                    {internalGateways.map((row) => (
                                         <Grid item xs={4}>
                                             <Card
                                                 className={clsx(SelectedEnvironment
@@ -1680,7 +1689,7 @@ export default function Environments() {
                                 </Grid>
                             </Box>
                         )}
-                        {(api.gatewayVendor === 'solace') && (allExternalEnvironments.length > 0) && (
+                        {(api.gatewayVendor === 'solace') && (allExternalGateways.length > 0) && (
                             <Box mt={2}>
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
@@ -1738,7 +1747,7 @@ export default function Environments() {
                                                         >
                                                             <Grid item xs={12}>
                                                                 <TextField
-                                                                    id='Api.Details.Third.party,environment.name'
+                                                                    id='Api.Details.Third.party.environment.name'
                                                                     label='Environment'
                                                                     variant='outlined'
                                                                     disabled
@@ -1748,13 +1757,15 @@ export default function Environments() {
                                                                 />
                                                                 <TextField
                                                                     id='Api.Details.
-                                                                        Third.party,environment.organization'
+                                                                        Third.party.environment.organization'
                                                                     label='Organization'
                                                                     variant='outlined'
                                                                     disabled
                                                                     fullWidth
                                                                     margin='dense'
-                                                                    value={row.organization}
+                                                                    value={getOrganizationFromAdditionalProperties(
+                                                                        row.additionalProperties,
+                                                                    )}
                                                                 />
                                                             </Grid>
                                                         </Grid>
@@ -1793,7 +1804,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && (api.gatewayVendor === 'wso2' ) && (
+            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor !== 'solace' && (
                 <>
                     <Grid
                         container
@@ -1972,7 +1983,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
+            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor !== 'solace' && (
                 <Box mx='auto' mt={5}>
                     <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage
@@ -2037,7 +2048,7 @@ export default function Environments() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {settings.environment.map((row) => (
+                                {internalGateways.map((row) => (
                                     <TableRow key={row.name}>
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}
@@ -2239,7 +2250,7 @@ export default function Environments() {
                 </Box>
             )}
             {allRevisions && allRevisions.length !== 0 && (api.gatewayVendor === 'solace')
-            && (allExternalEnvironments.length > 0) && (
+            && (allExternalGateways.length > 0) && (
                 <Box mx='auto' mt={5}>
                     <Typography variant='h6' className={classes.sectionTitle}>
                         <FormattedMessage
@@ -2347,17 +2358,17 @@ export default function Environments() {
                                             {row.name}
                                         </TableCell>
                                         <TableCell align='left'>
-                                            {row.organization}
+                                            {getOrganizationFromAdditionalProperties(row.additionalProperties)}
                                         </TableCell>
                                         <TableCell align='left'>
                                             {row.provider}
                                         </TableCell>
                                         <TableCell align='left' style={{ width: '300px' }}>
-                                            {allExternalEnvironmentsMap[row.name].revision != null
+                                            {allExternalGatewaysMap[row.name].revision != null
                                                 ? (
                                                     <div>
                                                         <Chip
-                                                            label={allExternalEnvironmentsMap[row.name]
+                                                            label={allExternalGatewaysMap[row.name]
                                                                 .revision.displayName}
                                                             style={{ backgroundColor: '#15B8CF' }}
                                                         />
@@ -2366,7 +2377,7 @@ export default function Environments() {
                                                             variant='outlined'
                                                             disabled={api.isRevision}
                                                             onClick={() => undeployRevision(
-                                                                allExternalEnvironmentsMap[row.name]
+                                                                allExternalGatewaysMap[row.name]
                                                                     .revision.id, row.name,
                                                             )}
                                                             size='small'
@@ -2442,7 +2453,7 @@ export default function Environments() {
                                             <DisplayDevportal
                                                 name={row.name}
                                                 api={api}
-                                                EnvDeployments={allExternalEnvironmentsMap[row.name]}
+                                                EnvDeployments={allExternalGatewaysMap[row.name]}
                                             />
                                         </TableCell>
                                     </TableRow>

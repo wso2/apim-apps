@@ -239,7 +239,7 @@ function AsyncOperation(props) {
                             verb={verb}
                             disableForSolace={api.solaceAPI}
                         />
-                        {(api.gatewayVendor === 'wso2') && (
+                        {(api.gatewayVendor !== 'solace') && (
                             <>
                                 <OperationGovernance
                                     operation={operation}

@@ -483,7 +483,7 @@ export default function Topics(props) {
                 </Grid>
             )}
             {!isRestricted(['apim:api_create'], api) && !disableAddOperation
-            && api.type === 'WEBSUB' && (api.gatewayVendor === 'wso2') && (
+            && api.type === 'WEBSUB' && (api.gatewayVendor !== 'solace') && (
                 <Grid item md={12} xs={12}>
                     <SubscriptionConfig
                         websubSubscriptionConfigDispatcher={websubSubscriptionConfigDispatcher}
@@ -492,7 +492,7 @@ export default function Topics(props) {
                 </Grid>
             )}
             {!isRestricted(['apim:api_create'], api) && !disableAddOperation
-            && (api.gatewayVendor === 'wso2') && (
+            && (api.gatewayVendor !== 'solace') && (
                 <Grid item md={12} xs={12}>
                     <AddOperation operationsDispatcher={operationsDispatcher} isAsyncAPI={isAsyncAPI} api={api} />
                 </Grid>

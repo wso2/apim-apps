@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
@@ -68,34 +85,48 @@ export default function DeploymentOnboarding(props) {
     const theme = useTheme();
     const { maxCommentLength } = theme.custom;
     const { settings: { environment: environments } } = useAppContext();
-    const hasOnlyOneEnvironment = environments.length === 1;
+    const internalGateways = environments.filter((p) => !p.provider.toLowerCase().includes('solace'));
+    const externalGateways = environments.filter((p) => p.provider.toLowerCase().includes('solace'));
+    const hasOnlyOneEnvironment = internalGateways.length === 1;
 
-    const defaultVhosts = environments.map(
+    const defaultVhosts = internalGateways.map(
         (e) => (e.vhosts && e.vhosts.length > 0 ? { env: e.name, vhost: e.vhosts[0].host } : undefined),
     );
+
     const [descriptionOpen, setDescriptionOpen] = useState(false);
-    const [selectedEnvironment, setSelectedEnvironment] = useState(hasOnlyOneEnvironment ? [environments[0].name] : []);
+    const [selectedEnvironment, setSelectedEnvironment] = useState(hasOnlyOneEnvironment
+        ? [internalGateways[0].name] : []);
 
-    const externalGateways = environments.map((env)=>{
-        let gateways
-        if (env.provider !== 'wso2'){
-            gateways.add(env)
-        }
-        return gateways;
-    });
-
+    /**
+     * Get Solace environments from the environments list
+     * @return String Solace gateway environment name
+     */
     function getSolaceEnvironment() {
-        let solaceEnv = null;
-        environments && environments.forEach((environment) => {
+        let solaceEnv;
+        environments.forEach((environment) => {
             if (environment.provider === 'solace') {
                 solaceEnv = environment;
             }
         });
         return solaceEnv.name;
     }
+    /**
+     * Get Organization value of external gateways
+     * @param {Object} additionalProperties the additionalProperties list
+     * @return String organization name
+     */
+    function getOrganizationFromAdditionalProperties(additionalProperties) {
+        let organization;
+        additionalProperties.forEach((property) => {
+            if (property.key === 'Organization') {
+                organization = property.value;
+            }
+        });
+        return organization;
+    }
 
     const [selectedSolaceEnvironment, setSelectedSolaceEnvironment] = useState(
-        getSolaceEnvironment(environments),
+        getSolaceEnvironment(externalGateways),
     );
     const [selectedVhostDeploy, setVhostsDeploy] = useState(defaultVhosts);
 
@@ -161,7 +192,7 @@ export default function DeploymentOnboarding(props) {
                             <Grid item xs={2} />
                         </Grid>
                     </Box>
-                    {(gatewayVendor === 'wso2') ? (
+                    {(gatewayVendor !== 'solace') ? (
                         <Paper fullWidth className={classes1.root}>
                             <Box p={5}>
                                 <Typography className={classes1.textRevision}>
@@ -172,7 +203,7 @@ export default function DeploymentOnboarding(props) {
                                         container
                                         spacing={3}
                                     >
-                                        {environments.map((row) => (
+                                        {internalGateways.map((row) => (
                                             <Grid item xs={3}>
                                                 <Card
                                                     className={clsx(selectedEnvironment
@@ -377,7 +408,7 @@ export default function DeploymentOnboarding(props) {
                                                                 color='textSecondary'
                                                                 gutterBottom
                                                             >
-                                                                {row.provider}
+                                                                {row.provider.toString().toUpperCase()}
                                                             </Typography>
                                                         )}
                                                     />
@@ -389,7 +420,7 @@ export default function DeploymentOnboarding(props) {
                                                         >
                                                             <Grid item xs={12}>
                                                                 <TextField
-                                                                    id='Api.Details.Third.party,environment.name'
+                                                                    id='Api.Details.Third.party.environment.name'
                                                                     label='Environment'
                                                                     variant='outlined'
                                                                     disabled
@@ -399,13 +430,15 @@ export default function DeploymentOnboarding(props) {
                                                                 />
                                                                 <TextField
                                                                     id='Api.Details.
-                                                                        Third.party,environment.organization'
+                                                                        Third.party.environment.organization'
                                                                     label='Organization'
                                                                     variant='outlined'
                                                                     disabled
                                                                     fullWidth
                                                                     margin='dense'
-                                                                    value={row.organization}
+                                                                    value={getOrganizationFromAdditionalProperties(
+                                                                        row.additionalProperties,
+                                                                    )}
                                                                 />
                                                             </Grid>
                                                         </Grid>
