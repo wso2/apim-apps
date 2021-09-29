@@ -249,7 +249,7 @@ function APIThumbPlain(props) {
                                 color='primary'
                             />
                         )}
-                        {(api.type === 'WEBSUB') && (api.gatewayVendor === 'wso2') && (
+                        {(api.type === 'WEBSUB') && (api.gatewayVendor !== 'solace') && (
                             <Chip
                                 size='small'
                                 classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}

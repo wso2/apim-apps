@@ -84,6 +84,7 @@ const SampleAPI = (props) => {
     const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
+    const internalGateways = publisherSettings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
 
     const taskManager = async (promisedTask, name) => {
         tasksStatusDispatcher({ name, status: { inProgress: true } });
@@ -127,10 +128,10 @@ const SampleAPI = (props) => {
                 restApi.createRevision(sampleAPI.id, revisionPayload),
                 'revision',
             );
-            const envList = publisherSettings.environment.map((env) => env.name);
+            const envList = internalGateways.map((env) => env.name);
             const deployRevisionPayload = [];
             const getFirstVhost = (envName) => {
-                const env = publisherSettings.environment.find(
+                const env = internalGateways.find(
                     (ev) => ev.name === envName && ev.vhosts.length > 0,
                 );
                 return env && env.vhosts[0].host;

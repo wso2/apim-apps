@@ -730,7 +730,7 @@ class APIDefinition extends React.Component {
                             )}
                         </Typography>
                         {asyncAPI ? (
-                            (api.gatewayVendor === 'wso2') && (
+                            (api.gatewayVendor !== 'solace') && (
                                 <Button
                                     size='small'
                                     className={classes.button}

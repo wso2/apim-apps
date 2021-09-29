@@ -109,7 +109,7 @@ function Subscriptions(props) {
     }
     return (
         <>
-            {(api.gatewayVendor === 'wso2')
+            {(api.gatewayVendor !== 'solace')
             && (<SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />)}
             {tenants !== 0 && settings.crossTenantSubscriptionEnabled && (
                 <SubscriptionAvailability
@@ -121,7 +121,7 @@ function Subscriptions(props) {
                 />
             )}
             { updateInProgress && <Progress /> }
-            {(api.gatewayVendor === 'wso2') && (
+            {(api.gatewayVendor !== 'solace') && (
                 <Grid
                     container
                     direction='row'
