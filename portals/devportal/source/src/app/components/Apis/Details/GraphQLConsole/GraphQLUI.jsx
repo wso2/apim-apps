@@ -28,9 +28,12 @@ import TextField from '@material-ui/core/TextField';
 import GraphiQLExplorer from 'graphiql-explorer';
 import { FormattedMessage } from 'react-intl';
 import Collapse from '@material-ui/core/Collapse';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { graphQLFetcher } from 'graphiql-subscriptions-fetcher/dist/fetcher';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import QueryComplexityView from './QueryComplexityView';
+
 
 import Progress from '../../../Shared/Progress';
 
@@ -83,7 +86,7 @@ export default function GraphQLUI(props) {
      *
      * @param {*} graphQLParams
      */
-    function graphQLFetcher(graphQLParams) {
+    function graphiQLFetcher(graphQLParams) {
         let token;
         if (authorizationHeader === 'apikey') {
             token = accessTokenProvider();
@@ -102,16 +105,38 @@ export default function GraphQLUI(props) {
             body: JSON.stringify(graphQLParams),
         }).then((response) => response.json());
     }
+
+    /**
+     * @param {string} wsUrl TODO://
+     * @return {string} TODO://
+     */
+    function queryFetcher(wsUrl) {
+        if (wsUrl == null) {
+            return graphiQLFetcher;
+        } else {
+            const subscriptionsClient = new SubscriptionClient(wsUrl + '?access_token=' + accessTokenProvider(), {
+                reconnect: true,
+                lazy: true,
+            });
+            const subscriptionFetcher = graphQLFetcher(subscriptionsClient, graphiQLFetcher);
+            return subscriptionFetcher;
+        }
+    }
+
     if ({ schema } === null) {
         return <Progress />;
     } else {
+        // const display = { display: '' };
+        // if (URLs.wss == null) {
+        //     display = { display: 'none' };
+        // }
         return (
             <>
                 <Box width='30%' m={1}>
                     <TextField
                         label={(
                             <FormattedMessage
-                                defaultMessage='Gateway URLs'
+                                defaultMessage='Gateway URLsxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
                                 id='Apis.Details.GraphQLConsole.GraphQLUI.URLs'
                             />
                         )}
@@ -121,6 +146,16 @@ export default function GraphQLUI(props) {
                         margin='normal'
                         variant='outlined'
                         InputProps={URLs && URLs.https}
+                        disabled
+                    />
+                </Box>
+                <Box width='30%' m={1}>
+                    <TextField
+                        value='wss://localhost:8099/snowooth/1.0'
+                        name='selectedURL2'
+                        fullWidth
+                        margin='normal'
+                        variant='outlined'
                         disabled
                     />
                 </Box>
@@ -147,7 +182,7 @@ export default function GraphQLUI(props) {
                             <Box display='flex' height='800px' flexGrow={1}>
                                 <GraphiQL
                                     ref={graphiqlEl}
-                                    fetcher={(graphQLFetcher)}
+                                    fetcher={(queryFetcher('wss://localhost:8099/snowooth/1.0'))}
                                     schema={schema}
                                     query={query}
                                     onEditQuery={setQuery}
