@@ -142,7 +142,7 @@ function TryOutController(props) {
         let keys;
         let selectedKeyTypes = 'PRODUCTION';
         let accessToken;
-        if (api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() !== 'prototyped') {
+        if (api.lifeCycleStatus) {
             const promiseSubscriptions = restApi.getSubscriptions(apiID);
             promiseSubscriptions.then((subscriptionsResponse) => {
                 if (subscriptionsResponse !== null) {
@@ -237,7 +237,7 @@ function TryOutController(props) {
      * Generate access token
      * */
     function generateAccessToken() {
-        if (api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() !== 'prototyped') {
+        if (api.lifeCycleStatus) {
             setIsUpdating(true);
             const applicationPromise = Application.get(selectedApplication);
             applicationPromise
@@ -272,7 +272,7 @@ function TryOutController(props) {
      * Generate api key
      * */
     function generateApiKey() {
-        if (api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() !== 'prototyped') {
+        if (api.lifeCycleStatus) {
             setIsUpdating(true);
             const promisedKey = restApi.generateApiKey(selectedApplication, selectedKeyType, -1);
             promisedKey
@@ -311,7 +311,7 @@ function TryOutController(props) {
      * @memberof TryOutController
      */
     function updateApplication() {
-        if (api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() !== 'prototyped') {
+        if (api.lifeCycleStatus) {
             let accessToken;
             let keyType;
             if (subscriptions !== null && subscriptions.length !== 0 && selectedApplication.length !== 0) {
@@ -557,11 +557,10 @@ function TryOutController(props) {
                     )}
                 </Box>
             </Grid>
-            {!isPrototypedAPI
-                && (
-                    <Grid xs={12} md={12} item>
-                        <Box display='block'>
-                            {user && subscriptions
+
+            <Grid xs={12} md={12} item>
+                <Box display='block'>
+                    {user && subscriptions
                                 && subscriptions.length > 0 && securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                                 && (
                                     <SelectAppPanel
@@ -573,192 +572,192 @@ function TryOutController(props) {
                                         keyManagers={keyManagers}
                                     />
                                 )}
-                            {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST' ? (
-                                <Grid x={8} md={6} className={classes.tokenType} item>
-                                    <Box mb={1} alignItems='center'>
-                                        <Typography variant='body1'>
-                                            <Box display='flex'>
-                                                <WarningIcon className={classes.warningIcon} />
-                                                <div>
-                                                    <FormattedMessage
-                                                        id='Apis.Details.ApiConsole.ApiConsole.subscribe.to.application'
-                                                        defaultMessage='Please subscribe to an application'
-                                                    />
-                                                </div>
-                                            </Box>
-                                        </Typography>
+                    {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST' ? (
+                        <Grid x={8} md={6} className={classes.tokenType} item>
+                            <Box mb={1} alignItems='center'>
+                                <Typography variant='body1'>
+                                    <Box display='flex'>
+                                        <WarningIcon className={classes.warningIcon} />
+                                        <div>
+                                            <FormattedMessage
+                                                id='Apis.Details.ApiConsole.ApiConsole.subscribe.to.application'
+                                                defaultMessage='Please subscribe to an application'
+                                            />
+                                        </div>
                                     </Box>
-                                </Grid>
-                            ) : (
-                                (!ksGenerated && securitySchemeType === 'OAUTH') && (
-                                    <Grid x={8} md={6} className={classes.tokenType} item>
-                                        <Box mb={1} alignItems='center'>
-                                            <Typography variant='body1'>
-                                                <Box display='flex'>
-                                                    <WarningIcon className={classes.warningIcon} />
-                                                    <div>
-                                                        <FormattedMessage
-                                                            id='Apis.Details.ApiConsole.ApiConsole.keys.not.generated'
-                                                            defaultMessage={'Consumer key and secret not generated for the selected'
+                                </Typography>
+                            </Box>
+                        </Grid>
+                    ) : (
+                        (!ksGenerated && securitySchemeType === 'OAUTH') && (
+                            <Grid x={8} md={6} className={classes.tokenType} item>
+                                <Box mb={1} alignItems='center'>
+                                    <Typography variant='body1'>
+                                        <Box display='flex'>
+                                            <WarningIcon className={classes.warningIcon} />
+                                            <div>
+                                                <FormattedMessage
+                                                    id='Apis.Details.ApiConsole.ApiConsole.keys.not.generated'
+                                                    defaultMessage={'Consumer key and secret not generated for the selected'
                                                             + ' application on the {what} environment. '}
-                                                            values={{ what: selectedKeyType }}
-                                                        />
-                                                    </div>
-                                                </Box>
-                                            </Typography>
+                                                    values={{ what: selectedKeyType }}
+                                                />
+                                            </div>
                                         </Box>
-                                    </Grid>
-                                )
-                            )}
-                            <Box display='block' justifyContent='center'>
-                                <Grid x={8} md={6} className={classes.tokenType} item>
-                                    {securitySchemeType === 'BASIC' && (
-                                        <>
-                                            <Grid x={12} md={12} item>
-                                                <TextField
-                                                    margin='normal'
-                                                    variant='outlined'
-                                                    id='username'
-                                                    label={(
-                                                        <FormattedMessage
-                                                            id='username'
-                                                            defaultMessage='Username'
-                                                        />
-                                                    )}
-                                                    name='username'
-                                                    onChange={handleChanges}
-                                                    value={username || ''}
-                                                    fullWidth
-                                                />
-                                                <TextField
-                                                    margin='normal'
-                                                    variant='outlined'
-                                                    id='input-password'
-                                                    label={(
-                                                        <FormattedMessage
-                                                            id='password'
-                                                            defaultMessage='Password'
-                                                        />
-                                                    )}
-                                                    name='password'
-                                                    onChange={handleChanges}
-                                                    type={showPassword ? 'text' : 'password'}
-                                                    value={password || ''}
-                                                    fullWidth
-                                                    InputProps={{
-                                                        autoComplete: 'new-password',
-                                                        endAdornment: (
-                                                            <InputAdornment position='end'>
-                                                                <IconButton
-                                                                    edge='end'
-                                                                    aria-label='toggle password visibility'
-                                                                    onClick={() => setShowPassword(!showPassword)}
-                                                                >
-                                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                                </IconButton>
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                />
-                                            </Grid>
-                                        </>
-                                    )}
-
-                                    {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        )
+                    )}
+                    <Box display='block' justifyContent='center'>
+                        <Grid x={8} md={6} className={classes.tokenType} item>
+                            {securitySchemeType === 'BASIC' && (
+                                <>
+                                    <Grid x={12} md={12} item>
                                         <TextField
-                                            fullWidth
                                             margin='normal'
                                             variant='outlined'
+                                            id='username'
                                             label={(
                                                 <FormattedMessage
-                                                    id='access.token'
-                                                    defaultMessage='Access Token'
+                                                    id='username'
+                                                    defaultMessage='Username'
                                                 />
                                             )}
-                                            name='accessToken'
+                                            name='username'
                                             onChange={handleChanges}
-                                            type={showToken ? 'text' : 'password'}
-                                            value={tokenValue || ''}
-                                            helperText={(
+                                            value={username || ''}
+                                            fullWidth
+                                        />
+                                        <TextField
+                                            margin='normal'
+                                            variant='outlined'
+                                            id='input-password'
+                                            label={(
                                                 <FormattedMessage
-                                                    id='enter.access.token'
-                                                    defaultMessage='Enter access Token'
+                                                    id='password'
+                                                    defaultMessage='Password'
                                                 />
                                             )}
-                                            id='accessTokenInput'
+                                            name='password'
+                                            onChange={handleChanges}
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={password || ''}
+                                            fullWidth
                                             InputProps={{
                                                 autoComplete: 'new-password',
                                                 endAdornment: (
                                                     <InputAdornment position='end'>
                                                         <IconButton
                                                             edge='end'
-                                                            aria-label='Toggle token visibility'
-                                                            onClick={handleClickShowToken}
+                                                            aria-label='toggle password visibility'
+                                                            onClick={() => setShowPassword(!showPassword)}
                                                         >
-                                                            {showToken ? <Icon>visibility_off</Icon>
-                                                                : <Icon>visibility</Icon>}
+                                                            {showPassword ? <Visibility /> : <VisibilityOff />}
                                                         </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                                startAdornment: (
-                                                    <InputAdornment
-                                                        style={{
-                                                            minWidth: (authHeader.length * 7),
-                                                        }}
-                                                        position='start'
-                                                    >
-                                                        {`${authorizationHeader}: ${prefix}`}
                                                     </InputAdornment>
                                                 ),
                                             }}
                                         />
+                                    </Grid>
+                                </>
+                            )}
+
+                            {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
+                                <TextField
+                                    fullWidth
+                                    margin='normal'
+                                    variant='outlined'
+                                    label={(
+                                        <FormattedMessage
+                                            id='access.token'
+                                            defaultMessage='Access Token'
+                                        />
                                     )}
-                                    {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
-                                        <>
-                                            <Button
-                                                onClick={securitySchemeType === 'API-KEY' ? generateApiKey
-                                                    : generateAccessToken}
-                                                variant='contained'
-                                                className={classes.genKeyButton}
-                                                disabled={!user || (subscriptions && subscriptions.length === 0)
+                                    name='accessToken'
+                                    onChange={handleChanges}
+                                    type={showToken ? 'text' : 'password'}
+                                    value={tokenValue || ''}
+                                    helperText={(
+                                        <FormattedMessage
+                                            id='enter.access.token'
+                                            defaultMessage='Enter access Token'
+                                        />
+                                    )}
+                                    id='accessTokenInput'
+                                    InputProps={{
+                                        autoComplete: 'new-password',
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <IconButton
+                                                    edge='end'
+                                                    aria-label='Toggle token visibility'
+                                                    onClick={handleClickShowToken}
+                                                >
+                                                    {showToken ? <Icon>visibility_off</Icon>
+                                                        : <Icon>visibility</Icon>}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                        startAdornment: (
+                                            <InputAdornment
+                                                style={{
+                                                    minWidth: (authHeader.length * 7),
+                                                }}
+                                                position='start'
+                                            >
+                                                {`${authorizationHeader}: ${prefix}`}
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            )}
+                            {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
+                                <>
+                                    <Button
+                                        onClick={securitySchemeType === 'API-KEY' ? generateApiKey
+                                            : generateAccessToken}
+                                        variant='contained'
+                                        className={classes.genKeyButton}
+                                        disabled={!user || (subscriptions && subscriptions.length === 0)
                                                     || (!ksGenerated && securitySchemeType === 'OAUTH')}
-                                            >
-                                                {isUpdating && (
-                                                    <CircularProgress size={15} />
-                                                )}
-                                                <FormattedMessage
-                                                    id='Apis.Details.ApiCOnsole.generate.test.key'
-                                                    defaultMessage='GET TEST KEY '
-                                                />
-                                            </Button>
-                                            <Tooltip
-                                                placement='right'
-                                                interactive
-                                                title={(
-                                                    <FormattedMessage
-                                                        id='Apis.Details.TryOutConsole.access.token.tooltip'
-                                                        defaultMessage={
-                                                            'You can use your existing Access Token or '
+                                    >
+                                        {isUpdating && (
+                                            <CircularProgress size={15} />
+                                        )}
+                                        <FormattedMessage
+                                            id='Apis.Details.ApiCOnsole.generate.test.key'
+                                            defaultMessage='GET TEST KEY '
+                                        />
+                                    </Button>
+                                    <Tooltip
+                                        placement='right'
+                                        interactive
+                                        title={(
+                                            <FormattedMessage
+                                                id='Apis.Details.TryOutConsole.access.token.tooltip'
+                                                defaultMessage={
+                                                    'You can use your existing Access Token or '
                                                             + 'you can generate a new Test Key.'
-                                                        }
-                                                    />
-                                                )}
+                                                }
+                                            />
+                                        )}
+                                    >
+                                        <Box m={1} mt={2}>
+                                            <IconButton
+                                                aria-label='Use existing Access Token or generate a new Test Key'
                                             >
-                                                <Box m={1} mt={2}>
-                                                    <IconButton
-                                                        aria-label='Use existing Access Token or generate a new Test Key'
-                                                    >
-                                                        <HelpOutline />
-                                                    </IconButton>
-                                                </Box>
-                                            </Tooltip>
-                                        </>
-                                    )}
-                                </Grid>
-                            </Box>
-                            <Box display='flex' justifyContent='center' className={classes.gatewayEnvironment}>
-                                <Grid xs={12} md={6} item>
-                                    {(environments && environments.length > 0)
+                                                <HelpOutline />
+                                            </IconButton>
+                                        </Box>
+                                    </Tooltip>
+                                </>
+                            )}
+                        </Grid>
+                    </Box>
+                    <Box display='flex' justifyContent='center' className={classes.gatewayEnvironment}>
+                        <Grid xs={12} md={6} item>
+                            {(environments && environments.length > 0)
                                         && (
                                             <>
                                                 <Typography
@@ -817,11 +816,10 @@ function TryOutController(props) {
                                                 </TextField>
                                             </>
                                         )}
-                                </Grid>
-                            </Box>
-                        </Box>
-                    </Grid>
-                )}
+                        </Grid>
+                    </Box>
+                </Box>
+            </Grid>
         </>
     );
 }

@@ -34,6 +34,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
+import LockIcon from '@material-ui/icons//Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 // spliced operation components
 
 import { FormattedMessage } from 'react-intl';
@@ -236,8 +238,8 @@ function Operation(props) {
                                     && getOperationScopes(operation, spec).join(', ') }
                             </Typography>
                         </Grid>
-                        {!(disableDelete || markAsDelete) && (
-                            <Grid item md={1} justify='flex-end' container>
+                        <Grid item md={1} justify='flex-end' alignItems='center' container>
+                            {!(disableDelete || markAsDelete) && (
                                 <Tooltip
                                     title={
                                         isUsedInAPIProduct
@@ -272,8 +274,41 @@ function Operation(props) {
                                         </IconButton>
                                     </div>
                                 </Tooltip>
-                            </Grid>
-                        )}
+                            )}
+                            <Tooltip
+                                title={
+                                    (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                        ? (
+                                            <FormattedMessage
+                                                id={'Apis.Details.Resources.components.Operation.disable.security'
+                                                    + '.when.used.in.api.products'}
+                                                defaultMessage='No security'
+                                            />
+                                        )
+                                        : (
+                                            <FormattedMessage
+                                                id='Apis.Details.Resources.components.enabled.security'
+                                                defaultMessage='Security enabled'
+                                            />
+                                        )
+                                }
+                                aria-label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.Resources.components.Operation.security.operation'
+                                        defaultMessage='Security '
+                                    />
+                                )}
+                            >
+                                <IconButton
+                                    aria-label='Security'
+                                >
+                                    {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                        ? <LockIcon fontSize='small' />
+                                        : <LockOpenIcon fontSize='small' />}
+                                </IconButton>
+                            </Tooltip>
+
+                        </Grid>
                     </Grid>
                 </ExpansionPanelSummary>
                 <Divider light className={classes.customDivider} />
