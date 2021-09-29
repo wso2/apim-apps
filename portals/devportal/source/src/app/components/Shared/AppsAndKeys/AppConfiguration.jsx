@@ -98,13 +98,13 @@ const AppConfiguration = (props) => {
      * Update the state when new props are available
      */
     useEffect(() => {        
-        if (config.type === 'checkbox' && typeof selectedValue === 'string'){
-            setSelectedValue(selectedValue === 'true');
-        } else {
-            setSelectedValue(previousValue);
-        }  
+        setSelectedValue(previousValue);
     }, [previousValue])
 
+    const setCheckboxValue = () => {
+        return ( typeof selectedValue === 'string' && selectedValue === 'true' )
+            || ( typeof selectedValue !== 'string' && selectedValue === true );
+    }
 
     return (
         <>
@@ -212,7 +212,7 @@ const AppConfiguration = (props) => {
                             fullWidth
                             id={config.name}
                             label={config.label}
-                            checked={selectedValue}                            
+                            checked={setCheckboxValue()}
                             name={config.name}
                             onChange={e => handleAppRequestChange(e)}
                             helperText={
