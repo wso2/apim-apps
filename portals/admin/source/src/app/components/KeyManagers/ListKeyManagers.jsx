@@ -23,9 +23,14 @@ import Typography from '@material-ui/core/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@material-ui/core/Switch';
+import ProviderMenu from './ProviderMenu';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useTheme } from '@material-ui/core';
+import MenuButton from '../Shared/MenuButton';
+import Grid from "@material-ui/core/Grid";
 
 /**
  * API call to get microgateway labels
@@ -43,6 +48,32 @@ function apiCall() {
         });
 }
 
+const useStyles = makeStyles((theme) => {
+    return {
+        dividerCls: {
+            height: '80px',
+            position: 'absolute',
+            top: '50%',
+            '-ms-transform': 'translateY(-50%)',
+            transform: 'translateY(-50%)',
+            margin: 'auto',
+        },
+        popover: {
+            [theme.breakpoints.down('sm')]: {
+                width: '22vw',
+            },
+            [theme.breakpoints.up('md')]: {
+                width: '22vw',
+            },
+            [theme.breakpoints.up('lg')]: {
+                width: '14vw',
+            },
+            paddingTop: theme.spacing(2),
+            paddingBottom: theme.spacing(2),
+        },
+    };
+});
+
 /**
  * Render a list
  * @returns {JSX} Header AppBar components.
@@ -50,6 +81,7 @@ function apiCall() {
 export default function ListKeyManagers() {
     // eslint-disable-next-line no-unused-vars
     const [saving, setSaving] = useState(false);
+    const { popover } = useStyles();
     const intl = useIntl();
     const columProps = [
         {
@@ -63,7 +95,7 @@ export default function ListKeyManagers() {
                     if (typeof tableMeta.rowData === 'object') {
                         const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
                         return (
-                            <RouterLink to={`/settings/key-managers/${artifactId}`}>
+                            <RouterLink to={`/settings/key-managers/external-key-manager/${artifactId}`}>
                                 {value}
                             </RouterLink>
                         );
@@ -115,14 +147,25 @@ export default function ListKeyManagers() {
         }),
     };
     const addButtonOverride = (
-        <RouterLink to='/settings/key-managers/create'>
-            <Button variant='contained' color='primary' size='small'>
-                <FormattedMessage
-                    id='KeyManagers.ListKeyManagers.addButtonProps.triggerButtonText'
-                    defaultMessage='Add Key Manager'
-                />
-            </Button>
-        </RouterLink>
+        <MenuButton
+            buttonProps={{
+                id: 'KeyManagers.ListKeyManagers.addButtonProps.triggerButtonText',
+                color: 'primary',
+                variant: 'contained',
+            }}
+            menuList={(
+                <Grid
+                    className={popover}
+                    container
+                    direction='row'
+                    spacing={2}
+                >
+                    <ProviderMenu/>
+                </Grid>
+            )}
+        >
+            Add Provider
+        </MenuButton>
     );
     const emptyBoxProps = {
         content: (
