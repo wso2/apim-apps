@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 import ProvideGraphQL from './Steps/ProvideGraphQL';
 
@@ -46,6 +47,9 @@ export default function ApiCreateGraphQL(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history } = props;
     const [policies, setPolicies] = useState([]);
+    const { settings } = useAppContext();
+    const isExternalGateways = settings.environment.filter((p) => !p.provider.toLowerCase()
+        .includes('wso2')).length > 0;
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -78,6 +82,7 @@ export default function ApiCreateGraphQL(props) {
             case 'version':
             case 'endpoint':
             case 'context':
+            case 'gatewayVendor':
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             case 'inputType':
@@ -139,6 +144,7 @@ export default function ApiCreateGraphQL(props) {
             version,
             context,
             endpoint,
+            gatewayVendor,
             implementationType,
             inputValue,
             graphQLInfo: { operations },
@@ -149,6 +155,7 @@ export default function ApiCreateGraphQL(props) {
             context,
             policies,
             operations,
+            gatewayVendor,
         };
         const uploadMethod = 'file';
         if (endpoint) {
@@ -269,6 +276,7 @@ export default function ApiCreateGraphQL(props) {
                             onChange={handleOnChange}
                             api={apiInputs}
                             isAPIProduct={false}
+                            isExternalGateways={isExternalGateways}
                         />
                     )}
                 </Grid>

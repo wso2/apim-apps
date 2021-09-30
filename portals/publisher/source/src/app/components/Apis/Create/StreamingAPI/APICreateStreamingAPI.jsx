@@ -45,6 +45,8 @@ const APICreateStreamingAPI = (props) => {
     const { history } = props;
     const intl = useIntl();
     const { settings } = useAppContext();
+    const isExternalGateways = settings.environment.filter((p) => !p.provider.toLowerCase()
+        .includes('wso2')).length > 0;
     const [pageError, setPageError] = useState(null);
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
@@ -115,6 +117,7 @@ const APICreateStreamingAPI = (props) => {
             case 'context':
             case 'endpoint':
             case 'policies':
+            case 'gatewayVendor':
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             case 'protocol':
@@ -161,13 +164,14 @@ const APICreateStreamingAPI = (props) => {
     function createAPI() {
         setIsCreating(true);
         const {
-            name, version, context, endpoint, protocol,
+            name, version, context, endpoint, protocol, gatewayVendor,
         } = apiInputs;
         const apiData = {
             name,
             version,
             context,
             endpoint,
+            gatewayVendor,
             type: apiType || protocol.toUpperCase(),
             policies,
         };
@@ -385,6 +389,7 @@ const APICreateStreamingAPI = (props) => {
                         endpointPlaceholderText='Streaming Provider'
                         appendChildrenBeforeEndpoint
                         hideEndpoint={hideEndpoint}
+                        isExternalGateways={isExternalGateways}
                         isWebSocket={(apiType && apiType === protocolKeys.WebSocket)
                             || apiInputs.protocol === protocolKeys.WebSocket}
                     >

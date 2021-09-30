@@ -54,6 +54,8 @@ function APICreateDefault(props) {
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
     const [policies, setPolicies] = useState([]);
+    const isExternalGateways = settings.environment.filter((p) => !p.provider.toLowerCase()
+        .includes('wso2')).length > 0;
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -84,6 +86,7 @@ function APICreateDefault(props) {
             case 'version':
             case 'endpoint':
             case 'context':
+            case 'gatewayVendor':
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             default:
@@ -128,8 +131,7 @@ function APICreateDefault(props) {
     function createAPI() {
         setIsCreating(true);
         const {
-            name, version, context, endpoint,
-            // name, version, context, endpoint, gatewayVendor,
+            name, version, context, endpoint, gatewayVendor,
         } = apiInputs;
         let promisedCreatedAPI;
         const apiData = {
@@ -137,7 +139,7 @@ function APICreateDefault(props) {
             version,
             context,
             policies,
-            // gatewayVendor,
+            gatewayVendor,
         };
         if (endpoint) {
             apiData.endpointConfig = {
@@ -412,6 +414,7 @@ function APICreateDefault(props) {
                         api={apiInputs}
                         isAPIProduct={isAPIProduct}
                         isWebSocket={isWebSocket}
+                        isExternalGateways={isExternalGateways}
                     />
                 </Grid>
                 <Grid item md={1} xs={0} />

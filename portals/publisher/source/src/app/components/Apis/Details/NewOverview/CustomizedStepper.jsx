@@ -460,7 +460,7 @@ export default function CustomizedStepper() {
                                             </Grid>
                                         </Box>
                                     )}
-                                    {(api.gatewayVendor !== 'solace') && (
+                                    {(api.gatewayVendor === 'wso2') && (
                                         <Box ml={6}>
                                             <Grid
                                                 container

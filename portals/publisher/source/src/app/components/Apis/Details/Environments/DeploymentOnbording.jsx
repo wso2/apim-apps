@@ -101,14 +101,14 @@ export default function DeploymentOnboarding(props) {
      * Get Solace environments from the environments list
      * @return String Solace gateway environment name
      */
-    function getSolaceEnvironment() {
-        let solaceEnv;
-        environments.forEach((environment) => {
-            if (environment.provider === 'solace') {
-                solaceEnv = environment;
+    function getSolaceEnvironment(envs) {
+        let solaceEnv = '';
+        envs.forEach((env) => {
+            if (env.provider === 'solace') {
+                solaceEnv = env.name;
             }
         });
-        return solaceEnv.name;
+        return solaceEnv;
     }
     /**
      * Get Organization value of external gateways
@@ -192,7 +192,7 @@ export default function DeploymentOnboarding(props) {
                             <Grid item xs={2} />
                         </Grid>
                     </Box>
-                    {(gatewayVendor !== 'solace') ? (
+                    {(gatewayVendor === 'wso2') ? (
                         <Paper fullWidth className={classes1.root}>
                             <Box p={5}>
                                 <Typography className={classes1.textRevision}>

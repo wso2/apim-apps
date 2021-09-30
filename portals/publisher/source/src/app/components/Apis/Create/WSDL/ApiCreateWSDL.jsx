@@ -32,6 +32,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 import ProvideWSDL from './Steps/ProvideWSDL';
 
@@ -47,6 +48,9 @@ export default function ApiCreateWSDL(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history } = props;
     const [policies, setPolicies] = useState([]);
+    const { settings } = useAppContext();
+    const isExternalGateways = settings.environment.filter((p) => !p.provider.toLowerCase()
+        .includes('wso2')).length > 0;
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -74,6 +78,7 @@ export default function ApiCreateWSDL(props) {
             case 'inputValue':
             case 'name':
             case 'version':
+            case 'gatewayVendor':
             case 'endpoint':
             case 'context':
             case 'isFormValid':
@@ -125,11 +130,12 @@ export default function ApiCreateWSDL(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, type,
+            name, version, context, endpoint, type, gatewayVendor,
         } = apiInputs;
         const additionalProperties = {
             name,
             version,
+            gatewayVendor,
             context,
             policies,
         };
@@ -219,6 +225,7 @@ export default function ApiCreateWSDL(props) {
                             onChange={handleOnChange}
                             api={apiInputs}
                             isAPIProduct={false}
+                            isExternalGateways={isExternalGateways}
                         />
                     )}
                 </Grid>

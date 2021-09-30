@@ -25,7 +25,7 @@ import Configurations from 'Config';
  * An abstract representation of an API
  */
 class API extends Resource {
-    constructor(name, version, context, kwargs) {
+    constructor(name, version, context, gatewayVendor, kwargs) {
         super();
         let properties = kwargs;
         if (name instanceof Object) {
@@ -35,6 +35,7 @@ class API extends Resource {
             this.name = name;
             this.version = version;
             this.context = context;
+            this.gatewayVendor = gatewayVendor;
             this.isDefaultVersion = false;
             this.transport = ['http', 'https'];
             this.visibility = 'PUBLIC';
@@ -319,6 +320,8 @@ class API extends Resource {
             const requestBody = {
                 'requestBody': data,
             };
+            console.log("payload", payload);
+            console.log("requestBody", requestBody);
             return client.apis['APIs'].createAPI(payload, requestBody, this._requestMetaData());
         });
         return promisedAPIResponse.then(response => {

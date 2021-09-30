@@ -56,7 +56,7 @@ function Configuration(props) {
             <Box p={1}>
                 <Grid container spacing={2}>
 
-                    {(api.gatewayVendor !== 'solace') && (
+                    {(api.gatewayVendor === 'wso2') && (
                         <>
                             <Grid item xs={12} md={6} lg={4}>
                                 {/* Transports */}
@@ -334,7 +334,7 @@ function Configuration(props) {
                             {api.visibility === 'RESTRICTED' && ' ) '}
                         </Typography>
                     </Grid>
-                    {(api.gatewayVendor !== 'solace') && (<Policies parentClasses={parentClasses} />)}
+                    {(api.gatewayVendor === 'wso2') && (<Policies parentClasses={parentClasses} />)}
                     {api.apiType === API.CONSTS.APIProduct ? null : (
                         <>
                             <Grid item xs={12} md={6} lg={4}>

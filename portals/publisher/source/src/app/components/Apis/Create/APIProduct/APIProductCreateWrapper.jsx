@@ -70,6 +70,8 @@ export default function ApiProductCreateWrapper(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const [apiResources, setApiResources] = useState([]);
     const { settings } = useAppContext();
+    const isExternalGateways = settings.environment.filter((p) => !p.provider.toLowerCase()
+        .includes('wso2')).length > 0;
 
     const [policies, setPolicies] = useState([]);
 
@@ -121,6 +123,7 @@ export default function ApiProductCreateWrapper(props) {
             case 'name':
             case 'context':
             case 'version':
+            case 'gatewayVendor':
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             case 'apiResources':
@@ -184,12 +187,13 @@ export default function ApiProductCreateWrapper(props) {
     const createAPIProduct = () => {
         setCreating(true);
         const {
-            name, context,
+            name, context, gatewayVendor,
         } = apiInputs;
         const apiData = {
             name,
             context,
             policies,
+            gatewayVendor,
             apis: apiResources,
         };
         apiData.transport = ['http', 'https'];
@@ -303,6 +307,7 @@ export default function ApiProductCreateWrapper(props) {
                                 onChange={handleOnChange}
                                 api={apiInputs}
                                 isAPIProduct
+                                isExternalGateways={isExternalGateways}
                             />
                         )}
                         {wizardStep === 1 && (

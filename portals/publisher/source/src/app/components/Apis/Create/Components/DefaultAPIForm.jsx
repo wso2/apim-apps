@@ -28,6 +28,7 @@ import { FormattedMessage } from 'react-intl';
 import green from '@material-ui/core/colors/green';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
+import SelectGateways from 'AppComponents/Apis/Details/components/SelectGateways';
 
 const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
@@ -116,7 +117,8 @@ function checkContext(value, result) {
  */
 export default function DefaultAPIForm(props) {
     const {
-        onChange, onValidate, api, isAPIProduct, isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
+        onChange, onValidate, api, isAPIProduct, isWebSocket, isExternalGateways,
+        children, appendChildrenBeforeEndpoint, hideEndpoint,
     } = props;
     const classes = useStyles();
     const [validity, setValidity] = useState({});
@@ -225,6 +227,23 @@ export default function DefaultAPIForm(props) {
                 if (isWebSocket && value && value.length > 0) {
                     const wsUrlValidity = APIValidation.wsUrl.validate(value).error;
                     updateValidity({ ...validity, endpointURL: wsUrlValidity });
+                }
+                break;
+            }
+            case 'gatewayVendor': {
+                const gatewayVendorValidity = APIValidation.gatewayVendor.required().validate(value,
+                    { abortEarly: false }).error;
+                if (gatewayVendorValidity === null) {
+                    APIValidation.apiParameter.validate(field + ':' + value).then((result) => {
+                        if (result.body.list.length > 0 && value.toLowerCase() === result.body.list[0]
+                            .name.toLowerCase()) {
+                            updateValidity({ ...validity, gatewayVendor: gatewayVendorValidity });
+                        } else {
+                            updateValidity({ ...validity, gatewayVendor: gatewayVendorValidity });
+                        }
+                    });
+                } else {
+                    updateValidity({ ...validity, gatewayVendor: gatewayVendorValidity });
                 }
                 break;
             }
@@ -470,6 +489,15 @@ export default function DefaultAPIForm(props) {
                 )}
 
                 {!appendChildrenBeforeEndpoint && !!children && children}
+
+                {isExternalGateways === true && (
+                    <SelectGateways
+                        value={api.gatewayVendor}
+                        isAPIProduct={isAPIProduct}
+                        onChange={onChange}
+                        validate={validate}
+                    />
+                )}
             </form>
             <Grid container direction='row' justify='flex-end' alignItems='center'>
                 <Grid item>

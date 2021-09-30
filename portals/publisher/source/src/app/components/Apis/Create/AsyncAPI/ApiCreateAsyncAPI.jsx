@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -54,6 +55,9 @@ export default function ApiCreateAsyncAPI(props) {
     // eslint-disable-next-line no-use-before-define
     const classes = useStyles();
     const [hideEndpoint, setHideEndpoint] = useState(true);
+    const { settings } = useAppContext();
+    const isExternalGateways = settings.environment.filter((p) => !p.provider.toLowerCase()
+        .includes('wso2')).length > 0;
 
     /**
      *
@@ -277,6 +281,7 @@ export default function ApiCreateAsyncAPI(props) {
                             hideEndpoint={hideEndpoint}
                             endpointPlaceholderText='Streaming Provider'
                             appendChildrenBeforeEndpoint
+                            isExternalGateways={isExternalGateways}
                         >
                             <Grid container spacing={2}>
                                 {apiInputs.gatewayVendor === 'solace'

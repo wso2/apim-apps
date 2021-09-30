@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 import ProvideOpenAPI from './Steps/ProvideOpenAPI';
 
@@ -77,6 +78,9 @@ function apiInputsReducer(currentState, inputAction) {
 export default function ApiCreateOpenAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history } = props;
+    const { settings } = useAppContext();
+    const isExternalGateways = settings.environment.filter((p) => !p.provider.toLowerCase()
+        .includes('wso2')).length > 0;
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateOpenAPI',
@@ -117,13 +121,14 @@ export default function ApiCreateOpenAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, policies, inputValue, inputType,
+            name, version, context, endpoint, policies, inputValue, inputType, gatewayVendor,
         } = apiInputs;
         const additionalProperties = {
             name,
             version,
             context,
             policies,
+            gatewayVendor,
         };
         if (endpoint) {
             additionalProperties.endpointConfig = {
@@ -213,6 +218,7 @@ export default function ApiCreateOpenAPI(props) {
                             onChange={handleOnChange}
                             api={apiInputs}
                             isAPIProduct={false}
+                            isExternalGateways={isExternalGateways}
                         />
                     )}
                 </Grid>
