@@ -126,22 +126,18 @@ export default function GraphQLUI(props) {
     if ({ schema } === null) {
         return <Progress />;
     } else {
-        // const display = { display: '' };
-        // if (URLs.wss == null) {
-        //     display = { display: 'none' };
-        // }
         return (
             <>
                 <Box width='30%' m={1}>
                     <TextField
                         label={(
                             <FormattedMessage
-                                defaultMessage='Gateway URLsxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+                                defaultMessage='Gateway URLs'
                                 id='Apis.Details.GraphQLConsole.GraphQLUI.URLs'
                             />
                         )}
                         value={URLs && URLs.https}
-                        name='selectedURL'
+                        name='selectedHTTPURL'
                         fullWidth
                         margin='normal'
                         variant='outlined'
@@ -151,11 +147,18 @@ export default function GraphQLUI(props) {
                 </Box>
                 <Box width='30%' m={1}>
                     <TextField
-                        value='wss://localhost:8099/snowooth/1.0'
-                        name='selectedURL2'
+                        label={(
+                            <FormattedMessage
+                                defaultMessage='Subscription Gateway URLs'
+                                id='Apis.Details.GraphQLConsole.GraphQLUI.Subscription.URLs'
+                            />
+                        )}
+                        value={URLs && URLs.wss}
+                        name='selectedWSURL'
                         fullWidth
                         margin='normal'
                         variant='outlined'
+                        InputProps={URLs && URLs.wss}
                         disabled
                     />
                 </Box>
@@ -182,7 +185,7 @@ export default function GraphQLUI(props) {
                             <Box display='flex' height='800px' flexGrow={1}>
                                 <GraphiQL
                                     ref={graphiqlEl}
-                                    fetcher={(queryFetcher('wss://localhost:8099/snowooth/1.0'))}
+                                    fetcher={(queryFetcher(URLs.wss))}
                                     schema={schema}
                                     query={query}
                                     onEditQuery={setQuery}

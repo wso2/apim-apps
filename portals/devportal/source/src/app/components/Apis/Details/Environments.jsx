@@ -204,8 +204,8 @@ function Environments(props) {
                                 inputProps={{ 'aria-label': 'api url' }}
                                 value={selectedEndpoint.URLs.https
                                     || selectedEndpoint.URLs.http
-                                    || selectedEndpoint.URLs.ws
-                                    || selectedEndpoint.URLs.wss}
+                                    || selectedEndpoint.URLs.wss
+                                    || selectedEndpoint.URLs.ws}
                             />
                             <Avatar className={classes.avatar} sizes={30}>
                                 <Tooltip
@@ -227,8 +227,8 @@ function Environments(props) {
                                     <CopyToClipboard
                                         text={selectedEndpoint.URLs.https
                                             || selectedEndpoint.URLs.http
-                                            || selectedEndpoint.URLs.ws
-                                            || selectedEndpoint.URLs.wss}
+                                            || selectedEndpoint.URLs.wss
+                                            || selectedEndpoint.URLs.ws}
                                         // text={endpoint.URLs.http}
                                         onCopy={() => onCopy('urlCopied')}
                                     >
@@ -238,6 +238,44 @@ function Environments(props) {
                                     </CopyToClipboard>
                                 </Tooltip>
                             </Avatar>
+                            {api.type === 'GRAPHQL' && (selectedEndpoint.URLs.ws || selectedEndpoint.URLs.wss)
+                            && (
+                                <>
+                                    <VerticalDivider height={30} />
+                                    <InputBase
+                                        className={classes.input}
+                                        inputProps={{ 'aria-label': 'api url' }}
+                                        value={selectedEndpoint.URLs.wss
+                                        || selectedEndpoint.URLs.ws}
+                                    />
+                                    <Avatar className={classes.avatar} sizes={30}>
+                                        <Tooltip
+                                            title={urlCopied
+                                                ? intl.formatMessage({
+                                                    defaultMessage: 'Copied',
+                                                    id: 'Apis.Details.Environments.copied',
+                                                })
+                                                : intl.formatMessage({
+                                                    defaultMessage: 'Copy to clipboard',
+                                                    id: 'Apis.Details.Environments.copy.to.clipboard',
+                                                })}
+                                            interactive
+                                            placement='right'
+                                            className={classes.iconStyle}
+                                        >
+                                            <CopyToClipboard
+                                                text={selectedEndpoint.URLs.wss
+                                                    || selectedEndpoint.URLs.ws}
+                                                onCopy={() => onCopy('urlCopied')}
+                                            >
+                                                <IconButton aria-label='Copy the API URL to clipboard'>
+                                                    <Icon color='secondary'>file_copy</Icon>
+                                                </IconButton>
+                                            </CopyToClipboard>
+                                        </Tooltip>
+                                    </Avatar>
+                                </>
+                            )}
                         </Paper>
                     </>
                 )}

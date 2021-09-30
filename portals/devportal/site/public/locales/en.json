@@ -140,6 +140,7 @@
   "Apis.Details.GoToTryOut.popup.subscribe.complete.success": "API subscribe to DefaultApplication successfully!",
   "Apis.Details.GoToTryOut.popup.subscribe.inprogress": "API subscribing to DefaultApplication ...",
   "Apis.Details.GraphQLConsole.GraphQLConsole.title": "Try Out",
+  "Apis.Details.GraphQLConsole.GraphQLUI.Subscription.URLs": "Subscription Gateway URLs",
   "Apis.Details.GraphQLConsole.GraphQLUI.URLs": "Gateway URLs",
   "Apis.Details.GraphQLConsole.QueryComplexityView.title": "Custom Complexity Values",
   "Apis.Details.Operations.notFound": "Operations Not Found",
