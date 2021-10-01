@@ -86,7 +86,7 @@ export default function OperationsSelector(props) {
                             <IconButton
                                 disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                 onClick={handleSelector}
-                                aria-label='delete all'
+                                aria-label='Mark all for delete'
                                 size='large'
                             >
                                 {isIndeterminate ? <ClearAllIcon /> : <DeleteSweepIcon />}

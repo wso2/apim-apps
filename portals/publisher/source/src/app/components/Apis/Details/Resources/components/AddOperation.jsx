@@ -206,7 +206,7 @@ function AddOperation(props) {
             <Grid container direction='row' spacing={0} justify='center' alignItems='center'>
                 <Grid item md={5} xs={12}>
                     <FormControl margin='dense' variant='outlined' className={classes.formControl}>
-                        <InputLabel ref={inputLabel} htmlFor='outlined-age-simple'>
+                        <InputLabel ref={inputLabel} htmlFor='operation-verb'>
                             {isAsyncAPI && (
                                 <FormattedMessage
                                     id='Apis.Details.Topics.components.AddOperation.op.type'
@@ -329,7 +329,6 @@ function AddOperation(props) {
                                 defaultMessage='Add new operation'
                             />
                         )}
-                        aria-label='AddOperation'
                         placement='bottom'
                         interactive
                     >
@@ -338,7 +337,7 @@ function AddOperation(props) {
                                 style={{ marginLeft: '20px', marginBottom: '15px', marginRight: '20px' }}
                                 size='small'
                                 color='primary'
-                                aria-label='add'
+                                aria-label='Add new operation'
                                 onClick={addOperation}
                             >
                                 <AddIcon />
@@ -353,12 +352,11 @@ function AddOperation(props) {
                                     defaultMessage='Clear inputs'
                                 />
                             )}
-                            aria-label='clear-inputs'
                             placement='bottom'
                             interactive
                         >
                             <span>
-                                <IconButton onClick={clearInputs} size='small'>
+                                <IconButton onClick={clearInputs} size='small' aria-label='clear-inputs'>
                                     <ClearIcon />
                                 </IconButton>
                             </span>

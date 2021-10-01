@@ -475,6 +475,7 @@ function Properties(props) {
                         <Typography
                             id='itest-api-details-api-products-properties-head'
                             variant='h4'
+                            component='h2'
                             align='left'
                             className={classes.mainTitle}
                         >
@@ -488,6 +489,7 @@ function Properties(props) {
                         <Typography
                             id='itest-api-details-api-properties-head'
                             variant='h4'
+                            component='h2'
                             align='left'
                             className={classes.mainTitle}
                         >
@@ -602,7 +604,11 @@ function Properties(props) {
                                                 defaultMessage='Visibility'
                                             />
                                         </TableCell>
-                                        <TableCell />
+                                        <TableCell>
+                                            <Typography variant='srOnly'>
+                                                Action
+                                            </Typography>
+                                        </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -613,7 +619,7 @@ function Properties(props) {
                                                     <TextField
                                                         fullWidth
                                                         required
-                                                        id='outlined-required'
+                                                        id='property-name'
                                                         label={intl.formatMessage({
                                                             id: `Apis.Details.Properties.Properties.
                                                                 show.add.property.property.name`,
@@ -644,7 +650,7 @@ function Properties(props) {
                                                     <TextField
                                                         fullWidth
                                                         required
-                                                        id='outlined-required'
+                                                        id='property-value'
                                                         label={intl.formatMessage({
                                                             id: 'Apis.Details.Properties.Properties.property.value',
                                                             defaultMessage: 'Value',
@@ -771,14 +777,15 @@ function Properties(props) {
                                     </div>
                                 </Grid>
                                 <Grid item>
-                                    <Link to={'/apis/' + api.id + '/overview'}>
-                                        <Button>
-                                            <FormattedMessage
-                                                id='Apis.Details.Properties.Properties.cancel'
-                                                defaultMessage='Cancel'
-                                            />
-                                        </Button>
-                                    </Link>
+                                    <Button
+                                        component={Link}
+                                        to={'/apis/' + api.id + '/overview'}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.Properties.Properties.cancel'
+                                            defaultMessage='Cancel'
+                                        />
+                                    </Button>
                                 </Grid>
                                 {isRestricted(['apim:api_create', 'apim:api_publish'], api) && (
                                     <Grid item xs={12}>
