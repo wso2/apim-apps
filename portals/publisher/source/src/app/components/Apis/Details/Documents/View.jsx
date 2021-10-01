@@ -128,9 +128,7 @@ function View(props) {
                             setIsFileAvailable(true);
                         })
                         .catch((error) => {
-                            if (process.env.NODE_ENV !== 'production') {
-                                console.log(error);
-                            }
+                            console.error(error);
                             setIsFileAvailable(false);
                         });
                  }
