@@ -5249,6 +5249,12 @@
       "value": "HTTP Verb"
     }
   ],
+  "Apis.Details.Resources.components.AddOperation.operation.target.cannot.contains.white.spaces": [
+    {
+      "type": 0,
+      "value": "Operation target cannot contains white spaces"
+    }
+  ],
   "Apis.Details.Resources.components.AddOperation.operation.target.or.verb.cannot.be.empty.warning": [
     {
       "type": 0,
