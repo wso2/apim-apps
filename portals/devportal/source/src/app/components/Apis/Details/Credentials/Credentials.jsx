@@ -415,27 +415,23 @@ class Credentials extends React.Component {
                                                     }
                                                 />
                                             </Typography>
-                                            <Link
+                                            <Button
+                                                variant='contained'
+                                                color='primary'
+                                                className={classes.buttonElm}
                                                 to={(isOnlyMutualSSL || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers) ? null
                                                     : `/apis/${api.id}/credentials/wizard`}
-                                                style={!api.isSubscriptionAvailable
-                                                    ? { pointerEvents: 'none' } : null}
+                                                component={Link}
+                                                disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
+                                                    || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
                                             >
-                                                <Button
-                                                    variant='contained'
-                                                    color='primary'
-                                                    className={classes.buttonElm}
-                                                    disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
-                                                        || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
-                                                >
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Credentials.'
-                                                        + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
-                                                        defaultMessage='Subscription &amp; Key Generation Wizard'
-                                                    />
-                                                </Button>
-                                            </Link>
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Credentials.'
+                                                    + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
+                                                    defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                />
+                                            </Button>
                                         </div>
                                     ) }
                                     {applicationsAvailable.length > 0 && (

@@ -301,7 +301,7 @@ a {
     animation: progress-bar-stripes 2s linear infinite;
     background-color: #0064dac4;
 }
-}
+
 .progress-bar-striped p{
   margin: 0;
 }
@@ -316,3 +316,12 @@ a {
   }
 }
 /* Progress bar styles end */ 
+
+/* Swagger UI overides */
+.swagger-ui .opblock .opblock-summary-method {
+  color: #29292d !important;
+}
+
+.swagger-ui .opblock-delete .opblock-summary-method {
+  color: #000 !important;
+}

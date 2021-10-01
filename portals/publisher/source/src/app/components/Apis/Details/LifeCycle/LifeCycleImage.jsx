@@ -48,7 +48,7 @@ class LifeCycleImage extends React.Component {
     highLightMe(element) {
         const style = {};
         if (!element.startsWith(this.props.lifeCycleStatus.toLowerCase())) {
-            style.opacity = 0.2;
+            style.opacity = 0.4;
         }
         return style;
     }
@@ -70,6 +70,7 @@ class LifeCycleImage extends React.Component {
                 viewBox='0 0 743.09858 287.34519'
                 id='svg5953'
                 className={classes.root}
+                aria-hidden='true'
             >
                 <defs id='defs5955'>
                     <path

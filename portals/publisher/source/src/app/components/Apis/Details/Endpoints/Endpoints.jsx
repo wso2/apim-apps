@@ -456,7 +456,13 @@ function Endpoints(props) {
                 ? <NewEndpointCreate generateEndpointConfig={generateEndpointConfig} apiType={apiObject.type} />
                 : (
                     <div className={classes.root}>
-                        <Typography id='itest-api-details-endpoints-head' variant='h4' align='left' gutterBottom>
+                        <Typography
+                            id='itest-api-details-endpoints-head'
+                            variant='h4'
+                            component='h2'
+                            align='left'
+                            gutterBottom
+                        >
                             <FormattedMessage
                                 id='Apis.Details.Endpoints.Endpoints.endpoints.header'
                                 defaultMessage='Endpoints'
@@ -516,14 +522,15 @@ function Endpoints(props) {
                                         )}
                                 </Grid>
                                 <Grid item>
-                                    <Link to={'/apis/' + api.id + '/overview'}>
-                                        <Button>
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.Endpoints.cancel'
-                                                defaultMessage='Cancel'
-                                            />
-                                        </Button>
-                                    </Link>
+                                    <Button
+                                        component={Link}
+                                        to={'/apis/' + api.id + '/overview'}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.Endpoints.cancel'
+                                            defaultMessage='Cancel'
+                                        />
+                                    </Button>
                                 </Grid>
                                 {isRestricted(['apim:api_create'], api)
                                 && (

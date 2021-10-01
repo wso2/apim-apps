@@ -1764,7 +1764,7 @@ export default function Environments() {
             </Grid>
             {allRevisions && allRevisions.length !== 0 && (
                 <Box mx='auto' mt={5}>
-                    <Typography variant='h6' className={classes.sectionTitle}>
+                    <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.APIGateways'
                             defaultMessage='API Gateways'

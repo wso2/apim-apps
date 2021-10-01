@@ -203,8 +203,7 @@ function GeneralConfiguration(props) {
             >
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
-                    aria-controls='panel1bh-content'
-                    id='panel1bh-header'
+                    id={endpointType.key + '-panel1bh-header'}
                     className={classes.configHeaderContainer}
                 >
                     {endpointType.key === 'awslambda' ? (

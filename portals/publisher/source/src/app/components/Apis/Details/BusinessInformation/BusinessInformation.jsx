@@ -145,7 +145,7 @@ class BusinessInformation extends React.Component {
             <>
                 <Container maxWidth='md'>
                     <Box mb={3}>
-                        <Typography id='itest-api-details-bushiness-info-head' variant='h4'>
+                        <Typography id='itest-api-details-bushiness-info-head' variant='h4' component='h2'>
                             <FormattedMessage
                                 id='Apis.Details.BusinessInformation.BusinessInformation.business.info'
                                 defaultMessage='Business Information'
@@ -208,7 +208,7 @@ class BusinessInformation extends React.Component {
                                     error={!this.isValidBusinessOwnerEmail}
                                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                                     fullWidth
-                                    id='name'
+                                    id='Email'
                                     label={(
                                         <>
                                             <FormattedMessage
@@ -250,7 +250,7 @@ class BusinessInformation extends React.Component {
                                 <TextField
                                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                                     fullWidth
-                                    id='name'
+                                    id='TOname'
                                     label={(
                                         <>
                                             <FormattedMessage
@@ -282,7 +282,7 @@ class BusinessInformation extends React.Component {
                                     error={!this.isValidTechnicalOwnerEmail}
                                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                                     fullWidth
-                                    id='name'
+                                    id='TOemail'
                                     label={(
                                         <FormattedMessage
                                             id={
@@ -344,17 +344,16 @@ class BusinessInformation extends React.Component {
                                         </div>
                                     </Grid>
                                     <Grid item>
-                                        <Link
+                                        <Button
+                                            component={Link}
                                             to={
                                                 (api.apiType === API.CONSTS.APIProduct ? '/api-products/' : '/apis/')
                                                 + api.id
                                                 + '/overview'
                                             }
                                         >
-                                            <Button>
-                                                <FormattedMessage id='cancel' defaultMessage='Cancel' />
-                                            </Button>
-                                        </Link>
+                                            <FormattedMessage id='cancel' defaultMessage='Cancel' />
+                                        </Button>
                                     </Grid>
                                 </Grid>
                             </div>

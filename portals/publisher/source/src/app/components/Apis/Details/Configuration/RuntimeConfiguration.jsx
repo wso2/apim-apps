@@ -457,7 +457,7 @@ export default function RuntimeConfiguration() {
     return (
         <>
             <Box pb={3}>
-                <Typography id='itest-api-details-runtime-config-head' variant='h5'>
+                <Typography id='itest-api-details-runtime-config-head' variant='h5' component='h2'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.RuntimeConfiguration.topic.header'
                         defaultMessage='Runtime Configurations'
@@ -467,7 +467,7 @@ export default function RuntimeConfiguration() {
             <div className={classes.contentWrapper}>
                 <Grid container direction='row' justify='space-around' alignItems='stretch' spacing={8}>
                     <Grid item xs={12} md={7}>
-                        <Typography className={classes.heading} variant='h6'>
+                        <Typography className={classes.heading} variant='h6' component='h3'>
                             { isAsyncAPI
                                 ? (
                                     <FormattedMessage
@@ -521,7 +521,7 @@ export default function RuntimeConfiguration() {
                             </Grid>
                             { !isNonWebSubAsyncAPI && (
                                 <>
-                                    <Typography className={classes.heading} variant='h6'>
+                                    <Typography className={classes.heading} variant='h6' component='h3'>
                                         {!isWebSub ? (
                                             <FormattedMessage
                                                 id='Apis.Details.Configuration.Configuration.section.response'
@@ -575,7 +575,7 @@ export default function RuntimeConfiguration() {
                             )}
                             {!api.isAPIProduct() && (
                                 <>
-                                    <Typography className={classes.heading} variant='h6'>
+                                    <Typography className={classes.heading} variant='h6' component='h3'>
                                         <FormattedMessage
                                             id='Apis.Details.Configuration.RuntimeConfiguration.section.fault'
                                             defaultMessage='Fault'
@@ -599,7 +599,7 @@ export default function RuntimeConfiguration() {
                     <Grid item xs={12} md={5}>
                         {!isWebSub && (
                             <>
-                                <Typography className={classes.heading} variant='h6'>
+                                <Typography className={classes.heading} variant='h6' component='h3'>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.Configuration.section.backend'
                                         defaultMessage='Backend'
@@ -660,14 +660,16 @@ export default function RuntimeConfiguration() {
                                 )}
                         </Grid>
                         <Grid item>
-                            <Link to={'/apis/' + api.id + '/overview'}>
-                                <Button>
-                                    <FormattedMessage
-                                        id='Apis.Details.Configuration.Configuration.cancel'
-                                        defaultMessage='Cancel'
-                                    />
-                                </Button>
-                            </Link>
+                            <Button
+                                component={Link}
+                                to={'/apis/' + api.id + '/overview'}
+                                aria-label='Cancel'
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Configuration.cancel'
+                                    defaultMessage='Cancel'
+                                />
+                            </Button>
                         </Grid>
                         {isRestricted(['apim:api_create'], api) && (
                             <Grid item>

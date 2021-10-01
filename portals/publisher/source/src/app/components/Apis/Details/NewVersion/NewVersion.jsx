@@ -242,7 +242,7 @@ class CreateNewVersion extends React.Component {
             <>
                 <Container maxWidth='md'>
                     <div className={classes.titleWrapper}>
-                        <Typography variant='h4' align='left' className={classes.mainTitle}>
+                        <Typography variant='h4' component='h2' align='left' className={classes.mainTitle}>
                             <FormattedMessage
                                 id='Apis.Details.NewVersion.NewVersion.create.new.version'
                                 defaultMessage='Create New Version'

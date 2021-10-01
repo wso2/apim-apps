@@ -121,7 +121,7 @@ class SchemaValidation extends React.Component {
             <Paper className={classes.paper}>
                 <Grid container spacing={1} alignItems='flex-start'>
                     <Grid item md={12}>
-                        <Typography className={classes.subHeading} variant='h6'>
+                        <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Configuration.schema.validation'
                                 defaultMessage='Schema Validation'
@@ -134,7 +134,7 @@ class SchemaValidation extends React.Component {
                                         + 'validation against the OpenAPI definition'}
                                     />
                                 )}
-                                aria-label='Schema Validation'
+                                aria-label='Schema Validation helper text'
                                 placement='right-end'
                                 interactive
                             >
@@ -154,6 +154,9 @@ class SchemaValidation extends React.Component {
                                         value: checked,
                                     })}
                                     color='primary'
+                                    inputProps={{
+                                        'aria-label': 'switch Schema Validation',
+                                    }}
                                 />
                             )}
                         />
