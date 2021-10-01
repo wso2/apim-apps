@@ -2515,7 +2515,7 @@
     "defaultMessage": "Delete operation"
   },
   "Apis.Details.Resources.components.Operation.disable.security.when.used.in.api.products": {
-    "defaultMessage": "No security"
+    "defaultMessage": "Security enabled"
   },
   "Apis.Details.Resources.components.Operation.security.operation": {
     "defaultMessage": "Security"
@@ -2527,7 +2527,7 @@
     "defaultMessage": "Undo Delete"
   },
   "Apis.Details.Resources.components.enabled.security": {
-    "defaultMessage": "Security enabled"
+    "defaultMessage": "No security"
   },
   "Apis.Details.Resources.components.operationComponents.AWSLambdaSettings.Title": {
     "defaultMessage": "AWS Lambda Settings"

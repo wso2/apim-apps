@@ -5294,7 +5294,7 @@
   "Apis.Details.Resources.components.Operation.disable.security.when.used.in.api.products": [
     {
       "type": 0,
-      "value": "No security"
+      "value": "Security enabled"
     }
   ],
   "Apis.Details.Resources.components.Operation.security.operation": [
@@ -5326,7 +5326,7 @@
   "Apis.Details.Resources.components.enabled.security": [
     {
       "type": 0,
-      "value": "Security enabled"
+      "value": "No security"
     }
   ],
   "Apis.Details.Resources.components.operationComponents.AWSLambdaSettings.Title": [
