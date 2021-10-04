@@ -407,14 +407,21 @@ class Utils {
      *
      * @static
      * @param {*} response
+     * @param {*} serviceDefinitionType
      * @memberof Utils
      */
-    static downloadServiceDefinition(response) {
+    static downloadServiceDefinition(response, serviceDefinitionType) {
         const fileName = 'service-definition';
-        const contentType = 'application/yaml';
-        const blob = new Blob([JSON.stringify(response)], {
-            type: contentType,
-        });
+        let blob;
+        if (serviceDefinitionType === 'WSDL1') {
+            blob = new Blob([response], {
+                type: 'text/xml',
+            });
+        } else {
+            blob = new Blob([JSON.stringify(response)], {
+                type: 'application/yaml',
+            });
+        }
         if (typeof window.navigator.msSaveBlob !== 'undefined') {
             window.navigator.msSaveBlob(blob, fileName);
         } else {

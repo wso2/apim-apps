@@ -32,6 +32,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import API from 'AppData/api.js';
 import { FormattedMessage } from 'react-intl';
+import beautify from 'xml-beautifier';
 
 /**
  * This component hosts the Swagger Editor component.
@@ -91,14 +92,21 @@ export default function DefinitionOutdated(props) {
     function showdiff() {
         setIsRendering(true);
         const promisedNewServiceDef = ServiceCatalog.searchServiceByKey(api.serviceInfo.key);
-        const promisedOldServiceDef = api.getSwagger(api.id);
+        const promisedOldServiceDef = (api.type === 'SOAP') ? api.getWSDL(api.id) : api.getSwagger(api.id);
         Promise.all([promisedNewServiceDef, promisedOldServiceDef])
             .then((response) => {
                 const newServiceDef = response[0];
                 const oldServiceDef = response[1];
                 return ServiceCatalog.getServiceDefinition(newServiceDef.body.list[0].id).then((file) => {
-                    setNewDefinition(JSON.stringify(file, null, 2));
-                    setOldDefinition(JSON.stringify(oldServiceDef.obj, null, 2));
+                    if (newServiceDef.body.list[0].definitionType === 'WSDL1') {
+                        setNewDefinition(beautify(file));
+                        oldServiceDef.data.text().then((text) => {
+                            setOldDefinition(beautify(text));
+                        });
+                    } else {
+                        setNewDefinition(JSON.stringify(file, null, 2));
+                        setOldDefinition(JSON.stringify(oldServiceDef.obj, null, 2));
+                    }
                 }).catch((error) => {
                     if (error.response) {
                         Alert.error(error.response.body.description);
