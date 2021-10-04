@@ -2,15 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'swagger-ui-react/swagger-ui.css';
 import SwaggerUILib from 'swagger-ui-react';
+import CustomPadLock from './CustomPadLock';
 
-const disableAuthorizeAndInfoPlugin = function () {
+const disableAuthorizeAndInfoPlugin = function (spec) {
     return {
         wrapComponents: {
             info: () => () => null,
             authorizeBtn: () => () => null,
+            authorizeOperationBtn: () => () => null,
+            OperationSummary: (original) => (props) => {
+                return <CustomPadLock BaseLayout={original} oldProps={props} spec={spec} />;
+            },
         },
     };
 };
+
 /**
  *
  * @class SwaggerUI
@@ -48,7 +54,7 @@ const SwaggerUI = (props) => {
             return req;
         },
         defaultModelExpandDepth: -1,
-        plugins: [disableAuthorizeAndInfoPlugin],
+        plugins: [disableAuthorizeAndInfoPlugin(spec)],
     };
     return <SwaggerUILib {...componentProps} />;
 };

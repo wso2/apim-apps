@@ -99,7 +99,6 @@ export default function Resources(props) {
         return nextResourcePolicies;
     }
     const [resourcePolicies, resourcePoliciesDispatcher] = useReducer(resourcePoliciesReducer, null);
-    const [isChecked, setChecked] = useState(true);
 
 
     /**
@@ -130,19 +129,10 @@ export default function Resources(props) {
         if (action === 'init') {
             newData = data || openAPISpec.paths;
         }
-        let flag = true;
         switch (action) {
             case 'init':
                 setSelectedOperation({});
-                Object.entries(newData).forEach(([, verbObj]) => {
-                    Object.entries(verbObj).forEach(([, operation]) => {
-                        if (operation['x-auth-type'] !== 'None') {
-                            flag = false;
-                        }
-                    });
-                });
-                setChecked(flag);
-                return newData;
+                return data || openAPISpec.paths;
             case 'removeAllSecurity':
                 setSelectedOperation({});
                 return Object.entries(newData).reduce((resourceAcc, [resourceKey, verbObj]) => {
@@ -162,23 +152,7 @@ export default function Resources(props) {
                 updatedOperation[action] = value;
                 break;
             case 'authType':
-                if (value) {
-                    updatedOperation['x-auth-type'] = 'Any';
-                    setChecked(false);
-                } else {
-                    updatedOperation['x-auth-type'] = 'None';
-                    Object.entries(currentOperations).forEach(([resourceKey, verbObj]) => {
-                        Object.entries(verbObj).forEach(([verbKey, operation]) => {
-                            if (resourceKey === target && verbKey === verb) {
-                                return;
-                            }
-                            if (operation['x-auth-type'] !== 'None') {
-                                flag = false;
-                            }
-                        });
-                    });
-                    setChecked(flag);
-                }
+                updatedOperation['x-auth-type'] = value ? 'Any' : 'None';
                 break;
             case 'parameter':
                 if (updatedOperation.parameters) {
@@ -286,16 +260,10 @@ export default function Resources(props) {
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
 
     const enableSecurity = () => {
-        if (isChecked === true) {
-            setChecked(!isChecked);
-            operationsDispatcher({ action: 'removeAllSecurity', data: { disable: !isChecked } });
-        }
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: false } });
     };
     const disableSecurity = () => {
-        if (isChecked === false) {
-            setChecked(!isChecked);
-            operationsDispatcher({ action: 'removeAllSecurity', data: { disable: !isChecked } });
-        }
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: true } });
     };
     /**
      *

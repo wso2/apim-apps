@@ -282,13 +282,13 @@ function Operation(props) {
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.Operation.disable.security'
                                                     + '.when.used.in.api.products'}
-                                                defaultMessage='No security'
+                                                defaultMessage='Security enabled'
                                             />
                                         )
                                         : (
                                             <FormattedMessage
                                                 id='Apis.Details.Resources.components.enabled.security'
-                                                defaultMessage='Security enabled'
+                                                defaultMessage='No security'
                                             />
                                         )
                                 }
