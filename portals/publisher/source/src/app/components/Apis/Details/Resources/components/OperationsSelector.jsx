@@ -71,7 +71,7 @@ export default function OperationsSelector(props) {
             <Grid item />
             <Grid item>
                 <Box mr={17.25} display='flex'>
-                    { operationWithSecurityCount === 0
+                    { (operationWithSecurityCount === 0)
                     && (
                         <Tooltip
                             title='Enable security for all'
@@ -88,7 +88,7 @@ export default function OperationsSelector(props) {
                             </div>
                         </Tooltip>
                     )}
-                    { operationWithSecurityCount === operationCount
+                    { (operationWithSecurityCount === operationCount)
                     && (
                         <Tooltip
                             title='Disable security for all'
@@ -105,7 +105,7 @@ export default function OperationsSelector(props) {
                             </div>
                         </Tooltip>
                     )}
-                    { operationWithSecurityCount !== 0 && operationWithSecurityCount !== operationCount
+                    { (operationWithSecurityCount !== 0 && operationWithSecurityCount !== operationCount)
                     && (
                         <Tooltip
                             title='Enable security for all'
