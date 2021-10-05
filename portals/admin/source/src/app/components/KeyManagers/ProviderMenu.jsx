@@ -48,7 +48,7 @@ const ProviderMenu = () => {
             >
                 <FormattedMessage
                     id='Provider.Type.Listing.Token.Exchange.title'
-                    defaultMessage='Token Exchange Grant'
+                    defaultMessage='Token Exchange'
                 />
             </LandingMenuItem>
 
@@ -64,7 +64,7 @@ const ProviderMenu = () => {
             >
                 <FormattedMessage
                     id='Provider.Type.Listing.external.keymanager.title'
-                    defaultMessage='External Key Manager'
+                    defaultMessage='Direct Token'
                 />
             </LandingMenuItem>
         </Component>

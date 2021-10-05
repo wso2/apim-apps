@@ -41,7 +41,15 @@ function apiCall() {
     return restApi
         .getKeyManagersList()
         .then((result) => {
-            return result.body.list;
+            var resultList = result.body.list;
+            resultList.forEach(item => {
+                if(item.tokenType === 'ORIGINAL'){
+                    item.tokenType= 'Direct';
+                } else{
+                    item.tokenType = 'Exchange';
+                }
+            })
+            return resultList;
         })
         .catch((error) => {
             throw error;
@@ -94,11 +102,20 @@ export default function ListKeyManagers() {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
                         const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
-                        return (
-                            <RouterLink to={`/settings/key-managers/external-key-manager/${artifactId}`}>
-                                {value}
-                            </RouterLink>
-                        );
+                        const tokenType = tableMeta.rowData[tableMeta.rowData.length - 5]
+                        if (tokenType === "ORIGINAL") {
+                            return (
+                                <RouterLink to={`/settings/key-managers/external-key-manager/${artifactId}`}>
+                                    {value}
+                                </RouterLink>
+                            );
+                        } else {
+                            return (
+                                <RouterLink to={`/settings/key-managers/token-exchange-endpoint/${artifactId}`}>
+                                    {value}
+                                </RouterLink>
+                            );
+                        }
                     } else {
                         return <div />;
                     }
@@ -116,10 +133,20 @@ export default function ListKeyManagers() {
             },
         },
         {
+            name: 'tokenType',
+            label: intl.formatMessage({
+                id: 'KeyManagers.ListKeyManagers.table.header.label.tokenType',
+                defaultMessage: 'Type',
+            }),
+            options: {
+                sort: false,
+            },
+        },
+        {
             name: 'type',
             label: intl.formatMessage({
-                id: 'KeyManagers.ListKeyManagers.table.header.label.type',
-                defaultMessage: 'Type',
+                id: 'KeyManagers.ListKeyManagers.table.header.label.provider',
+                defaultMessage: 'Provider',
             }),
             options: {
                 sort: false,
@@ -193,6 +220,7 @@ export default function ListKeyManagers() {
                 const kmName = rowData[0];
                 const kmId = rowData[4];
                 restApi.keyManagerGet(kmId).then((result) => {
+                    console.log('------------------',result);
                     let editState;
                     if (result.body.name !== null) {
                         editState = {

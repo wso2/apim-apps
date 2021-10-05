@@ -16,34 +16,25 @@
  * under the License.
  */
 
-import React, {useReducer, useState, useEffect} from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import {makeStyles} from '@material-ui/core/styles';
-import Checkbox from '@material-ui/core/Checkbox';
-import ChipInput from 'material-ui-chip-input';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import {useIntl, FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import {Link as RouterLink} from 'react-router-dom';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import clsx from 'clsx';
-import Radio from '@material-ui/core/Radio';
-import {
-    Typography, FormControlLabel, MenuItem,
-} from '@material-ui/core';
+import {MenuItem, Typography,} from '@material-ui/core';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import {useAppContext} from 'AppComponents/Shared/AppContext';
 import cloneDeep from 'lodash.clonedeep';
 import Button from '@material-ui/core/Button';
-import KeyValidations from 'AppComponents/KeyManagers/KeyValidations';
-import isEmpty from 'lodash.isempty';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import KeyManagerConfiguration from 'AppComponents/KeyManagers/KeyManagerConfiguration';
 import ClaimMappings from 'AppComponents/KeyManagers/ClaimMapping';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -51,6 +42,7 @@ import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import BlockingProgress from 'AppComponents/Shared/BlockingProgress';
+import Certificates from "AppComponents/KeyManagers/Certificates";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -131,7 +123,6 @@ const residentKeyManagerName = 'Resident Key Manager';
 function reducer(state, newValue) {
     const {field, value} = newValue;
     switch (field) {
-        case 'identityProviderType':
         case 'name':
         case 'description':
         case 'type':
@@ -157,6 +148,7 @@ function reducer(state, newValue) {
         case 'consumerKeyClaim':
         case 'scopesClaim':
         case 'certificates':
+        case 'tokenType':
         case 'wellKnownEndpoint':
             return {...state, [field]: value};
         case 'all':
@@ -189,17 +181,45 @@ function AddEditTokenExchangeIDP(props) {
         description: '',
         displayName: '',
         type: defaultKMType,
+        introspectionEndpoint: '',
+        clientRegistrationEndpoint: '',
         tokenEndpoint: '',
+        revokeEndpoint: '',
+        userInfoEndpoint: '',
+        authorizeEndpoint: '',
         issuer: '',
+        scopeManagementEndpoint: '',
+        availableGrantTypes: [],
+        enableTokenGeneration: true,
+        enableMapOAuthConsumerApps: true,
+        enableOAuthAppCreation: true,
+        enableSelfValidationJWT: true,
+        claimMapping: [],
+        tokenValidation: [
+            {
+                id: 1, type: '', value: '', enable: true,
+            },
+        ],
+        enabled: true,
+        scopesClaim: '',
+        consumerKeyClaim: '',
+        additionalProperties: {},
+        certificates: {
+            type: 'PEM',
+            value: '',
+        },
         wellKnownEndpoint: '',
+        tokenType: '',
     });
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
         name, description, type, displayName, wellKnownEndpoint,
         introspectionEndpoint, clientRegistrationEndpoint,
         tokenEndpoint, revokeEndpoint,
-        jwksEndpoint,
-        issuer, claimMapping, tokenValidation, additionalProperties,
+        userInfoEndpoint, authorizeEndpoint,
+        issuer, scopeManagementEndpoint, availableGrantTypes, consumerKeyClaim, scopesClaim,
+        enableTokenGeneration, enableMapOAuthConsumerApps, certificates,
+        enableOAuthAppCreation, enableSelfValidationJWT, claimMapping, tokenValidation, additionalProperties,
     } = state;
     const [validating, setValidating] = useState(false);
     const [keymanagerConnectorConfigurations, setKeyManagerConfiguration] = useState([]);
@@ -325,22 +345,16 @@ function AddEditTokenExchangeIDP(props) {
     };
     const formSaveCallback = () => {
         setValidating(true);
-        if (!isResidentKeyManager && formHasErrors(true)) {
-            Alert.error(intl.formatMessage({
-                id: 'KeyManagers.AddEditTokenExchangeIDP.form.has.errors',
-                defaultMessage: 'One or more fields contain errors.',
-            }));
-            return false;
-        }
+
         setSaving(true);
 
         let promisedAddKeyManager;
-        const newTokenValidation = (tokenValidation.length > 0 && tokenValidation[0].type === '')
+        const newTokenValidation = (tokenValidation && tokenValidation.length > 0 && tokenValidation[0].type === '')
             ? [] : tokenValidation;
 
 
         const keymanager = {
-            ...state, tokenValidation: newTokenValidation,
+            ...state, tokenValidation: newTokenValidation, tokenType: "EXCHANGED"
         };
 
         if (id) {
@@ -348,10 +362,10 @@ function AddEditTokenExchangeIDP(props) {
         } else {
             promisedAddKeyManager = restApi.addKeyManager(keymanager);
             promisedAddKeyManager
-                .then(() => {
+                .then((e) => {
                     return (intl.formatMessage({
                         id: 'KeyManager.add.success',
-                        defaultMessage: 'Key Manager added successfully.',
+                        defaultMessage: 'Token Exchange Endpoint added successfully.',
                     }));
                 });
         }
@@ -364,7 +378,7 @@ function AddEditTokenExchangeIDP(props) {
             } else {
                 Alert.success(`${displayName} ${intl.formatMessage({
                     id: 'KeyManager.add.success.msg',
-                    defaultMessage: ' - Key Manager added successfully.',
+                    defaultMessage: ' - Token Exchange Endpoint added successfully.',
                 })}`);
             }
             setSaving(false);
@@ -392,7 +406,7 @@ function AddEditTokenExchangeIDP(props) {
     const importKMConfig = () => {
         const payload = {url: wellKnownEndpoint, type};
         setImportingConfig(true);
-        restApi.KeyManagersDiscover(payload).then((result) => {
+        restApi.keyManagersDiscover(payload).then((result) => {
             const {obj: {value}} = result;
             for (const key of Object.keys(value)) {
                 if (key === 'name' || key === 'description' || key === 'displayName') {
@@ -442,10 +456,10 @@ function AddEditTokenExchangeIDP(props) {
             title={
                 id ? `${intl.formatMessage({
                     id: 'KeyManagers.AddEditTokenExchangeIDP.title.edit',
-                    defaultMessage: 'Token Exchange Identity Provider - Edit ',
+                    defaultMessage: 'Identity Provider - Edit ',
                 })} ${name}` : intl.formatMessage({
                     id: 'KeyManagers.AddEditTokenExchangeIDP.title.new',
-                    defaultMessage: 'Token Exchange Identity Provider - Create new',
+                    defaultMessage: 'Identity Provider - Create new',
                 })
             }
             help={<div/>}
@@ -554,6 +568,31 @@ function AddEditTokenExchangeIDP(props) {
                                     defaultMessage: 'Description of the Key Manager.',
                                 })}
                             />
+                        </Box>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Box marginTop={2} marginBottom={2}>
+                            <hr className={classes.hr}/>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={3}>
+                        <Typography color='inherit' variant='subtitle2' component='div'>
+                            <FormattedMessage
+                                id='KeyManagers.AddEditTokenExchangeIDP.endpoints'
+                                defaultMessage='Key Manager Endpoints'
+                            />
+                        </Typography>
+                        <Typography color='inherit' variant='caption' component='p'>
+                            <FormattedMessage
+                                id='KeyManagers.AddEditTokenExchangeIDP.endpoints.description'
+                                defaultMessage={'Configure endpoints such as client registration endpoint, '
+                                + 'the token endpoint for this Key Manager.'}
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                        <Box component='div' m={1}>
                             <FormControl
                                 variant='outlined'
                                 className={classes.FormControlRoot}
@@ -561,7 +600,7 @@ function AddEditTokenExchangeIDP(props) {
                             >
                                 <InputLabel classes={{root: classes.labelRoot}}>
                                     <FormattedMessage
-                                        defaultMessage='Key Manager Type'
+                                        defaultMessage='Provider'
                                         id='Admin.KeyManager.form.type'
                                     />
                                     <span className={classes.error}>*</span>
@@ -577,6 +616,9 @@ function AddEditTokenExchangeIDP(props) {
                                             {keymanager.displayName || keymanager.type}
                                         </MenuItem>
                                     ))}
+                                    <MenuItem key='other' value='other'>
+                                        {'Other' || 'other'}
+                                    </MenuItem>
                                 </Select>
                                 <FormHelperText>
                                     {hasErrors('type', type, validating) || (
@@ -644,30 +686,6 @@ function AddEditTokenExchangeIDP(props) {
                                     defaultMessage: 'E.g.,: https://localhost:9443/oauth2/token',
                                 })}
                             />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
-                            <FormattedMessage
-                                id='KeyManagers.AddEditTokenExchangeIDP.endpoints'
-                                defaultMessage='Key Manager Endpoints'
-                            />
-                        </Typography>
-                        <Typography color='inherit' variant='caption' component='p'>
-                            <FormattedMessage
-                                id='KeyManagers.AddEditTokenExchangeIDP.endpoints.description'
-                                defaultMessage={'Configure endpoints such as client registration endpoint, '
-                                + 'the token endpoint for this Key Manager.'}
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
                             <TextField
                                 margin='dense'
                                 name='tokenEndpoint'
@@ -691,32 +709,39 @@ function AddEditTokenExchangeIDP(props) {
                                     defaultMessage: 'E.g., https://localhost:9443/oauth2/token',
                                 })}
                             />
-                            <TextField
-                                margin='dense'
-                                name='jwksEndpoint'
-                                label={(
-                                    <FormattedMessage
-                                        id='KeyManagers.AddEditTokenExchangeIDP.form.jwksEndpoint'
-                                        defaultMessage='JWKS Endpoint'
-                                    />
-                                )}
-                                fullWidth
-                                variant='outlined'
-                                value={jwksEndpoint}
-                                onChange={onChange}
-                                helperText={intl.formatMessage({
-                                    id: 'KeyManagers.AddEditTokenExchangeIDP.form.scopeManagementEndpoint.help',
-                                    defaultMessage: 'E.g, https://localhost:9443/oauth2/keys',
-                                })}
-                            />
                         </Box>
                     </Grid>
+
+                    <Grid item xs={12}>
+                                <Box marginTop={2} marginBottom={2}>
+                                    <hr className={classes.hr}/>
+                                </Box>
+                            </Grid>
+                    <Grid item xs={12} md={12} lg={3}>
+                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                    <FormattedMessage
+                                        id='KeyManagers.AddEditKeyManager.certificate'
+                                        defaultMessage='Certificates'
+                                    />
+                                </Typography>
+                                <Typography color='inherit' variant='caption' component='p'>
+                                    <FormattedMessage
+                                        id='KeyManagers.AddEditKeyManager.certificate.description'
+                                        defaultMessage='Upload or provide the certificate inline.'
+                                    />
+                                </Typography>
+                            </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                                <Box component='div' m={1}>
+                                    <Certificates certificates={certificates} dispatch={dispatch}/>
+                                </Box>
+                            </Grid>
+
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
                             <hr className={classes.hr}/>
                         </Box>
                     </Grid>
-
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
