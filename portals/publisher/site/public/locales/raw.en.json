@@ -77,6 +77,9 @@
   "Apis.Create.Components.NewTopic.topic.name": {
     "defaultMessage": "Topic Name"
   },
+  "Apis.Create.Components.SelectGateways.Vendor": {
+    "defaultMessage": "Gateway Vendor"
+  },
   "Apis.Create.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Business plan(s)"
   },

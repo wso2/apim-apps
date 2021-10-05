@@ -328,8 +328,8 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
-    const externalGateways = settings.environment.filter((p) => p.provider.toLowerCase().includes('solace'));
-    const internalGateways = settings.environment.filter((p) => !p.provider.toLowerCase().includes('solace'));
+    const externalGateways = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+    const internalGateways = settings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
     const defaultVhosts = internalGateways.map(
         (e) => (e.vhosts && e.vhosts.length > 0 ? { env: e.name, vhost: e.vhosts[0].host } : undefined),
     );
@@ -780,7 +780,7 @@ export default function Environments() {
                         if (settings.environment.includes(envList[i])) {
                             body1.push({
                                 name: envList[i],
-                                vhost: api.gatewayVendor !== 'solace'
+                                vhost: api.gatewayVendor === 'wso2'
                                     ? vhostList.find((v) => v.env === envList[i]).vhost : ' ',
                                 displayOnDevportal: true,
                             });
@@ -820,7 +820,7 @@ export default function Environments() {
                     for (let i = 0; i < envList.length; i++) {
                         body1.push({
                             name: envList[i],
-                            vhost: api.gatewayVendor !== 'solace' ? vhostList.find((v) => v.env === envList[i]).vhost
+                            vhost: api.gatewayVendor === 'wso2' ? vhostList.find((v) => v.env === envList[i]).vhost
                                 : ' ',
                             displayOnDevportal: true,
                         });
@@ -1409,7 +1409,7 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor !== 'solace'
+            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2'
             && (
                 <Grid container>
                     <Button
@@ -1536,7 +1536,7 @@ export default function Environments() {
                                 {currentLength + '/' + maxCommentLength}
                             </Typography>
                         </Box>
-                        {api.gatewayVendor !== 'solace' && (
+                        {api.gatewayVendor === 'wso2' && (
                             <Box mt={2}>
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
@@ -1804,7 +1804,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor !== 'solace' && (
+            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
                 <>
                     <Grid
                         container
@@ -1983,7 +1983,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor !== 'solace' && (
+            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
                 <Box mx='auto' mt={5}>
                     <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage

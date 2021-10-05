@@ -171,6 +171,12 @@
       "value": "Topic Name"
     }
   ],
+  "Apis.Create.Components.SelectGateways.Vendor": [
+    {
+      "type": 0,
+      "value": "Gateway Vendor"
+    }
+  ],
   "Apis.Create.Components.SelectPolicies.business.plans": [
     {
       "type": 0,
