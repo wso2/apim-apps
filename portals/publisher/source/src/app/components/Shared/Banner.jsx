@@ -96,7 +96,7 @@ function Banner(props) {
                     <Grid container spacing={2} alignItems='center' wrap='nowrap'>
                         <Grid item>{bannerIcon}</Grid>
                         <Grid item>
-                            <Typography variant='subtitle2' display='block' gutterBottom>
+                            <Typography variant='subtitle2' component='h3' display='block' gutterBottom>
                                 {title}
                                 <Typography variant='body1'>{description}</Typography>
                             </Typography>

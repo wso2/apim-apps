@@ -54,7 +54,7 @@ const styles = (theme) => ({
     backLink: {
         alignItems: 'center',
         textDecoration: 'none',
-        display: 'flex',
+        display: 'contents',
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
     backIcon: {
@@ -199,24 +199,33 @@ const APIDetailsTopMenu = (props) => {
                     <ThumbnailView api={api} width={70} height={50} imageUpdate={imageUpdate} />
                 </Box>
                 <div style={{ marginLeft: theme.spacing(1), maxWidth: 500 }}>
-                    <Typography id='itest-api-name-version' variant='h4' className={classes.apiName}>
-                        {api.name}
-                        {' '}
-                        {isAPIProduct ? '' : ':' + api.version}
-                    </Typography>
-                    <Typography variant='caption' gutterBottom align='left'>
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.created.by'
-                            defaultMessage='Created by:'
-                        />
-                        {' '}
-                        {api.provider}
-                    </Typography>
+                    <Link
+                        to={isAPIProduct
+                            ? `/api-products/${api.id}/overview`
+                            : `/apis/${api.id}/overview`}
+                        className={classes.backLink}
+                    >
+                        <Typography id='itest-api-name-version' variant='h4' component='h1' className={classes.apiName}>
+                            {api.name}
+                            {' '}
+                            {isAPIProduct ? '' : ':' + api.version}
+                        </Typography>
+                        <Typography variant='caption' gutterBottom align='left'>
+                            <FormattedMessage
+                                id='Apis.Details.components.APIDetailsTopMenu.created.by'
+                                defaultMessage='Created by:'
+                            />
+                            {' '}
+                            {api.provider}
+                        </Typography>
+                    </Link>
                 </div>
             </Link>
             <VerticalDivider height={70} />
             <div className={classes.infoItem}>
-                <Typography variant='subtitle1'>{isAPIProduct ? api.state : api.lifeCycleStatus}</Typography>
+                <Typography component='div' variant='subtitle1'>
+                    {isAPIProduct ? api.state : api.lifeCycleStatus}
+                </Typography>
                 <Typography variant='caption' align='left'>
                     <FormattedMessage
                         id='Apis.Details.components.APIDetailsTopMenu.state'

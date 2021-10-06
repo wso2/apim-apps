@@ -18,6 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
+import List from '@material-ui/core/List';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { useTheme } from '@material-ui/styles';
 import { FormattedMessage } from 'react-intl';
@@ -54,73 +55,75 @@ function GlobalNavLinks(props) {
     const analyticsMenuLink = theme.custom.leftMenuAnalytics.link;
     return (
         <Box mt={10}>
-            <GlobalNavLink
-                to='/apis'
-                type='apis'
-                title='APIs'
-                active={selected === 'apis'}
-            >
-                <FormattedMessage
-                    id='Base.Header.navbar.GlobalNavBar.apis'
-                    defaultMessage='APIs'
-                />
-            </GlobalNavLink>
-            <GlobalNavLink
-                to='/service-catalog'
-                type='service-catalog'
-                title='Services'
-                active={selected === 'service-catalog'}
-            >
-                <FormattedMessage
-                    id='Base.Header.navbar.GlobalNavBar.Service.Catalog'
-                    defaultMessage='Services'
-                />
-            </GlobalNavLink>
-            { publisherUser
-                && (
-                    <GlobalNavLink
-                        to='/api-products'
-                        type='api-product'
-                        title='API Products'
-                        active={selected === 'api-products'}
-                    >
-                        <FormattedMessage
-                            id='Base.Header.navbar.GlobalNavBar.api.products'
-                            defaultMessage='API Products'
-                        />
-                    </GlobalNavLink>
-                )}
-            <GlobalNavLink
-                id='scope'
-                to='/scopes'
-                type='scopes'
-                title='Scopes'
-                active={selected === 'scopes'}
-            >
-                <FormattedMessage id='Base.Header.navbar.GlobalNavBar.scopes' defaultMessage='Scopes' />
-            </GlobalNavLink>
-            {analyticsMenuEnabled && (
-                <>
-                    <Divider />
-                    <a href={analyticsMenuLink} target='_blank' rel='noreferrer'>
+            <List className={classes.listRoot} component='nav' name='primaryNavigation' aria-label='primary navigation'>
+                <GlobalNavLink
+                    to='/apis'
+                    type='apis'
+                    title='APIs'
+                    active={selected === 'apis'}
+                >
+                    <FormattedMessage
+                        id='Base.Header.navbar.GlobalNavBar.apis'
+                        defaultMessage='APIs'
+                    />
+                </GlobalNavLink>
+                <GlobalNavLink
+                    to='/service-catalog'
+                    type='service-catalog'
+                    title='Services'
+                    active={selected === 'service-catalog'}
+                >
+                    <FormattedMessage
+                        id='Base.Header.navbar.GlobalNavBar.Service.Catalog'
+                        defaultMessage='Services'
+                    />
+                </GlobalNavLink>
+                { publisherUser
+                    && (
                         <GlobalNavLink
-                            isExternalLink
-                            type='analytics'
-                            title='Analytics'
+                            to='/api-products'
+                            type='api-product'
+                            title='API Products'
+                            active={selected === 'api-products'}
                         >
-                            <div style={{ flexDirection: 'row', display: 'flex' }}>
-                                <FormattedMessage
-                                    id='Base.Header.navbar.GlobalNavBar.analytics'
-                                    defaultMessage='Analytics'
-                                />
-                                <div className={classes.externalLinkIcon}>
-                                    <LaunchIcon style={{ fontSize: 15 }} />
-                                </div>
-                            </div>
+                            <FormattedMessage
+                                id='Base.Header.navbar.GlobalNavBar.api.products'
+                                defaultMessage='API Products'
+                            />
                         </GlobalNavLink>
-                    </a>
-                </>
-            )}
+                    )}
+                <GlobalNavLink
+                    id='scope'
+                    to='/scopes'
+                    type='scopes'
+                    title='Scopes'
+                    active={selected === 'scopes'}
+                >
+                    <FormattedMessage id='Base.Header.navbar.GlobalNavBar.scopes' defaultMessage='Scopes' />
+                </GlobalNavLink>
+                {analyticsMenuEnabled && (
+                    <>
+                        <Divider />
+                        <a href={analyticsMenuLink} target='_blank' rel='noreferrer'>
+                            <GlobalNavLink
+                                isExternalLink
+                                type='analytics'
+                                title='Analytics'
+                            >
+                                <div style={{ flexDirection: 'row', display: 'flex' }}>
+                                    <FormattedMessage
+                                        id='Base.Header.navbar.GlobalNavBar.analytics'
+                                        defaultMessage='Analytics'
+                                    />
+                                    <div className={classes.externalLinkIcon}>
+                                        <LaunchIcon style={{ fontSize: 15 }} />
+                                    </div>
+                                </div>
+                            </GlobalNavLink>
+                        </a>
+                    </>
+                )}
+            </List>
         </Box>
     );
 }

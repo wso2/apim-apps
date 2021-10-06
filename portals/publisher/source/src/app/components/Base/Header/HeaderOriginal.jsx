@@ -70,7 +70,7 @@ export default function HeaderOriginal(props) {
                     </IconButton>
                     <Box display='flex' justifyContent='space-between' flexDirection='row' width={1}>
                         <Box display='flex'>
-                            <Link to='/'>
+                            <Link to='/' aria-label='Go to home page'>
                                 <img
                                     src={Configurations.app.context + theme.custom.logo}
                                     alt={`${theme.custom.title.prefix} ${theme.custom.title.suffix}`}
@@ -83,7 +83,7 @@ export default function HeaderOriginal(props) {
                                 <HeaderSearch />
                             </Hidden>
                             <Hidden mdUp>
-                                <IconButton onClick={toggleMiniSearch} color='inherit'>
+                                <IconButton onClick={toggleMiniSearch} color='inherit' aria-label='Search button'>
                                     <SearchIcon className={classes.menuIcon} />
                                 </IconButton>
                                 {openMiniSearch

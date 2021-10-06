@@ -142,14 +142,15 @@ function Subscriptions(props) {
                     </Button>
                 </Grid>
                 <Grid item>
-                    <Link to={'/apis/' + api.id + '/overview'}>
-                        <Button>
-                            <FormattedMessage
-                                id='Apis.Details.Subscriptions.Subscriptions.cancel'
-                                defaultMessage='Cancel'
-                            />
-                        </Button>
-                    </Link>
+                    <Button
+                        component={Link}
+                        to={'/apis/' + api.id + '/overview'}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Subscriptions.Subscriptions.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
                 </Grid>
             </Grid>
             <SubscriptionsTable api={api} />

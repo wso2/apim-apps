@@ -75,6 +75,7 @@ const APICreateMenu = () => {
                     id: 'itest-create-api-menu-button',
                     color: 'primary',
                     variant: 'contained',
+                    'aria-label': 'View create API options',
                 }}
                 menuList={(
                     <Grid

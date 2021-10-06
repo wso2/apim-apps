@@ -686,108 +686,110 @@ class Details extends Component {
                     }}
                 >
                     <Box className={classes.LeftMenu}>
-                        <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'}>
-                            <div className={classes.leftLInkMain}>
-                                <CustomIcon
-                                    className={classes.customIcon}
-                                    width={leftMenuIconMainSize}
-                                    height={leftMenuIconMainSize}
-                                    icon={isAPIProduct ? 'api-product' : 'apis'}
-                                />
-                            </div>
-                        </Link>
-                        <LeftMenuItem
-                            text={intl.formatMessage({
-                                id: 'Apis.Details.index.overview',
-                                defaultMessage: 'overview',
-                            })}
-                            to={pathPrefix + 'overview'}
-                            Icon={<DashboardIcon />}
-                            head='valueOnly'
-                        />
-                        <Typography className={classes.headingText}>
-                            Develop
-                        </Typography>
-                        <DevelopSectionMenu
-                            pathPrefix={pathPrefix}
-                            isAPIProduct={isAPIProduct}
-                            api={api}
-                            getLeftMenuItemForResourcesByType={this.getLeftMenuItemForResourcesByType}
-                            getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
-                        />
-                        <Divider />
-                        {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && (
-                            <>
-                                <Typography className={classes.headingText}>Deploy</Typography>
-                                <LeftMenuItem
-                                    text={intl.formatMessage({
-                                        id: 'Apis.Details.index.environments',
-                                        defaultMessage: 'Deployments',
-                                    })}
-                                    route='deployments'
-                                    to={pathPrefix + 'deployments'}
-                                    Icon={<PersonPinCircleOutlinedIcon />}
-                                />
-                            </>
-                        )}
-                        {isAPIProduct && (
-                            <>
-                                <Typography className={classes.headingText}>Deploy</Typography>
-                                <LeftMenuItem
-                                    text={intl.formatMessage({
-                                        id: 'Apis.Details.index.environments',
-                                        defaultMessage: 'Deployments',
-                                    })}
-                                    route='deployments'
-                                    to={pathPrefix + 'deployments'}
-                                    Icon={<PersonPinCircleOutlinedIcon />}
-                                />
-                            </>
-                        )}
-                        {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && !api.isWebSocket()
-                            && !api.isGraphql() && !isAsyncAPI && (
-                            <div>
-                                <Divider />
-                                <Typography className={classes.headingText}>Test</Typography>
-                                <LeftMenuItem
-                                    route='test-console'
-                                    text={intl.formatMessage({
-                                        id: 'Apis.Details.index.Tryout.menu.name',
-                                        defaultMessage: 'Try Out',
-                                    })}
-                                    to={pathPrefix + 'test-console'}
-                                    iconText='test'
-                                />
-                            </div>
-                        )}
-                        {!isAPIProduct && !isRestricted(['apim:api_publish'], api) && (
-                            <div>
-                                <Divider />
-                                <Typography className={classes.headingText}>Publish</Typography>
-                                <LeftMenuItem
-                                    text={intl.formatMessage({
-                                        id: 'Apis.Details.index.lifecycle',
-                                        defaultMessage: 'lifecycle',
-                                    })}
-                                    to={pathPrefix + 'lifecycle'}
-                                    Icon={<LifeCycleIcon />}
-                                />
-                            </div>
-                        )}
-                        {!isAPIProduct && settingsContext.externalStoresEnabled && (
-                            <>
-                                <Divider />
-                                <LeftMenuItem
-                                    text={intl.formatMessage({
-                                        id: 'Apis.Details.index.external-stores',
-                                        defaultMessage: 'external dev portals',
-                                    })}
-                                    to={pathPrefix + 'external-devportals'}
-                                    Icon={<StoreIcon />}
-                                />
-                            </>
-                        )}
-                        <Divider />
+                        <nav name='secondaryNavigation' aria-label='secondary navigation'>
+                            <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'} aria-label='ALL APIs'>
+                                <div className={classes.leftLInkMain}>
+                                    <CustomIcon
+                                        className={classes.customIcon}
+                                        width={leftMenuIconMainSize}
+                                        height={leftMenuIconMainSize}
+                                        icon={isAPIProduct ? 'api-product' : 'apis'}
+                                    />
+                                </div>
+                            </Link>
+                            <LeftMenuItem
+                                text={intl.formatMessage({
+                                    id: 'Apis.Details.index.overview',
+                                    defaultMessage: 'overview',
+                                })}
+                                to={pathPrefix + 'overview'}
+                                Icon={<DashboardIcon />}
+                                head='valueOnly'
+                            />
+                            <Typography className={classes.headingText}>
+                                Develop
+                            </Typography>
+                            <DevelopSectionMenu
+                                pathPrefix={pathPrefix}
+                                isAPIProduct={isAPIProduct}
+                                api={api}
+                                getLeftMenuItemForResourcesByType={this.getLeftMenuItemForResourcesByType}
+                                getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
+                            />
+                            <Divider />
+                            {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && (
+                                <>
+                                    <Typography className={classes.headingText}>Deploy</Typography>
+                                    <LeftMenuItem
+                                        text={intl.formatMessage({
+                                            id: 'Apis.Details.index.environments',
+                                            defaultMessage: 'Deployments',
+                                        })}
+                                        route='deployments'
+                                        to={pathPrefix + 'deployments'}
+                                        Icon={<PersonPinCircleOutlinedIcon />}
+                                    />
+                                </>
+                            )}
+                            {isAPIProduct && (
+                                <>
+                                    <Typography className={classes.headingText}>Deploy</Typography>
+                                    <LeftMenuItem
+                                        text={intl.formatMessage({
+                                            id: 'Apis.Details.index.environments',
+                                            defaultMessage: 'Deployments',
+                                        })}
+                                        route='deployments'
+                                        to={pathPrefix + 'deployments'}
+                                        Icon={<PersonPinCircleOutlinedIcon />}
+                                    />
+                                </>
+                            )}
+                            {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && !api.isWebSocket()
+                                && !api.isGraphql() && !isAsyncAPI && (
+                                <div>
+                                    <Divider />
+                                    <Typography className={classes.headingText}>Test</Typography>
+                                    <LeftMenuItem
+                                        route='test-console'
+                                        text={intl.formatMessage({
+                                            id: 'Apis.Details.index.Tryout.menu.name',
+                                            defaultMessage: 'Try Out',
+                                        })}
+                                        to={pathPrefix + 'test-console'}
+                                        iconText='test'
+                                    />
+                                </div>
+                            )}
+                            {!isAPIProduct && !isRestricted(['apim:api_publish'], api) && (
+                                <div>
+                                    <Divider />
+                                    <Typography className={classes.headingText}>Publish</Typography>
+                                    <LeftMenuItem
+                                        text={intl.formatMessage({
+                                            id: 'Apis.Details.index.lifecycle',
+                                            defaultMessage: 'lifecycle',
+                                        })}
+                                        to={pathPrefix + 'lifecycle'}
+                                        Icon={<LifeCycleIcon />}
+                                    />
+                                </div>
+                            )}
+                            {!isAPIProduct && settingsContext.externalStoresEnabled && (
+                                <>
+                                    <Divider />
+                                    <LeftMenuItem
+                                        text={intl.formatMessage({
+                                            id: 'Apis.Details.index.external-stores',
+                                            defaultMessage: 'external dev portals',
+                                        })}
+                                        to={pathPrefix + 'external-devportals'}
+                                        Icon={<StoreIcon />}
+                                    />
+                                </>
+                            )}
+                            <Divider />
+                        </nav>
                     </Box>
                     <Box className={classes.content}>
                         <RevisionContextProvider

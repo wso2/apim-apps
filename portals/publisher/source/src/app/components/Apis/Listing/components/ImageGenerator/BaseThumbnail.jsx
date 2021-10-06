@@ -198,6 +198,7 @@ const BaseThumbnail = (props) => {
                     focusRipple
                     className={classes.thumb}
                     onClick={onClick}
+                    aria-label='edit api thumbnail'
                 >
                     {thumbnail
                         ? (
@@ -218,7 +219,7 @@ const BaseThumbnail = (props) => {
                     </span>
                 </ButtonBase>
             ) : (
-                <Link className={classes.suppressLinkStyles} to={overviewPath}>
+                <Link className={classes.suppressLinkStyles} to={overviewPath} aria-label={api.name + ' Thumbnail'}>
                     {thumbnail
                         ? (
                             <img
