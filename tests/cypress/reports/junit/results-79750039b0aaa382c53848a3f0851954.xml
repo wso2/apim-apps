@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="2" failures="2">
+  <testsuite name="Root Suite" timestamp="2021-09-22T12:53:28" tests="0" file="cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="API Create flow" timestamp="2021-09-22T12:53:28" tests="2" time="0.0000" failures="2">
+    <testcase name="API Create flow Login to publisher" time="0.0000" classname="Login to publisher">
+      <failure message="Timed out retrying after 10000ms: expected &apos;https://localhost:9443/publisher/apis&apos; to include &apos;/authenticationendpoint/login.do&apos;" type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: expected 'https://localhost:9443/publisher/apis' to include '/authenticationendpoint/login.do'
+    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/support/index.js:204:12)]]></failure>
+    </testcase>
+    <testcase name="API Create flow Deploy sample API" time="0.0000" classname="Deploy sample API">
+      <failure message="Timed out retrying after 10000ms: Expected to find element: `#itest-id-deploy-sample-api`, but never found it." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: Expected to find element: `#itest-id-deploy-sample-api`, but never found it.
+    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js:375:8)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -3,16 +3,15 @@ import Utils from "@support/utils";
 describe("API Create flow", () => {
     const username = 'admin'
     const password = 'admin'
-    // beforeEach(function () {
-    //     // login before each test
-    //     cy.loginToPublisher(username, password)
-    // })
+    beforeEach(function () {
+        // login before each test
+        cy.loginToPublisher(username, password)
+    })
 
     it.only("Login to publisher", () => {
         cy.loginToPublisher(username, password)
     })
 
-    /*
     it.only("Deploy sample API", () => {
         cy.viewport(1920, 980)
         cy.visit(`/publisher/apis`);
@@ -115,9 +114,7 @@ describe("API Create flow", () => {
         cy.get('#itest-id-deleteapi-icon-button').click();
         cy.get('#itest-id-deleteconf').click();
     });
-    */
 
-    /*
     it("Create API from GraphQL API file", () => {
         cy.visit(`/publisher/apis`)
         cy.get('#itest-id-createapi').click();
@@ -135,5 +132,4 @@ describe("API Create flow", () => {
         cy.get('#itest-id-deleteapi-icon-button').click();
         cy.get('#itest-id-deleteconf').click();
     });
-    */
 })

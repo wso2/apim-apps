@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="3.6270" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2021-09-22T12:51:25" tests="0" file="cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="API Create flow" timestamp="2021-09-22T12:51:25" tests="1" time="3.6270" failures="0">
+    <testcase name="API Create flow Login to publisher" time="3.6270" classname="Login to publisher">
+    </testcase>
+  </testsuite>
+</testsuites>

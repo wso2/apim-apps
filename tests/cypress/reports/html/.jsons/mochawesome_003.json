@@ -1,0 +1,135 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 0,
+    "pending": 0,
+    "failures": 2,
+    "start": "2021-09-22T12:53:28.806Z",
+    "end": "2021-09-22T12:54:01.346Z",
+    "duration": 32540,
+    "testsRegistered": 2,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "8cda695a-c6c1-4a0d-95d0-0d1bf4c6d887",
+      "title": "",
+      "fullFile": "cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js",
+      "file": "cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "1fe79517-a6de-4c64-985b-d7085f784226",
+          "title": "API Create flow",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Login to publisher",
+              "fullTitle": "API Create flow Login to publisher",
+              "timedOut": null,
+              "duration": 17763,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"Failed screenshot\",\n  \"value\": \"screenshots/publisher/API/REST/Create/defaultAPI.create.spec.js/API Create flow -- Login to publisher (failed).png\"\n}",
+              "code": "cy.loginToPublisher(username, password);",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 10000ms: expected 'https://localhost:9443/publisher/apis' to include '/authenticationendpoint/login.do'",
+                "estack": "AssertionError: Timed out retrying after 10000ms: expected 'https://localhost:9443/publisher/apis' to include '/authenticationendpoint/login.do'\n    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/support/index.js:204:12)",
+                "diff": null
+              },
+              "uuid": "a45f5cfe-9305-44eb-bf41-fc5064dbc528",
+              "parentUUID": "1fe79517-a6de-4c64-985b-d7085f784226",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Deploy sample API",
+              "fullTitle": "API Create flow Deploy sample API",
+              "timedOut": null,
+              "duration": 14688,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"Failed screenshot\",\n  \"value\": \"screenshots/publisher/API/REST/Create/defaultAPI.create.spec.js/API Create flow -- Deploy sample API (failed).png\"\n}",
+              "code": "cy.viewport(1920, 980);\ncy.visit(\"/publisher/apis\");\ncy.get('#itest-id-deploy-sample-api').click();\ncy.get('#itest-api-name-version').should('be.visible');\ncy.url().should('contains', '/overview');\ncy.get(\"#itest-api-name-version\").contains('PizzaShackAPI');\ncy.get('#itest-id-deleteapi-icon-button').click();\ncy.get('#itest-id-deleteconf').click();",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 10000ms: Expected to find element: `#itest-id-deploy-sample-api`, but never found it.",
+                "estack": "AssertionError: Timed out retrying after 10000ms: Expected to find element: `#itest-id-deploy-sample-api`, but never found it.\n    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/integration/publisher/API/REST/Create/defaultAPI.create.spec.js:375:8)",
+                "diff": null
+              },
+              "uuid": "61b4177f-40f6-40e1-a485-58925c14b2a7",
+              "parentUUID": "1fe79517-a6de-4c64-985b-d7085f784226",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "a45f5cfe-9305-44eb-bf41-fc5064dbc528",
+            "61b4177f-40f6-40e1-a485-58925c14b2a7"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 32451,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}
