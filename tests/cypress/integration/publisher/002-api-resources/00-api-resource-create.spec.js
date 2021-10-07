@@ -17,41 +17,40 @@ describe("do nothing", () => {
     const password = 'admin'
     const target = '/test';
 
-    let apiId;
     beforeEach(function () {
         cy.loginToPublisher(username, password)
         // login before each test
     })
 
-    // it.only("Add new resource", () => {
-    //     cy.createAPIByRestAPIDesign();
-    //     // Typing the resource name
-    //     const target = '/test';
-    //     cy.get('[data-testid="left-menu-itemresources"]').click();
-    //     cy.get('#operation-target').type(target);
-    //     cy.get('body').click();
-    //     cy.get('[data-testid="add-operation-selection-dropdown"]').click();
+    it.only("Add new resource", () => {
+        cy.createAPIByRestAPIDesign();
+        // Typing the resource name
+        const target = '/test';
+        cy.get('[data-testid="left-menu-itemresources"]').click();
+        cy.get('#operation-target').type(target);
+        cy.get('body').click();
+        cy.get('[data-testid="add-operation-selection-dropdown"]').click();
 
-    //     // Checking all the operations
-    //     cy.get('[data-testid="add-operation-get"]').click();
-    //     cy.get('[data-testid="add-operation-post"]').click();
-    //     cy.get('[data-testid="add-operation-put"]').click();
-    //     cy.get('[data-testid="add-operation-patch"]').click();
-    //     cy.get('[data-testid="add-operation-delete"]').click();
-    //     cy.get('[data-testid="add-operation-head"]').click();
+        // Checking all the operations
+        cy.get('[data-testid="add-operation-get"]').click();
+        cy.get('[data-testid="add-operation-post"]').click();
+        cy.get('[data-testid="add-operation-put"]').click();
+        cy.get('[data-testid="add-operation-patch"]').click();
+        cy.get('[data-testid="add-operation-delete"]').click();
+        cy.get('[data-testid="add-operation-head"]').click();
 
-    //     cy.get('body').click();
-    //     cy.get('[data-testid="add-operation-button"]').click();
-    //     cy.get('[data-testid="resources-save-operations"]').click();
+        cy.get('body').click();
+        cy.get('[data-testid="add-operation-button"]').click();
+        cy.get('[data-testid="resources-save-operations"]').click();
 
-    //     // Validating if the resource exists after saving
-    //     cy.get(`[data-testid="operation-${target}-get"]`).should('be.visible');
-    //     cy.get(`[data-testid="operation-${target}-post"]`).should('be.visible');
-    //     cy.get(`[data-testid="operation-${target}-put"]`).should('be.visible');
-    //     cy.get(`[data-testid="operation-${target}-patch"]`).should('be.visible');
-    //     cy.get(`[data-testid="operation-${target}-delete"]`).should('be.visible');
-    //     cy.get(`[data-testid="operation-${target}-head"]`).should('be.visible');
-    // });
+        // Validating if the resource exists after saving
+        cy.get(`[data-testid="operation-${target}-get"]`).should('be.visible');
+        cy.get(`[data-testid="operation-${target}-post"]`).should('be.visible');
+        cy.get(`[data-testid="operation-${target}-put"]`).should('be.visible');
+        cy.get(`[data-testid="operation-${target}-patch"]`).should('be.visible');
+        cy.get(`[data-testid="operation-${target}-delete"]`).should('be.visible');
+        cy.get(`[data-testid="operation-${target}-head"]`).should('be.visible');
+    });
 
     const addApiAndResource = (verb) => {
         cy.createAPIByRestAPIDesign();
@@ -71,58 +70,56 @@ describe("do nothing", () => {
         // Validating if the resource exists after saving
         cy.get(`[data-testid="operation-${target}-${verb}"]`).should('be.visible');
     }
-    // it.only("Add/ delete Query/ path parameters for resources", () => {
-    //     const verb = 'get';
-    //     const paramType = 'query';
-    //     const paramName = 'count';
-    //     const paramDataType = 'string';
+    it.only("Add delete query path parameters for resources", () => {
+        const verb = 'get';
+        const paramType = 'query';
+        const paramName = 'count';
+        const paramDataType = 'string';
 
-    //     addApiAndResource(verb);
+        addApiAndResource(verb);
 
-    //     cy.get(`[data-testid="operation-${target}-${verb}"]`).click();
-    //     cy.get(`[data-testid="add-parameter-${target}-${verb}-param-type"]`).click();
-    //     cy.get(`[data-testid="add-parameter-${target}-${verb}-${paramType}"]`).click();
+        cy.get(`[data-testid="operation-${target}-${verb}"]`).click();
+        cy.get(`[data-testid="add-parameter-${target}-${verb}-param-type"]`).click();
+        cy.get(`[data-testid="add-parameter-${target}-${verb}-${paramType}"]`).click();
 
-    //     cy.get(`[data-testid="add-parameter-${target}-${verb}-param-name"]`).click();
-    //     cy.get(`[data-testid="add-parameter-${target}-${verb}-param-name"] input`).type(paramName);
+        cy.get(`[data-testid="add-parameter-${target}-${verb}-param-name"]`).click();
+        cy.get(`[data-testid="add-parameter-${target}-${verb}-param-name"] input`).type(paramName);
 
-    //     // Clicking the parameter data type drop down
-    //     cy.get(`[data-testid="add-parameter-${target}-${verb}-param-data-type"]`).click();
-    //     cy.get(`[data-testid="add-parameter-${target}-${verb}-${paramDataType}"]`).click();
-    //     cy.get(`[data-testid="add-parameter-${target}-${verb}-add-btn"]`).click();
+        // Clicking the parameter data type drop down
+        cy.get(`[data-testid="add-parameter-${target}-${verb}-param-data-type"]`).click();
+        cy.get(`[data-testid="add-parameter-${target}-${verb}-${paramDataType}"]`).click();
+        cy.get(`[data-testid="add-parameter-${target}-${verb}-add-btn"]`).click();
 
-    //     // Save the resources
-    //     cy.get('[data-testid="resources-save-operations"]').click();
+        // Save the resources
+        cy.get('[data-testid="resources-save-operations"]').click();
 
-    //     // Validating if the param exists after saving
-    //     cy.get(`[data-testid="param-list-${paramType}-${paramName}-${paramDataType}"]`).should('be.visible');
-
-
-    // });
-
-    // it.only("Add advance throttling policies per resource", () => {
-    //     const verb = 'get';
-    //     const rateLimitName = '50KPerMin';
-    //     addApiAndResource(verb);
-
-    //     // Click the operation level radio button on the top
-    //     cy.get('[data-testid="api-rate-limiting-operation-level"]').click();
-
-    //     // expand the section
-    //     cy.get(`[data-testid="operation-${target}-${verb}"]`).click();
-
-    //     cy.get(`[data-testid="${target}-${verb}-operation-rate-limiting-policy"]`).click();
-    //     cy.get(`[data-testid="${target}-${verb}-operation-rate-limiting-policy-${rateLimitName}"]`).click();
-
-    //     // Save the resources
-    //     cy.get('[data-testid="resources-save-operations"]').click();
-
-    //     cy.get(`[data-testid="${target}-${verb}-operation-rate-limiting-policy"] .selected`)
-    //         .contains(rateLimitName)
-    //         .should('be.visible');
+        // Validating if the param exists after saving
+        cy.get(`[data-testid="param-list-${paramType}-${paramName}-${paramDataType}"]`).should('be.visible');
 
 
-    // });
+    });
+
+    it.only("Add advance throttling policies per resource", () => {
+        const verb = 'get';
+        const rateLimitName = '50KPerMin';
+        addApiAndResource(verb);
+
+        // Click the operation level radio button on the top
+        cy.get('[data-testid="api-rate-limiting-operation-level"]').click();
+
+        // expand the section
+        cy.get(`[data-testid="operation-${target}-${verb}"]`).click();
+
+        cy.get(`[data-testid="${target}-${verb}-operation-rate-limiting-policy"]`).click();
+        cy.get(`[data-testid="${target}-${verb}-operation-rate-limiting-policy-${rateLimitName}"]`).click();
+
+        // Save the resources
+        cy.get('[data-testid="resources-save-operations"]').click();
+
+        cy.get(`[data-testid="${target}-${verb}-operation-rate-limiting-policy"] .selected`)
+            .contains(rateLimitName)
+            .should('be.visible');
+    });
 
     it.only("Add and assign scopes for API resources", () => {
         const random_number = Math.floor(Date.now() / 1000);
