@@ -43,7 +43,7 @@ describe("Endpoint testing", () => {
         cy.get('#certificateAlias').type(testAlias);
 
         // upload the cert
-        const filepath = 'api_artifacts/mock_cert.crt';
+        const filepath = 'api_artifacts/sample.crt.pem';
         cy.get('input[type="file"]').attachFile(filepath);
         
         // Click away
