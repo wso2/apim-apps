@@ -14,7 +14,6 @@ describe("do nothing", () => {
     const username = 'admin'
     const password = 'admin'
 
-    let apiId;
     beforeEach(function () {
         cy.loginToPublisher(username, password)
         // login before each test
@@ -24,11 +23,17 @@ describe("do nothing", () => {
         const customAuthHeader = '-custom';
         cy.createAPIByRestAPIDesign();
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
-        cy.get('[data-testid="transport-level-security-head"]').click();
-        cy.get('[data-testid="http-transport"]').click();
+        cy.get('[data-testid="application-level-security-head"]').click();
+        // Checking the two options
+        cy.get('[data-testid="api-security-basic-auth-checkbox"]').click();
+        cy.get('[data-testid="api-security-api-key-checkbox"]').click();
+
         cy.get('[data-testid="save-runtime-configurations"]').click();
-        cy.get('[data-testid="transport-level-security-head"]').click();
-        cy.get('[data-testid="http-transport"] input').should('not.be.checked');
+        cy.get('[data-testid="save-runtime-configurations"]').then(() => {
+            cy.get('[data-testid="application-level-security-head"]').click();
+            cy.get('[data-testid="api-security-basic-auth-checkbox"] input').should('be.checked');
+            cy.get('[data-testid="api-security-api-key-checkbox"] input').should('be.checked');
+        })
     });
 
     after(function () {
