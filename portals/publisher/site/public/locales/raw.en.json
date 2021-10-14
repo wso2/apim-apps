@@ -3726,6 +3726,9 @@
   "ServiceCatalog.CreateApi.update.btn.in.progress": {
     "defaultMessage": "Creating API ..."
   },
+  "ServiceCatalog.CreateSoapPassthroughApi.create.api.dialog.helper": {
+    "defaultMessage": "Create SOAP Passthrough API from service {serviceName}"
+  },
   "ServiceCatalog.Listing.Delete.cancel": {
     "defaultMessage": "Cancel"
   },
