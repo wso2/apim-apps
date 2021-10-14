@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         padding: theme.spacing(2),
-        color: theme.palette.text.secondary,
+        color: theme.palette.getContrastText(theme.custom.apiDetailPages.documentBackground),
         minHeight: 400,
         position: 'relative',
         background: theme.custom.apiDetailPages.documentBackground,
