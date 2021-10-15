@@ -349,7 +349,8 @@ class ViewKeys extends React.Component {
                                                 onCopy={() => this.onCopy('keyCopied')}
                                                 classes={{ root: classes.iconButton }}
                                             >
-                                                <IconButton aria-label='Copy to clipboard' classes={{ root: classes.iconButton }}>
+                                                <IconButton aria-label='Copy to clipboard'
+                                                            classes={{root: classes.iconButton}}>
                                                     <Icon color='secondary'>
                                                         file_copy
                                                     </Icon>
@@ -492,7 +493,7 @@ class ViewKeys extends React.Component {
             }
         }
 
-        let dialogHead = 'Undefined';
+        let dialogHead;
         if (showCurl) {
             dialogHead = 'Get CURL to Generate Access Token';
         } else if (showSecretGen) {

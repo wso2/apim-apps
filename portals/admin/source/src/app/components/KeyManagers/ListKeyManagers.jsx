@@ -25,12 +25,11 @@ import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@material-ui/core/Switch';
-import ProviderMenu from './ProviderMenu';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useTheme } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import MenuButton from '../Shared/MenuButton';
-import Grid from "@material-ui/core/Grid";
+import ProviderMenu from './ProviderMenu';
 
 /**
  * API call to get microgateway labels
@@ -41,14 +40,16 @@ function apiCall() {
     return restApi
         .getKeyManagersList()
         .then((result) => {
-            var resultList = result.body.list;
-            resultList.forEach(item => {
-                if(item.tokenType === 'ORIGINAL'){
-                    item.tokenType= 'Direct';
-                } else{
+            const resultList = result.body.list;
+            resultList.forEach((item) => {
+                if (item.tokenType === 'ORIGINAL') {
+                    // eslint-disable-next-line no-param-reassign
+                    item.tokenType = 'Direct';
+                } else {
+                    // eslint-disable-next-line no-param-reassign
                     item.tokenType = 'Exchange';
                 }
-            })
+            });
             return resultList;
         })
         .catch((error) => {
@@ -74,7 +75,10 @@ const useStyles = makeStyles((theme) => {
                 width: '22vw',
             },
             [theme.breakpoints.up('lg')]: {
-                width: '14vw',
+                width: '19vw',
+            },
+            [theme.breakpoints.up('xl')]: {
+                width: '13vw',
             },
             paddingTop: theme.spacing(2),
             paddingBottom: theme.spacing(2),
@@ -102,8 +106,8 @@ export default function ListKeyManagers() {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
                         const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
-                        const tokenType = tableMeta.rowData[tableMeta.rowData.length - 5]
-                        if (tokenType === "ORIGINAL") {
+                        const tokenType = tableMeta.rowData[tableMeta.rowData.length - 5];
+                        if (tokenType === 'ORIGINAL') {
                             return (
                                 <RouterLink to={`/settings/key-managers/external-key-manager/${artifactId}`}>
                                     {value}
@@ -187,7 +191,7 @@ export default function ListKeyManagers() {
                     direction='row'
                     spacing={2}
                 >
-                    <ProviderMenu/>
+                    <ProviderMenu />
                 </Grid>
             )}
         >
@@ -220,7 +224,6 @@ export default function ListKeyManagers() {
                 const kmName = rowData[0];
                 const kmId = rowData[4];
                 restApi.keyManagerGet(kmId).then((result) => {
-                    console.log('------------------',result);
                     let editState;
                     if (result.body.name !== null) {
                         editState = {

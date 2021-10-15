@@ -22,11 +22,9 @@ import LandingMenuItem from '../Shared/LandingMenuItem';
 import ProviderCreateMenuSection from '../Shared/ProviderCreateMenuSection';
 
 
-
 const ProviderMenu = () => {
     const Component = ProviderCreateMenuSection;
-
-    return(
+    return (
         <Component
             id='provider-type-menu'
             title={(
@@ -69,6 +67,6 @@ const ProviderMenu = () => {
             </LandingMenuItem>
         </Component>
     );
-}
+};
 
 export default ProviderMenu;

@@ -241,7 +241,7 @@ function Environments(props) {
                         </Paper>
                     </>
                 )}
-                {!selectedEndpoint && (api.lifeCycleStatus !== 'PROTOTYPED') && (
+                {!selectedEndpoint && (
                     <Typography variant='subtitle2' component='p' gutterBottom align='left' className={classes.sectionTitle}>
                         <FormattedMessage
                             id='Apis.Details.Environments.label.noendpoint'

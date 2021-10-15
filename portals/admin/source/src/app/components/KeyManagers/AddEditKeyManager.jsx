@@ -16,41 +16,45 @@
  * under the License.
  */
 
-import React, {useEffect, useReducer, useState} from 'react';
-import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import {makeStyles} from '@material-ui/core/styles';
-import Checkbox from '@material-ui/core/Checkbox';
-import ChipInput from 'material-ui-chip-input';
-import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import {FormattedMessage, useIntl} from 'react-intl';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import {Link as RouterLink} from 'react-router-dom';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import clsx from 'clsx';
-import Radio from '@material-ui/core/Radio';
-import {FormControlLabel, MenuItem, Typography,} from '@material-ui/core';
+import {
+    FormControlLabel,
+    MenuItem,
+    Typography,
+} from '@material-ui/core';
+import { FormattedMessage, useIntl } from 'react-intl';
+import React, { useEffect, useReducer, useState } from 'react';
+
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import {useAppContext} from 'AppComponents/Shared/AppContext';
-import cloneDeep from 'lodash.clonedeep';
+import BlockingProgress from 'AppComponents/Shared/BlockingProgress';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import KeyValidations from 'AppComponents/KeyManagers/KeyValidations';
-import isEmpty from 'lodash.isempty';
-import Select from '@material-ui/core/Select';
+import Certificates from 'AppComponents/KeyManagers/Certificates';
+import Checkbox from '@material-ui/core/Checkbox';
+import ChipInput from 'material-ui-chip-input';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ClaimMappings from 'AppComponents/KeyManagers/ClaimMapping';
+import Collapse from '@material-ui/core/Collapse';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import KeyManagerConfiguration from 'AppComponents/KeyManagers/KeyManagerConfiguration';
-import ClaimMappings from 'AppComponents/KeyManagers/ClaimMapping';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Certificates from 'AppComponents/KeyManagers/Certificates';
-import BlockingProgress from 'AppComponents/Shared/BlockingProgress';
-
+import KeyValidations from 'AppComponents/KeyManagers/KeyValidations';
+import PropTypes from 'prop-types';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import { Link as RouterLink } from 'react-router-dom';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import cloneDeep from 'lodash.clonedeep';
+import clsx from 'clsx';
+import isEmpty from 'lodash.isempty';
+import { makeStyles } from '@material-ui/core/styles';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -128,7 +132,7 @@ const residentKeyManagerName = 'Resident Key Manager';
  * @returns {Promise}
  */
 function reducer(state, newValue) {
-    const {field, value} = newValue;
+    const { field, value } = newValue;
     switch (field) {
         case 'name':
         case 'description':
@@ -136,7 +140,9 @@ function reducer(state, newValue) {
         case 'introspectionEndpoint':
         case 'clientRegistrationEndpoint':
         case 'tokenEndpoint':
+        case 'displayTokenEndpoint':
         case 'revokeEndpoint':
+        case 'displayRevokeEndpoint':
         case 'userInfoEndpoint':
         case 'authorizeEndpoint':
         case 'issuer':
@@ -156,7 +162,7 @@ function reducer(state, newValue) {
         case 'scopesClaim':
         case 'certificates':
         case 'wellKnownEndpoint':
-            return {...state, [field]: value};
+            return { ...state, [field]: value };
         case 'all':
             return value;
         default:
@@ -174,8 +180,8 @@ function AddEditKeyManager(props) {
     const [saving, setSaving] = useState(false);
     const [importingConfig, setImportingConfig] = useState(false);
     const [isResidentKeyManager, setIsResidentKeyManager] = useState(false);
-    const {match: {params: {id}}, history} = props;
-    const {settings} = useAppContext();
+    const { match: { params: { id } }, history } = props;
+    const { settings } = useAppContext();
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -189,7 +195,9 @@ function AddEditKeyManager(props) {
         introspectionEndpoint: '',
         clientRegistrationEndpoint: '',
         tokenEndpoint: '',
+        displayTokenEndpoint: '',
         revokeEndpoint: '',
+        displayRevokeEndpoint: '',
         userInfoEndpoint: '',
         authorizeEndpoint: '',
         issuer: '',
@@ -219,7 +227,7 @@ function AddEditKeyManager(props) {
     const {
         name, description, type, displayName, wellKnownEndpoint,
         introspectionEndpoint, clientRegistrationEndpoint,
-        tokenEndpoint, revokeEndpoint,
+        tokenEndpoint, revokeEndpoint, displayTokenEndpoint, displayRevokeEndpoint,
         userInfoEndpoint, authorizeEndpoint,
         issuer, scopeManagementEndpoint, availableGrantTypes, consumerKeyClaim, scopesClaim,
         enableTokenGeneration, enableMapOAuthConsumerApps, certificates,
@@ -231,19 +239,16 @@ function AddEditKeyManager(props) {
     const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
-                                                      type: key,
-                                                      defaultConsumerKeyClaim,
-                                                      defaultScopesClaim,
-                                                      configurations,
-                                                  }) => {
+                type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations,
+            }) => {
                 if (key === keyManagerType) {
                     if (!id) {
                         if (defaultConsumerKeyClaim) {
-                            dispatch({field: 'consumerKeyClaim', value: defaultConsumerKeyClaim});
+                            dispatch({ field: 'consumerKeyClaim', value: defaultConsumerKeyClaim });
                         }
                     }
                     if (defaultScopesClaim) {
-                        dispatch({field: 'scopesClaim', value: defaultScopesClaim});
+                        dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
                     }
                     setKeyManagerConfiguration(configurations);
                     return true;
@@ -273,7 +278,7 @@ function AddEditKeyManager(props) {
                         setIsResidentKeyManager(true);
                     }
                 }
-                dispatch({field: 'all', value: editState});
+                dispatch({ field: 'all', value: editState });
                 updateKeyManagerConnectorConfiguration(editState.type);
             });
         } else {
@@ -322,15 +327,15 @@ function AddEditKeyManager(props) {
 
     const onChange = (e) => {
         if (e.target.type === 'checkbox') {
-            dispatch({field: e.target.name, value: e.target.checked});
+            dispatch({ field: e.target.name, value: e.target.checked });
         } else {
             if (e.target.name === 'type') {
                 updateKeyManagerConnectorConfiguration(e.target.value);
             }
             if (e.target.name === 'enableSelfValidationJWT') {
-                dispatch({field: e.target.name, value: e.target.value === 'selfValidate'});
+                dispatch({ field: e.target.name, value: e.target.value === 'selfValidate' });
             } else {
-                dispatch({field: e.target.name, value: e.target.value});
+                dispatch({ field: e.target.name, value: e.target.value });
             }
         }
     };
@@ -405,7 +410,7 @@ function AddEditKeyManager(props) {
             setSaving(false);
             history.push('/settings/key-managers/');
         }).catch((e) => {
-            const {response} = e;
+            const { response } = e;
             if (response.body) {
                 Alert.error(response.body.description);
             }
@@ -414,21 +419,21 @@ function AddEditKeyManager(props) {
         return true;
     };
     const setClaimMapping = (updatedClaimMappings) => {
-        dispatch({field: 'claimMapping', value: updatedClaimMappings});
+        dispatch({ field: 'claimMapping', value: updatedClaimMappings });
     };
     const setAdditionalProperties = (key, value) => {
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
         clonedAdditionalProperties[key] = value;
-        dispatch({field: 'additionalProperties', value: clonedAdditionalProperties});
+        dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
     };
     const setTokenValidations = (value) => {
-        dispatch({field: 'tokenValidation', value});
+        dispatch({ field: 'tokenValidation', value });
     };
     const importKMConfig = () => {
-        const payload = {url: wellKnownEndpoint, type};
+        const payload = { url: wellKnownEndpoint, type };
         setImportingConfig(true);
         restApi.keyManagersDiscover(payload).then((result) => {
-            const {obj: {value}} = result;
+            const { obj: { value } } = result;
             for (const key of Object.keys(value)) {
                 if (key === 'name' || key === 'description' || key === 'displayName') {
                     value[key] = state[key];
@@ -453,11 +458,17 @@ function AddEditKeyManager(props) {
                     delete value[key];
                 }
             }
-            dispatch({field: 'all', value});
-            updateKeyManagerConnectorConfiguration(value.type);
+            const modifiedValue = {
+                ...value,
+                displayTokenEndpoint: value.tokenEndpoint,
+                displayRevokeEndpoint: value.revokeEndpoint,
+            };
+
+            dispatch({ field: 'all', value: modifiedValue });
+            updateKeyManagerConnectorConfiguration(modifiedValue.type);
             setImportingConfig(false);
         }).catch((e) => {
-            const {response} = e;
+            const { response } = e;
             if (response.body) {
                 Alert.error(response.body.description);
             }
@@ -483,7 +494,7 @@ function AddEditKeyManager(props) {
                     defaultMessage: 'Key Manager - Create new',
                 })
             }
-            help={<div/>}
+            help={<div />}
         >
             {importingConfig && (
                 <BlockingProgress message={intl.formatMessage({
@@ -560,10 +571,10 @@ function AddEditKeyManager(props) {
                                                 )}
                                                 error={hasErrors('displayName', displayName, validating)}
                                                 helperText={hasErrors('displayName', displayName, validating)
-                                                || intl.formatMessage({
-                                                    id: 'KeyManagers.AddEditKeyManager.form.displayName.help',
-                                                    defaultMessage: 'Display Name of the Key Manager.',
-                                                })}
+                                                    || intl.formatMessage({
+                                                        id: 'KeyManagers.AddEditKeyManager.form.displayName.help',
+                                                        defaultMessage: 'Display Name of the Key Manager.',
+                                                    })}
                                             />
                                         </Box>
                                     </Grid>
@@ -599,7 +610,7 @@ function AddEditKeyManager(props) {
                                         className={classes.FormControlRoot}
                                         error={hasErrors('type', type, validating)}
                                     >
-                                        <InputLabel classes={{root: classes.labelRoot}}>
+                                        <InputLabel classes={{ root: classes.labelRoot }}>
                                             <FormattedMessage
                                                 defaultMessage='Key Manager Type'
                                                 id='Admin.KeyManager.form.type'
@@ -610,7 +621,7 @@ function AddEditKeyManager(props) {
                                             name='type'
                                             value={type}
                                             onChange={onChange}
-                                            classes={{select: classes.select}}
+                                            classes={{ select: classes.select }}
                                         >
                                             {settings.keyManagerConfiguration.map((keymanager) => (
                                                 <MenuItem key={keymanager.type} value={keymanager.type}>
@@ -692,7 +703,7 @@ function AddEditKeyManager(props) {
                         <>
                             <Grid item xs={12}>
                                 <Box marginTop={2} marginBottom={2}>
-                                    <hr className={classes.hr}/>
+                                    <hr className={classes.hr} />
                                 </Box>
                             </Grid>
                             <Grid item xs={12} md={12} lg={3}>
@@ -706,7 +717,7 @@ function AddEditKeyManager(props) {
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.endpoints.description'
                                         defaultMessage={'Configure endpoints such as client registration endpoint, '
-                                        + 'the token endpoint for this Key Manager.'}
+                                            + 'the token endpoint for this Key Manager.'}
                                     />
                                 </Typography>
                             </Grid>
@@ -732,10 +743,12 @@ function AddEditKeyManager(props) {
                                             clientRegistrationEndpoint, validating)}
                                         helperText={hasErrors('clientRegistrationEndpoint',
                                             clientRegistrationEndpoint, validating)
-                                        || intl.formatMessage({
-                                            id: 'KeyManagers.AddEditKeyManager.form.clientRegistrationEndpoint.help',
-                                            defaultMessage: 'E.g., https://localhost:9444/client-registration/v0.17/register',
-                                        })}
+                                            || intl.formatMessage({
+                                                id: 'KeyManagers.AddEditKeyManager.form.clientRegistrationEndpoint'
+                                                + '.help',
+                                                defaultMessage: 'E.g., https://localhost:9444/client-registration/'
+                                                + 'v0.17/register',
+                                            })}
                                     />
                                     <TextField
                                         margin='dense'
@@ -757,10 +770,10 @@ function AddEditKeyManager(props) {
                                         helperText={hasErrors('introspectionEndpoint',
                                             introspectionEndpoint,
                                             validating)
-                                        || intl.formatMessage({
-                                            id: 'KeyManagers.AddEditKeyManager.form.introspectionEndpoint.help',
-                                            defaultMessage: 'E.g., https://localhost:9443/oauth2/introspect',
-                                        })}
+                                            || intl.formatMessage({
+                                                id: 'KeyManagers.AddEditKeyManager.form.introspectionEndpoint.help',
+                                                defaultMessage: 'E.g., https://localhost:9443/oauth2/introspect',
+                                            })}
                                     />
                                     <TextField
                                         margin='dense'
@@ -780,7 +793,27 @@ function AddEditKeyManager(props) {
                                         )}
                                         error={hasErrors('tokenEndpoint', tokenEndpoint, validating)}
                                         helperText={hasErrors('tokenEndpoint', tokenEndpoint, validating)
-                                        || intl.formatMessage({
+                                            || intl.formatMessage({
+                                                id: 'KeyManagers.AddEditKeyManager.form.tokenEndpoint.help',
+                                                defaultMessage: 'E.g., https://localhost:9443/oauth2/token',
+                                            })}
+                                    />
+                                    <TextField
+                                        margin='dense'
+                                        name='displayTokenEndpoint'
+                                        fullWidth
+                                        variant='outlined'
+                                        value={displayTokenEndpoint}
+                                        onChange={onChange}
+                                        label={(
+                                            <span>
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.form.displayTokenEndpoint'
+                                                    defaultMessage='Display Token Endpoint'
+                                                />
+                                            </span>
+                                        )}
+                                        helperText={intl.formatMessage({
                                             id: 'KeyManagers.AddEditKeyManager.form.tokenEndpoint.help',
                                             defaultMessage: 'E.g., https://localhost:9443/oauth2/token',
                                         })}
@@ -803,10 +836,32 @@ function AddEditKeyManager(props) {
                                         )}
                                         error={hasErrors('revokeEndpoint', revokeEndpoint, validating)}
                                         helperText={hasErrors('revokeEndpoint', revokeEndpoint, validating)
-                                        || intl.formatMessage({
-                                            id: 'KeyManagers.AddEditKeyManager.form.revokeEndpoint.help',
-                                            defaultMessage: 'E.g., https://localhost:9443/oauth2/revoke',
-                                        })}
+                                            || intl.formatMessage({
+                                                id: 'KeyManagers.AddEditKeyManager.form.revokeEndpoint.help',
+                                                defaultMessage: 'E.g., https://localhost:9443/oauth2/revoke',
+                                            })}
+                                    />
+                                    <TextField
+                                        margin='dense'
+                                        name='displayRevokeEndpoint'
+                                        fullWidth
+                                        variant='outlined'
+                                        value={displayRevokeEndpoint}
+                                        onChange={onChange}
+                                        label={(
+                                            <span>
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.form.displayRevokeEndpoint'
+                                                    defaultMessage='Display Revoke Endpoint'
+                                                />
+                                            </span>
+                                        )}
+                                        helperText={
+                                            intl.formatMessage({
+                                                id: 'KeyManagers.AddEditKeyManager.form.revokeEndpoint.help',
+                                                defaultMessage: 'E.g., https://localhost:9443/oauth2/revoke',
+                                            })
+                                        }
                                     />
                                     <TextField
                                         margin='dense'
@@ -867,10 +922,9 @@ function AddEditKeyManager(props) {
 
                             <Grid item xs={12}>
                                 <Box marginTop={2} marginBottom={2}>
-                                    <hr className={classes.hr}/>
+                                    <hr className={classes.hr} />
                                 </Box>
                             </Grid>
-
                             <Grid item xs={12} md={12} lg={3}>
                                 <Typography color='inherit' variant='subtitle2' component='div'>
                                     <FormattedMessage
@@ -928,9 +982,77 @@ function AddEditKeyManager(props) {
                             </Grid>
                         </>
                     )}
+                    {isResidentKeyManager && (
+                        <>
+                            <Grid item xs={12}>
+                                <Box marginTop={2} marginBottom={2}>
+                                    <hr className={classes.hr} />
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={3}>
+                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                    <FormattedMessage
+                                        id='KeyManagers.AddEditKeyManager.endpoints'
+                                        defaultMessage='Key Manager Endpoints'
+                                    />
+                                </Typography>
+                                <Typography color='inherit' variant='caption' component='p'>
+                                    <FormattedMessage
+                                        id='KeyManagers.AddEditKeyManager.resident.endpoints.description'
+                                        defaultMessage={'Configure display endpoints such as display token endpoint, '
+                                            + 'display revoke endpoint for this Key Manager.'}
+                                    />
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={9}>
+                                <Box component='div' m={1}>
+                                    <TextField
+                                        margin='dense'
+                                        name='displayTokenEndpoint'
+                                        fullWidth
+                                        variant='outlined'
+                                        value={displayTokenEndpoint}
+                                        onChange={onChange}
+                                        label={(
+                                            <span>
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.form.displayTokenEndpoint'
+                                                    defaultMessage='Display Token Endpoint'
+                                                />
+                                            </span>
+                                        )}
+                                        helperText={intl.formatMessage({
+                                            id: 'KeyManagers.AddEditKeyManager.form.tokenEndpoint.help',
+                                            defaultMessage: 'E.g., https://localhost:9443/oauth2/token',
+                                        })}
+                                    />
+                                    <TextField
+                                        margin='dense'
+                                        name='displayRevokeEndpoint'
+                                        fullWidth
+                                        variant='outlined'
+                                        value={displayRevokeEndpoint}
+                                        onChange={onChange}
+                                        label={(
+                                            <span>
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.form.displayRevokeEndpoint'
+                                                    defaultMessage='Display Revoke Endpoint'
+                                                />
+                                            </span>
+                                        )}
+                                        helperText={intl.formatMessage({
+                                            id: 'KeyManagers.AddEditKeyManager.form.revokeEndpoint.help',
+                                            defaultMessage: 'E.g., https://localhost:9443/oauth2/revoke',
+                                        })}
+                                    />
+                                </Box>
+                            </Grid>
+                        </>
+                    )}
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
+                            <hr className={classes.hr} />
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={3}>
@@ -944,7 +1066,7 @@ function AddEditKeyManager(props) {
                             <FormattedMessage
                                 id='KeyManagers.AddEditKeyManager.grant.types.description'
                                 defaultMessage={'Add the supported grant types by the'
-                                + ' Key Manager. Press enter to add each grant.'}
+                                    + ' Key Manager. Press enter to add each grant.'}
                             />
                         </Typography>
                     </Grid>
@@ -964,7 +1086,7 @@ function AddEditKeyManager(props) {
                                     const filteredGrantTypes = availableGrantTypes.filter(
                                         (grantType) => grantType !== grantToDelete,
                                     );
-                                    dispatch({field: 'availableGrantTypes', value: filteredGrantTypes});
+                                    dispatch({ field: 'availableGrantTypes', value: filteredGrantTypes });
                                 }}
                                 helperText={(
                                     <div className={classes.chipHelper}>
@@ -980,7 +1102,7 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
+                            <hr className={classes.hr} />
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={3}>
@@ -999,12 +1121,12 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <Certificates certificates={certificates} dispatch={dispatch}/>
+                            <Certificates certificates={certificates} dispatch={dispatch} />
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
+                            <hr className={classes.hr} />
                         </Box>
                     </Grid>
                     {(keymanagerConnectorConfigurations && keymanagerConnectorConfigurations.length > 0) && (
@@ -1036,7 +1158,7 @@ function AddEditKeyManager(props) {
                             </Grid>
                             <Grid item xs={12}>
                                 <Box marginTop={2} marginBottom={2}>
-                                    <hr className={classes.hr}/>
+                                    <hr className={classes.hr} />
                                 </Box>
                             </Grid>
                         </>
@@ -1140,11 +1262,11 @@ function AddEditKeyManager(props) {
                                         name='enableSelfValidationJWT'
                                         value={enableSelfValidationJWT ? 'selfValidate' : 'useIntrospect'}
                                         onChange={onChange}
-                                        style={{flexDirection: 'row', paddingLeft: 16}}
+                                        style={{ flexDirection: 'row', paddingLeft: 16 }}
                                     >
                                         <FormControlLabel
                                             value='selfValidate'
-                                            control={<Radio/>}
+                                            control={<Radio />}
                                             label={intl.formatMessage({
                                                 id: 'KeyManagers.AddEditKeyManager.selfvalidate',
                                                 defaultMessage: 'Self validate JWT',
@@ -1152,7 +1274,7 @@ function AddEditKeyManager(props) {
                                         />
                                         <FormControlLabel
                                             value='useIntrospect'
-                                            control={<Radio/>}
+                                            control={<Radio />}
                                             label={intl.formatMessage({
                                                 id: 'KeyManagers.AddEditKeyManager.useIntrospect',
                                                 defaultMessage: 'Use introspect',
@@ -1184,7 +1306,7 @@ function AddEditKeyManager(props) {
                                     variant='subtitle2'
                                     component='a'
                                     onClick={handleExpandClick}
-                                    style={{cursor: 'pointer'}}
+                                    style={{ cursor: 'pointer' }}
                                 >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.claim.mappings.title'
@@ -1199,7 +1321,7 @@ function AddEditKeyManager(props) {
                                     aria-expanded={expanded}
                                     aria-label='show more'
                                 >
-                                    <ExpandMoreIcon/>
+                                    <ExpandMoreIcon />
                                 </IconButton>
                             </Box>
                             <Box>
@@ -1214,7 +1336,7 @@ function AddEditKeyManager(props) {
                                         color='inherit'
                                         variant='caption'
                                         component='div'
-                                        style={{paddingLeft: 16}}
+                                        style={{ paddingLeft: 16 }}
                                     >
                                         <FormattedMessage
                                             id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help'
@@ -1227,13 +1349,13 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
+                            <hr className={classes.hr} />
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
                         <Box component='span' m={1}>
                             <Button variant='contained' color='primary' onClick={formSaveCallback}>
-                                {saving ? (<CircularProgress size={16}/>) : (
+                                {saving ? (<CircularProgress size={16} />) : (
                                     <>
                                         {id ? (
                                             <FormattedMessage

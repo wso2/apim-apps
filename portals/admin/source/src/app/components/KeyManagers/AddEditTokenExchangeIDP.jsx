@@ -16,20 +16,20 @@
  * under the License.
  */
 
-import React, {useEffect, useReducer, useState} from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import {FormattedMessage, useIntl} from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import {Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
-import {MenuItem, Typography,} from '@material-ui/core';
+import { MenuItem, Typography } from '@material-ui/core';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import {useAppContext} from 'AppComponents/Shared/AppContext';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import cloneDeep from 'lodash.clonedeep';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
@@ -42,7 +42,7 @@ import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import BlockingProgress from 'AppComponents/Shared/BlockingProgress';
-import Certificates from "AppComponents/KeyManagers/Certificates";
+import Certificates from 'AppComponents/KeyManagers/Certificates';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -113,15 +113,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const residentKeyManagerName = 'Resident Key Manager';
-
 /**
  * Reducer
  * @param {JSON} state The second number.
  * @returns {Promise}
  */
 function reducer(state, newValue) {
-    const {field, value} = newValue;
+    const { field, value } = newValue;
     switch (field) {
         case 'name':
         case 'description':
@@ -150,7 +148,8 @@ function reducer(state, newValue) {
         case 'certificates':
         case 'tokenType':
         case 'wellKnownEndpoint':
-            return {...state, [field]: value};
+        case 'alias':
+            return { ...state, [field]: value };
         case 'all':
             return value;
         default:
@@ -167,9 +166,8 @@ function AddEditTokenExchangeIDP(props) {
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
     const [importingConfig, setImportingConfig] = useState(false);
-    const [isResidentKeyManager, setIsResidentKeyManager] = useState(false);
-    const {match: {params: {id}}, history} = props;
-    const {settings} = useAppContext();
+    const { match: { params: { id } }, history } = props;
+    const { settings } = useAppContext();
 
 
     const defaultKMType = (settings.keyManagerConfiguration
@@ -210,42 +208,16 @@ function AddEditTokenExchangeIDP(props) {
         },
         wellKnownEndpoint: '',
         tokenType: '',
+        alias: 'https://localhost:9443/oauth2/token',
     });
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
         name, description, type, displayName, wellKnownEndpoint,
-        introspectionEndpoint, clientRegistrationEndpoint,
-        tokenEndpoint, revokeEndpoint,
-        userInfoEndpoint, authorizeEndpoint,
-        issuer, scopeManagementEndpoint, availableGrantTypes, consumerKeyClaim, scopesClaim,
-        enableTokenGeneration, enableMapOAuthConsumerApps, certificates,
-        enableOAuthAppCreation, enableSelfValidationJWT, claimMapping, tokenValidation, additionalProperties,
+        tokenEndpoint, issuer, certificates,
+        claimMapping, tokenValidation, alias,
     } = state;
     const [validating, setValidating] = useState(false);
-    const [keymanagerConnectorConfigurations, setKeyManagerConfiguration] = useState([]);
     const restApi = new API();
-    const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
-        if (settings.keyManagerConfiguration) {
-            settings.keyManagerConfiguration.map(({
-                type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations
-            }) => {
-                if (key === keyManagerType) {
-                    if (!id) {
-                        if (defaultConsumerKeyClaim) {
-                            dispatch({field: 'consumerKeyClaim', value: defaultConsumerKeyClaim});
-                        }
-                    }
-                    if (defaultScopesClaim) {
-                        dispatch({field: 'scopesClaim', value: defaultScopesClaim});
-                    }
-                    setKeyManagerConfiguration(configurations);
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-        }
-    };
     useEffect(() => {
         if (id) {
             restApi.keyManagerGet(id).then((result) => {
@@ -261,16 +233,9 @@ function AddEditTokenExchangeIDP(props) {
                     editState = {
                         ...result.body, tokenValidation: newTokenValidation,
                     };
-
-                    if (result.body.name === residentKeyManagerName) {
-                        setIsResidentKeyManager(true);
-                    }
                 }
-                dispatch({field: 'all', value: editState});
-                updateKeyManagerConnectorConfiguration(editState.type);
+                dispatch({ field: 'all', value: editState });
             });
-        } else {
-            updateKeyManagerConnectorConfiguration(defaultKMType);
         }
     }, []);
 
@@ -297,50 +262,18 @@ function AddEditTokenExchangeIDP(props) {
             case 'displayName':
             case 'issuer':
             case 'tokenEndpoint':
+            default:
         }
         return error;
     };
 
     const onChange = (e) => {
         if (e.target.type === 'checkbox') {
-            dispatch({field: e.target.name, value: e.target.checked});
+            dispatch({ field: e.target.name, value: e.target.checked });
+        } else if (e.target.name === 'enableSelfValidationJWT') {
+            dispatch({ field: e.target.name, value: e.target.value === 'selfValidate' });
         } else {
-            if (e.target.name === 'type') {
-                updateKeyManagerConnectorConfiguration(e.target.value);
-            }
-            if (e.target.name === 'identityProviderType') {
-                if (e.target.value === 'tokenExchange') {
-                    setIsTokenExchange(true)
-                } else {
-                    setIsTokenExchange(false)
-                }
-            }
-            if (e.target.name === 'enableSelfValidationJWT') {
-                dispatch({field: e.target.name, value: e.target.value === 'selfValidate'});
-            } else {
-                dispatch({field: e.target.name, value: e.target.value});
-            }
-        }
-    };
-
-    const formHasErrors = (validatingActive = false) => {
-        let connectorConfigHasErrors = false;
-        keymanagerConnectorConfigurations.forEach((connector) => {
-            if (connector.required && (!additionalProperties[connector.name]
-                || additionalProperties[connector.name] === '')) {
-                connectorConfigHasErrors = true;
-            }
-        });
-
-        if (hasErrors('name', name, validatingActive)
-            || hasErrors('displayName', displayName, validatingActive)
-            || connectorConfigHasErrors
-            || hasErrors('issuer', issuer, validatingActive)
-            || hasErrors('revokeEndpoint', revokeEndpoint, validatingActive)
-        ) {
-            return true;
-        } else {
-            return false;
+            dispatch({ field: e.target.name, value: e.target.value });
         }
     };
     const formSaveCallback = () => {
@@ -354,7 +287,7 @@ function AddEditTokenExchangeIDP(props) {
 
 
         const keymanager = {
-            ...state, tokenValidation: newTokenValidation, tokenType: "EXCHANGED"
+            ...state, tokenValidation: newTokenValidation, tokenType: 'EXCHANGED',
         };
 
         if (id) {
@@ -362,7 +295,7 @@ function AddEditTokenExchangeIDP(props) {
         } else {
             promisedAddKeyManager = restApi.addKeyManager(keymanager);
             promisedAddKeyManager
-                .then((e) => {
+                .then(() => {
                     return (intl.formatMessage({
                         id: 'KeyManager.add.success',
                         defaultMessage: 'Token Exchange Endpoint added successfully.',
@@ -384,7 +317,7 @@ function AddEditTokenExchangeIDP(props) {
             setSaving(false);
             history.push('/settings/key-managers/');
         }).catch((e) => {
-            const {response} = e;
+            const { response } = e;
             if (response.body) {
                 Alert.error(response.body.description);
             }
@@ -393,23 +326,15 @@ function AddEditTokenExchangeIDP(props) {
         return true;
     };
     const setClaimMapping = (updatedClaimMappings) => {
-        dispatch({field: 'claimMapping', value: updatedClaimMappings});
-    };
-    const setAdditionalProperties = (key, value) => {
-        const clonedAdditionalProperties = cloneDeep(additionalProperties);
-        clonedAdditionalProperties[key] = value;
-        dispatch({field: 'additionalProperties', value: clonedAdditionalProperties});
-    };
-    const setTokenValidations = (value) => {
-        dispatch({field: 'tokenValidation', value});
+        dispatch({ field: 'claimMapping', value: updatedClaimMappings });
     };
     const importKMConfig = () => {
-        const payload = {url: wellKnownEndpoint, type};
+        const payload = { url: wellKnownEndpoint, type };
         setImportingConfig(true);
         restApi.keyManagersDiscover(payload).then((result) => {
-            const {obj: {value}} = result;
+            const { obj: { value } } = result;
             for (const key of Object.keys(value)) {
-                if (key === 'name' || key === 'description' || key === 'displayName') {
+                if (key === 'name' || key === 'description' || key === 'displayName' || key === 'alias') {
                     value[key] = state[key];
                 } else if (value[key] === null && key === 'additionalProperties') {
                     value[key] = {};
@@ -432,11 +357,10 @@ function AddEditTokenExchangeIDP(props) {
                     delete value[key];
                 }
             }
-            dispatch({field: 'all', value});
-            updateKeyManagerConnectorConfiguration(value.type);
+            dispatch({ field: 'all', value });
             setImportingConfig(false);
         }).catch((e) => {
-            const {response} = e;
+            const { response } = e;
             if (response.body) {
                 Alert.error(response.body.description);
             }
@@ -462,7 +386,7 @@ function AddEditTokenExchangeIDP(props) {
                     defaultMessage: 'Identity Provider - Create new',
                 })
             }
-            help={<div/>}
+            help={<div />}
         >
             {importingConfig && (
                 <BlockingProgress message={intl.formatMessage({
@@ -497,13 +421,13 @@ function AddEditTokenExchangeIDP(props) {
                                         name='name'
                                         label={(
                                             <span>
-                                                    <FormattedMessage
-                                                        id='KeyManagers.AddEditTokenExchangeIDP.form.name'
-                                                        defaultMessage='Name'
-                                                    />
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditTokenExchangeIDP.form.name'
+                                                    defaultMessage='Name'
+                                                />
 
-                                                    <span className={classes.error}>*</span>
-                                                </span>
+                                                <span className={classes.error}>*</span>
+                                            </span>
                                         )}
                                         fullWidth
                                         variant='outlined'
@@ -529,12 +453,12 @@ function AddEditTokenExchangeIDP(props) {
                                             onChange={onChange}
                                             label={(
                                                 <span>
-                                                        <FormattedMessage
-                                                            id='Admin.KeyManager.label.DisplayName'
-                                                            defaultMessage='Display Name'
-                                                        />
-                                                        <span className={classes.error}>*</span>
-                                                    </span>
+                                                    <FormattedMessage
+                                                        id='Admin.KeyManager.label.DisplayName'
+                                                        defaultMessage='Display Name'
+                                                    />
+                                                    <span className={classes.error}>*</span>
+                                                </span>
                                             )}
                                             error={hasErrors('displayName', displayName, validating)}
                                             helperText={hasErrors('displayName', displayName, validating)
@@ -573,7 +497,7 @@ function AddEditTokenExchangeIDP(props) {
 
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
+                            <hr className={classes.hr} />
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={3}>
@@ -598,7 +522,7 @@ function AddEditTokenExchangeIDP(props) {
                                 className={classes.FormControlRoot}
                                 error={hasErrors('type', type, validating)}
                             >
-                                <InputLabel classes={{root: classes.labelRoot}}>
+                                <InputLabel classes={{ root: classes.labelRoot }}>
                                     <FormattedMessage
                                         defaultMessage='Provider'
                                         id='Admin.KeyManager.form.type'
@@ -609,7 +533,7 @@ function AddEditTokenExchangeIDP(props) {
                                     name='type'
                                     value={type}
                                     onChange={onChange}
-                                    classes={{select: classes.select}}
+                                    classes={{ select: classes.select }}
                                 >
                                     {settings.keyManagerConfiguration.map((keymanager) => (
                                         <MenuItem key={keymanager.type} value={keymanager.type}>
@@ -629,6 +553,28 @@ function AddEditTokenExchangeIDP(props) {
                                     )}
                                 </FormHelperText>
                             </FormControl>
+                            <TextField
+                                margin='dense'
+                                name='alias'
+                                label={(
+                                    <span>
+                                        <FormattedMessage
+                                            id='Admin.KeyManager.label.token.audience'
+                                            defaultMessage='Allowed Token Audience '
+                                        />
+                                        <span className={classes.error}>*</span>
+                                    </span>
+                                )}
+                                onChange={onChange}
+                                fullWidth
+                                variant='outlined'
+                                value={alias}
+                                helperText={intl.formatMessage({
+                                    id: 'KeyManagers.AddEditKeyManager.form.token.audience.help',
+                                    defaultMessage: 'The Audience of the authorization server which the access token'
+                                        + ' is intended for.',
+                                })}
+                            />
                             <Box display='flex' mt={2} alignItems='flex-start'>
                                 <TextField
                                     margin='dense'
@@ -638,10 +584,13 @@ function AddEditTokenExchangeIDP(props) {
                                     value={wellKnownEndpoint}
                                     onChange={onChange}
                                     label={(
-                                        <FormattedMessage
-                                            id='KeyManagers.AddEditTokenExchangeIDP.form.wellKnownUrl'
-                                            defaultMessage='Well-known URL'
-                                        />
+                                        <span>
+                                            <FormattedMessage
+                                                id='KeyManagers.AddEditTokenExchangeIDP.form.wellKnownUrl'
+                                                defaultMessage='Well-known URL'
+                                            />
+                                            <span className={classes.error}>*</span>
+                                        </span>
                                     )}
                                     helperText={intl.formatMessage({
                                         id: 'KeyManagers.AddEditTokenExchangeIDP.form.wellKnownUrl.help',
@@ -695,12 +644,12 @@ function AddEditTokenExchangeIDP(props) {
                                 onChange={onChange}
                                 label={(
                                     <span>
-                                                <FormattedMessage
-                                                    id='KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint'
-                                                    defaultMessage='Token Endpoint'
-                                                />
-                                                <span className={classes.error}>*</span>
-                                            </span>
+                                        <FormattedMessage
+                                            id='KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint'
+                                            defaultMessage='Token Endpoint'
+                                        />
+                                        <span className={classes.error}>*</span>
+                                    </span>
                                 )}
                                 error={hasErrors('tokenEndpoint', tokenEndpoint, validating)}
                                 helperText={hasErrors('tokenEndpoint', tokenEndpoint, validating)
@@ -713,33 +662,33 @@ function AddEditTokenExchangeIDP(props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                                <Box marginTop={2} marginBottom={2}>
-                                    <hr className={classes.hr}/>
-                                </Box>
-                            </Grid>
+                        <Box marginTop={2} marginBottom={2}>
+                            <hr className={classes.hr} />
+                        </Box>
+                    </Grid>
                     <Grid item xs={12} md={12} lg={3}>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
-                                    <FormattedMessage
-                                        id='KeyManagers.AddEditKeyManager.certificate'
-                                        defaultMessage='Certificates'
-                                    />
-                                </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
-                                    <FormattedMessage
-                                        id='KeyManagers.AddEditKeyManager.certificate.description'
-                                        defaultMessage='Upload or provide the certificate inline.'
-                                    />
-                                </Typography>
-                            </Grid>
+                        <Typography color='inherit' variant='subtitle2' component='div'>
+                            <FormattedMessage
+                                id='KeyManagers.AddEditKeyManager.certificate'
+                                defaultMessage='Certificates'
+                            />
+                        </Typography>
+                        <Typography color='inherit' variant='caption' component='p'>
+                            <FormattedMessage
+                                id='KeyManagers.AddEditKeyManager.certificate.description'
+                                defaultMessage='Upload or provide the certificate inline.'
+                            />
+                        </Typography>
+                    </Grid>
                     <Grid item xs={12} md={12} lg={9}>
-                                <Box component='div' m={1}>
-                                    <Certificates certificates={certificates} dispatch={dispatch}/>
-                                </Box>
-                            </Grid>
+                        <Box component='div' m={1}>
+                            <Certificates certificates={certificates} dispatch={dispatch} />
+                        </Box>
+                    </Grid>
 
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
+                            <hr className={classes.hr} />
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={3}>
@@ -764,7 +713,7 @@ function AddEditTokenExchangeIDP(props) {
                                     variant='subtitle2'
                                     component='a'
                                     onClick={handleExpandClick}
-                                    style={{cursor: 'pointer'}}
+                                    style={{ cursor: 'pointer' }}
                                 >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditTokenExchangeIDP.claim.mappings.title'
@@ -779,7 +728,7 @@ function AddEditTokenExchangeIDP(props) {
                                     aria-expanded={expanded}
                                     aria-label='show more'
                                 >
-                                    <ExpandMoreIcon/>
+                                    <ExpandMoreIcon />
                                 </IconButton>
                             </Box>
                             <Box>
@@ -794,7 +743,7 @@ function AddEditTokenExchangeIDP(props) {
                                         color='inherit'
                                         variant='caption'
                                         component='div'
-                                        style={{paddingLeft: 16}}
+                                        style={{ paddingLeft: 16 }}
                                     >
                                         <FormattedMessage
                                             id='KeyManagers.AddEditTokenExchangeIDP.claim.mappings.hidden.help'
@@ -808,13 +757,13 @@ function AddEditTokenExchangeIDP(props) {
 
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr}/>
+                            <hr className={classes.hr} />
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
                         <Box component='span' m={1}>
                             <Button variant='contained' color='primary' onClick={formSaveCallback}>
-                                {saving ? (<CircularProgress size={16}/>) : (
+                                {saving ? (<CircularProgress size={16} />) : (
                                     <>
                                         {id ? (
                                             <FormattedMessage

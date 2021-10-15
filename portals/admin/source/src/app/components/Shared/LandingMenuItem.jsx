@@ -25,7 +25,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     linkRoot: {
         color: '#34679D',
         '&:hover': {
@@ -46,7 +46,7 @@ const LandingMenuItem = (props) => {
         >
             <Typography
                 color='primary'
-                variant={'h6'}
+                variant='h6'
             >
                 {/* Using React Router Links with Material-UI Links
                 Pattern as suggested in https://material-ui.com/guides/composition/#link */}
@@ -63,7 +63,7 @@ const LandingMenuItem = (props) => {
                 {component.toLowerCase() === 'button' && (
                     <Button
                         id={id}
-                        size={'medium'}
+                        size='medium'
                         onClick={onClick}
                         color='primary'
                         variant='outlined'
@@ -76,7 +76,7 @@ const LandingMenuItem = (props) => {
             <Box
                 color='text.secondary'
                 fontFamily='fontFamily'
-                fontSize={'body2.fontSize'}
+                fontSize='body2.fontSize'
             >
                 {helperText}
             </Box>

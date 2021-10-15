@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Box from '@material-ui/core/Box';
 import cloneDeep from 'lodash.clonedeep';
 import { withStyles } from '@material-ui/core/styles';
@@ -469,7 +469,7 @@ KeyConfiguration.propTypes = {
     isKeysAvailable: PropTypes.bool.isRequired,
     keyManagerConfig: PropTypes.any.isRequired,
     notFound: PropTypes.bool,
-    setGenerateEnabled: PropTypes.func.isRequired,
+    setGenerateEnabled: PropTypes.func,
     updateKeyRequest: PropTypes.func.isRequired,
     validating: PropTypes.bool,
 };

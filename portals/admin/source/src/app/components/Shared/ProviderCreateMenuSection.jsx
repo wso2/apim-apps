@@ -28,26 +28,26 @@ const ProviderCreateMenuSection = (props) => {
 
 
     return (
-        <Grid >
+        <Grid>
             <Box pl={3}>
-            <Box mb={1}>
-                <Typography
-                    variant='h6'
-                    align='left'
+                <Box mb={1}>
+                    <Typography
+                        variant='h6'
+                        align='left'
+                    >
+                        {title}
+                    </Typography>
+                </Box>
+                <Grid
+                    container
+                    direction='column'
+                    justify='flex-start'
+                    alignItems='flex-start'
+                    spacing={1}
                 >
-                    {title}
-                </Typography>
-            </Box>
-            <Grid
-                container
-                direction='column'
-                justify='flex-start'
-                alignItems='flex-start'
-                spacing={1}
-            >
-                {/* Menu links or buttons */}
-                {children}
-            </Grid>
+                    {/* Menu links or buttons */}
+                    {children}
+                </Grid>
             </Box>
         </Grid>
     );

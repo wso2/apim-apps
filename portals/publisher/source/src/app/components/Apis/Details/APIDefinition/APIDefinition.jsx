@@ -761,7 +761,7 @@ class APIDefinition extends React.Component {
                         {api.type !== API.CONSTS.APIProduct && (
                             <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} />
                         )}
-                        {api.serviceInfo && api.serviceInfo.outdated && (
+                        {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
                             <DefinitionOutdated
                                 api={api}
                                 classes={classes}
