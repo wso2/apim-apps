@@ -134,7 +134,7 @@ context: '/devportal'
 proxy_context_path: '/apim',
 */
 var getAppContextForServerUrl = function() {
-    var appContext = app.context;
+    var appContext = new String(app.context);
     var proxyContextPath = app.proxy_context_path;
     if(proxyContextPath !== null && proxyContextPath !== ''){
         appContext = appContext.replace(proxyContextPath, '');
