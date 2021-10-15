@@ -595,8 +595,8 @@ class ViewKeys extends React.Component {
                         </Dialog>
                         {!hashEnabled && (
                             <div className={classes.tokenSection}>
-                                {keyManagerConfig.enableTokenGeneration
-                                    && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials'))
+                                {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
+                                    && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
                                     && (
                                         <Button
                                             variant='outlined'
@@ -626,7 +626,7 @@ class ViewKeys extends React.Component {
                                 </Button>
                             </div>
                         )}
-                        {!supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
+                        {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
                             <Typography variant='caption' gutterBottom>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.client.enable.client.credentials'

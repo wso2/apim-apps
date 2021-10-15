@@ -1483,18 +1483,6 @@
       "value": "Yes"
     }
   ],
-  "Apis.Details.Configuration.Configuration.prototype": [
-    {
-      "type": 0,
-      "value": "Deploy as a Prototype"
-    }
-  ],
-  "Apis.Details.Configuration.Configuration.prototype.endpoints.provided": [
-    {
-      "type": 0,
-      "value": "Prototype Endpoint provided"
-    }
-  ],
   "Apis.Details.Configuration.Configuration.publisher": [
     {
       "type": 0,
@@ -1969,22 +1957,28 @@
       "value": "Signing Algortithm"
     }
   ],
+  "Apis.Details.Configuration.components.Tags.error": [
+    {
+      "type": 0,
+      "value": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = | < > , ' \" \\\\ / ) ."
+    }
+  ],
   "Apis.Details.Configuration.components.Tags.helper": [
     {
       "type": 0,
       "value": "Press `Enter` after typing the tag name to add a new tag"
     }
   ],
+  "Apis.Details.Configuration.components.Tags.limit.error": [
+    {
+      "type": 0,
+      "value": "The tag exceeds the maximum length of 30 characters"
+    }
+  ],
   "Apis.Details.Configuration.components.Tags.title": [
     {
       "type": 0,
       "value": "Tags"
-    }
-  ],
-  "Apis.Details.Configuration.components.Tags.validation.error": [
-    {
-      "type": 0,
-      "value": "The tag contains one or more illegal characters ( ~ ! @ # ; % ^ & * + = } | < > , ' \" \\\\ / ) ."
     }
   ],
   "Apis.Details.Configuration.components.Transports.tooltip": [
@@ -3636,13 +3630,13 @@
   "Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint": [
     {
       "type": 0,
-      "value": "Prototype Endpoint"
+      "value": "Mock Implementation"
     }
   ],
   "Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint.description": [
     {
       "type": 0,
-      "value": "Use the inbuilt JavaScript engine to prototype the API or provide an endpoint to a prototype API. The inbuilt JavaScript engine does support prototype SOAP APIs"
+      "value": "Use the inbuilt JavaScript engine to prototype the API The inbuilt JavaScript engine does support prototype SOAP APIs"
     }
   ],
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint": [
@@ -3655,18 +3649,6 @@
     {
       "type": 0,
       "value": "The direct URI of the web service."
-    }
-  ],
-  "Apis.Details.Endpoints.NewEndpointCreate.default.prototype.endpoints": [
-    {
-      "type": 0,
-      "value": "Prototype Endpoint"
-    }
-  ],
-  "Apis.Details.Endpoints.NewEndpointCreate.prototype.implementation": [
-    {
-      "type": 0,
-      "value": "Prototype Implementation"
     }
   ],
   "Apis.Details.Endpoints.Prototype.InlineEndpoints.script": [
@@ -5243,6 +5225,12 @@
       "value": "Error occurred while updating API"
     }
   ],
+  "Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level": [
+    {
+      "type": 0,
+      "value": "Rate limiting level"
+    }
+  ],
   "Apis.Details.Resources.components.AddOperation.add.tooltip": [
     {
       "type": 0,
@@ -5259,6 +5247,12 @@
     {
       "type": 0,
       "value": "HTTP Verb"
+    }
+  ],
+  "Apis.Details.Resources.components.AddOperation.operation.target.cannot.contains.white.spaces": [
+    {
+      "type": 0,
+      "value": "Operation target cannot contains white spaces"
     }
   ],
   "Apis.Details.Resources.components.AddOperation.operation.target.or.verb.cannot.be.empty.warning": [
@@ -5303,6 +5297,18 @@
       "value": "Delete operation"
     }
   ],
+  "Apis.Details.Resources.components.Operation.disable.security.when.used.in.api.products": [
+    {
+      "type": 0,
+      "value": "Security enabled"
+    }
+  ],
+  "Apis.Details.Resources.components.Operation.security.operation": [
+    {
+      "type": 0,
+      "value": "Security"
+    }
+  ],
   "Apis.Details.Resources.components.Operation.this.operation.used.in.products": [
     {
       "type": 0,
@@ -5321,6 +5327,12 @@
     {
       "type": 0,
       "value": "Undo Delete"
+    }
+  ],
+  "Apis.Details.Resources.components.enabled.security": [
+    {
+      "type": 0,
+      "value": "No security"
     }
   ],
   "Apis.Details.Resources.components.operationComponents.AWSLambdaSettings.Title": [
@@ -7795,6 +7807,16 @@
     {
       "type": 0,
       "value": "Creating API ..."
+    }
+  ],
+  "ServiceCatalog.CreateSoapPassthroughApi.create.api.dialog.helper": [
+    {
+      "type": 0,
+      "value": "Create SOAP Passthrough API from service "
+    },
+    {
+      "type": 1,
+      "value": "serviceName"
     }
   ],
   "ServiceCatalog.Listing.Delete.cancel": [

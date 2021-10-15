@@ -22,6 +22,10 @@ const Settings = {
             timeout: 4000, // Defines the timeout for the above periodical session status check
         },
         propertyDisplaySuffix: '__display',
+        sanitizeHtml: {
+            allowedTags: false, // You can pass the properties described at https://www.npmjs.com/package/sanitize-html
+            allowedAttributes: false,
+        }
     },
     grantTypes: {
         authorization_code: 'Code',
