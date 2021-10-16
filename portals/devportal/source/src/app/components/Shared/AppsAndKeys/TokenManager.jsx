@@ -263,13 +263,13 @@ class TokenManager extends React.Component {
     }
 
     handleTabChange = (event, newSelectedTab) => {
-        const {keys, keyManagers, keyRequest} = this.state;
-        const {keyType} = this.props;
+        const { keys, keyManagers, keyRequest } = this.state;
+        const { keyType } = this.props;
         const selectedKM = keyManagers.find((x) => x.name === newSelectedTab);
-        const {availableGrantTypes} = selectedKM;
+        const { availableGrantTypes } = selectedKM;
 
         if (keys.size > 0 && keys.get(newSelectedTab) && keys.get(newSelectedTab).keyType === keyType) {
-            const {callbackUrl, supportedGrantTypes, additionalProperties} = keys.get(newSelectedTab);
+            const { callbackUrl, supportedGrantTypes, additionalProperties } = keys.get(newSelectedTab);
             const newRequest = {
                 ...keyRequest,
                 callbackUrl,
@@ -295,7 +295,7 @@ class TokenManager extends React.Component {
      * load application key generation ui
      */
     loadApplication = () => {
-        const {keyType} = this.props;
+        const { keyType } = this.props;
         if (this.appId) {
             const api = new API();
             const promisedKeyManagers = api.getKeyManagers();
@@ -310,11 +310,11 @@ class TokenManager extends React.Component {
                     });
 
                     if (responseKeyManagerList.length === 0) {
-                        this.setState({keyManagers: []});
+                        this.setState({ keyManagers: [] });
                         return;
                     }
                     // Selecting a key manager from the list of key managers.
-                    let {selectedTab} = this.state;
+                    let { selectedTab } = this.state;
                     if (!selectedTab && responseKeyManagerList.length > 0) {
                         selectedTab = responseKeyManagerList.find((x) => x.name === 'Resident Key Manager') ? 'Resident Key Manager'
                             : responseKeyManagerList[0].name;
@@ -322,10 +322,10 @@ class TokenManager extends React.Component {
                     const selectdKM = responseKeyManagerList.find((x) => x.name === selectedTab);
                     // processing promisedGetKeys response
                     const keys = response[1];
-                    const {keyRequest} = this.state;
+                    const { keyRequest } = this.state;
 
                     if (keys.size > 0 && keys.get(selectedTab) && keys.get(selectedTab).keyType === keyType) {
-                        const {callbackUrl, supportedGrantTypes, additionalProperties, mode} = keys.get(selectedTab);
+                        const { callbackUrl, supportedGrantTypes, additionalProperties, mode } = keys.get(selectedTab);
                         const newRequest = {
                             ...keyRequest,
                             callbackUrl: callbackUrl || '',
@@ -357,7 +357,7 @@ class TokenManager extends React.Component {
                         console.error(error);
                     }
                     if (error.status === 404) {
-                        this.setState({notFound: true});
+                        this.setState({ notFound: true });
                     }
                 });
         }
@@ -368,7 +368,7 @@ class TokenManager extends React.Component {
      * @param {Object} keyRequest parameters requried for key generation request
      */
     updateKeyRequest(keyRequest) {
-        this.setState({keyRequest});
+        this.setState({ keyRequest });
     }
 
     /**
@@ -377,9 +377,9 @@ class TokenManager extends React.Component {
      * @memberof KeyConfiguration
      */
     generateKeys() {
-        const {keyRequest, keys, selectedTab} = this.state;
+        const { keyRequest, keys, selectedTab } = this.state;
         const {
-            keyType, updateSubscriptionData, selectedApp: {tokenType, hashEnabled}, intl,
+            keyType, updateSubscriptionData, selectedApp: { tokenType, hashEnabled }, intl,
         } = this.props;
 
         if ((keyRequest.selectedGrantTypes.includes('implicit')

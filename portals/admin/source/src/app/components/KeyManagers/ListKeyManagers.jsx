@@ -26,7 +26,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
-
 import Grid from '@material-ui/core/Grid';
 import MenuButton from '../Shared/MenuButton';
 import ProviderMenu from './ProviderMenu';

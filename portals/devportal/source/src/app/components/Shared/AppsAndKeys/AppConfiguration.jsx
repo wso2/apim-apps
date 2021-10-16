@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -25,11 +25,11 @@ import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
-import {injectIntl} from 'react-intl';
+import { injectIntl } from 'react-intl';
 import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import Box from '@material-ui/core/Box';
@@ -90,7 +90,7 @@ const AppConfiguration = (props) => {
      * @param {*} event event fired
      */
     const handleAppRequestChange = (event) => {
-        const {target: currentTarget} = event;
+        const { target: currentTarget } = event;
         setSelectedValue(currentTarget.value);
         handleChange('additionalProperties', event);
     }
@@ -102,8 +102,8 @@ const AppConfiguration = (props) => {
     }, [previousValue])
 
     const setCheckboxValue = () => {
-        return (typeof selectedValue === 'string' && selectedValue === 'true')
-            || (typeof selectedValue !== 'string' && selectedValue === true);
+        return ( typeof selectedValue === 'string' && selectedValue === 'true' )
+            || ( typeof selectedValue !== 'string' && selectedValue === true );
     }
 
     return (
@@ -263,7 +263,7 @@ AppConfiguration.propTypes = {
     handleChange: PropTypes.func.isRequired,
     config: PropTypes.any.isRequired,
     notFound: PropTypes.bool,
-    intl: PropTypes.shape({formatMessage: PropTypes.func}).isRequired,
+    intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
 
 export default injectIntl(withStyles(styles)(AppConfiguration));
