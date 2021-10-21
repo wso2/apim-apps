@@ -800,4 +800,36 @@ export default class API extends Resource {
             return promiseChangePassword;
         }
     }
+
+
+    /**
+     * Get the AsyncAPI Definition of an API
+     * @param apiId {String} UUID of the API in which the AsyncAPI definition is needed
+     * @param environmentName {String} API environment name
+     * @param callback {function} Function which needs to be called upon success of the API deletion
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    getAsyncAPIByAPIIdAndEnvironment(apiId, environmentName, callback = null) {
+        const promiseGet = this.client.then((client) => {
+            return client.apis.APIs.get_apis__apiId__asyncapi({apiId, environmentName}, this._requestMetaData());
+        });
+        if (callback) {
+            return promiseGet.then(callback);
+        } else {
+            return promiseGet;
+        }
+    }
+
+    /**
+     * Get the additional information of subscriptions attched to an API
+     * @param apiId {String} UUID of the API in which the additional information of subscriptions is needed
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    getSubscriptionAdditionalInfo(apiId) {
+        const payload = {apiId};
+        const promiseAdditionalInfo = this.client.then((client) => {
+            return client.apis.Subscriptions.getAdditionalInfoOfAPISubscriptions(payload, this._requestMetaData());
+        });
+        return promiseAdditionalInfo;
+    }
 }
