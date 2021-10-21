@@ -30,6 +30,8 @@ import ApiCreateGraphQL from './GraphQL/ApiCreateGraphQL';
 import ApiCreateWebSocket from './WebSocket/ApiCreateWebSocket';
 import APICreateStreamingAPI from './StreamingAPI/APICreateStreamingAPI';
 import APICreateAsyncAPI from './AsyncAPI/ApiCreateAsyncAPI';
+import ApiImportAdvertiseOnlyAPI from './AdvertiseOnlyAPI/ApiImportAdvertiseOnlyAPI';
+import APICreateAdvertiseOnlyAPI from './AdvertiseOnlyAPI/APICreateAdvertiseOnlyAPI';
 
 const styles = {
     content: {
@@ -58,6 +60,8 @@ function APICreateRoutes(props) {
                 <Route path='/apis/create/ws' component={ApiCreateWebSocket} />
                 <Route path='/apis/create/streamingapi/:apiType' component={APICreateStreamingAPI} />
                 <Route path='/apis/create/asyncapi' component={APICreateAsyncAPI} />
+                <Route path='/apis/create/advertiseonly/create' component={APICreateAdvertiseOnlyAPI} />
+                <Route path='/apis/create/advertiseonly/import' component={ApiImportAdvertiseOnlyAPI} />
                 <Route component={ResourceNotFound} />
             </Switch>
         </main>

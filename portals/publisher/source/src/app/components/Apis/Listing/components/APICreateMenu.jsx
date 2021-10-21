@@ -31,6 +31,7 @@ import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
 import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
 import ServiceCatalogMenu from 'AppComponents/Apis/Listing/Landing/Menus/ServiceCatalogMenu';
+import AdvertiseOnlyAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/AdvertiseOnlyAPIMenu';
 import MenuButton from 'AppComponents/Shared/MenuButton';
 
 const useStyles = makeStyles((theme) => {
@@ -93,6 +94,7 @@ const APICreateMenu = () => {
                             <Divider className={dividerCls} light orientation='vertical' variant='inset' />
                         </Box>
                         <ServiceCatalogMenu isCreateMenu icon={streamingApiIcon} />
+                        <AdvertiseOnlyAPIMenu isCreateMenu />
                     </Grid>
                 )}
             >

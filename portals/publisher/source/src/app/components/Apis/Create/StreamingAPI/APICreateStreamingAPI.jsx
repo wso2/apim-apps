@@ -145,8 +145,7 @@ const APICreateStreamingAPI = (props) => {
     /**
      *
      * Set the validity of the API Inputs form
-     * @param {*} isValidForm
-     * @param {*} validationState
+     * @param {*} isFormValid validity of the form field values
      */
     function handleOnValidate(isFormValid) {
         inputsDispatcher({
@@ -191,7 +190,7 @@ const APICreateStreamingAPI = (props) => {
 
         const newAPI = new API(apiData);
         const promisedCreatedAPI = newAPI
-            .saveStreamingAPI()
+            .saveAPI()
             .then((api) => {
                 Alert.info('API created successfully');
                 return api;
