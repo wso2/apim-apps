@@ -114,6 +114,7 @@ function checkContext(value, result) {
 export default function DefaultAPIForm(props) {
     const {
         onChange, onValidate, api, isAPIProduct, isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
+        externalStoreURL,
     } = props;
     const classes = useStyles();
     const [validity, setValidity] = useState({});
@@ -221,6 +222,34 @@ export default function DefaultAPIForm(props) {
                 if (isWebSocket && value && value.length > 0) {
                     const wsUrlValidity = APIValidation.wsUrl.validate(value).error;
                     updateValidity({ ...validity, endpointURL: wsUrlValidity });
+                }
+                break;
+            }
+            case 'originalDevPortalUrl': {
+                if (value && value.length > 0) {
+                    let url;
+                    try {
+                        url = new URL(value);
+                    } catch (_) {
+                        updateValidity({
+                            ...validity,
+                            originalDevPortalUrl: { details: [{ message: 'Invalid URL' }] },
+                        });
+                        break;
+                    }
+                    if (url.protocol === 'http:' || url.protocol === 'https:') {
+                        updateValidity({ ...validity, originalDevPortalUrl: null });
+                    } else {
+                        updateValidity({
+                            ...validity,
+                            originalDevPortalUrl: { details: [{ message: 'Invalid URL' }] },
+                        });
+                    }
+                } else {
+                    updateValidity({
+                        ...validity,
+                        originalDevPortalUrl: { details: [{ message: 'URL cannot be empty' }] },
+                    });
                 }
                 break;
             }
@@ -456,7 +485,38 @@ export default function DefaultAPIForm(props) {
                         }}
                     />
                 )}
-
+                {externalStoreURL && (
+                    <TextField
+                        fullWidth
+                        id='outlined-name'
+                        label={(
+                            <>
+                                <FormattedMessage
+                                    id='Apis.Create.Components.DefaultAPIForm.externalStoreURL'
+                                    defaultMessage='External Store URL'
+                                />
+                                <sup className={classes.mandatoryStar}>*</sup>
+                            </>
+                        )}
+                        value={api.originalDevPortalUrl}
+                        name='originalDevPortalUrl'
+                        error={validity.originalDevPortalUrl}
+                        onChange={onChange}
+                        InputProps={{
+                            onBlur: ({ target: { value } }) => {
+                                validate('originalDevPortalUrl', value);
+                            },
+                        }}
+                        helperText={
+                            validity.originalDevPortalUrl
+                            && validity.originalDevPortalUrl.details.map((detail, index) => {
+                                return <div style={{ marginTop: index !== 0 && '10px' }}>{detail.message}</div>;
+                            })
+                        }
+                        margin='normal'
+                        variant='outlined'
+                    />
+                )}
                 {!appendChildrenBeforeEndpoint && !!children && children}
             </form>
             <Grid container direction='row' justify='flex-end' alignItems='center'>
