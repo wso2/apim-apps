@@ -179,7 +179,7 @@ class LifeCycle extends Component {
         }
         return (
             <>
-                <Typography id='itest-api-details-lifecycle-head' variant='h4' gutterBottom>
+                <Typography id='itest-api-details-lifecycle-head' variant='h4' component='h2' gutterBottom>
                     <FormattedMessage id='Apis.Details.LifeCycle.LifeCycle.lifecycle' defaultMessage='Lifecycle' />
                 </Typography>
                 <div className={classes.contentWrapper}>
@@ -197,7 +197,12 @@ class LifeCycle extends Component {
                         <Grid item xs={12}>
                             {lcHistory.length > 1 && (
                                 <div>
-                                    <Typography variant='h6' gutterBottom className={classes.historyHead}>
+                                    <Typography
+                                        variant='h6'
+                                        component='h3'
+                                        gutterBottom
+                                        className={classes.historyHead}
+                                    >
                                         <FormattedMessage
                                             id='Apis.Details.LifeCycle.LifeCycle.history'
                                             defaultMessage='History'

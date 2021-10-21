@@ -69,6 +69,10 @@ export default function Tags(props) {
             <ChipInput
                 fullWidth
                 variant='outlined'
+                id='tags'
+                InputProps={{
+                    name: 'tag-name',
+                }}
                 label={(
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.Tags.title'

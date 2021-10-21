@@ -17,20 +17,18 @@ export default function CustomIcon(props) {
                 width={width}
                 height={height}
                 viewBox='0 0 8.5272856 8.5114363'
-                id='svg8'
+                aria-hidden='true'
                 className={className}
                 style={{ padding: 0 }}
             >
-                <g id='layer2' transform='translate(79.857 -62.367)'>
+                <g transform='translate(79.857 -62.367)'>
                     <g
-                        id='g5726'
                         transform='matrix(.9999 0 0 1.00321 -86.091 38.578)'
                         fill='none'
                         stroke={strokeColor}
                         strokeLinejoin='round'
                     >
                         <path
-                            id='path5717'
                             transform='scale(.26458)'
                             d={
                                 'm 29.705078,90.623047 c -2.846282,0 -5.138672,2.290437 -5.138672,5.136719 V'
@@ -45,15 +43,14 @@ export default function CustomIcon(props) {
                             }
                             strokeWidth='2'
                         />
-                        <g transform='scale(.88683 .9159) rotate(-45 -45.67 5.272)' id='g5724' strokeWidth='0.539'>
-                            <circle id='circle5720' cx='-22.921' cy='63.11' r='2.603' />
+                        <g transform='scale(.88683 .9159) rotate(-45 -45.67 5.272)' strokeWidth='0.539'>
+                            <circle cx='-22.921' cy='63.11' r='2.603' />
                             <path
                                 d={
                                     'm -89.15625,247.73828 v 13.91602 h 6.3125 V 247.74609 A 7,7 0 0 1 -86,248.5 a'
                                     + ' 7,7 0 0 1 -3.15625,-0.76172 z'
                                 }
                                 transform='scale(.26458)'
-                                id='path5722'
                                 strokeWidth='2.039'
                             />
                         </g>
@@ -68,7 +65,7 @@ export default function CustomIcon(props) {
                 width={width}
                 height={height}
                 viewBox='0 0 11 11'
-                id='svg8'
+                aria-hidden='true'
                 className={className}
                 style={{ padding: 0 }}
             >
@@ -77,18 +74,15 @@ export default function CustomIcon(props) {
                     transform='translate(79.833 -138.905)'
                 >
                     <g
-                        id='g5708'
                         transform='matrix(1.19734 0 0 1.0548 -89.665 113.54)'
                         fill='none'
                         stroke={strokeColor}
                         strokeWidth='0.529'
                     >
                         <path
-                            id='path5704'
                             d='m 8.6244111,24.214646 3.2203959,3.9527 -3.439584,3.704167'
                         />
                         <path
-                            id='path5706'
                             d='M 10.944689,31.765172 H 15.2945'
                         />
                     </g>
@@ -104,6 +98,7 @@ export default function CustomIcon(props) {
                 viewBox='0 0 18 20'
                 version='1.1'
                 xmlns='http://www.w3.org/2000/svg'
+                aria-hidden='true'
             >
                 <g id='Home' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd' opacity='1'>
                     <g id='new-dashboard-+' transform='translate(-26.000000, -313.000000)' fill={strokeColor}>
@@ -153,6 +148,7 @@ export default function CustomIcon(props) {
                 height={height}
                 viewBox='0 0 18 18'
                 version='1.1'
+                aria-hidden='true'
                 xmlns='http://www.w3.org/2000/svg'
             >
                 <g id='Home' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd' opacity='1'>
@@ -202,14 +198,13 @@ export default function CustomIcon(props) {
                 className={className}
                 stroke={strokeColor}
                 viewBox='0 0 8.467 8.467'
-                id='prefix__svg8'
+                aria-hidden='true'
                 {...props}
             >
-                <g id='prefix__layer2' transform='translate(82.262 -41.963)' stroke={strokeColor}>
-                    <g id='prefix__g994' stroke={strokeColor}>
+                <g transform='translate(82.262 -41.963)' stroke={strokeColor}>
+                    <g stroke={strokeColor}>
                         <g
                             transform='matrix(.76623 0 0 .76623 171.718 7.386)'
-                            id='prefix__g5764'
                             display='inline'
                             fill='#8b8e95'
                             fillOpacity={1}
@@ -231,7 +226,6 @@ export default function CustomIcon(props) {
                                     + ' 00-.142-.143zm.552 2.082a3.012 3.012 0 013.012 3.011 3.012 3.012'
                                     + ' 0 01-3.012 3.012 3.012 3.012 0 01-3.012-3.012 3.012 3.012 0 013.012-3.011z'
                                 }
-                                id='prefix__path5728'
                                 stroke='none'
                                 strokeWidth={0.937}
                                 strokeLinejoin='round'
@@ -239,9 +233,8 @@ export default function CustomIcon(props) {
                                 strokeDasharray='none'
                                 strokeOpacity={1}
                             />
-                            <g id='prefix__g5762' transform='matrix(.01024 0 0 .01024 -328.341 48.178)'>
+                            <g transform='matrix(.01024 0 0 .01024 -328.341 48.178)'>
                                 <path
-                                    id='prefix__path5730'
                                     stroke={strokeColor}
                                     d={
                                         'M364.427 259.214c-14.051-14.052-32.733-21.79-52.605-21.79-10.619'
@@ -290,7 +283,6 @@ export default function CustomIcon(props) {
                             </g>
                         </g>
                         <path
-                            id='prefix__rect893'
                             d={
                                 'M-77.015 45.818a.343.343 0 00-.341.345v1.255h-4.282a.343.343 0 00-.34.345v2.072c0'
                                 + ' .191.151.345.34.345h7.26c.189 0 .341-.154.341-.345v-3.672a.343.343 0 00-.341-.345z'
@@ -320,6 +312,7 @@ export default function CustomIcon(props) {
                 height={height}
                 className={className}
                 stroke={strokeColor}
+                aria-hidden='true'
                 viewBox='0 0 18 18'
                 version='1.1'
                 xmlns='http://www.w3.org/2000/svg'
@@ -359,6 +352,7 @@ export default function CustomIcon(props) {
                 height={height}
                 viewBox='0 0 18 18'
                 version='1.1'
+                aria-hidden='true'
                 xmlns='http://www.w3.org/2000/svg'
             >
                 <title>1359ABD8-ABF3-4FE9-8AF4-014881DB78CF</title>

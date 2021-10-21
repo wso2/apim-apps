@@ -42,6 +42,7 @@ const Social = (props) => {
                         defaultMessage='GitHub URL'
                     />
                 )}
+                id='github'
                 variant='outlined'
                 value={githubURL || ''}
                 fullWidth
@@ -63,6 +64,7 @@ const Social = (props) => {
                         defaultMessage='Slack URL'
                     />
                 )}
+                id='slack'
                 variant='outlined'
                 value={slackURL || ''}
                 fullWidth

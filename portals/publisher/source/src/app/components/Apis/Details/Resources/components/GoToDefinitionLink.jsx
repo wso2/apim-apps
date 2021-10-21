@@ -17,10 +17,19 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Link } from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
+
+const useStyles = makeStyles((theme) => ({
+    link: {
+        color: theme.palette.primary.dark,
+        marginLeft: theme.spacing(2),
+        display: 'inline',
+    },
+}));
 
 /**
  *
@@ -31,10 +40,11 @@ import Typography from '@material-ui/core/Typography';
  */
 export default function GoToDefinitionLink(props) {
     const { api, message } = props;
+    const classes = useStyles();
     return (
         <Box m={1}>
             <Link to={`/apis/${api.id}/api definition`}>
-                <Typography style={{ marginLeft: '10px' }} color='primary' display='inline' variant='caption'>
+                <Typography className={classes.link} variant='caption'>
                     {message}
                     <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />
                 </Typography>

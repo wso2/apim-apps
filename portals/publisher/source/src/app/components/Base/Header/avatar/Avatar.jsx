@@ -95,7 +95,7 @@ class Avatar extends Component {
             <>
                 <IconButton
                     id='profile-menu-btn'
-                    aria-owns='profile-menu-appbar'
+                    aria-owns='logout-menu'
                     aria-haspopup='true'
                     color='inherit'
                     onClick={this.handleClick}

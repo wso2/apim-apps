@@ -85,7 +85,7 @@ export default function ResponseCaching(props) {
         <>
             <WrappedExpansionPanel className={classes.expansionPanel} id='responseCaching'>
                 <ExpansionPanelSummary expandIcon={generateElement(api.responseCachingEnabled)}>
-                    <Typography className={classes.subHeading} variant='h6'>
+                    <Typography className={classes.subHeading} variant='h6' component='h4'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.Configuration.response.caching'
                             defaultMessage='Response Caching'
@@ -100,7 +100,7 @@ export default function ResponseCaching(props) {
                                     }
                                 />
                             )}
-                            aria-label='Response cache'
+                            aria-label='Response caching helper text'
                             placement='right-end'
                             interactive
                         >
@@ -118,6 +118,9 @@ export default function ResponseCaching(props) {
                                     value: checked,
                                 })}
                                 color='primary'
+                                inputProps={{
+                                    'aria-label': 'switch response caching',
+                                }}
                             />
                         )}
                     />

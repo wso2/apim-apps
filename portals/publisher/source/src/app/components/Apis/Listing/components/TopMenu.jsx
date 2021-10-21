@@ -111,7 +111,7 @@ function TopMenu(props) {
                 <div className={classes.mainTitleWrapper}>
                     {data && (
                         <>
-                            <Typography variant='h5' className={classes.mainTitle} component='div'>
+                            <Typography variant='h5' className={classes.mainTitle} component='h1'>
                                 {isAPIProduct && (
                                     <FormattedMessage
                                         id='Apis.Listing.components.TopMenu.apiproducts'
@@ -153,14 +153,17 @@ function TopMenu(props) {
                 <VerticalDivider height={70} />
                 <div className={classes.APICreateMenu}>
                     {isAPIProduct && (
-                        <Link to='/api-products/create'>
-                            <Button variant='contained' color='primary'>
-                                <FormattedMessage
-                                    id='Apis.Listing.components.TopMenu.create.an.api.product'
-                                    defaultMessage='Create an API Product'
-                                />
-                            </Button>
-                        </Link>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            to='/api-products/create'
+                        >
+                            <FormattedMessage
+                                id='Apis.Listing.components.TopMenu.create.an.api.product'
+                                defaultMessage='Create an API Product'
+                            />
+                        </Button>
                     )}
                     {!query && !isAPIProduct && (
                         <APICreateMenu>
@@ -174,10 +177,10 @@ function TopMenu(props) {
                 {showToggle && (
                     <Box height={32} m='auto' mr={8}>
                         <ButtonGroup color='primary' aria-label='outlined primary button group'>
-                            <IconButton onClick={() => setListType('grid')} aria-label='list'>
+                            <IconButton onClick={() => setListType('grid')} aria-label='Switch to Grid View'>
                                 <GridOn color={listType === 'grid' ? 'primary' : 'disabled'} />
                             </IconButton>
-                            <IconButton onClick={() => setListType('list')} aria-label='grid'>
+                            <IconButton onClick={() => setListType('list')} aria-label='Switch to List View'>
                                 <List color={listType === 'list' ? 'primary' : 'disabled'} />
                             </IconButton>
                         </ButtonGroup>

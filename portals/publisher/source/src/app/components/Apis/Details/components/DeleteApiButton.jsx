@@ -199,7 +199,6 @@ class DeleteApiButton extends React.Component {
                             <IconButton
                                 id='itest-id-deleteapi-icon-button'
                                 onClick={this.handleRequestOpen}
-                                onKeyDown={this.handleRequestOpen}
                                 className={classes.delete}
                                 disabled={isRestricted(['apim:api_delete'], api)}
                                 aria-label='delete'
@@ -212,7 +211,6 @@ class DeleteApiButton extends React.Component {
                                 fontFamily='fontFamily'
                                 fontSize='caption.fontSize'
                                 onClick={this.handleRequestOpen}
-                                onKeyDown={this.handleRequestOpen}
                             >
 
                                 <FormattedMessage

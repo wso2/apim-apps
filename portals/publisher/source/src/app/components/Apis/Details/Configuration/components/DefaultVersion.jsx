@@ -54,6 +54,7 @@ export default function DefaultVersion(props) {
                         </FormLabel>
                         <RadioGroup
                             aria-label='Make this the default version'
+                            name='defaultVersion'
                             value={api.isDefaultVersion}
                             onChange={({
                                 target: { value },

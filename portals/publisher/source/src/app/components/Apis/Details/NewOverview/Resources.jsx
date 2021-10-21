@@ -58,7 +58,7 @@ RenderMethodBase.propTypes = {
 
 const RenderMethod = withTheme(RenderMethodBase);
 
-const styles = {
+const styles = (theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'row',
@@ -72,7 +72,10 @@ const styles = {
         maxHeight: '125px',
         overflowY: 'auto',
     },
-};
+    subHeading: {
+        color: theme.palette.primary.dark,
+    },
+});
 
 class Resources extends React.Component {
     constructor(props) {
@@ -130,7 +133,7 @@ class Resources extends React.Component {
             <>
                 <div className={parentClasses.titleWrapper}>
                     { api.type === 'GraphQL' ? (
-                        <Typography variant='h5' component='h3' className={parentClasses.title}>
+                        <Typography id='resources' variant='h5' component='h2' className={parentClasses.title}>
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.Operations.operations'
                                 defaultMessage='Operation'
@@ -138,7 +141,7 @@ class Resources extends React.Component {
                         </Typography>
                     )
                         : (
-                            <Typography variant='h5' component='h3' className={parentClasses.title}>
+                            <Typography id='resources' variant='h5' component='h2' className={parentClasses.title}>
                                 <FormattedMessage
                                     id='Apis.Details.NewOverview.Resources.resources'
                                     defaultMessage='Resources'
@@ -163,7 +166,11 @@ class Resources extends React.Component {
                             );
                         })}
                     </div>
-                    <Link to={'/apis/' + api.id + '/resources'}>
+                    <Link
+                        to={'/apis/' + api.id + '/resources'}
+                        id='resource-more'
+                        aria-labelledby='resource-more resources'
+                    >
                         <Typography
                             className={classes.subHeading}
                             color='primary'

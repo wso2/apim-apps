@@ -61,7 +61,7 @@ const styles = {
     },
     heading: {
         margin: 'auto',
-        color: 'rgba(0, 0, 0, 0.40)',
+        color: 'rgba(0, 0, 0, 0.54)',
         wordBreak: 'break-all',
         whiteSpace: 'normal',
     },
@@ -90,7 +90,7 @@ function InFlow(props) {
             <Paper className={classes.paper}>
                 <Grid container spacing={2} alignItems='flex-start'>
                     <Grid item md={12} style={{ position: 'relative', display: 'inline-flex' }}>
-                        <Typography className={classes.subHeading} variant='h6'>
+                        <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.MediationPolicies.Mediation'
                                 defaultMessage='Message Mediation'
@@ -107,6 +107,7 @@ function InFlow(props) {
                             size='small'
                             onClick={startEditing}
                             disabled={isRestricted}
+                            aria-label='Edit mediation message'
                         >
                             <EditRounded />
                         </Button>

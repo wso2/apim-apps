@@ -32,7 +32,7 @@ function LastUpdatedTime(props) {
         <div style={{ float: 'right' }}>
             <Tooltip
                 title={moment(lastUpdatedTime).calendar()}
-                aria-label='add'
+                interactive
             >
                 <Typography variant='caption' display='block'>
                     <FormattedMessage

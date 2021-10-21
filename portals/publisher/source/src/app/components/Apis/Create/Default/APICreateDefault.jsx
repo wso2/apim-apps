@@ -326,7 +326,7 @@ function APICreateDefault(props) {
     }
     let pageTitle = (
         <>
-            <Typography variant='h5'>
+            <Typography variant='h5' component='h1'>
                 <FormattedMessage
                     id='Apis.Create.Default.APICreateDefault.api.heading'
                     defaultMessage='Create an API'
@@ -346,7 +346,7 @@ function APICreateDefault(props) {
     if (isAPIProduct) {
         pageTitle = (
             <>
-                <Typography variant='h5'>
+                <Typography variant='h5' component='h1'>
                     <FormattedMessage
                         id='Apis.Create.Default.APICreateDefault.apiProduct.heading'
                         defaultMessage='Create an API Product'
@@ -366,7 +366,7 @@ function APICreateDefault(props) {
     } else if (isWebSocket) {
         pageTitle = (
             <>
-                <Typography variant='h5'>
+                <Typography variant='h5' component='h1'>
                     <FormattedMessage
                         id='Apis.Create.Default.APICreateDefault.webSocket.heading'
                         defaultMessage='Create a WebSocket API'

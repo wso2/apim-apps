@@ -64,6 +64,9 @@ export default function SelectPolicies(props) {
                 InputProps={{
                     id: 'itest-id-apipolicies-input',
                 }}
+                InputLabelProps={{
+                    for: 'itest-id-apipolicies-input',
+                }}
             >
                 {policies.list.map((policy) => (
                     <MenuItem

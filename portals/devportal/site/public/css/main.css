@@ -453,3 +453,13 @@ a {
   max-height: 750px;
   overflow-y: scroll;
 }
+
+
+/* Swagger UI overides */
+.swagger-ui .opblock .opblock-summary-method {
+  color: #29292d !important;
+}
+
+.swagger-ui .opblock-delete .opblock-summary-method {
+  color: #000 !important;
+}

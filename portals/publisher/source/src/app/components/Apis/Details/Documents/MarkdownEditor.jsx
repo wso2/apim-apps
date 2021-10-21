@@ -141,10 +141,10 @@ function MarkdownEditor(props) {
             });
     };
 
-    const { classes } = props;
+    const { classes, docName } = props;
     return (
         <div>
-            <Button onClick={toggleOpen} disabled={api.isRevision}>
+            <Button onClick={toggleOpen} disabled={api.isRevision}  aria-label={'Edit Content of ' + docName}>
                 <Icon>code</Icon>
                 <FormattedMessage
                     id="Apis.Details.Documents.MarkdownEditor.edit.content"
@@ -161,7 +161,7 @@ function MarkdownEditor(props) {
                             id="Apis.Details.Documents.MarkdownEditor.edit.content.of"
                             defaultMessage="Edit Content of"
                         />{' '}
-                        "{props.docName}"
+                        "{docName}"
                     </Typography>
                     <Button className={classes.button} variant="contained" disabled={isUpdating} color="primary" onClick={addContentToDoc}>
                         <FormattedMessage

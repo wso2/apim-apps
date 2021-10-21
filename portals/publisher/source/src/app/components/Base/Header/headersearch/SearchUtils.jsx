@@ -23,6 +23,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import InputLabel from '@material-ui/core/InputLabel';
 import Divider from '@material-ui/core/Divider';
 import Icon from '@material-ui/core/Icon';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -55,22 +56,25 @@ function renderInput(inputProps) {
         );
     }
     return (
-        <TextField
-            id='searchQuery' // Pay attention to usages when renaming this ID
-            InputProps={{
-                inputRef: ref,
-                className: classes.input,
-                classes: { focused: classes.inputFocused },
-                startAdornment: (
-                    <InputAdornment position='start'>
-                        <SearchOutlined />
-                    </InputAdornment>
-                ),
-                endAdornment: loadingAdorment,
-                onChange,
-                ...other,
-            }}
-        />
+        <>
+            <InputLabel className={classes.ariaLabel} htmlFor='searchQuery'>Search APIs</InputLabel>
+            <TextField
+                id='searchQuery' // Pay attention to usages when renaming this ID
+                InputProps={{
+                    inputRef: ref,
+                    className: classes.input,
+                    classes: { focused: classes.inputFocused },
+                    startAdornment: (
+                        <InputAdornment position='start'>
+                            <SearchOutlined />
+                        </InputAdornment>
+                    ),
+                    endAdornment: loadingAdorment,
+                    onChange,
+                    ...other,
+                }}
+            />
+        </>
     );
 }
 

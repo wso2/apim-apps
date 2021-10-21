@@ -76,6 +76,9 @@ export default {
             // dark: will be calculated from palette.primary.main,
             // contrastText: will be calculated to contrast with palette.primary.main
         },
+        error: {
+            main: '#d32f2f',
+        },
         secondary: {
             light: '#0066ff',
             main: '#a2ecf5',
@@ -135,7 +138,7 @@ export default {
             get: '#61affe',
             post: '#49cc90',
             put: '#fca130',
-            delete: '#f93e3e',
+            delete: '#bd0202',
             options: '#0d5aa7',
             patch: '#50e3c2',
             head: '#9012fe',

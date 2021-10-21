@@ -141,10 +141,13 @@ function TextEditor(props) {
             });
     };
 
-    const { classes } = props;
+    const { classes, docName } = props;
     return (
         <div>
-            <Button onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}>
+            <Button
+                onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                aria-label={'Edit Content of ' + docName}
+            >
                 <Icon>description</Icon>
                 <FormattedMessage id='Apis.Details.Documents.TextEditor.edit.content' defaultMessage='Edit Content' />
             </Button>
@@ -158,7 +161,7 @@ function TextEditor(props) {
                             id='Apis.Details.Documents.TextEditor.edit.content.of'
                             defaultMessage='Edit Content of'
                         />{' '}
-                        "{props.docName}"
+                        "{docName}"
                     </Typography>
                     <Button className={classes.button} variant='contained' disabled={isUpdating} color='primary' onClick={addContentToDoc}>
                         <FormattedMessage

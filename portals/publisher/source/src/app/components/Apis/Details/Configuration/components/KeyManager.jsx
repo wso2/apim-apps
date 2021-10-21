@@ -94,7 +94,7 @@ export default function KeyManager(props) {
     if (!securityScheme.includes('oauth2')) {
         return (
             <>
-                <Typography className={classes.subHeading} variant='subtitle2'>
+                <Typography className={classes.subHeading} variant='subtitle2' component='h5'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.KeyManager.configuration'
                         defaultMessage='Key Manager Configuration'
@@ -113,7 +113,7 @@ export default function KeyManager(props) {
     }
     return (
         <>
-            <Typography className={classes.subHeading} variant='subtitle2'>
+            <Typography className={classes.subHeading} variant='subtitle2' component='h5'>
                 <FormattedMessage
                     id='Apis.Details.Configuration.components.KeyManager.configuration'
                     defaultMessage='Key Manager Configuration'

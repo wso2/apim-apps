@@ -196,7 +196,7 @@ function AddParameter(props) {
         <Grid container direction='row' spacing={1} className={classes.parameterContainer}>
             <Grid item xs={2} md={2}>
                 <FormControl margin='dense' variant='outlined' className={classes.formControl}>
-                    <InputLabel ref={inputLabel} htmlFor='param-in' error={isParameterExist}>
+                    <InputLabel ref={inputLabel} htmlFor={'param-' + verb + target} error={isParameterExist}>
                         Parameter Type
                     </InputLabel>
 
@@ -206,8 +206,8 @@ function AddParameter(props) {
                         labelWidth={labelWidth}
                         inputProps={{
                             name: 'in',
-                            id: 'param-in',
                         }}
+                        id={'param-' + verb + target}
                         MenuProps={{
                             getContentAnchorEl: null,
                             anchorOrigin: {
@@ -231,7 +231,7 @@ function AddParameter(props) {
                     </Select>
                     {isParameterExist
                         ? (
-                            <FormHelperText id='my-helper-text' error>
+                            <FormHelperText error>
                                 <FormattedMessage
                                     id='Apis.Details.Resources.components.operationComponents.parameter.name.exists'
                                     defaultMessage='Parameter type already exists'
@@ -239,7 +239,7 @@ function AddParameter(props) {
                             </FormHelperText>
                         )
                         : (
-                            <FormHelperText id='my-helper-text'>
+                            <FormHelperText>
                                 <FormattedMessage
                                     id='Apis.Details.Resources.components.operationComponents.select.parameter.type'
                                     defaultMessage='Select the parameter type'
@@ -250,7 +250,7 @@ function AddParameter(props) {
             </Grid>
             <Grid item xs={2} md={2}>
                 <TextField
-                    id='parameter-name'
+                    id={'name-' + verb + target}
                     label={newParameter.in === 'body'
                         ? iff(specVersion === '2.0',
                             <FormattedMessage
@@ -285,7 +285,7 @@ function AddParameter(props) {
             </Grid>
             <Grid item xs={2} md={2}>
                 <FormControl margin='dense' variant='outlined' className={classes.formControl}>
-                    <InputLabel ref={inputLabel} htmlFor='data-type' error={isParameterExist}>
+                    <InputLabel ref={inputLabel} htmlFor={'data-' + verb + target} error={isParameterExist}>
                         <FormattedMessage
                             id='Apis.Details.Resources.components.operationComponents.data.type'
                             defaultMessage='Data Type'
@@ -298,8 +298,8 @@ function AddParameter(props) {
                         labelWidth={labelWidth}
                         inputProps={{
                             name: 'type',
-                            id: 'data-type',
                         }}
+                        id={'data-' + verb + target}
                         MenuProps={{
                             getContentAnchorEl: null,
                             anchorOrigin: {
@@ -317,7 +317,7 @@ function AddParameter(props) {
                             );
                         })}
                     </Select>
-                    <FormHelperText id='my-helper-text'>Select the data type</FormHelperText>
+                    <FormHelperText>Select the data type</FormHelperText>
                 </FormControl>
             </Grid>
             <Grid item xs={2} md={2}>
@@ -361,7 +361,6 @@ function AddParameter(props) {
                             defaultMessage='Add new parameter'
                         />
                     )}
-                    aria-label='AddParameter'
                     placement='bottom'
                     interactive
                 >
@@ -371,7 +370,7 @@ function AddParameter(props) {
                             disabled={isDisabled()}
                             size='small'
                             variant='outlined'
-                            aria-label='add'
+                            aria-label='Add Parameter'
                             color='primary'
                             onClick={addNewParameter}
                         >
@@ -390,12 +389,11 @@ function AddParameter(props) {
                                 defaultMessage='Clear inputs'
                             />
                         )}
-                        aria-label='clear-inputs'
                         placement='bottom'
                         interactive
                     >
                         <span>
-                            <IconButton onClick={clearInputs} size='small'>
+                            <IconButton onClick={clearInputs} size='small' aria-label='clear-inputs'>
                                 <ClearIcon />
                             </IconButton>
                         </span>
