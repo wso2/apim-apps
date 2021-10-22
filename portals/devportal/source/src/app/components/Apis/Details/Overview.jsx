@@ -26,7 +26,6 @@ import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
-import LaunchIcon from '@material-ui/icons/Launch';
 import Card from '@material-ui/core/Card';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -48,7 +47,12 @@ import Alert from 'AppComponents/Shared/Alert';
 import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
 import View from 'AppComponents/Apis/Details/Documents/View';
+import AsyncApiComponent from '@asyncapi/react-component';
+import '@asyncapi/react-component/lib/styles/fiori.css';
+import SwaggerUILib from 'swagger-ui-react';
+import 'swagger-ui-react/swagger-ui.css';
 import Environments from './Environments';
+import ExternalStoreURL from './ExternalStoreURL';
 import Comments from './Comments/Comments';
 import OverviewDocuments from './OverviewDocuments';
 import SourceDownload from './SourceDownload';
@@ -95,6 +99,8 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.grey[800],
         fontSize: '0.95rem',
         fontWeight: 400,
+        paddingTop: '20px',
+        paddingBottom: '10px',
     },
     moreLink: {
         fontSize: '14px',
@@ -109,6 +115,9 @@ const useStyles = makeStyles((theme) => ({
     },
     requestUnit: {
         fontSize: 13,
+    },
+    apiDefinition: {
+        marginRight: '48px',
     },
 }));
 /**
@@ -320,6 +329,69 @@ function Overview() {
         }
     };
 
+    const disableAuthorizeAndInfoPlugin = function () {
+        return {
+            wrapComponents: {
+                info: () => () => null,
+                authorizeBtn: () => () => null,
+            },
+        };
+    };
+    const disableTryItOutPlugin = function () {
+        return {
+            statePlugins: {
+                spec: {
+                    wrapSelectors: {
+                        allowTryItOutFor: () => () => false,
+                    },
+                },
+            },
+        };
+    };
+
+    function renderAPIDefinitions() {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            if (api.type === 'HTTP' && api.apiDefinition) {
+                const oapiDefinition = JSON.parse(api.apiDefinition);
+                const componentProps = {
+                    spec: oapiDefinition,
+                    validatorUrl: null,
+                    docExpansion: 'list',
+                    defaultModelsExpandDepth: -1,
+                    plugins: [disableAuthorizeAndInfoPlugin, disableTryItOutPlugin],
+                };
+                return (
+                    <div className={classes.apiDefinition}>
+                        <Typography variant='h4' className={classes.sectionTitle}>
+                            <FormattedMessage
+                                id='Apis.Details.Overview.api.openapi.specification'
+                                defaultMessage='OpenAPI Specification'
+                            />
+                        </Typography>
+                        <SwaggerUILib {...componentProps} />
+                    </div>
+                );
+            } else if (api.type === 'ASYNC' && api.apiDefinition) {
+                const asyncApiDefinition = JSON.parse(api.apiDefinition);
+                delete asyncApiDefinition.servers;
+                delete asyncApiDefinition.components.securitySchemes;
+                return (
+                    <div className={classes.apiDefinition}>
+                        <Typography variant='h4' className={classes.sectionTitle}>
+                            <FormattedMessage
+                                id='Apis.Details.Overview.api.asyncapi.specification'
+                                defaultMessage='Async API Specification'
+                            />
+                        </Typography>
+                        <AsyncApiComponent schema={JSON.stringify(asyncApiDefinition)} />
+                    </div>
+                );
+            }
+            return <></>;
+        }
+        return <></>;
+    }
+
     const user = AuthManager.getUser();
     if (isLoading) {
         return (<Progress />);
@@ -379,10 +451,19 @@ function Overview() {
                             <Box ml={3} mr={2}>
                                 <Typography variant='h4' component='h2'>{api.name}</Typography>
                                 {api.description && (
-                                    <Typography variant='body2' gutterBottom align='left' className={classes.description}>
+                                    <Typography
+                                        variant='body2'
+                                        gutterBottom
+                                        align='left'
+                                        className={classes.description}
+                                    >
                                         {(descriptionIsBig && descriptionHidden) ? smallDescription : api.description}
                                         {descriptionIsBig && (
-                                            <a aria-label='Show more/less description' onClick={collapseAllDescription} href='#'>
+                                            <a
+                                                aria-label='Show more/less description'
+                                                onClick={collapseAllDescription}
+                                                href='#'
+                                            >
                                                 {descriptionHidden ? ' more' : ' less'}
                                             </a>
                                         )}
@@ -413,40 +494,69 @@ function Overview() {
                                 </Box>
                             </Box>
                         </Box>
-                        <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
-                            <Environments updateSelectedEndpoint={updateSelectedEndpoint} selectedEndpoint={selectedEndpoint} />
-                        </Box>
-                        <Box mt={6}>
-                            <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.business.plans.title'
-                                    defaultMessage='Business Plans'
+                        {(!api.advertiseInfo.advertised || api.advertiseInfo.vendor === 'AWS') ? (
+                            <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
+                                <Environments
+                                    updateSelectedEndpoint={updateSelectedEndpoint}
+                                    selectedEndpoint={selectedEndpoint}
                                 />
-                            </Typography>
-                        </Box>
-                        <Box flexWrap='wrap' display='flex' flexDirection='row' alignItems='center' mt={2} ml={1} textAlign='center'>
-                            {allPolicies && allPolicies.map((tier) => (
-                                <Card className={classes.cardRoot} key={tier.name}>
-                                    <CardContent>
-                                        <Typography className={classes.cardMainTitle} color='textSecondary' gutterBottom>
-                                            {tier.name}
-                                        </Typography>
-                                        <Box mt={2}>
-                                            <Typography className={classes.requestCount} color='textSecondary'>
-                                                {tier.requestCount === 2147483647 ? 'Unlimited' : tier.requestCount}
-                                            </Typography>
-                                        </Box>
-                                        <Box>
-                                            <Typography className={classes.requestUnit} color='textSecondary'>
-                                                Requests/
-                                                {tier.timeUnit}
-                                            </Typography>
-                                        </Box>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                            </Box>
+                        ) : (
+                            <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
+                                <ExternalStoreURL />
+                            </Box>
+                        )}
+                        {!api.advertiseInfo.advertised && (
+                            <>
+                                <Box mt={6}>
+                                    <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Overview.business.plans.title'
+                                            defaultMessage='Business Plans'
+                                        />
+                                    </Typography>
+                                </Box>
+                                <Box
+                                    flexWrap='wrap'
+                                    display='flex'
+                                    flexDirection='row'
+                                    alignItems='center'
+                                    mt={2}
+                                    ml={1}
+                                    textAlign='center'
+                                >
+                                    {allPolicies && allPolicies.map((tier) => (
+                                        <Card className={classes.cardRoot} key={tier.name}>
+                                            <CardContent>
+                                                <Typography
+                                                    className={classes.cardMainTitle}
+                                                    color='textSecondary'
+                                                    gutterBottom
+                                                >
+                                                    {tier.name}
+                                                </Typography>
+                                                <Box mt={2}>
+                                                    <Typography
+                                                        className={classes.requestCount}
+                                                        color='textSecondary'
+                                                    >
+                                                        {tier.requestCount === 2147483647
+                                                            ? 'Unlimited' : tier.requestCount}
+                                                    </Typography>
+                                                </Box>
+                                                <Box>
+                                                    <Typography className={classes.requestUnit} color='textSecondary'>
+                                                        Requests/
+                                                        {tier.timeUnit}
+                                                    </Typography>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
 
-                        </Box>
+                                </Box>
+                            </>
+                        )}
                         {(showCredentials && subscribedApplications.length > 0) && (
                             <>
                                 <Box mt={6}>
@@ -489,7 +599,10 @@ function Overview() {
                                                 {subscribedApplications.map((app) => (
                                                     <TableRow key={app.label}>
                                                         <TableCell component='th' scope='row'>
-                                                            <MUILink component={Link} to={`/applications/${app.value}/overview`}>
+                                                            <MUILink
+                                                                component={Link}
+                                                                to={`/applications/${app.value}/overview`}
+                                                            >
                                                                 {app.label}
                                                             </MUILink>
                                                         </TableCell>
@@ -503,8 +616,11 @@ function Overview() {
                                 </Box>
                             </>
                         )}
+                        <Box mt={2} pr={6}>
+                            {renderAPIDefinitions}
+                        </Box>
                         <Box mt={6}>
-                            {(!api.advertiseInfo.advertised && showComments) && (
+                            {showComments && (
                                 <>
                                     <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                                         <FormattedMessage
@@ -523,9 +639,13 @@ function Overview() {
                     </Box>
                 </Grid>
                 <Grid item xs={4} xl={3}>
-                    {!api.advertiseInfo.advertised && user && showRating && (
+                    {user && showRating && (
                         <Box display='flex' flexDirection='row' alignItems='center'>
-                            <StarRatingSummary avgRating={rating.avgRating} reviewCount={rating.total} returnCount={rating.count} />
+                            <StarRatingSummary
+                                avgRating={rating.avgRating}
+                                reviewCount={rating.total}
+                                returnCount={rating.count}
+                            />
                             <VerticalDivider height={30} />
                             <StarRatingBar
                                 apiId={api.id}
@@ -538,27 +658,6 @@ function Overview() {
                     <Box mt={6}>
                         <Social />
                     </Box>
-                    {api.advertiseInfo.advertised && (
-                        <>
-                            <a
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                href={api.advertiseInfo.originalStoreUrl}
-                                className={classes.viewInPubStoreLauncher}
-                            >
-                                <div>
-                                    <LaunchIcon />
-                                </div>
-                                <div className={classes.linkText}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Overview.visit.publisher.portal'
-                                        defaultMessage='Visit Publisher Portal'
-                                    />
-                                </div>
-                            </a>
-                            <VerticalDivider height={70} />
-                        </>
-                    )}
                     <Box mt={6} mb={1}>
                         <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                             <FormattedMessage
@@ -603,7 +702,11 @@ function Overview() {
                             <Box pr={2} pl={1}>
                                 <OverviewDocuments apiId={api.id} />
                                 {allDocuments.length > 2 && (
-                                    <MUILink component={Link} to={'/apis/' + api.id + '/documents'} className={classes.moreLink}>
+                                    <MUILink
+                                        component={Link}
+                                        to={'/apis/' + api.id + '/documents'}
+                                        className={classes.moreLink}
+                                    >
                                         {allDocuments.length - 2}
                                         {' '}
                                         <FormattedMessage
@@ -674,7 +777,8 @@ function Overview() {
                             </Box>
                             <Box mt={1} ml={1}>
                                 {api.additionalProperties
-                                    .filter(({ name, display }) => display && !['slack_url', 'github_repo'].includes(name))
+                                    .filter(({ name, display }) => display
+                                        && !['slack_url', 'github_repo'].includes(name))
                                     .map(({ name, value }) => {
                                         return (
                                             <Typography variant='body2'>

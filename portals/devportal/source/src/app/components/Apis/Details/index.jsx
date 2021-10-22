@@ -79,7 +79,7 @@ const LoadableSwitch = withRouter((props) => {
                 <Route path='/apis/:apiUuid/documents' component={Documents} />
                 <Route path='/apis/:apiUuid/definition' component={AsyncApiDefinition} />
                 <Route exact path='/apis/:apiUuid/credentials/wizard' component={Wizard} />
-                {!advertised && <Route path='/apis/:apiUuid/comments' component={Comments} />}
+                <Route path='/apis/:apiUuid/comments' component={Comments} />
                 {!advertised && <Route path='/apis/:apiUuid/credentials' component={Credentials} />}
                 {!advertised && tryoutRoute}
                 {!advertised && <Route path='/apis/:apiUuid/sdk' component={Sdk} />}
@@ -519,23 +519,23 @@ class Details extends React.Component {
                                         open={open}
                                     />
                                 )}
-                                {showComments && (
-
-                                    <LeftMenuItem
-                                        text={(
-                                            <FormattedMessage
-                                                id='Apis.Details.index.comments'
-                                                defaultMessage='Comments'
-                                            />
-                                        )}
-                                        route='comments'
-                                        iconText='comments'
-                                        to={pathPrefix + 'comments'}
-                                        open={open}
-                                    />
-
-                                )}
                             </>
+                        )}
+                        {showComments && (
+
+                            <LeftMenuItem
+                                text={(
+                                    <FormattedMessage
+                                        id='Apis.Details.index.comments'
+                                        defaultMessage='Comments'
+                                    />
+                                )}
+                                route='comments'
+                                iconText='comments'
+                                to={pathPrefix + 'comments'}
+                                open={open}
+                            />
+
                         )}
                         {showDocuments && (
 
