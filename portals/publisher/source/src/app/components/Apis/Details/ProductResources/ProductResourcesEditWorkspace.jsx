@@ -210,7 +210,7 @@ function ProductResourcesEdit(props) {
         if (text) {
             // Build the search query and update
             const inputValue = text.trim().toLowerCase();
-            const composeQuery = '?query=name:' + inputValue + ' type:HTTP';
+            const composeQuery = '?query=name:' + inputValue + ' type:HTTP advertiseOnly:false';
             const composeQueryJSON = queryString.parse(composeQuery);
             // TODO we need to make the limit and offset changeable from the UI ( paggination )
             composeQueryJSON.limit = 100;
@@ -220,6 +220,7 @@ function ProductResourcesEdit(props) {
             return API.all({
                 query: {
                     type: 'HTTP',
+                    advertiseOnly: false,
                 },
             });
         }
