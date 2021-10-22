@@ -35,6 +35,51 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": {
     "defaultMessage": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
   },
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.api.heading": {
+    "defaultMessage": "Create an Advertise Only API"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.api.sub.heading": {
+    "defaultMessage": "Create an API by providing a Name, a Version, a Context and the External Store URL"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.error.errorMessage.publish": {
+    "defaultMessage": "Something went wrong while publishing the API"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.success.otherStatus": {
+    "defaultMessage": "API updated successfully"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.success.publishStatus": {
+    "defaultMessage": "Lifecycle state change request has been sent"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.ApiImportAdvertiseOnlyAPI.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.ApiImportAdvertiseOnlyAPI.heading": {
+    "defaultMessage": "Create an Advertise Only API using an API definition"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.ApiImportAdvertiseOnlyAPI.sub.heading": {
+    "defaultMessage": "Create an Advertise Only API using an existing OpenAPI/WSDL/GraphQL SDL/Async API definition file or URL."
+  },
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.Input.file.dropzone": {
+    "defaultMessage": "Drag & Drop API Definition file/archive {break} or {break} Browse files"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.Input.file.upload": {
+    "defaultMessage": "Browse File to Upload"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.Input.type": {
+    "defaultMessage": "Input Type"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.api.file.archive": {
+    "defaultMessage": "API Definition File/Archive"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.api.type": {
+    "defaultMessage": "API Type"
+  },
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.api.url.label": {
+    "defaultMessage": "API Definition URL"
+  },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": {
     "defaultMessage": "Cancel"
   },
@@ -64,6 +109,9 @@
   },
   "Apis.Create.Components.DefaultAPIForm.api.product.context": {
     "defaultMessage": "Context"
+  },
+  "Apis.Create.Components.DefaultAPIForm.externalStoreURL": {
+    "defaultMessage": "External Store URL"
   },
   "Apis.Create.Components.DefaultAPIForm.name": {
     "defaultMessage": "Name"
@@ -821,6 +869,12 @@
   },
   "Apis.Details.Configuration.components.Endpoints.sandbox.not.set": {
     "defaultMessage": "-"
+  },
+  "Apis.Details.Configuration.components.ExternalStoreURL.externalStoreURL": {
+    "defaultMessage": "External Store URL"
+  },
+  "Apis.Details.Configuration.components.ExternalStoreURL.externalStoreURL.help": {
+    "defaultMessage": "This is the external store of the advertised API"
   },
   "Apis.Details.Configuration.components.KeyManager.allow.all": {
     "defaultMessage": "Allow all"
@@ -2133,6 +2187,9 @@
   "Apis.Details.NewOverview.MetaData.description.not.set": {
     "defaultMessage": "-"
   },
+  "Apis.Details.NewOverview.MetaData.externalStoreURL": {
+    "defaultMessage": "External Store URL"
+  },
   "Apis.Details.NewOverview.MetaData.last.updated.time": {
     "defaultMessage": "Last Updated Time"
   },
@@ -3191,6 +3248,21 @@
   },
   "Apis.Listing.ApiThumb.version": {
     "defaultMessage": "Version"
+  },
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.api": {
+    "defaultMessage": "Advertise Only API"
+  },
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.create.api": {
+    "defaultMessage": "Create an API for advertise purposes only"
+  },
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.create.api.title": {
+    "defaultMessage": "Create Advertise Only API"
+  },
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.import.api": {
+    "defaultMessage": "Import an API definition for advertise purposes only"
+  },
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.import.api.title": {
+    "defaultMessage": "Import Advertise Only API"
   },
   "Apis.Listing.SampleAPI.SampleAPI.create.new": {
     "defaultMessage": "Let’s get started !"

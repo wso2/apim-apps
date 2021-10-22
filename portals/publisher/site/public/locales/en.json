@@ -71,6 +71,112 @@
       "value": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
     }
   ],
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.api.heading": [
+    {
+      "type": 0,
+      "value": "Create an Advertise Only API"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.api.sub.heading": [
+    {
+      "type": 0,
+      "value": "Create an API by providing a Name, a Version, a Context and the External Store URL"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.error.errorMessage.publish": [
+    {
+      "type": 0,
+      "value": "Something went wrong while publishing the API"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.success.otherStatus": [
+    {
+      "type": 0,
+      "value": "API updated successfully"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.APICreateAdvertiseOnlyAPI.success.publishStatus": [
+    {
+      "type": 0,
+      "value": "Lifecycle state change request has been sent"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.ApiImportAdvertiseOnlyAPI.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.ApiImportAdvertiseOnlyAPI.heading": [
+    {
+      "type": 0,
+      "value": "Create an Advertise Only API using an API definition"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.ApiImportAdvertiseOnlyAPI.sub.heading": [
+    {
+      "type": 0,
+      "value": "Create an Advertise Only API using an existing OpenAPI/WSDL/GraphQL SDL/Async API definition file or URL."
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.Input.file.dropzone": [
+    {
+      "type": 0,
+      "value": "Drag & Drop API Definition file/archive "
+    },
+    {
+      "type": 1,
+      "value": "break"
+    },
+    {
+      "type": 0,
+      "value": " or "
+    },
+    {
+      "type": 1,
+      "value": "break"
+    },
+    {
+      "type": 0,
+      "value": " Browse files"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.Input.file.upload": [
+    {
+      "type": 0,
+      "value": "Browse File to Upload"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.Input.type": [
+    {
+      "type": 0,
+      "value": "Input Type"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.api.file.archive": [
+    {
+      "type": 0,
+      "value": "API Definition File/Archive"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.api.type": [
+    {
+      "type": 0,
+      "value": "API Type"
+    }
+  ],
+  "Apis.Create.AdvertiseOnlyAPI.Steps.ProvideAdvertiseOnlyAPI.api.url.label": [
+    {
+      "type": 0,
+      "value": "API Definition URL"
+    }
+  ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": [
     {
       "type": 0,
@@ -145,6 +251,12 @@
     {
       "type": 0,
       "value": "Context"
+    }
+  ],
+  "Apis.Create.Components.DefaultAPIForm.externalStoreURL": [
+    {
+      "type": 0,
+      "value": "External Store URL"
     }
   ],
   "Apis.Create.Components.DefaultAPIForm.name": [
@@ -1841,6 +1953,18 @@
     {
       "type": 0,
       "value": "-"
+    }
+  ],
+  "Apis.Details.Configuration.components.ExternalStoreURL.externalStoreURL": [
+    {
+      "type": 0,
+      "value": "External Store URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.ExternalStoreURL.externalStoreURL.help": [
+    {
+      "type": 0,
+      "value": "This is the external store of the advertised API"
     }
   ],
   "Apis.Details.Configuration.components.KeyManager.allow.all": [
@@ -4529,6 +4653,12 @@
       "value": "-"
     }
   ],
+  "Apis.Details.NewOverview.MetaData.externalStoreURL": [
+    {
+      "type": 0,
+      "value": "External Store URL"
+    }
+  ],
   "Apis.Details.NewOverview.MetaData.last.updated.time": [
     {
       "type": 0,
@@ -6723,6 +6853,36 @@
     {
       "type": 0,
       "value": "Version"
+    }
+  ],
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.api": [
+    {
+      "type": 0,
+      "value": "Advertise Only API"
+    }
+  ],
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.create.api": [
+    {
+      "type": 0,
+      "value": "Create an API for advertise purposes only"
+    }
+  ],
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.create.api.title": [
+    {
+      "type": 0,
+      "value": "Create Advertise Only API"
+    }
+  ],
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.import.api": [
+    {
+      "type": 0,
+      "value": "Import an API definition for advertise purposes only"
+    }
+  ],
+  "Apis.Listing.SampleAPI.SampleAPI.advertiseonly.import.api.title": [
+    {
+      "type": 0,
+      "value": "Import Advertise Only API"
     }
   ],
   "Apis.Listing.SampleAPI.SampleAPI.create.new": [
