@@ -167,6 +167,18 @@ const styles = (theme) => ({
             border: '1px solid' + theme.palette.primary.main,
         },
     },
+    ribbon: {
+        fontFamily: theme.typography.fontFamily,
+        fontWeight: 800,
+        backgroundColor: '#006e9c',
+        color: 'white',
+        position: 'absolute',
+        padding: '5px',
+        width: '40px',
+        zIndex: 3,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+    },
 });
 
 const windowURL = window.URL || window.webkitURL;
@@ -351,6 +363,9 @@ class ApiThumbClassic extends React.Component {
                 raised={isHover}
                 className={classNames('image-thumbnail', classes.card)}
             >
+                {((api.advertiseInfo && api.advertiseInfo.advertised) || api.advertiseOnly) && (
+                    <div className={classes.ribbon}><span>ad</span></div>
+                )}
                 {isMonetizationEnabled && (
                     <div className={classes.textblock}>{api.monetizationLabel}</div>
                 )}
