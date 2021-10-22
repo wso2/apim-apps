@@ -124,6 +124,18 @@ const styles = (theme) => ({
         paddingLeft: 5,
         paddingRight: 5,
     },
+    ribbon: {
+        fontFamily: theme.typography.fontFamily,
+        fontWeight: 800,
+        backgroundColor: '#006e9c',
+        color: 'white',
+        position: 'absolute',
+        padding: '5px',
+        width: '40px',
+        zIndex: 3,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+    },
 });
 
 /**
@@ -192,121 +204,136 @@ class APIThumb extends Component {
         }
 
         return (
-            <Card
-                onMouseOver={this.toggleMouseOver}
-                onFocus={this.toggleMouseOver}
-                onMouseOut={this.toggleMouseOver}
-                onBlur={this.toggleMouseOver}
-                elevation={isHover ? 4 : 1}
-                className={classes.card}
-            >
-                <CardMedia
-                    src='None'
-                    component={BaseThumbnail}
-                    height={theme.custom.thumbnail.height}
-                    width={theme.custom.thumbnail.width}
-                    title='Thumbnail'
-                    api={api}
-                />
-                <CardContent className={classes.apiDetails}>
-                    <div className={classes.textWrapper}>
-                        <Link to={overviewPath}>
-                            <Typography gutterBottom variant='h4' className={classes.thumbHeader} title={api.name}>
-                                {api.name}
+            <>
+                <Card
+                    onMouseOver={this.toggleMouseOver}
+                    onFocus={this.toggleMouseOver}
+                    onMouseOut={this.toggleMouseOver}
+                    onBlur={this.toggleMouseOver}
+                    elevation={isHover ? 4 : 1}
+                    className={classes.card}
+                >
+                    {
+                        api.advertiseOnly && (
+                            <div className={classes.ribbon}><span>ad</span></div>
+                        )
+                    }
+                    <CardMedia
+                        src='None'
+                        component={BaseThumbnail}
+                        height={theme.custom.thumbnail.height}
+                        width={theme.custom.thumbnail.width}
+                        title='Thumbnail'
+                        api={api}
+                    />
+                    <CardContent className={classes.apiDetails}>
+                        <div className={classes.textWrapper}>
+                            <Link to={overviewPath}>
+                                <Typography gutterBottom variant='h4' className={classes.thumbHeader} title={api.name}>
+                                    {api.name}
+                                </Typography>
+                            </Link>
+                        </div>
+                        <div className={classes.row}>
+                            <Typography variant='caption' gutterBottom align='left' className={classes.thumbBy}>
+                                <FormattedMessage id='by' defaultMessage='By' />
+                                <FormattedMessage id='colon' defaultMessage=' : ' />
+                                {api.provider}
                             </Typography>
-                        </Link>
-                    </div>
-                    <div className={classes.row}>
-                        <Typography variant='caption' gutterBottom align='left' className={classes.thumbBy}>
-                            <FormattedMessage id='by' defaultMessage='By' />
-                            <FormattedMessage id='colon' defaultMessage=' : ' />
-                            {api.provider}
-                        </Typography>
-                    </div>
-                    <div className={classes.thumbInfo}>
-                        {isAPIProduct ? null : (
+                        </div>
+                        <div className={classes.thumbInfo}>
+                            {isAPIProduct ? null : (
+                                <div className={classes.row}>
+                                    <div className={classes.thumbLeft}>
+                                        <Typography variant='subtitle1'>{api.version}</Typography>
+                                    </div>
+
+                                    <div className={classes.thumbLeft}>
+                                        <Typography variant='caption' gutterBottom align='left'>
+                                            <FormattedMessage
+                                                defaultMessage='Version'
+                                                id='Apis.Listing.ApiThumb.version'
+                                            />
+                                        </Typography>
+                                    </div>
+                                </div>
+                            )}
                             <div className={classes.row}>
-                                <div className={classes.thumbLeft}>
-                                    <Typography variant='subtitle1'>{api.version}</Typography>
+                                <div className={classes.thumbRight}>
+                                    <Typography variant='subtitle1' align='right' className={classes.contextBox}>
+                                        {api.context}
+                                    </Typography>
                                 </div>
 
-                                <div className={classes.thumbLeft}>
-                                    <Typography variant='caption' gutterBottom align='left'>
-                                        <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
+                                <div className={classes.thumbRight}>
+                                    <Typography
+                                        variant='caption'
+                                        gutterBottom
+                                        align='right'
+                                        className={classes.context}
+                                    >
+                                        {api.type === 'WS' ? (
+                                            <FormattedMessage
+                                                defaultMessage='Channel'
+                                                id='Apis.Listing.ApiThumb.channel'
+                                            />
+                                        ) : (
+                                            <FormattedMessage
+                                                defaultMessage='Context'
+                                                id='Apis.Listing.ApiThumb.context'
+                                            />
+                                        )}
                                     </Typography>
                                 </div>
                             </div>
-                        )}
-                        <div className={classes.row}>
-                            <div className={classes.thumbRight}>
-                                <Typography variant='subtitle1' align='right' className={classes.contextBox}>
-                                    {api.context}
-                                </Typography>
-                            </div>
-
-                            <div className={classes.thumbRight}>
-                                <Typography variant='caption' gutterBottom align='right' className={classes.context}>
-                                    {api.type === 'WS' ? (
-                                        <FormattedMessage
-                                            defaultMessage='Channel'
-                                            id='Apis.Listing.ApiThumb.channel'
-                                        />
-                                    ) : (
-                                        <FormattedMessage
-                                            defaultMessage='Context'
-                                            id='Apis.Listing.ApiThumb.context'
-                                        />
-                                    )}
-                                </Typography>
-                            </div>
                         </div>
-                    </div>
-                </CardContent>
-                <CardActions className={classes.apiActions}>
-                    <Chip
-                        size='small'
-                        classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                        label={api.apiType === API.CONSTS.APIProduct ? api.state : api.lifeCycleStatus}
-                        color='default'
-                    />
-                    {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
+                    </CardContent>
+                    <CardActions className={classes.apiActions}>
                         <Chip
                             size='small'
                             classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label={api.transportType === undefined
-                                ? api.type : api.transportType}
-                            color='primary'
+                            label={api.apiType === API.CONSTS.APIProduct ? api.state : api.lifeCycleStatus}
+                            color='default'
                         />
-                    )}
-                    {(api.type === 'WS') && (
-                        <Chip
-                            size='small'
-                            classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label='WEBSOCKET'
-                            color='primary'
-                        />
-                    )}
-                    {(api.type === 'WEBSUB') && (
-                        <Chip
-                            size='small'
-                            classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label='WEBSUB'
-                            color='primary'
-                        />
-                    )}
-                    {!isRestricted(['apim:api_create'], api) && (
-                        <>
-                            <DeleteApiButton
-                                setLoading={this.setLoading}
-                                api={api}
-                                updateData={updateData}
-                                isAPIProduct={isAPIProduct}
+                        {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
+                                label={api.transportType === undefined
+                                    ? api.type : api.transportType}
+                                color='primary'
                             />
-                            {loading && <CircularProgress className={classes.deleteProgress} />}
-                        </>
-                    )}
-                </CardActions>
-            </Card>
+                        )}
+                        {(api.type === 'WS') && (
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
+                                label='WEBSOCKET'
+                                color='primary'
+                            />
+                        )}
+                        {(api.type === 'WEBSUB') && (
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
+                                label='WEBSUB'
+                                color='primary'
+                            />
+                        )}
+                        {!isRestricted(['apim:api_create'], api) && (
+                            <>
+                                <DeleteApiButton
+                                    setLoading={this.setLoading}
+                                    api={api}
+                                    updateData={updateData}
+                                    isAPIProduct={isAPIProduct}
+                                />
+                                {loading && <CircularProgress className={classes.deleteProgress} />}
+                            </>
+                        )}
+                    </CardActions>
+                </Card>
+            </>
         );
     }
 }
