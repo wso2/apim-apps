@@ -55,113 +55,127 @@ function Configuration(props) {
             </div>
             <Box p={1}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={6} lg={4}>
-                        {/* Transports */}
-                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
-                            <FormattedMessage
-                                id='Apis.Details.NewOverview.MetaData.transports'
-                                defaultMessage='Transports'
-                            />
-                            <Tooltip
-                                interactive
-                                placement='top'
-                                tabIndex='-1'
-                                classes={{
-                                    tooltip: parentClasses.htmlTooltip,
-                                }}
-                                title={(
-                                    <>
+                    {
+                        (api.advertiseInfo && !api.advertiseInfo.advertised) && (
+                            <>
+                                <Grid item xs={12} md={6} lg={4}>
+                                    {/* Transports */}
+                                    <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                         <FormattedMessage
-                                            id='Apis.Details.NewOverview.MetaData.transport.tooltip'
-                                            defaultMessage={
-                                                'HTTP is less secure than HTTPS and '
-                                                + 'makes your API vulnerable to security threats.'
-                                            }
+                                            id='Apis.Details.NewOverview.MetaData.transports'
+                                            defaultMessage='Transports'
                                         />
-                                    </>
-                                )}
-                            >
-                                <Button className={parentClasses.helpButton}>
-                                    <HelpOutline className={parentClasses.helpIcon} />
-                                </Button>
-                            </Tooltip>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
-                        <Typography component='p' variant='body1'>
-                            {api.transport && api.transport.length !== 0 && (
-                                <>
-                                    {api.transport.map((item, index) => (
-                                        <span>
-                                            {upperCaseString(item)}
-                                            {api.transport.length !== index + 1 && ', '}
-                                        </span>
-                                    ))}
-                                </>
-                            )}
-                            {!api.transport && (
-                                <>
-                                    <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
-                                        <FormattedMessage
-                                            id='Apis.Details.NewOverview.MetaData.transports.not.set'
-                                            defaultMessage='-'
-                                        />
+                                        <Tooltip
+                                            interactive
+                                            placement='top'
+                                            tabIndex='-1'
+                                            classes={{
+                                                tooltip: parentClasses.htmlTooltip,
+                                            }}
+                                            title={(
+                                                <>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.NewOverview.MetaData.transport.tooltip'
+                                                        defaultMessage={
+                                                            'HTTP is less secure than HTTPS and '
+                                                            + 'makes your API vulnerable to security threats.'
+                                                        }
+                                                    />
+                                                </>
+                                            )}
+                                        >
+                                            <Button className={parentClasses.helpButton}>
+                                                <HelpOutline className={parentClasses.helpIcon} />
+                                            </Button>
+                                        </Tooltip>
                                     </Typography>
-                                </>
-                            )}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={6} lg={4}>
-                        {/* API Security */}
-                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
-                            <FormattedMessage
-                                id='Apis.Details.NewOverview.MetaData.securityScheme'
-                                defaultMessage='API Security'
-                            />
-                            <Tooltip
-                                interactive
-                                placement='top'
-                                tabIndex='-1'
-                                classes={{
-                                    tooltip: parentClasses.htmlTooltip,
-                                }}
-                                title={(
-                                    <>
-                                        <FormattedMessage
-                                            id='Apis.Details.NewOverview.MetaData.securityScheme.tooltip'
-                                            defaultMessage='OAuth2 is used as the default security schema.'
-                                        />
-                                    </>
-                                )}
-                            >
-                                <Button className={parentClasses.helpButton}>
-                                    <HelpOutline className={parentClasses.helpIcon} />
-                                </Button>
-                            </Tooltip>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
-                        <Typography component='p' variant='body1'>
-                            {api.securityScheme && api.securityScheme.length !== 0 && (
-                                <>
-                                    {api.securityScheme
-                                        .filter((item) => !item.includes('mandatory'))
-                                        .map((filteredItem) => HUMAN_READABLE_SCHEMES[filteredItem])
-                                        .join(' , ')}
-                                </>
-                            )}
-                            {!api.securityScheme && (
-                                <>
-                                    <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
-                                        <FormattedMessage
-                                            id='Apis.Details.NewOverview.MetaData.securityScheme.not.set'
-                                            defaultMessage='-'
-                                        />
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={8}>
+                                    <Typography component='p' variant='body1'>
+                                        {api.transport && api.transport.length !== 0 && (
+                                            <>
+                                                {api.transport.map((item, index) => (
+                                                    <span>
+                                                        {upperCaseString(item)}
+                                                        {api.transport.length !== index + 1 && ', '}
+                                                    </span>
+                                                ))}
+                                            </>
+                                        )}
+                                        {!api.transport && (
+                                            <>
+                                                <Typography
+                                                    component='p'
+                                                    variant='body1'
+                                                    className={parentClasses.notConfigured}
+                                                >
+                                                    <FormattedMessage
+                                                        id='Apis.Details.NewOverview.MetaData.transports.not.set'
+                                                        defaultMessage='-'
+                                                    />
+                                                </Typography>
+                                            </>
+                                        )}
                                     </Typography>
-                                </>
-                            )}
-                        </Typography>
-                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={4}>
+                                    {/* API Security */}
+                                    <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                                        <FormattedMessage
+                                            id='Apis.Details.NewOverview.MetaData.securityScheme'
+                                            defaultMessage='API Security'
+                                        />
+                                        <Tooltip
+                                            interactive
+                                            placement='top'
+                                            tabIndex='-1'
+                                            classes={{
+                                                tooltip: parentClasses.htmlTooltip,
+                                            }}
+                                            title={(
+                                                <>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.NewOverview.MetaData.securityScheme.tooltip'
+                                                        defaultMessage='OAuth2 is used as the default security schema.'
+                                                    />
+                                                </>
+                                            )}
+                                        >
+                                            <Button className={parentClasses.helpButton}>
+                                                <HelpOutline className={parentClasses.helpIcon} />
+                                            </Button>
+                                        </Tooltip>
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={8}>
+                                    <Typography component='p' variant='body1'>
+                                        {api.securityScheme && api.securityScheme.length !== 0 && (
+                                            <>
+                                                {api.securityScheme
+                                                    .filter((item) => !item.includes('mandatory'))
+                                                    .map((filteredItem) => HUMAN_READABLE_SCHEMES[filteredItem])
+                                                    .join(' , ')}
+                                            </>
+                                        )}
+                                        {!api.securityScheme && (
+                                            <>
+                                                <Typography
+                                                    component='p'
+                                                    variant='body1'
+                                                    className={parentClasses.notConfigured}
+                                                >
+                                                    <FormattedMessage
+                                                        id='Apis.Details.NewOverview.MetaData.securityScheme.not.set'
+                                                        defaultMessage='-'
+                                                    />
+                                                </Typography>
+                                            </>
+                                        )}
+                                    </Typography>
+                                </Grid>
+                            </>
+                        )
+                    }
                     <Grid item xs={12} md={6} lg={4}>
                         {/* Access Control */}
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
@@ -215,30 +229,40 @@ function Configuration(props) {
                             {api.accessControl === 'RESTRICTED' && ' ) '}
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={4}>
-                        {/* workflowStatus */}
-                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
-                            <FormattedMessage
-                                id='Apis.Details.NewOverview.MetaData.workflow.status'
-                                defaultMessage='Workflow Status'
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
-                        <Typography component='p' variant='body1'>
-                            {api.workflowStatus && <>{api.workflowStatus}</>}
-                            {!api.workflowStatus && (
-                                <>
-                                    <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
+                    {
+                        (api.advertiseInfo && !api.advertiseInfo.advertised) && (
+                            <>
+                                <Grid item xs={12} md={6} lg={4}>
+                                    {/* workflowStatus */}
+                                    <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                         <FormattedMessage
-                                            id='Apis.Details.NewOverview.MetaData.workflowStatus.not.set'
-                                            defaultMessage='-'
+                                            id='Apis.Details.NewOverview.MetaData.workflow.status'
+                                            defaultMessage='Workflow Status'
                                         />
                                     </Typography>
-                                </>
-                            )}
-                        </Typography>
-                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={8}>
+                                    <Typography component='p' variant='body1'>
+                                        {api.workflowStatus && <>{api.workflowStatus}</>}
+                                        {!api.workflowStatus && (
+                                            <>
+                                                <Typography
+                                                    component='p'
+                                                    variant='body1'
+                                                    className={parentClasses.notConfigured}
+                                                >
+                                                    <FormattedMessage
+                                                        id='Apis.Details.NewOverview.MetaData.workflowStatus.not.set'
+                                                        defaultMessage='-'
+                                                    />
+                                                </Typography>
+                                            </>
+                                        )}
+                                    </Typography>
+                                </Grid>
+                            </>
+                        )
+                    }
                     <Grid item xs={12} md={6} lg={4}>
                         {/* Visibility */}
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
@@ -298,7 +322,11 @@ function Configuration(props) {
                             {api.visibility === 'RESTRICTED' && ' ) '}
                         </Typography>
                     </Grid>
-                    <Policies parentClasses={parentClasses} />
+                    {
+                        (api.advertiseInfo && !api.advertiseInfo.advertised) && (
+                            <Policies parentClasses={parentClasses} />
+                        )
+                    }
                     {api.apiType === API.CONSTS.APIProduct ? null : (
                         <>
                             <Grid item xs={12} md={6} lg={4}>

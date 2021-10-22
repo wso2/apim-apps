@@ -188,7 +188,7 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {api.type !== API.CONSTS.APIProduct && (
+            {api.type !== API.CONSTS.APIProduct && !api.advertiseInfo.advertised && (
                 <Grid container spacing={12}>
                     <Grid item xs={12} s={12} md={12} lg={12}>
                         <CustomizedStepper />
@@ -212,23 +212,25 @@ function Overview(props) {
                             <div className={classes.specialGap}>
                                 <Grid container spacing={24}>
                                     {
-                                        api.type === 'WEBSUB' ? (
-                                            <Grid item xs={12} md={12} lg={12}>
+                                        (api.advertised && !api.advertiseInfo.advertised) && (
+                                            api.type === 'WEBSUB' ? (
                                                 <Grid item xs={12} md={12} lg={12}>
-                                                    {getResourcesClassForAPIs(api.type)}
-                                                </Grid>
-                                            </Grid>
-                                        ) : (
-                                            <>
-                                                <Grid item xs={12} md={6} lg={6}>
-                                                    <Grid item xs={12} md={8} lg={8}>
+                                                    <Grid item xs={12} md={12} lg={12}>
                                                         {getResourcesClassForAPIs(api.type)}
                                                     </Grid>
                                                 </Grid>
-                                                <Grid item xs={12} md={6} lg={6}>
-                                                    {loadEndpoints}
-                                                </Grid>
-                                            </>
+                                            ) : (
+                                                <>
+                                                    <Grid item xs={12} md={6} lg={6}>
+                                                        <Grid item xs={12} md={8} lg={8}>
+                                                            {getResourcesClassForAPIs(api.type)}
+                                                        </Grid>
+                                                    </Grid>
+                                                    <Grid item xs={12} md={6} lg={6}>
+                                                        {loadEndpoints}
+                                                    </Grid>
+                                                </>
+                                            )
                                         )
                                     }
                                 </Grid>
