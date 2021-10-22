@@ -83,6 +83,12 @@ function renderInput(inputProps) {
                     >
                         {(placeholder) => <option value='PROTOTYPED'>{placeholder}</option>}
                     </FormattedMessage>
+                    <FormattedMessage
+                        id='Base.Header.headersearch.SearchUtils.lcState.advertiseonly'
+                        defaultMessage='Advertise Only'
+                    >
+                        {(placeholder) => <option value='Advertise Only'>{placeholder}</option>}
+                    </FormattedMessage>
                 </NativeSelect>
                 <InputLabel className={classes.ariaLabel} htmlFor='searchQuery'>Search APIs</InputLabel>
                 <TextField
@@ -169,8 +175,15 @@ function getSuggestionValue(suggestion) {
  */
 function buildSearchQuery(searchText, lcstate) {
     const newSearchText = (searchText && !searchText.includes(':')) ? 'content:' + searchText : searchText;
-    return lcstate
-        ? (newSearchText + ' status:' + lcstate).trim().toLowerCase() : newSearchText.trim();
+    if (lcstate) {
+        if (lcstate === 'Advertise Only') {
+            return (newSearchText).trim().toLowerCase() + ' advertiseOnly:true';
+        } else {
+            return (newSearchText + ' status:' + lcstate).trim().toLowerCase() + ' advertiseOnly:false';
+        }
+    } else {
+        return newSearchText.trim();
+    }
 }
 
 /**
