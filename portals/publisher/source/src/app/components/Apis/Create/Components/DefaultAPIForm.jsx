@@ -96,7 +96,7 @@ function actualContext({ context, version }) {
  * @returns {Boolean} true or false
  */
 function checkContext(value, result) {
-    const contextVal = value.includes('/') ? value.toLowerCase() : '/' + value.toLowerCase();
+    const contextVal = value.startsWith('/') ? value.toLowerCase() : '/' + value.toLowerCase();
     if (contextVal === '/' + result.toLowerCase().slice(result.toLowerCase().lastIndexOf('/') + 1)
      || contextVal === result.toLowerCase()) {
         return true;
@@ -175,13 +175,19 @@ export default function DefaultAPIForm(props) {
             case 'context': {
                 const contextValidity = APIValidation.apiContext.required().validate(value, { abortEarly: false })
                     .error;
-                const apiContext = value.includes('/') ? value : '/' + value;
+                const apiContext = value.startsWith('/') ? value : '/' + value;
                 if (contextValidity === null) {
                     APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
-                        if (result.body.list.length > 0 && checkContext(value, result.body.list[0].context)) {
+                        const count = result.body.list.length;
+                        if (count > 0 && checkContext(value, result.body.list[0].context)) {
                             updateValidity({
                                 ...validity,
                                 context: { details: [{ message: apiContext + ' context already exists' }] },
+                            });
+                        } else if (count > 0 && checkContext(value, result.body.list[0].contextTemplate)) {
+                            updateValidity({
+                                ...validity,
+                                context: { details: [{ message: apiContext + ' dynamic context already exists' }] },
                             });
                         } else {
                             updateValidity({ ...validity, context: contextValidity, version: null });
