@@ -60,7 +60,12 @@ function Configuration(props) {
                         <>
                             <Grid item xs={12} md={6} lg={4}>
                                 {/* Transports */}
-                                <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                                <Typography
+                                    id='transports'
+                                    component='p'
+                                    variant='subtitle2'
+                                    className={parentClasses.subtitle}
+                                >
                                     <FormattedMessage
                                         id='Apis.Details.NewOverview.MetaData.transports'
                                         defaultMessage='Transports'
