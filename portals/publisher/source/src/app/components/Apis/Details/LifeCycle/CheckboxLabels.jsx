@@ -82,14 +82,11 @@ export default function CheckboxLabels(props) {
         api, isMutualSSLEnabled, isCertAvailable, isAppLayerSecurityMandatory, isBusinessPlanAvailable,
     } = props;
     const isEndpointAvailable = api.endpointConfig !== null && !api.endpointConfig.implementation_status;
-    const isPrototypedAvailable = (api.endpointConfig !== null
-        && api.endpointConfig.implementation_status === 'prototyped')
-        || api.endpointImplementationType === 'INLINE';
 
     return (
         <Paper className={classes.paperCenter}>
             <Grid xs={12}>
-                <Typography variant='h6'>
+                <Typography variant='h6' component='h4'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.Configuration.requirements'
                         defaultMessage='Requirements'
@@ -105,7 +102,7 @@ export default function CheckboxLabels(props) {
             {(api.lifeCycleStatus === 'CREATED' || api.lifeCycleStatus === 'PROTOTYPED') && (
                 <>
                     <Grid xs={12} className={classes.labelsGrid}>
-                        <Typography variant='subtitle2'>
+                        <Typography variant='subtitle2' component='h5'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Configuration.publisher'
                                 defaultMessage='Publish'
@@ -126,7 +123,7 @@ export default function CheckboxLabels(props) {
                                         defaultMessage='Endpoint provided'
                                     />
                                 </Typography>
-                                <Link to={'/apis/' + api.id + '/endpoints'}>
+                                <Link to={'/apis/' + api.id + '/endpoints'} aria-label='Endpoint provided'>
                                     <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
                                 </Link>
                             </Grid>
@@ -145,7 +142,7 @@ export default function CheckboxLabels(props) {
                                             defaultMessage='Business Plan(s) selected'
                                         />
                                     </Typography>
-                                    <Link to={'/apis/' + api.id + '/subscriptions'}>
+                                    <Link to={'/apis/' + api.id + '/subscriptions'} aria-label='Business Plan(s)'>
                                         <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
                                     </Link>
                                 </Grid>
@@ -163,79 +160,15 @@ export default function CheckboxLabels(props) {
                                             defaultMessage='Certificate provided'
                                         />
                                     </Typography>
-                                    <Link to={'/apis/' + api.id + '/runtime-configuration'}>
+                                    <Link
+                                        to={'/apis/' + api.id + '/runtime-configuration'}
+                                        aria-label='Certificate provided'
+                                    >
                                         <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
                                     </Link>
                                 </Grid>
                             ) }
                         </>
-                    </Grid>
-                    { api.type !== 'GRAPHQL' && (
-                        <>
-                            <Grid xs={12} className={classes.labelsGrid}>
-                                <Typography variant='subtitle2'>
-                                    <FormattedMessage
-                                        id='Apis.Details.Configuration.Configuration.prototype'
-                                        defaultMessage='Deploy as a Prototype'
-                                    />
-                                </Typography>
-                            </Grid>
-                            <Grid xs={12}>
-                                {api.type !== 'WEBSUB' && (
-                                    <Grid xs={12} className={classes.grid}>
-                                        {isPrototypedAvailable ? (
-                                            <CheckIcon className={classes.iconTrue} />
-                                        ) : (
-                                            <CloseIcon className={classes.iconFalse} />
-                                        )}
-                                        <Typography>
-                                            <FormattedMessage
-                                                id={'Apis.Details.Configuration.Configuration.prototype.endpoints'
-                                                    + '.provided'}
-                                                defaultMessage='Prototype Endpoint provided'
-                                            />
-                                        </Typography>
-                                        <Link to={'/apis/' + api.id + '/endpoints'}>
-                                            <LaunchIcon
-                                                style={{ marginLeft: '2px' }}
-                                                color='primary'
-                                                fontSize='small'
-                                            />
-                                        </Link>
-                                    </Grid>
-                                )}
-                            </Grid>
-                        </>
-                    )}
-                </>
-            )}
-            {api.lifeCycleStatus === 'PUBLISHED' && (
-                <>
-                    <Grid xs={12} className={classes.labelsGrid}>
-                        <Typography variant='subtitle2'>
-                            <FormattedMessage
-                                id='Apis.Details.Configuration.Configuration.prototype'
-                                defaultMessage='Deploy as a Prototype'
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid xs={12}>
-                        <Grid xs={12} className={classes.grid}>
-                            {isPrototypedAvailable ? (
-                                <CheckIcon className={classes.iconTrue} />
-                            ) : (
-                                <CloseIcon className={classes.iconFalse} />
-                            )}
-                            <Typography>
-                                <FormattedMessage
-                                    id='Apis.Details.Configuration.Configuration.prototype.endpoints.provided'
-                                    defaultMessage='Prototype Endpoint provided'
-                                />
-                            </Typography>
-                            <Link to={'/apis/' + api.id + '/endpoints'}>
-                                <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
-                            </Link>
-                        </Grid>
                     </Grid>
                 </>
             )}

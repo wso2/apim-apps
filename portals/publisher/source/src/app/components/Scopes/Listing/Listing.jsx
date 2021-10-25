@@ -313,32 +313,31 @@ class Listing extends React.Component {
                             const scopeName = tableMeta.rowData[1];
                             const usageCount = tableMeta.rowData[5];
                             return (
-                                <Box display='flex' flexDirection='column'>
+                                <Box display='flex' flexDirection='row'>
                                     <Usage
                                         scopeName={scopeName}
                                         scopeId={scopeId}
                                         usageCount={usageCount}
                                     />
-                                    <Link
+                                    <Button
+                                        disabled={isRestricted(['apim:shared_scope_manage'])}
+                                        aria-label={'Edit ' + scopeName}
+                                        component={Link}
                                         to={!isRestricted(['apim:shared_scope_manage'])
-                                            && {
-                                                pathname: editUrl,
-                                                state: {
-                                                    scopeName,
-                                                    scopeId,
-                                                },
-                                            }}
-                                        className={isRestricted(['apim:shared_scope_manage'])
-                                            ? classes.disableLink : ''}
+                                        && {
+                                            pathname: editUrl,
+                                            state: {
+                                                scopeName,
+                                                scopeId,
+                                            },
+                                        }}
                                     >
-                                        <Button disabled={isRestricted(['apim:shared_scope_manage'])}>
-                                            <Icon>edit</Icon>
-                                            <FormattedMessage
-                                                id='Scopes.Listing.Listing.scopes.text.editor.edit'
-                                                defaultMessage='Edit'
-                                            />
-                                        </Button>
-                                    </Link>
+                                        <Icon>edit</Icon>
+                                        <FormattedMessage
+                                            id='Scopes.Listing.Listing.scopes.text.editor.edit'
+                                            defaultMessage='Edit'
+                                        />
+                                    </Button>
                                     <Delete
                                         scopeName={scopeName}
                                         scopeId={scopeId}
@@ -429,31 +428,28 @@ class Listing extends React.Component {
                     lg={11}
                     item
                 >
-                    <Typography variant='h4' align='left' className={classes.mainTitle}>
+                    <Typography variant='h4' align='left' component='h1' className={classes.mainTitle}>
                         <FormattedMessage
                             id='Scopes.Listing.Listing.heading.scope.heading'
                             defaultMessage='Scopes'
                         />
                     </Typography>
-                    <Link
-                        to={!isRestricted(['apim:shared_scope_manage']) && url}
-                        className={isRestricted(['apim:shared_scope_manage']) ? classes.disableLink : ''}
-                    >
-                        <Box pl={1}>
-                            <Button
-                                color='primary'
-                                variant='outlined'
-                                size='small'
-                                disabled={isRestricted(['apim:shared_scope_manage'])}
-                            >
-                                <AddCircle className={classes.buttonIcon} />
-                                <FormattedMessage
-                                    id='Scopes.Listing.Listing.heading.scope.add_new'
-                                    defaultMessage='Add New Scope'
-                                />
-                            </Button>
-                        </Box>
-                    </Link>
+                    <Box pl={1}>
+                        <Button
+                            color='primary'
+                            variant='outlined'
+                            size='small'
+                            disabled={isRestricted(['apim:shared_scope_manage'])}
+                            component='Link'
+                            to={!isRestricted(['apim:shared_scope_manage']) && url}
+                        >
+                            <AddCircle className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='Scopes.Listing.Listing.heading.scope.add_new'
+                                defaultMessage='Add New Scope'
+                            />
+                        </Button>
+                    </Box>
                     {isRestricted(['apim:shared_scope_manage']) && (
                         <Grid item>
                             <Typography variant='body2' color='primary'>

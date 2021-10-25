@@ -30,6 +30,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import queryString from 'query-string';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
         '& input': {
             padding: '12px 14px',
         },
+        display: 'flex',
     },
     paper: {
         height: '100%',
@@ -506,7 +508,7 @@ function ProductResourcesEdit(props) {
                                 </Typography>
                             </div>
                             <Paper>
-                                <ListItem className={classes.searchWrapper}>
+                                <div className={classes.searchWrapper}>
                                     <TextField
                                         id='outlined-full-width'
                                         label='API'
@@ -522,9 +524,9 @@ function ProductResourcesEdit(props) {
                                             shrink: true,
                                         }}
                                     />
-                                </ListItem>
+                                </div>
                                 <div className={classes.apiWrapper}>
-                                    <List dense>
+                                    <List dense component='nav'>
                                         {allApis.map((apiObj) => {
                                             const labelId = `checkbox-list-label-${apiObj.id}`;
 
@@ -567,12 +569,12 @@ function ProductResourcesEdit(props) {
                                     </Typography>
                                 </div>
                                 {selectedApi && (
-                                    <Typography variant='h5' className={classes.selectedTitle}>
+                                    <Typography variant='h5' component='h2' className={classes.selectedTitle}>
                                         {selectedApi.name}
                                     </Typography>
                                 )}
                                 <div className={classes.tootBar}>
-                                    <a
+                                    <Button
                                         onClick={() => addSelectedResourcesToTree()}
                                         onKeyDown={() => addSelectedResourcesToTree()}
                                     >
@@ -584,9 +586,9 @@ function ProductResourcesEdit(props) {
                                             />
                                         </Typography>
                                         <Icon>fast_forward</Icon>
-                                    </a>
+                                    </Button>
                                     <VerticalDivider />
-                                    <a
+                                    <Button
                                         onClick={() => addSelectedResourcesToTree(true)}
                                         onKeyDown={() => addSelectedResourcesToTree(true)}
                                     >
@@ -598,14 +600,14 @@ function ProductResourcesEdit(props) {
                                             />
                                         </Typography>
                                         <Icon>fast_forward</Icon>
-                                    </a>
+                                    </Button>
                                 </div>
                                 <div className={classes.ResourceWrapper}>
                                     <div className='frame'>
                                         <List dense>
                                             {Object.keys(selectedApiPaths).map((key) => {
                                                 const path = selectedApiPaths[key];
-                                                const labelId = `checkbox-list-label-${key}`;
+                                                const labelId = `checkbox-list-label_${key}`;
                                                 return Object.keys(path).map((innerKey) => {
                                                     const methodObj = path[innerKey];
                                                     return (
@@ -624,10 +626,15 @@ function ProductResourcesEdit(props) {
                                                                         onChange={() => updateCheckBox(key, innerKey)}
                                                                         color='primary'
                                                                         disabled={methodObj.allreadyAdded}
+                                                                        inputProps={
+                                                                            {
+                                                                                'aria-label': 'Select API resource',
+                                                                            }
+                                                                        }
                                                                     />
                                                                 </ListItemIcon>
                                                                 <ListItemText
-                                                                    id={labelId}
+                                                                    id={labelId + innerKey}
                                                                     primary={(
                                                                         <div>
                                                                             <MethodView
@@ -699,7 +706,7 @@ function ProductResourcesEdit(props) {
                                 <div className={classes.colTitle} />
                                 {api.name && (
                                     <>
-                                        <Typography variant='h5' className={classes.selectedTitle}>
+                                        <Typography variant='h5' component='h2' className={classes.selectedTitle}>
                                             {api.name}
                                         </Typography>
                                     </>
@@ -745,7 +752,7 @@ function ProductResourcesEdit(props) {
                                                                     />
                                                                     <Typography variant='body2'>{target}</Typography>
                                                                     <hr className={classes.hr} />
-                                                                    <Icon
+                                                                    <IconButton
                                                                         onClick={() => updateResourceTree(
                                                                             {
                                                                                 target,
@@ -756,9 +763,14 @@ function ProductResourcesEdit(props) {
                                                                             },
                                                                             'remove',
                                                                         )}
+                                                                        aria-label={
+                                                                            'delete resource ' + apiResource.name
+                                                                        }
                                                                     >
-                                                                        delete
-                                                                    </Icon>
+                                                                        <Icon>
+                                                                            delete
+                                                                        </Icon>
+                                                                    </IconButton>
                                                                 </div>
                                                             );
                                                         })}

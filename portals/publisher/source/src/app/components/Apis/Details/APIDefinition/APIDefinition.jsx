@@ -30,6 +30,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
+import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
@@ -88,6 +89,9 @@ const styles = (theme) => ({
     },
     button: {
         marginLeft: theme.spacing(1),
+        '&:hover': {
+            'text-decoration': 'none',
+        },
     },
     progressLoader: {
         marginLeft: theme.spacing(1),
@@ -710,7 +714,7 @@ class APIDefinition extends React.Component {
             <>
                 <div className={classes.topBar}>
                     <div className={classes.titleWrapper}>
-                        <Typography id='itest-api-details-api-definition-head' variant='h4'>
+                        <Typography id='itest-api-details-api-definition-head' variant='h4' component='h2'>
                             {/* eslint-disable-next-line no-nested-ternary */}
                             {graphQL ? (
                                 <FormattedMessage
@@ -763,21 +767,25 @@ class APIDefinition extends React.Component {
                         {api.type !== API.CONSTS.APIProduct && (
                             <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} />
                         )}
-                        {api.serviceInfo && api.serviceInfo.outdated && (
+                        {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
                             <DefinitionOutdated
                                 api={api}
                                 classes={classes}
                             />
                         )}
-                        <a className={classes.downloadLink} href={downloadLink} download={fileName}>
-                            <Button size='small' className={classes.button}>
-                                <CloudDownloadRounded className={classes.buttonIcon} />
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.download.definition'
-                                    defaultMessage='Download Definition'
-                                />
-                            </Button>
-                        </a>
+                        <Button
+                            size='small'
+                            className={classes.button}
+                            component={Link}
+                            download={fileName}
+                            href={downloadLink}
+                        >
+                            <CloudDownloadRounded className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.download.definition'
+                                defaultMessage='Download Definition'
+                            />
+                        </Button>
 
                         {(securityAuditProperties.apiToken && securityAuditProperties.collectionId
                         && api.type !== 'GRAPHQL' && !asyncAPI)

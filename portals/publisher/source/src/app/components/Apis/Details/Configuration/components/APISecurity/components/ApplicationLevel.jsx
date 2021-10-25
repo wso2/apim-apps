@@ -118,7 +118,7 @@ export default function ApplicationLevel(props) {
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} id='applicationLevel'>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography className={classes.subHeading} variant='h6'>
+                        <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Components.APISecurity.Components.
                                     ApplicationLevel.http'
@@ -137,7 +137,7 @@ export default function ApplicationLevel(props) {
                                         }
                                     />
                                 )}
-                                aria-label='APISecurity'
+                                aria-label='API Security helper text'
                                 placement='right-end'
                                 interactive
                             >

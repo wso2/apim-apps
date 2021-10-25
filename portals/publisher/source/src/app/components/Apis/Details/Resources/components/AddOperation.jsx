@@ -1,3 +1,4 @@
+import { FormattedMessage, useIntl } from 'react-intl';
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -16,33 +17,34 @@
  * under the License.
  */
 import React, {
-    useState, useRef, useReducer,
+    useReducer,
+    useRef,
+    useState,
 } from 'react';
-import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import AddIcon from '@material-ui/icons/Add';
-import { FormattedMessage, useIntl } from 'react-intl';
 
-import TextField from '@material-ui/core/TextField';
+import APIValidation from 'AppData/APIValidation';
+import AddIcon from '@material-ui/icons/Add';
+import Alert from 'AppComponents/Shared/Alert';
+import Badge from '@material-ui/core/Badge';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import ClearIcon from '@material-ui/icons/Clear';
+import Fab from '@material-ui/core/Fab';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Chip from '@material-ui/core/Chip';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
+import Paper from '@material-ui/core/Paper';
+import PropTypes from 'prop-types';
 import Select from '@material-ui/core/Select';
-import Fab from '@material-ui/core/Fab';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import ClearIcon from '@material-ui/icons/Clear';
+import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
-import Badge from '@material-ui/core/Badge';
-import APIValidation from 'AppData/APIValidation';
-import Alert from 'AppComponents/Shared/Alert';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -198,6 +200,13 @@ function AddOperation(props) {
             }));
             return;
         }
+        if (newOperations.target.indexOf(' ') >= 0) {
+            Alert.warning(intl.formatMessage({
+                id: 'Apis.Details.Resources.components.AddOperation.operation.target.cannot.contains.white.spaces',
+                defaultMessage: 'Operation target cannot contains white spaces',
+            }));
+            return;
+        }
         operationsDispatcher({ action: 'add', data: newOperations });
         clearInputs();
     }
@@ -206,7 +215,7 @@ function AddOperation(props) {
             <Grid container direction='row' spacing={0} justify='center' alignItems='center'>
                 <Grid item md={5} xs={12}>
                     <FormControl margin='dense' variant='outlined' className={classes.formControl}>
-                        <InputLabel ref={inputLabel} htmlFor='outlined-age-simple'>
+                        <InputLabel ref={inputLabel} htmlFor='operation-verb'>
                             {isAsyncAPI && (
                                 <FormattedMessage
                                     id='Apis.Details.Topics.components.AddOperation.op.type'
@@ -329,7 +338,6 @@ function AddOperation(props) {
                                 defaultMessage='Add new operation'
                             />
                         )}
-                        aria-label='AddOperation'
                         placement='bottom'
                         interactive
                     >
@@ -338,7 +346,7 @@ function AddOperation(props) {
                                 style={{ marginLeft: '20px', marginBottom: '15px', marginRight: '20px' }}
                                 size='small'
                                 color='primary'
-                                aria-label='add'
+                                aria-label='Add new operation'
                                 onClick={addOperation}
                             >
                                 <AddIcon />
@@ -353,12 +361,11 @@ function AddOperation(props) {
                                     defaultMessage='Clear inputs'
                                 />
                             )}
-                            aria-label='clear-inputs'
                             placement='bottom'
                             interactive
                         >
                             <span>
-                                <IconButton onClick={clearInputs} size='small'>
+                                <IconButton onClick={clearInputs} size='small' aria-label='clear-inputs'>
                                     <ClearIcon />
                                 </IconButton>
                             </span>

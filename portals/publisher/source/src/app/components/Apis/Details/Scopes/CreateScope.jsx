@@ -404,7 +404,7 @@ class CreateScope extends React.Component {
                         <Grid item md={12}>
                             <div className={classes.titleWrapper}>
                                 <Link to={url} className={classes.titleLink}>
-                                    <Typography variant='h4'>
+                                    <Typography variant='h4' component='h2'>
                                         <FormattedMessage
                                             id='Apis.Details.Scopes.Scopes.heading.scope.heading'
                                             defaultMessage='Scopes'
@@ -412,7 +412,7 @@ class CreateScope extends React.Component {
                                     </Typography>
                                 </Link>
                                 <Icon>keyboard_arrow_right</Icon>
-                                <Typography variant='h4'>
+                                <Typography variant='h4' component='h3'>
                                     <FormattedMessage
                                         id='Apis.Details.Scopes.CreateScope.create.new.scope'
                                         defaultMessage='Create New Scope'
@@ -579,14 +579,15 @@ class CreateScope extends React.Component {
                                             />
                                         )}
                                     </Button>
-                                    <Link to={url}>
-                                        <Button>
-                                            <FormattedMessage
-                                                id='Apis.Details.Scopes.CreateScope.cancel'
-                                                defaultMessage='Cancel'
-                                            />
-                                        </Button>
-                                    </Link>
+                                    <Button
+                                        component={Link}
+                                        to={url}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.Scopes.CreateScope.cancel'
+                                            defaultMessage='Cancel'
+                                        />
+                                    </Button>
                                 </div>
                             </Paper>
                         </Grid>

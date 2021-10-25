@@ -265,8 +265,8 @@ class ProtectedApp extends Component {
                             title='iframeOP'
                             id='iframeOP'
                             src={checkSessionURL}
-                            width='0px'
-                            height='0px'
+                            width='0%'
+                            height='0%'
                         />
                     )}
                     <AppRouts isAuthenticated={isAuthenticated} isUserFound={isUserFound} />
@@ -287,8 +287,8 @@ class ProtectedApp extends Component {
                             title='iframeOP'
                             id='iframeOP'
                             src={checkSessionURL}
-                            width='0px'
-                            height='0px'
+                            width='0%'
+                            height='0%'
                         />
                     )}
                 <AppRouts isAuthenticated={isAuthenticated} isUserFound={isUserFound} />

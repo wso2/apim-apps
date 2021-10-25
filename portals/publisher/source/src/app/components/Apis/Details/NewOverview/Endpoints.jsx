@@ -51,7 +51,7 @@ function Endpoints(props) {
     return (
         <>
             <div>
-                <Typography variant='h5' component='h3' className={parentClasses.title}>
+                <Typography variant='h5' component='h2' className={parentClasses.title}>
                     <FormattedMessage
                         id='Apis.Details.NewOverview.Endpoints.endpoints'
                         defaultMessage='Endpoints'
@@ -86,6 +86,7 @@ function Endpoints(props) {
                             classes={{
                                 tooltip: parentClasses.htmlTooltip,
                             }}
+                            interactive
                             title={
                                 showEndpoint(api, 'prod')
                                 && <>{showEndpoint(api, 'prod')}</>
@@ -127,6 +128,7 @@ function Endpoints(props) {
                                 classes={{
                                     tooltip: parentClasses.htmlTooltip,
                                 }}
+                                interactive
                                 title={
                                     showEndpoint(api, 'sand')
                                     && <>{showEndpoint(api, 'sand')}</>

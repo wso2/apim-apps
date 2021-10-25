@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
     notConfigured: {
-        color: 'rgba(0, 0, 0, 0.40)',
+        color: 'rgba(0, 0, 0, 0.54)',
     },
     subHeading: {
         fontSize: '1rem',
@@ -66,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
     textTrim: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+    externalLink: {
+        color: theme.palette.primary.dark,
     },
 }));
 
@@ -101,7 +104,7 @@ function Endpoints(props) {
         <>
             <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded id='endpoints'>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography className={classes.subHeading} variant='h6'>
+                    <Typography className={classes.subHeading} variant='h6' component='h4'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.Endpoints.endpoints'
                             defaultMessage='Endpoints'
@@ -206,7 +209,7 @@ function Endpoints(props) {
                         )}
                     <Box width='100%' textAlign='right' m={1}>
                         <Link to={'/apis/' + api.id + '/endpoints'}>
-                            <Typography style={{ marginLeft: '10px' }} color='primary' variant='caption'>
+                            <Typography className={classes.externalLink} variant='caption'>
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.Configuration.Endpoints.edit.api.endpoints'
                                     defaultMessage='Edit API Endpoints'

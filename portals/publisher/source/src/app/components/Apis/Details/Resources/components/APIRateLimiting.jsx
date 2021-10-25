@@ -20,6 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Radio from '@material-ui/core/Radio';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -36,6 +37,7 @@ import HelpOutline from '@material-ui/icons/HelpOutline';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { FormattedMessage } from 'react-intl';
 
 const RateLimitingLevels = {
     API: 'api',
@@ -141,16 +143,17 @@ function APIRateLimiting(props) {
             <Grid container direction='row' spacing={3} justify='flex-start' alignItems='flex-start'>
                 <Grid item md={12} xs={12}>
                     <Box ml={1}>
-                        <Typography variant='subtitle1' gutterBottom>
+                        <Typography variant='subtitle1' component='h3' gutterBottom>
                             Operations Configuration
                             <Tooltip
                                 fontSize='small'
                                 title='Configurations that affects on all the resources'
-                                aria-label='common configurations'
                                 placement='right-end'
                                 interactive
                             >
-                                <HelpOutline />
+                                <IconButton aria-label='Operations Configuration help text'>
+                                    <HelpOutline />
+                                </IconButton>
                             </Tooltip>
                         </Typography>
                     </Box>
@@ -159,7 +162,12 @@ function APIRateLimiting(props) {
                 <Grid item md={1} xs={1} />
                 <Grid item md={5} xs={11}>
                     <FormControl component='fieldset'>
-                        <FormLabel component='legend'>Rate limiting level</FormLabel>
+                        <FormLabel component='legend'>
+                            <FormattedMessage
+                                id='Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level'
+                                defaultMessage='Rate limiting level'
+                            />
+                        </FormLabel>
                         <RadioGroup
                             aria-label='Apply rate limiting in'
                             value={rateLimitingLevel}

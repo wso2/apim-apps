@@ -33,7 +33,7 @@ export default function APIOperations() {
     return (
         <>
             <Box mb={4}>
-                <Typography id='itest-api-details-resources-head' variant='h4' gutterBottom>
+                <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
                     <FormattedMessage
                         id='Apis.Details.Resources.APIOperations.title'
                         defaultMessage='Resources'

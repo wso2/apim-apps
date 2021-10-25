@@ -33,6 +33,7 @@ import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import ImportDefinition from './ImportDefinition';
+import DefinitionOutdated from './DefinitionOutdated';
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
@@ -66,6 +67,9 @@ const styles = (theme) => ({
     },
     button: {
         marginLeft: theme.spacing(1),
+    },
+    buttonWarningColor: {
+        color: theme.palette.warning.light,
     },
 });
 
@@ -256,6 +260,12 @@ class WSDL extends React.Component {
                             />
                         </Typography>
                         <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} />
+                        {api.serviceInfo && api.serviceInfo.outdated && api.type === 'SOAP' && (
+                            <DefinitionOutdated
+                                api={api}
+                                classes={classes}
+                            />
+                        )}
                         {downloadWidget}
                         {isRestricted(['apim:api_create'], api) && (
                             <Typography variant='body2' color='primary'>

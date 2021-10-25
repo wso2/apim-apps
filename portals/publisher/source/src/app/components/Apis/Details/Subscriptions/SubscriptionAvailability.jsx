@@ -126,7 +126,7 @@ export default function SimpleSelect(props) {
 
     return (
         <Grid item xs={12} md={12} lg={12}>
-            <Typography variant='h4' className={classes.heading}>
+            <Typography variant='h4' component='h2' className={classes.heading}>
                 <FormattedMessage
                     id='Apis.Details.Subscriptions.SubscriptionAvailability.subscription.availability'
                     defaultMessage='Subscription Availability'

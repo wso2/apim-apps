@@ -50,6 +50,9 @@ const ColorlibConnector = withStyles((theme) => {
             backgroundColor: '#eaeaf0',
             borderRadius: 1,
         },
+        viewInStoreLauncher: {
+            color: theme.palette.primary.dark,
+        },
     };
 })(StepConnector);
 
@@ -238,7 +241,7 @@ export default function CustomizedStepper() {
                             </Grid>
                             <Box ml={1}>
                                 <Grid item>
-                                    <Typography variant='h7'>
+                                    <Typography variant='h7' component='div'>
                                         <FormattedMessage
                                             id='Apis.Details.Overview.CustomizedStepper.publish'
                                             defaultMessage=' Published'
@@ -289,7 +292,7 @@ export default function CustomizedStepper() {
                 );
             case 'PROTOTYPED':
                 return (
-                    <Typography variant='h7'>
+                    <Typography variant='h7' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.prototyped'
@@ -300,7 +303,7 @@ export default function CustomizedStepper() {
                 );
             case 'BLOCKED':
                 return (
-                    <Typography variant='h7'>
+                    <Typography variant='h7' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.blocked'
@@ -311,7 +314,7 @@ export default function CustomizedStepper() {
                 );
             case 'DEPRECATED':
                 return (
-                    <Typography variant='h7'>
+                    <Typography variant='h7' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.deprecated'
@@ -322,7 +325,7 @@ export default function CustomizedStepper() {
                 );
             case 'RETIRED':
                 return (
-                    <Typography variant='h7'>
+                    <Typography variant='h7' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.retired'

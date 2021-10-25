@@ -106,7 +106,6 @@ export default function OperationGovernance(props) {
                             />
                         )}
                         fontSize='small'
-                        aria-label='Operation security'
                         placement='right-end'
                         interactive
                     >
@@ -118,7 +117,6 @@ export default function OperationGovernance(props) {
             <Grid item md={5}>
                 <Box display='flex' flexDirection='row' alignItems='flex-start'>
                     <TextField
-                        id='operation_rate_limiting_policy'
                         select
                         fullWidth={!isOperationRateLimiting}
                         SelectProps={{
@@ -234,7 +232,6 @@ export default function OperationGovernance(props) {
             <Grid item md={5}>
                 { operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
                     <TextField
-                        id='operation_scope'
                         select
                         SelectProps={{
                             multiple: true,

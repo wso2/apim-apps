@@ -31,6 +31,7 @@ import Paper from '@material-ui/core/Paper';
 import { EditorState, convertToRaw, ContentState, convertFromHTML } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
 import Alert from 'AppComponents/Shared/Alert';
@@ -122,10 +123,12 @@ function TextEditor(props) {
         const docPromise = restAPI.getInlineContentOfDocument(api.id, docId);
         docPromise
             .then((doc) => {
-                const blocksFromHTML = convertFromHTML(doc.text);
-                const state = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks, blocksFromHTML.entityMap);
-
-                setEditorState(EditorState.createWithContent(state));
+                const contentBlock = htmlToDraft(doc.text);
+                if (contentBlock) {
+                    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+                    const editorState = EditorState.createWithContent(contentState);
+                    setEditorState(editorState);
+                }
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -138,10 +141,13 @@ function TextEditor(props) {
             });
     };
 
-    const { classes } = props;
+    const { classes, docName } = props;
     return (
         <div>
-            <Button onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}>
+            <Button
+                onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                aria-label={'Edit Content of ' + docName}
+            >
                 <Icon>description</Icon>
                 <FormattedMessage id='Apis.Details.Documents.TextEditor.edit.content' defaultMessage='Edit Content' />
             </Button>
@@ -155,7 +161,7 @@ function TextEditor(props) {
                             id='Apis.Details.Documents.TextEditor.edit.content.of'
                             defaultMessage='Edit Content of'
                         />{' '}
-                        "{props.docName}"
+                        "{docName}"
                     </Typography>
                     <Button className={classes.button} variant='contained' disabled={isUpdating} color='primary' onClick={addContentToDoc}>
                         <FormattedMessage

@@ -193,8 +193,6 @@ export default function GraphQLConsole() {
         }
     }
 
-    const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
-
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -202,7 +200,7 @@ export default function GraphQLConsole() {
             </Typography>
             <Paper className={classes.paper}>
                 <Grid container className={classes.grid}>
-                    {!isPrototypedAPI && !user && (
+                    {!user && (
                         <Grid item md={6}>
                             <Paper className={classes.userNotificationPaper}>
                                 <Typography variant='h5' component='h3'>

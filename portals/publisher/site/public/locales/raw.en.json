@@ -651,12 +651,6 @@
   "Apis.Details.Configuration.Configuration.isdefault.yes": {
     "defaultMessage": "Yes"
   },
-  "Apis.Details.Configuration.Configuration.prototype": {
-    "defaultMessage": "Deploy as a Prototype"
-  },
-  "Apis.Details.Configuration.Configuration.prototype.endpoints.provided": {
-    "defaultMessage": "Prototype Endpoint provided"
-  },
   "Apis.Details.Configuration.Configuration.publisher": {
     "defaultMessage": "Publish"
   },
@@ -1726,22 +1720,16 @@
     "defaultMessage": "A REST API endpoint based on a URI template."
   },
   "Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint": {
-    "defaultMessage": "Prototype Endpoint"
+    "defaultMessage": "Mock Implementation"
   },
   "Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint.description": {
-    "defaultMessage": "Use the inbuilt JavaScript engine to prototype the API or provide an endpoint to a prototype API. The inbuilt JavaScript engine does support prototype SOAP APIs"
+    "defaultMessage": "Use the inbuilt JavaScript engine to prototype the API The inbuilt JavaScript engine does support prototype SOAP APIs"
   },
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint": {
     "defaultMessage": "HTTP/ SOAP Endpoint"
   },
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint.description": {
     "defaultMessage": "The direct URI of the web service."
-  },
-  "Apis.Details.Endpoints.NewEndpointCreate.default.prototype.endpoints": {
-    "defaultMessage": "Prototype Endpoint"
-  },
-  "Apis.Details.Endpoints.NewEndpointCreate.prototype.implementation": {
-    "defaultMessage": "Prototype Implementation"
   },
   "Apis.Details.Endpoints.Prototype.InlineEndpoints.script": {
     "defaultMessage": "Script"
@@ -2520,6 +2508,9 @@
   "Apis.Details.Resources.Resources.something.went.wrong.while.updating.the.api": {
     "defaultMessage": "Error occurred while updating API"
   },
+  "Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level": {
+    "defaultMessage": "Rate limiting level"
+  },
   "Apis.Details.Resources.components.AddOperation.add.tooltip": {
     "defaultMessage": "Add new operation"
   },
@@ -2528,6 +2519,9 @@
   },
   "Apis.Details.Resources.components.AddOperation.http.verb": {
     "defaultMessage": "HTTP Verb"
+  },
+  "Apis.Details.Resources.components.AddOperation.operation.target.cannot.contains.white.spaces": {
+    "defaultMessage": "Operation target cannot contains white spaces"
   },
   "Apis.Details.Resources.components.AddOperation.operation.target.or.verb.cannot.be.empty.warning": {
     "defaultMessage": "Operation target or operation verb(s) can't be empty"
@@ -2550,11 +2544,20 @@
   "Apis.Details.Resources.components.Operation.delete.operation": {
     "defaultMessage": "Delete operation"
   },
+  "Apis.Details.Resources.components.Operation.disable.security.when.used.in.api.products": {
+    "defaultMessage": "Security enabled"
+  },
+  "Apis.Details.Resources.components.Operation.security.operation": {
+    "defaultMessage": "Security"
+  },
   "Apis.Details.Resources.components.Operation.this.operation.used.in.products": {
     "defaultMessage": "This operation is used in {isUsedInAPIProduct} API product(s)"
   },
   "Apis.Details.Resources.components.Operation.undo.delete": {
     "defaultMessage": "Undo Delete"
+  },
+  "Apis.Details.Resources.components.enabled.security": {
+    "defaultMessage": "No security"
   },
   "Apis.Details.Resources.components.operationComponents.AWSLambdaSettings.Title": {
     "defaultMessage": "AWS Lambda Settings"
@@ -3767,6 +3770,9 @@
   },
   "ServiceCatalog.CreateApi.update.btn.in.progress": {
     "defaultMessage": "Creating API ..."
+  },
+  "ServiceCatalog.CreateSoapPassthroughApi.create.api.dialog.helper": {
+    "defaultMessage": "Create SOAP Passthrough API from service {serviceName}"
   },
   "ServiceCatalog.Listing.Delete.cancel": {
     "defaultMessage": "Cancel"

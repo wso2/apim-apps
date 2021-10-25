@@ -34,6 +34,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
+import LockIcon from '@material-ui/icons//Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 // spliced operation components
 
 import { FormattedMessage } from 'react-intl';
@@ -81,6 +83,7 @@ function Operation(props) {
                 '&:hover': { backgroundColor },
                 backgroundColor,
                 width: theme.spacing(12),
+                color: theme.palette.getContrastText(backgroundColor),
             },
             paperStyles: {
                 border: `1px solid ${backgroundColor}`,
@@ -110,6 +113,10 @@ function Operation(props) {
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 display: 'inline-block',
+            },
+            title: {
+                display: 'inline',
+                margin: `0 ${theme.spacing(5)}px`,
             },
         };
     });
@@ -144,7 +151,7 @@ function Operation(props) {
         <>
             {markAsDelete && (
                 <Box className={classes.overlayUnmarkDelete}>
-                    <Tooltip title='Marked for delete' aria-label='Marked for delete'>
+                    <Tooltip title='Marked for delete'>
                         <Button onClick={toggleDelete} variant='outlined' style={{ marginTop: '10px' }}>
                             <FormattedMessage
                                 id='Apis.Details.Resources.components.Operation.undo.delete'
@@ -165,8 +172,7 @@ function Operation(props) {
                     disableRipple
                     disableTouchRipple
                     expandIcon={<ExpandMoreIcon />}
-                    aria-controls='panel2a-content'
-                    id='panel2a-header'
+                    id={verb + target}
                     classes={{ content: classes.contentNoMargin }}
                 >
                     <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
@@ -180,6 +186,7 @@ function Operation(props) {
                                 <Button
                                     disableFocusRipple
                                     variant='contained'
+                                    aria-label={'HTTP verb ' + verb}
                                     size='small'
                                     className={classes.customButton}
                                 >
@@ -189,6 +196,7 @@ function Operation(props) {
                             <Typography
                                 display='inline-block'
                                 variant='h6'
+                                component='div'
                                 gutterBottom
                                 className={classes.targetText}
                                 title={target}
@@ -236,8 +244,8 @@ function Operation(props) {
                                     && getOperationScopes(operation, spec).join(', ') }
                             </Typography>
                         </Grid>
-                        {!(disableDelete || markAsDelete) && (
-                            <Grid item md={1} justify='flex-end' container>
+                        <Grid item md={1} justify='flex-end' alignItems='center' container>
+                            {!(disableDelete || markAsDelete) && (
                                 <Tooltip
                                     title={
                                         isUsedInAPIProduct
@@ -255,25 +263,52 @@ function Operation(props) {
                                                 />
                                             )
                                     }
-                                    aria-label={(
-                                        <FormattedMessage
-                                            id='Apis.Details.Resources.components.Operation.delete.operation'
-                                            defaultMessage='Delete operation'
-                                        />
-                                    )}
                                 >
                                     <div>
                                         <IconButton
                                             disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
                                             onClick={toggleDelete}
-                                            aria-label='delete'
+                                            aria-label='delete operation'
                                         >
                                             <DeleteIcon fontSize='small' />
                                         </IconButton>
                                     </div>
                                 </Tooltip>
-                            </Grid>
-                        )}
+                            )}
+                            <Tooltip
+                                title={
+                                    (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                        ? (
+                                            <FormattedMessage
+                                                id={'Apis.Details.Resources.components.Operation.disable.security'
+                                                    + '.when.used.in.api.products'}
+                                                defaultMessage='Security enabled'
+                                            />
+                                        )
+                                        : (
+                                            <FormattedMessage
+                                                id='Apis.Details.Resources.components.enabled.security'
+                                                defaultMessage='No security'
+                                            />
+                                        )
+                                }
+                                aria-label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.Resources.components.Operation.security.operation'
+                                        defaultMessage='Security '
+                                    />
+                                )}
+                            >
+                                <IconButton
+                                    aria-label='Security'
+                                >
+                                    {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                        ? <LockIcon fontSize='small' />
+                                        : <LockOpenIcon fontSize='small' />}
+                                </IconButton>
+                            </Tooltip>
+
+                        </Grid>
                     </Grid>
                 </ExpansionPanelSummary>
                 <Divider light className={classes.customDivider} />

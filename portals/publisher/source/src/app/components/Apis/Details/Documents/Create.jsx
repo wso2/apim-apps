@@ -72,6 +72,9 @@ const styles = theme => ({
         marginLeft: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
+    mainTitle: {
+        color: theme.palette.primary.dark,
+    },
 });
 
 function Create(props) {
@@ -140,7 +143,7 @@ function Create(props) {
                         <Grid item md={12}>
                             <div className={classes.titleWrapper}>
                                 <Link to={listingPath} className={classes.titleLink}>
-                                    <Typography variant='h5' align='left' className={classes.mainTitle}>
+                                    <Typography variant='h5' component='h2' align='left' className={classes.mainTitle}>
                                         <FormattedMessage
                                             id='Apis.Details.Documents.Create.heading'
                                             defaultMessage='Documents'
@@ -148,7 +151,7 @@ function Create(props) {
                                     </Typography>
                                 </Link>
                                 <Icon>keyboard_arrow_right</Icon>
-                                <Typography variant='h5'>
+                                <Typography variant='h5' component='h3'>
                                     <FormattedMessage
                                         id='Apis.Details.Documents.Create.title'
                                         defaultMessage='Add New Document'

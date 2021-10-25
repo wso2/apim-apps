@@ -47,7 +47,7 @@ const styles = {
 function APICreateRoutes(props) {
     const { classes } = props;
     return (
-        <main className={classes.content}>
+        <div className={classes.content}>
             <Switch>
                 <Route path='/apis/create/rest' component={APICreateDefault} />
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
@@ -60,7 +60,7 @@ function APICreateRoutes(props) {
                 <Route path='/apis/create/asyncapi' component={APICreateAsyncAPI} />
                 <Route component={ResourceNotFound} />
             </Switch>
-        </main>
+        </div>
     );
 }
 

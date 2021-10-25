@@ -110,6 +110,7 @@ function View(props) {
 
     const [code, setCode] = useState('');
     const [doc, setDoc] = useState(null);
+    const [isFileAvailable, setIsFileAvailable] = useState(true);
     const restAPI = isAPIProduct ? new APIProduct() : new API();
 
     useEffect(() => {
@@ -119,6 +120,18 @@ function View(props) {
                 const { body } = doc;
                 setDoc(body);
                 if (body.sourceType === 'MARKDOWN' || body.sourceType === 'INLINE') loadContentForDoc();
+
+                if (body.sourceType === 'FILE') {
+                    const promised_get_content = restAPI.getFileForDocument(api.id, documentId);
+                    promised_get_content
+                        .then((done) => {
+                            setIsFileAvailable(true);
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                            setIsFileAvailable(false);
+                        });
+                 }
             })
             .catch(error => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -166,12 +179,12 @@ function View(props) {
                 <div className={classes.root}>
                     <div className={classes.titleWrapper}>
                         <Link to={listingPath} className={classes.titleLink}>
-                            <Typography variant="h5" align="left" className={classes.mainTitle}>
+                            <Typography variant="h5" component='h2' align="left" className={classes.mainTitle}>
                                 <FormattedMessage id="Apis.Details.Documents.View.heading" defaultMessage="Documents" />
                             </Typography>
                         </Link>
                         <Icon>keyboard_arrow_right</Icon>
-                        <Typography variant="h5">{doc.name}</Typography>
+                        <Typography variant="h5" component='h3'>{doc.name}</Typography>
                     </div>
                     <Paper className={classes.paper}>
                         <Table className={classes.table}>
@@ -253,6 +266,7 @@ function View(props) {
                                 color="default"
                                 className={classes.button}
                                 onClick={handleDownload}
+                                disabled={!isFileAvailable}
                             >
                                 <FormattedMessage
                                     id="Apis.Details.Documents.View.btn.download"

@@ -346,25 +346,10 @@ class Credentials extends React.Component {
         && !api.securityScheme.includes('api_key') && !api.securityScheme.includes('basic_auth');
         const isOnlyBasicAuth = api.securityScheme.includes('basic_auth') && !api.securityScheme.includes('oauth2')
          && !api.securityScheme.includes('api_key');
-        const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
         const isSetAllorResidentKeyManagers = (api.keyManagers && api.keyManagers.includes('all'))
             || (api.keyManagers && api.keyManagers.includes('Resident Key Manager'));
         const renderCredentialInfo = () => {
-            if (isPrototypedAPI) {
-                return (
-                    <>
-                        <InlineMessage type='info' className={classes.dialogContainer}>
-                            <Typography component='p'>
-                                <FormattedMessage
-                                    id={'Apis.Details.Credentials.Credentials.you.do.not.need'
-                                        + '.credentials.to.access.prototyped.api'}
-                                    defaultMessage='You do not need credentials to access Prototyped APIs'
-                                />
-                            </Typography>
-                        </InlineMessage>
-                    </>
-                );
-            } else if (isOnlyMutualSSL || isOnlyBasicAuth) {
+            if (isOnlyMutualSSL || isOnlyBasicAuth) {
                 return (
                     <InlineMessage type='info' className={classes.dialogContainer}>
                         <Typography component='p'>
@@ -430,27 +415,23 @@ class Credentials extends React.Component {
                                                     }
                                                 />
                                             </Typography>
-                                            <Link
+                                            <Button
+                                                variant='contained'
+                                                color='primary'
+                                                className={classes.buttonElm}
                                                 to={(isOnlyMutualSSL || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers) ? null
                                                     : `/apis/${api.id}/credentials/wizard`}
-                                                style={!api.isSubscriptionAvailable
-                                                    ? { pointerEvents: 'none' } : null}
+                                                component={Link}
+                                                disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
+                                                    || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
                                             >
-                                                <Button
-                                                    variant='contained'
-                                                    color='primary'
-                                                    className={classes.buttonElm}
-                                                    disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
-                                                        || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
-                                                >
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Credentials.'
-                                                        + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
-                                                        defaultMessage='Subscription &amp; Key Generation Wizard'
-                                                    />
-                                                </Button>
-                                            </Link>
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Credentials.'
+                                                    + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
+                                                    defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                />
+                                            </Button>
                                         </div>
                                     ) }
                                     {applicationsAvailable.length > 0 && (
@@ -574,7 +555,7 @@ class Credentials extends React.Component {
                             <Typography onClick={this.handleExpandClick} variant='h4' component='div' className={classes.titleSub}>
                                 {applicationsAvailable.length > 0 && (
                                     <Link
-                                        to={(isOnlyMutualSSL || isOnlyBasicAuth || isPrototypedAPI
+                                        to={(isOnlyMutualSSL || isOnlyBasicAuth
                                             || !isSetAllorResidentKeyManagers) ? null
                                             : `/apis/${api.id}/credentials/wizard`}
                                         style={!api.isSubscriptionAvailable
@@ -584,7 +565,7 @@ class Credentials extends React.Component {
                                         <Button
                                             color='secondary'
                                             disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
-                                                 || isOnlyBasicAuth || isPrototypedAPI
+                                                 || isOnlyBasicAuth
                                                  || !isSetAllorResidentKeyManagers}
                                             size='small'
                                         >

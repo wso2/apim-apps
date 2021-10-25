@@ -27,6 +27,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import APIValidation from 'AppData/APIValidation';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 /**
  *
@@ -40,7 +41,9 @@ export default function AuthorizationHeader(props) {
     const { api, configDispatcher } = props;
     const [apiFromContext] = useAPI();
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
+    const { settings } = useAppContext();
     let hasResourceWithSecurity;
+    const authorizationHeaderValue = api.authorizationHeader ? api.authorizationHeader : settings.authorizationHeader;
     if (apiFromContext.apiType === API.CONSTS.APIProduct) {
         const apiList = apiFromContext.apis;
         for (const apiInProduct in apiList) {
@@ -84,7 +87,7 @@ export default function AuthorizationHeader(props) {
                             defaultMessage='Authorization Header'
                         />
                     )}
-                    value={hasResourceWithSecurity ? (api.authorizationHeader || ' ') : ''}
+                    value={hasResourceWithSecurity ? authorizationHeaderValue : ' '}
                     error={!isHeaderNameValid}
                     helperText={
                         (!isHeaderNameValid)

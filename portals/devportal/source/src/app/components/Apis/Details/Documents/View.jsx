@@ -24,9 +24,10 @@ import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
-import ReactSafeHtml from 'react-safe-html';
+import sanitizeHtml from 'sanitize-html';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
+import { app } from 'Settings';
 import { ApiContext } from '../ApiContext';
 import Alert from '../../../Shared/Alert';
 
@@ -104,6 +105,10 @@ function View(props) {
                 }
             });
     };
+    const clean = sanitizeHtml(code, {
+        allowedTags: (app.sanitizeHtml && app.sanitizeHtml.allowedTags) || false,
+        allowedAttributes: (app.sanitizeHtml && app.sanitizeHtml.allowedAttributes) || false,
+    });
     useEffect(() => {
         if (doc.sourceType === 'MARKDOWN' || doc.sourceType === 'INLINE') loadContentForDoc();
         if (doc.sourceType === 'FILE') {
@@ -194,7 +199,7 @@ function View(props) {
                     {code}
                 </ReactMarkdown>
             )}
-            {doc.sourceType === 'INLINE' && <ReactSafeHtml html={code} />}
+            {doc.sourceType === 'INLINE' && (<div dangerouslySetInnerHTML={{ __html: clean }} />)}
             {doc.sourceType === 'URL' && (
                 <a
                     className={classes.displayURL}

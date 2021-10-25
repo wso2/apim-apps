@@ -122,37 +122,37 @@ function Subscriptions(props) {
             )}
             { updateInProgress && <Progress /> }
             {(api.gatewayVendor === 'wso2') && (
-                <Grid
-                    container
-                    direction='row'
-                    alignItems='flex-start'
-                    spacing={1}
-                    className={classes.buttonSection}
-                >
-                    <Grid item>
-                        <Button
-                            type='submit'
-                            variant='contained'
-                            color='primary'
-                            disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                            onClick={() => saveAPI()}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Subscriptions.Subscriptions.save'
-                                defaultMessage='Save'
-                            />
-                        </Button>
-                    </Grid>
-                    <Grid item>
-                        <Link to={'/apis/' + api.id + '/overview'}>
-                            <Button>
-                                <FormattedMessage
-                                    id='Apis.Details.Subscriptions.Subscriptions.cancel'
-                                    defaultMessage='Cancel'
-                                />
-                            </Button>
-                        </Link>
-                    </Grid>
+              <Grid
+                  container
+                  direction='row'
+                  alignItems='flex-start'
+                  spacing={1}
+                  className={classes.buttonSection}
+              >
+                  <Grid item>
+                      <Button
+                          type='submit'
+                          variant='contained'
+                          color='primary'
+                          disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                          onClick={() => saveAPI()}
+                      >
+                          <FormattedMessage
+                              id='Apis.Details.Subscriptions.Subscriptions.save'
+                              defaultMessage='Save'
+                          />
+                      </Button>
+                  </Grid>
+                  <Grid item>
+                      <Button
+                          component={Link}
+                          to={'/apis/' + api.id + '/overview'}
+                      >
+                          <FormattedMessage
+                              id='Apis.Details.Subscriptions.Subscriptions.cancel'
+                              defaultMessage='Cancel'
+                          />
+                      </Button>
                 </Grid>
             )}
             <SubscriptionsTable api={api} />

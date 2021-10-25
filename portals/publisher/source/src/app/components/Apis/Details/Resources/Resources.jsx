@@ -100,6 +100,7 @@ export default function Resources(props) {
     }
     const [resourcePolicies, resourcePoliciesDispatcher] = useReducer(resourcePoliciesReducer, null);
 
+
     /**
      *
      * **** NOTE: This reducer function needs to be a pure JS function, Mean we cant refer to external states, or
@@ -121,11 +122,31 @@ export default function Resources(props) {
         } else {
             addedOperations = cloneDeep(currentOperations);
         }
-
+        let newData = {};
+        if (action === 'removeAllSecurity') {
+            newData = cloneDeep(openAPISpec.paths);
+        }
+        if (action === 'init') {
+            newData = data || openAPISpec.paths;
+        }
         switch (action) {
             case 'init':
                 setSelectedOperation({});
                 return data || openAPISpec.paths;
+            case 'removeAllSecurity':
+                setSelectedOperation({});
+                return Object.entries(newData).reduce((resourceAcc, [resourceKey, verbObj]) => {
+                    const verbList = Object.entries(verbObj).reduce((verbListAcc, [verbKey, operation]) => {
+                        const newOperation = { ...operation };
+                        newOperation['x-auth-type'] = data.disable ? 'None' : 'Any';
+                        const newVerbListAcc = { ...verbListAcc };
+                        newVerbListAcc[verbKey] = newOperation;
+                        return newVerbListAcc;
+                    }, {});
+                    const newResourceListAcc = { ...resourceAcc };
+                    newResourceListAcc[resourceKey] = verbList;
+                    return newResourceListAcc;
+                }, {});
             case 'description':
             case 'summary':
                 updatedOperation[action] = value;
@@ -237,6 +258,13 @@ export default function Resources(props) {
         return { ...currentOperations, [target]: { ...currentOperations[target], [verb]: updatedOperation } };
     }
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
+
+    const enableSecurity = () => {
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: false } });
+    };
+    const disableSecurity = () => {
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: true } });
+    };
     /**
      *
      *
@@ -593,6 +621,8 @@ export default function Resources(props) {
                             operations={operations}
                             selectedOperations={markedOperations}
                             setSelectedOperation={setSelectedOperation}
+                            enableSecurity={enableSecurity}
+                            disableSecurity={disableSecurity}
                         />
                     )}
                     {Object.entries(operations).map(([target, verbObject]) => (

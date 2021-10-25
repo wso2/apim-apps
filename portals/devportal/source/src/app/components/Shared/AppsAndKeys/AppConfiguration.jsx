@@ -97,9 +97,15 @@ const AppConfiguration = (props) => {
     /**
      * Update the state when new props are available
      */
-    useEffect(() => {
+    useEffect(() => {        
         setSelectedValue(previousValue);
     }, [previousValue])
+
+    const setCheckboxValue = () => {
+        return ( typeof selectedValue === 'string' && selectedValue === 'true' )
+            || ( typeof selectedValue !== 'string' && selectedValue === true );
+    }
+
     return (
         <>
             <TableRow>
@@ -108,6 +114,7 @@ const AppConfiguration = (props) => {
                 </TableCell>
                 <TableCell>
                     <Box maxWidth={600}>
+                        
                     {config.type === 'select' && config.multiple === false ? (
                         <TextField
                             classes={{
@@ -197,6 +204,26 @@ const AppConfiguration = (props) => {
                             variant='outlined'
                             disabled={!isUserOwner}
                         />
+                    ) : (config.type === 'checkbox') ? (
+                        <Checkbox
+                        classes={{
+                            root: classes.removeHelperPadding,
+                        }}
+                            fullWidth
+                            id={config.name}
+                            label={config.label}
+                            checked={setCheckboxValue()}
+                            name={config.name}
+                            onChange={e => handleAppRequestChange(e)}
+                            helperText={
+                                <Typography variant='caption'>
+                                    {config.tooltip}
+                                </Typography>
+                            }
+                            margin='dense'
+                            variant='outlined'
+                            disabled={!isUserOwner}
+                            />
                     ) : (
                                     <TextField
                                         classes={{
