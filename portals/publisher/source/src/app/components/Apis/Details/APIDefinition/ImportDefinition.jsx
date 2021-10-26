@@ -57,7 +57,7 @@ export default function ImportDefinition(props) {
     const classes = useStyles();
     const [openAPIDefinitionImport, setOpenAPIDefinitionImport] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
-    const [api] = useAPI();
+    const [api, updateAPI] = useAPI();
     const intl = useIntl();
     const isGraphQL = api.isGraphql();
     const isSOAP = api.isSOAP();
@@ -137,6 +137,7 @@ export default function ImportDefinition(props) {
                     const contentType = isJSONRegex.test(content) ? 'json' : 'yaml';
                     setSchemaDefinition(content, contentType);
                 }
+                updateAPI();
             })
             .catch((error) => {
                 console.error(error);
