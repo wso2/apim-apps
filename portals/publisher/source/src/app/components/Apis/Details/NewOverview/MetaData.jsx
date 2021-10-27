@@ -181,12 +181,13 @@ function MetaData(props) {
                             && (
                                 <>
                                     <Tooltip
-                                        title={moment(api.createdTime).calendar()}
+                                        title={moment.unix(api.createdTime / 1000).calendar()}
                                         interactive
                                         placement='top-start'
                                     >
                                         <Typography variant='body1' display='block'>
-                                            {capitalizeFirstLetter(moment(api.createdTime).fromNow())}
+                                            {capitalizeFirstLetter(moment.unix(api.createdTime / 1000)
+                                                .fromNow())}
                                         </Typography>
                                     </Tooltip>
                                 </>
