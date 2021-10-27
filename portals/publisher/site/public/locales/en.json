@@ -1729,6 +1729,42 @@
       "value": "The API can be viewed and modified only by specific publishers and creators with the roles that you specify"
     }
   ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL": [
+    {
+      "type": 0,
+      "value": "Accessible Endpoint URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL.help": [
+    {
+      "type": 0,
+      "value": "This is the accessible endpoint of the advertised API"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised": [
+    {
+      "type": 0,
+      "value": "Make the API Advertise Only"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.tooltip": [
+    {
+      "type": 0,
+      "value": "If enabled, API will be served as an advertise only API. API Cannot be deployed when the API is advertise only."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL": [
+    {
+      "type": 0,
+      "value": "External Store URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL.help": [
+    {
+      "type": 0,
+      "value": "This is the external store of the advertised API"
+    }
+  ],
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": [
     {
       "type": 0,
@@ -2532,25 +2568,25 @@
   "Apis.Details.Documents.Listing.column.header.action": [
     {
       "type": 0,
-      "value": "action"
+      "value": "Action"
     }
   ],
   "Apis.Details.Documents.Listing.column.header.name": [
     {
       "type": 0,
-      "value": "name"
+      "value": "Name"
     }
   ],
   "Apis.Details.Documents.Listing.column.header.source.type": [
     {
       "type": 0,
-      "value": "sourceType"
+      "value": "Source Type"
     }
   ],
   "Apis.Details.Documents.Listing.column.header.type": [
     {
       "type": 0,
-      "value": "type"
+      "value": "Type"
     }
   ],
   "Apis.Details.Documents.Listing.documents.listing.fetching.error.message": [
