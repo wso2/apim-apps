@@ -247,101 +247,120 @@ const APIDetailsTopMenu = (props) => {
                     />
                 </MUIAlert>
             )}
-            <div className={classes.topRevisionStyle}>
-                <TextField
-                    id='revision-selector'
-                    value={revisionId}
-                    select
-                    SelectProps={{
-                        MenuProps: {
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            },
-                            getContentAnchorEl: null,
-                        },
-                    }}
-                    name='selectRevision'
-                    onChange={handleChange}
-                    margin='dense'
+            <div className={classes.dateWrapper} />
+            {(api.advertiseInfo && api.advertiseInfo.advertised) && (
+                <MUIAlert
                     variant='outlined'
+                    severity='warning'
+                    icon={false}
                 >
-                    {!isAPIProduct ? (
-                        <MenuItem
-                            value={api.isRevision ? api.revisionedApiId : api.id}
-                            component={Link}
-                            to={'/apis/' + (api.isRevision ? api.revisionedApiId : api.id) + '/' + lastIndex}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                defaultMessage='Current API'
-                            />
-                        </MenuItem>
-                    ) : (
-                        <MenuItem
-                            value={api.isRevision ? api.revisionedApiProductId : api.id}
-                            component={Link}
-                            to={'/api-products/' + (api.isRevision
-                                ? api.revisionedApiProductId : api.id) + '/' + lastIndex}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                defaultMessage='Current API'
-                            />
-                        </MenuItem>
-                    )}
-                    {allRevisions && !isAPIProduct && allRevisions.map((item) => (
-                        <MenuItem value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
-                            <Grid
-                                container
-                                direction='row'
-                                alignItems='center'
+                    <FormattedMessage
+                        id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
+                        defaultMessage='Advertise Only'
+                    />
+                </MUIAlert>
+            )}
+            {(api.advertiseInfo && !api.advertiseInfo.advertised) && (
+                <div className={classes.topRevisionStyle}>
+                    <TextField
+                        id='revision-selector'
+                        value={revisionId}
+                        select
+                        SelectProps={{
+                            MenuProps: {
+                                anchorOrigin: {
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                },
+                                getContentAnchorEl: null,
+                            },
+                        }}
+                        name='selectRevision'
+                        onChange={handleChange}
+                        margin='dense'
+                        variant='outlined'
+                    >
+                        {!isAPIProduct ? (
+                            <MenuItem
+                                value={api.isRevision ? api.revisionedApiId : api.id}
+                                component={Link}
+                                to={'/apis/' + (api.isRevision ? api.revisionedApiId : api.id) + '/' + lastIndex}
                             >
-                                <Grid item>
-                                    {item.displayName}
-                                </Grid>
-                                {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
-                                    <Grid item>
-                                        <Box ml={2}>
-                                            <Tooltip
-                                                title={getDeployments(item.id)}
-                                                placement='bottom'
-                                            >
-                                                <Grid className={classes.active} />
-                                            </Tooltip>
-                                        </Box>
-                                    </Grid>
-                                )}
-                            </Grid>
-                        </MenuItem>
-                    ))}
-                    {allRevisions && isAPIProduct && allRevisions.map((item) => (
-                        <MenuItem value={item.id} component={Link} to={'/api-products/' + item.id + '/' + lastIndex}>
-                            <Grid
-                                container
-                                direction='row'
-                                alignItems='center'
+                                <FormattedMessage
+                                    id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                    defaultMessage='Current API'
+                                />
+                            </MenuItem>
+                        ) : (
+                            <MenuItem
+                                value={api.isRevision ? api.revisionedApiProductId : api.id}
+                                component={Link}
+                                to={'/api-products/' + (api.isRevision
+                                    ? api.revisionedApiProductId : api.id) + '/' + lastIndex}
                             >
-                                <Grid item>
-                                    {item.displayName}
-                                </Grid>
-                                {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                <FormattedMessage
+                                    id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                    defaultMessage='Current API'
+                                />
+                            </MenuItem>
+                        )}
+                        {allRevisions && !isAPIProduct && allRevisions.map((item) => (
+                            <MenuItem value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
+                                <Grid
+                                    container
+                                    direction='row'
+                                    alignItems='center'
+                                >
                                     <Grid item>
-                                        <Box ml={2}>
-                                            <Tooltip
-                                                title={getDeployments(item.id)}
-                                                placement='bottom'
-                                            >
-                                                <Grid className={classes.active} />
-                                            </Tooltip>
-                                        </Box>
+                                        {item.displayName}
                                     </Grid>
-                                )}
-                            </Grid>
-                        </MenuItem>
-                    ))}
-                </TextField>
-            </div>
+                                    {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                        <Grid item>
+                                            <Box ml={2}>
+                                                <Tooltip
+                                                    title={getDeployments(item.id)}
+                                                    placement='bottom'
+                                                >
+                                                    <Grid className={classes.active} />
+                                                </Tooltip>
+                                            </Box>
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </MenuItem>
+                        ))}
+                        {allRevisions && isAPIProduct && allRevisions.map((item) => (
+                            <MenuItem
+                                value={item.id}
+                                component={Link}
+                                to={'/api-products/' + item.id + '/' + lastIndex}
+                            >
+                                <Grid
+                                    container
+                                    direction='row'
+                                    alignItems='center'
+                                >
+                                    <Grid item>
+                                        {item.displayName}
+                                    </Grid>
+                                    {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                        <Grid item>
+                                            <Box ml={2}>
+                                                <Tooltip
+                                                    title={getDeployments(item.id)}
+                                                    placement='bottom'
+                                                >
+                                                    <Grid className={classes.active} />
+                                                </Tooltip>
+                                            </Box>
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </div>
+            )}
 
             <VerticalDivider height={70} />
             <GoTo

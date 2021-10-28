@@ -3063,6 +3063,9 @@
   "Apis.Details.TryOutConsole.token.label": {
     "defaultMessage": "Internal API Key"
   },
+  "Apis.Details.components.APIDetailsTopMenu.advertise.only.label": {
+    "defaultMessage": "Advertise Only"
+  },
   "Apis.Details.components.APIDetailsTopMenu.created.by": {
     "defaultMessage": "Created by:"
   },
