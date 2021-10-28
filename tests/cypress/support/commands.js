@@ -54,23 +54,23 @@ Cypress.Commands.add('deploySampleAPI', () => {
 Cypress.Commands.add('createAPIByRestAPIDesign', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
     const randomName = `sample_api_${random_number}`;
-    cy.visit(`/publisher/apis`)
-    cy.get('#itest-id-createapi').click()
-    cy.get('#itest-id-createdefault').click()
-    cy.get('#itest-id-apiname-input').type(name || randomName);
-    cy.get('#itest-id-apicontext-input').click();
-    cy.get('#itest-id-apicontext-input').type(`/sample_context_${random_number}`);
-    cy.get('#itest-id-apiversion-input').click();
-    cy.get('#itest-id-apiversion-input').type(`v${random_number}`);
-    cy.get('#itest-id-apiendpoint-input').click();
-    cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
-    cy.get('#itest-create-default-api-button').click();
+    cy.visit(`/publisher/apis`);
+    cy.get('[data-testid="itest-id-createapi"]').click();
+    cy.get('[data-testid="itest-id-createdefault"]').click();
+    cy.get('[data-testid="itest-id-apiname-input"]').type(name || randomName);
+    cy.get('[data-testid="itest-id-apicontext-input"] input').click();
+    cy.get('[data-testid="itest-id-apicontext-input"] input').type(`/sample_context_${random_number}`);
+    cy.get('[data-testid="itest-id-apiversion-input"] input').click();
+    cy.get('[data-testid="itest-id-apiversion-input"] input').type(`v${random_number}`);
+    cy.get('[data-testid="itest-id-apiendpoint-input"]').click();
+    cy.get('[data-testid="itest-id-apiendpoint-input"]').type(`https://apis.wso2.com/sample${random_number}`);
+    cy.get('[data-testid="itest-create-default-api-button"]').click();
     cy.visit(`/publisher/apis`);
     cy.get(`#sample_api_${random_number}`).click();
 
 
-    cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
-    cy.get("#itest-api-name-version").contains(`v${random_number}`);
+    cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).should('be.visible');
+    cy.get('[data-testid="itest-api-name-version"]').contains(`v${random_number}`);
     return cy.location('pathname').then((pathName) => {
         const pathSegments = pathName.split('/');
         const apiUUID = pathSegments[pathSegments.length - 2];
@@ -83,21 +83,21 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
     const randomName = `sample_api_${random_number}`;
     cy.visit(`/publisher/apis`)
-    cy.get('#itest-id-createapi').click()
-    cy.get('#itest-id-createdefault').click()
-    cy.get('#itest-id-apiname-input').type(name || randomName);
-    cy.get('#itest-id-apicontext-input').click();
-    cy.get('#itest-id-apicontext-input').type(`/sample_context_${random_number}`);
-    cy.get('#itest-id-apiversion-input').click();
-    cy.get('#itest-id-apiversion-input').type(`v${random_number}`);
-    cy.get('#itest-id-apiendpoint-input').click();
-    cy.get('#itest-create-default-api-button').click();
+    cy.get('[data-testid="itest-id-createapi"]').click();
+    cy.get('[data-testid="itest-id-createdefault"]').click();
+    cy.get('[data-testid="itest-id-apiname-input"]').type(name || randomName);
+    cy.get('[data-testid="itest-id-apicontext-input"] input').click();
+    cy.get('[data-testid="itest-id-apicontext-input"] input').type(`/sample_context_${random_number}`);
+    cy.get('[data-testid="itest-id-apiversion-input"] input').click();
+    cy.get('[data-testid="itest-id-apiversion-input"] input').type(`v${random_number}`);
+    cy.get('[data-testid="itest-id-apiendpoint-input"]').click();
+    cy.get('[data-testid="itest-create-default-api-button"]').click();
     cy.visit(`/publisher/apis`);
     cy.get(`#sample_api_${random_number}`).click();
 
 
-    cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
-    cy.get("#itest-api-name-version").contains(`v${random_number}`);
+    cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).should('be.visible');
+    cy.get('[data-testid="itest-api-name-version"]').contains(`v${random_number}`);
     return cy.location('pathname').then((pathName) => {
         const pathSegments = pathName.split('/');
         const apiUUID = pathSegments[pathSegments.length - 2];

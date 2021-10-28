@@ -1,4 +1,5 @@
 
+
 /*
  * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,7 +18,8 @@
  * under the License.
  */
 
-describe("Make api the default version", () => {
+
+describe("Set publisher access control and visibility by roles", () => {
     const username = 'admin'
     const password = 'admin'
 
@@ -26,13 +28,29 @@ describe("Make api the default version", () => {
         // login before each test
     });
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Set role based API Store visibility and access control for the api", () => {
+        const role = 'internal/everyone';
         cy.createAPIByRestAPIDesign();
         cy.get('[data-testid="left-menu-itemDesignConfigurations"]').click();
-        cy.get('[data-testid="default-version-yes"]').click();
+
+        // Select the restricted by role option for access control
+        cy.get('[data-testid="access-control-select"]').click();
+        cy.get('[data-testid="access-control-restricted-by-roles"]').click();
+
+        // fill the chip input and press enter
+        cy.get('[data-testid="access-control-select-role"]').type(`${role}{enter}`);
+
+        // Select the restricted by role option for devportal visibility
+        cy.get('[data-testid="visibility-select"]').click();
+        cy.get('[data-testid="visibility-restricted-by-roles"]').click();
+
+        // fill the chip input and press enter
+        cy.get('[data-testid="visibility-select-role"]').type(`${role}{enter}`);
+
         cy.get('[data-testid="design-config-save-btn"]').click();
         cy.get('[data-testid="design-config-save-btn"]').then(function () {
-            cy.get('[data-testid="default-version-yes"] input').should('be.checked');
+            cy.get('div[data-testid="access-control-select-role"] span').contains(role).should('exist');
+            cy.get('div[data-testid="visibility-select-role"] span').contains(role).should('exist');
         });
     });
 

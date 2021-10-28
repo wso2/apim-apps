@@ -1,14 +1,11 @@
-
 /*
  * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- *
+ *  
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ *  
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,7 +14,7 @@
  * under the License.
  */
 
-describe("Make api the default version", () => {
+describe("do nothing", () => {
     const username = 'admin'
     const password = 'admin'
 
@@ -26,14 +23,28 @@ describe("Make api the default version", () => {
         // login before each test
     });
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Download api", () => {
         cy.createAPIByRestAPIDesign();
-        cy.get('[data-testid="left-menu-itemDesignConfigurations"]').click();
-        cy.get('[data-testid="default-version-yes"]').click();
-        cy.get('[data-testid="design-config-save-btn"]').click();
-        cy.get('[data-testid="design-config-save-btn"]').then(function () {
-            cy.get('[data-testid="default-version-yes"] input').should('be.checked');
+        cy.get('[data-testid="left-menu-itemAPIdefinition"]').click();
+        cy.get('[data-testid="import-definition-btn"]').click();
+        cy.get('[data-testid="open-api-file-select-radio"]').click();
+
+        // upload the swagger
+        cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
+            const filepath = 'api_artifacts/swagger_2.0.json'
+            cy.get('input[type="file"]').attachFile(filepath)            
         });
+        // provide the swagger url
+        cy.get('[data-testid="import-open-api-btn"]').click();
+
+        // Wait until the api is saved
+        cy.intercept('**/apis/**').as('apiGet');
+        cy.wait('@apiGet');
+
+        // Check the resource exists
+        cy.get('[data-testid="left-menu-itemresources"]').click();
+        cy.get('[data-testid="operation-/pet/{petId}/uploadImage-post"]', { timeout: 30000 });
+        cy.get('[data-testid="operation-/pet/{petId}/uploadImage-post"]').should('be.visible');
     });
 
     after(function () {

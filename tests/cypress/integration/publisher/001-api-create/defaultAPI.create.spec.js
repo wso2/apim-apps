@@ -32,8 +32,8 @@ describe("API Create flow", () => {
         let i = Utils.getRandomRange(2, 4);
         while (i > 0) {
             cy.visit(`/publisher/apis`);
-            cy.get('#itest-id-createapi').click()
-            cy.get('#itest-id-createdefault').click()
+            cy.get('[data-testid="itest-id-createapi"]').click()
+            cy.get('[data-testid="itest-id-createdefault"]').click()
             const random_number = Math.round(Math.random() * 1000);
             const randomName = Utils.generateName();
             const apiName = `${randomName}_api_${random_number}`
