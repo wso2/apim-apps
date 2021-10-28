@@ -1732,16 +1732,17 @@ class API extends Resource {
      * @memberof API
      */
     static all(params) {
-        let query = '';
+        let updatedQuery = '';
         if (params && 'query' in params) {
             Object.entries(params.query).forEach(([key, value], index) => {
-                query = `${key}:${value}`;
+                let property = `${key}:${value}`;
+                updatedQuery += property;
                 if (Object.entries(params.query).length !== index + 1) {
-                    query += ',';
+                    updatedQuery += ' ';
                 }
             });
-            params.query = query;
         }
+        params.query = updatedQuery;
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const promisedAPIs = apiClient.then(client => {
             return client.apis['APIs'].getAllAPIs(params, Resource._requestMetaData());
