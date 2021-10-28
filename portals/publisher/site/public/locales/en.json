@@ -6547,6 +6547,12 @@
       "value": "Internal API Key"
     }
   ],
+  "Apis.Details.components.APIDetailsTopMenu.advertise.only.label": [
+    {
+      "type": 0,
+      "value": "Advertise Only"
+    }
+  ],
   "Apis.Details.components.APIDetailsTopMenu.created.by": [
     {
       "type": 0,
