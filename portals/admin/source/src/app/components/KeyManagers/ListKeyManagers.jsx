@@ -26,9 +26,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import MenuButton from '../Shared/MenuButton';
-import ProviderMenu from './ProviderMenu';
+import Button from "@material-ui/core/Button";
 
 /**
  * API call to get microgateway labels
@@ -105,20 +103,11 @@ export default function ListKeyManagers() {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
                         const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
-                        const tokenType = tableMeta.rowData[tableMeta.rowData.length - 5];
-                        if (tokenType === 'ORIGINAL') {
-                            return (
-                                <RouterLink to={`/settings/key-managers/external-key-manager/${artifactId}`}>
-                                    {value}
-                                </RouterLink>
-                            );
-                        } else {
-                            return (
-                                <RouterLink to={`/settings/key-managers/token-exchange-endpoint/${artifactId}`}>
-                                    {value}
-                                </RouterLink>
-                            );
-                        }
+                        return (
+                            <RouterLink to={`/settings/key-managers/${artifactId}`}>
+                                {value}
+                            </RouterLink>
+                        );
                     } else {
                         return <div />;
                     }
@@ -177,25 +166,14 @@ export default function ListKeyManagers() {
         }),
     };
     const addButtonOverride = (
-        <MenuButton
-            buttonProps={{
-                id: 'KeyManagers.ListKeyManagers.addButtonProps.triggerButtonText',
-                color: 'primary',
-                variant: 'contained',
-            }}
-            menuList={(
-                <Grid
-                    className={popover}
-                    container
-                    direction='row'
-                    spacing={2}
-                >
-                    <ProviderMenu />
-                </Grid>
-            )}
-        >
-            Add Provider
-        </MenuButton>
+        <RouterLink to='/settings/key-managers/create'>
+            <Button variant='contained' color='primary' size='small'>
+                <FormattedMessage
+                    id='KeyManagers.ListKeyManagers.addButtonProps.triggerButtonText'
+                    defaultMessage='Add Key Manager'
+                />
+            </Button>
+        </RouterLink>
     );
     const emptyBoxProps = {
         content: (

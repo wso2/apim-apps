@@ -194,31 +194,17 @@ const RouteMenuMapping = (intl) => [
         addEditPageDetails: [
             {
                 id: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.keymanagers.externalkeymanager.items.Adding',
+                    id: 'Base.RouteMenuMapping.keymanagers.items.Adding',
                     defaultMessage: 'Add Key Manager',
                 }),
-                path: '/settings/key-managers/external-key-manager/create',
+                path: '/settings/key-managers/create',
             },
             {
                 id: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.externalkeymanager.items.Editing',
+                    id: 'Base.RouteMenuMapping.keymanagers.items.Editing',
                     defaultMessage: 'Edit Key Manager',
                 }),
-                path: '/settings/key-managers/external-key-manager/(.*?)$',
-            },
-            {
-                id: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.keymanagers.tokenexchangeendpoint.items.Adding',
-                    defaultMessage: 'Add Token Exchange Endpoint',
-                }),
-                path: '/settings/key-managers/token-exchange-endpoint/create',
-            },
-            {
-                id: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.keymanagers.tokenexchangeendpoint.items.Editing',
-                    defaultMessage: 'Edit Token Exchange Endpoint',
-                }),
-                path: '/settings/key-managers/token-exchange-endpoint/(.*?)$',
+                path: '/settings/key-managers/(.*?)$',
             },
         ],
     },
