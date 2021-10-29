@@ -21,6 +21,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import Subscription from 'AppData/Subscription';
 import GenericDisplayDialog from 'AppComponents/Shared/GenericDisplayDialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -29,6 +30,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import InputBase from '@material-ui/core/InputBase';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Application from 'AppData/Application';
@@ -155,6 +157,47 @@ const styles = (theme) => ({
         '& span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
+    },
+    visitLabel: {
+        whiteSpace: 'nowrap',
+    },
+    root: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: '80%',
+        border: `solid 1px ${theme.palette.grey[300]}`,
+        '& .MuiInputBase-root:before,  .MuiInputBase-root:hover': {
+            borderBottom: 'none !important',
+            color: theme.palette.primary.main,
+        },
+        '& .MuiSelect-select': {
+            color: theme.palette.primary.main,
+            paddingLeft: theme.spacing(),
+        },
+        '& .MuiInputBase-input': {
+            color: theme.palette.primary.main,
+        },
+        '& .material-icons': {
+            fontSize: 16,
+            color: `${theme.palette.grey[700]} !important`,
+        },
+        borderRadius: 10,
+        marginRight: theme.spacing(),
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    sectionTitle: {
+        color: '#424242',
+        fontSize: '0.85rem',
+        marginRight: 20,
+        fontWeight: 400,
+        width: '10%',
+    },
+    externalStoreContainer: {
+        paddingTop: '20px',
     },
 });
 
@@ -349,7 +392,9 @@ class Credentials extends React.Component {
         const isSetAllorResidentKeyManagers = (api.keyManagers && api.keyManagers.includes('all'))
             || (api.keyManagers && api.keyManagers.includes('Resident Key Manager'));
         const renderCredentialInfo = () => {
-            if (isOnlyMutualSSL || isOnlyBasicAuth) {
+            if (api.advertiseInfo && api.advertiseInfo.advertised) {
+                return <></>;
+            } else if (isOnlyMutualSSL || isOnlyBasicAuth) {
                 return (
                     <InlineMessage type='info' className={classes.dialogContainer}>
                         <Typography component='p'>
@@ -547,51 +592,137 @@ class Credentials extends React.Component {
                 );
             }
         };
+        const visitExternalStore = () => {
+            window.open(api.advertiseInfo.originalDevPortalUrl, '_blank').focus();
+        };
+        const renderExternalStore = () => {
+            if (api.advertiseInfo.originalDevPortalUrl && api.advertiseInfo.originalDevPortalUrl !== '') {
+                return (
+                    <div className={classes.externalStoreContainer}>
+                        <Typography variant='body2' className={classes.descWrapper}>
+                            <FormattedMessage
+                                id='Apis.Details.Credentials.Credentials.externalstore.text'
+                                defaultMessage='You can visit the external store for more details.'
+                            />
+                        </Typography>
+                        <Box display='flex' flexDirection='column' width='100%'>
+                            <Box
+                                mr={5}
+                                display='flex'
+                                area-label='External Store URL details'
+                                alignItems='center'
+                                width='100%'
+                                flexDirection='row'
+                            >
+
+                                <Typography
+                                    variant='subtitle2'
+                                    component='label'
+                                    for='external-store-url'
+                                    gutterBottom
+                                    align='left'
+                                    className={classes.sectionTitle}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.Credentials.Credentials.externalstore.label'
+                                        defaultMessage='External Store URL'
+                                    />
+                                </Typography>
+                                <Paper id='external-store-url' component='form' className={classes.root}>
+                                    <InputBase
+                                        className={classes.input}
+                                        inputProps={{ 'aria-label': 'external store url' }}
+                                        value={api.advertiseInfo.originalDevPortalUrl}
+                                    />
+                                </Paper>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    size='medium'
+                                    classes={{ label: classes.visitLabel }}
+                                    onClick={visitExternalStore}
+                                    aria-label='Got to the External Store URL'
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.Credentials.Credentials.externalstore.btn.visit'
+                                        defaultMessage='Visit'
+                                    />
+                                </Button>
+                            </Box>
+                        </Box>
+                    </div>
+                );
+            } else {
+                return <></>;
+            }
+        };
         return (
             <Grid container>
                 <Grid item md={12} lg={11}>
                     <Grid container spacing={2}>
-                        <Grid item md={12}>
-                            <Typography onClick={this.handleExpandClick} variant='h4' component='div' className={classes.titleSub}>
-                                {applicationsAvailable.length > 0 && (
-                                    <Link
-                                        to={(isOnlyMutualSSL || isOnlyBasicAuth
-                                            || !isSetAllorResidentKeyManagers) ? null
-                                            : `/apis/${api.id}/credentials/wizard`}
-                                        style={!api.isSubscriptionAvailable
-                                            ? { pointerEvents: 'none' } : null}
-                                        className={classes.addLinkWrapper}
-                                    >
-                                        <Button
-                                            color='secondary'
-                                            disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
-                                                 || isOnlyBasicAuth
-                                                 || !isSetAllorResidentKeyManagers}
-                                            size='small'
-                                        >
-                                            <Icon>add_circle_outline</Icon>
+                        {(api.advertiseInfo && api.advertiseInfo.advertised) ? (
+                            <Grid item md={12}>
+                                <Paper elevation={0} className={classes.paper}>
+                                    <InlineMessage type='info' className={classes.dialogContainer}>
+                                        <Typography component='p'>
                                             <FormattedMessage
-                                                id={'Apis.Details.Credentials.'
-                                                + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
-                                                defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                id='Apis.Details.Creadentials.credetials.advertiseonly'
+                                                defaultMessage={'Subscription is not available for Advertise Only '
+                                                + 'APIs.'}
                                             />
-                                        </Button>
-                                    </Link>
-                                )}
-                            </Typography>
-                            <Paper elevation={0} className={classes.paper}>
-                                <Typography variant='body2' className={classes.descWrapper}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Credentials.Credentials.'
-                                        defaultMessage={`An application 
+                                        </Typography>
+                                    </InlineMessage>
+                                    {renderExternalStore()}
+                                </Paper>
+                            </Grid>
+                        ) : (
+                            <Grid item md={12}>
+                                <Typography
+                                    onClick={this.handleExpandClick}
+                                    variant='h4'
+                                    component='div'
+                                    className={classes.titleSub}
+                                >
+                                    {applicationsAvailable.length > 0 && (
+                                        <Link
+                                            to={(isOnlyMutualSSL || isOnlyBasicAuth
+                                                || !isSetAllorResidentKeyManagers) ? null
+                                                : `/apis/${api.id}/credentials/wizard`}
+                                            style={!api.isSubscriptionAvailable
+                                                ? { pointerEvents: 'none' } : null}
+                                            className={classes.addLinkWrapper}
+                                        >
+                                            <Button
+                                                color='secondary'
+                                                disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
+                                                || isOnlyBasicAuth
+                                                || !isSetAllorResidentKeyManagers}
+                                                size='small'
+                                            >
+                                                <Icon>add_circle_outline</Icon>
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Credentials.'
+                                                    + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
+                                                    defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                />
+                                            </Button>
+                                        </Link>
+                                    )}
+                                </Typography>
+                                <Paper elevation={0} className={classes.paper}>
+                                    <Typography variant='body2' className={classes.descWrapper}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Credentials.Credentials.'
+                                            defaultMessage={`An application 
                                         is primarily used to decouple the consumer from the APIs. It allows you to 
                                         generate and use a single key for multiple APIs and subscribe multiple times to 
                                         a single API with different SLA levels.`}
-                                    />
-                                </Typography>
-                                {renderCredentialInfo()}
-                            </Paper>
-                        </Grid>
+                                        />
+                                    </Typography>
+                                    {renderCredentialInfo()}
+                                </Paper>
+                            </Grid>
+                        )}
                     </Grid>
                 </Grid>
             </Grid>
