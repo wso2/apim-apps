@@ -415,91 +415,115 @@ function Overview() {
                         <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
                             <Environments updateSelectedEndpoint={updateSelectedEndpoint} selectedEndpoint={selectedEndpoint} />
                         </Box>
-                        <Box mt={6}>
-                            <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.business.plans.title'
-                                    defaultMessage='Business Plans'
-                                />
-                            </Typography>
-                        </Box>
-                        <Box flexWrap='wrap' display='flex' flexDirection='row' alignItems='center' mt={2} ml={1} textAlign='center'>
-                            {allPolicies && allPolicies.map((tier) => (
-                                <Card className={classes.cardRoot} key={tier.name}>
-                                    <CardContent>
-                                        <Typography className={classes.cardMainTitle} color='textSecondary' gutterBottom>
-                                            {tier.name}
-                                        </Typography>
-                                        <Box mt={2}>
-                                            <Typography className={classes.requestCount} color='textSecondary'>
-                                                {tier.requestCount === 2147483647 ? 'Unlimited' : tier.requestCount}
-                                            </Typography>
-                                        </Box>
-                                        <Box>
-                                            <Typography className={classes.requestUnit} color='textSecondary'>
-                                                Requests/
-                                                {tier.timeUnit}
-                                            </Typography>
-                                        </Box>
-                                    </CardContent>
-                                </Card>
-                            ))}
-
-                        </Box>
-                        {(showCredentials && subscribedApplications.length > 0) && (
+                        {(api.advertiseInfo && !api.advertiseInfo.advertised) && (
                             <>
                                 <Box mt={6}>
                                     <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                                         <FormattedMessage
-                                            id='Apis.Details.Overview.subscriptions.title'
-                                            defaultMessage='Subscriptions'
+                                            id='Apis.Details.Overview.business.plans.title'
+                                            defaultMessage='Business Plans'
                                         />
                                     </Typography>
                                 </Box>
-                                <Box mt={2} ml={1} pr={6}>
-                                    <TableContainer component={Paper}>
-                                        <Table className={classes.table} aria-label='simple table'>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>
-                                                        <FormattedMessage
-                                                            id={'Apis.Details.Overview.'
-                                                                + 'api.credentials.subscribed.apps.name'}
-                                                            defaultMessage='Application Name'
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FormattedMessage
-                                                            id={'Apis.Details.Overview.api.'
-                                                                + 'credentials.subscribed.apps.tier'}
-                                                            defaultMessage='Throttling Tier'
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FormattedMessage
-                                                            id={'Apis.Details.Overview.'
-                                                                + 'api.credentials.subscribed.apps.status'}
-                                                            defaultMessage='Application Status'
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {subscribedApplications.map((app) => (
-                                                    <TableRow key={app.label}>
-                                                        <TableCell component='th' scope='row'>
-                                                            <MUILink component={Link} to={`/applications/${app.value}/overview`}>
-                                                                {app.label}
-                                                            </MUILink>
-                                                        </TableCell>
-                                                        <TableCell>{app.policy}</TableCell>
-                                                        <TableCell>{app.status}</TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
+                                <Box
+                                    flexWrap='wrap'
+                                    display='flex'
+                                    flexDirection='row'
+                                    alignItems='center'
+                                    mt={2}
+                                    ml={1}
+                                    textAlign='center'
+                                >
+                                    {allPolicies && allPolicies.map((tier) => (
+                                        <Card className={classes.cardRoot} key={tier.name}>
+                                            <CardContent>
+                                                <Typography
+                                                    className={classes.cardMainTitle}
+                                                    color='textSecondary'
+                                                    gutterBottom
+                                                >
+                                                    {tier.name}
+                                                </Typography>
+                                                <Box mt={2}>
+                                                    <Typography className={classes.requestCount} color='textSecondary'>
+                                                        {tier.requestCount === 2147483647
+                                                            ? 'Unlimited' : tier.requestCount}
+                                                    </Typography>
+                                                </Box>
+                                                <Box>
+                                                    <Typography className={classes.requestUnit} color='textSecondary'>
+                                                        Requests/
+                                                        {tier.timeUnit}
+                                                    </Typography>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+
                                 </Box>
+                                {(showCredentials && subscribedApplications.length > 0) && (
+                                    <>
+                                        <Box mt={6}>
+                                            <Typography
+                                                variant='subtitle2'
+                                                component='h3'
+                                                className={classes.sectionTitle}
+                                            >
+                                                <FormattedMessage
+                                                    id='Apis.Details.Overview.subscriptions.title'
+                                                    defaultMessage='Subscriptions'
+                                                />
+                                            </Typography>
+                                        </Box>
+                                        <Box mt={2} ml={1} pr={6}>
+                                            <TableContainer component={Paper}>
+                                                <Table className={classes.table} aria-label='simple table'>
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id={'Apis.Details.Overview.'
+                                                                    + 'api.credentials.subscribed.apps.name'}
+                                                                    defaultMessage='Application Name'
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id={'Apis.Details.Overview.api.'
+                                                                    + 'credentials.subscribed.apps.tier'}
+                                                                    defaultMessage='Throttling Tier'
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id={'Apis.Details.Overview.'
+                                                                    + 'api.credentials.subscribed.apps.status'}
+                                                                    defaultMessage='Application Status'
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {subscribedApplications.map((app) => (
+                                                            <TableRow key={app.label}>
+                                                                <TableCell component='th' scope='row'>
+                                                                    <MUILink
+                                                                        component={Link}
+                                                                        to={`/applications/${app.value}/overview`}
+                                                                    >
+                                                                        {app.label}
+                                                                    </MUILink>
+                                                                </TableCell>
+                                                                <TableCell>{app.policy}</TableCell>
+                                                                <TableCell>{app.status}</TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        </Box>
+                                    </>
+                                )}
                             </>
                         )}
                         <Box mt={6}>
@@ -625,7 +649,7 @@ function Overview() {
                         </Box>
                     )}
                     {/* Key Managers */}
-                    {getKeyManagers() && (
+                    {(!(api.advertiseInfo && api.advertiseInfo.advertised) && getKeyManagers()) && (
                         <>
                             <Box mt={6}>
                                 <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
