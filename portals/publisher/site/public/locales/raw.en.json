@@ -35,6 +35,15 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": {
     "defaultMessage": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
   },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.accessibleEndpointUrl": {
+    "defaultMessage": "Accessible Endpoint URL"
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.accessibleEndpointUrl.error": {
+    "defaultMessage": "Invalid Accessible Endpoint URL"
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.accessibleEndpointUrl.warning": {
+    "defaultMessage": "Other types of Async APIs cannot be deployed in the API gateway. They will be created as Advertise Only APIs."
+  },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": {
     "defaultMessage": "Cancel"
   },

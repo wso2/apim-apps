@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -52,6 +53,8 @@ export default function ApiCreateAsyncAPI(props) {
     // eslint-disable-next-line no-use-before-define
     const classes = useStyles();
     const [hideEndpoint, setHideEndpoint] = useState(true);
+    const [hideAccessibleEndpointUrl, setHideAccessibleEndpointUrl] = useState(true);
+    const [isValidAccessibleEndpointUrl, setValidAccessibleEndpointUrl] = useState(false);
 
     /**
      *
@@ -83,6 +86,8 @@ export default function ApiCreateAsyncAPI(props) {
                     context: value.context,
                     endpoint: value.endpoints && value.endpoints[0],
                 };
+            case 'accessibleEndpointUrl':
+                return { ...currentState, [action]: value };
             default:
                 return currentState;
         }
@@ -111,12 +116,18 @@ export default function ApiCreateAsyncAPI(props) {
             displayName: 'SSE',
             description: 'Server-Sent Events',
         },
+        {
+            name: 'other',
+            displayName: 'Other',
+            description: 'Other Async APIs such as AMQP, MQTT etc.',
+        },
     ];
 
     const protocolKeys = {
         WebSocket: 'WS',
         SSE: 'SSE',
         WebSub: 'WEBSUB',
+        Other: 'ASYNC',
     };
 
     /**
@@ -138,8 +149,28 @@ export default function ApiCreateAsyncAPI(props) {
         const { name: action, value } = event.target;
         if (value === 'WebSub') {
             setHideEndpoint(true);
+            setHideAccessibleEndpointUrl(true);
+        } else if (value === 'Other') {
+            setHideEndpoint(true);
+            setHideAccessibleEndpointUrl(false);
         } else {
             setHideEndpoint(false);
+            setHideAccessibleEndpointUrl(true);
+        }
+        inputsDispatcher({ action, value });
+    }
+
+    /**
+     *
+     *
+     * @param event
+     */
+    function handleOnChangeAccessibleEndpointURL(event) {
+        const { name: action, value } = event.target;
+        if (value !== '') {
+            setValidAccessibleEndpointUrl(true);
+        } else {
+            setValidAccessibleEndpointUrl(false);
         }
         inputsDispatcher({ action, value });
     }
@@ -166,7 +197,7 @@ export default function ApiCreateAsyncAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, policies, inputValue, inputType, protocol,
+            name, version, context, endpoint, policies, inputValue, inputType, protocol, accessibleEndpointUrl,
         } = apiInputs;
         const additionalProperties = {
             name,
@@ -184,6 +215,15 @@ export default function ApiCreateAsyncAPI(props) {
                 production_endpoints: {
                     url: endpoint,
                 },
+            };
+        }
+        if (protocolKeys[protocol] === 'ASYNC') {
+            additionalProperties.advertiseInfo = {
+                advertised: true,
+                accessibleEndpointUrl,
+                originalDevPortalUrl: '',
+                apiOwner: 'admin',
+                vendor: 'WSO2',
             };
         }
         const newAPI = new API(additionalProperties);
@@ -304,6 +344,47 @@ export default function ApiCreateAsyncAPI(props) {
                                     </MenuItem>
                                 ))}
                             </TextField>
+                            {!hideAccessibleEndpointUrl && (
+                                <>
+                                    <TextField
+                                        fullWidth
+                                        id='itest-id-apiendpoint-input'
+                                        label={(
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.accessibleEndpointUrl'
+                                                    defaultMessage='Accessible Endpoint URL'
+                                                />
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            </>
+                                        )}
+                                        name='accessibleEndpointUrl'
+                                        value={apiInputs.accessibleEndpointUrl}
+                                        onChange={handleOnChangeAccessibleEndpointURL}
+                                        helperText={
+                                            !isValidAccessibleEndpointUrl && (
+                                                <div style={{ marginTop: '10px' }}>
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
+                                                        + '.accessibleEndpointUrl.error'}
+                                                        defaultMessage='Invalid Accessible Endpoint URL'
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                        error={!isValidAccessibleEndpointUrl}
+                                        margin='normal'
+                                        variant='outlined'
+                                    />
+                                    <MuiAlert severity='warning' className={classes.accessibleEndpointUrlWarning}>
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.accessibleEndpointUrl.warning'
+                                            defaultMessage={'Other types of Async APIs cannot be deployed in the '
+                                            + 'API gateway. They will be created as Advertise Only APIs.'}
+                                        />
+                                    </MuiAlert>
+                                </>
+                            )}
                         </DefaultAPIForm>
                     )}
                 </Grid>
@@ -342,7 +423,7 @@ export default function ApiCreateAsyncAPI(props) {
                                 <Button
                                     variant='contained'
                                     color='primary'
-                                    disabled={!apiInputs.isFormValid || isCreating}
+                                    disabled={!apiInputs.isFormValid || isCreating || !isValidAccessibleEndpointUrl}
                                     onClick={createAPI}
                                 >
                                     Create
@@ -366,5 +447,8 @@ const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
+    },
+    accessibleEndpointUrlWarning: {
+        marginTop: theme.spacing(2),
     },
 }));
