@@ -1753,6 +1753,12 @@
       "value": "Accessible Endpoint URL"
     }
   ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL.error": [
+    {
+      "type": 0,
+      "value": "Invalid Accessible Endpoint URL"
+    }
+  ],
   "Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL.help": [
     {
       "type": 0,
@@ -1775,6 +1781,12 @@
     {
       "type": 0,
       "value": "External Store URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL.error": [
+    {
+      "type": 0,
+      "value": "Invalid External Store URL"
     }
   ],
   "Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL.help": [

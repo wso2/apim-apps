@@ -777,6 +777,9 @@
   "Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL": {
     "defaultMessage": "Accessible Endpoint URL"
   },
+  "Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL.error": {
+    "defaultMessage": "Invalid Accessible Endpoint URL"
+  },
   "Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL.help": {
     "defaultMessage": "This is the accessible endpoint of the advertised API"
   },
@@ -788,6 +791,9 @@
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL": {
     "defaultMessage": "External Store URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL.error": {
+    "defaultMessage": "Invalid External Store URL"
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL.help": {
     "defaultMessage": "This is the external store of the advertised API"

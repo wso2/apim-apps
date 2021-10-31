@@ -167,8 +167,18 @@ export default function ApiCreateAsyncAPI(props) {
      */
     function handleOnChangeAccessibleEndpointURL(event) {
         const { name: action, value } = event.target;
-        if (value !== '') {
-            setValidAccessibleEndpointUrl(true);
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                setValidAccessibleEndpointUrl(false);
+            }
+            if (url) {
+                setValidAccessibleEndpointUrl(true);
+            } else {
+                setValidAccessibleEndpointUrl(false);
+            }
         } else {
             setValidAccessibleEndpointUrl(false);
         }

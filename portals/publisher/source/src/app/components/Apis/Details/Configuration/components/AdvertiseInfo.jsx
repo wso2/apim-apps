@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -68,7 +68,47 @@ const AdvertiseInfo = (props) => {
     } = props;
     const classes = useStyles();
     const [apiFromContext] = useAPI();
-    // const isAdvertised = advertiseInfo.advertised;
+    const [isValidAccessibleEndpointUrl, setValidAccessibleEndpointUrl] = useState(true);
+    const [isValidOriginalDevPortalUrl, setValidOriginalDevPortalUrl] = useState(true);
+
+    const handleOnChangeAccessibleEndpointUrl = ({ target: { value } }) => {
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                setValidAccessibleEndpointUrl(false);
+            }
+            if (url) {
+                setValidAccessibleEndpointUrl(true);
+            } else {
+                setValidAccessibleEndpointUrl(false);
+            }
+        } else {
+            setValidAccessibleEndpointUrl(false);
+        }
+        configDispatcher({ action: 'accessibleEndpointUrl', value });
+    };
+
+    const handleOnChangeOriginalDevPortalUrl = ({ target: { value } }) => {
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                setValidOriginalDevPortalUrl(false);
+            }
+            if (url.protocol === 'http:' || url.protocol === 'https:') {
+                setValidOriginalDevPortalUrl(true);
+            } else {
+                setValidOriginalDevPortalUrl(false);
+            }
+        } else {
+            setValidOriginalDevPortalUrl(true);
+        }
+        configDispatcher({ action: 'originalDevPortalUrl', value });
+    };
+
     return (
         <>
             <Typography className={classes.subHeading}>
@@ -121,18 +161,22 @@ const AdvertiseInfo = (props) => {
                             </>
                         )}
                         variant='outlined'
+                        name='accessibleEndpointUrl'
                         value={advertiseInfo.accessibleEndpointUrl}
                         fullWidth
                         margin='normal'
-                        onChange={(e) => configDispatcher({
-                            action: 'accessibleEndpointUrl',
-                            value: e.target.value,
-                        })}
+                        onChange={handleOnChangeAccessibleEndpointUrl}
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                        helperText={(
+                        error={!isValidAccessibleEndpointUrl}
+                        helperText={isValidAccessibleEndpointUrl ? (
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL.help'
                                 defaultMessage='This is the accessible endpoint of the advertised API'
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.AdvertiseInfo.accessibleEndpointURL.error'
+                                defaultMessage='Invalid Accessible Endpoint URL'
                             />
                         )}
                         style={{ marginTop: 0 }}
@@ -145,18 +189,22 @@ const AdvertiseInfo = (props) => {
                             />
                         )}
                         variant='outlined'
+                        name='originalDevPortalUrl'
                         value={advertiseInfo.originalDevPortalUrl}
                         fullWidth
                         margin='normal'
-                        onChange={(e) => configDispatcher({
-                            action: 'originalDevPortalUrl',
-                            value: e.target.value,
-                        })}
+                        onChange={handleOnChangeOriginalDevPortalUrl}
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                        helperText={(
+                        error={!isValidOriginalDevPortalUrl}
+                        helperText={isValidOriginalDevPortalUrl ? (
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL.help'
                                 defaultMessage='This is the external store of the advertised API'
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.AdvertiseInfo.externalStoreURL.error'
+                                defaultMessage='Invalid External Store URL'
                             />
                         )}
                         style={{ marginTop: 0 }}

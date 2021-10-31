@@ -481,7 +481,7 @@ export default function DesignConfigurations() {
                                         />
                                     </Box>
                                     <Box py={1}>
-                                        {api.apiType !== API.CONSTS.APIProduct && api.advertiseInfo.advertised && (
+                                        {api.apiType !== API.CONSTS.APIProduct && (
                                             <AdvertiseInfo
                                                 api={apiConfig}
                                                 configDispatcher={configDispatcher}
