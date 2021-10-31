@@ -152,6 +152,10 @@ function GoTo(props) {
     if (api.type === 'GRAPHQL') {
         isGraphQL = true;
     }
+    let isAdvertiseOnly = false;
+    if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        isAdvertiseOnly = true;
+    }
     const toggleSearch = () => {
         setShowSearch(!showSearch);
     };
@@ -205,6 +209,7 @@ function GoTo(props) {
                                                     inputValue={inputValue}
                                                     isAPIProduct={isAPIProduct}
                                                     isGraphQL={isGraphQL}
+                                                    isAdvertiseOnly={isAdvertiseOnly}
                                                     getItemProps={getItemProps}
                                                     highlightedIndex={highlightedIndex}
                                                     selectedItem={selectedItem}

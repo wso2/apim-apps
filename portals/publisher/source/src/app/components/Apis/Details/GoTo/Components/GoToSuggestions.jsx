@@ -46,18 +46,28 @@ const useStyles = makeStyles((theme) => ({
  * @param {*} param2 showEmpty
  * @returns {*} filter
  */
-function getSuggestions(value, isAPIProduct, isGraphQL, { showEmpty = false } = {}) {
+function getSuggestions(value, isAPIProduct, isGraphQL, isAdvertiseOnly, { showEmpty = false } = {}) {
     const inputValue = deburr(value.trim()).toLowerCase();
     const inputLength = inputValue.length;
     let count = 0;
-    const newSuggestions = [...suggestions.common];
 
-    if (isAPIProduct) {
-        newSuggestions.push(...suggestions.productOnly);
-    } else if (isGraphQL) {
-        newSuggestions.push(...suggestions.graphqlOnly);
+    let newSuggestions;
+    if (!isAdvertiseOnly) {
+        newSuggestions = [...suggestions.common];
+        if (isAPIProduct) {
+            newSuggestions.push(...suggestions.productOnly);
+        } else if (isGraphQL) {
+            newSuggestions.push(...suggestions.graphqlOnly);
+        } else {
+            newSuggestions.push(...suggestions.apiOnly);
+        }
     } else {
-        newSuggestions.push(...suggestions.apiOnly);
+        newSuggestions = [...suggestions.advertiseOnly];
+        if (isGraphQL) {
+            newSuggestions.push(...suggestions.graphQLAdvertiseOnly);
+        } else {
+            newSuggestions.push(...suggestions.httpAdvertiseOnly);
+        }
     }
 
     return inputLength === 0 && !showEmpty
@@ -76,10 +86,11 @@ function getSuggestions(value, isAPIProduct, isGraphQL, { showEmpty = false } = 
 
 const GoToSuggestions = (props) => {
     const {
-        inputValue, isAPIProduct, isGraphQL, getItemProps, highlightedIndex, selectedItem, handleClickAway, apiId,
+        inputValue, isAPIProduct, isGraphQL, isAdvertiseOnly, getItemProps, highlightedIndex, selectedItem,
+        handleClickAway, apiId,
     } = props;
     const classes = useStyles();
-    const currentSuggestions = getSuggestions(inputValue, isAPIProduct, isGraphQL);
+    const currentSuggestions = getSuggestions(inputValue, isAPIProduct, isGraphQL, isAdvertiseOnly);
     return (
         <Paper className={classes.paper} square>
             {currentSuggestions.length > 0

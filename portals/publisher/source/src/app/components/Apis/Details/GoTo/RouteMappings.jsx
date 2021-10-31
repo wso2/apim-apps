@@ -624,5 +624,159 @@ const suggestions = {
             route: 'properties',
         },
     ],
+    advertiseOnly: [
+        {
+            label: 'comments',
+            route: 'comments',
+        },
+        {
+            label: 'Overview',
+            route: 'overview',
+        },
+        {
+            label: 'MetaData',
+            route: 'overview',
+        },
+        {
+            label: 'Publisher Access Control',
+            route: 'configuration',
+        },
+        {
+            label: 'Developer Portal Visibility',
+            route: 'configuration',
+        },
+        {
+            label: 'Tags',
+            route: 'configuration',
+        },
+        {
+            label: 'Default Version',
+            route: 'configuration',
+        },
+        {
+            label: 'Image',
+            route: 'configuration',
+        },
+        {
+            label: 'Thumbnail',
+            route: 'configuration',
+        },
+        {
+            label: 'Description',
+            route: 'configuration',
+        },
+        {
+            label: 'Documents',
+            route: 'documents',
+        },
+        {
+            label: 'Add New Documents',
+            route: 'documents',
+        },
+        {
+            label: 'API Help',
+            route: 'documents',
+        },
+        {
+            label: 'Markdown Documents',
+            route: 'documents',
+        },
+        {
+            label: 'Business Information',
+            route: 'business info',
+        },
+        {
+            label: 'Business Owner',
+            route: 'business info',
+        },
+        {
+            label: 'Technical Owner',
+            route: 'business info',
+        },
+        {
+            label: 'Properties',
+            route: 'business info',
+        },
+        {
+            label: 'Lifecycle',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Change Lifecycle',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Publish API',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Unpublish API',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Create New Version',
+            route: 'new_version',
+        },
+        {
+            label: 'Properties',
+            route: 'properties',
+        },
+    ],
+    graphQLAdvertiseOnly: [
+        {
+            label: 'Schema Definition',
+            route: 'schema definition',
+        },
+    ],
+    httpAdvertiseOnly: [
+        {
+            label: 'API Definition',
+            route: 'api definition',
+        },
+        {
+            label: 'Import API Definition',
+            route: 'api definition',
+        },
+        {
+            label: 'Download API Definition',
+            route: 'api definition',
+        },
+        {
+            label: 'Swagger',
+            route: 'api definition',
+        },
+        {
+            label: 'Import Swagger',
+            route: 'api definition',
+        },
+        {
+            label: 'Download Swagger',
+            route: 'api definition',
+        },
+        {
+            label: 'OAS',
+            route: 'api definition',
+        },
+        {
+            label: 'Import OAS',
+            route: 'api definition',
+        },
+        {
+            label: 'Download OAS',
+            route: 'api definition',
+        },
+        {
+            label: 'OpenAPI',
+            route: 'api definition',
+        },
+        {
+            label: 'Import OpenAPI',
+            route: 'api definition',
+        },
+        {
+            label: 'Download OpenAPI',
+            route: 'api definition',
+        },
+    ],
 };
 export default suggestions;
