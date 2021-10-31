@@ -100,6 +100,8 @@ class ApiConsole extends React.Component {
             productionApiKey: '',
             sandboxApiKey: '',
             selectedKeyManager: 'Resident Key Manager',
+            advAuthHeader: '',
+            advAuthHeaderValue: '',
         };
         this.accessTokenProvider = this.accessTokenProvider.bind(this);
         this.updateSwagger = this.updateSwagger.bind(this);
@@ -116,6 +118,8 @@ class ApiConsole extends React.Component {
         this.setProductionApiKey = this.setProductionApiKey.bind(this);
         this.setSandboxApiKey = this.setSandboxApiKey.bind(this);
         this.converttopostman = this.convertToPostman.bind(this);
+        this.setAdvAuthHeader = this.setAdvAuthHeader.bind(this);
+        this.setAdvAuthHeaderValue = this.setAdvAuthHeaderValue.bind(this);
     }
 
     /**
@@ -279,11 +283,27 @@ class ApiConsole extends React.Component {
     setKeys(keys) {
         this.setState({ keys });
     }
+
+    /**
+     * Set authorization header of advertise only APIs
+     * @param advAuthHeader authorization header
+     */
+    setAdvAuthHeader(advAuthHeader) {
+        this.setState({ advAuthHeader });
+    }
+
+    /**
+     * Set authorization header value of advertise only APIs
+     * @param advAuthHeaderValue authorization header value
+     */
+    setAdvAuthHeaderValue(advAuthHeaderValue) {
+        this.setState({ advAuthHeaderValue });
+    }
+
     /**
      * Converting an OpenAPI file to a postman collection
      * @memberof ApiConsole
    */
-
     convertToPostman(fr) {
         openapiToPostman.convert({ type: 'string', data: fr },
             {}, (err, conversionResult) => {
@@ -350,9 +370,12 @@ class ApiConsole extends React.Component {
      */
     accessTokenProvider() {
         const {
-            securitySchemeType, username, password, productionAccessToken,
-            sandboxAccessToken, selectedKeyType, productionApiKey, sandboxApiKey,
+            securitySchemeType, username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
+            productionApiKey, sandboxApiKey, api, advAuthHeaderValue,
         } = this.state;
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
         if (securitySchemeType === 'BASIC') {
             const credentials = username + ':' + password;
             return btoa(credentials);
@@ -399,7 +422,7 @@ class ApiConsole extends React.Component {
         const {
             api, notFound, swagger, securitySchemeType, selectedEnvironment, environments, scopes,
             username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
-            sandboxApiKey, productionApiKey, selectedKeyManager,
+            sandboxApiKey, productionApiKey, selectedKeyManager, advAuthHeader, advAuthHeaderValue,
         } = this.state;
         const user = AuthManager.getUser();
         const downloadSwagger = JSON.stringify({ ...swagger });
@@ -420,11 +443,14 @@ class ApiConsole extends React.Component {
                 authorizationHeader = 'apikey';
             }
         }
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            authorizationHeader = advAuthHeader;
+        }
         return (
             <>
                 <Paper className={classes.paper}>
                     <Grid container className={classes.grid}>
-                        {!user && (
+                        {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                             <Grid item md={6}>
                                 <Paper className={classes.userNotificationPaper}>
                                     <Typography variant='h5' component='h3'>
@@ -438,6 +464,25 @@ class ApiConsole extends React.Component {
                                             defaultMessage={'You need an access token to try the API. Please log '
                                             + 'in and subscribe to the API to generate an access token. If you already '
                                             + 'have an access token, please provide it below.'}
+                                        />
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                        )}
+                        {(api.advertiseInfo && api.advertiseInfo.advertised) && (
+                            <Grid item md={6}>
+                                <Paper className={classes.userNotificationPaper}>
+                                    <Typography variant='h5' component='h3'>
+                                        <Icon>warning</Icon>
+                                        {' '}
+                                        <FormattedMessage id='notice' defaultMessage='Notice' />
+                                    </Typography>
+                                    <Typography component='p'>
+                                        <FormattedMessage
+                                            id='api.console.notice.advertise.only'
+                                            defaultMessage={'This API is not deployed in the gateway. This is deployed '
+                                            + 'elsewhere. Therefore, the access token should be taken from the external'
+                                            + ' source.'}
                                         />
                                     </Typography>
                                 </Paper>
@@ -471,6 +516,10 @@ class ApiConsole extends React.Component {
                         setSandboxApiKey={this.setSandboxApiKey}
                         productionApiKey={productionApiKey}
                         sandboxApiKey={sandboxApiKey}
+                        setAdvAuthHeader={this.setAdvAuthHeader}
+                        setAdvAuthHeaderValue={this.setAdvAuthHeaderValue}
+                        advAuthHeader={advAuthHeader}
+                        advAuthHeaderValue={advAuthHeaderValue}
                         api={this.state.api}
                     />
 
