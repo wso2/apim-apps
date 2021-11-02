@@ -11,20 +11,22 @@ Cypress.Commands.add('carbonLogin', (username, password) => {
     cy.get('#txtPassword').type(password);
     cy.get('form').submit();
 })
-Cypress.Commands.add('portalLogin', (username, password, portal) => {
+Cypress.Commands.add('portalLogin', (username = 'admin', password = 'admin', portal) => {
     Cypress.log({
         name: 'portalLogin',
         message: `${username} | ${password}`,
     })
 
-    cy.visit(`${portal}`);
     if (portal === 'devportal') {
-        cy.get('#itest-devportal-sign-in').click();
+        cy.visit('/devportal/apis?tenant=carbon.super');
+        cy.get('[data-testid="itest-devportal-sign-in"]').click();
+    } else{
+        cy.visit(`${portal}`);
     }
     cy.url().should('contains', `/authenticationendpoint/login.do`);
     cy.get('#usernameUserInput').click();
-    cy.get('#usernameUserInput').type('admin');
-    cy.get('#password').type('admin');
+    cy.get('#usernameUserInput').type(username);
+    cy.get('#password').type(password);
     cy.get('#loginForm').submit();
     cy.url().should('contains', `${portal}`);
 })
@@ -36,20 +38,62 @@ Cypress.Commands.add('loginToPublisher', (username, password) => {
 Cypress.Commands.add('loginToDevportal', (username, password) => {
     cy.portalLogin(username, password, 'devportal');
 })
+Cypress.Commands.add('addNewTenant', (tenant = 'wso2.com', password = 'admin') => {
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
+    cy.carbonLogin(carbonUsername, carbonPassword);
+    cy.visit('/carbon/tenant-mgt/add_tenant.jsp?region=region1&item=govern_add_tenants_menu');
+    cy.get('#buttonRow .button');
+    cy.get('#domain').click();
+    cy.get('#domain').type(tenant);
+    cy.get('#admin-firstname').click();
+    cy.get('#admin-firstname').type('admin');
+    cy.get('#admin-lastname').click();
+    cy.get('#admin-lastname').type('admin');
+    cy.get('#admin').click();
+    cy.get('#admin').type('admin');
+    cy.on('uncaught:exception', (err, runnable) => {
+        expect(err.message).to.include('isDomainNameAvailable is not defined')
+
+        // using mocha's async done callback to finish
+        // this test so we prove that an uncaught exception
+        // was thrown
+        done()
+
+        // return false to prevent the error from
+        // failing this test
+        return false
+    });
+    cy.get('#admin-password').click();
+    cy.get('#admin-password').type(password);
+    cy.get('#admin-password-repeat').click();
+    cy.get('#admin-password-repeat').type(password);
+    cy.get('#admin-email').click();
+    cy.get('#admin-email').type(`admin@${tenant}`);
+    cy.get('#buttonRow .button').click();
+})
+
+
+Cypress.Commands.add('deleteAllApis', () => {
+    cy.visit(`/publisher/apis`);
+    cy.get('[data-testid="itest-id-deleteapi-icon-button"]').each(($btn) => {
+        cy.wrap($btn).click();
+        cy.get('[data-testid="itest-id-deleteconf"]').click();
+    })
+});
 
 Cypress.Commands.add('deploySampleAPI', () => {
-    cy.visit(`/publisher/apis`)
-    cy.get('#itest-rest-api-create-menu').click()
-    cy.get('#itest-id-deploy-sample').click()
-    cy.get('#itest-api-name-version').should('be.visible');
+    cy.deleteAllApis();
+    cy.get('[data-testid="deploy-sample-api-btn"]').click();
+    cy.get('[data-testid="itest-api-name-context"]', { timeout: 30000 }).should('be.visible');
     cy.url().should('contains', '/overview');
-    cy.get("#itest-api-name-version").contains('PizzaShackAPI');
+    cy.get('[data-testid="itest-api-name-context"]').contains('/pizzashack');
     return cy.location('pathname').then((pathName) => {
         const pathSegments = pathName.split('/');
         const apiUUID = pathSegments[pathSegments.length - 2];
         return { uuid: apiUUID };
-    })
-})
+    });
+});
 
 Cypress.Commands.add('createAPIByRestAPIDesign', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
@@ -103,5 +147,5 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
         const apiUUID = pathSegments[pathSegments.length - 2];
         return { uuid: apiUUID };
     })
-
 })
+
