@@ -177,8 +177,20 @@ function MetaData(props) {
                     </Grid>
                     <Grid item xs={12} md={6} lg={8}>
                         <Typography component='p' variant='body1'>
-                            {api.createdTime
-                            && (
+                            {(api.apiType === API.CONSTS.APIProduct && api.createdTime) && (
+                                <>
+                                    <Tooltip
+                                        title={moment(api.createdTime).calendar()}
+                                        interactive
+                                        placement='top-start'
+                                    >
+                                        <Typography variant='body1' display='block'>
+                                            {capitalizeFirstLetter(moment(api.createdTime).fromNow())}
+                                        </Typography>
+                                    </Tooltip>
+                                </>
+                            )}
+                            {(api.apiType === API.CONSTS.API && api.createdTime) && (
                                 <>
                                     <Tooltip
                                         title={moment.unix(api.createdTime / 1000).calendar()}

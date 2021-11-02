@@ -211,7 +211,7 @@ function Overview(props) {
                         <Grid item xs={12} md={12} lg={12}>
                             <div className={classes.specialGap}>
                                 <Grid container spacing={24}>
-                                    {!api.advertiseInfo.advertised && (
+                                    {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                                         api.type === 'WEBSUB' ? (
                                             <Grid item xs={12} md={12} lg={12}>
                                                 <Grid item xs={12} md={12} lg={12}>
