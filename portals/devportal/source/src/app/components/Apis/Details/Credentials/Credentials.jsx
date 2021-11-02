@@ -631,6 +631,7 @@ class Credentials extends React.Component {
                                 <Paper id='external-store-url' component='form' className={classes.root}>
                                     <InputBase
                                         className={classes.input}
+                                        disabled
                                         inputProps={{ 'aria-label': 'external store url' }}
                                         value={api.advertiseInfo.originalDevPortalUrl}
                                     />
