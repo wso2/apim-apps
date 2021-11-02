@@ -84,6 +84,7 @@ function AdvanceEndpointConfig(props) {
         isSOAPEndpoint,
         onSaveAdvanceConfig,
         onCancel,
+        isGraphQLWS,
     } = props;
     const [advanceConfigObj, setAdvanceConfig] = useState(() => {
         const config = {};
@@ -506,7 +507,7 @@ function AdvanceEndpointConfig(props) {
             </Grid>
             <Grid className={classes.advanceDialogActions}>
                 <Button
-                    onClick={() => onSaveAdvanceConfig(advanceConfigObj)}
+                    onClick={() => onSaveAdvanceConfig(advanceConfigObj, isGraphQLWS)}
                     color='primary'
                     autoFocus
                     disabled={isRestricted(['apim:api_create'], api)}

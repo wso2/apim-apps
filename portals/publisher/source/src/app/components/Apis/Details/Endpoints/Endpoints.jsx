@@ -78,12 +78,32 @@ function Endpoints(props) {
 
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
-        const { action, value } = configAction;
+        const { action, value, isGraphQLWS } = configAction;
         switch (action) {
             case 'production_endpoints':
             case 'sandbox_endpoints': {
                 if (value) {
-                    return { ...initState, endpointConfig: { ...tmpEndpointConfig, [action]: value } };
+                    if (isGraphQLWS === undefined) {
+                        return { ...initState, endpointConfig: { ...tmpEndpointConfig, [action]: value } };
+                    } else if (isGraphQLWS) {
+                        const tmpWSEndpointConfig = cloneDeep(initState.endpointConfig.ws);
+                        return {
+                            ...initState,
+                            endpointConfig: {
+                                ...tmpEndpointConfig,
+                                ws: { ...tmpWSEndpointConfig, [action]: value },
+                            },
+                        };
+                    } else {
+                        const tmpWSEndpointConfig = cloneDeep(initState.endpointConfig.http);
+                        return {
+                            ...initState,
+                            endpointConfig: {
+                                ...tmpEndpointConfig,
+                                http: { ...tmpWSEndpointConfig, [action]: value },
+                            },
+                        };
+                    }
                 }
                 delete tmpEndpointConfig[action];
                 return { ...initState, endpointConfig: { ...tmpEndpointConfig } };
@@ -98,6 +118,8 @@ function Endpoints(props) {
                 return { ...initState, endpointConfig: { ...value } };
             }
             case 'set_advance_config': {
+                console.log(initState);
+                console.log('set_advanced', value);
                 return { ...initState, endpointConfig: { ...value } };
             }
             case 'remove_endpoint': {
@@ -183,6 +205,7 @@ function Endpoints(props) {
                 }
             });
         } else {
+            console.log(apiObject);
             updateAPI(apiObject).finally(() => {
                 setUpdating(false);
                 if (isRedirect) {
@@ -221,8 +244,7 @@ function Endpoints(props) {
      * @param {string} implementationType The api implementation type (INLINE/ ENDPOINT)
      * @return {{isValid: boolean, message: string}} The endpoint validity information.
      * */
-    const validate = (implementationType) => {
-        const { endpointConfig } = apiObject;
+    const validate = (implementationType, endpointConfig) => {
         if (endpointConfig && endpointConfig.endpoint_security) {
             const { production, sandbox } = endpointConfig.endpoint_security;
             if (production && production.enabled) {
@@ -413,6 +435,22 @@ function Endpoints(props) {
         };
     };
 
+    const validateEndpoint = (implementationType) => {
+        const { endpointConfig } = apiObject;
+        if (endpointConfig && endpointConfig.endpoint_type === 'graphql') {
+            let validateEpResponse;
+            if (endpointConfig.http) {
+                validateEpResponse = validate(implementationType, endpointConfig.http);
+            }
+            if (endpointConfig.ws && validateEpResponse.isValid) {
+                validateEpResponse = validate(implementationType, endpointConfig.ws);
+            }
+            return validateEpResponse;
+        } else {
+            return validate(implementationType, endpointConfig);
+        }
+    };
+
     useEffect(() => {
         if (api.type !== 'WS') {
             api.getSwagger(apiObject.id).then((resp) => {
@@ -424,7 +462,7 @@ function Endpoints(props) {
     }, []);
 
     useEffect(() => {
-        setAPIEndpointsValid(validate(apiObject.endpointImplementationType));
+        setAPIEndpointsValid(validateEndpoint(apiObject.endpointImplementationType));
     }, [apiObject]);
 
     const saveAndRedirect = () => {

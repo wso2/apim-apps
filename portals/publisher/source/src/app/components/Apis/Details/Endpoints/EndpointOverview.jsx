@@ -122,6 +122,7 @@ const endpointTypes = [
     { key: 'prototyped', value: 'Prototype Endpoint' },
     { key: 'INLINE', value: 'Mock Implementation' },
     { key: 'awslambda', value: 'AWS Lambda' },
+    { key: 'graphql', value: 'HTTP/REST Endpoint' },
 ];
 
 /**
@@ -143,6 +144,8 @@ function EndpointOverview(props) {
     const [supportedEnpointTypes, setSupportedEndpointType] = useState([]);
 
     const [epConfig, setEpConfig] = useState(endpointConfig);
+    const [gqlSubEpConfig, setGqlEpConfig] = useState(endpointConfig.ws);
+
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(null);
     const [advanceConfigOptions, setAdvancedConfigOptions] = useState({
         open: false,
@@ -150,6 +153,7 @@ function EndpointOverview(props) {
         type: '',
         category: '',
         config: undefined,
+        isGraphQLWS: false,
     });
     const [endpointSecurityConfig, setEndpointSecurityConfig] = useState({
         open: false,
@@ -191,6 +195,8 @@ function EndpointOverview(props) {
             return endpointTypes[2];
         } else if (type === 'awslambda') {
             return endpointTypes[5];
+        } else if (type === 'graphql') {
+            return endpointTypes[6];
         } else {
             const availableEndpoints = (endpointConfig.production_endpoints && endpointConfig.production_endpoints)
                 || (endpointConfig.sandbox_endpoints && endpointConfig.sandbox_endpoints);
@@ -245,16 +251,27 @@ function EndpointOverview(props) {
     useEffect(() => {
         const supportedTypeLists = getSupportedType(api);
         const epType = getEndpointType(api);
+        let gqlWsEpConfig;
+        let clonedEndpointConfig;
+        if (epType.key === 'graphql') {
+            clonedEndpointConfig = endpointConfig.http;
+            gqlWsEpConfig = endpointConfig.ws;
+        } else {
+            clonedEndpointConfig = endpointConfig;
+        }
         if (epType.key !== 'INLINE') {
             setEndpointCategory({
-                prod: !!endpointConfig.production_endpoints,
-                sandbox: !!endpointConfig.sandbox_endpoints,
+                prod: !!clonedEndpointConfig.production_endpoints,
+                sandbox: !!clonedEndpointConfig.sandbox_endpoints,
             });
         }
         setSupportedEndpointType(supportedTypeLists);
-        setEpConfig(endpointConfig);
+        setEpConfig(clonedEndpointConfig);
+        if (epType.key === 'graphql') {
+            setGqlEpConfig(gqlWsEpConfig);
+        }
         setEndpointType(epType);
-        setEndpointSecurityInfo(endpointConfig.endpoint_security);
+        setEndpointSecurityInfo(clonedEndpointConfig.endpoint_security);
     }, [props]);
 
 
@@ -262,6 +279,15 @@ function EndpointOverview(props) {
         if (epConfig[type]) {
             return epConfig[type].length > 0
                 ? epConfig[type][0].url : epConfig[type].url;
+        }
+        return '';
+    };
+
+
+    const getGraphQLWSEndpoints = (type) => {
+        if (gqlSubEpConfig[type]) {
+            return gqlSubEpConfig[type].length > 0
+                ? gqlSubEpConfig[type][0].url : gqlSubEpConfig[type].url;
         }
         return '';
     };
@@ -315,10 +341,11 @@ function EndpointOverview(props) {
      * @param {string} category The endpoint category. (production/ sand box)
      * @param {string} url The new endpoint url.
      * */
-    const editEndpoint = (index, category, url) => {
+    const editEndpoint = (index, category, url, isGraphQLWS) => {
         let modifiedEndpoint = null;
+        const endpointConfiguration = isGraphQLWS ? gqlSubEpConfig : epConfig;
         // Make a copy of the endpoint config.
-        const endpointConfigCopy = cloneDeep(epConfig);
+        const endpointConfigCopy = cloneDeep(endpointConfiguration);
         /*
         * If the index > 0, it means that the endpoint is load balance or fail over.
         * Otherwise it is the default endpoint. (index = 0)
@@ -370,7 +397,11 @@ function EndpointOverview(props) {
             * */
             delete endpointConfigCopy[category];
         }
-        endpointsDispatcher({ action: category, value: modifiedEndpoint });
+        if (endpointConfig.endpoint_type === 'graphql') {
+            endpointsDispatcher({ action: category, value: modifiedEndpoint, isGraphQLWS });
+        } else {
+            endpointsDispatcher({ action: category, value: modifiedEndpoint });
+        }
     };
 
     const handleEndpointCategorySelect = (event) => {
@@ -449,17 +480,18 @@ function EndpointOverview(props) {
      * @param {string} category The endpoint category (Production/ sandbox)
      * @return {object} The advance config object of the endpoint.
      * */
-    const getAdvanceConfig = (index, epType, category) => {
+    const getAdvanceConfig = (index, epType, category, isGraphQLWS) => {
+        const endpointConfiguration = isGraphQLWS ? gqlSubEpConfig : epConfig;
         const endpointTypeProperty = getEndpointTypeProperty(epType, category);
         let advanceConfig = {};
         if (index > 0) {
-            if (epConfig.endpoint_type === 'failover') {
-                advanceConfig = epConfig[endpointTypeProperty][index - 1].config;
+            if (endpointConfiguration.endpoint_type === 'failover') {
+                advanceConfig = endpointConfiguration[endpointTypeProperty][index - 1].config;
             } else {
-                advanceConfig = epConfig[endpointTypeProperty][index].config;
+                advanceConfig = endpointConfiguration[endpointTypeProperty][index].config;
             }
         } else {
-            const endpointInfo = epConfig[endpointTypeProperty];
+            const endpointInfo = endpointConfiguration[endpointTypeProperty];
             if (Array.isArray(endpointInfo)) {
                 advanceConfig = endpointInfo[0].config;
             } else {
@@ -477,8 +509,8 @@ function EndpointOverview(props) {
      * @param {string} type The endpoint type
      * @param {string} category The endpoint category.
      * */
-    const toggleAdvanceConfig = (index, type, category) => {
-        const advanceEPConfig = getAdvanceConfig(index, type, category);
+    const toggleAdvanceConfig = (index, type, category, isGraphQLWS) => {
+        const advanceEPConfig = getAdvanceConfig(index, type, category, isGraphQLWS);
         setAdvancedConfigOptions(() => {
             return ({
                 open: !advanceConfigOptions.open,
@@ -486,6 +518,7 @@ function EndpointOverview(props) {
                 type,
                 category,
                 config: advanceEPConfig === undefined ? {} : advanceEPConfig,
+                isGraphQLWS,
             });
         });
     };
@@ -539,8 +572,9 @@ function EndpointOverview(props) {
      *
      * @param {object} advanceConfig The advance configuration object.
      * */
-    const saveAdvanceConfig = (advanceConfig) => {
-        const config = cloneDeep(epConfig);
+    const saveAdvanceConfig = (advanceConfig, isGraphQLWS) => {
+        const endpointConfiguration = isGraphQLWS ? gqlSubEpConfig : epConfig;
+        const config = cloneDeep(endpointConfiguration);
         const endpointConfigProperty = getEndpointTypeProperty(
             advanceConfigOptions.type, advanceConfigOptions.category,
         );
@@ -554,18 +588,37 @@ function EndpointOverview(props) {
         } else {
             selectedEndpoints.config = advanceConfig;
         }
-        setAdvancedConfigOptions({ open: false });
-        endpointsDispatcher({
-            action: 'set_advance_config',
-            value: { ...config, [endpointConfigProperty]: selectedEndpoints },
-        });
+        setAdvancedConfigOptions({ open: false, isGraphQLWS: false });
+        const updatingEPConfig = { ...config, [endpointConfigProperty]: selectedEndpoints };
+        if (endpointConfig.endpoint_type === 'graphql') {
+            if (isGraphQLWS) {
+                endpointsDispatcher({
+                    action: 'set_advance_config',
+                    value: {
+                        ...endpointConfig, ws: updatingEPConfig,
+                    },
+                });
+            } else {
+                endpointsDispatcher({
+                    action: 'set_advance_config',
+                    value: {
+                        ...endpointConfig, http: updatingEPConfig,
+                    },
+                });
+            }
+        } else {
+            endpointsDispatcher({
+                action: 'set_advance_config',
+                value: { ...config, [endpointConfigProperty]: selectedEndpoints },
+            });
+        }
     };
 
     /**
      * Method to close the advance configuration dialog box.
      * */
     const closeAdvanceConfig = () => {
-        setAdvancedConfigOptions({ open: false });
+        setAdvancedConfigOptions({ open: false, isGraphQLWS: false });
     };
 
     /**
@@ -594,7 +647,7 @@ function EndpointOverview(props) {
         <div className={classes.overviewWrapper}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    {api.type === 'WS' ? <div /> : (
+                    {api.type === 'WS' || api.type === 'GRAPHQL' ? <div /> : (
                         <FormControl component='fieldset' className={classes.formControl}>
                             <RadioGroup
                                 aria-label='EndpointType'
@@ -702,7 +755,7 @@ function EndpointOverview(props) {
                                                                 className={classes.button}
                                                                 aria-label='Settings'
                                                                 onClick={() => toggleAdvanceConfig(
-                                                                    0, '', 'production_endpoints',
+                                                                    0, '', 'production_endpoints', false,
                                                                 )}
                                                                 disabled={
                                                                     (isRestricted(
@@ -756,35 +809,68 @@ function EndpointOverview(props) {
                                                         </InlineMessage>
                                                     )
                                                     : (
-                                                        <GenericEndpoint
-                                                            autoFocus
-                                                            name={endpointType.key === 'prototyped'
+                                                        <>
+                                                            <GenericEndpoint
+                                                                autoFocus
+                                                                name={endpointType.key === 'prototyped'
+                                                                    ? (
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.'
+                                                                        + 'EndpointOverview.prototype'
+                                                                        + '.endpoint.prototype.header'}
+                                                                            defaultMessage='Prototype Endpoint'
+                                                                        />
+                                                                    ) : (
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.'
+                                                                        + 'EndpointOverview.production'
+                                                                        + '.endpoint.production.header'}
+                                                                            defaultMessage='Production Endpoint'
+                                                                        />
+                                                                    )}
+                                                                className={classes.defaultEndpointWrapper}
+                                                                endpointURL={getEndpoints('production_endpoints')}
+                                                                type=''
+                                                                index={0}
+                                                                category='production_endpoints'
+                                                                editEndpoint={editEndpoint}
+                                                                setAdvancedConfigOpen={toggleAdvanceConfig}
+                                                                esCategory='production'
+                                                                setESConfigOpen={toggleEndpointSecurityConfig}
+                                                                apiId={api.id}
+                                                                isGraphQLWS={false}
+                                                            />
+                                                            {endpointType.key === 'graphql'
                                                                 ? (
-                                                                    <FormattedMessage
-                                                                        id={'Apis.Details.Endpoints.'
-                                                                            + 'EndpointOverview.prototype'
-                                                                            + '.endpoint.prototype.header'}
-                                                                        defaultMessage='Prototype Endpoint'
+                                                                    <GenericEndpoint
+                                                                        autoFocus
+                                                                        name={(
+                                                                            <FormattedMessage
+                                                                                id={'Apis.Details.Endpoints.'
+                                                                                + 'EndpointOverview.production'
+                                                                                + 'ws.endpoint.production.header'}
+                                                                                defaultMessage='Production WS Endpoint'
+                                                                            />
+                                                                        )}
+                                                                        className={classes.defaultEndpointWrapper}
+                                                                        endpointURL={
+                                                                            getGraphQLWSEndpoints(
+                                                                                'production_endpoints',
+                                                                            )
+                                                                        }
+                                                                        type=''
+                                                                        index={0}
+                                                                        category='production_endpoints'
+                                                                        editEndpoint={editEndpoint}
+                                                                        setAdvancedConfigOpen={toggleAdvanceConfig}
+                                                                        esCategory='production'
+                                                                        setESConfigOpen={toggleEndpointSecurityConfig}
+                                                                        apiId={api.id}
+                                                                        isGraphQLWS
                                                                     />
-                                                                ) : (
-                                                                    <FormattedMessage
-                                                                        id={'Apis.Details.Endpoints.'
-                                                                            + 'EndpointOverview.production'
-                                                                            + '.endpoint.production.header'}
-                                                                        defaultMessage='Production Endpoint'
-                                                                    />
-                                                                )}
-                                                            className={classes.defaultEndpointWrapper}
-                                                            endpointURL={getEndpoints('production_endpoints')}
-                                                            type=''
-                                                            index={0}
-                                                            category='production_endpoints'
-                                                            editEndpoint={editEndpoint}
-                                                            setAdvancedConfigOpen={toggleAdvanceConfig}
-                                                            esCategory='production'
-                                                            setESConfigOpen={toggleEndpointSecurityConfig}
-                                                            apiId={api.id}
-                                                        />
+                                                                )
+                                                                : (<div />)}
+                                                        </>
                                                     )}
                                             </Collapse>
                                             {endpointType.key === 'prototyped' ? <div />
@@ -846,7 +932,7 @@ function EndpointOverview(props) {
                                                                             className={classes.button}
                                                                             aria-label='Settings'
                                                                             onClick={() => toggleAdvanceConfig(
-                                                                                0, '', 'sandbox_endpoints',
+                                                                                0, '', 'sandbox_endpoints', false,
                                                                             )}
                                                                             disabled={
                                                                                 (isRestricted(
@@ -967,6 +1053,7 @@ function EndpointOverview(props) {
                         advanceConfig={advanceConfigOptions.config}
                         onSaveAdvanceConfig={saveAdvanceConfig}
                         onCancel={closeAdvanceConfig}
+                        isGraphQLWS={advanceConfigOptions.isGraphQLWS}
                     />
                 </DialogContent>
             </Dialog>

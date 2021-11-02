@@ -96,6 +96,7 @@ function GenericEndpoint(props) {
         name,
         id,
         apiId,
+        isGraphQLWS,
     } = props;
     const [serviceUrl, setServiceUrl] = useState(endpointURL);
     const { api } = useContext(APIContext);
@@ -143,7 +144,7 @@ function GenericEndpoint(props) {
                 placeholder={!serviceUrl ? 'http://appserver/resource' : ''}
                 onChange={(event) => setServiceUrl(event.target.value)}
                 onBlur={() => {
-                    editEndpoint(index, category, serviceUrl);
+                    editEndpoint(index, category, serviceUrl, isGraphQLWS);
                 }}
                 error={!serviceUrl}
                 helperText={!serviceUrl
@@ -206,7 +207,7 @@ function GenericEndpoint(props) {
                                         <IconButton
                                             className={classes.iconButton}
                                             aria-label='Settings'
-                                            onClick={() => setAdvancedConfigOpen(index, type, category)}
+                                            onClick={() => setAdvancedConfigOpen(index, type, category, isGraphQLWS)}
                                             disabled={(isRestricted(['apim:api_create'], api))}
                                         >
                                             <Tooltip
