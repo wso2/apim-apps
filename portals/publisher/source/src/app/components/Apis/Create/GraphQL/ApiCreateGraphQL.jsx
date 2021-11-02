@@ -152,31 +152,13 @@ export default function ApiCreateGraphQL(props) {
         };
         const uploadMethod = 'file';
         if (endpoint) {
-            let wsEndpoint = '';
-            if (endpoint.indexOf('http://') === 0) {
-                wsEndpoint = endpoint.replace(/(^\w+:|^)\/\//, 'ws://');
-            } else if (endpoint.indexOf('https://') === 0) {
-                wsEndpoint = endpoint.replace(/(^\w+:|^)\/\//, 'wss://');
-            }
             additionalProperties.endpointConfig = {
-                endpoint_type: 'graphql',
-                http: {
-                    endpoint_type: 'http',
-                    sandbox_endpoints: {
-                        url: endpoint,
-                    },
-                    production_endpoints: {
-                        url: endpoint,
-                    },
+                endpoint_type: 'http',
+                sandbox_endpoints: {
+                    url: endpoint,
                 },
-                ws: {
-                    endpoint_type: 'ws',
-                    sandbox_endpoints: {
-                        url: wsEndpoint,
-                    },
-                    production_endpoints: {
-                        url: wsEndpoint,
-                    },
+                production_endpoints: {
+                    url: endpoint,
                 },
             };
         }
