@@ -28,6 +28,8 @@ import HelpOutline from '@material-ui/icons/HelpOutline';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
+import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 
 const useStyles = makeStyles((theme) => ({
     expansionPanel: {
@@ -52,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
+    alert: {
+        marginTop: theme.spacing(2),
+    },
 }));
 
 /**
@@ -64,8 +69,9 @@ const useStyles = makeStyles((theme) => ({
 const AdvertiseInfo = (props) => {
     const {
         configDispatcher,
-        api: { advertiseInfo },
+        api,
     } = props;
+    const { allRevisions } = useRevisionContext();
     const classes = useStyles();
     const [apiFromContext] = useAPI();
     const [isValidAccessibleEndpointUrl, setValidAccessibleEndpointUrl] = useState(true);
@@ -109,6 +115,32 @@ const AdvertiseInfo = (props) => {
         configDispatcher({ action: 'originalDevPortalUrl', value });
     };
 
+    const isAdvertiseOnlyChangeDisabled = isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)
+        || api.type === 'ASYNC' || api.hasSubscriptions || api.isProductized
+        || (!allRevisions || allRevisions.length !== 0) || (!api.advertiseInfo.advertised
+        && api.lifeCycleStatus !== 'CREATED') || (api.advertiseInfo.advertised && api.lifeCycleStatus !== 'CREATED');
+
+    const infoMsg = () => {
+        if (api.type === 'ASYNC') {
+            return 'This Async API only can be only used as an advertise only API.';
+        }
+        if (api.type !== 'ASYNC' && api.advertiseInfo.advertised && api.lifeCycleStatus !== 'CREATED') {
+            return 'Cannot change to a normal API while being published.';
+        }
+        if (api.type !== 'ASYNC' && !api.advertiseInfo.advertised && api.lifeCycleStatus !== 'CREATED') {
+            return 'Cannot change to an advertise only API while being published.';
+        }
+        if (api.type !== 'ASYNC' && api.lifeCycleStatus === 'CREATED' && !api.advertiseInfo.advertised
+            && (api.hasSubscriptions || (!allRevisions || allRevisions.length !== 0))) {
+            return 'Cannot change to an advertise only API when there are active subscriptions or revisions.';
+        }
+        if ((api.type !== 'ASYNC' && api.lifeCycleStatus === 'CREATED' && !api.advertiseInfo.advertised
+            && api.isProductized)) {
+            return 'Cannot change to an advertise only API when the API is being used in an API Product.';
+        }
+        return null;
+    };
+
     return (
         <>
             <Typography className={classes.subHeading}>
@@ -135,8 +167,8 @@ const AdvertiseInfo = (props) => {
                 className={classes.actionSpace}
                 control={(
                     <Switch
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                        checked={advertiseInfo.advertised}
+                        disabled={isAdvertiseOnlyChangeDisabled}
+                        checked={api.advertiseInfo.advertised}
                         onChange={({ target: { checked } }) => configDispatcher({
                             action: 'advertised',
                             value: checked,
@@ -148,7 +180,7 @@ const AdvertiseInfo = (props) => {
                     />
                 )}
             />
-            {advertiseInfo.advertised && (
+            {api.advertiseInfo.advertised && (
                 <>
                     <TextField
                         label={(
@@ -162,7 +194,7 @@ const AdvertiseInfo = (props) => {
                         )}
                         variant='outlined'
                         name='accessibleEndpointUrl'
-                        value={advertiseInfo.accessibleEndpointUrl}
+                        value={api.advertiseInfo.accessibleEndpointUrl}
                         fullWidth
                         margin='normal'
                         onChange={handleOnChangeAccessibleEndpointUrl}
@@ -190,7 +222,7 @@ const AdvertiseInfo = (props) => {
                         )}
                         variant='outlined'
                         name='originalDevPortalUrl'
-                        value={advertiseInfo.originalDevPortalUrl}
+                        value={api.advertiseInfo.originalDevPortalUrl}
                         fullWidth
                         margin='normal'
                         onChange={handleOnChangeOriginalDevPortalUrl}
@@ -210,6 +242,9 @@ const AdvertiseInfo = (props) => {
                         style={{ marginTop: 0 }}
                     />
                 </>
+            )}
+            {infoMsg() !== null && (
+                <MuiAlert severity='info' className={classes.alert}>{infoMsg()}</MuiAlert>
             )}
         </>
     );

@@ -149,6 +149,7 @@ function copyAPIConfig(api) {
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
         additionalProperties: [...api.additionalProperties],
+        type: api.type,
     };
     if (api.advertiseInfo) {
         copiedConfig = {
@@ -160,6 +161,18 @@ function copyAPIConfig(api) {
                 apiOwner: api.advertiseInfo.apiOwner,
                 vendor: api.advertiseInfo.vendor,
             },
+        };
+    }
+    if (api.hasSubscriptions) {
+        copiedConfig = {
+            ...copiedConfig,
+            hasSubscriptions: api.hasSubscriptions,
+        };
+    }
+    if (api.isProductized) {
+        copiedConfig = {
+            ...copiedConfig,
+            isProductized: api.isProductized,
         };
     }
     return copiedConfig;
