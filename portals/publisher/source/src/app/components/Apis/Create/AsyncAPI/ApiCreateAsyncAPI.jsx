@@ -150,12 +150,15 @@ export default function ApiCreateAsyncAPI(props) {
         if (value === 'WebSub') {
             setHideEndpoint(true);
             setHideAccessibleEndpointUrl(true);
+            setValidAccessibleEndpointUrl(true);
         } else if (value === 'Other') {
             setHideEndpoint(true);
             setHideAccessibleEndpointUrl(false);
+            setValidAccessibleEndpointUrl(false);
         } else {
             setHideEndpoint(false);
             setHideAccessibleEndpointUrl(true);
+            setValidAccessibleEndpointUrl(true);
         }
         inputsDispatcher({ action, value });
     }
