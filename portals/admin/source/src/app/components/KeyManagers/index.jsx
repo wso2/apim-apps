@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import AddEditTokenExchangeIDP from 'AppComponents/KeyManagers/AddEditTokenExchangeIDP';
 import ListKeyManagers from './ListKeyManagers';
 import AddEditKeyManager from './AddEditKeyManager';
 
@@ -14,7 +13,7 @@ function KeyManagers() {
         <Switch>
             <Route exact path='/settings/key-managers' component={ListKeyManagers} />
             <Route exact path='/settings/key-managers/create' component={AddEditKeyManager} />
-            <Route exact path='/settings/key-managers/:id'  component={AddEditKeyManager} />
+            <Route exact path='/settings/key-managers/:id' component={AddEditKeyManager} />
             <Route component={ResourceNotFound} />
         </Switch>
     );

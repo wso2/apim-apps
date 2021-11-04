@@ -25,8 +25,8 @@ import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@material-ui/core/Switch';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from "@material-ui/core/Button";
+import Button from '@material-ui/core/Button';
+import { Chip } from '@material-ui/core';
 
 /**
  * API call to get microgateway labels
@@ -41,10 +41,15 @@ function apiCall() {
             resultList.forEach((item) => {
                 if (item.tokenType === 'ORIGINAL') {
                     // eslint-disable-next-line no-param-reassign
-                    item.tokenType = 'Direct';
-                } else {
+                    item.tokenType = <Chip variant='outlined' color='primary' size='small' label='Direct' />;
+                } else if (item.tokenType === 'BOTH') {
                     // eslint-disable-next-line no-param-reassign
-                    item.tokenType = 'Exchange';
+                    item.tokenType = (
+                        <div>
+                            <Chip variant='outlined' color='primary' size='small' label='Direct' />
+                            <Chip variant='outlined' color='primary' size='small' label='Exchange' />
+                        </div>
+                    );
                 }
             });
             return resultList;
@@ -54,35 +59,6 @@ function apiCall() {
         });
 }
 
-const useStyles = makeStyles((theme) => {
-    return {
-        dividerCls: {
-            height: '80px',
-            position: 'absolute',
-            top: '50%',
-            '-ms-transform': 'translateY(-50%)',
-            transform: 'translateY(-50%)',
-            margin: 'auto',
-        },
-        popover: {
-            [theme.breakpoints.down('sm')]: {
-                width: '22vw',
-            },
-            [theme.breakpoints.up('md')]: {
-                width: '22vw',
-            },
-            [theme.breakpoints.up('lg')]: {
-                width: '19vw',
-            },
-            [theme.breakpoints.up('xl')]: {
-                width: '13vw',
-            },
-            paddingTop: theme.spacing(2),
-            paddingBottom: theme.spacing(2),
-        },
-    };
-});
-
 /**
  * Render a list
  * @returns {JSX} Header AppBar components.
@@ -90,7 +66,6 @@ const useStyles = makeStyles((theme) => {
 export default function ListKeyManagers() {
     // eslint-disable-next-line no-unused-vars
     const [saving, setSaving] = useState(false);
-    const { popover } = useStyles();
     const intl = useIntl();
     const columProps = [
         {

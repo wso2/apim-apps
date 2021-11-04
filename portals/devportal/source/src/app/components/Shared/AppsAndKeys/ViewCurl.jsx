@@ -168,15 +168,13 @@ function ViewCurl(props) {
     } else {
         if (consumerKey === false) {
             return (
-                <React.Fragment>
                     <Typography>
                         <FormattedMessage
                             id='Shared.AppsAndKeys.ViewCurl.error'
-                            defaultMessage='Please generate the Concumer Key and Secret for Residence Key Manager in
+                            defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager in
                             order to use the token Exchange Approach. '
                         />
                     </Typography>
-                </React.Fragment>
                 )
         } else {
             return (
