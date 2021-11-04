@@ -72,6 +72,8 @@ export default function AsyncApiConsole() {
     const environmentObject = api.endpointURLs;
     const [URLs, setURLs] = useState(environmentObject.length > 0 ? environmentObject[0].URLs : []);
     const [notFound, setNotFound] = useState(false);
+    const [advAuthHeader, setAdvAuthHeader] = useState('');
+    const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
 
     const user = AuthManager.getUser();
 
@@ -152,6 +154,9 @@ export default function AsyncApiConsole() {
 
 
     function accessTokenProvider() {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
         if (securitySchemeType === 'BASIC') {
             const credentials = username + ':' + password;
             return btoa(credentials);
@@ -187,6 +192,17 @@ export default function AsyncApiConsole() {
         }
     }
 
+    if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        authorizationHeader = advAuthHeader;
+    }
+
+    const getURLs = () => {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return [api.advertiseInfo.accessibleEndpointUrl];
+        }
+        return URLs;
+    };
+
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -194,7 +210,7 @@ export default function AsyncApiConsole() {
             </Typography>
             <Paper className={classes.paper}>
                 <Grid container className={classes.grid}>
-                    {!user && (
+                    {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                         <Grid item md={6}>
                             <Paper className={classes.userNotificationPaper}>
                                 <Typography variant='h5' component='h3'>
@@ -208,6 +224,25 @@ export default function AsyncApiConsole() {
                                         defaultMessage={'You need an access token to try the API. Please log '
                                         + 'in and subscribe to the API to generate an access token. If you already '
                                         + 'have an access token, please provide it below.'}
+                                    />
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    )}
+                    {(api.advertiseInfo && api.advertiseInfo.advertised) && (
+                        <Grid item md={6}>
+                            <Paper className={classes.userNotificationPaper}>
+                                <Typography variant='h5' component='h3'>
+                                    <Icon>warning</Icon>
+                                    {' '}
+                                    <FormattedMessage id='notice' defaultMessage='Notice' />
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='api.console.notice.advertise.only'
+                                        defaultMessage={'This API is not deployed in the gateway. This is deployed '
+                                        + 'elsewhere. Therefore, the access token should be taken from the external'
+                                        + ' source.'}
                                     />
                                 </Typography>
                             </Paper>
@@ -239,13 +274,17 @@ export default function AsyncApiConsole() {
                     productionApiKey={productionApiKey}
                     sandboxApiKey={sandboxApiKey}
                     environmentObject={environmentObject}
+                    setAdvAuthHeader={setAdvAuthHeader}
+                    setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                    advAuthHeader={advAuthHeader}
+                    advAuthHeaderValue={advAuthHeaderValue}
                     api={api}
                 />
             </Paper>
             <Paper className={classes.paper}>
                 <AsyncApiUI
                     authorizationHeader={authorizationHeader}
-                    URLs={URLs}
+                    URLs={getURLs()}
                     securitySchemeType={securitySchemeType}
                     accessTokenProvider={accessTokenProvider}
                 />

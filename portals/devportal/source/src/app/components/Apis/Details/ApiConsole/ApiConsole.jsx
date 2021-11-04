@@ -443,8 +443,15 @@ class ApiConsole extends React.Component {
                 authorizationHeader = 'apikey';
             }
         }
+        let swaggerSpec = swagger;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             authorizationHeader = advAuthHeader;
+            swaggerSpec = {
+                ...swagger,
+                servers: [
+                    { url: api.advertiseInfo.accessibleEndpointUrl },
+                ],
+            };
         }
         return (
             <>
@@ -554,7 +561,7 @@ class ApiConsole extends React.Component {
                     <SwaggerUI
                         api={this.state.api}
                         accessTokenProvider={this.accessTokenProvider}
-                        spec={swagger}
+                        spec={swaggerSpec}
                         authorizationHeader={authorizationHeader}
                         securitySchemeType={securitySchemeType}
                     />

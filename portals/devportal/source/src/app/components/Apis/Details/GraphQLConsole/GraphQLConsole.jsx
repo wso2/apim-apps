@@ -75,6 +75,8 @@ export default function GraphQLConsole() {
     const [selectedKeyType, setSelectedKey] = useState('PRODUCTION');
     const [sandboxApiKey, setSandboxApiKey] = useState('');
     const [productionApiKey, setProductionApiKey] = useState('');
+    const [advAuthHeader, setAdvAuthHeader] = useState('');
+    const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
     const [keys, setKeys] = useState([]);
     const user = AuthManager.getUser();
 
@@ -138,6 +140,9 @@ export default function GraphQLConsole() {
     }
 
     function accessTokenProvider() {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
         if (securitySchemeType === 'BASIC') {
             const credentials = username + ':' + password;
             return btoa(credentials);
@@ -193,6 +198,10 @@ export default function GraphQLConsole() {
         }
     }
 
+    if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        authorizationHeader = advAuthHeader;
+    }
+
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -200,7 +209,7 @@ export default function GraphQLConsole() {
             </Typography>
             <Paper className={classes.paper}>
                 <Grid container className={classes.grid}>
-                    {!user && (
+                    {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                         <Grid item md={6}>
                             <Paper className={classes.userNotificationPaper}>
                                 <Typography variant='h5' component='h3'>
@@ -214,6 +223,25 @@ export default function GraphQLConsole() {
                                         defaultMessage={'You need an access token to try the API. Please log '
                                             + 'in and subscribe to the API to generate an access token. If you already '
                                             + 'have an access token, please provide it below.'}
+                                    />
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    )}
+                    {(api.advertiseInfo && api.advertiseInfo.advertised) && (
+                        <Grid item md={6}>
+                            <Paper className={classes.userNotificationPaper}>
+                                <Typography variant='h5' component='h3'>
+                                    <Icon>warning</Icon>
+                                    {' '}
+                                    <FormattedMessage id='notice' defaultMessage='Notice' />
+                                </Typography>
+                                <Typography component='p'>
+                                    <FormattedMessage
+                                        id='api.console.notice.advertise.only'
+                                        defaultMessage={'This API is not deployed in the gateway. This is deployed '
+                                        + 'elsewhere. Therefore, the access token should be taken from the external'
+                                        + ' source.'}
                                     />
                                 </Typography>
                             </Paper>
@@ -245,6 +273,10 @@ export default function GraphQLConsole() {
                     productionApiKey={productionApiKey}
                     sandboxApiKey={sandboxApiKey}
                     environmentObject={environmentObject}
+                    setAdvAuthHeader={setAdvAuthHeader}
+                    setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                    advAuthHeader={advAuthHeader}
+                    advAuthHeaderValue={advAuthHeaderValue}
                     api={api}
                 />
             </Paper>

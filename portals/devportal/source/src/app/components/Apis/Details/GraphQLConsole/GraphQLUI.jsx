@@ -79,20 +79,30 @@ export default function GraphQLUI(props) {
         setIsExplorerOpen(newExplorerIsOpen);
     };
 
+    const getURLs = () => {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return api.advertiseInfo.accessibleEndpointUrl;
+        } else {
+            return URLs && URLs.https;
+        }
+    };
+
     /**
      *
      * @param {*} graphQLParams
      */
     function graphQLFetcher(graphQLParams) {
         let token;
-        if (authorizationHeader === 'apikey') {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            token = accessTokenProvider();
+        } else if (authorizationHeader === 'apikey') {
             token = accessTokenProvider();
         } else if (securitySchemeType === 'BASIC') {
             token = 'Basic ' + accessTokenProvider();
         } else {
             token = 'Bearer ' + accessTokenProvider();
         }
-        return fetch((URLs && URLs.https), {
+        return fetch(getURLs(), {
             method: 'post',
             headers: {
                 Accept: 'application/json',
@@ -115,12 +125,12 @@ export default function GraphQLUI(props) {
                                 id='Apis.Details.GraphQLConsole.GraphQLUI.URLs'
                             />
                         )}
-                        value={URLs && URLs.https}
+                        value={getURLs()}
                         name='selectedURL'
                         fullWidth
                         margin='normal'
                         variant='outlined'
-                        InputProps={URLs && URLs.https}
+                        InputProps={getURLs()}
                         disabled
                     />
                 </Box>
