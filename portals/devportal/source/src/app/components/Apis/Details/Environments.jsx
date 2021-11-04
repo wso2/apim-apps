@@ -292,7 +292,7 @@ function Environments(props) {
                         </Paper>
                     </>
                 )}
-                {(!selectedEndpoint || (api.advertiseInfo && api.advertiseInfo.advertised
+                {(!selectedEndpoint && (api.advertiseInfo && api.advertiseInfo.advertised
                     && !api.advertiseInfo.accessibleEndpointUrl)) && (
                     <Typography variant='subtitle2' component='p' gutterBottom align='left' className={classes.sectionTitle}>
                         <FormattedMessage
