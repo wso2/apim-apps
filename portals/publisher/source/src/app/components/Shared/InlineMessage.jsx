@@ -15,7 +15,7 @@ const styles = (theme) => ({
         border: 'solid 1px ' + theme.palette.primary.main,
         '& span.material-icons.info': {
             fontSize: 80,
-            color: theme.palette.primary.main,
+            color: theme.palette.primary.dark,
         },
         '& span.material-icons.warning': {
             fontSize: 80,

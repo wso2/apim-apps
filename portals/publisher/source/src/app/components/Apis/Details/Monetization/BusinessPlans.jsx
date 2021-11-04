@@ -169,7 +169,7 @@ class BusinessPlans extends Component {
         return (
             <Grid container spacing={1}>
                 <Grid item xs={12}>
-                    <Typography variant='h6'>
+                    <Typography variant='h6' component='h3'>
                         <FormattedMessage
                             id='Apis.Details.Monetization.BusinessPlans.commercial.policies'
                             defaultMessage='Commercial Policies'

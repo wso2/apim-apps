@@ -95,7 +95,7 @@ class SubscriptionPoliciesManage extends Component {
 
         return (
             <>
-                <Typography id='itest-api-details-bushiness-plans-head' variant='h4'>
+                <Typography id='itest-api-details-bushiness-plans-head' variant='h4' component='h2'>
                     <FormattedMessage
                         id='Apis.Details.Subscriptions.SubscriptionPoliciesManage.business.plans'
                         defaultMessage='Business Plans'

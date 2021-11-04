@@ -38,9 +38,9 @@ function Listing(props) {
     } = props;
     // TODO: need to handle this search case separately ~tmkb
     return (
-        <main className={classes.content}>
+        <div className={classes.content}>
             <TableView isAPIProduct={isAPIProduct} theme={theme} query={search} />
-        </main>
+        </div>
     );
 }
 

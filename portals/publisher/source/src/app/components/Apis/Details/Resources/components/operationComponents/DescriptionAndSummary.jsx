@@ -66,7 +66,6 @@ export default function DescriptionAndSummary(props) {
             </Grid>
             <Grid item md={5}>
                 <TextField
-                    id='operation_summary'
                     label='Summary'
                     margin='dense'
                     variant='outlined'

@@ -28,7 +28,7 @@ import Utils from 'AppData/Utils';
 function Download(props) {
     const { intl } = props;
 
-    const { docId, apiId } = props;
+    const { docId, apiId, docName } = props;
     const [isFileAvailable, setIsFileAvailable] = useState(false);
     const [isSuccessful, setIsSuccessful] = useState(false);
 
@@ -65,7 +65,7 @@ function Download(props) {
 
     return (
         isSuccessful &&
-        <Button onClick={handleDownload} disabled={!isFileAvailable}>
+        <Button onClick={handleDownload} disabled={!isFileAvailable}  aria-label={'Download ' + docName}>
             <Icon>arrow_downward</Icon>
             <FormattedMessage
                 id='Apis.Details.Documents.Download.documents.listing.download'

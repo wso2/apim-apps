@@ -179,12 +179,12 @@ function View(props) {
                 <div className={classes.root}>
                     <div className={classes.titleWrapper}>
                         <Link to={listingPath} className={classes.titleLink}>
-                            <Typography variant="h5" align="left" className={classes.mainTitle}>
+                            <Typography variant="h5" component='h2' align="left" className={classes.mainTitle}>
                                 <FormattedMessage id="Apis.Details.Documents.View.heading" defaultMessage="Documents" />
                             </Typography>
                         </Link>
                         <Icon>keyboard_arrow_right</Icon>
-                        <Typography variant="h5">{doc.name}</Typography>
+                        <Typography variant="h5" component='h3'>{doc.name}</Typography>
                     </div>
                     <Paper className={classes.paper}>
                         <Table className={classes.table}>

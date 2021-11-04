@@ -96,7 +96,7 @@ function actualContext({ context, version }) {
  * @returns {Boolean} true or false
  */
 function checkContext(value, result) {
-    const contextVal = value.includes('/') ? value.toLowerCase() : '/' + value.toLowerCase();
+    const contextVal = value.startsWith('/') ? value.toLowerCase() : '/' + value.toLowerCase();
     if (contextVal === '/' + result.toLowerCase().slice(result.toLowerCase().lastIndexOf('/') + 1)
      || contextVal === result.toLowerCase()) {
         return true;
@@ -175,13 +175,19 @@ export default function DefaultAPIForm(props) {
             case 'context': {
                 const contextValidity = APIValidation.apiContext.required().validate(value, { abortEarly: false })
                     .error;
-                const apiContext = value.includes('/') ? value : '/' + value;
+                const apiContext = value.startsWith('/') ? value : '/' + value;
                 if (contextValidity === null) {
                     APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
-                        if (result.body.list.length > 0 && checkContext(value, result.body.list[0].context)) {
+                        const count = result.body.list.length;
+                        if (count > 0 && checkContext(value, result.body.list[0].context)) {
                             updateValidity({
                                 ...validity,
                                 context: { details: [{ message: apiContext + ' context already exists' }] },
+                            });
+                        } else if (count > 0 && checkContext(value, result.body.list[0].contextTemplate)) {
+                            updateValidity({
+                                ...validity,
+                                context: { details: [{ message: apiContext + ' dynamic context already exists' }] },
                             });
                         } else {
                             updateValidity({ ...validity, context: contextValidity, version: null });
@@ -259,8 +265,8 @@ export default function DefaultAPIForm(props) {
                 <TextField
                     autoFocus
                     fullWidth
-                    id='outlined-name'
-                    error={validity.name}
+                    id='api-name'
+                    error={Boolean(validity.name)}
                     label={(
                         <>
                             <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name' defaultMessage='Name' />
@@ -282,6 +288,9 @@ export default function DefaultAPIForm(props) {
                             validate('name', value);
                         },
                     }}
+                    InputLabelProps={{
+                        for: 'itest-id-apiname-input',
+                    }}
                     margin='normal'
                     variant='outlined'
                 />
@@ -291,8 +300,8 @@ export default function DefaultAPIForm(props) {
                             <Grid item md={8} xs={6}>
                                 <TextField
                                     fullWidth
-                                    id='outlined-name'
-                                    error={validity.context}
+                                    id='context'
+                                    error={Boolean(validity.context)}
                                     label={(
                                         <>
                                             <FormattedMessage
@@ -310,6 +319,9 @@ export default function DefaultAPIForm(props) {
                                         onBlur: ({ target: { value } }) => {
                                             validate('context', value);
                                         },
+                                    }}
+                                    InputLabelProps={{
+                                        for: 'itest-id-apicontext-input',
                                     }}
                                     helperText={
                                         (validity.context
@@ -330,7 +342,8 @@ export default function DefaultAPIForm(props) {
                             <Grid item md={4} xs={6}>
                                 <TextField
                                     fullWidth
-                                    error={validity.version}
+                                    id='version'
+                                    error={Boolean(validity.version)}
                                     label={(
                                         <>
                                             <FormattedMessage
@@ -349,6 +362,9 @@ export default function DefaultAPIForm(props) {
                                             validate('version', value);
                                         },
                                     }}
+                                    InputLabelProps={{
+                                        for: 'itest-id-apiversion-input',
+                                    }}
                                     helperText={validity.version && validity.version.message}
                                     margin='normal'
                                     variant='outlined'
@@ -360,8 +376,8 @@ export default function DefaultAPIForm(props) {
                             <Grid item md={12}>
                                 <TextField
                                     fullWidth
-                                    id='outlined-name'
-                                    error={validity.context}
+                                    id='context'
+                                    error={Boolean(validity.context)}
                                     label={(
                                         <>
                                             <FormattedMessage
@@ -416,7 +432,7 @@ export default function DefaultAPIForm(props) {
                                     );
                                 }))
                         }
-                        error={validity.endpointURL}
+                        error={Boolean(validity.endpointURL)}
                         margin='normal'
                         variant='outlined'
                         InputProps={{

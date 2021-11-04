@@ -57,7 +57,12 @@ function Configuration(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6} lg={4}>
                         {/* Transports */}
-                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                        <Typography
+                            id='transports'
+                            component='p'
+                            variant='subtitle2'
+                            className={parentClasses.subtitle}
+                        >
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.transports'
                                 defaultMessage='Transports'
@@ -65,7 +70,7 @@ function Configuration(props) {
                             <Tooltip
                                 interactive
                                 placement='top'
-                                tabIndex='-1'
+                                aria-label='helper text for transports'
                                 classes={{
                                     tooltip: parentClasses.htmlTooltip,
                                 }}
@@ -121,7 +126,7 @@ function Configuration(props) {
                             <Tooltip
                                 interactive
                                 placement='top'
-                                tabIndex='-1'
+                                aria-label='helper text for API Security'
                                 classes={{
                                     tooltip: parentClasses.htmlTooltip,
                                 }}
@@ -172,7 +177,7 @@ function Configuration(props) {
                             <Tooltip
                                 interactive
                                 placement='top'
-                                tabIndex='-1'
+                                aria-label='helper text for Access Control'
                                 classes={{
                                     tooltip: parentClasses.htmlTooltip,
                                 }}
@@ -249,7 +254,7 @@ function Configuration(props) {
                             <Tooltip
                                 placement='top'
                                 interactive
-                                tabIndex='-1'
+                                aria-label='helper text for Visibility on Developer Portal'
                                 classes={{
                                     tooltip: parentClasses.htmlTooltip,
                                 }}

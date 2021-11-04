@@ -30,6 +30,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 const styles = (theme) => ({
     listRoot: {
         padding: 0,
+        display: 'flex',
     },
     listText: {
         color: theme.palette.getContrastText(theme.palette.background.drawer),
@@ -138,7 +139,7 @@ function GlobalNavLinks(props) {
                         [classes.selected]: active,
                         [classes.notSelected]: !active,
                     })}
-                    button
+                    omponent='div'
                 >
                     <ListItemIcon
                         className={classes.itemIcon}

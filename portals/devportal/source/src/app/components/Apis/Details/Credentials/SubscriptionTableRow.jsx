@@ -68,7 +68,7 @@ const subscriptionTableRow = (props) => {
     return (
         <>
             <tr>
-                <td className={classes.td}>{app.label}</td>
+                <td className={classes.td} id={app.label}>{app.label}</td>
                 <td className={classes.td}>{app.policy}</td>
                 <td className={classes.td}>{app.status}</td>
                 <td className={classes.td}>
@@ -76,6 +76,8 @@ const subscriptionTableRow = (props) => {
                         <Link
                             className={classes.button}
                             to={'/applications/' + app.value}
+                            id={app.label + '-MA'}
+                            aria-labelledby={app.label + '-MA ' + app.label}
                         >
                             <span>
                                 <FormattedMessage
@@ -100,6 +102,8 @@ const subscriptionTableRow = (props) => {
                                     app.subscriptionId,
                                     updateSubscriptionData,
                                 )}
+                                id={app.label + '-UN'}
+                                aria-labelledby={app.label + '-UN ' + app.label}
                             >
                                 <span>
                                     <FormattedMessage
@@ -122,6 +126,8 @@ const subscriptionTableRow = (props) => {
                                             && app.value === selectedAppId,
                             })}
                             onClick={() => loadInfo('PRODUCTION', app.value)}
+                            id={app.label + '-PK'}
+                            aria-labelledby={app.label + '-PK ' + app.label}
                         >
                             <span>
                                 <FormattedMessage
@@ -143,6 +149,8 @@ const subscriptionTableRow = (props) => {
                                             && app.value === selectedAppId,
                             })}
                             onClick={() => loadInfo('SANDBOX', app.value)}
+                            id={app.label + '-SB'}
+                            aria-labelledby={app.label + '-SB ' + app.label}
                         >
                             <span>
                                 <FormattedMessage

@@ -74,7 +74,7 @@ export default function MaxBackendTps(props) {
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded id='maxBackendTps'>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography className={classes.subHeading} variant='h6'>
+                        <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Components.MaxBackendTps.maximum.backend.throughput'
                                 defaultMessage='Backend Throughput'

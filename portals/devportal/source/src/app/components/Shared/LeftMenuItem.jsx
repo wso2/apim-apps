@@ -188,6 +188,7 @@ function LeftMenuItem(props) {
                                 width={submenu ? iconSize - 10 : iconSize}
                                 height={submenu ? iconSize - 10 : iconSize}
                                 icon={props.iconText}
+                                aria-label={ text + ' icon'}
                                 className={classNames(
                                     classes.leftLInk,
                                     {

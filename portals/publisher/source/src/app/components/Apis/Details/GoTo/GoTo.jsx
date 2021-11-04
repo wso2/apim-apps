@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 import Downshift from 'downshift';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -65,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
         height: theme.spacing(2),
     },
     linkButton: {
-        display: 'flex',
+        display: 'grid',
         alignItems: 'center',
         flexDirection: 'column',
         padding: 10,
@@ -161,12 +162,12 @@ function GoTo(props) {
 
     return (
         <div className={classes.goToWrapper}>
-            <a className={classes.linkButton} onClick={toggleSearch}>
+            <Button className={classes.linkButton} onClick={toggleSearch}>
                 <Icon>find_in_page</Icon>
                 <Typography variant='caption'>
                     <FormattedMessage id='Apis.Details.GoTo.GoTo.btn' defaultMessage='Go To' />
                 </Typography>
-            </a>
+            </Button>
             <Backdrop className={classes.backdrop} open={showSearch} onClick={handleClickAway}>
                 <div onClick={(e) => { e.stopPropagation(); e.preventDefault(); }} className={classes.downshiftWrapper}>
                     {showSearch && (
