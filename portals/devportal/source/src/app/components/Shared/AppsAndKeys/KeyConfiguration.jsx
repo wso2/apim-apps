@@ -479,7 +479,7 @@ KeyConfiguration.propTypes = {
     isKeysAvailable: PropTypes.bool.isRequired,
     keyManagerConfig: PropTypes.any.isRequired,
     notFound: PropTypes.bool,
-    setGenerateEnabled: PropTypes.func,
+    setGenerateEnabled: PropTypes.func.isRequired,
     updateKeyRequest: PropTypes.func.isRequired,
     validating: PropTypes.bool,
 };
