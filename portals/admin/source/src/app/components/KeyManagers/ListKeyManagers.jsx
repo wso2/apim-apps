@@ -174,7 +174,7 @@ export default function ListKeyManagers() {
             const updateSomething = () => {
                 const restApi = new API();
                 const kmName = rowData[0];
-                const kmId = rowData[4];
+                const kmId = rowData[5];
                 restApi.keyManagerGet(kmId).then((result) => {
                     let editState;
                     if (result.body.name !== null) {
@@ -200,7 +200,7 @@ export default function ListKeyManagers() {
                     });
                 });
             };
-            const kmEnabled = rowData[3];
+            const kmEnabled = rowData[4];
 
             return (
                 <Switch
