@@ -909,6 +909,32 @@ class API extends Resource {
         });
     }
 
+
+    /**
+     * Retrieve tenant conf
+     */
+     tenantConfGet() {
+        return this.client.then((client) => {
+            return client.apis['Tenant Config'].exportTenantConfig();
+        });
+    }
+
+     /**
+     * Update tenant conf
+     */
+    updateTenantConf(body) {
+        return this.client.then((client) => {
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Tenant Config'].updateTenantConfig(
+                payload,
+                { requestBody: body},
+                this._requestMetaData(),
+            );
+        });
+    }
+
 }
 
 API.CONSTS = {

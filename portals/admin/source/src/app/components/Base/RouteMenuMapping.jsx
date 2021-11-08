@@ -21,6 +21,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import DnsRoundedIcon from '@material-ui/icons/DnsRounded';
 import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
 import HomeIcon from '@material-ui/icons/Home';
 import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
@@ -35,6 +36,7 @@ import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
 import KeyManagers from 'AppComponents/KeyManagers';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
+import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 
 import GamesIcon from '@material-ui/icons/Games';
 import CategoryIcon from '@material-ui/icons/Category';
@@ -296,6 +298,15 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/devportal-theme',
                 component: TenantTheme,
                 icon: <PhonelinkSetupIcon />,
+            },
+            {
+                id: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.advanced.configurations',
+                    defaultMessage: 'Advanced Configurations',
+                }),
+                path: '/settings/advanced-configurations',
+                component: TenantConfSave,
+                icon: <SettingsApplicationsIcon />,
             },
         ],
     },
