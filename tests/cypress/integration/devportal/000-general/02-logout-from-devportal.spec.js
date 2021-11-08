@@ -1,11 +1,14 @@
+
 /*
  * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -13,19 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-describe("Application tests", () => {
-    const appName = 'jwtapplication';
-    const appDescription = 'JWT application description';
-   
-    it.only("Add Applications for JWT token Type", () => {
-        cy.loginToDevportal();
-        cy.createApp(appName, appDescription);
-    })
 
-    after(() => {
-        cy.visit('/devportal/applications?tenant=carbon.super');
-        cy.get(`[data-testid="delete-${appName}-btn"]`, {timeout: 30000});
-        cy.get(`[data-testid="delete-${appName}-btn"]`).click();
-        cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+describe("Login logout from devportal", () => {
+    it.only("Login logout from devportal", () => {
+        cy.loginToDevportal();
+        cy.logoutFromDevportal();
     })
 })

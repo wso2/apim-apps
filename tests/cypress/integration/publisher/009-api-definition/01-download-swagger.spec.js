@@ -17,7 +17,7 @@ describe("do nothing", () => {
         const downloadsFolder = Cypress.config('downloadsFolder')
         const downloadedFilename = `${downloadsFolder}/swagger.yaml`;
 
-        cy.readFile(downloadedFilename, 'binary', { timeout: 15000 })
+        cy.readFile(downloadedFilename, 'binary', { timeout: 35000 })
             .should(buffer => expect(buffer.length).to.be.gt(100));
     });
 

@@ -33,6 +33,24 @@ describe("Anonymous view apis", () => {
         cy.get('[title="PizzaShackAPI"]', { timeout: 30000 });
         cy.get('[title="PizzaShackAPI"]').should('exist');
     })
+
+    it.only("Download swagger", () => {
+        cy.visit('/devportal/apis?tenant=carbon.super');
+        cy.url().should('contain', '/apis?tenant=carbon.super');
+
+        cy.get('[title="PizzaShackAPI"]', { timeout: 30000 });
+        cy.get('[title="PizzaShackAPI"]').click();
+        cy.get('[data-testid="left-menu-overview"]').click();
+        
+        // Downloading swagger
+        cy.get('#panel1a-header').click();
+        cy.get('[data-testid="swagger-download-btn"]').click();
+
+         const downloadsFolder = Cypress.config('downloadsFolder')
+         const downloadedFilename = `${downloadsFolder}/swagger.json`;
+         cy.readFile(downloadedFilename).its('basePath').should('eq', '/pizzashack/1.0.0');
+    })
+    
     it.only("Download client sdks", () => {
         cy.loginToDevportal();
         cy.visit('/devportal/apis?tenant=carbon.super');
