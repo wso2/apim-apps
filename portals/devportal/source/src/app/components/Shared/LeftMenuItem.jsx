@@ -150,6 +150,7 @@ function LeftMenuItem(props) {
     }
     return (
         <BootstrapTooltip title={props.text} placement="right">
+            <div>
             <Link
                 className={classNames(
                     classes.leftLInk,
@@ -227,6 +228,7 @@ function LeftMenuItem(props) {
 
 
             </Link>
+            </div>
         </BootstrapTooltip>
     );
 }

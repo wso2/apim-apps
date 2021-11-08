@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -97,7 +97,7 @@ const AppConfiguration = (props) => {
     /**
      * Update the state when new props are available
      */
-    useEffect(() => {        
+    useEffect(() => {
         setSelectedValue(previousValue);
     }, [previousValue])
 
@@ -114,138 +114,138 @@ const AppConfiguration = (props) => {
                 </TableCell>
                 <TableCell>
                     <Box maxWidth={600}>
-                        
-                    {config.type === 'select' && config.multiple === false ? (
-                        <TextField
-                            classes={{
-                                root: classes.removeHelperPadding,
-                            }}
-                            fullWidth
-                            id={config.name}
-                            select
-                            label={config.label}
-                            value={selectedValue}
-                            name={config.name}
-                            onChange={e => handleAppRequestChange(e)}
-                            helperText={
-                                <Typography variant='caption'>
-                                    {config.tooltip}
-                                </Typography>
-                            }
-                            margin='dense'
-                            variant='outlined'
-                            disabled={!isUserOwner}
-                        >
-                            {config.values.map(key => (
-                                <MenuItem key={key} value={key}>
-                                    {key}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    ) : (config.type === 'select' && config.multiple === true && Array.isArray(selectedValue)) ? (
-                        <>
-                            <FormControl variant="outlined" className={classes.formControl} fullWidth>
-                                <InputLabel id="multi-select-label">{config.label}</InputLabel>
-                                <Select
-                                    labelId="multi-select-label"
-                                    id="multi-select-outlined"
-                                    margin='dense'
-                                    displayEmpty
-                                    name={config.name}
-                                    multiple
-                                    value={selectedValue}
-                                    onChange={e => handleAppRequestChange(e)}
-                                    input={<Input id='multi-select-outlined' />}
-                                    renderValue={selected => (
-                                        <div className={classes.chips}>
-                                            {selected.map(value => (
-                                                <Chip key={value} label={value} className={classes.chip} />
-                                            ))}
-                                        </div>
-                                    )}
-                                    helperText={
-                                        <Typography variant='caption'>
-                                            {config.tooltip}
-                                        </Typography>
-                                    }
-                                    label={config.label}
-                                >
-                                    {config.values.map(key => (
-                                        <MenuItem key={key} value={key}>
-                                            <Checkbox checked={selectedValue.indexOf(key) > -1} />
-                                            <ListItemText primary={key} />
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
 
-
-                            <Typography variant='caption'>
-                                {config.tooltip}
-                            </Typography>
-                        </>
-                    ) : (config.type === 'input') ? (
-                        <TextField
-                            classes={{
-                                root: classes.removeHelperPadding,
-                            }}
-                            fullWidth
-                            id={config.name}
-                            label={config.label}
-                            value={selectedValue}
-                            name={config.name}
-                            onChange={e => handleAppRequestChange(e)}
-                            helperText={
-                                <Typography variant='caption'>
-                                    {config.tooltip}
-                                </Typography>
-                            }
-                            margin='dense'
-                            variant='outlined'
-                            disabled={!isUserOwner}
-                        />
-                    ) : (config.type === 'checkbox') ? (
-                        <Checkbox
-                        classes={{
-                            root: classes.removeHelperPadding,
-                        }}
-                            fullWidth
-                            id={config.name}
-                            label={config.label}
-                            checked={setCheckboxValue()}
-                            name={config.name}
-                            onChange={e => handleAppRequestChange(e)}
-                            helperText={
-                                <Typography variant='caption'>
-                                    {config.tooltip}
-                                </Typography>
-                            }
-                            margin='dense'
-                            variant='outlined'
-                            disabled={!isUserOwner}
-                            />
-                    ) : (
-                                    <TextField
-                                        classes={{
-                                            root: classes.removeHelperPadding,
-                                        }}
-                                        fullWidth
-                                        id={config.name}
-                                        label={config.label}
-                                        value={selectedValue}
+                        {config.type === 'select' && config.multiple === false ? (
+                            <TextField
+                                classes={{
+                                    root: classes.removeHelperPadding,
+                                }}
+                                fullWidth
+                                id={config.name}
+                                select
+                                label={config.label}
+                                value={selectedValue}
+                                name={config.name}
+                                onChange={e => handleAppRequestChange(e)}
+                                helperText={
+                                    <Typography variant='caption'>
+                                        {config.tooltip}
+                                    </Typography>
+                                }
+                                margin='dense'
+                                variant='outlined'
+                                disabled={!isUserOwner}
+                            >
+                                {config.values.map(key => (
+                                    <MenuItem key={key} value={key}>
+                                        {key}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        ) : (config.type === 'select' && config.multiple === true && Array.isArray(selectedValue)) ? (
+                            <>
+                                <FormControl variant="outlined" className={classes.formControl} fullWidth>
+                                    <InputLabel id="multi-select-label">{config.label}</InputLabel>
+                                    <Select
+                                        labelId="multi-select-label"
+                                        id="multi-select-outlined"
+                                        margin='dense'
+                                        displayEmpty
                                         name={config.name}
+                                        multiple
+                                        value={selectedValue}
                                         onChange={e => handleAppRequestChange(e)}
+                                        input={<Input id='multi-select-outlined'/>}
+                                        renderValue={selected => (
+                                            <div className={classes.chips}>
+                                                {selected.map(value => (
+                                                    <Chip key={value} label={value} className={classes.chip}/>
+                                                ))}
+                                            </div>
+                                        )}
                                         helperText={
                                             <Typography variant='caption'>
                                                 {config.tooltip}
                                             </Typography>
                                         }
-                                        margin='dense'
-                                        variant='outlined'
-                                        disabled={!isUserOwner}
-                                    />
-                                )}
-                            </Box>
+                                        label={config.label}
+                                    >
+                                        {config.values.map(key => (
+                                            <MenuItem key={key} value={key}>
+                                                <Checkbox checked={selectedValue.indexOf(key) > -1}/>
+                                                <ListItemText primary={key}/>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+
+                                <Typography variant='caption'>
+                                    {config.tooltip}
+                                </Typography>
+                            </>
+                        ) : (config.type === 'input') ? (
+                            <TextField
+                                classes={{
+                                    root: classes.removeHelperPadding,
+                                }}
+                                fullWidth
+                                id={config.name}
+                                label={config.label}
+                                value={selectedValue}
+                                name={config.name}
+                                onChange={e => handleAppRequestChange(e)}
+                                helperText={
+                                    <Typography variant='caption'>
+                                        {config.tooltip}
+                                    </Typography>
+                                }
+                                margin='dense'
+                                variant='outlined'
+                                disabled={!isUserOwner}
+                            />
+                        ) : (config.type === 'checkbox') ? (
+                            <Checkbox
+                                classes={{
+                                    root: classes.removeHelperPadding,
+                                }}
+                                fullWidth
+                                id={config.name}
+                                label={config.label}
+                                checked={setCheckboxValue()}
+                                name={config.name}
+                                onChange={e => handleAppRequestChange(e)}
+                                helperText={
+                                    <Typography variant='caption'>
+                                        {config.tooltip}
+                                    </Typography>
+                                }
+                                margin='dense'
+                                variant='outlined'
+                                disabled={!isUserOwner}
+                            />
+                        ) : (
+                            <TextField
+                                classes={{
+                                    root: classes.removeHelperPadding,
+                                }}
+                                fullWidth
+                                id={config.name}
+                                label={config.label}
+                                value={selectedValue}
+                                name={config.name}
+                                onChange={e => handleAppRequestChange(e)}
+                                helperText={
+                                    <Typography variant='caption'>
+                                        {config.tooltip}
+                                    </Typography>
+                                }
+                                margin='dense'
+                                variant='outlined'
+                                disabled={!isUserOwner}
+                            />
+                        )}
+                    </Box>
                 </TableCell>
             </TableRow>
         </>

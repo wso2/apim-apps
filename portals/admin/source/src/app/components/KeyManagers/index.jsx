@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter, Switch, Route } from 'react-router-dom';
+import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import ListKeyManagers from './ListKeyManagers';
 import AddEditKeyManager from './AddEditKeyManager';

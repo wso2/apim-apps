@@ -54,8 +54,9 @@ function ViewCurl(props) {
     const {
         keys: { consumerKey, consumerSecret },
         intl,
-        keyType,
         keyManagerConfig,
+        jwtToken,
+        defaultTokenEndpoint,
     } = props;
     const bas64Encoded = window.btoa(consumerKey + ':' + consumerSecret);
     const [showReal, setShowReal] = useState(false);
@@ -73,102 +74,185 @@ function ViewCurl(props) {
     };
     // Check for additional properties for token endpoint and revoke endpoints.
     let { tokenEndpoint } = keyManagerConfig;
-    return (
-        <React.Fragment>
-            <Typography>
-                <FormattedMessage
-                    id='Shared.AppsAndKeys.ViewCurl.help'
-                    defaultMessage='The following cURL command shows how to generate an access token using
+    if (keyManagerConfig.alias === null ) {
+        return (
+            <React.Fragment>
+                <Typography>
+                    <FormattedMessage
+                        id='Shared.AppsAndKeys.ViewCurl.help'
+                        defaultMessage='The following cURL command shows how to generate an access token using
                             the Password Grant type.'
-                />
-            </Typography>
+                    />
+                </Typography>
 
-            <div className={classes.contentWrapper}>
-                <div className={classes.code}>
-                    <div>
-                        <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
-                        <span className={classes.command}> -d </span>{' '}
-                        {'"grant_type=password&username=Username&password=Password"'}
+                <div className={classes.contentWrapper}>
+                    <div className={classes.code}>
+                        <div>
+                            <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
+                            <span className={classes.command}> -d </span>{' '}
+                            {'"grant_type=password&username=Username&password=Password"'}
+                        </div>
+                        <div>
+                            <span className={classes.command}> -H </span>
+                            {'"Authorization: Basic'}
+                            <a onClick={applyReal} className={classes.encodeVisible}>
+                                {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                            </a>
+                            {'"'}
+                        </div>
                     </div>
                     <div>
-                        <span className={classes.command}> -H </span>
-                        {'"Authorization: Basic'}
-                        <a onClick={applyReal} className={classes.encodeVisible}>
-                            {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                        </a>
-                        {'"'}
-                    </div>
-                </div>
-                <div>
-                    <Tooltip
-                        title={
-                            tokenCopied
-                                ? intl.formatMessage({
-                                    defaultMessage: 'Copied',
-                                    id: 'Shared.AppsAndKeys.ViewCurl.copied',
-                                })
-                                : intl.formatMessage({
-                                    defaultMessage: 'Copy to clipboard',
-                                    id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
-                                })
-                        }
-                        placement='right'
-                    >
-                        <CopyToClipboard
-                            text={`curl -k -X POST ${tokenEndpoint} -d ` +
+                        <Tooltip
+                            title={
+                                tokenCopied
+                                    ? intl.formatMessage({
+                                        defaultMessage: 'Copied',
+                                        id: 'Shared.AppsAndKeys.ViewCurl.copied',
+                                    })
+                                    : intl.formatMessage({
+                                        defaultMessage: 'Copy to clipboard',
+                                        id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
+                                    })
+                            }
+                            placement='right'
+                        >
+                            <CopyToClipboard
+                                text={`curl -k -X POST ${tokenEndpoint} -d ` +
                                 '"grant_type=password&username=Username&password=Password" -H ' +
                                 `"Authorization: Basic ${bas64Encoded}"`}
-                            onCopy={onCopy}
-                        >
-                            <FileCopy color='secondary' />
-                        </CopyToClipboard>
-                    </Tooltip>
+                                onCopy={onCopy}
+                            >
+                                <FileCopy color='secondary'/>
+                            </CopyToClipboard>
+                        </Tooltip>
+                    </div>
                 </div>
-            </div>
-            <Typography>
-                <FormattedMessage
-                    id='Shared.AppsAndKeys.ViewCurl.help.in.a.similar'
-                    defaultMessage={`In a similar manner, you can generate an access token using the
+                <Typography>
+                    <FormattedMessage
+                        id='Shared.AppsAndKeys.ViewCurl.help.in.a.similar'
+                        defaultMessage={`In a similar manner, you can generate an access token using the
                     Client Credentials grant type with the following cURL command.`}
-                />
-            </Typography>
-            <div className={classes.contentWrapper}>
-                <div className={classes.code}>
-                    <div>
-                        <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
-                        <span className={classes.command}> -d </span>{' '}
-                        {'"grant_type=client_credentials"'}
+                    />
+                </Typography>
+                <div className={classes.contentWrapper}>
+                    <div className={classes.code}>
+                        <div>
+                            <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
+                            <span className={classes.command}> -d </span>{' '}
+                            {'"grant_type=client_credentials"'}
+                        </div>
+                        <div>
+                            <span className={classes.command}> -H </span>
+                            {'"Authorization: Basic'}
+                            <a onClick={applyReal} className={classes.encodeVisible}>
+                                {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                            </a>
+                            {'"'}
+                        </div>
                     </div>
                     <div>
-                        <span className={classes.command}> -H </span>
-                        {'"Authorization: Basic'}
-                        <a onClick={applyReal} className={classes.encodeVisible}>
-                            {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                        </a>
-                        {'"'}
-                    </div>
-                </div>
-                <div>
-                    <Tooltip title={tokenCopied ? 'Copied' : 'Copy to clipboard'} placement='right'>
-                        <CopyToClipboard
-                            text={`curl -k -X POST ${tokenEndpoint} -d ` +
+                        <Tooltip title={tokenCopied ? 'Copied' : 'Copy to clipboard'} placement='right'>
+                            <CopyToClipboard
+                                text={`curl -k -X POST ${tokenEndpoint} -d ` +
                                 '"grant_type=client_credentials" -H' +
                                 `"Authorization: Basic ${bas64Encoded}"`}
-                            onCopy={onCopy}
-                        >
-                            <FileCopy color='secondary' />
-                        </CopyToClipboard>
-                    </Tooltip>
+                                onCopy={onCopy}
+                            >
+                                <FileCopy color='secondary'/>
+                            </CopyToClipboard>
+                        </Tooltip>
+                    </div>
                 </div>
-            </div>
-        </React.Fragment>
-    );
+            </React.Fragment>
+        );
+    } else {
+        if (consumerKey === false) {
+            return (
+                    <Typography>
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.ViewCurl.error'
+                            defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager in
+                            order to use the token Exchange Approach. '
+                        />
+                    </Typography>
+                )
+        } else {
+            return (
+                <React.Fragment>
+                    <Typography>
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.ViewCurl.TokenExchange.help'
+                            defaultMessage='The following cURL command shows how to generate an access token using the
+                        token exchange grant type'
+                        />
+                    </Typography>
+
+                    <div className={classes.contentWrapper}>
+                        <div className={classes.code}>
+                            <div>
+                                <span className={classes.command}>curl -k -X POST </span> {defaultTokenEndpoint}
+                                <span className={classes.command}> -d </span>{' '}
+                                {'"grant_type=urn:ietf:params:oauth:grant-type:token-exchange"'}
+                                <span className={classes.command}> -d </span>{' '}
+                                {'"subject_token_type=urn:ietf:params:oauth:token-type:jwt"'}
+                                <span className={classes.command}> -d </span>{' '}
+                                {'"requested_token_type=urn:ietf:params:oauth:token-type:jwt" '}
+                                <span className={classes.command}> -d </span>{' '}
+                                {'"subject_token="'}
+                                <a onClick={applyReal} className={classes.encodeVisible}>
+                                    {showReal ? ' ' + jwtToken : 'jwtToken'}
+                                </a>
+                            </div>
+                            <div>
+                                <span className={classes.command}> -H </span>
+                                {'"Authorization: Basic'}
+                                <a onClick={applyReal} className={classes.encodeVisible}>
+                                    {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                                </a>
+                                {'"'}
+                            </div>
+                        </div>
+                        <div>
+                            <Tooltip
+                                title={
+                                    tokenCopied
+                                        ? intl.formatMessage({
+                                            defaultMessage: 'Copied',
+                                            id: 'Shared.AppsAndKeys.ViewCurl.copied',
+                                        })
+                                        : intl.formatMessage({
+                                            defaultMessage: 'Copy to clipboard',
+                                            id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
+                                        })
+                                }
+                                placement='right'
+                            >
+                                <CopyToClipboard
+                                    text={`curl -k -X POST ${tokenEndpoint} -d ` +
+                                    '"grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d ' +
+                                    '"subject_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
+                                    '"requested_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
+                                    `"subject_token=${jwtToken}"  -H ` +
+                                    `"Authorization: Basic ${bas64Encoded}"`}
+                                    onCopy={onCopy}
+                                >
+                                    <FileCopy color='secondary'/>
+                                </CopyToClipboard>
+                            </Tooltip>
+                        </div>
+                    </div>
+                </React.Fragment>
+            );
+        }
+    }
 }
 
 ViewCurl.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     keys: PropTypes.shape({}).isRequired,
     apis: PropTypes.shape({}).isRequired,
+    jwtToken: PropTypes.string,
+    defaultTokenEndpoint: PropTypes.string,
 };
 
 export default injectIntl(ViewCurl);
