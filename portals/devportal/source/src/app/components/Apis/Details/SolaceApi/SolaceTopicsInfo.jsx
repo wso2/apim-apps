@@ -74,6 +74,8 @@ function SolaceTopicsInfo() {
     const [notFound, setNotFound] = useState(false);
     const [urlCopied, setUrlCopied] = useState(false);
     const [apiTopics, setApiTopics] = useState(null);
+    const [apiPubTopics] = useState([]);
+    const [apiSubTopics] = useState([]);
 
     const intl = useIntl();
 
@@ -398,10 +400,10 @@ function SolaceTopicsInfo() {
                                 <Box p={1}>
                                     {topics.publishTopics.map((t) => (
                                         <Box pt={2}>
-                                            <Grid container spacing={1}>
-                                                <Grid item xs={12}>
-                                                    {apiTopics.map((e) => (
-                                                        (t.toString().includes(e)) && (
+                                            {apiTopics.map((e) => (
+                                                (t.toString().includes(e)) && (
+                                                    <Grid container spacing={1}>
+                                                        <Grid item xs={12}>
                                                             <Grid container direction='row' spacing={1}>
                                                                 <Grid item>
                                                                     <VerbElement verb='PUB' />
@@ -412,15 +414,24 @@ function SolaceTopicsInfo() {
                                                                         variant='body1'
                                                                     >
                                                                         {t}
+                                                                        {apiPubTopics.push(t)}
                                                                     </Typography>
                                                                 </Grid>
                                                             </Grid>
-                                                        )
-                                                    ))}
-                                                </Grid>
-                                            </Grid>
+                                                        </Grid>
+                                                    </Grid>
+                                                )
+                                            ))}
                                         </Box>
                                     ))}
+                                    { apiPubTopics.length === 0 && (
+                                        <Typography id='itest-api-details-bushiness-plans-head' variant='h5'>
+                                            <FormattedMessage
+                                                id='solace.application.topics.publish.empty'
+                                                defaultMessage='No Publish Topics to Display.'
+                                            />
+                                        </Typography>
+                                    )}
                                 </Box>
                             </Box>
                         </Grid>
@@ -435,26 +446,35 @@ function SolaceTopicsInfo() {
                                 <Box p={1}>
                                     {topics.subscribeTopics.map((t) => (
                                         <Box pt={2}>
-                                            <Grid container spacing={1}>
-                                                <Grid item xs={12}>
-                                                    {apiTopics.map((e) => (
-                                                        (t.toString().includes(e)) && (
+                                            {apiTopics.map((e) => (
+                                                (t.toString().includes(e)) && (
+                                                    <Grid container spacing={1}>
+                                                        <Grid item xs={12}>
                                                             <Grid container direction='row' spacing={1}>
                                                                 <Grid item>
                                                                     <VerbElement verb='SUB' />
                                                                 </Grid>
                                                                 <Grid item>
                                                                     <Typography className={classes.heading} variant='body1'>
+                                                                        {apiSubTopics.push(t)}
                                                                         {t}
                                                                     </Typography>
                                                                 </Grid>
                                                             </Grid>
-                                                        )
-                                                    ))}
-                                                </Grid>
-                                            </Grid>
+                                                        </Grid>
+                                                    </Grid>
+                                                )
+                                            ))}
                                         </Box>
                                     ))}
+                                    { apiSubTopics.length === 0 && (
+                                        <Typography id='itest-api-details-bushiness-plans-head' variant='h5'>
+                                            <FormattedMessage
+                                                id='solace.application.topics.publish.empty'
+                                                defaultMessage='No Subscribe Topics to Display.'
+                                            />
+                                        </Typography>
+                                    )}
                                 </Box>
                             </Box>
                         </Grid>
