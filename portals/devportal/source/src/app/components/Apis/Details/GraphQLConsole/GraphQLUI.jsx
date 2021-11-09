@@ -82,9 +82,24 @@ export default function GraphQLUI(props) {
         setIsExplorerOpen(newExplorerIsOpen);
     };
 
+    // /**
+    //  * Check if string is json.
+    //  * @param {*} str   String to check
+    //  * @returns {boolean} if json or not
+    //  */
+    // function isJson(str) {
+    //     try {
+    //         JSON.parse(str);
+    //     } catch (e) {
+    //         return false;
+    //     }
+    //     return true;
+    // }
+
     /**
-     *
-     * @param {*} graphQLParams
+     * Execute GraphQL query
+     * @param {*} graphQLParams GraphQL query parameters
+     * @returns {Promise} GraphQL query promise
      */
     function graphiQLFetcher(graphQLParams) {
         let token;
@@ -107,8 +122,9 @@ export default function GraphQLUI(props) {
     }
 
     /**
-     * @param {string} wsUrl TODO://
-     * @return {string} TODO://
+     * Get subscription fetcher.
+     * @param {string} wsUrl subscription websocket URL
+     * @return {string} The subscription fetcher
      */
     function queryFetcher(wsUrl) {
         if (wsUrl == null) {
