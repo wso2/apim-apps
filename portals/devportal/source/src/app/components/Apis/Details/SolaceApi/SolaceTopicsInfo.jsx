@@ -73,9 +73,11 @@ function SolaceTopicsInfo() {
     const [applicationList, setApplicationList] = useState(null);
     const [notFound, setNotFound] = useState(false);
     const [urlCopied, setUrlCopied] = useState(false);
+    const [topicCopied, setTopicCopied] = useState(false);
     const [apiTopics, setApiTopics] = useState(null);
-    const [apiPubTopics] = useState([]);
-    const [apiSubTopics] = useState([]);
+    const [apiPubTopics, setApiPubTopics] = useState(null);
+    const [apiSubTopics, setApiSubTopics] = useState(null);
+
 
     const intl = useIntl();
 
@@ -87,8 +89,55 @@ function SolaceTopicsInfo() {
         setTimeout(caller, 2000);
     };
 
+    const onTopicCopy = () => {
+        setTopicCopied(true);
+        const caller = function () {
+            setTopicCopied(false);
+        };
+        setTimeout(caller, 2000);
+    };
+
+    function setPubAndSubTopics(allTopics, allApiTopics) {
+        const apiPubTopicList = [];
+        allTopics.publishTopics.map((t) => {
+            allApiTopics.map((e) => {
+                if (t.toString().includes(e)) {
+                    apiPubTopicList.push(t);
+                }
+                return null;
+            });
+            return null;
+        });
+        setApiPubTopics(apiPubTopicList);
+
+        const apiSubTopicList = [];
+        allTopics.subscribeTopics.map((t) => {
+            allApiTopics.map((e) => {
+                if (t.toString().includes(e)) {
+                    apiSubTopicList.push(t);
+                }
+                return null;
+            });
+            return null;
+        });
+        setApiSubTopics(apiSubTopicList);
+    }
+
     useEffect(() => {
         const client = new API();
+
+        const promisedApi = client.getAllTopics(apiUuid);
+        const apiTopicList = [];
+        promisedApi
+            .then((response) => {
+                response.obj.list.map((entry) => {
+                    const parts = entry.name.split('{')[0];
+                    apiTopicList.push(parts);
+                    return null;
+                });
+                setApiTopics(apiTopicList);
+                return null;
+            });
 
         const infoPromise = client.getSubscriptionAdditionalInfo(apiUuid);
         infoPromise
@@ -108,8 +157,10 @@ function SolaceTopicsInfo() {
                     // Set default topics of deployed solace environment
                     if (appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol === 'mqtt') {
                         setTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.mqttSyntax);
+                        setPubAndSubTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.mqttSyntax, apiTopicList);
                     } else {
                         setTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.defaultSyntax);
+                        setPubAndSubTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.defaultSyntax, apiTopicList);
                     }
                 }
             }).catch((error) => {
@@ -120,18 +171,6 @@ function SolaceTopicsInfo() {
                 } else {
                     setNotFound(false);
                 }
-            });
-        const promisedApi = client.getAllTopics(apiUuid);
-        promisedApi
-            .then((response) => {
-                const apiTopicList = [];
-                response.obj.list.map((entry) => {
-                    const parts = entry.name.split('{')[0];
-                    apiTopicList.push(parts);
-                    return null;
-                });
-                setApiTopics(apiTopicList);
-                return null;
             });
     }, [apiUuid]);
 
@@ -146,8 +185,10 @@ function SolaceTopicsInfo() {
     function setProtocolTopics(protocol, selectedEnv) {
         if (protocol === 'mqtt') {
             setTopics(selectedEnv.SolaceTopicsObject.mqttSyntax);
+            setPubAndSubTopics(selectedEnv.SolaceTopicsObject.mqttSyntax, apiTopics);
         } else {
             setTopics(selectedEnv.SolaceTopicsObject.defaultSyntax);
+            setPubAndSubTopics(selectedEnv.SolaceTopicsObject.defaultSyntax, apiTopics);
         }
     }
     // Handle application selection change
@@ -219,6 +260,8 @@ function SolaceTopicsInfo() {
 
     console.log(apiTopics);
     console.log(topics);
+    console.log('==========');
+    console.log(apiPubTopics);
 
     if (!applicationList) {
         return <Loading />;
@@ -317,26 +360,7 @@ function SolaceTopicsInfo() {
                     <Box pt={5} pb={5}>
                         <Grid container>
                             <Grid
-                                item
-                                xs={1}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Box mr={3}>
-                                    <Chip
-                                        label={upperCaseString(selectedProtocol)}
-                                        color='primary'
-                                        style={{
-                                            width: '70px',
-                                        }}
-                                    />
-                                </Box>
-                            </Grid>
-                            <Grid
-                                xs={11}
+                                xs={12}
                                 md={7}
                                 item
                                 style={{
@@ -345,11 +369,21 @@ function SolaceTopicsInfo() {
                                     justifyContent: 'center',
                                 }}
                             >
+
                                 <Box
                                     id='gateway-envirounment'
                                     component='form'
                                     className={classes.Box3}
                                 >
+                                    <Box mr={3}>
+                                        <Chip
+                                            label={upperCaseString(selectedProtocol)}
+                                            color='primary'
+                                            style={{
+                                                width: '70px',
+                                            }}
+                                        />
+                                    </Box>
                                     <InputBase
                                         className={classes.input}
                                         inputProps={{ 'aria-label': 'api url' }}
@@ -398,40 +432,65 @@ function SolaceTopicsInfo() {
                                     />
                                 </Typography>
                                 <Box p={1}>
-                                    {topics.publishTopics.map((t) => (
-                                        <Box pt={2}>
-                                            {apiTopics.map((e) => (
-                                                (t.toString().includes(e)) && (
-                                                    <Grid container spacing={1}>
-                                                        <Grid item xs={12}>
-                                                            <Grid container direction='row' spacing={1}>
-                                                                <Grid item>
-                                                                    <VerbElement verb='PUB' />
-                                                                </Grid>
-                                                                <Grid item>
-                                                                    <Typography
-                                                                        className={classes.heading}
-                                                                        variant='body1'
-                                                                    >
-                                                                        {t}
-                                                                        {apiPubTopics.push(t)}
-                                                                    </Typography>
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Grid>
+                                    {
+                                        (apiPubTopics && apiPubTopics.length > 0) ? apiPubTopics.map((t) => (
+                                            <Box pt={2}>
+                                                <Box
+                                                    id='gateway-envirounment'
+                                                    component='form'
+                                                    className={classes.Box3}
+                                                >
+                                                    <Grid item>
+                                                        <VerbElement verb='PUB' />
                                                     </Grid>
-                                                )
-                                            ))}
-                                        </Box>
-                                    ))}
-                                    { apiPubTopics.length === 0 && (
-                                        <Typography id='itest-api-details-bushiness-plans-head' variant='h5'>
-                                            <FormattedMessage
-                                                id='solace.application.topics.publish.empty'
-                                                defaultMessage='No Publish Topics to Display.'
-                                            />
-                                        </Typography>
-                                    )}
+                                                    <InputBase
+                                                        className={classes.input}
+                                                        inputProps={{ 'aria-label': 'api url' }}
+                                                        value={t}
+                                                    />
+                                                    <Avatar className={classes.avatar} sizes={30}>
+                                                        <Tooltip
+                                                            title={
+                                                                topicCopied
+                                                                    ? intl.formatMessage({
+                                                                        defaultMessage: 'Copied',
+                                                                        id: 'Apis.Details.PubTopic.copied',
+                                                                    })
+                                                                    : intl.formatMessage({
+                                                                        defaultMessage: 'Copy to clipboard',
+                                                                        id: 'Apis.Details.PubTopic.copy.to.clipboard',
+                                                                    })
+                                                            }
+                                                            interactive
+                                                            placement='right'
+                                                            className={classes.iconStyle}
+                                                        >
+                                                            <CopyToClipboard
+                                                                text={t}
+                                                                onCopy={() => onTopicCopy('topicCopied')}
+                                                            >
+                                                                <IconButton
+                                                                    aria-label='Copy the API URL to clipboard'
+                                                                >
+                                                                    <Icon color='secondary'>file_copy</Icon>
+                                                                </IconButton>
+                                                            </CopyToClipboard>
+                                                        </Tooltip>
+                                                    </Avatar>
+                                                </Box>
+
+                                            </Box>
+                                        )) : (
+                                            <Box pt={2}>
+                                                <Typography id='itest-api-details-bushiness-plans-head' variant='h7'>
+                                                    <FormattedMessage
+                                                        id='solace.application.topics.publish.empty'
+                                                        defaultMessage='No Publish Topics to Display.'
+                                                    />
+                                                </Typography>
+                                            </Box>
+                                        )
+                                    }
                                 </Box>
                             </Box>
                         </Grid>
@@ -444,37 +503,65 @@ function SolaceTopicsInfo() {
                                     />
                                 </Typography>
                                 <Box p={1}>
-                                    {topics.subscribeTopics.map((t) => (
-                                        <Box pt={2}>
-                                            {apiTopics.map((e) => (
-                                                (t.toString().includes(e)) && (
-                                                    <Grid container spacing={1}>
-                                                        <Grid item xs={12}>
-                                                            <Grid container direction='row' spacing={1}>
-                                                                <Grid item>
-                                                                    <VerbElement verb='SUB' />
-                                                                </Grid>
-                                                                <Grid item>
-                                                                    <Typography className={classes.heading} variant='body1'>
-                                                                        {apiSubTopics.push(t)}
-                                                                        {t}
-                                                                    </Typography>
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Grid>
+                                    {
+                                        (apiSubTopics && apiSubTopics.length > 0) ? apiSubTopics.map((t) => (
+                                            <Box pt={2}>
+                                                <Box
+                                                    id='gateway-envirounment'
+                                                    component='form'
+                                                    className={classes.Box3}
+                                                >
+                                                    <Grid item>
+                                                        <VerbElement verb='SUB' />
                                                     </Grid>
-                                                )
-                                            ))}
-                                        </Box>
-                                    ))}
-                                    { apiSubTopics.length === 0 && (
-                                        <Typography id='itest-api-details-bushiness-plans-head' variant='h5'>
-                                            <FormattedMessage
-                                                id='solace.application.topics.publish.empty'
-                                                defaultMessage='No Subscribe Topics to Display.'
-                                            />
-                                        </Typography>
-                                    )}
+                                                    <InputBase
+                                                        className={classes.input}
+                                                        inputProps={{ 'aria-label': 'api url' }}
+                                                        value={t}
+                                                    />
+                                                    <Avatar className={classes.avatar} sizes={30}>
+                                                        <Tooltip
+                                                            title={
+                                                                topicCopied
+                                                                    ? intl.formatMessage({
+                                                                        defaultMessage: 'Copied',
+                                                                        id: 'Apis.Details.SubTopic.copied',
+                                                                    })
+                                                                    : intl.formatMessage({
+                                                                        defaultMessage: 'Copy to clipboard',
+                                                                        id: 'Apis.Details.SubTopic.copy.to.clipboard',
+                                                                    })
+                                                            }
+                                                            interactive
+                                                            placement='right'
+                                                            className={classes.iconStyle}
+                                                        >
+                                                            <CopyToClipboard
+                                                                text={t}
+                                                                onCopy={() => onTopicCopy('topicCopied')}
+                                                            >
+                                                                <IconButton
+                                                                    aria-label='Copy the API URL to clipboard'
+                                                                >
+                                                                    <Icon color='secondary'>file_copy</Icon>
+                                                                </IconButton>
+                                                            </CopyToClipboard>
+                                                        </Tooltip>
+                                                    </Avatar>
+                                                </Box>
+
+                                            </Box>
+                                        )) : (
+                                            <Box pt={2}>
+                                                <Typography id='itest-api-details-bushiness-plans-head' variant='h7'>
+                                                    <FormattedMessage
+                                                        id='solace.application.topics.subscribe.empty'
+                                                        defaultMessage='No Subscribe Topics to Display.'
+                                                    />
+                                                </Typography>
+                                            </Box>
+                                        )
+                                    }
                                 </Box>
                             </Box>
                         </Grid>
