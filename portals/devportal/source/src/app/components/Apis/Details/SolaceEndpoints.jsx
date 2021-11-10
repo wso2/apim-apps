@@ -137,100 +137,97 @@ function SolaceEndpoints() {
                     <Grid item spacing={2} xs={12}>
                         <Grid container spacing={2} xs={12}>
 
-                            <>
-                                <Grid item spacing={2} xs={12}>
-                                    {api.endpointURLs.map((e) => (
-                                        <Typography
-                                            component='p'
-                                            variant='subtitle2'
-                                        >
-                                            {e.environmentDisplayName}
-                                        </Typography>
-                                    ))}
-                                </Grid>
-                                <Grid item spacing={2} xs={12}>
-                                    {protocols && protocols.map((p) => (
-                                        <Grid container spacing={2} xs={12}>
-                                            <Grid item>
-                                                <Typography component='p' variant='body1'>
-                                                    <FormattedMessage
-                                                        id='Apis.Details.NewOverview.Endpoints.blank'
-                                                        defaultMessage='-'
-                                                    />
-                                                </Typography>
-                                            </Grid>
-                                            <Grid
-                                                item
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }}
-                                            >
-                                                <Chip
-                                                    label={upperCaseString(p.protocol)}
-                                                    color='primary'
-                                                    style={{
-                                                        width: '70px',
-                                                    }}
+                            <Grid item spacing={2} xs={12}>
+                                {api.endpointURLs.map((e) => (
+                                    <Typography
+                                        component='p'
+                                        variant='subtitle2'
+                                    >
+                                        {e.environmentDisplayName}
+                                    </Typography>
+                                ))}
+                            </Grid>
+                            <Grid item spacing={2} xs={12}>
+                                {protocols && protocols.map((p) => (
+                                    <Grid container spacing={2} xs={12}>
+                                        <Grid item>
+                                            <Typography component='p' variant='body1'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.NewOverview.Endpoints.blank'
+                                                    defaultMessage='-'
                                                 />
-                                            </Grid>
-                                            <Grid
-                                                xs={10}
-                                                item
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }}
-                                            >
-                                                <Paper
-                                                    id='gateway-envirounment'
-                                                    component='form'
-                                                    className={classes.root}
-                                                >
-                                                    <InputBase
-                                                        className={classes.input}
-                                                        inputProps={{ 'aria-label': 'api url' }}
-                                                        value={p.endPointUrl}
-                                                    />
-                                                    <Avatar className={classes.avatar} sizes={30}>
-                                                        <Tooltip
-                                                            title={
-                                                                urlCopied
-                                                                    ? intl.formatMessage({
-                                                                        defaultMessage: 'Copied',
-                                                                        id: 'Apis.Details.Environments.copied',
-                                                                    })
-                                                                    : intl.formatMessage({
-                                                                        defaultMessage: 'Copy to clipboard',
-                                                                        id: 'Apis.Details.Environments.copy.to.clipboard',
-                                                                    })
-                                                            }
-                                                            interactive
-                                                            placement='right'
-                                                            className={classes.iconStyle}
-                                                        >
-                                                            <CopyToClipboard
-                                                                text={p.endPointUrl}
-                                                                // text={endpoint.URLs.http}
-                                                                onCopy={() => onCopy('urlCopied')}
-                                                            >
-                                                                <IconButton
-                                                                    aria-label='Copy the API URL to clipboard'
-                                                                >
-                                                                    <Icon color='secondary'>file_copy</Icon>
-                                                                </IconButton>
-                                                            </CopyToClipboard>
-                                                        </Tooltip>
-                                                    </Avatar>
-                                                </Paper>
-                                            </Grid>
+                                            </Typography>
                                         </Grid>
-                                    ))}
-                                </Grid>
-                            </>
-
+                                        <Grid
+                                            item
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <Chip
+                                                label={upperCaseString(p.protocol)}
+                                                color='primary'
+                                                style={{
+                                                    width: '70px',
+                                                }}
+                                            />
+                                        </Grid>
+                                        <Grid
+                                            xs={10}
+                                            item
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <Paper
+                                                id='gateway-envirounment'
+                                                component='form'
+                                                className={classes.root}
+                                            >
+                                                <InputBase
+                                                    className={classes.input}
+                                                    inputProps={{ 'aria-label': 'api url' }}
+                                                    value={p.endPointUrl}
+                                                />
+                                                <Avatar className={classes.avatar} sizes={30}>
+                                                    <Tooltip
+                                                        title={
+                                                            urlCopied
+                                                                ? intl.formatMessage({
+                                                                    defaultMessage: 'Copied',
+                                                                    id: 'Apis.Details.Environments.copied',
+                                                                })
+                                                                : intl.formatMessage({
+                                                                    defaultMessage: 'Copy to clipboard',
+                                                                    id: 'Apis.Details.Environments.copy.to.clipboard',
+                                                                })
+                                                        }
+                                                        interactive
+                                                        placement='right'
+                                                        className={classes.iconStyle}
+                                                    >
+                                                        <CopyToClipboard
+                                                            text={p.endPointUrl}
+                                                            // text={endpoint.URLs.http}
+                                                            onCopy={() => onCopy('urlCopied')}
+                                                        >
+                                                            <IconButton
+                                                                aria-label='Copy the API URL to clipboard'
+                                                            >
+                                                                <Icon color='secondary'>file_copy</Icon>
+                                                            </IconButton>
+                                                        </CopyToClipboard>
+                                                    </Tooltip>
+                                                </Avatar>
+                                            </Paper>
+                                        </Grid>
+                                    </Grid>
+                                ))}
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>

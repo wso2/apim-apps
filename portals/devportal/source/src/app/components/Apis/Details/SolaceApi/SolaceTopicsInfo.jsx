@@ -11,18 +11,15 @@
  * associated services.
  */
 
-import Loading from 'AppComponents/Base/Loading/Loading';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import API from 'AppData/api';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Divider, Grid, MenuItem, TextField,
 } from '@material-ui/core';
-import { upperCaseString } from 'AppData/stringFormatter';
 import Box from '@material-ui/core/Box';
 import InputBase from '@material-ui/core/InputBase';
 import Avatar from '@material-ui/core/Avatar';
@@ -32,6 +29,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Chip from '@material-ui/core/Chip';
+import { upperCaseString } from 'AppData/stringFormatter';
+import API from 'AppData/api';
+import Loading from 'AppComponents/Base/Loading/Loading';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import solaceTopicStyles from './SolaceTopicStyles';
 
@@ -256,12 +256,6 @@ function SolaceTopicsInfo() {
         });
         setProtocolTopics(protocol, selectedEnv);
     };
-
-
-    console.log(apiTopics);
-    console.log(topics);
-    console.log('==========');
-    console.log(apiPubTopics);
 
     if (!applicationList) {
         return <Loading />;
