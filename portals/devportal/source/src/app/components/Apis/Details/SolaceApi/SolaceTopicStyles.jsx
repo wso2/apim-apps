@@ -19,6 +19,9 @@ const solaceTopicStyles = makeStyles((theme) => ({
         '& td, & th': {
             color: theme.palette.getContrastText(theme.custom.infoBar.background),
         },
+        '& option': {
+            padding: '5px 0px 5px 0px',
+        },
         background: theme.custom.infoBar.background,
     },
     table: {

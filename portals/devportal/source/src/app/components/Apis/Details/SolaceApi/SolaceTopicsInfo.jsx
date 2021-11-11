@@ -18,7 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    Divider, Grid, MenuItem, TextField,
+    Divider, Grid, TextField,
 } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import InputBase from '@material-ui/core/InputBase';
@@ -77,7 +77,6 @@ function SolaceTopicsInfo() {
     const [apiTopics, setApiTopics] = useState(null);
     const [apiPubTopics, setApiPubTopics] = useState(null);
     const [apiSubTopics, setApiSubTopics] = useState(null);
-
 
     const intl = useIntl();
 
@@ -293,11 +292,14 @@ function SolaceTopicsInfo() {
                                                     application'
                                     />
                                 )}
+                                SelectProps={{
+                                    native: true,
+                                }}
                             >
                                 {applicationList.map((e) => (
-                                    <MenuItem key={e} value={e.applicationName}>
+                                    <option key={e} value={e.applicationName}>
                                         {e.applicationName}
-                                    </MenuItem>
+                                    </option>
                                 ))}
                             </TextField>
                         </Grid>
@@ -316,11 +318,14 @@ function SolaceTopicsInfo() {
                                                         deployed.environment'
                                     />
                                 )}
+                                SelectProps={{
+                                    native: true,
+                                }}
                             >
                                 {envsListOfApplication.map((e) => (
-                                    <MenuItem key={e} value={e.environmentDisplayName}>
+                                    <option key={e} value={e.environmentDisplayName}>
                                         {e.environmentDisplayName}
-                                    </MenuItem>
+                                    </option>
                                 ))}
                             </TextField>
                         </Grid>
@@ -339,11 +344,14 @@ function SolaceTopicsInfo() {
                                                         environment.protocol'
                                     />
                                 )}
+                                SelectProps={{
+                                    native: true,
+                                }}
                             >
                                 {protocolsListOfEnvironments.map((e) => (
-                                    <MenuItem key={e.protocol} value={e.protocol}>
+                                    <option key={e.protocol} value={e.protocol}>
                                         {upperCaseString(e.protocol)}
-                                    </MenuItem>
+                                    </option>
                                 ))}
                             </TextField>
                         </Grid>
