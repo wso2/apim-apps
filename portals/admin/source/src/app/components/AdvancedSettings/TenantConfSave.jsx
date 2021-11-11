@@ -78,6 +78,8 @@ function reducer(state, { field, value }) {
     switch (field) {
         case 'tenantConf':
             return { ...state, [field]: value };
+        case 'tenantConfSchema':
+            return { ...state, [field]: value };
         case 'editDetails':
             return value;
         default:
@@ -97,26 +99,44 @@ function TenantConfSave(props) {
     const intl = useIntl();
     const [initialState, setInitialState] = useState({
         tenantConf: '',
+        tenantConfSchema: '',
     });
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        tenantConf,
+        tenantConf, tenantConfSchema,
     } = state;
     const restApi = new API();
 
     useEffect(() => {
         let tenantConfVal;
+        let tenantConfSchemaVal;
+        restApi.tenantConfSchemaGet().then((result) => {
+            tenantConfSchemaVal = result.body;
+            dispatch({ field: 'tenantConfSchema', value: tenantConfSchemaVal });
+        });
         restApi.tenantConfGet().then((result) => {
             tenantConfVal = JSON.stringify(result.body, null, '\t');
-            const editState = {
-                tenantConf: tenantConfVal,
-            };
-            dispatch({ field: 'editDetails', value: editState });
+            dispatch({ field: 'tenantConf', value: tenantConfVal });
         });
         setInitialState({
             tenantConf: tenantConfVal,
+            tenantConfSchema: tenantConfSchemaVal,
         });
     }, []);
+
+    const editorWillMount = (monaco) => {
+        const schemaVal = state.tenantConfSchema;
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            completion: true,
+            validate: true,
+            format: true,
+            schemas: [{
+                uri: 'http://myserver/foo-schema.json',
+                fileMatch: ['*'],
+                schema: schemaVal,
+            }],
+        });
+    };
 
     const tenantConfOnChange = (newValue) => {
         dispatch({ field: 'tenantConf', value: newValue });
@@ -147,7 +167,7 @@ function TenantConfSave(props) {
                         defaultMessage='Advanced Configuration saved successfully'
                     />,
                 );
-                history.push('/settings/advanced-configurations');
+                history.push('/settings/advanced');
             })
             .catch((error) => {
                 const { response } = error;
@@ -169,7 +189,7 @@ function TenantConfSave(props) {
                 defaultMessage: 'Advanced Configurations',
             })}
         >
-            <Box component='div' m={2} className={classes.root}>
+            <Box component='div' m={2} className={classes.root} name={tenantConfSchema}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={12} lg={12}>
                         <Suspense fallback={<Progress />}>
@@ -179,6 +199,7 @@ function TenantConfSave(props) {
                                 theme='vs-dark'
                                 value={tenantConf}
                                 onChange={tenantConfOnChange}
+                                editorWillMount={editorWillMount}
                             />
                         </Suspense>
                     </Grid>

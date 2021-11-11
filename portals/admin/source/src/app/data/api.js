@@ -913,7 +913,7 @@ class API extends Resource {
     /**
      * Retrieve tenant conf
      */
-     tenantConfGet() {
+    tenantConfGet() {
         return this.client.then((client) => {
             return client.apis['Tenant Config'].exportTenantConfig();
         });
@@ -932,6 +932,15 @@ class API extends Resource {
                 { requestBody: body},
                 this._requestMetaData(),
             );
+        });
+    }
+
+    /**
+     * Retrieve tenant conf
+     */
+    tenantConfSchemaGet() {
+        return this.client.then((client) => {
+            return client.apis['Tenant Config Schema'].exportTenantConfigSchema();
         });
     }
 

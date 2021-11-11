@@ -301,10 +301,10 @@ const RouteMenuMapping = (intl) => [
             },
             {
                 id: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.advanced.configurations',
-                    defaultMessage: 'Advanced Configurations',
+                    id: 'Base.RouteMenuMapping.advanced',
+                    defaultMessage: 'Advanced',
                 }),
-                path: '/settings/advanced-configurations',
+                path: '/settings/advanced',
                 component: TenantConfSave,
                 icon: <SettingsApplicationsIcon />,
             },

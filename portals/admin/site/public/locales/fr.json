@@ -104,7 +104,7 @@
   "Base.Errors.ResourceNotfound.default_tittle": "",
   "Base.Footer.Footer.product_details": "",
   "Base.Header.avatar.Avatar.logout": "",
-  "Base.RouteMenuMapping.advanced.configurations": "",
+  "Base.RouteMenuMapping.advanced": "",
   "Base.RouteMenuMapping.advanced.throttling.policies": "",
   "Base.RouteMenuMapping.advanced.throttling.policies.Adding": "",
   "Base.RouteMenuMapping.advanced.throttling.policies.Editing": "",

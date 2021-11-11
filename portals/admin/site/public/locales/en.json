@@ -104,7 +104,7 @@
   "Base.Errors.ResourceNotfound.default_tittle": "Page Not Found",
   "Base.Footer.Footer.product_details": "WSO2 API-M v4.0.0 | © 2021 WSO2 Inc",
   "Base.Header.avatar.Avatar.logout": "Logout",
-  "Base.RouteMenuMapping.advanced.configurations": "Advanced Configurations",
+  "Base.RouteMenuMapping.advanced": "Advanced",
   "Base.RouteMenuMapping.advanced.throttling.policies": "Advanced Policies",
   "Base.RouteMenuMapping.advanced.throttling.policies.Adding": "Add Advanced Policy",
   "Base.RouteMenuMapping.advanced.throttling.policies.Editing": "Edit Advanced Policy",
