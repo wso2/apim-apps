@@ -18,14 +18,25 @@
  */
 
 describe("Anonymous view apis", () => {
-    const username = 'admin'
-    const password = 'admin'
-    const appName = 'jwtapplication';
-    const appDescription = 'JWT application description';
+    const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
+    const appDescription = 'app description';
+    const developer = 'developer';
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
+
+    before(function(){
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    })
     
-    it.only("Subscribe to API", () => {
-        cy.loginToPublisher(username, password);
+    it.only("Subscribe and unsubscribe to API from api details page", () => {
+        cy.loginToPublisher(publisher, password);
         cy.deploySampleAPI();
+        cy.logoutFromPublisher();
+        cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
@@ -46,5 +57,13 @@ describe("Anonymous view apis", () => {
         cy.get(`[data-testid="delete-${appName}-btn"]`, {timeout: 30000});
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+        cy.logoutFromDevportal();
+        cy.loginToPublisher(publisher, password);
+        deleteApi('PizzaShackAPI', '1.0.0');
+
+        // delete developer
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(developer);
+        cy.deleteUser(publisher);
     })
 })

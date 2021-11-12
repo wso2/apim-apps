@@ -1,12 +1,16 @@
 
-describe("do nothing", () => {
-    const username = 'admin'
-    const password = 'admin'
+describe("Runtime configuration", () => {
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
     beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
+
     const downloadMediator = (type) => {
         cy.get(`[data-testid="mediation-edit-${type}"]`).click();
         cy.get('[data-testid="mediation-policy-global"]').click();
@@ -37,7 +41,7 @@ describe("do nothing", () => {
         cy.get('[data-testid="save-runtime-configurations"]').click();
         cy.get(`[data-testid="mediation-edit-${type}"]`).then(() => {
             cy.get(`[data-testid="mediation-edit-${type}"]`).click();
-            
+
             cy.contains(fileName).should('exist');
         });
     }
@@ -56,9 +60,12 @@ describe("do nothing", () => {
         uploadMediator('FAULT');
     });
 
-    after(function () {
+    afterEach(function () {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });

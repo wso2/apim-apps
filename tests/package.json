@@ -38,7 +38,8 @@
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
     "mochawesome-report-generator": "^5.2.0",
-    "nodemailer": "^6.6.2"
+    "nodemailer": "^6.6.2",
+    "yamljs": "^0.3.0"
   },
   "dependencies": {
     "aws-sdk": "^2.942.0",

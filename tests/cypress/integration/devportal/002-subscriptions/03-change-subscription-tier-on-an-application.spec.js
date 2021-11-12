@@ -15,23 +15,28 @@
  */
 
 describe("do nothing", () => {
-    const username = 'admin';
-    const password = 'admin';
-    const appName = 'changeTierApp';
-    const appDescription = 'change tier app description';
+    const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
+    const developer = 'developer';
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
     const apiName = 'changeTierApi';
     const apiVersion = '1.0.0';
 
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
-
-    it.only("Download swagger", () => {
+    before(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    })
+    it.only("Change subscription tier", () => {
+        cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion);
+        cy.logoutFromPublisher();
+        cy.loginToDevportal(developer, password);
 
         // Create an app and subscribe
-        cy.createApp(appName, appDescription);
+        cy.createApp(appName, 'application description');
         cy.visit('/devportal/applications?tenant=carbon.super');
         cy.get(`[data-testid="application-listing-table"] td a`).contains(appName).click();
 
@@ -62,7 +67,12 @@ describe("do nothing", () => {
         cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
-
-        cy.deleteAllApis();
+        cy.logoutFromDevportal();
+        cy.loginToPublisher(publisher, password);
+        cy.deleteApi(apiName, apiVersion);
+        // delete users
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(developer);
+        cy.deleteUser(publisher);
     })
 });

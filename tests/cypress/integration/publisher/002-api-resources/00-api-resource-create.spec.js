@@ -1,20 +1,25 @@
 import { after } from "mocha"
 
 
-describe("do nothing", () => {
-    const username = 'admin'
-    const password = 'admin'
+describe("Resource add edit operations", () => {
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
     const target = '/test';
 
+    before(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    })
+
     beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
+        cy.loginToPublisher(publisher, password);
     })
 
     it.only("Add new resource", () => {
         cy.createAPIByRestAPIDesign();
         // Typing the resource name
-        const target = '/test';
         cy.get('[data-testid="left-menu-itemresources"]').click();
         cy.get('#operation-target').type(target);
         cy.get('body').click();
@@ -33,12 +38,18 @@ describe("do nothing", () => {
         cy.get('[data-testid="resources-save-operations"]').click();
 
         // Validating if the resource exists after saving
+        cy.get('[data-testid="resources-save-operations"]', { timeout: 30000 });
+
         cy.get(`[data-testid="operation-${target}-get"]`).should('be.visible');
         cy.get(`[data-testid="operation-${target}-post"]`).should('be.visible');
         cy.get(`[data-testid="operation-${target}-put"]`).should('be.visible');
         cy.get(`[data-testid="operation-${target}-patch"]`).should('be.visible');
         cy.get(`[data-testid="operation-${target}-delete"]`).should('be.visible');
         cy.get(`[data-testid="operation-${target}-head"]`).should('be.visible');
+
+        // Test is done. Now delete the api
+        cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
+        cy.get(`[data-testid="itest-id-deleteconf"]`).click();
     });
 
     const addApiAndResource = (verb) => {
@@ -57,6 +68,8 @@ describe("do nothing", () => {
         cy.get('[data-testid="resources-save-operations"]').click();
 
         // Validating if the resource exists after saving
+        cy.get('[data-testid="resources-save-operations"]', { timeout: 30000 });
+
         cy.get(`[data-testid="operation-${target}-${verb}"]`).should('be.visible');
     }
     it.only("Add delete query path parameters for resources", () => {
@@ -83,9 +96,12 @@ describe("do nothing", () => {
         cy.get('[data-testid="resources-save-operations"]').click();
 
         // Validating if the param exists after saving
+        cy.get('[data-testid="resources-save-operations"]', { timeout: 30000 });
         cy.get(`[data-testid="param-list-${paramType}-${paramName}-${paramDataType}"]`).should('be.visible');
 
-
+        // Test is done. Now delete the api
+        cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
+        cy.get(`[data-testid="itest-id-deleteconf"]`).click();
     });
 
     it.only("Add advance throttling policies per resource", () => {
@@ -105,9 +121,14 @@ describe("do nothing", () => {
         // Save the resources
         cy.get('[data-testid="resources-save-operations"]').click();
 
+        cy.get('[data-testid="resources-save-operations"]', { timeout: 30000 });
         cy.get(`[data-testid="${target}-${verb}-operation-rate-limiting-policy"] .selected`)
             .contains(rateLimitName)
             .should('be.visible');
+
+        // Test is done. Now delete the api
+        cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
+        cy.get(`[data-testid="itest-id-deleteconf"]`).click();
     });
 
     it.only("Add and assign scopes for API resources", () => {
@@ -140,21 +161,27 @@ describe("do nothing", () => {
 
         // Open the operation sub section
         cy.get(`[data-testid="operation-${target}-${verb}"]`).click();
-        cy.get(`[data-testid="${target}-${verb}-operation-scope-select"]`).click();
+        cy.get(`[data-testid="${target}-${verb}-operation-scope-select"] > div`, { timeout: 3000 });
+        cy.get(`[data-testid="${target}-${verb}-operation-scope-select"] > div`).click();
         cy.get(`[data-testid="${target}-${verb}-operation-scope-${scopeName}"]`).click();
         cy.get(`[data-testid="${target}-${verb}-operation-scope-${scopeName}"]`).type('{esc}');
         // // Save the resources
         cy.get('[data-testid="resources-save-operations"]').click();
 
+        cy.get('[data-testid="resources-save-operations"]', { timeout: 30000 });
         cy.get(`[data-testid="${target}-${verb}-operation-scope-select"] .selected`)
             .contains(scopeName)
             .should('be.visible');
 
-    });
-
-    after(function () {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+    });
+
+    after(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 })

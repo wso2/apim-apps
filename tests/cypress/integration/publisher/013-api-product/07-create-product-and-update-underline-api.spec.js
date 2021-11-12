@@ -14,16 +14,22 @@
  * under the License.
  */
 describe("Mock the api response and test it", () => {
-    const username = 'admin'
-    const password = 'admin'
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
+    const productName = 'petstoreProduct';
+    const apiName = 'SwaggerPetstore-OpenAPI30';
+    const apiVersion = '1.0.6';
 
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
+    before(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
     })
 
     it("Mock the api response and test it", () => {
 
-        const productName = 'petstoreProduct';
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
         cy.get('[data-testid="itest-id-createapi"]').click();
@@ -127,4 +133,9 @@ describe("Mock the api response and test it", () => {
             });
         });
     });
+
+    after(function () {
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
+    })
 })

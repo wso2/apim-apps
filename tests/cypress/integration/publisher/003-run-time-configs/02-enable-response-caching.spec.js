@@ -1,14 +1,15 @@
 
-describe("do nothing", () => {
-    const username = 'admin'
-    const password = 'admin'
+describe("Runtime configuration", () => {
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
-    let apiId;
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
-
+    beforeEach(function(){
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
     it.only("Add Authorization Header for the api", () => {
         const customAuthHeader = '-custom';
         cy.createAPIByRestAPIDesign();
@@ -22,5 +23,9 @@ describe("do nothing", () => {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        // delete publisher
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });

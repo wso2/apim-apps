@@ -18,8 +18,22 @@
  */
 
 describe("Login logout from devportal", () => {
+    const developer = 'developer';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
+
+    before(function(){
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+    })
     it.only("Login logout from devportal", () => {
-        cy.loginToDevportal();
+        cy.loginToDevportal(developer, password);
         cy.logoutFromDevportal();
+    });
+
+    after(() => {
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(developer);
     })
 })

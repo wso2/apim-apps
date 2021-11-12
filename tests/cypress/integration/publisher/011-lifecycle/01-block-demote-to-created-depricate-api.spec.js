@@ -1,12 +1,15 @@
 
 describe("do nothing", () => {
-    const username = 'admin'
-    const password = 'admin'
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
+    before(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
 
     it.only("Add Authorization Header for the api", () => {
         cy.createAPIByRestAPIDesign();
@@ -20,12 +23,18 @@ describe("do nothing", () => {
 
         // Publishing
         cy.get('button[data-testid="Publish"]').click();
+        cy.get('button[data-testid="Redeploy"]').should('exist');
+        // Even though this step is redundant we need to do this. The component is behaving
+        // It removes the buttons after some time of initial rendering.
+        cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+
 
         // Redeploy
         cy.get('button[data-testid="Redeploy"]').then(() => {
             cy.get('button[data-testid="Redeploy"]').click();
         });
         cy.get('button[data-testid="Demote to Created"]').should('exist');
+        cy.get('[data-testid="left-menu-itemlifecycle"]').click();
 
 
         // Demote to created
@@ -34,25 +43,28 @@ describe("do nothing", () => {
             cy.get('button[data-testid="Publish"]').click();
         });
         cy.get('button[data-testid="Demote to Created"]').should('exist');
-
+        cy.get('[data-testid="left-menu-itemlifecycle"]').click();
 
         // Block
         cy.get('button[data-testid="Block"]').then(() => {
             cy.get('button[data-testid="Block"]').click();
         });
         cy.get('button[data-testid="Re-Publish"]').should('exist');
+        cy.get('[data-testid="left-menu-itemlifecycle"]').click();
 
         // Re-Publish
         cy.get('button[data-testid="Re-Publish"]').then(() => {
             cy.get('button[data-testid="Re-Publish"]').click();
         });
         cy.get('button[data-testid="Deprecate"]').should('exist');
+        cy.get('[data-testid="left-menu-itemlifecycle"]').click();
 
         // Deprecate
         cy.get('button[data-testid="Deprecate"]').then(() => {
             cy.get('button[data-testid="Deprecate"]').click();
         });
         cy.get('button[data-testid="Retire"]').should('exist');
+        cy.get('[data-testid="left-menu-itemlifecycle"]').click();
 
 
         cy.get('button[data-testid="Retire"]').then(() => {
@@ -64,5 +76,8 @@ describe("do nothing", () => {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });

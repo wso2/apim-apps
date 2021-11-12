@@ -14,12 +14,16 @@
  * under the License.
  */
 describe("Create websocket api - super tenant", () => {
-    const username = 'admin'
-    const password = 'admin'
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
-    })
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
+    beforeEach(function(){
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
     it("Create websocket API from url", () => {
         const random_number = Math.floor(Date.now() / 1000);
         const randomName = `sample_api_${random_number}`;
@@ -48,5 +52,8 @@ describe("Create websocket api - super tenant", () => {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 })

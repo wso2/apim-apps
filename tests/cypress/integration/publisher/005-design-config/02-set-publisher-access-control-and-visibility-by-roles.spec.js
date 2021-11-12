@@ -20,13 +20,16 @@
 
 
 describe("Set publisher access control and visibility by roles", () => {
-    const username = 'admin'
-    const password = 'admin'
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
+    before(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
 
     it.only("Set role based API Store visibility and access control for the api", () => {
         const role = 'internal/everyone';
@@ -58,5 +61,8 @@ describe("Set publisher access control and visibility by roles", () => {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });

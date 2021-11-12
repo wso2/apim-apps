@@ -18,15 +18,21 @@
  */
 
 describe("Anonymous view apis", () => {
-    const username = 'admin'
-    const password = 'admin'
+    const developer = 'developer';
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
+    before(function(){
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    })
     it.only("Anonymous view apis", () => {
-        cy.loginToPublisher(username, password);
+        cy.loginToPublisher(publisher, password);
         cy.deploySampleAPI();
-        cy.get('[data-testid="logout-menu-dropdown"]').click();
-        cy.get('[data-testid="logout-menu-item"]').click();
-        cy.get('#usernameUserInput').should('exist');
+        cy.logoutFromPublisher();
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/logout?referrer=/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
@@ -52,7 +58,7 @@ describe("Anonymous view apis", () => {
     })
     
     it.only("Download client sdks", () => {
-        cy.loginToDevportal();
+        cy.loginToDevportal(developer, password);
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
         cy.get('[title="PizzaShackAPI"]', { timeout: 30000 });
@@ -75,5 +81,15 @@ describe("Anonymous view apis", () => {
     it.only("Login to devportal by supper tenant user", () => {
         cy.addNewTenant('wso2.com', 'admin');
         cy.portalLogin('admin@wso2.com', 'admin', 'devportal');
+    })
+
+    after(() => {
+        cy.logoutFromDevportal();
+        cy.loginToPublisher(publisher, password);
+        deleteApi('PizzaShackAPI', '1.0.0');
+        
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(developer);
+        cy.deleteUser(publisher);
     })
 })

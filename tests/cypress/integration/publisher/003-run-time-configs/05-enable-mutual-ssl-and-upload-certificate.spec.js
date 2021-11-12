@@ -1,15 +1,17 @@
 
-describe("do nothing", () => {
-    const username = 'admin'
-    const password = 'admin'
+describe("Runtime configuration", () => {
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
-    let apiId;
     beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Enable mutual ssl and upload cert", () => {
         const random_number = Math.floor(Date.now() / 1000);
         const alias = `alias${random_number}`;
 
@@ -40,9 +42,13 @@ describe("do nothing", () => {
         })
     });
 
+
     after(function () {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });

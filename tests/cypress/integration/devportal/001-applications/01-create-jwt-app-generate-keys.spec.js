@@ -14,9 +14,17 @@
  * under the License.
  */
 describe("Application tests", () => {
-    const appName = 'jwtapplication';
+    const appName = 'jwtapplication' + Math.floor(Date.now() / 1000);
     const appDescription = 'JWT application description';
-   
+    const developer = 'developer';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
+
+    before(function(){
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+    })
     it.only("Add Applications for JWT token Type", () => {
         cy.loginToDevportal();
         cy.createApp(appName, appDescription);
@@ -27,5 +35,10 @@ describe("Application tests", () => {
         cy.get(`[data-testid="delete-${appName}-btn"]`, {timeout: 30000});
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+    })
+
+    after(() => {
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(developer);
     })
 })

@@ -21,12 +21,18 @@ describe("Application tests", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
-    before(function(){
+    before(function () {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
     })
-   
-    it.only("Generate and update application production and sandbox keys, show hide keys", () => {
+
+    const checkIfKeyExists = () => {
+        // Check if the key exists
+        cy.get('#access-token', { timeout: 30000 });
+        cy.get('#access-token').should('not.be.empty');
+        cy.get('[data-testid="generate-api-keys-close-btn"]').click();
+    }
+    it.only("Generate API Keys", () => {
         cy.loginToDevportal(developer, password);
         cy.visit('/devportal/applications/create?tenant=carbon.super');
 
@@ -43,52 +49,37 @@ describe("Application tests", () => {
         cy.get('[data-testid="application-title"]').contains(appName).should('exist');
 
         // Generating keys production
-        cy.get('[data-testid="left-menu-productionkeys/oauth"]').click();
-        cy.get('input#client_credentials').check();
-        cy.get('input#password').check();
-        cy.get('[data-testid="generate-application-keys"]').click();
-        cy.get('#consumer-key', {timeout: 30000});
-        cy.get('#consumer-key').should('exist');
+        cy.get('[data-testid="left-menu-productionkeys/apikey"]').click();
+        // Generate with none option
+        cy.get('[data-testid="generate-key-btn"]').click();
+        cy.get('[data-testid="generate-api-keys-btn"]').click();
 
-        // Updating the keys
-        // Enabling authorization code grant type and updating keys
-        cy.get('input#authorization_code').check();
-        cy.get('#callbackURL').click();
-        cy.get('#callbackURL').type('https://localhost');
-        cy.get('[data-testid="generate-application-keys"]').click();
-        // Checking if the code grant is still selected.
-        cy.get('input#authorization_code').should('be.checked');
+        checkIfKeyExists();
 
+        // Generate with ip option
+        cy.get('[data-testid="api-key-restriction-ip"]').click();
+        cy.get('[data-testid="ip-address-txt"] input').type('192.168.1.2');
+        cy.get('[data-testid="ip-address-add-btn"]').click();
+        cy.get('[data-testid="generate-key-btn"]').click();
+        cy.get('[data-testid="generate-api-keys-btn"]').click();
 
-        // Generating keys sandbox
-        cy.get('[data-testid="left-menu-sandboxkeys/oauth"]').click();
-        cy.get('input#client_credentials').check();
-        cy.get('input#password').check();
-        cy.get('[data-testid="generate-application-keys"]').click();
-        cy.get('#consumer-key', {timeout: 30000});
-        cy.get('#consumer-key').should('exist');
+        checkIfKeyExists();
 
-        // Updating the keys
-        // Enabling authorization code grant type and updating keys
-        cy.get('input#authorization_code').check();
-        cy.get('#callbackURL').click();
-        cy.get('#callbackURL').type('https://localhost');
-        cy.get('[data-testid="generate-application-keys"]').click();
-        // Checking if the code grant is still selected.
-        cy.get('input#authorization_code').should('be.checked');
+        cy.get('[data-testid="api-key-restriction-referer"]').click();
+        cy.get('[data-testid="referer-txt"] input').type('www.example.com/path');
+        cy.get('[data-testid="referer-add-btn"]').click();
+        cy.get('[data-testid="generate-key-btn"]').click();
+        cy.get('[data-testid="generate-api-keys-btn"]').click();
 
-        // Show hide keys
-        cy.get('[data-testid="visibility-toggle-btn"]').click();
-        cy.get('input#consumer-secret').should('have.attr', 'type', 'text');
-        cy.contains('visibility_off').should('be.visible');
-
+        checkIfKeyExists();
     })
 
     after(() => {
         cy.visit('/devportal/applications?tenant=carbon.super');
-        cy.get(`[data-testid="delete-${appName}-btn"]`, {timeout: 30000});
+        cy.get(`[data-testid="delete-${appName}-btn"]`, { timeout: 30000 });
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
+
         // delete developer
         cy.visit('carbon/user/user-mgt.jsp');
         cy.deleteUser(developer);

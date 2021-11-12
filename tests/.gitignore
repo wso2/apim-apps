@@ -1,2 +1,5 @@
 cypress/videos/
 cypress/screenshots/
+cypress/downloads/
+cypress/reports/junit/
+cypress/reports/html/

@@ -14,13 +14,18 @@
  * under the License.
  */
 describe("Create api with swagger file super tenant", () => {
-    const username = 'admin'
-    const password = 'admin'
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
+
+    before(function(){
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
     it("Create API from swagger from file", () => {
+        cy.loginToPublisher(publisher, password);
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
         cy.get('[data-testid="itest-id-createapi"]').click();
@@ -47,5 +52,8 @@ describe("Create api with swagger file super tenant", () => {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 })

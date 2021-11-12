@@ -1,12 +1,15 @@
 
 describe("Endpoint testing", () => {
-    const username = 'admin'
-    const password = 'admin'
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
+    before(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
 
     it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
@@ -44,5 +47,8 @@ describe("Endpoint testing", () => {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });

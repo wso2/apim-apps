@@ -20,10 +20,6 @@
 describe("Login logout from publisher as supper tenant", () => {
     const username = 'admin'
     const password = 'admin'
-    // beforeEach(function () {
-    //     // login before each test
-    //     cy.loginToPublisher(username, password)
-    // })
 
     it.only("Login and logout from publisher", () => {
         cy.loginToPublisher(username, password);

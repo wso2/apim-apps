@@ -1,15 +1,18 @@
 
-describe("do nothing", () => {
-    const username = 'admin'
-    const password = 'admin'
+describe("Runtime configuration", () => {
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
     beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.loginToPublisher(publisher, password);
+    })
 
-    it.only("Add Authorization Header for the api", () => {
-        const customAuthHeader = '-custom';
+
+    it.only("OAuth2 and api key security spec", () => {
         cy.createAPIByRestAPIDesign();
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
         cy.get('[data-testid="application-level-security-head"]').click();
@@ -25,9 +28,13 @@ describe("do nothing", () => {
         })
     });
 
+
     after(function () {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });

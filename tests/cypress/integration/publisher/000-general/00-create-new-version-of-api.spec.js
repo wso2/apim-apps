@@ -1,30 +1,38 @@
 
-describe("do nothing", () => {
-    const username = 'admin'
-    const password = 'admin'
+describe("Create a new version of API", () => {
+    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const apiVersion = '1.0.0';
+    const newVersion = '2.0.0';
+    const publisher = 'publisher';
+    const password = 'test123';
+    const carbonUsername = 'admin';
+    const carbonPassword = 'admin';
 
-    beforeEach(function () {
-        cy.loginToPublisher(username, password)
-        // login before each test
-    });
-
+    before(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    })
     it.only("Create a new version of API", () => {
-        const version = '2.0.0';
-        cy.createAPIByRestAPIDesign();
+        cy.loginToPublisher(publisher, password);
+
+        cy.createAPIByRestAPIDesign(apiName, apiVersion);
 
         cy.get('[data-testid="create-new-version-btn"]').click();
-        cy.get('[data-testid="new-version-textbox"] input').type(version);
+        cy.get('[data-testid="new-version-textbox"] input').type(newVersion);
         cy.get('[data-testid="new-version-save-btn"]').click();
 
-        // // Validate
-
-    cy.get('[data-testid="api-name-version-title"]', { timeout: 30000 }).should('be.visible');
-    cy.get('[data-testid="api-name-version-title"]').contains(`${version}`);
+        // Validate
+        cy.get('[data-testid="api-name-version-title"]', { timeout: 30000 }).should('be.visible');
+        cy.get('[data-testid="api-name-version-title"]').contains(`${apiName} :${apiVersion}`);
     });
 
     after(function () {
         // Test is done. Now delete the api
-        cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
-        cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+        cy.deleteApi(apiName, apiVersion);
+        cy.deleteApi(apiName, newVersion);
+
+        // delete publisher user.
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(publisher);
     })
 });
