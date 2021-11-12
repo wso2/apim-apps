@@ -1851,6 +1851,22 @@ export default function Environments() {
                                                                 allEnvDeployments[row.name].vhost, 'HTTP',
                                                             ).secondary}
                                                     </div>
+                                                    {api && api.isGraphql !== true
+                                                    && (
+                                                        <>
+                                                            <div className={classes.primaryEndpoint}>
+                                                                {getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                    .vhost, 'WS')
+                                                                    .primary}
+                                                            </div>
+                                                            <div className={classes.secondaryEndpoint}>
+                                                                {getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                    .vhost, 'WS')
+                                                                    .secondary}
+                                                            </div>
+                                                        </>
+
+                                                    )}
                                                 </TableCell>
                                             </>
                                         ) : (
