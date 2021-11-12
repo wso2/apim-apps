@@ -82,20 +82,6 @@ export default function GraphQLUI(props) {
         setIsExplorerOpen(newExplorerIsOpen);
     };
 
-    // /**
-    //  * Check if string is json.
-    //  * @param {*} str   String to check
-    //  * @returns {boolean} if json or not
-    //  */
-    // function isJson(str) {
-    //     try {
-    //         JSON.parse(str);
-    //     } catch (e) {
-    //         return false;
-    //     }
-    //     return true;
-    // }
-
     /**
      * Execute GraphQL query
      * @param {*} graphQLParams GraphQL query parameters
