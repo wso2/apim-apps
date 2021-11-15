@@ -130,7 +130,7 @@ export default function GraphQLUI(props) {
     } else {
         return (
             <>
-                <Box width='30%' m={1}>
+                <Box width='50%' m={1}>
                     <TextField
                         label={(
                             <FormattedMessage
@@ -144,10 +144,9 @@ export default function GraphQLUI(props) {
                         margin='normal'
                         variant='outlined'
                         InputProps={URLs && URLs.https}
-                        disabled
                     />
                 </Box>
-                <Box width='30%' m={1}>
+                <Box width='50%' m={1}>
                     <TextField
                         label={(
                             <FormattedMessage
@@ -161,7 +160,6 @@ export default function GraphQLUI(props) {
                         margin='normal'
                         variant='outlined'
                         InputProps={URLs && URLs.wss}
-                        disabled
                     />
                 </Box>
                 <div>
