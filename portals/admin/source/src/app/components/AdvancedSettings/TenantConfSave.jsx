@@ -19,8 +19,9 @@
 import React, {
     useReducer, useState, Suspense, lazy, useEffect,
 } from 'react';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Box, Grid, Button,
@@ -82,6 +83,8 @@ function reducer(state, { field, value }) {
             return { ...state, [field]: value };
         case 'editDetails':
             return value;
+        case 'reset':
+            return { tenantConf: '', tenantConfSchema: '' };
         default:
             return state;
     }
@@ -91,13 +94,10 @@ function reducer(state, { field, value }) {
  * Render a list
  * @returns {JSX} Header AppBar components.
  */
-function TenantConfSave(props) {
+function TenantConfSave() {
     const classes = useStyles();
-    const {
-        updateList, history,
-    } = props;
-    const intl = useIntl();
-    const [initialState, setInitialState] = useState({
+    const history = useHistory();
+    const [initialState] = useState({
         tenantConf: '',
         tenantConfSchema: '',
     });
@@ -117,10 +117,6 @@ function TenantConfSave(props) {
         restApi.tenantConfGet().then((result) => {
             tenantConfVal = JSON.stringify(result.body, null, '\t');
             dispatch({ field: 'tenantConf', value: tenantConfVal });
-        });
-        setInitialState({
-            tenantConf: tenantConfVal,
-            tenantConfSchema: tenantConfSchemaVal,
         });
     }, []);
 
@@ -151,9 +147,6 @@ function TenantConfSave(props) {
             };
             dispatch({ field: 'editDetails', value: editState });
         });
-        setInitialState({
-            tenantConf: tenantConfVal,
-        });
     };
 
     const formSaveCallback = () => {
@@ -174,20 +167,19 @@ function TenantConfSave(props) {
                 if (response.body) {
                     Alert.error(response.body.description);
                 }
-                return null;
-            })
-            .finally(() => {
-                updateList();
+                console.error(error);
             });
     };
 
     return (
         <ContentBase
             pageStyle='full'
-            title={intl.formatMessage({
-                id: 'Settings.Advanced.TenantConfSave.title.save',
-                defaultMessage: 'Advanced Configurations',
-            })}
+            title={(
+                <FormattedMessage
+                    id='Settings.Advanced.TenantConfSave.title.save'
+                    defaultMessage='Advanced Configurations'
+                />
+            )}
         >
             <Box component='div' m={2} className={classes.root} name={tenantConfSchema}>
                 <Grid container spacing={3}>
@@ -232,8 +224,6 @@ function TenantConfSave(props) {
 }
 
 TenantConfSave.propTypes = {
-    updateList: PropTypes.func.isRequired,
-    triggerButtonText: PropTypes.shape({}).isRequired,
     title: PropTypes.shape({}).isRequired,
 };
 
