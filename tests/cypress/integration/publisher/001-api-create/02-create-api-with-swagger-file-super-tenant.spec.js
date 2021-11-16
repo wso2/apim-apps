@@ -18,14 +18,10 @@ describe("Create api with swagger file super tenant", () => {
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
+    const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
-
-    it("Create API from swagger from file", () => {
-        cy.loginToPublisher(publisher, password);
+    const createApiFromSwagger = (username, password) => {
+        cy.loginToPublisher(username, password);
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
         cy.get('[data-testid="itest-id-createapi"]').click();
@@ -47,13 +43,32 @@ describe("Create api with swagger file super tenant", () => {
 
         // validate
         cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).contains('1.0.5');
-    });
-    after(function () {
+    }
+    it("Create API from swagger from file - supper admin", () => {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+
+        createApiFromSwagger(publisher, password);
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
 
         cy.visit('carbon/user/user-mgt.jsp');
         cy.deleteUser(publisher);
-    })
+        cy.carbonLogout();
+    });
+
+    it("Create API from swagger from file - tenant user", () => {
+        const tenant = 'wso2.com';
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewTenantUser(tenantUser);
+        createApiFromSwagger(`${tenantUser}@${tenant}`, password);
+        // Test is done. Now delete the api
+        cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
+        cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(tenantUser);
+    });
+    
 })

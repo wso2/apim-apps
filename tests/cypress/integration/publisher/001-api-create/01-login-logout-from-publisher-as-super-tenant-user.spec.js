@@ -18,16 +18,39 @@
  */
 
 describe("Login logout from publisher as supper tenant", () => {
-    const username = 'admin'
-    const password = 'admin'
+    const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`
+    const carbonUsername = 'admin'
+    const carbonPassword = 'admin'
 
     it.only("Login and logout from publisher", () => {
-        cy.loginToPublisher(username, password);
+        cy.loginToPublisher(carbonUsername, carbonPassword);
         cy.get('[data-testid="api-table-view"]').then(() => {
             cy.get('[data-testid="logout-menu-dropdown"]').click();
             cy.get('[data-testid="logout-menu-item"]').click();
             cy.get('#usernameUserInput').should('exist');
         })
-       
+    })
+
+    it.only("Login and logout from publisher - tenant user", () => {
+        const tenant = 'wso2.com';
+        const tenantAdminUsername = 'admin';
+        const tenantAdminPassword = 'admin';
+
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewTenant(tenant, tenantAdminUsername, tenantAdminPassword);
+        cy.reload();
+        cy.carbonLogout();
+        cy.carbonLogin(`${tenantAdminUsername}@${tenant}`, tenantAdminPassword);
+        cy.addNewUser(tenantUser, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], 'test123');
+        cy.loginToPublisher(`${tenantUser}@${tenant}`, 'test123');
+        cy.get('[data-testid="api-table-view"]').then(() => {
+            cy.get('[data-testid="logout-menu-dropdown"]').click();
+            cy.get('[data-testid="logout-menu-item"]').click();
+            cy.get('#usernameUserInput').should('exist');
+        })
+    })
+    after(() => {
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(tenantUser);
     })
 })

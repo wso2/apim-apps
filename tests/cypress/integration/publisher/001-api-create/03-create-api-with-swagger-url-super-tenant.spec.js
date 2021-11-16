@@ -18,14 +18,18 @@ describe("Create api with swagger file super tenant", () => {
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
+    const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`;
+    const tenant = 'wso2.com';
+    
 
-    beforeEach(function(){
+    before(function () {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        cy.addNewTenantUser(tenantUser);
+        cy.reload();
+        cy.carbonLogout();
     })
-
-    it("Create API from swagger from file openapi 2", () => {
+    const openApi2Create = () => {
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
         cy.get('[data-testid="itest-id-createapi"]').click();
@@ -47,10 +51,15 @@ describe("Create api with swagger file super tenant", () => {
 
             // validate
             cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).contains(version);
-        });
-    });
 
-    it("Create API from swagger from file openapi 3", () => {
+            // Test is done. Now delete the api
+            cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
+            cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+            cy.logoutFromPublisher();
+        });
+    }
+
+    const openApi3Create = () => {
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
         cy.get('[data-testid="itest-id-createapi"]').click();
@@ -71,18 +80,46 @@ describe("Create api with swagger file super tenant", () => {
 
             // finish the wizard
             cy.get('[data-testid="api-create-finish-btn"]').click();
-  
+
             // validate
             cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 });
             cy.get('[data-testid="itest-api-name-version"]').contains(version);
+
+            // Test is done. Now delete the api
+            cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
+            cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+            cy.logoutFromPublisher();
         });
+    }
+    it("Create API from swagger from file openapi 2", () => {
+        cy.loginToPublisher(publisher, password);
+        openApi2Create();
     });
 
-    afterEach(function () {
-        // Test is done. Now delete the api
-        cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
-        cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+    it("Create API from swagger from file openapi 3", () => {
+        cy.loginToPublisher(publisher, password);
+        openApi3Create();
+    });
 
+    it("Create API from swagger from file openapi 2 - tenant user", () => {
+        cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        openApi2Create();
+    });
+
+    it("Create API from swagger from file openapi 3 - tenant user", () => {
+        cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        openApi3Create();
+    });
+
+    after(function () {
+        // delete tenant user
+        cy.carbonLogin(`admin@${tenant}`, 'admin');
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(tenantUser);
+        cy.carbonLogout();
+
+        // delete other user
+        cy.carbonLogin(carbonUsername, carbonPassword);
         cy.visit('carbon/user/user-mgt.jsp');
         cy.deleteUser(publisher);
     })

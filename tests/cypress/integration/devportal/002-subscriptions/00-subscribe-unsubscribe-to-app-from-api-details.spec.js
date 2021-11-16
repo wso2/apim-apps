@@ -59,7 +59,7 @@ describe("Anonymous view apis", () => {
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
         cy.logoutFromDevportal();
         cy.loginToPublisher(publisher, password);
-        deleteApi('PizzaShackAPI', '1.0.0');
+        cy.deleteApi('PizzaShackAPI', '1.0.0');
 
         // delete developer
         cy.visit('carbon/user/user-mgt.jsp');

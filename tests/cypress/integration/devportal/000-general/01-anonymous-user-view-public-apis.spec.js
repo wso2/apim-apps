@@ -28,6 +28,7 @@ describe("Anonymous view apis", () => {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.carbonLogout();
     })
     it.only("Anonymous view apis", () => {
         cy.loginToPublisher(publisher, password);
@@ -79,6 +80,7 @@ describe("Anonymous view apis", () => {
     })
 
     it.only("Login to devportal by supper tenant user", () => {
+        cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewTenant('wso2.com', 'admin');
         cy.portalLogin('admin@wso2.com', 'admin', 'devportal');
     })
@@ -86,7 +88,7 @@ describe("Anonymous view apis", () => {
     after(() => {
         cy.logoutFromDevportal();
         cy.loginToPublisher(publisher, password);
-        deleteApi('PizzaShackAPI', '1.0.0');
+        cy.deleteApi('PizzaShackAPI', '1.0.0');
         
         cy.visit('carbon/user/user-mgt.jsp');
         cy.deleteUser(developer);

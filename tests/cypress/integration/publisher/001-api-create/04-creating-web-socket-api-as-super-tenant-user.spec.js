@@ -18,13 +18,16 @@ describe("Create websocket api - super tenant", () => {
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
+    const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`
 
-    beforeEach(function(){
+    before(function(){
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        cy.reload();
+        cy.carbonLogout();
     })
-    it("Create websocket API from url", () => {
+
+    const websocketApiCreate = () => {
         const random_number = Math.floor(Date.now() / 1000);
         const randomName = `sample_api_${random_number}`;
         cy.visit(`/publisher/apis`);
@@ -46,13 +49,29 @@ describe("Create websocket api - super tenant", () => {
         //Checking the version in the overview
         cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).should('be.visible');
         cy.get('[data-testid="itest-api-name-version"]').contains(`v${random_number}`);
-    });
 
-    after(function () {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+    }
+    it("Create websocket API from url", () => {
+        cy.loginToPublisher(publisher, password);
+        websocketApiCreate();
+    });
 
+    it("Create websocket API from url - tenant user", () => {
+        const tenant = 'wso2.com';
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewTenantUser(tenantUser);
+        cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        websocketApiCreate();
+        cy.visit('carbon/user/user-mgt.jsp');
+        cy.deleteUser(tenantUser);
+        cy.carbonLogout();
+    });
+
+    after(function () {
+        cy.carbonLogin(carbonUsername, carbonPassword);
         cy.visit('carbon/user/user-mgt.jsp');
         cy.deleteUser(publisher);
     })

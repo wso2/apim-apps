@@ -71,7 +71,7 @@ describe("Generate keys from api details page", () => {
         // Delete api
         cy.logoutFromDevportal();
         cy.loginToPublisher(publisher, password);
-        deleteApi('PizzaShackAPI', '1.0.0');
+        cy.deleteApi('PizzaShackAPI', '1.0.0');
 
          // delete users
          cy.visit('carbon/user/user-mgt.jsp');

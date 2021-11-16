@@ -28,6 +28,7 @@ describe("do nothing", () => {
         });
 
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+        cy.wait(2000);
         cy.get('button[data-testid="Deploy as a Prototype"]').then(() => {
             cy.get('button[data-testid="Deploy as a Prototype"]').click();
         });

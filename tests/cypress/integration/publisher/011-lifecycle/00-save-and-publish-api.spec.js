@@ -22,6 +22,7 @@ describe("do nothing", () => {
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
 
         // Publishing
+        cy.wait(2000);
         cy.get('button[data-testid="Publish"]').click();
 
         // Validate

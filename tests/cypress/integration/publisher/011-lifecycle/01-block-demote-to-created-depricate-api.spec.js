@@ -20,6 +20,8 @@ describe("do nothing", () => {
 
         // Going to lifecycle page
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+        // This wait is ant pattern. But there is no other way unless the React components are rewrite.
+        cy.wait(2000);
 
         // Publishing
         cy.get('button[data-testid="Publish"]').click();
@@ -27,7 +29,7 @@ describe("do nothing", () => {
         // Even though this step is redundant we need to do this. The component is behaving
         // It removes the buttons after some time of initial rendering.
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
-
+        cy.wait(2000);
 
         // Redeploy
         cy.get('button[data-testid="Redeploy"]').then(() => {
@@ -35,7 +37,7 @@ describe("do nothing", () => {
         });
         cy.get('button[data-testid="Demote to Created"]').should('exist');
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
-
+        cy.wait(2000);
 
         // Demote to created
         cy.get('button[data-testid="Demote to Created"]').click();
@@ -44,6 +46,7 @@ describe("do nothing", () => {
         });
         cy.get('button[data-testid="Demote to Created"]').should('exist');
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+        cy.wait(2000);
 
         // Block
         cy.get('button[data-testid="Block"]').then(() => {
@@ -51,6 +54,7 @@ describe("do nothing", () => {
         });
         cy.get('button[data-testid="Re-Publish"]').should('exist');
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+        cy.wait(2000);
 
         // Re-Publish
         cy.get('button[data-testid="Re-Publish"]').then(() => {
@@ -58,6 +62,7 @@ describe("do nothing", () => {
         });
         cy.get('button[data-testid="Deprecate"]').should('exist');
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+        cy.wait(2000);
 
         // Deprecate
         cy.get('button[data-testid="Deprecate"]').then(() => {
@@ -65,6 +70,7 @@ describe("do nothing", () => {
         });
         cy.get('button[data-testid="Retire"]').should('exist');
         cy.get('[data-testid="left-menu-itemlifecycle"]').click();
+        cy.wait(2000);
 
 
         cy.get('button[data-testid="Retire"]').then(() => {
