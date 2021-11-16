@@ -417,7 +417,7 @@ function AddEditKeyManager(props) {
         } else if (enableExchangeToken) {
             tokenType = 'EXCHANGED';
         } else {
-            tokenType = 'ORIGINAL';
+            tokenType = 'DIRECT';
         }
 
         const keymanager = {
