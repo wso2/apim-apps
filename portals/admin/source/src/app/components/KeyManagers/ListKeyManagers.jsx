@@ -39,7 +39,7 @@ function apiCall() {
         .then((result) => {
             const resultList = result.body.list;
             resultList.forEach((item) => {
-                if (item.tokenType === 'ORIGINAL') {
+                if (item.tokenType === 'DIRECT') {
                     // eslint-disable-next-line no-param-reassign
                     item.tokenType = <Chip variant='outlined' color='primary' size='small' label='Direct' />;
                 } else if (item.tokenType === 'BOTH') {
