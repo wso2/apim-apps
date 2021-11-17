@@ -148,7 +148,7 @@ const KeyConfiguration = (props) => {
                 defaultMessage: 'Invalid URL. Please enter a valid URL.',
                 id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.url.error.text',
             }));
-        } else {
+        }else {
             setCallbackHelper(false);
             updateHasError(false);
         }
@@ -187,7 +187,6 @@ const KeyConfiguration = (props) => {
                 break;
             case 'additionalProperties':
                 const clonedAdditionalProperties = newRequest.additionalProperties;
-
                 if(currentTarget.type === 'checkbox') {
                     clonedAdditionalProperties[currentTarget.name] = currentTarget.checked + "";
                 } else {

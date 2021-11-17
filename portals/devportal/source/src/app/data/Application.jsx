@@ -98,59 +98,106 @@ export default class Application extends Resource {
 
     /** *
      * Generate token for this application instance
+     * @param {string} selectedTab the selected KM tab
      * @param {string} type token type
      * @param {string} validityPeriod token validityPeriod
      * @param {string} selectedScopes token scopes
+     * @param {boolean} isTokenExchange is token exchange flow
+     * @param {string} externalToken token from external identity provider
      * @returns {promise} Set the generated token into current
      * instance and return tokenObject received as Promise object
      */
-    generateToken(selectedTab, type, validityPeriod, selectedScopes) {
-        const promiseToken = this.getKeys()
-            .then(() => this.client)
-            .then((client) => {
-                let keys;
+    generateToken(selectedTab, type, validityPeriod, selectedScopes, isTokenExchange
+                  , externalToken) {
+        if (isTokenExchange) {
+           const defaultKMTab = "Resident Key Manager";
+            const promiseToken = this.getKeys()
+                .then(() => this.client)
+                .then((client) => {
+                    let keys;
+                    if (type === 'PRODUCTION') {
+                        keys = this.productionKeys.get(defaultKMTab);
+                    } else {
+                        keys = this.sandboxKeys.get(defaultKMTab);
+                    }
+                    keys.additionalProperties.subject_token = externalToken;
+                    const keyMappingId = keys.keyMappingId;
+                    let accessToken;
+                    if (type === 'PRODUCTION') {
+                        accessToken = this.productionTokens.get(defaultKMTab);
+                    } else {
+                        accessToken = this.sandboxTokens.get(defaultKMTab);
+                    }
+                    const requestContent = {
+                        consumerSecret: keys.consumerSecret,
+                        validityPeriod,
+                        revokeToken: accessToken.accessToken,
+                        scopes: selectedScopes,
+                        grantType: "TOKEN_EXCHANGE",
+                        additionalProperties: keys.additionalProperties,
+                    };
+                    const payload = {applicationId: this.id, keyMappingId: keyMappingId};
+                    const body = {requestBody: requestContent};
+                    return client.apis['Application Tokens']
+                        .post_applications__applicationId__oauth_keys__keyMappingId__generate_token(payload, body);
+                });
+            return promiseToken.then((tokenResponse) => {
+                const token = tokenResponse.obj;
                 if (type === 'PRODUCTION') {
-                    keys = this.productionKeys.get(selectedTab); 
+                    this.productionTokens.set(selectedTab, token);
                 } else {
-                    keys = this.sandboxKeys.get(selectedTab); 
+                    this.sandboxTokens.set(selectedTab, token);
                 }
-                const keyMappingId = keys.keyMappingId;
-                let accessToken;
-                if (type === 'PRODUCTION') {
-                    accessToken = this.productionTokens.get(selectedTab); 
-                } else {
-                    accessToken = this.sandboxTokens.get(selectedTab); 
-                }
-                const requestContent = {
-                    consumerSecret: keys.consumerSecret,
-                    validityPeriod,
-                    revokeToken: accessToken.accessToken,
-                    scopes: selectedScopes,
-                    additionalProperties: keys.additionalProperties,
-                };
-                const payload = { applicationId: this.id, keyMappingId: keyMappingId };
-                const body = { requestBody: requestContent };
-                return client.apis['Application Tokens']
-                    .post_applications__applicationId__oauth_keys__keyMappingId__generate_token(payload, body);
+                return token;
             });
-        return promiseToken.then((tokenResponse) => {
-            const token = tokenResponse.obj;
-            if (type === 'PRODUCTION') {
-                this.productionTokens.set(selectedTab, token);
-            } else {
-                this.sandboxTokens.set(selectedTab, token);
-            }
-            return token;
-        });
+        } else {
+            const promiseToken = this.getKeys()
+                .then(() => this.client)
+                .then((client) => {
+                    let keys;
+                    if (type === 'PRODUCTION') {
+                        keys = this.productionKeys.get(selectedTab);
+                    } else {
+                        keys = this.sandboxKeys.get(selectedTab);
+                    }
+                    const keyMappingId = keys.keyMappingId;
+                    let accessToken;
+                    if (type === 'PRODUCTION') {
+                        accessToken = this.productionTokens.get(selectedTab);
+                    } else {
+                        accessToken = this.sandboxTokens.get(selectedTab);
+                    }
+                    const requestContent = {
+                        consumerSecret: keys.consumerSecret,
+                        validityPeriod,
+                        revokeToken: accessToken.accessToken,
+                        scopes: selectedScopes,
+                        additionalProperties: keys.additionalProperties,
+                    };
+                    const payload = {applicationId: this.id, keyMappingId: keyMappingId};
+                    const body = {requestBody: requestContent};
+                    return client.apis['Application Tokens']
+                        .post_applications__applicationId__oauth_keys__keyMappingId__generate_token(payload, body);
+                });
+            return promiseToken.then((tokenResponse) => {
+                const token = tokenResponse.obj;
+                if (type === 'PRODUCTION') {
+                    this.productionTokens.set(selectedTab, token);
+                } else {
+                    this.sandboxTokens.set(selectedTab, token);
+                }
+                return token;
+            });
+        }
     }
 
     /** *
      * Generate Consumer Secret and Consumer Key for this application instance
      * @param {string} keyType Key type either `Production` or `SandBox`
      * @param {string[]} supportedGrantTypes Grant types supported
-     * @param  {string} callbackUrl callback url
-     * @param  {string} tokenType Token type either `OAUTH` or `JWT`
+     * @param {string} callbackUrl callback url
      * @param {string} additionalProperties additional properties that needed for application.
+     * @param {object} keyManager keyManager configuration object
      * @returns {promise} Set the generated token into current instance and return tokenObject
      * received as Promise object
      */
@@ -183,6 +230,7 @@ export default class Application extends Resource {
     /** *
      * Cleanup Consumer Secret and Consumer Key for this application instance
      * @param {string} keyType Key type either `Production` or `SandBox`
+     * @param {object} keyManager keyManager configuration object
      * @returns {promise} Set the generated token into current instance and return tokenObject
      * received as Promise object
      */
@@ -214,6 +262,7 @@ export default class Application extends Resource {
      * @param  {String} consumerKey Consumer key of application
      * @param  {String} consumerSecret Consumer secret of application
      * @param  {String} additionalProperties Additional properties for the oauth application
+     * @param {object} keyManager keyManager configuration object
      * @returns {promise} Update the callbackURL and/or supportedGrantTypes
      */
     updateKeys(tokenType, keyType, supportedGrantTypes, callbackUrl, consumerKey, consumerSecret, additionalProperties, keyManager, keyMappingId) {
@@ -250,6 +299,7 @@ export default class Application extends Resource {
      * Regenerate Consumer Secret for this application instance
      * @param {String} consumerKey Consumer key of application
      * @param {string} keyType Key type either `Production` or `SandBox`
+     * @param {object} keyManager keyManager configuration object
      * @returns {promise} Update the consumerSecret
      */
     regenerateSecret(consumerKey, keyType, keyMappingId, keyManager) {
@@ -281,6 +331,7 @@ export default class Application extends Resource {
      * @param keyType           key type, either PRODUCTION or SANDBOX
      * @param consumerKey       consumer key of the OAuth app
      * @param consumerSecret    consumer secret of the OAuth app
+     * @param keyManager keyManager configuration object
      * @returns {*}
      */
     provideKeys(keyType, consumerKey, consumerSecret, keyManager) {

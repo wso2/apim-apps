@@ -23,9 +23,10 @@ import Typography from '@material-ui/core/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@material-ui/core/Switch';
+import Button from '@material-ui/core/Button';
+import { Chip } from '@material-ui/core';
 
 /**
  * API call to get microgateway labels
@@ -36,7 +37,22 @@ function apiCall() {
     return restApi
         .getKeyManagersList()
         .then((result) => {
-            return result.body.list;
+            const resultList = result.body.list;
+            resultList.forEach((item) => {
+                if (item.tokenType === 'DIRECT') {
+                    // eslint-disable-next-line no-param-reassign
+                    item.tokenType = <Chip variant='outlined' color='primary' size='small' label='Direct' />;
+                } else if (item.tokenType === 'BOTH') {
+                    // eslint-disable-next-line no-param-reassign
+                    item.tokenType = (
+                        <div>
+                            <Chip variant='outlined' color='primary' size='small' label='Direct' />
+                            <Chip variant='outlined' color='primary' size='small' label='Exchange' />
+                        </div>
+                    );
+                }
+            });
+            return resultList;
         })
         .catch((error) => {
             throw error;
@@ -84,10 +100,20 @@ export default function ListKeyManagers() {
             },
         },
         {
+            name: 'tokenType',
+            label: intl.formatMessage({
+                id: 'KeyManagers.ListKeyManagers.table.header.label.tokenType',
+                defaultMessage: 'Type',
+            }),
+            options: {
+                sort: false,
+            },
+        },
+        {
             name: 'type',
             label: intl.formatMessage({
-                id: 'KeyManagers.ListKeyManagers.table.header.label.type',
-                defaultMessage: 'Type',
+                id: 'KeyManagers.ListKeyManagers.table.header.label.provider',
+                defaultMessage: 'Provider',
             }),
             options: {
                 sort: false,
@@ -148,7 +174,7 @@ export default function ListKeyManagers() {
             const updateSomething = () => {
                 const restApi = new API();
                 const kmName = rowData[0];
-                const kmId = rowData[4];
+                const kmId = rowData[5];
                 restApi.keyManagerGet(kmId).then((result) => {
                     let editState;
                     if (result.body.name !== null) {
@@ -174,7 +200,7 @@ export default function ListKeyManagers() {
                     });
                 });
             };
-            const kmEnabled = rowData[3];
+            const kmEnabled = rowData[4];
 
             return (
                 <Switch
