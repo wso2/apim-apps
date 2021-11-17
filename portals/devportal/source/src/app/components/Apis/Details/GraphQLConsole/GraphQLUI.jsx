@@ -24,9 +24,7 @@ import fetch from 'isomorphic-fetch';
 import 'graphiql/graphiql.css';
 import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
 import GraphiQLExplorer from 'graphiql-explorer';
-import { FormattedMessage } from 'react-intl';
 import Collapse from '@material-ui/core/Collapse';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { graphQLFetcher } from 'graphiql-subscriptions-fetcher/dist/fetcher';
@@ -130,38 +128,6 @@ export default function GraphQLUI(props) {
     } else {
         return (
             <>
-                <Box width='50%' m={1}>
-                    <TextField
-                        label={(
-                            <FormattedMessage
-                                defaultMessage='Gateway URLs'
-                                id='Apis.Details.GraphQLConsole.GraphQLUI.URLs'
-                            />
-                        )}
-                        value={URLs && URLs.https}
-                        name='selectedHTTPURL'
-                        fullWidth
-                        margin='normal'
-                        variant='outlined'
-                        InputProps={URLs && URLs.https}
-                    />
-                </Box>
-                <Box width='50%' m={1}>
-                    <TextField
-                        label={(
-                            <FormattedMessage
-                                defaultMessage='Subscription Gateway URLs'
-                                id='Apis.Details.GraphQLConsole.GraphQLUI.Subscription.URLs'
-                            />
-                        )}
-                        value={URLs && URLs.wss}
-                        name='selectedWSURL'
-                        fullWidth
-                        margin='normal'
-                        variant='outlined'
-                        InputProps={URLs && URLs.wss}
-                    />
-                </Box>
                 <div>
                     <Box display='flex'>
                         <Box display='flex'>

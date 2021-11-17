@@ -40,6 +40,8 @@ import Box from '@material-ui/core/Box';
 import WarningIcon from '@material-ui/icons/Warning';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import Progress from '../../../Shared/Progress';
 import Api from '../../../../data/api';
 import Application from '../../../../data/Application';
@@ -103,6 +105,16 @@ const styles = makeStyles((theme) => ({
         fontSize: 25,
         marginRight: 10,
     },
+    loadMoreLink: {
+        textDecoration: 'none',
+        margin: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    link: {
+        color: theme.palette.getContrastText(theme.palette.background.default),
+        cursor: 'pointer',
+    },
 }));
 
 /**
@@ -118,7 +130,7 @@ function TryOutController(props) {
         setSelectedKeyManager,
         setSelectedEnvironment, setProductionAccessToken, setSandboxAccessToken, scopes,
         setSecurityScheme, setUsername, setPassword, username, password, updateSwagger,
-        setProductionApiKey, setSandboxApiKey, productionApiKey, sandboxApiKey, environmentObject, setURLs, api,
+        setProductionApiKey, setSandboxApiKey, productionApiKey, sandboxApiKey, environmentObject, setURLs, api, URLs,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
@@ -133,6 +145,7 @@ function TryOutController(props) {
     const [keyManagers, setKeyManagers] = useState([]);
     const [selectedKMObject, setSelectedKMObject] = useState(null);
     const [ksGenerated, setKSGenerated] = useState(false);
+    const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
     const apiID = api.id;
     const restApi = new Api();
 
@@ -814,6 +827,76 @@ function TryOutController(props) {
                                                             </MenuItem>
                                                         )))}
                                                 </TextField>
+                                                {api && api.type === 'GRAPHQL' && (
+                                                    <>
+                                                        <Typography className={classes.verticalSpace} variant='body1'>
+                                                            <a
+                                                                className={classes.link + ' ' + classes.loadMoreLink}
+                                                                onClick={() => setShowMoreGWUrls(!showMoreGWUrls)}
+                                                                onKeyDown={() => setShowMoreGWUrls(!showMoreGWUrls)}
+                                                            >
+                                                                {!showMoreGWUrls ? (
+                                                                    <>
+                                                                        <FormattedMessage
+                                                                            id='Apis.Details.ApiConsole.SelectAppPanel.environment
+                                                                            .show.more'
+                                                                            defaultMessage='Show More'
+                                                                        />
+                                                                        <ExpandMoreIcon />
+
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <FormattedMessage
+                                                                            id='Apis.Details.ApiConsole.SelectAppPanel.environment
+                                                                            .show.less'
+                                                                            defaultMessage='Show Less'
+                                                                        />
+                                                                        <ExpandLessIcon />
+
+                                                                    </>
+                                                                )}
+                                                            </a>
+                                                        </Typography>
+                                                        {showMoreGWUrls && (
+                                                            <>
+                                                                <TextField
+                                                                    label={(
+                                                                        <FormattedMessage
+                                                                            defaultMessage='Gateway URLs'
+                                                                            id='Apis.Details.ApiConsole.SelectAppPanel.environment
+                                                                            .show.more.http.URLs'
+                                                                        />
+                                                                    )}
+                                                                    value={URLs && URLs.https}
+                                                                    name='selectedHTTPURL'
+                                                                    fullWidth
+                                                                    margin='normal'
+                                                                    variant='outlined'
+                                                                    InputProps={URLs && URLs.https}
+                                                                />
+                                                                {URLs && URLs.wss
+                                                                && (
+                                                                    <TextField
+                                                                        label={(
+                                                                            <FormattedMessage
+                                                                                defaultMessage='Subscription Gateway URLs'
+                                                                                id='Apis.Details.ApiConsole.SelectAppPanel.environment
+                                                                                .show.more.subscription.URLs'
+                                                                            />
+                                                                        )}
+                                                                        value={URLs && URLs.wss}
+                                                                        name='selectedWSURL'
+                                                                        fullWidth
+                                                                        margin='normal'
+                                                                        variant='outlined'
+                                                                        InputProps={URLs && URLs.wss}
+                                                                    />
+                                                                )}
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
                                             </>
                                         )}
                         </Grid>
