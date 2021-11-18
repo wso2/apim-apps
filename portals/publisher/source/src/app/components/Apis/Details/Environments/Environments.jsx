@@ -1262,7 +1262,7 @@ export default function Environments() {
             if (api.isGraphql() && !shorten) {
                 const gatewayHttpUrl = getGatewayAccessUrl(vhost, 'HTTP');
                 const gatewayWsUrl = getGatewayAccessUrl(vhost, 'WS');
-                return gatewayHttpUrl.combined + '\n' + gatewayWsUrl.combined;
+                return gatewayHttpUrl.combined + ' ' + gatewayWsUrl.combined;
             }
             const gatewayUrls = getGatewayAccessUrl(vhost, api.isWebSocket() ? 'WS' : 'HTTP');
             if (shorten) {
@@ -1484,8 +1484,14 @@ export default function Environments() {
                                                     >
                                                         <Grid item xs={12}>
                                                             <Tooltip
-                                                                title={getVhostHelperText(row.name,
-                                                                    selectedVhostDeploy)}
+                                                                title={(
+                                                                    <>
+                                                                        <Typography color='inherit'>
+                                                                            {getVhostHelperText(row.name,
+                                                                                selectedVhostDeploy)}
+                                                                        </Typography>
+                                                                    </>
+                                                                )}
                                                                 placement='bottom'
                                                             >
                                                                 <TextField
@@ -1886,7 +1892,14 @@ export default function Environments() {
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={getVhostHelperText(row.name, selectedVhosts)}
+                                                        title={(
+                                                            <>
+                                                                <Typography color='inherit'>
+                                                                    {getVhostHelperText(row.name,
+                                                                        selectedVhosts)}
+                                                                </Typography>
+                                                            </>
+                                                        )}
                                                         placement='bottom'
                                                     >
                                                         <TextField

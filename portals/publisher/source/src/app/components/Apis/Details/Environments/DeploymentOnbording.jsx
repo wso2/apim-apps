@@ -183,8 +183,14 @@ export default function DeploymentOnboarding(props) {
                                                         >
                                                             <Grid item xs={12}>
                                                                 <Tooltip
-                                                                    title={getVhostHelperText(row.name,
-                                                                        selectedVhostDeploy)}
+                                                                    title={(
+                                                                        <>
+                                                                            <Typography color='inherit'>
+                                                                                {getVhostHelperText(row.name,
+                                                                                    selectedVhostDeploy)}
+                                                                            </Typography>
+                                                                        </>
+                                                                    )}
                                                                     placement='bottom'
                                                                 >
                                                                     <TextField
