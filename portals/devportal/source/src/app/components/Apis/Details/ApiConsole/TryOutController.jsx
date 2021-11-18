@@ -853,7 +853,6 @@ function TryOutController(props) {
                                                                             defaultMessage='Show Less'
                                                                         />
                                                                         <ExpandLessIcon />
-
                                                                     </>
                                                                 )}
                                                             </a>

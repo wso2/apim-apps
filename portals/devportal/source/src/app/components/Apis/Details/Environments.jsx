@@ -204,17 +204,19 @@ function Environments(props) {
                             <Box display='flex' flexDirection='column' width='100%'>
                                 <Box py={0.5} display='flex' alignItems='center' width='100%' flexDirection='row'>
                                     <Tooltip
-                                        title={
-                                            (api.type === 'GRAPHQL')
-                                                ? intl.formatMessage({
-                                                    defaultMessage: 'Gateway HTTP URL for GraphQL Queries and Mutations',
-                                                    id: 'Apis.Details.Environments.GraphQL.HTTP.Gateway.URL',
-                                                })
-                                                : intl.formatMessage({
-                                                    defaultMessage: 'Gateway URL',
-                                                    id: 'Apis.Details.Environments.Gateway.URL',
-                                                })
-                                        }
+                                        title={(
+                                            <Typography color='inherit'>
+                                                {(api.type === 'GRAPHQL')
+                                                    ? intl.formatMessage({
+                                                        defaultMessage: 'Gateway HTTP URL for GraphQL Queries and Mutations',
+                                                        id: 'Apis.Details.Environments.GraphQL.HTTP.Gateway.URL',
+                                                    })
+                                                    : intl.formatMessage({
+                                                        defaultMessage: 'Gateway URL',
+                                                        id: 'Apis.Details.Environments.Gateway.URL',
+                                                    })}
+                                            </Typography>
+                                        )}
                                         placement='left-start'
                                         arrow
                                     >
@@ -266,10 +268,14 @@ function Environments(props) {
                                     <Box pt={0.5} display='flex' alignItems='center' width='100%' flexDirection='row'>
                                         <>
                                             <Tooltip
-                                                title={intl.formatMessage({
-                                                    defaultMessage: 'Gateway Websocket URL for GraphQL Subscriptions',
-                                                    id: 'Apis.Details.Environments.GraphQL.WS.Gateway.URL',
-                                                })}
+                                                title={(
+                                                    <Typography color='inherit'>
+                                                        {intl.formatMessage({
+                                                            defaultMessage: 'Gateway Websocket URL for GraphQL Subscriptions',
+                                                            id: 'Apis.Details.Environments.GraphQL.WS.Gateway.URL',
+                                                        })}
+                                                    </Typography>
+                                                )}
                                                 placement='left-start'
                                                 arrow
                                             >
