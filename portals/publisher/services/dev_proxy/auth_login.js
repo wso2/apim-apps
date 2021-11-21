@@ -178,8 +178,11 @@ const setResponseSessionCookies = (res, accessToken, refreshToken, idToken, sess
  * @param {*} compiler
  */
 function devServerBefore(app, server, compiler) {
-    const isTestRun = process.env && process.env.WSO2_UI_TEST === 'ci';
-    if (isTestRun) {
+    const isMockRun = process.env && process.env.WSO2_UI_MOCKED === 'true';
+    const isMocked = process.env.WSO2_UI_MOCKED;
+    console.log('isMocked');
+    console.log(isMocked);
+    if (isMockRun) {
         app.get('/services/settings/settings.js', async (req, res, next) => {
             res.setHeader('Content-Type', 'application/javascript');
             const updatedConfig = { ...appSettings };
@@ -215,7 +218,7 @@ function devServerBefore(app, server, compiler) {
     }
 
     app.get('/publisher/services/auth/login', async (req, res, next) => {
-        if (isTestRun) {
+        if (isMockRun) {
             const mockIdToken = 'eyJraWQiOiIxZTlnZGs3IiwiYWxnIjoiUlMyNTYifQ.ewogImlzcyI6ICJodHRwOi8vc2VydmVyLmV4YW1'
             + 'wbGUuY29tIiwKICJzdWIiOiAiMjQ4Mjg5NzYxMDAxIiwKICJhdWQiOiAiczZCaGRSa3F0MyIsCiAibm9uY2UiOiAibi0wUz'
             + 'ZfV3pBMk1qIiwKICJleHAiOiAxMzExMjgxOTcwLAogImlhdCI6IDEzMTEyODA5NzAsCiAibmFtZSI6ICJKYW5l'
