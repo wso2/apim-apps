@@ -1168,16 +1168,16 @@
     "defaultMessage": "Create Documents"
   },
   "Apis.Details.Documents.Listing.column.header.action": {
-    "defaultMessage": "action"
+    "defaultMessage": "Action"
   },
   "Apis.Details.Documents.Listing.column.header.name": {
-    "defaultMessage": "name"
+    "defaultMessage": "Name"
   },
   "Apis.Details.Documents.Listing.column.header.source.type": {
-    "defaultMessage": "sourceType"
+    "defaultMessage": "Source Type"
   },
   "Apis.Details.Documents.Listing.column.header.type": {
-    "defaultMessage": "type"
+    "defaultMessage": "Type"
   },
   "Apis.Details.Documents.Listing.documents.listing.fetching.error.message": {
     "defaultMessage": "Error in fetching documents list of the API"

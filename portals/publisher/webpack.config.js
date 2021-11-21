@@ -18,7 +18,7 @@
  */
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
-const fs = require('fs');
+const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -29,7 +29,7 @@ const { clientRoutingBypass, devServerBefore } = require('./services/dev_proxy/a
 // https://github.com/webpack/webpack/issues/6460#issuecomment-364286147
 module.exports = (env, argv) => {
     const isDevelopmentBuild = argv.mode === 'development';
-    const isTestBuild = process.env && process.env.WSO2_UI_TEST === 'ci';
+    const isTestBuild = process.env && process.env.WSO2_UI_MOCKED === 'true';
     /**
      * Notes:
      *      - swaggerWorkerInit entry has being removed until we resolve
@@ -89,8 +89,14 @@ module.exports = (env, argv) => {
                     changeOrigin: true,
                     pathRewrite: { '^/api/am/publisher/v2/swagger.yaml': '' },
                 },
+                '/api/am/service-catalog/v0/oas.yaml': {
+                    target: 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml',
+                    secure: false,
+                    changeOrigin: true,
+                    pathRewrite: { '^/api/am/service-catalog/v0/oas.yaml': '' },
+                },
                 '/api/am': {
-                    target: 'https://localhost:9443',
+                    target: isTestBuild ? 'http://localhost:4010' : 'https://localhost:9443',
                     // pathRewrite: { '^/api/am/publisher/v2/': '' },
                     secure: false,
                 },
@@ -177,6 +183,9 @@ module.exports = (env, argv) => {
             Settings: 'Settings',
         },
         plugins: [
+            new webpack.EnvironmentPlugin({
+                WSO2_UI_MOCKED: 'false',
+            }),
             new MonacoWebpackPlugin({ languages: ['xml', 'json', 'yaml', 'markdown'], features: ['!gotoSymbol'] }),
             new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
