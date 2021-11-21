@@ -18,7 +18,6 @@
  */
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
-const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -183,9 +182,6 @@ module.exports = (env, argv) => {
             Settings: 'Settings',
         },
         plugins: [
-            new webpack.EnvironmentPlugin({
-                WSO2_UI_MOCKED: 'false',
-            }),
             new MonacoWebpackPlugin({ languages: ['xml', 'json', 'yaml', 'markdown'], features: ['!gotoSymbol'] }),
             new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
