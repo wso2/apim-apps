@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import Grid from '@material-ui/core/Grid';
@@ -74,8 +74,9 @@ function Operation(props) {
         resolvedSpec,
         sharedScopes,
         setFocusOperationLevel,
+        expandedResource,
+        setExpandedResource,
     } = props;
-    const [isExpanded, setIsExpanded] = useState(false);
     const useStyles = makeStyles((theme) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
         return {
@@ -133,19 +134,14 @@ function Operation(props) {
     function toggleDelete(event) {
         event.stopPropagation();
         event.preventDefault();
-        setIsExpanded(false);
+        setExpandedResource(false);
         onMarkAsDelete({ verb, target }, !markAsDelete);
     }
 
-    /**
-     *
-     *
-     * @param {*} event
-     * @param {*} expanded
-     */
-    function handleExpansion(event, expanded) {
-        setIsExpanded(expanded);
-    }
+    const handleExpansion = (panel) => (event, isExpanded) => {
+        setExpandedResource(isExpanded ? panel : false);
+    };
+
     const classes = useStyles();
     return (
         <>
@@ -162,8 +158,8 @@ function Operation(props) {
                 </Box>
             )}
             <ExpansionPanel
-                expanded={isExpanded}
-                onChange={handleExpansion}
+                expanded={expandedResource === verb + target}
+                onChange={handleExpansion(verb + target)}
                 disabled={markAsDelete}
                 className={classes.paperStyles}
             >
@@ -411,6 +407,8 @@ Operation.propTypes = {
     arns: PropTypes.shape([]).isRequired,
     resolvedSpec: PropTypes.shape({}).isRequired,
     sharedScopes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    expandedResource: PropTypes.string.isRequired,
+    setExpandedResource: PropTypes.func.isRequired,
 };
 
 export default React.memo(Operation);
