@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Select gateway environments", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("do nothing", () => {
         cy.loginToPublisher(publisher, password);
     });
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Select gateway environments", () => {
         cy.createAPIByRestAPIDesign();
         cy.get('[data-testid="left-menu-itemenvironments"]').click();
         cy.get('[data-testid="environments-checkbox-Production and Sandbox"]').click();

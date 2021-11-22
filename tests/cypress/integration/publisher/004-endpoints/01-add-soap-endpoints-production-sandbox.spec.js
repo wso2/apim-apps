@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Add production sandbox endpoints for SOAP", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("do nothing", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Add production sandbox endpoints for SOAP", () => {
         const endpoint = 'https://graphical.weather.gov/xml/SOAP_server/ndfdXMLserver.php?wsdl';
         cy.createAPIWithoutEndpoint();
         cy.get('[data-testid="left-menu-itemendpoints"]').click();

@@ -14,7 +14,7 @@
  * under the License.
  */
 
-describe("do nothing", () => {
+describe("Change subscription tier of an application", () => {
     const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
     const developer = 'developer';
     const publisher = 'publisher';

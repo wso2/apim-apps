@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Lifecycle changes", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("do nothing", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Block demote retire api", () => {
         cy.createAPIByRestAPIDesign();
         cy.get('[data-testid="left-menu-itemsubscriptions"]').click();
         cy.get('[data-testid="policy-checkbox-unlimited"]').click();

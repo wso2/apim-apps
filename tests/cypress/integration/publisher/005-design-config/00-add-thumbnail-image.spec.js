@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Upload thumbnail", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -10,7 +10,7 @@ describe("do nothing", () => {
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Upload thumbnail", () => {
         cy.createAPIByRestAPIDesign();
         cy.get('[data-testid="left-menu-itemDesignConfigurations"]').click();
         cy.get('[data-testid="edit-api-thumbnail-btn"]').click();

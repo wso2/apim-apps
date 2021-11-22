@@ -27,7 +27,9 @@ describe("Anonymous view apis", () => {
     before(function(){
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        cy.reload();
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.reload();
         cy.carbonLogout();
     })
     it.only("Anonymous view apis", () => {

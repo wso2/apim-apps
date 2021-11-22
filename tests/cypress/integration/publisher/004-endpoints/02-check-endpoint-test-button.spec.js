@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Check endpoint test button", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("do nothing", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Check endpoint test button", () => {
         const endpoint200 = 'https://petstore.swagger.io/v2/store/inventory'; // 200 OK
         const endpoint400 = 'https://petstore.swagger.io/v2/store/inventory/7777777'; //404 Not Found
         const endpointUnknown = 'http://bull-8772776363-url.foo123'; // Unknown Host

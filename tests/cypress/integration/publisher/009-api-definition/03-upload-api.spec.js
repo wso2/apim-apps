@@ -14,7 +14,7 @@
  * under the License.
  */
 
-describe("do nothing", () => {
+describe("Upload api spec from the api definition page", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -26,7 +26,7 @@ describe("do nothing", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Download api", () => {
+    it.only("Upload api spec from the api definition page", () => {
         cy.createAPIByRestAPIDesign();
         cy.get('[data-testid="left-menu-itemAPIdefinition"]').click();
         cy.get('[data-testid="import-definition-btn"]').click();

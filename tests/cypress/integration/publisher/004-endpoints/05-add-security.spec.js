@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Add security to the endpoint", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -11,7 +11,7 @@ describe("do nothing", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add Authorization Header for the api", () => {
+    it.only("Add security to the endpoint", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         const usernameLocal = 'admin';
         const passwordLocal = 'admin';

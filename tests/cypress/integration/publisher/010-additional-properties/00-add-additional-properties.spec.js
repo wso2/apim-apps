@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Add additional properties", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';

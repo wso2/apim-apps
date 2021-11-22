@@ -43,6 +43,11 @@ Cypress.Commands.add('loginToPublisher', (username, password) => {
 Cypress.Commands.add('loginToDevportal', (username, password) => {
     cy.portalLogin(username, password, 'devportal');
 })
+
+Cypress.Commands.add('loginToAdmin', (username, password) => {
+    cy.portalLogin(username, password, 'admin');
+})
+
 Cypress.Commands.add('addNewTenant', (tenant = 'wso2.com', username = 'admin', password = 'admin') => {
     cy.visit('/carbon/tenant-mgt/add_tenant.jsp?region=region1&item=govern_add_tenants_menu');
     cy.get('#buttonRow .button');

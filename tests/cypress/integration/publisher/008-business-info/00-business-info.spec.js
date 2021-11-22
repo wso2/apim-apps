@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Add business information", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';

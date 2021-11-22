@@ -1,7 +1,7 @@
 
 const YAML = require('yamljs')
 
-describe("do nothing", () => {
+describe("Download swagger", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';

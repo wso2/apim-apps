@@ -1,5 +1,5 @@
 
-describe("do nothing", () => {
+describe("Add Authorization Header for the api", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
