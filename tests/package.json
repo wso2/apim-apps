@@ -15,6 +15,7 @@
     "delete:reportSummary": "rm -rf cypress/reports/summary.txt",
     "pre-test": "npm run delete:reportFolderHTML && npm run delete:reportFolderJUnit && npm run delete:reportFolderReport && npm run delete:reportSummary",
     "test": "cypress run",
+    "test:dev": "cypress open",
     "report:merge": "mochawesome-merge ./cypress/reports/html/.jsons/*.json > ./cypress/reports/mochawesome-bundle.json",
     "report:generate": "marge --inline --saveHtml --charts ./cypress/reports/mochawesome-bundle.json -o ./cypress/reports/html",
     "merge-junit-reports": "jrm ./cypress/reports/junit/combined.xml \"./cypress/reports/junit/*.xml\""
@@ -27,7 +28,7 @@
   "devDependencies": {
     "@cypress/browserify-preprocessor": "^3.0.1",
     "babel-plugin-module-resolver": "^4.1.0",
-    "cypress": "^6.9.1",
+    "cypress": "^8.7.0",
     "cypress-file-upload": "^5.0.8",
     "cypress-mochawesome-reporter": "^2.2.0",
     "cypress-multi-reporters": "^1.5.0",
@@ -37,7 +38,8 @@
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
     "mochawesome-report-generator": "^5.2.0",
-    "nodemailer": "^6.6.2"
+    "nodemailer": "^6.6.2",
+    "yamljs": "^0.3.0"
   },
   "dependencies": {
     "aws-sdk": "^2.942.0",
