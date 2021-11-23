@@ -240,6 +240,7 @@ export default function AsyncApiConsole() {
                     sandboxApiKey={sandboxApiKey}
                     environmentObject={environmentObject}
                     api={api}
+                    URLs={null}
                 />
             </Paper>
             <Paper className={classes.paper}>
