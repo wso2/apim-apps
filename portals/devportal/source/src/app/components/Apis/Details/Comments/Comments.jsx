@@ -116,6 +116,7 @@ class Comments extends Component {
         this.addComment = this.addComment.bind(this);
         this.updateComment = this.updateComment.bind(this);
         this.onDeleteComment = this.onDeleteComment.bind(this);
+        this.isCrossTenant = this.isCrossTenant.bind(this);
     }
 
     /**
@@ -274,8 +275,7 @@ class Comments extends Component {
      * @param {*} currentUser current logged in user
      * @returns {boolean} true or false
      */
-    isCrossTenant(currentUser) {
-        const { tenantDomain } = this.props;
+    isCrossTenant(currentUser, tenantDomain) {
         if (!tenantDomain) {
             return false;
         }
@@ -306,10 +306,11 @@ class Comments extends Component {
      * @memberof Comments
      */
     render() {
-        const { classes, isOverview } = this.props;
+        const { classes, isOverview, tenantDomain } = this.props;
         const {
             comments, allComments, totalComments, showCommentAdd,
         } = this.state;
+        const isCrossTenantUser = AuthManager.getUser() && this.isCrossTenant(AuthManager.getUser(), tenantDomain);
         return (
             <ApiContext.Consumer>
                 {({ api }) => (
@@ -328,8 +329,7 @@ class Comments extends Component {
                             </div>
                         )}
 
-                        {AuthManager.getUser()
-                            && !this.isCrossTenant(AuthManager.getUser()) && (
+                        {!isCrossTenantUser && (
                             <Box mt={2} ml={1}>
                                 {!showCommentAdd && (
                                     <Button
@@ -386,8 +386,7 @@ class Comments extends Component {
                             )}
                         <Comment
                             comments={comments}
-                            crossTenentUser={AuthManager.getUser()
-                                ? this.isCrossTenant(api.provider, AuthManager.getUser()) : null}
+                            isCrossTenantUser={isCrossTenantUser}
                             apiId={api.id}
                             allComments={allComments}
                             onDeleteComment={this.onDeleteComment}
