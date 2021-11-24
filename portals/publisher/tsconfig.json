@@ -1,5 +1,5 @@
 {
-  "compilerOptions": {
+  "compilerOptions": { // For more info on these configs https://www.typescriptlang.org/tsconfig
     "target": "es5",
     // Ensure that .d.ts files are created by tsc, but not .js files
     "declaration": true,
