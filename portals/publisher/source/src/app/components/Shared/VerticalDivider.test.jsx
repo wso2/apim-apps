@@ -20,7 +20,7 @@ import VerticalDivider from './VerticalDivider';
 
 describe('<VerticalDivider/> tests', () => {
     test('should render the VerticalDivider component', () => {
-        const wrapper = mount(<VerticalDivider />);
+        const wrapper = DEPRECATED_mount(<VerticalDivider />);
         // TODO: add assertion here
     });
 });

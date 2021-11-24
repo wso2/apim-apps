@@ -57,7 +57,7 @@ const category = 'Another category';
 const props = createTestProps();
 
 beforeEach(() => {
-    wrapper = shallow(<CommentEditUnwrapped {...props} />);
+    wrapper = DEPRECATED_shallow(<CommentEditUnwrapped {...props} />);
 });
 
 describe('<CommentEdit /> rendering', () => {

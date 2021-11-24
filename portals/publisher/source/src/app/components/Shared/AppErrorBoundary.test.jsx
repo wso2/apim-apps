@@ -28,7 +28,7 @@ describe('AppErrorBoundary test', () => {
     test('Should return the child element when no exception is thrown', () => {
         const Child = <div>Testing child</div>;
         const Test = <UnwrappedAppErrorBoundary classes={{}}>{Child}</UnwrappedAppErrorBoundary>;
-        const shallowRendered = shallow(Test);
+        const shallowRendered = DEPRECATED_shallow(Test);
         expect(shallowRendered.contains(Child)).toBeTruthy();
     });
 
@@ -46,7 +46,7 @@ describe('AppErrorBoundary test', () => {
             </MuiThemeProvider>
         );
 
-        const wrapper = mount(TestComponent);
+        const wrapper = DEPRECATED_mount(TestComponent);
         const renderedAppErrorBoundary = wrapper.find(AppErrorBoundary);
         expect(renderedAppErrorBoundary.contains(message)).toBeTruthy();
         // Check the error message string

@@ -30,7 +30,7 @@ import { generateStatic } from '@stoplight/prism-http/dist/mocker/generator/JSON
  * @returns {*} Mocked API model
  */
 export default async function getMockedModel(modelName) {
-    const swagger = await apiDef;
+    const swagger = await DEPRECATED_apiDef;
     return generateStatic(swagger.components.schemas[modelName]);
 }
 
@@ -41,7 +41,7 @@ export default async function getMockedModel(modelName) {
  * @returns {Array} All the scopes available in publisher-api swagger
  */
 export async function getAllScopes() {
-    const swagger = await apiDef;
+    const swagger = await DEPRECATED_apiDef;
     return Object.keys(swagger.components.securitySchemes.OAuth2Security.flows.password.scopes);
 }
 
@@ -55,7 +55,7 @@ export async function getAllScopes() {
  * @returns {Promise<*>} the example for the given operation and id
  */
 export async function getExampleById(resource, verb, id) {
-    const swagger = await apiDef;
+    const swagger = await DEPRECATED_apiDef;
     return swagger.paths[resource][verb]['x-examples'].find((x) => x.id === id);
 }
 

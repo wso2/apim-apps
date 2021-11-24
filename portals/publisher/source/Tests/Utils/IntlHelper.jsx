@@ -56,7 +56,7 @@ function nodeWithIntlProp(node) {
  * @returns
  */
 export function shallowWithIntl(node, { context, ...additionalOptions } = {}) {
-    return shallow(nodeWithIntlProp(node), {
+    return DEPRECATED_shallow(nodeWithIntlProp(node), {
         context: { ...context, intl },
         ...additionalOptions,
     });

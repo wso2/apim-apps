@@ -21,7 +21,7 @@ import APIsNavigation from './Apis';
 
 describe('APIs', () => {
     test('should ', () => {
-        const a = shallow(<APIsNavigation intl={{ formatMessage: jest.fn() }} />);
+        const a = DEPRECATED_shallow(<APIsNavigation intl={{ formatMessage: jest.fn() }} />);
         // expect(a).type.to.be('WithStyles(PageNav)');
     });
 });

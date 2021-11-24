@@ -21,7 +21,7 @@ import CustomIcon from './CustomIcon';
 
 describe('<CustomIcon> Tests', () => {
     test('should render with default props', () => {
-        const wrapper = mount(<CustomIcon />);
+        const wrapper = DEPRECATED_mount(<CustomIcon />);
         const { defaultProps } = CustomIcon;
         expect(wrapper.props()).not.toBeUndefined();
         expect(wrapper.props()).toMatchObject(defaultProps);
@@ -29,7 +29,7 @@ describe('<CustomIcon> Tests', () => {
     });
 
     test('Should return svg icon for overview', () => {
-        const wrapper = mount(<CustomIcon />);
+        const wrapper = DEPRECATED_mount(<CustomIcon />);
         const { defaultProps } = CustomIcon;
         // Check overview prop
         wrapper.setProps({ icon: 'overview' });
@@ -38,7 +38,7 @@ describe('<CustomIcon> Tests', () => {
     });
 
     test('should return null if not one of supported icon types', () => {
-        const wrapper = mount(<CustomIcon />);
+        const wrapper = DEPRECATED_mount(<CustomIcon />);
 
         // If not a supported icon type should return null
         wrapper.setProps({ icon: 'noExist' });
