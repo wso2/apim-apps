@@ -235,9 +235,8 @@ function Operation(props) {
                                 variant='caption'
                                 gutterBottom
                             >
-                                <b>{ getOperationScopes(operation, spec) != null && 'Scope : ' }</b>
-                                { getOperationScopes(operation, spec) != null
-                                    && getOperationScopes(operation, spec).join(', ') }
+                                <b>{ getOperationScopes(operation, spec).length !== 0 && 'Scope : ' }</b>
+                                { getOperationScopes(operation, spec).join(', ') }
                             </Typography>
                         </Grid>
                         <Grid item md={1} justify='flex-end' alignItems='center' container>
