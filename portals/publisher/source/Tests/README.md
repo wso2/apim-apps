@@ -2,22 +2,43 @@
 
 We run mainly two types of tests
 
--   Unit tests
--   Integration test
+-   Unit/Integration tests
+    - Testing Library (React)
+-   E2E tests
+    - Cypress
 
 # Prerequisites
 
-Require NodeJs 8.0 or higher, and npm 5.0 or higher.You may use [`nvm`](https://github.com/nvm-sh/nvm) for installing/managing Node and NPM tools.
+Require NodeJs 14.x or higher, and npm 6.0 or higher.You may use [`nvm`](https://github.com/nvm-sh/nvm) for installing/managing Node and NPM tools.
 
 # How to run
 
-Before running either unit tests or integration test, Go to the application root directory where `package.json` file is located (i:e `<carbon-apimgt-root>/features/apimgt/org.wso2.carbon.apimgt.publisher.feature/src/main/resources/publisher/`) and run `npm install` command to download all the dependencies.
+Before running either unit tests or integration test, Go to the application root directory where `package.json` file is located 
+
+i:e: 
+
+```
+<carbon-apimgt-root>/features/apimgt/org.wso2.carbon.apimgt.publisher.feature/src/main/resources/publisher/
+```
+ 
+and run 
+```
+npm ci
+```
+
+command to download all the dependencies.
 
 ## Unit tests
 
-To run the unit tests, simply execute the `npm test` command in the application root directory (where the package.json file located). `npm test` is an alias to `jest` command defined in `package.json`.
+To run the unit tests, simply execute the `npm test` command in the application root directory (where the package.json file located). 
 
-## Integration tests
+```
+npm test
+```
+
+is an alias to `jest` command defined in `package.json`.
+
+## E2E tests
 
 Test files are located in `<Product-APIM-Root>/modules/integration/tests-integration/tests-backend/src/test/resources/jest-integration-tests/`).
 Go to the above location and run
@@ -30,7 +51,13 @@ for more information read the integration test [README.md](https://github.com/ws
 
 ## Code coverage
 
-Run the command `npm run test:coverage` to generate the code coverage for unit tests.Once generated, The coverage reports will be available in `<APP_ROOT>/coverage/` directory.
+Run the command
+
+```
+npm run test:coverage
+```
+
+to generate the code coverage for unit tests.Once generated, The coverage reports will be available in `<APP_ROOT>/coverage/` directory.
 
 # Unit tests
 
@@ -41,8 +68,30 @@ Jest will pickup the files for test which are ending with `.test.jsx` or `.test.
 
 
 # Troubleshooting
-
 > Feel free to update this guide , If you able to find better alternatives or if you find anything that is worth adding here
+
+## Error: ENOSPC: System limit for number of file watchers reached (Ubuntu)
+
+Try following command and increase the watch counts
+
+```bash
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
+# For a quick lookup on Jest features
+ - [Jest cheat sheet](https://github.com/sapegin/jest-cheat-sheet)
+
+
+<hr style="border:2px solid gray"> </hr>
+
+# Troubleshooting Old tests (DEPRECATED)
+
+---
+**NOTE**
+
+Below FAQ's are related to older Enzyme based tests, Just keeping theme here as an archived item, Do not encourage to add or modify any answers below 
+
+---
 
 ## Mounted wrapper does not contain the expected rendered react elements
 
@@ -135,6 +184,3 @@ When enzyme mounting use actual theme object and `MuiThemeProvider` component to
 ## Clearing , Resting or Restoring mock implementations
 
 If you want to change the mocked function behavior between different test cases within one test description(file), Use `mockReset` , `mockRestore` or `mockClear` accordingly. FOr more info refer this [issue](https://github.com/facebook/jest/issues/5143)
-
-# For a quick lookup on Jest features
- - [Jest cheat sheet](https://github.com/sapegin/jest-cheat-sheet)

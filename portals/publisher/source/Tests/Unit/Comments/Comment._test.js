@@ -78,7 +78,7 @@ let wrapper;
 const props = createTestProps();
 
 beforeEach(() => {
-    wrapper = shallow(<CommentUnwrapped {...props} />);
+    wrapper = DEPRECATED_shallow(<CommentUnwrapped {...props} />);
 });
 
 describe.skip('<Comment /> rendering', () => {
@@ -108,7 +108,7 @@ describe.skip('<Comment /> rendering', () => {
 
     it('should render a <CommentReply /> component', () => {
         comment.replies.push(reply);
-        wrapper = shallow(<CommentUnwrapped {...props} comments={[comment]} allComments={[comment]} />);
+        wrapper = DEPRECATED_shallow(<CommentUnwrapped {...props} comments={[comment]} allComments={[comment]} />);
         expect(wrapper.find(CommentReply)).toHaveLength(1);
     });
 });

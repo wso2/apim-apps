@@ -44,7 +44,7 @@ const category = 'Another category';
 const props = createTestProps();
 
 beforeEach(() => {
-    wrapper = shallow(<CommentAddUnwrapped {...props} />);
+    wrapper = DEPRECATED_shallow(<CommentAddUnwrapped {...props} />);
 });
 
 describe.skip('<CommentAdd /> rendering', () => {
@@ -73,7 +73,7 @@ describe.skip('<CommentAdd /> rendering', () => {
     });
 
     it('should render only one <Button /> to display only the save option, if cancelButton property is false ', () => {
-        wrapper = shallow(<CommentAddUnwrapped {...props} cancelButton={false} />);
+        wrapper = DEPRECATED_shallow(<CommentAddUnwrapped {...props} cancelButton={false} />);
         expect(wrapper.find(Button)).toHaveLength(1);
     });
 });

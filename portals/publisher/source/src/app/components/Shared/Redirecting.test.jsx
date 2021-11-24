@@ -22,7 +22,7 @@ import Redirecting from './Redirecting';
 describe('<Redirecting/> component tests', () => {
     test('should render the redirect component with message', () => {
         const testMessage = "Kasun's test message";
-        const wrapper = mount(<Redirecting message={testMessage} />);
+        const wrapper = DEPRECATED_mount(<Redirecting message={testMessage} />);
         expect(wrapper.text().includes(testMessage)).toBeTruthy();
     });
 });

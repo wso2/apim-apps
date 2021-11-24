@@ -34,7 +34,7 @@ const { light } = Themes;
 
 describe('Test APIs main routing component', () => {
     test('Should render the APIs routing component in smoke test', () => {
-        shallow(<APIs />);
+        DEPRECATED_shallow(<APIs />);
     });
 
     test('should return API Listing component when request path match with /apis', () => {
