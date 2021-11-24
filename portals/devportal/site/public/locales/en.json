@@ -172,6 +172,8 @@
   "Apis.Details.Overview.subscriptions.title": "Subscriptions",
   "Apis.Details.Overview.tags.title": "Tags",
   "Apis.Details.Overview.visit.publisher.portal": "Visit Publisher Portal",
+  "Apis.Details.PubTopic.copied": "Copied",
+  "Apis.Details.PubTopic.copy.to.clipboard": "Copy to clipboard",
   "Apis.Details.Resources.components.Operation.disable.security.when.used.in.api.products": "Security enabled",
   "Apis.Details.Resources.components.Operation.security.operation": "Security ",
   "Apis.Details.Resources.components.enabled.security": "No security",
@@ -186,6 +188,8 @@
   "Apis.Details.StarRatingSummary.not.rated": "Not Rated",
   "Apis.Details.StarRatingSummary.user": "user",
   "Apis.Details.StarRatingSummary.users": "users",
+  "Apis.Details.SubTopic.copied": "Copied",
+  "Apis.Details.SubTopic.copy.to.clipboard": "Copy to clipboard",
   "Apis.Details.Topics.error.404": "Resource not found",
   "Apis.Details.TryOutConsole.access.token.tooltip": "You can use your existing Access Token or you can generate a new Test Key.",
   "Apis.Details.index.all.apis": "ALL APIs",
@@ -546,7 +550,9 @@
   "solace.application.available.topics.heading": "Available Topics",
   "solace.application.available.topics.subheading": "Topics permitted to access from solace applications",
   "solace.application.topics.publish": "Publish Topics",
+  "solace.application.topics.publish.empty": "No Publish Topics to Display.",
   "solace.application.topics.subscribe": "Subscribe Topics",
+  "solace.application.topics.subscribe.empty": "No Subscribe Topics to Display.",
   "subscription.pending": "Your subscription request has been submitted and is now awaiting approval.",
   "username": "Username"
 }
