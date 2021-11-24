@@ -77,9 +77,6 @@
   "Apis.Create.Components.NewTopic.topic.name": {
     "defaultMessage": "Topic Name"
   },
-  "Apis.Create.Components.SelectGateways.Vendor": {
-    "defaultMessage": "Gateway Vendor"
-  },
   "Apis.Create.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Business plan(s)"
   },
@@ -1836,9 +1833,6 @@
   "Apis.Details.Environments.Environments.revision.delete.success": {
     "defaultMessage": "Revision Deleted Successfully"
   },
-  "Apis.Details.Environments.Environments.revision.description.\n                                                        deploy": {
-    "defaultMessage": "Add a description to the revision"
-  },
   "Apis.Details.Environments.Environments.revision.description.create": {
     "defaultMessage": "Brief description of the new revision"
   },
@@ -2139,9 +2133,6 @@
   "Apis.Details.NewOverview.MetaData.access.control.tooltip": {
     "defaultMessage": "Restricted by roles : The API can be viewable and modifiable by only specific publishers and creators with the roles that you specify"
   },
-  "Apis.Details.NewOverview.MetaData.channel:": {
-    "defaultMessage": "Channel:"
-  },
   "Apis.Details.NewOverview.MetaData.config": {
     "defaultMessage": "Configuration"
   },
@@ -2165,6 +2156,9 @@
   },
   "Apis.Details.NewOverview.MetaData.lastUpdatedTime.not.set": {
     "defaultMessage": "-"
+  },
+  "Apis.Details.NewOverview.MetaData.metadata": {
+    "defaultMessage": "Metadata"
   },
   "Apis.Details.NewOverview.MetaData.provider": {
     "defaultMessage": "Provider"

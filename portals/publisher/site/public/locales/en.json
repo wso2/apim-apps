@@ -171,12 +171,6 @@
       "value": "Topic Name"
     }
   ],
-  "Apis.Create.Components.SelectGateways.Vendor": [
-    {
-      "type": 0,
-      "value": "Gateway Vendor"
-    }
-  ],
   "Apis.Create.Components.SelectPolicies.business.plans": [
     {
       "type": 0,
@@ -3887,12 +3881,6 @@
       "value": "Revision Deleted Successfully"
     }
   ],
-  "Apis.Details.Environments.Environments.revision.description.\n                                                        deploy": [
-    {
-      "type": 0,
-      "value": "Add a description to the revision"
-    }
-  ],
   "Apis.Details.Environments.Environments.revision.description.create": [
     {
       "type": 0,
@@ -4541,12 +4529,6 @@
       "value": "Restricted by roles : The API can be viewable and modifiable by only specific publishers and creators with the roles that you specify"
     }
   ],
-  "Apis.Details.NewOverview.MetaData.channel:": [
-    {
-      "type": 0,
-      "value": "Channel:"
-    }
-  ],
   "Apis.Details.NewOverview.MetaData.config": [
     {
       "type": 0,
@@ -4593,6 +4575,12 @@
     {
       "type": 0,
       "value": "-"
+    }
+  ],
+  "Apis.Details.NewOverview.MetaData.metadata": [
+    {
+      "type": 0,
+      "value": "Metadata"
     }
   ],
   "Apis.Details.NewOverview.MetaData.provider": [

@@ -522,24 +522,8 @@ export default function Topics(props) {
                                                 sharedScopes={sharedScopes}
                                                 markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].subscribe)}
-                                                    onMarkAsDelete={onMarkAsDelete}
-                                                    disableDelete={api.gatewayVendor === 'solace'}
-                                                />
-                                            </Grid>
-                                        )}
-                                        {operation.publish && (
-                                            <Grid key={target + '_publish'} item md={12}>
-                                                <AsyncOperation
-                                                    target={target}
-                                                    verb='publish'
-                                                    highlight
-                                                    operation={operation}
-                                                    spec={asyncAPISpec}
-                                                    api={api}
-                                                    operationsDispatcher={operationsDispatcher}
-                                                    sharedScopes={sharedScopes}
-                                                    markAsDelete={Boolean(markedOperations[target]
                                                 onMarkAsDelete={onMarkAsDelete}
+                                                disableDelete={api.gatewayVendor === 'solace'}
                                             />
                                         </Grid>
                                     )}
@@ -556,13 +540,13 @@ export default function Topics(props) {
                                                 sharedScopes={sharedScopes}
                                                 markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].publish)}
-                                                    onMarkAsDelete={onMarkAsDelete}
-                                                    disableDelete={api.gatewayVendor === 'solace'}
-                                                />
-                                            </Grid>
-                                        )}
-                                    </Grid>
-                                </GroupOfOperations>
+                                                onMarkAsDelete={onMarkAsDelete}
+                                                disableDelete={api.gatewayVendor === 'solace'}
+                                            />
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </GroupOfOperations>
                         ))
                     }
                 </Paper>
