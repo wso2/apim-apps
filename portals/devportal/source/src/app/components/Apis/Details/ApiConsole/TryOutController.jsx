@@ -838,8 +838,8 @@ function TryOutController(props) {
                                                                 {!showMoreGWUrls ? (
                                                                     <>
                                                                         <FormattedMessage
-                                                                            id='Apis.Details.ApiConsole.SelectAppPanel.environment
-                                                                            .show.more'
+                                                                            id={'Apis.Details.ApiConsole.SelectAppPanel'
+                                                                            + '.environment.show.more'}
                                                                             defaultMessage='Show More'
                                                                         />
                                                                         <ExpandMoreIcon />
@@ -848,8 +848,8 @@ function TryOutController(props) {
                                                                 ) : (
                                                                     <>
                                                                         <FormattedMessage
-                                                                            id='Apis.Details.ApiConsole.SelectAppPanel.environment
-                                                                            .show.less'
+                                                                            id={'Apis.Details.ApiConsole.SelectAppPanel'
+                                                                            + '.environment.show.less'}
                                                                             defaultMessage='Show Less'
                                                                         />
                                                                         <ExpandLessIcon />
@@ -863,8 +863,8 @@ function TryOutController(props) {
                                                                     label={(
                                                                         <FormattedMessage
                                                                             defaultMessage='Gateway URLs'
-                                                                            id='Apis.Details.ApiConsole.SelectAppPanel.environment
-                                                                            .show.more.http.URLs'
+                                                                            id={'Apis.Details.ApiConsole.SelectAppPanel'
+                                                                            + '.environment.show.more.http.URLs'}
                                                                         />
                                                                     )}
                                                                     value={URLs && URLs.https}
@@ -880,8 +880,8 @@ function TryOutController(props) {
                                                                         label={(
                                                                             <FormattedMessage
                                                                                 defaultMessage='Subscription Gateway URLs'
-                                                                                id='Apis.Details.ApiConsole.SelectAppPanel.environment
-                                                                                .show.more.subscription.URLs'
+                                                                                id={'Apis.Details.ApiConsole.SelectAppPanel'
+                                                                                + '.environment.show.more.subscription.URLs'}
                                                                             />
                                                                         )}
                                                                         value={URLs && URLs.wss}
