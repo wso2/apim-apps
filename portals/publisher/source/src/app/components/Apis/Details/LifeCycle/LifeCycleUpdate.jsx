@@ -33,6 +33,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import PublishWithoutDeploy from 'AppComponents/Apis/Details/LifeCycle/Components/PublishWithoutDeploy';
 import Configurations from 'Config';
+import APIProduct from 'AppData/APIProduct';
 import LifeCycleImage from './LifeCycleImage';
 import CheckboxLabels from './CheckboxLabels';
 import LifecyclePending from './LifecyclePending';
@@ -75,6 +76,7 @@ class LifeCycleUpdate extends Component {
         super(props);
         this.updateLifeCycleState = this.updateLifeCycleState.bind(this);
         this.api = new API();
+        this.apiProduct = new APIProduct();
         this.WORKFLOW_STATUS = {
             CREATED: 'CREATED',
             APPROVED: 'APPROVED',
@@ -121,7 +123,10 @@ class LifeCycleUpdate extends Component {
         this.setState({ isUpdating: action });
         let promisedUpdate;
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
-        if (lifecycleChecklist.length > 0) {
+        const { isAPIProduct } = this.props;
+        if (isAPIProduct) {
+            promisedUpdate = this.apiProduct.changeLifecycleStatusOfAPIProduct(apiUUID, action, lifecycleChecklist);
+        } else if (lifecycleChecklist.length > 0) {
             promisedUpdate = this.api.updateLcState(apiUUID, action, lifecycleChecklist);
         } else {
             promisedUpdate = this.api.updateLcState(apiUUID, action);
@@ -206,7 +211,7 @@ class LifeCycleUpdate extends Component {
      */
     render() {
         const {
-            api, lcState, classes, theme, handleChangeCheckList, checkList, certList,
+            api, lcState, classes, theme, handleChangeCheckList, checkList, certList, isAPIProduct,
         } = this.props;
         const lifecycleStates = [...lcState.availableTransitions];
         const { newState, pageError, isOpen } = this.state;
@@ -224,6 +229,7 @@ class LifeCycleUpdate extends Component {
         );
         const isCertAvailable = certList.length !== 0;
         const isBusinessPlanAvailable = api.policies.length !== 0;
+        const lifeCycleStatus = isAPIProduct ? api.state : api.lifeCycleStatus;
         const lifecycleButtons = lifecycleStates.map((item) => {
             const state = { ...item, displayName: item.event };
             if (state.event === 'Deploy as a Prototype') {
@@ -232,14 +238,15 @@ class LifeCycleUpdate extends Component {
                 }
                 return {
                     ...state,
-                    disabled: (api.type !== 'WEBSUB' && api.endpointConfig == null),
+                    disabled:
+                        (api.type !== 'WEBSUB' && api.endpointConfig == null && !isAPIProduct),
                 };
             }
             if (state.event === 'Publish') {
                 return {
                     ...state,
                     disabled:
-                        (api.type !== 'WEBSUB' && api.endpointConfig === null)
+                        (api.type !== 'WEBSUB' && api.endpointConfig === null && !isAPIProduct)
                         || (isMutualSSLEnabled && !isCertAvailable)
                         || (isAppLayerSecurityMandatory && !isBusinessPlanAvailable)
                         || (api.type !== 'WEBSUB' && api.endpointConfig != null
@@ -268,10 +275,10 @@ class LifeCycleUpdate extends Component {
                         ) : (
                             <Grid container spacing={3}>
                                 <Grid item xs={8}>
-                                    <LifeCycleImage lifeCycleStatus={newState || api.lifeCycleStatus} />
+                                    <LifeCycleImage lifeCycleStatus={newState || lifeCycleStatus} />
                                 </Grid>
-                                {(api.lifeCycleStatus === 'CREATED'
-                                    || api.lifeCycleStatus === 'PROTOTYPED') && (
+                                {(lifeCycleStatus === 'CREATED'
+                                    || lifeCycleStatus === 'PROTOTYPED') && (
                                     <Grid item xs={3}>
                                         <CheckboxLabels
                                             api={api}
@@ -279,6 +286,7 @@ class LifeCycleUpdate extends Component {
                                             isAppLayerSecurityMandatory={isAppLayerSecurityMandatory}
                                             isCertAvailable={isCertAvailable}
                                             isBusinessPlanAvailable={isBusinessPlanAvailable}
+                                            isAPIProduct={isAPIProduct}
                                         />
                                     </Grid>
                                 )}

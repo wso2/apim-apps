@@ -24,6 +24,7 @@ import Box from '@material-ui/core/Box';
 import AuthManager from 'AppData/AuthManager';
 import Typography from '@material-ui/core/Typography';
 import LinkIcon from '@material-ui/icons/Link';
+import API from 'AppData/api';
 
 const ColorlibConnector = withStyles((theme) => {
     const completedColor = theme.custom.apis.overview.stepper.completed || theme.palette.success.main;
@@ -154,7 +155,7 @@ export default function CustomizedStepper() {
     const [api, updateAPI] = useAPI();
     const [isUpdating, setUpdating] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
-    const isPrototypedAvailable = api.endpointConfig !== null
+    const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
     && api.endpointConfig.implementation_status === 'prototyped';
     const isEndpointAvailable = api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;

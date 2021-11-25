@@ -29,8 +29,8 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.next": {
     "defaultMessage": "Next"
   },
-  "Apis.Create.APIProduct.APIProductCreateWrapper.publish": {
-    "defaultMessage": "Publish"
+  "Apis.Create.APIProduct.APIProductCreateWrapper.create": {
+    "defaultMessage": "Create"
   },
   "Apis.Create.APIProduct.APIProductCreateWrapper.resources": {
     "defaultMessage": "Add Resources"

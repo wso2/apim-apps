@@ -27,7 +27,7 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
-
+import APIProduct from 'AppData/APIProduct';
 import LifeCycleUpdate from './LifeCycleUpdate';
 import LifeCycleHistory from './LifeCycleHistory';
 
@@ -109,13 +109,29 @@ class LifeCycle extends Component {
      * @memberof LifeCycle
      */
     updateData() {
-        const { api: { id } } = this.props;
-        const promisedAPI = Api.get(id);
-        const promisedLcState = this.api.getLcState(id);
-        const promisedLcHistory = this.api.getLcHistory(id);
+        const { api: { id }, isAPIProduct } = this.props;
+        const apiProduct = new APIProduct();
+        let promisedAPI;
+        let promisedLcState;
+        let promisedLcHistory;
+        if (isAPIProduct) {
+            promisedAPI = apiProduct.getAPIProductByID(id);
+            promisedLcState = apiProduct.getLCStateOfAPIProduct(id);
+            promisedLcHistory = apiProduct.getLCHistoryOfAPIProduct(id);
+        } else {
+            promisedAPI = Api.get(id);
+            promisedLcState = this.api.getLcState(id);
+            promisedLcHistory = this.api.getLcHistory(id);
+        }
         Promise.all([promisedAPI, promisedLcState, promisedLcHistory])
             .then((response) => {
-                const api = response[0];
+                let api;
+                if (isAPIProduct) {
+                    api = response[0].body;
+                } else {
+                    /* eslint prefer-destructuring: ["error", {VariableDeclarator: {object: true}}] */
+                    api = response[0];
+                }
                 const lcState = response[1].body;
                 const lcHistory = response[2].body.list;
 
@@ -152,7 +168,7 @@ class LifeCycle extends Component {
      * @memberof LifeCycle
      */
     render() {
-        const { classes } = this.props;
+        const { classes, isAPIProduct } = this.props;
         const {
             api, lcState, checkList, lcHistory, certList,
         } = this.state;
@@ -192,6 +208,7 @@ class LifeCycle extends Component {
                                 handleChangeCheckList={this.handleChangeCheckList}
                                 api={api}
                                 certList={certList}
+                                isAPIProduct={isAPIProduct}
                             />
                         </Grid>
                         <Grid item xs={12}>

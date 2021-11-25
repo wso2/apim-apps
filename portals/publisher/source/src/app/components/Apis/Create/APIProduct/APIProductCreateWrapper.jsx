@@ -32,7 +32,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import APICreateProductBase from 'AppComponents/Apis/Create/Components/APICreateProductBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
 import ProductResourcesEditWorkspace from 'AppComponents/Apis/Details/ProductResources/ProductResourcesEditWorkspace';
 import API from 'AppData/api';
 
@@ -69,7 +68,6 @@ export default function ApiProductCreateWrapper(props) {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [apiResources, setApiResources] = useState([]);
-    const { settings } = useAppContext();
 
     const [policies, setPolicies] = useState([]);
 
@@ -198,63 +196,6 @@ export default function ApiProductCreateWrapper(props) {
             .saveProduct(apiData)
             .then((apiProduct) => {
                 Alert.info('API Product created successfully');
-                const body = {
-                    description: 'Initial Revision',
-                };
-                newAPIProduct.createProductRevision(apiProduct.id, body)
-                    .then((api1) => {
-                        const revisionId = api1.body.id;
-                        Alert.info('API Revision created successfully');
-                        const envList = settings.environment.map((env) => env.name);
-                        const body1 = [];
-                        const getFirstVhost = (envName) => {
-                            const env = settings.environment.find(
-                                (e) => e.name === envName && e.vhosts.length > 0,
-                            );
-                            return env && env.vhosts[0].host;
-                        };
-                        if (envList && envList.length > 0) {
-                            if (envList.includes('Default') && getFirstVhost('Default')) {
-                                body1.push({
-                                    name: 'Default',
-                                    displayOnDevportal: true,
-                                    vhost: getFirstVhost('Default'),
-                                });
-                            } else if (getFirstVhost(envList[0])) {
-                                body1.push({
-                                    name: envList[0],
-                                    displayOnDevportal: true,
-                                    vhost: getFirstVhost(envList[0]),
-                                });
-                            }
-                        }
-                        newAPIProduct.deployProductRevision(apiProduct.id, revisionId, body1)
-                            .then(() => {
-                                Alert.info('API Revision Deployed Successfully');
-                            })
-                            .catch((error) => {
-                                if (error.response) {
-                                    Alert.error(error.response.body.description);
-                                } else {
-                                    Alert.error(intl.formatMessage({
-                                        id: 'Apis.APIProductCreateWrapper.error.errorMessage.deploy.revision',
-                                        defaultMessage: 'Something went wrong while deploying the API Revision',
-                                    }));
-                                }
-                                console.error(error);
-                            });
-                    })
-                    .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error(intl.formatMessage({
-                                id: 'Apis.APIProductCreateWrapper.error.errorMessage.create.revision',
-                                defaultMessage: 'Something went wrong while creating the API Revision',
-                            }));
-                        }
-                        console.error(error);
-                    });
                 history.push(`/api-products/${apiProduct.id}/overview`);
             })
             .catch((error) => {
@@ -356,8 +297,8 @@ export default function ApiProductCreateWrapper(props) {
                                         onClick={createAPIProduct}
                                     >
                                         <FormattedMessage
-                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.publish'
-                                            defaultMessage='Publish'
+                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.create'
+                                            defaultMessage='Create'
                                         />
                                         {isCreating && <CircularProgress size={24} />}
                                     </Button>
