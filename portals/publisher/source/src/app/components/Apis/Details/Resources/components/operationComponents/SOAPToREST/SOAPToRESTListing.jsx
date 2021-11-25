@@ -86,7 +86,7 @@ export default function SOAPToRESTListing(props) {
         <>
             <Grid item xs={12} md={12}>
                 <Typography variant='subtitle1'>
-                    Mediation
+                    Transformation Configurations
                     <Divider variant='middle' />
                 </Typography>
             </Grid>
