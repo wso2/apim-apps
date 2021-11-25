@@ -511,15 +511,17 @@ export default function RuntimeConfiguration() {
 
                                         {(api.type !== 'GRAPHQL' && !isAsyncAPI)
                                             && <SchemaValidation api={apiConfig} configDispatcher={configDispatcher} />}
-                                        {!api.isAPIProduct() && !isAsyncAPI && (
-                                            <Flow
-                                                api={apiConfig}
-                                                type='IN'
-                                                updateMediationPolicy={updateInMediationPolicy}
-                                                selectedMediationPolicy={inPolicy}
-                                                isRestricted={isRestricted(['apim:api_create'], api)}
-                                            />
-                                        )}
+                                        {!api.isAPIProduct() && !isAsyncAPI &&
+                                            !(api.type === 'HTTP' || api.type === 'SOAPTOREST' || api.type === 'SOAP')
+                                            && (
+                                                <Flow
+                                                    api={apiConfig}
+                                                    type='IN'
+                                                    updateMediationPolicy={updateInMediationPolicy}
+                                                    selectedMediationPolicy={inPolicy}
+                                                    isRestricted={isRestricted(['apim:api_create'], api)}
+                                                />
+                                            )}
                                         {api.type === 'GRAPHQL' && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
@@ -553,7 +555,8 @@ export default function RuntimeConfiguration() {
                                         <Grid item xs={12} style={{ position: 'relative' }}>
                                             <Box mb={3}>
                                                 <Paper className={classes.paper} elevation={0}>
-                                                    {!api.isAPIProduct() && (
+                                                    {!api.isAPIProduct() && !(api.type === 'HTTP'
+                                                        || api.type === 'SOAPTOREST' || api.type === 'SOAP') && (
                                                         <Box mb={3}>
                                                             {isWebSub ? (
                                                                 <Flow
@@ -592,7 +595,8 @@ export default function RuntimeConfiguration() {
                                         </Grid>
                                     </>
                                 )}
-                                {!api.isAPIProduct() && (
+                                {!api.isAPIProduct()
+                                    && !(api.type === 'HTTP' || api.type === 'SOAPTOREST' || api.type === 'SOAP') && (
                                     <>
                                         <Typography className={classes.heading} variant='h6' component='h3'>
                                             <FormattedMessage
