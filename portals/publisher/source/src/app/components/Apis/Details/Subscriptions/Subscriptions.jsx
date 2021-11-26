@@ -109,7 +109,8 @@ function Subscriptions(props) {
     }
     return (
         <>
-            <SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />
+            {(api.gatewayVendor === 'wso2')
+            && (<SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />)}
             {tenants !== 0 && settings.crossTenantSubscriptionEnabled && (
                 <SubscriptionAvailability
                     api={api}
@@ -120,39 +121,41 @@ function Subscriptions(props) {
                 />
             )}
             { updateInProgress && <Progress /> }
-            <Grid
-                container
-                direction='row'
-                alignItems='flex-start'
-                spacing={1}
-                className={classes.buttonSection}
-            >
-                <Grid item>
-                    <Button
-                        type='submit'
-                        variant='contained'
-                        color='primary'
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                        onClick={() => saveAPI()}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Subscriptions.Subscriptions.save'
-                            defaultMessage='Save'
-                        />
-                    </Button>
+            {(api.gatewayVendor === 'wso2') && (
+                <Grid
+                    container
+                    direction='row'
+                    alignItems='flex-start'
+                    spacing={1}
+                    className={classes.buttonSection}
+                >
+                    <Grid item>
+                        <Button
+                            type='submit'
+                            variant='contained'
+                            color='primary'
+                            disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            onClick={() => saveAPI()}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Subscriptions.Subscriptions.save'
+                                defaultMessage='Save'
+                            />
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            component={Link}
+                            to={'/apis/' + api.id + '/overview'}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Subscriptions.Subscriptions.cancel'
+                                defaultMessage='Cancel'
+                            />
+                        </Button>
+                    </Grid>
                 </Grid>
-                <Grid item>
-                    <Button
-                        component={Link}
-                        to={'/apis/' + api.id + '/overview'}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Subscriptions.Subscriptions.cancel'
-                            defaultMessage='Cancel'
-                        />
-                    </Button>
-                </Grid>
-            </Grid>
+            )}
             <SubscriptionsTable api={api} />
         </>
     );

@@ -2082,7 +2082,7 @@ class API extends Resource {
     }
 
     /**
-    * Undeploy revision.
+    * Deploy revision.
     *
     * @param {string} apiId Id of the API.
     * @param {Object} body Revision Object.

@@ -51,7 +51,7 @@ const useStyles = makeStyles({
  */
 export default function ListPayloadProperties(props) {
     const {
-        operation, operationsDispatcher, target, verb, disableUpdate,
+        operation, operationsDispatcher, target, verb, disableUpdate, disableForSolace,
     } = props;
     const classes = useStyles();
     const [editingProperty, setEditingProperty] = useState(null);
@@ -119,6 +119,7 @@ export default function ListPayloadProperties(props) {
                                                 disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                                                 onClick={() => setEditingProperty({ name: k, ...v })}
                                                 fontSize='small'
+                                                disabled={disableForSolace}
                                             >
                                                 <EditIcon fontSize='small' />
                                             </IconButton>
@@ -132,8 +133,12 @@ export default function ListPayloadProperties(props) {
                                         )}
                                         >
                                             <IconButton
+<<<<<<< HEAD
                                                 disabled={disableUpdate
                                                     || isRestricted(['apim:api_publish', 'apim:api_create'])}
+=======
+                                                disabled={disableUpdate || disableForSolace}
+>>>>>>> 97a35cac268dd529c4c6bfbbc5c6577efa3ae54c
                                                 onClick={() => operationsDispatcher({
                                                     action: 'deletePayloadProperty',
                                                     data: { target, verb, value: k },
@@ -156,6 +161,7 @@ export default function ListPayloadProperties(props) {
 
 ListPayloadProperties.defaultProps = {
     disableUpdate: false,
+    disableForSolace: false,
 };
 ListPayloadProperties.propTypes = {
     operation: PropTypes.shape({}).isRequired,
@@ -165,4 +171,5 @@ ListPayloadProperties.propTypes = {
     verb: PropTypes.string.isRequired,
     disableUpdate: PropTypes.bool,
     resolvedSpec: PropTypes.shape({}).isRequired,
+    disableForSolace: PropTypes.bool,
 };

@@ -658,7 +658,7 @@ class APIProduct extends Resource {
     }
 
      /**
-     * Undeploy revision.
+     * Deploy revision.
      *
      * @param {string} apiProductId Id of the API.
      * @param {Object} body Revision Object.
