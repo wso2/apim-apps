@@ -166,6 +166,25 @@ class AuthManager {
 
     /**
      *
+     * Check whether user is a readOnly user
+     * @static
+     * @returns {Boolean} isReadOnlyUser
+     * @memberof AuthManager
+     */
+    static isReadOnlyUser() {
+        if (AuthManager.getUser() === null) {
+            return false;
+        } else {
+            const arrayLength = AuthManager.getUser().scopes.length;
+            if (arrayLength === 2) {
+                return AuthManager.getUser().scopes.includes('apim:api_view', 'openid');
+            }
+            return false;
+        }
+    }
+
+    /**
+     *
      * @param {*} scopesAllowedToEdit
      * @param {*} api
      */

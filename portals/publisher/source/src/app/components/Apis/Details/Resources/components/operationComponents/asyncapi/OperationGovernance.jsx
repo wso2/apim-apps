@@ -33,6 +33,7 @@ import LaunchIcon from '@material-ui/icons/Launch';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { Link } from 'react-router-dom';
 import { useIntl, FormattedMessage } from 'react-intl';
+import { isRestricted } from 'AppData/AuthManager';
 import { getAsyncAPIOperationScopes } from '../../../operationUtils';
 
 /**
@@ -73,6 +74,7 @@ export default function OperationGovernance(props) {
                     <FormControlLabel
                         control={(
                             <Switch
+                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                                 checked={operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none'}
                                 onChange={({ target: { checked } }) => operationsDispatcher({
                                     action: 'authType',

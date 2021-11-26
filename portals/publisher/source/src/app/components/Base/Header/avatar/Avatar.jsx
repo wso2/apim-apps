@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import AuthManager from 'AppData/AuthManager';
 
 const styles = (theme) => ({
     profileMenu: {
@@ -90,6 +91,13 @@ class Avatar extends Component {
         if (user.name.endsWith('@carbon.super') && count <= 1) {
             username = user.name.replace('@carbon.super', '');
         }
+        let usr;
+        const readOnlyUser = AuthManager.isReadOnlyUser();
+        if (readOnlyUser) {
+            usr = username + ' (read-only)';
+        } else {
+            usr = username;
+        }
         const { anchorEl } = this.state;
         return (
             <>
@@ -105,7 +113,7 @@ class Avatar extends Component {
                 >
                     <AccountCircle className={classes.accountIcon} />
                     {' '}
-                    {username}
+                    {usr}
                     <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
                         keyboard_arrow_down
                     </Icon>

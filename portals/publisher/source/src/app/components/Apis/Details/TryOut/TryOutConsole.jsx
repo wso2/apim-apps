@@ -49,6 +49,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { isRestricted } from 'AppData/AuthManager';
 
 // disabled because webpack magic comment for chunk name require to be in the same line
 // eslint-disable-next-line max-len
@@ -212,7 +213,8 @@ const TryOutConsole = () => {
                             onClick={generateInternalKey}
                             variant='contained'
                             color='primary'
-                            disabled={tasksStatus.generateKey.inProgress || isAPIRetired}
+                            disabled={tasksStatus.generateKey.inProgress || isAPIRetired
+                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                         >
                             <FormattedMessage
                                 id='Apis.Details.ApiConsole.generate.test.key'

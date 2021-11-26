@@ -796,15 +796,6 @@ class APIDefinition extends React.Component {
                                     />
                                 </Button>
                             )}
-
-                        {isRestricted(['apim:api_create'], api) && (
-                            <Typography variant='body2' color='primary'>
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.update.not.allowed'
-                                    defaultMessage='Unauthorized: Insufficient permissions to update API Definition'
-                                />
-                            </Typography>
-                        )}
                     </div>
                     {isGraphQL === 0 && (
                         <div className={classes.titleWrapper}>

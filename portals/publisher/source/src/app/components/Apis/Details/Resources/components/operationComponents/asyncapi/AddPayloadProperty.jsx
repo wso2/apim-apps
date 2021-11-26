@@ -30,6 +30,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
 import Tooltip from '@material-ui/core/Tooltip';
+import { isRestricted } from 'AppData/AuthManager';
 
 const useStyles = makeStyles(() => ({
     formControl: {
@@ -121,6 +122,7 @@ function AddPayloadProperty(props) {
                     id='parameter-name'
                     label='Name'
                     name='name'
+                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                     value={property.name}
                     onChange={({ target: { name, value } }) => newPropertyDispatcher({ type: name, value })}
                     helperText='Enter property name'
@@ -138,7 +140,10 @@ function AddPayloadProperty(props) {
             <Grid item xs={2} md={2}>
                 <FormControl margin='dense' variant='outlined' className={classes.formControl}>
                     {/* <InputLabel ref={inputLabel} htmlFor='data-type' error={isParameterExist}> */}
-                    <InputLabel htmlFor='data-type'>
+                    <InputLabel
+                        htmlFor='data-type'
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                    >
                         <FormattedMessage
                             id='Apis.Details.Resources.components.operationComponents.data.type'
                             defaultMessage='Data Type'
@@ -148,6 +153,7 @@ function AddPayloadProperty(props) {
                     <Select
                         value={property.type}
                         onChange={({ target: { name, value } }) => newPropertyDispatcher({ type: name, value })}
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                         inputProps={{
                             name: 'type',
                             id: 'data-type',
@@ -163,7 +169,10 @@ function AddPayloadProperty(props) {
                         {
                             getSupportedDataTypes().map((dataType) => {
                                 return (
-                                    <MenuItem value={dataType} dense>
+                                    <MenuItem
+                                        value={dataType}
+                                        dense
+                                    >
                                         {dataType}
                                     </MenuItem>
                                 );
@@ -178,6 +187,7 @@ function AddPayloadProperty(props) {
                     id='parameter-description'
                     label='Description'
                     name='description'
+                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                     value={property.description}
                     onChange={({ target: { name, value } }) => newPropertyDispatcher({ type: name, value })}
                     helperText='Enter property description'
@@ -208,6 +218,7 @@ function AddPayloadProperty(props) {
                         <Button
                             style={{ marginLeft: '20px', marginBottom: '15px', marginRight: '20px' }}
                             size='small'
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             variant='outlined'
                             aria-label='add'
                             color='primary'
@@ -234,6 +245,7 @@ function AddPayloadProperty(props) {
                     >
                         <span>
                             <IconButton
+                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                                 onClick={clearInputs}
                                 size='small'
                             >

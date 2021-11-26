@@ -34,6 +34,7 @@ import Grid from '@material-ui/core/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
+import { isRestricted } from 'AppData/AuthManager';
 import APIRateLimiting from '../Resources/components/APIRateLimiting';
 import Operation from './Operation';
 
@@ -317,6 +318,7 @@ class Operations extends React.Component {
                             <div className={classes.searchWrapper}>
                                 <TextField
                                     id='outlined-full-width'
+                                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                                     label='Operation'
                                     placeholder='Filter Operations'
                                     onChange={(e) => this.setFilterByKeyWord(e, api.operations)}
@@ -393,7 +395,8 @@ class Operations extends React.Component {
                         <Button
                             variant='contained'
                             color='primary'
-                            disabled={isSaving || api.isRevision}
+                            disabled={isSaving || api.isRevision
+                                || isRestricted(['apim:api_publish', 'apim:api_create'])}
                             className={classes.buttonMain}
                             onClick={this.updateOperations}
                         >

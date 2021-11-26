@@ -25,6 +25,7 @@ import Grid from '@material-ui/core/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import CommentsAPI from 'AppData/Comments';
+import { isRestricted } from 'AppData/AuthManager';
 
 const styles = (theme) => ({
     commentIcon: {
@@ -177,7 +178,7 @@ class CommentAdd extends React.Component {
                             id='standard-multiline-flexible'
                             autoFocus
                             multiline
-                            disabled={api.isRevision}
+                            disabled={api.isRevision || isRestricted(['apim:api_create'], api)}
                             className={classes.textField}
                             margin='normal'
                             placeholder={intl.formatMessage({
@@ -198,7 +199,8 @@ class CommentAdd extends React.Component {
                             <Button
                                 variant='contained'
                                 color='primary'
-                                disabled={currentLength === 0}
+                                disabled={api.isRevision || isRestricted(['apim:api_create'], api)
+                                || currentLength === 0}
                                 onClick={() => this.handleClickAddComment()}
                                 className={classes.commentAddButton}
                             >

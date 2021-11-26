@@ -33,6 +33,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { FormattedMessage } from 'react-intl';
+import { isRestricted } from 'AppData/AuthManager';
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -178,6 +179,7 @@ export default function EditPayloadProperty(props) {
                                 />
                             )}
                             multiline
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             rows='4'
                             name='description'
                             margin='normal'
