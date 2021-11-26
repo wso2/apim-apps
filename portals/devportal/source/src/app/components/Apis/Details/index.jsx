@@ -30,6 +30,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import Api from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
+import SolaceTopicsInfo from 'AppComponents/Apis/Details/SolaceApi/SolaceTopicsInfo';
 import Alert from 'AppComponents/Shared/Alert';
 import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
@@ -78,6 +79,7 @@ const LoadableSwitch = withRouter((props) => {
                 <Route path='/apis/:apiUuid/overview' render={() => <Overview {...props} />} />
                 <Route path='/apis/:apiUuid/documents' component={Documents} />
                 <Route path='/apis/:apiUuid/definition' component={AsyncApiDefinition} />
+                <Route path='/apis/:apiUuid/solaceTopicsInfo' component={SolaceTopicsInfo} />
                 <Route exact path='/apis/:apiUuid/credentials/wizard' component={Wizard} />
                 {!advertised && <Route path='/apis/:apiUuid/comments' component={Comments} />}
                 {!advertised && <Route path='/apis/:apiUuid/credentials' component={Credentials} />}
@@ -406,7 +408,7 @@ class Details extends React.Component {
                     rootIconSize, rootIconTextVisible, rootIconVisible, position,
                 },
                 apiDetailPages: {
-                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification,
+                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification, showSolaceTopics,
                 },
                 title: {
                     prefix, sufix,
@@ -490,7 +492,7 @@ class Details extends React.Component {
 
                                     </>
                                 )}
-                                {showTryout && (
+                                {showTryout && (api.gatewayVendor === 'wso2') && (
                                     <LeftMenuItem
                                         text={(
                                             <FormattedMessage
@@ -504,6 +506,20 @@ class Details extends React.Component {
                                         open={open}
                                     />
 
+                                )}
+                                {(showSolaceTopics && api.gatewayVendor === 'solace') && (
+                                    <LeftMenuItem
+                                        text={(
+                                            <FormattedMessage
+                                                id='Apis.Details.index.solaceTopicsInfo'
+                                                defaultMessage='Solace Info'
+                                            />
+                                        )}
+                                        route='solaceTopicsInfo'
+                                        iconText='test'
+                                        to={pathPrefix + 'solaceTopicsInfo'}
+                                        open={open}
+                                    />
                                 )}
                                 {isAsyncApi && showAsyncSpecification && (
                                     <LeftMenuItem
