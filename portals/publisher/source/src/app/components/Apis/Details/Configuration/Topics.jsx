@@ -499,52 +499,50 @@ export default function Topics(props) {
                 <Paper>
                     {
                         operations && Object.entries(operations).map(([target, operation]) => (
-                            <Grid key={target} item md={12}>
-                                <GroupOfOperations tag={target} operation={operation}>
-                                    <Grid
-                                        container
-                                        direction='column'
-                                        justify='flex-start'
-                                        spacing={1}
-                                        alignItems='stretch'
-                                    >
-                                        {operation.subscribe && (
-                                            <Grid key={target + '_subscribe'} item md={12}>
-                                                <AsyncOperation
-                                                    target={target}
-                                                    verb='subscribe'
-                                                    highlight
-                                                    operation={operation}
-                                                    spec={asyncAPISpec}
-                                                    api={api}
-                                                    operationsDispatcher={operationsDispatcher}
-                                                    sharedScopes={sharedScopes}
-                                                    markAsDelete={Boolean(markedOperations[target]
+                            <GroupOfOperations tag={target} operation={operation}>
+                                <Grid
+                                    container
+                                    direction='row'
+                                    justify='flex-start'
+                                    spacing={1}
+                                    alignItems='stretch'
+                                >
+                                    {operation.subscribe && (
+                                        <Grid key={target + '_subscribe'} item md={12}>
+                                            <AsyncOperation
+                                                target={target}
+                                                verb='subscribe'
+                                                highlight
+                                                operation={operation}
+                                                spec={asyncAPISpec}
+                                                api={api}
+                                                operationsDispatcher={operationsDispatcher}
+                                                sharedScopes={sharedScopes}
+                                                markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].subscribe)}
-                                                    onMarkAsDelete={onMarkAsDelete}
-                                                />
-                                            </Grid>
-                                        )}
-                                        {operation.publish && (
-                                            <Grid key={target + '_publish'} item md={12}>
-                                                <AsyncOperation
-                                                    target={target}
-                                                    verb='publish'
-                                                    highlight
-                                                    operation={operation}
-                                                    spec={asyncAPISpec}
-                                                    api={api}
-                                                    operationsDispatcher={operationsDispatcher}
-                                                    sharedScopes={sharedScopes}
-                                                    markAsDelete={Boolean(markedOperations[target]
+                                                onMarkAsDelete={onMarkAsDelete}
+                                            />
+                                        </Grid>
+                                    )}
+                                    {operation.publish && (
+                                        <Grid key={target + '_publish'} item md={12}>
+                                            <AsyncOperation
+                                                target={target}
+                                                verb='publish'
+                                                highlight
+                                                operation={operation}
+                                                spec={asyncAPISpec}
+                                                api={api}
+                                                operationsDispatcher={operationsDispatcher}
+                                                sharedScopes={sharedScopes}
+                                                markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].publish)}
-                                                    onMarkAsDelete={onMarkAsDelete}
-                                                />
-                                            </Grid>
-                                        )}
-                                    </Grid>
-                                </GroupOfOperations>
-                            </Grid>
+                                                onMarkAsDelete={onMarkAsDelete}
+                                            />
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            </GroupOfOperations>
                         ))
                     }
                 </Paper>

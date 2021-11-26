@@ -92,5 +92,5 @@ module.exports = {
         'react/prop-types': [1, { ignore: ['classes', 'api', 'theme', 'history', 'intl'] }], // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
         'react/destructuring-assignment': [1, 'always'],
     },
-    plugins: ['react', 'jest', 'prettier'],
+    plugins: ['react', 'jest', 'prettier', 'testing-library'],
 };

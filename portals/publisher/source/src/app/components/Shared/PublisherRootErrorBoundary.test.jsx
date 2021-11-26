@@ -24,7 +24,7 @@ describe('PublisherRootErrorBoundary test', () => {
         const shallow = createShallow();
         const Child = <div>Testing child</div>;
         const Test = <PublisherRootErrorBoundary classes={{}}>{Child}</PublisherRootErrorBoundary>;
-        const shallowRendered = shallow(Test);
+        const shallowRendered = DEPRECATED_shallow(Test);
         expect(shallowRendered.contains(Child)).toBeTruthy();
     });
 
@@ -39,7 +39,7 @@ describe('PublisherRootErrorBoundary test', () => {
             </PublisherRootErrorBoundary>
         );
 
-        const wrapper = mount(TestComponent);
+        const wrapper = DEPRECATED_mount(TestComponent);
 
         const renderedAppErrorBoundary = wrapper.find(PublisherRootErrorBoundary);
         expect(renderedAppErrorBoundary.state().hasError).toBeTruthy();

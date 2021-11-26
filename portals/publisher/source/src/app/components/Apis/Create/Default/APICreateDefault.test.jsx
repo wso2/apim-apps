@@ -46,12 +46,12 @@ describe('<APICreateForm/> tests', () => {
         jest.restoreAllMocks();
         jest.clearAllMocks();
         jest.resetModules();
-        jest.resetModuleRegistry();
+        jest.resetModules();
         // eslint-disable-next-line no-underscore-dangle
         User._userMap.clear();
     });
-    beforeAll(async () => {
-        spec = await apiDef;
+    beforeAll(() => {
+        spec = DEPRECATED_apiDef;
     });
     test.skip('should not show the policies dropdown if user dose not have required scopes', async () => {
         const mockedResolve = Promise.resolve({ spec });

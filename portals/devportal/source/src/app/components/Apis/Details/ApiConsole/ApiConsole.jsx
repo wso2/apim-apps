@@ -472,6 +472,7 @@ class ApiConsole extends React.Component {
                         productionApiKey={productionApiKey}
                         sandboxApiKey={sandboxApiKey}
                         api={this.state.api}
+                        URLs={null}
                     />
 
                     {api.type !== 'SOAP' && (

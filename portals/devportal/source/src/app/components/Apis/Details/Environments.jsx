@@ -31,6 +31,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@material-ui/core/Tooltip';
 import Box from '@material-ui/core/Box';
 import Icon from '@material-ui/core/Icon';
+import Divider from '@material-ui/core/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
@@ -195,49 +196,128 @@ function Environments(props) {
                                             </MenuItem>
                                         ))}
                                     </Select>
-                                    <VerticalDivider height={30} />
+                                    <VerticalDivider height={api.type === 'GRAPHQL' && (selectedEndpoint.URLs.ws
+                                        || selectedEndpoint.URLs.wss) ? 80 : 30}
+                                    />
                                 </>
                             )}
-
-                            <InputBase
-                                className={classes.input}
-                                inputProps={{ 'aria-label': 'api url' }}
-                                value={selectedEndpoint.URLs.https
-                                    || selectedEndpoint.URLs.http
-                                    || selectedEndpoint.URLs.ws
-                                    || selectedEndpoint.URLs.wss}
-                            />
-                            <Avatar className={classes.avatar} sizes={30}>
-                                <Tooltip
-                                    title={
-                                        urlCopied
-                                            ? intl.formatMessage({
-                                                defaultMessage: 'Copied',
-                                                id: 'Apis.Details.Environments.copied',
-                                            })
-                                            : intl.formatMessage({
-                                                defaultMessage: 'Copy to clipboard',
-                                                id: 'Apis.Details.Environments.copy.to.clipboard',
-                                            })
-                                    }
-                                    interactive
-                                    placement='right'
-                                    className={classes.iconStyle}
-                                >
-                                    <CopyToClipboard
-                                        text={selectedEndpoint.URLs.https
-                                            || selectedEndpoint.URLs.http
-                                            || selectedEndpoint.URLs.ws
-                                            || selectedEndpoint.URLs.wss}
-                                        // text={endpoint.URLs.http}
-                                        onCopy={() => onCopy('urlCopied')}
+                            <Box display='flex' flexDirection='column' width='100%'>
+                                <Box py={0.5} display='flex' alignItems='center' width='100%' flexDirection='row'>
+                                    <Tooltip
+                                        title={(
+                                            <Typography color='inherit'>
+                                                {(api.type === 'GRAPHQL')
+                                                    ? intl.formatMessage({
+                                                        defaultMessage: 'Gateway HTTP URL for GraphQL Queries and Mutations',
+                                                        id: 'Apis.Details.Environments.GraphQL.HTTP.Gateway.URL',
+                                                    })
+                                                    : intl.formatMessage({
+                                                        defaultMessage: 'Gateway URL',
+                                                        id: 'Apis.Details.Environments.Gateway.URL',
+                                                    })}
+                                            </Typography>
+                                        )}
+                                        placement='left-start'
+                                        arrow
                                     >
-                                        <IconButton aria-label='Copy the API URL to clipboard'>
-                                            <Icon color='secondary'>file_copy</Icon>
-                                        </IconButton>
-                                    </CopyToClipboard>
-                                </Tooltip>
-                            </Avatar>
+                                        <InputBase
+                                            className={classes.input}
+                                            inputProps={{ 'aria-label': 'api url' }}
+                                            value={selectedEndpoint.URLs.https
+                                            || selectedEndpoint.URLs.http
+                                            || selectedEndpoint.URLs.wss
+                                            || selectedEndpoint.URLs.ws}
+                                        />
+                                    </Tooltip>
+                                    <Avatar className={classes.avatar} sizes={30}>
+                                        <Tooltip
+                                            title={
+                                                urlCopied
+                                                    ? intl.formatMessage({
+                                                        defaultMessage: 'Copied',
+                                                        id: 'Apis.Details.Environments.copied',
+                                                    })
+                                                    : intl.formatMessage({
+                                                        defaultMessage: 'Copy to clipboard',
+                                                        id: 'Apis.Details.Environments.copy.to.clipboard',
+                                                    })
+                                            }
+                                            interactive
+                                            placement='right'
+                                            className={classes.iconStyle}
+                                        >
+                                            <CopyToClipboard
+                                                text={selectedEndpoint.URLs.https
+                                            || selectedEndpoint.URLs.http
+                                            || selectedEndpoint.URLs.wss
+                                            || selectedEndpoint.URLs.ws}
+                                                // text={endpoint.URLs.http}
+                                                onCopy={() => onCopy('urlCopied')}
+                                            >
+                                                <IconButton aria-label='Copy the API URL to clipboard'>
+                                                    <Icon color='secondary'>file_copy</Icon>
+                                                </IconButton>
+                                            </CopyToClipboard>
+                                        </Tooltip>
+                                    </Avatar>
+                                </Box>
+                                {api.type === 'GRAPHQL' && (selectedEndpoint.URLs.ws || selectedEndpoint.URLs.wss)
+                            && (
+                                <>
+                                    <Divider light />
+                                    <Box pt={0.5} display='flex' alignItems='center' width='100%' flexDirection='row'>
+                                        <>
+                                            <Tooltip
+                                                title={(
+                                                    <Typography color='inherit'>
+                                                        {intl.formatMessage({
+                                                            defaultMessage: 'Gateway Websocket URL for GraphQL Subscriptions',
+                                                            id: 'Apis.Details.Environments.GraphQL.WS.Gateway.URL',
+                                                        })}
+                                                    </Typography>
+                                                )}
+                                                placement='left-start'
+                                                arrow
+                                            >
+                                                <InputBase
+                                                    className={classes.input}
+                                                    inputProps={{ 'aria-label': 'api url' }}
+                                                    value={selectedEndpoint.URLs.wss
+                                                    || selectedEndpoint.URLs.ws}
+                                                />
+                                            </Tooltip>
+                                            <Avatar className={classes.avatar} sizes={30}>
+                                                <Tooltip
+                                                    title={urlCopied
+                                                        ? intl.formatMessage({
+                                                            defaultMessage: 'Copied',
+                                                            id: 'Apis.Details.Environments.copied',
+                                                        })
+                                                        : intl.formatMessage({
+                                                            defaultMessage: 'Copy to clipboard',
+                                                            id: 'Apis.Details.Environments.copy.to.clipboard',
+                                                        })}
+                                                    interactive
+                                                    placement='right'
+                                                    className={classes.iconStyle}
+                                                >
+                                                    <CopyToClipboard
+                                                        text={selectedEndpoint.URLs.wss
+                                                            || selectedEndpoint.URLs.ws}
+                                                        onCopy={() => onCopy('urlCopied')}
+                                                    >
+                                                        <IconButton aria-label='Copy the API URL to clipboard'>
+                                                            <Icon color='secondary'>file_copy</Icon>
+                                                        </IconButton>
+                                                    </CopyToClipboard>
+                                                </Tooltip>
+                                            </Avatar>
+                                        </>
+                                    </Box>
+
+                                </>
+                            )}
+                            </Box>
                         </Paper>
                     </>
                 )}

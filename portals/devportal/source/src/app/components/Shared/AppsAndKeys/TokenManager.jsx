@@ -231,7 +231,7 @@ class TokenManager extends React.Component {
             validating: false,
             importDisabled: false,
             mode: null,
-            tokenType: 'ORIGINAL',
+            tokenType: 'DIRECT',
             isExchangeTokenError:false,
         };
         this.keyStates = {
@@ -635,7 +635,7 @@ class TokenManager extends React.Component {
     }
 
     handleClose=() => {
-        this.setState({ tokenType: 'ORIGINAL' });
+        this.setState({ tokenType: 'DIRECT' });
     }
     /**
      *  @returns {Component}
@@ -776,7 +776,7 @@ class TokenManager extends React.Component {
                     </Box>
                     {(keyManagers && keyManagers.length > 0) && keyManagers.map((keymanager) => (
                         <div>
-                            {keymanager.tokenType === 'ORIGINAL' && (
+                            {keymanager.tokenType === 'DIRECT' && (
                                 <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
                                     <Box display='flex' flexDirection='row'>
                                         <Typography className={classes.heading} variant='h6' component='h6'
@@ -962,7 +962,7 @@ class TokenManager extends React.Component {
                                                             value={tokenType}
                                                             onChange={this.handleChange}
                                                         >
-                                                            <FormControlLabel value='ORIGINAL' control={<Radio/>}
+                                                            <FormControlLabel value='DIRECT' control={<Radio/>}
                                                                               label='Direct Token'/>
                                                             <FormControlLabel value='EXCHANGED' control={<Radio/>}
                                                                               label='Exchange Token'/>
@@ -973,7 +973,7 @@ class TokenManager extends React.Component {
                                         </Box>
                                         </Box>
 
-                                    {tokenType === 'ORIGINAL' && (
+                                    {tokenType === 'DIRECT' && (
                                         <>
                                             <Box display='flex' flexDirection='row'>
                                                 <Typography className={classes.heading} variant='h6' component='h6'

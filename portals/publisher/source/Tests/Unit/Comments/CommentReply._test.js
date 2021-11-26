@@ -74,7 +74,7 @@ let wrapper;
 const props = createTestProps();
 
 beforeEach(() => {
-    wrapper = shallow(<CommentReplyUnwrapped {...props} />);
+    wrapper = DEPRECATED_shallow(<CommentReplyUnwrapped {...props} />);
 });
 
 describe('<CommentReply /> rendering', () => {

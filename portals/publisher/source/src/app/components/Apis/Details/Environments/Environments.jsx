@@ -1243,6 +1243,14 @@ export default function Environments() {
         return endpoints;
     }
 
+    /**
+     * Get helper text for selected vhost.
+     * @param {*} env   Environment
+     * @param {*} selectionList Selected vhosts
+     * @param {*} shorten  Shorten the text
+     * @param {*} maxTextLen Maximum text length
+     * @returns {string} Helper text
+     */
     function getVhostHelperText(env, selectionList, shorten, maxTextLen) {
         const selected = selectionList && selectionList.find((v) => v.env === env);
         if (selected) {
@@ -1251,6 +1259,11 @@ export default function Environments() {
             );
 
             const maxtLen = maxTextLen || 30;
+            if (api.isGraphql() && !shorten) {
+                const gatewayHttpUrl = getGatewayAccessUrl(vhost, 'HTTP');
+                const gatewayWsUrl = getGatewayAccessUrl(vhost, 'WS');
+                return gatewayHttpUrl.combined + ' ' + gatewayWsUrl.combined;
+            }
             const gatewayUrls = getGatewayAccessUrl(vhost, api.isWebSocket() ? 'WS' : 'HTTP');
             if (shorten) {
                 const helperText = getGatewayAccessUrl(vhost, api.isWebSocket() ? 'WS' : 'HTTP').secondary;
@@ -1471,8 +1484,14 @@ export default function Environments() {
                                                     >
                                                         <Grid item xs={12}>
                                                             <Tooltip
-                                                                title={getVhostHelperText(row.name,
-                                                                    selectedVhostDeploy)}
+                                                                title={(
+                                                                    <>
+                                                                        <Typography color='inherit'>
+                                                                            {getVhostHelperText(row.name,
+                                                                                selectedVhostDeploy)}
+                                                                        </Typography>
+                                                                    </>
+                                                                )}
                                                                 placement='bottom'
                                                             >
                                                                 <TextField
@@ -1851,13 +1870,36 @@ export default function Environments() {
                                                                 allEnvDeployments[row.name].vhost, 'HTTP',
                                                             ).secondary}
                                                     </div>
+                                                    {api.isGraphql()
+                                                    && (
+                                                        <>
+                                                            <div className={classes.primaryEndpoint}>
+                                                                {getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                    .vhost, 'WS')
+                                                                    .primary}
+                                                            </div>
+                                                            <div className={classes.secondaryEndpoint}>
+                                                                {getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                    .vhost, 'WS')
+                                                                    .secondary}
+                                                            </div>
+                                                        </>
+
+                                                    )}
                                                 </TableCell>
                                             </>
                                         ) : (
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={getVhostHelperText(row.name, selectedVhosts)}
+                                                        title={(
+                                                            <>
+                                                                <Typography color='inherit'>
+                                                                    {getVhostHelperText(row.name,
+                                                                        selectedVhosts)}
+                                                                </Typography>
+                                                            </>
+                                                        )}
                                                         placement='bottom'
                                                     >
                                                         <TextField

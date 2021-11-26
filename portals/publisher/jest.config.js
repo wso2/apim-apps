@@ -22,7 +22,7 @@
  *      https://github.com/react-monaco-editor/react-monaco-editor/issues/133#issuecomment-403960502
  */
 module.exports = {
-    setupFiles: ['<rootDir>/source/Tests/setupTests.js'],
+    setupFilesAfterEnv: ['<rootDir>/source/Tests/setupTests.js'],
     moduleNameMapper: {
         'AppComponents(.*)$': '<rootDir>/source/src/app/components/$1',
         'AppData(.*)$': '<rootDir>/source/src/app/data/$1',
@@ -31,13 +31,9 @@ module.exports = {
             '<rootDir>/source/Tests/Unit/__mocks__/fileMock.js',
         '\\.(css|less)$': '<rootDir>/source/Tests/Unit/__mocks__/styleMock.js',
         userCustomThemes: '<rootDir>/site/public/conf/userThemes.js',
-        Config: '<rootDir>/source/Tests/Utils/settings.js',
+        Config: '<rootDir>/site/public/conf/settings.js',
         '^MaterialIcons$': '<rootDir>/site/public/fonts/iconfont/MaterialIcons.js',
         'monaco-editor': '<rootDir>/node_modules/react-monaco-editor',
-    },
-    transform: {
-        '^.+\\.jsx$': 'babel-jest',
-        '^.+\\.js$': 'babel-jest',
     },
     testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/source/Tests/Integration/'],
     transformIgnorePatterns: ['<rootDir>/node_modules/'],
@@ -59,5 +55,5 @@ module.exports = {
 
     // The test environment that will be used for testing,
     // Default is JSDOM https://github.com/jest-community/vscode-jest/issues/165
-    // testEnvironment: 'node',
+    testEnvironment: 'jsdom',
 };

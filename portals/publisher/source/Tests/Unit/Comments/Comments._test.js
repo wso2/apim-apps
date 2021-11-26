@@ -40,7 +40,7 @@ const api = {
 };
 
 beforeEach(() => {
-    wrapper = shallow(<CommentsUnwrapped api={api} classes={{}} theme={theme} />);
+    wrapper = DEPRECATED_shallow(<CommentsUnwrapped api={api} classes={{}} theme={theme} />);
 });
 
 beforeAll(() => {

@@ -28,7 +28,7 @@ describe('<MenuButton/> tests', () => {
     let wrapper;
     const TestingMenu = () => <div>My test menu</div>;
     beforeEach(() => {
-        wrapper = mount(<UnwrappedMenuButton menuList={<TestingMenu />} classes={{}} />);
+        wrapper = DEPRECATED_mount(<UnwrappedMenuButton menuList={<TestingMenu />} classes={{}} />);
     });
 
     test('should just render the Menu button', () => {

@@ -396,7 +396,7 @@ class Comment extends React.Component {
      */
     render() {
         const {
-            classes, comments, apiId, allComments, isOverview, crossTenentUser,
+            classes, comments, apiId, allComments, isOverview, isCrossTenantUser,
         } = this.props;
 
         const { editIndex, openDialog, replyId } = this.state;
@@ -434,7 +434,7 @@ class Comment extends React.Component {
 
                                             <Typography className={classes.commentText}>{comment.content}</Typography>
 
-                                            {!crossTenentUser && (
+                                            {!isCrossTenantUser && (
                                                 <CommentOptions
                                                     comment={comment}
                                                     editIndex={editIndex}
@@ -491,7 +491,7 @@ class Comment extends React.Component {
                                                                     />
                                                                 )}
 
-                                                                {!crossTenentUser && (
+                                                                {!isCrossTenantUser && (
                                                                     <CommentOptions
                                                                         comment={reply}
                                                                         editIndex={editIndex}
@@ -560,7 +560,7 @@ Comment.propTypes = {
     allComments: PropTypes.instanceOf(Array).isRequired,
     comments: PropTypes.instanceOf(Array).isRequired,
     isOverview: PropTypes.bool,
-    crossTenentUser: PropTypes.bool.isRequired,
+    isCrossTenantUser: PropTypes.bool.isRequired,
     updateComment: PropTypes.func.isRequired,
 };
 

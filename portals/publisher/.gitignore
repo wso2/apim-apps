@@ -1,5 +1,5 @@
 site/public/dist/
 site/public/pages/index.jag
-.vscode
+/.vscode
 coverage
 services/dev_proxy/keys.json
