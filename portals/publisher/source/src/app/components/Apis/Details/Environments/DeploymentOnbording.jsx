@@ -390,13 +390,9 @@ export default function DeploymentOnboarding(props) {
                                                             <Checkbox
                                                                 id={row.name.split(' ').join('')}
                                                                 value={row.name}
-<<<<<<< HEAD
                                                                 checked={selectedEnvironment.includes(row.name)}
                                                                 disabled={isRestricted(['apim:api_publish',
                                                                     'apim:api_create'])}
-=======
-                                                                checked={selectedSolaceEnvironment.includes(row.name)}
->>>>>>> 97a35cac268dd529c4c6bfbbc5c6577efa3ae54c
                                                                 onChange={handleChange}
                                                                 color='primary'
                                                                 icon={<RadioButtonUncheckedIcon />}
@@ -450,69 +446,6 @@ export default function DeploymentOnboarding(props) {
                                                             </Grid>
                                                         </Grid>
                                                     </CardContent>
-<<<<<<< HEAD
-                                                </Box>
-                                            </Card>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Box>
-                            <Box mt={2}>
-                                <Button
-                                    color='primary'
-                                    className={classes.button}
-                                    display='inline'
-                                    startIcon={<AddIcon />}
-                                    onClick={handleDescriptionOpen}
-                                >
-                                    Add a description
-                                </Button>
-                                <Typography display='inline' className={classes1.textOptional}>
-                                    (optional)
-                                </Typography>
-                                <br />
-                                {descriptionOpen && (
-                                    <>
-                                        <TextField
-                                            className={classes1.descriptionWidth}
-                                            name='description'
-                                            margin='dense'
-                                            variant='outlined'
-                                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                            label='Description'
-                                            inputProps={{ maxLength: maxCommentLength }}
-                                            helperText={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.Environments.Environments.revision
-                                                    .description.deploy'
-                                                    defaultMessage='Add a description to the revision'
-                                                />
-                                            )}
-                                            multiline
-                                            rows={3}
-                                            defaultValue={description === true ? '' : description}
-                                            onBlur={handleChange}
-                                        />
-                                    </>
-                                )}
-                            </Box>
-                            <Box mt={3}>
-                                <Button
-                                    type='submit'
-                                    variant='contained'
-                                    onClick={
-                                        () => createDeployRevision(selectedEnvironment, selectedVhostDeploy)
-                                    }
-                                    color='primary'
-                                    disabled={selectedEnvironment.length === 0
-                                        || isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.Environments.Environments.deploy.deploy'
-                                        defaultMessage='Deploy'
-                                    />
-                                </Button>
-=======
                                                 </Card>
                                             </Grid>
                                         ))}
@@ -539,6 +472,7 @@ export default function DeploymentOnboarding(props) {
                                                 name='description'
                                                 margin='dense'
                                                 variant='outlined'
+                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                                                 label='Description'
                                                 inputProps={{ maxLength: maxCommentLength }}
                                                 helperText={(
@@ -564,7 +498,8 @@ export default function DeploymentOnboarding(props) {
                                             () => createDeployRevision(selectedSolaceEnvironment, selectedVhostDeploy)
                                         }
                                         color='primary'
-                                        disabled={selectedSolaceEnvironment.length === 0}
+                                        disabled={selectedSolaceEnvironment.length === 0
+                                            || isRestricted(['apim:api_publish', 'apim:api_create'])}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.deploy.deploy'
@@ -572,7 +507,6 @@ export default function DeploymentOnboarding(props) {
                                         />
                                     </Button>
                                 </Box>
->>>>>>> 97a35cac268dd529c4c6bfbbc5c6577efa3ae54c
                             </Box>
                         </Paper>
                     )}

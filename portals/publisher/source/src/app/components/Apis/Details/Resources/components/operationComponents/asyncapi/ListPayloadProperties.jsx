@@ -116,10 +116,10 @@ export default function ListPayloadProperties(props) {
                                         )}
                                         >
                                             <IconButton
-                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                                disabled={disableForSolace
+                                                    || isRestricted(['apim:api_publish', 'apim:api_create'])}
                                                 onClick={() => setEditingProperty({ name: k, ...v })}
                                                 fontSize='small'
-                                                disabled={disableForSolace}
                                             >
                                                 <EditIcon fontSize='small' />
                                             </IconButton>
@@ -133,12 +133,8 @@ export default function ListPayloadProperties(props) {
                                         )}
                                         >
                                             <IconButton
-<<<<<<< HEAD
-                                                disabled={disableUpdate
+                                                disabled={disableUpdate || disableForSolace
                                                     || isRestricted(['apim:api_publish', 'apim:api_create'])}
-=======
-                                                disabled={disableUpdate || disableForSolace}
->>>>>>> 97a35cac268dd529c4c6bfbbc5c6577efa3ae54c
                                                 onClick={() => operationsDispatcher({
                                                     action: 'deletePayloadProperty',
                                                     data: { target, verb, value: k },
