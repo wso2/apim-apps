@@ -199,6 +199,8 @@ function APICreateDefault(props) {
         return promisedCreatedAPI.finally(() => setIsCreating(false));
     }
 
+    const internalGateways = settings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
+
     /**
      *
      */
@@ -218,7 +220,7 @@ function APICreateDefault(props) {
                     const envList = settings.environment.map((env) => env.name);
                     const body1 = [];
                     const getFirstVhost = (envName) => {
-                        const env = settings.environment.find(
+                        const env = internalGateways.find(
                             (e) => e.name === envName && e.vhosts.length > 0,
                         );
                         return env && env.vhosts[0].host;

@@ -217,6 +217,7 @@ function AsyncOperation(props) {
                             disableUpdate={disableUpdate}
                             target={target}
                             verb={verb}
+                            disableForSolace={api.gatewayVendor === 'solace'}
                         />
                         {operation.parameters && (
                             <Parameters
@@ -227,6 +228,7 @@ function AsyncOperation(props) {
                                 spec={spec}
                                 target={target}
                                 verb={verb}
+                                disableForSolace={api.gatewayVendor === 'solace'}
                             />
                         )}
                         <PayloadProperties
@@ -235,26 +237,31 @@ function AsyncOperation(props) {
                             disableUpdate={disableUpdate}
                             target={target}
                             verb={verb}
+                            disableForSolace={api.gatewayVendor === 'solace'}
                         />
-                        <OperationGovernance
-                            operation={operation}
-                            operationsDispatcher={operationsDispatcher}
-                            api={api}
-                            disableUpdate={disableUpdate}
-                            spec={spec}
-                            target={target}
-                            verb={verb}
-                            sharedScopes={sharedScopes}
-                        />
-                        {(api.type === 'WS' || api.type === 'WEBSUB') && (
-                            <Runtime
-                                operation={operation}
-                                operationsDispatcher={operationsDispatcher}
-                                disableUpdate={disableUpdate}
-                                target={target}
-                                verb={verb}
-                                api={api}
-                            />
+                        {(api.gatewayVendor === 'wso2') && (
+                            <>
+                                <OperationGovernance
+                                    operation={operation}
+                                    operationsDispatcher={operationsDispatcher}
+                                    api={api}
+                                    disableUpdate={disableUpdate}
+                                    spec={spec}
+                                    target={target}
+                                    verb={verb}
+                                    sharedScopes={sharedScopes}
+                                />
+                                {(api.type === 'WS' || api.type === 'WEBSUB') && (
+                                    <Runtime
+                                        operation={operation}
+                                        operationsDispatcher={operationsDispatcher}
+                                        disableUpdate={disableUpdate}
+                                        target={target}
+                                        verb={verb}
+                                        api={api}
+                                    />
+                                )}
+                            </>
                         )}
                     </Grid>
                 </ExpansionPanelDetails>
