@@ -444,7 +444,7 @@ class ApiThumbClassic extends React.Component {
                                     )}
                                     {(api.lifeCycleStatus === 'PROTOTYPED') && (
                                         <Chip
-                                            label={api.apiType === 'APIProduct' ? api.state : 'PROTOTYPE'}
+                                            label='PRE-RELEASED'
                                             color='default'
                                         />
                                     )}

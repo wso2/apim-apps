@@ -2329,7 +2329,7 @@
     "defaultMessage": "The request is pending"
   },
   "Apis.Details.Overview.CustomizedStepper.prototyped": {
-    "defaultMessage": "Prototyped"
+    "defaultMessage": "Pre-Released"
   },
   "Apis.Details.Overview.CustomizedStepper.publish": {
     "defaultMessage": "Published"

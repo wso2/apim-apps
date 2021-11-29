@@ -131,7 +131,15 @@ const APIDetailsTopMenu = (props) => {
     const prevLocation = history.location.pathname;
     const lastIndex = prevLocation.split('/')[3];
     const [revisionId, setRevisionId] = useState(api.id);
-    const isVisibleInStore = ['PROTOTYPED', 'PUBLISHED'].includes(api.lifeCycleStatus);
+    let lifecycleState;
+    let isVisibleInStore;
+    if (isAPIProduct) {
+        lifecycleState = api.state === 'PROTOTYPED' ? 'PRE-RELEASED' : api.state;
+        isVisibleInStore = ['PROTOTYPED', 'PUBLISHED'].includes(api.state);
+    } else {
+        lifecycleState = api.lifeCycleStatus === 'PROTOTYPED' ? 'PRE-RELEASED' : api.lifeCycleStatus;
+        isVisibleInStore = ['PROTOTYPED', 'PUBLISHED'].includes(api.lifeCycleStatus);
+    }
     /**
          * The component for advanced endpoint configurations.
          * @param {string} name The name of the
@@ -224,7 +232,7 @@ const APIDetailsTopMenu = (props) => {
             <VerticalDivider height={70} />
             <div className={classes.infoItem}>
                 <Typography component='div' variant='subtitle1'>
-                    {isAPIProduct ? api.state : api.lifeCycleStatus}
+                    {lifecycleState}
                 </Typography>
                 <Typography variant='caption' align='left'>
                     <FormattedMessage
@@ -350,8 +358,8 @@ const APIDetailsTopMenu = (props) => {
                 api={api}
                 isAPIProduct={isAPIProduct}
             />
-            {(isVisibleInStore || isAPIProduct) && <VerticalDivider height={70} />}
-            {(isVisibleInStore || isAPIProduct) && (
+            {(isVisibleInStore) && <VerticalDivider height={70} />}
+            {(isVisibleInStore) && (
                 <a
                     target='_blank'
                     rel='noopener noreferrer'
