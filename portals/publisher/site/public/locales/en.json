@@ -65,12 +65,6 @@
       "value": "Next"
     }
   ],
-  "Apis.Create.APIProduct.APIProductCreateWrapper.create": [
-    {
-      "type": 0,
-      "value": "Create"
-    }
-  ],
   "Apis.Create.APIProduct.APIProductCreateWrapper.resources": [
     {
       "type": 0,
