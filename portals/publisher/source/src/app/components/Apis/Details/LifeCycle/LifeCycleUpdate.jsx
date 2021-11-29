@@ -125,7 +125,7 @@ class LifeCycleUpdate extends Component {
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
         const { isAPIProduct } = this.props;
         if (isAPIProduct) {
-            promisedUpdate = this.apiProduct.changeLifecycleStatusOfAPIProduct(apiUUID, action, lifecycleChecklist);
+            promisedUpdate = this.apiProduct.updateLcState(apiUUID, action, lifecycleChecklist);
         } else if (lifecycleChecklist.length > 0) {
             promisedUpdate = this.api.updateLcState(apiUUID, action, lifecycleChecklist);
         } else {
@@ -234,7 +234,7 @@ class LifeCycleUpdate extends Component {
             const state = { ...item, displayName: item.event };
             if (state.event === 'Deploy as a Prototype') {
                 if (state.displayName === 'Deploy as a Prototype') {
-                    state.displayName = 'Prototype';
+                    state.displayName = 'Pre-Release';
                 }
                 return {
                     ...state,

@@ -770,7 +770,7 @@ class APIProduct extends Resource {
     /**
      * Change the LC Status of a given API Product
      */
-    changeLifecycleStatusOfAPIProduct(id, state, checkedItems) {
+    updateLcState(id, state, checkedItems) {
         const payload = {
             action: state,
             apiProductId: id,
@@ -853,6 +853,19 @@ class APIProduct extends Resource {
             );
         });
         return promise_deletePendingTask;
+    }
+
+    /**
+     * Return the deployed revisions of this API
+     * @returns
+     */
+    getDeployedRevisions(id) {
+        return this.client.then(client => {
+            return client.apis['API Product Revisions'].getAPIProductRevisionDeployments({
+                    apiProductId: id,
+                },
+            );
+        });
     }
 
     /**
