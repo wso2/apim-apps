@@ -745,8 +745,8 @@ class Details extends Component {
                                     />
                                 </>
                             )}
-                            {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && !api.isWebSocket()
-                                && !api.isGraphql() && !isAsyncAPI && (
+                            {(isAPIProduct || (!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised
+                                && !api.isWebSocket() && !api.isGraphql() && !isAsyncAPI)) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>Test</Typography>
@@ -963,6 +963,10 @@ class Details extends Component {
                                         path={Details.subPaths.TRYOUT}
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.TRYOUT_PRODUCT}
+                                        component={() => <TryOutConsole apiObj={api} />}
+                                    />
                                     <Route path={Details.subPaths.EXTERNAL_STORES} component={ExternalStores} />
                                     <Route
                                         path={Details.subPaths.COMMENTS}
@@ -1021,6 +1025,7 @@ Details.subPaths = {
     MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
     TRYOUT: '/apis/:api_uuid/test-console',
+    TRYOUT_PRODUCT: '/api-products/:apiprod_uuid/test-console',
     QUERYANALYSIS: '/apis/:api_uuid/queryanalysis',
     TOPICS: '/apis/:api_uuid/topics',
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi definition',
