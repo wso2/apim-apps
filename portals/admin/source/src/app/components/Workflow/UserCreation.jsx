@@ -231,7 +231,7 @@ function ListLabels() {
             name: 'tenantAwareUserName',
             label: intl.formatMessage({
                 id: 'Workflow.UserCreation.table.header.TenantName',
-                defaultMessage: 'Tenant Name',
+                defaultMessage: 'User Name',
             }),
             options: {
                 sort: false,
@@ -339,7 +339,7 @@ function ListLabels() {
     const searchActive = true;
     const searchPlaceholder = intl.formatMessage({
         id: 'Workflow.ListUserCreation.search.default',
-        defaultMessage: 'Search by Tenant name or domain',
+        defaultMessage: 'Search by user name or domain',
     });
 
     const filterData = (event) => {
