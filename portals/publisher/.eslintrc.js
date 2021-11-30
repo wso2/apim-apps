@@ -34,6 +34,7 @@ module.exports = {
     extends: ['airbnb', 'plugin:jsx-a11y/recommended'], // http://airbnb.io/javascript/react/
     rules: {
         'max-len': ['error', { code: 120, tabWidth: 4 }],
+        'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
         'require-jsdoc': [
             'warn',
             {
