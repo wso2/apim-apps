@@ -93,17 +93,19 @@ export default function TasksWorkflowCard() {
     const fetchAllWorkFlows = () => {
         const promiseUserSign = restApi.workflowsGet('AM_USER_SIGNUP');
         const promiseStateChange = restApi.workflowsGet('AM_API_STATE');
+        const promiseApiProductStateChange = restApi.workflowsGet('AM_API_PRODUCT_STATE');
         const promiseAppCreation = restApi.workflowsGet('AM_APPLICATION_CREATION');
         const promiseSubCreation = restApi.workflowsGet('AM_SUBSCRIPTION_CREATION');
         const promiseSubUpdate = restApi.workflowsGet('AM_SUBSCRIPTION_UPDATE');
         const promiseRegProd = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_PRODUCTION');
         const promiseRegSb = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_SANDBOX');
         Promise.all([promiseUserSign, promiseStateChange, promiseAppCreation, promiseSubCreation,
-            promiseSubUpdate, promiseRegProd, promiseRegSb])
+            promiseSubUpdate, promiseRegProd, promiseRegSb, promiseApiProductStateChange])
             .then(([resultUserSign, resultStateChange, resultAppCreation, resultSubCreation,
-                resultSubUpdate, resultRegProd, resultRegSb]) => {
+                resultSubUpdate, resultRegProd, resultRegSb, resultApiProductStateChange]) => {
                 const userCreation = resultUserSign.body.list;
                 const stateChange = resultStateChange.body.list;
+                const productStateChange = resultApiProductStateChange.body.list;
                 const applicationCreation = resultAppCreation.body.list;
                 const subscriptionCreation = resultSubCreation.body.list;
                 const subscriptionUpdate = resultSubUpdate.body.list;
@@ -115,6 +117,7 @@ export default function TasksWorkflowCard() {
                     subscriptionCreation,
                     subscriptionUpdate,
                     registration,
+                    productStateChange,
                 });
             });
     };
@@ -243,6 +246,15 @@ export default function TasksWorkflowCard() {
                     defaultMessage: 'API State Change',
                 }),
                 count: allTasksSet.stateChange.length,
+            },
+            {
+                icon: SettingsEthernetIcon,
+                path: '/tasks/api-product-state-change',
+                name: intl.formatMessage({
+                    id: 'Dashboard.tasksWorkflow.compactTasks.apiProductStateChange.name',
+                    defaultMessage: 'API Product State Change',
+                }),
+                count: allTasksSet.productStateChange.length,
             },
         ];
         return (
@@ -567,6 +579,38 @@ export default function TasksWorkflowCard() {
         });
     };
 
+    const getAPIProductStateChangeFewerTaskComponent = () => {
+        // State Change tasks related component generation
+        return allTasksSet.productStateChange.map((task) => {
+            return (
+                <Box display='flex' alignItems='center' mt={1}>
+                    <Box flexGrow={1}>
+                        <Typography variant='subtitle2'>
+                            {task.properties.apiName}
+                        </Typography>
+                        <Box display='flex'>
+                            <Typography variant='body2'>
+                                <FormattedMessage
+                                    id='Dashboard.tasksWorkflow.fewerTasks.card.apiProduct.stateChangeAction.prefix'
+                                    defaultMessage='State Change Action:'
+                                />
+                                &nbsp;
+                            </Typography>
+                            <Typography style={{ 'font-weight': 'bold' }} variant='body2'>
+                                {task.properties.action}
+                                &nbsp;
+                            </Typography>
+                            <Typography variant='body2'>
+                                {moment(task.createdTime).fromNow()}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    {getApproveRejectButtons(task.referenceId)}
+                </Box>
+            );
+        });
+    };
+
     // Component to be displayed when there are 4 or less remaining tasks
     // Renders some details of the task and approve/reject buttons
     const fewerTasksCard = () => {
@@ -596,6 +640,7 @@ export default function TasksWorkflowCard() {
                     {getSubscriptionUpdateFewerTaskComponent()}
                     {getRegistrationCreationFewerTaskComponent()}
                     {getStateChangeFewerTaskComponent()}
+                    {getAPIProductStateChangeFewerTaskComponent()}
                 </CardContent>
             </Card>
         );

@@ -17,6 +17,9 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.cancel": {
     "defaultMessage": "Cancel"
   },
+  "Apis.Create.APIProduct.APIProductCreateWrapper.create": {
+    "defaultMessage": "Create"
+  },
   "Apis.Create.APIProduct.APIProductCreateWrapper.defineProvide": {
     "defaultMessage": "Define API Product"
   },

@@ -54,6 +54,7 @@ import SecurityIcon from '@material-ui/icons/Security';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import APIProductStateChange from 'AppComponents/Workflow/APIProductStateChange';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -262,6 +263,12 @@ const RouteMenuMapping = (intl) => [
                 id: 'API State Change',
                 path: '/tasks/api-state-change',
                 component: APIStateChange,
+                icon: <SettingsEthernetIcon />,
+            },
+            {
+                id: 'API Product State Change',
+                path: '/tasks/api-product-state-change',
+                component: APIProductStateChange,
                 icon: <SettingsEthernetIcon />,
             },
         ],
