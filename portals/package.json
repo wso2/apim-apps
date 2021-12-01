@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "clean": "lerna run clean --stream",
+    "clean": "lerna clean -y",
     "bootstrap": "npm ci && lerna bootstrap",
     "build:prod": "lerna run build:prod --stream",
+    "clean": "lerna run clean --stream",
     "start": "lerna run start --parallel"
   },
   "dependencies": {
@@ -13,10 +14,6 @@
     "react-dom": "^16.8.0"
   },
   "devDependencies": {
-    "@formatjs/cli": "^4.4.0",
-    "extract-react-intl-messages": "^4.1.1",
-    "lerna": "^3.22.1",
-    "webpack": "^5.64.1",
-    "webpack-cli": "^4.9.1"
+    "lerna": "^3.22.1"
   }
 }
