@@ -11,23 +11,23 @@
  * associated services.
  */
 
-import React, { FC, ReactElement } from "react";
-import { render, RenderOptions, RenderResult } from "@testing-library/react";
-import { IntlProvider } from "react-intl";
-import { ThemeProvider } from "@material-ui/core/styles";
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
-import defaultTheme from "AppData/defaultTheme";
-import { Router } from "react-router-dom";
-import { createMemoryHistory } from "history";
-import { AppContextProvider } from "AppComponents/Shared/AppContext";
+import React, { FC, ReactElement } from 'react';
+import { render, RenderOptions, RenderResult } from '@testing-library/react';
+import { IntlProvider } from 'react-intl';
+import { ThemeProvider } from '@material-ui/core/styles';
+import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import defaultTheme from 'AppData/defaultTheme';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
+import { AppContextProvider } from 'AppComponents/Shared/AppContext';
 
 const organizationData = {
   organizationList: [],
   selectedOrg: {
-    handle: "testOrg",
+    handle: 'testOrg',
     id: 123,
-    uuid: "13bbd7d0-254f-4292-80eb-6d474f487438",
-    name: "Test Org",
+    uuid: '13bbd7d0-254f-4292-80eb-6d474f487438',
+    name: 'Test Org',
   },
 };
 
@@ -66,6 +66,6 @@ export const searchParamsToRequestQuery = (searchParams: URLSearchParams) =>
       .replace(/&/g, '","')
       .replace(/=/g, '":"')}"}`
   );
-export * from "@testing-library/react";
+export * from '@testing-library/react';
 export { customRender as render };
-export { getMockServer } from "./restAPI.mock";
+export { getMockServer } from './restAPI.mock';
