@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+/* eslint-disable no-unused-expressions */
 
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -80,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {JSON} props props passed from parent
  * @returns {JSX} Header AppBar components.
  */
-function ListLabels() {
+function ListLabels(props) {
     const intl = useIntl();
     const [data, setData] = useState(null);
     const restApi = new API();
@@ -88,6 +89,13 @@ function ListLabels() {
     const [buttonValue, setButtonValue] = useState();
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
+    const { isAPIProduct } = props;
+    let workflowType;
+    if (isAPIProduct) {
+        workflowType = 'AM_API_PRODUCT_STATE';
+    } else {
+        workflowType = 'AM_API_STATE';
+    }
 
     /**
      * API call to get Detected Data
@@ -95,12 +103,14 @@ function ListLabels() {
      */
     function apiCall() {
         return restApi
-            .workflowsGet('AM_API_STATE')
+            .workflowsGet(workflowType)
             .then((result) => {
                 const workflowlist = result.body.list.map((obj) => {
                     return {
                         description: obj.description,
-                        api: obj.properties.apiName + '-' + obj.properties.apiVersion,
+                        api: isAPIProduct
+                            ? obj.properties.apiName
+                            : obj.properties.apiName + '-' + obj.properties.apiVersion,
                         action: obj.properties.action,
                         currentState: obj.properties.currentState,
                         apiProvider: obj.properties.currentState,
@@ -116,10 +126,17 @@ function ListLabels() {
                 if (status === 401) {
                     setHasListPermission(false);
                 } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Workflow.APIStateChange.apicall.has.errors',
-                        defaultMessage: 'Unable to get workflow pending requests for API State Change',
-                    }));
+                    isAPIProduct ? (
+                        Alert.error(intl.formatMessage({
+                            id: 'Workflow.APIProductStateChange.apicall.has.errors',
+                            defaultMessage: 'Unable to get workflow pending requests for API Product State Change',
+                        }))
+                    ) : (
+                        Alert.error(intl.formatMessage({
+                            id: 'Workflow.APIStateChange.apicall.has.errors',
+                            defaultMessage: 'Unable to get workflow pending requests for API State Change',
+                        }))
+                    );
                     throw (error);
                 }
             });
@@ -168,10 +185,17 @@ function ListLabels() {
                 if (status === 401) {
                     Alert.error(description);
                 } else if (response.body) {
-                    Alert.error(intl.formatMessage({
-                        id: 'Workflow.APIStateChange.updateStatus.has.errors',
-                        defaultMessage: 'Unable to complete API state change approve/reject process. ',
-                    }));
+                    isAPIProduct ? (
+                        Alert.error(intl.formatMessage({
+                            id: 'Workflow.APIProductStateChange.updateStatus.has.errors',
+                            defaultMessage: 'Unable to complete API Product state change approve/reject process.',
+                        }))
+                    ) : (
+                        Alert.error(intl.formatMessage({
+                            id: 'Workflow.APIStateChange.updateStatus.has.errors',
+                            defaultMessage: 'Unable to complete API state change approve/reject process.',
+                        }))
+                    );
                     throw (response.body.description);
                 }
                 setIsUpdating(false);
@@ -209,10 +233,15 @@ function ListLabels() {
             </HelpBase>),
 
         pageStyle: 'half',
-        title: intl.formatMessage({
-            id: 'Workflow.APIStateChange.title.apistatechange',
-            defaultMessage: 'API State Change - Approval Tasks',
-        }),
+        title: intl.formatMessage(
+            isAPIProduct ? {
+                id: 'Workflow.APIProductStateChange.title.apistatechange',
+                defaultMessage: 'API Product State Change - Approval Tasks',
+            } : {
+                id: 'Workflow.APIStateChange.title.apistatechange',
+                defaultMessage: 'API State Change - Approval Tasks',
+            },
+        ),
     };
 
     const classes = useStyles();
@@ -232,10 +261,16 @@ function ListLabels() {
         },
         {
             name: 'api',
-            label: intl.formatMessage({
-                id: 'Workflow.APIStateChange.table.header.APIName',
-                defaultMessage: 'API',
-            }),
+            label: intl.formatMessage(
+                isAPIProduct
+                    ? {
+                        id: 'Workflow.APIProductStateChange.table.header.APIProductName',
+                        defaultMessage: 'API Product',
+                    } : {
+                        id: 'Workflow.APIStateChange.table.header.APIName',
+                        defaultMessage: 'API',
+                    },
+            ),
             options: {
                 sort: false,
                 filter: true,
@@ -354,10 +389,14 @@ function ListLabels() {
     );
 
     const searchActive = true;
-    const searchPlaceholder = intl.formatMessage({
-        id: 'Workflow.apistatechange.search.default',
-        defaultMessage: 'Search by API, Request state, Current state or Creator',
-    });
+    const searchPlaceholder = isAPIProduct
+        ? intl.formatMessage({
+            id: 'Workflow.apiProduct.statechange.search.default',
+            defaultMessage: 'Search by API Product, Request state, Current state or Creator',
+        }) : intl.formatMessage({
+            id: 'Workflow.api.statechange.search.default',
+            defaultMessage: 'Search by API, Request state, Current state or Creator',
+        });
 
     const filterData = (event) => {
         setSearchText(event.target.value);
@@ -389,16 +428,35 @@ function ListLabels() {
                 <Card className={classes.root}>
                     <CardContent>
                         <Typography gutterBottom variant='h5' component='h2'>
-                            <FormattedMessage
-                                id='Workflow.APIStateChange.List.empty.title.apistatechange'
-                                defaultMessage='API State Change'
-                            />
+                            {isAPIProduct
+                                ? (
+                                    <FormattedMessage
+                                        id='Workflow.APIProductStateChange.List.empty.title.apistatechange'
+                                        defaultMessage='API Product State Change'
+                                    />
+                                )
+                                : (
+                                    <FormattedMessage
+                                        id='Workflow.APIStateChange.List.empty.title.apistatechange'
+                                        defaultMessage='API State Change'
+                                    />
+                                )}
                         </Typography>
                         <Typography variant='body2' color='textSecondary' component='p'>
-                            <FormattedMessage
-                                id='Workflow.APIStateChange.List.empty.content.apistatechange'
-                                defaultMessage='There are no pending workflow requests for API state change.'
-                            />
+                            {isAPIProduct
+                                ? (
+                                    <FormattedMessage
+                                        id='Workflow.APIProductStateChange.List.empty.content.apiProduct.statechange'
+                                        defaultMessage='There are no pending workflow requests for API Product state
+                                        change'
+                                    />
+                                )
+                                : (
+                                    <FormattedMessage
+                                        id='Workflow.APIStateChange.List.empty.content.apistatechange'
+                                        defaultMessage='There are no pending workflow requests for API state change.'
+                                    />
+                                )}
                         </Typography>
                     </CardContent>
                     <CardActions>
@@ -420,13 +478,21 @@ function ListLabels() {
                         defaultMessage='Permission Denied'
                     />
                 )}
-                content={(
-                    <FormattedMessage
-                        id='Workflow.ApiStateChange.permission.denied.content'
-                        defaultMessage={'You dont have enough permission to view API State Change - '
+                content={isAPIProduct
+                    ? (
+                        <FormattedMessage
+                            id='Workflow.ApiProduct.StateChange.permission.denied.content'
+                            defaultMessage={'You dont have enough permission to view API Product State Change - '
                         + 'Approval Tasks. Please contact the site administrator.'}
-                    />
-                )}
+                        />
+                    )
+                    : (
+                        <FormattedMessage
+                            id='Workflow.ApiStateChange.permission.denied.content'
+                            defaultMessage={'You dont have enough permission to view API State Change - '
+                            + 'Approval Tasks. Please contact the site administrator.'}
+                        />
+                    )}
             />
         );
     }
