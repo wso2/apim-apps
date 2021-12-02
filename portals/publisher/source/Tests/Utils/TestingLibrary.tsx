@@ -11,30 +11,167 @@
  * associated services.
  */
 
-import React, { FC, ReactElement } from 'react';
-import { render, RenderOptions, RenderResult } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { ThemeProvider } from '@material-ui/core/styles';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
-import defaultTheme from 'AppData/defaultTheme';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import { AppContextProvider } from 'AppComponents/Shared/AppContext';
+import React, { FC, ReactElement, useEffect, useState } from "react";
+import { render, RenderOptions, RenderResult } from "@testing-library/react";
+import { IntlProvider } from "react-intl";
+import { ThemeProvider } from "@material-ui/core/styles";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import defaultTheme from "AppData/defaultTheme";
+import Api from "AppData/api";
+import { Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
+import { AppContextProvider } from "AppComponents/Shared/AppContext";
+import AuthManager from "AppData/AuthManager";
+import User from "AppData/User";
+import Utils from "AppData/Utils";
 
-const organizationData = {
-  organizationList: [],
-  selectedOrg: {
-    handle: 'testOrg',
-    id: 123,
-    uuid: '13bbd7d0-254f-4292-80eb-6d474f487438',
-    name: 'Test Org',
-  },
-};
-
+var localStorageMock = (function() {
+  var store: { [key: string]: string } = {};
+  return {
+    getItem: function(key: string) {
+      return store[key];
+    },
+    setItem: function(key: string, value: any) {
+      store[key] = value.toString();
+    },
+    clear: function() {
+      store = {};
+    },
+    removeItem: function(key: string): void {
+      delete store[key];
+    },
+  };
+})();
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
+Object.defineProperty(window.document, 'cookie', {
+  writable: true,
+  value: 'myCookie=omnomnom',
+});
 export const history = createMemoryHistory();
 
 const GlobalProviders: FC = ({ children }) => {
+  const [settings, setSettings] = useState({
+    devportalUrl: "https://localhost:9443/devportal",
+    environment: [
+      {
+        id: "Default",
+        name: "Default",
+        displayName: "Default",
+        type: "hybrid",
+        serverUrl: "https://localhost:9443/services/",
+        showInApiConsole: true,
+        vhosts: [
+          {
+            host: "localhost",
+            httpContext: "",
+            httpPort: 8280,
+            httpsPort: 8243,
+            wsPort: 9099,
+            wssPort: 8099,
+            websubHttpPort: 9021,
+            websubHttpsPort: 8021,
+          },
+        ],
+      },
+    ],
+    scopes: [
+      "apim:admin",
+      "apim:api_create",
+      "apim:api_delete",
+      "apim:api_generate_key",
+      "apim:api_import_export",
+      "apim:api_manage",
+      "apim:api_mediation_policy_manage",
+      "apim:api_product_import_export",
+      "apim:api_publish",
+      "apim:api_view",
+      "apim:app_import_export",
+      "apim:client_certificates_add",
+      "apim:client_certificates_manage",
+      "apim:client_certificates_update",
+      "apim:client_certificates_view",
+      "apim:comment_manage",
+      "apim:comment_view",
+      "apim:comment_write",
+      "apim:document_create",
+      "apim:document_manage",
+      "apim:ep_certificates_add",
+      "apim:ep_certificates_manage",
+      "apim:ep_certificates_update",
+      "apim:ep_certificates_view",
+      "apim:mediation_policy_create",
+      "apim:mediation_policy_manage",
+      "apim:mediation_policy_view",
+      "apim:pub_alert_manage",
+      "apim:publisher_settings",
+      "apim:shared_scope_manage",
+      "apim:subscription_block",
+      "apim:subscription_manage",
+      "apim:subscription_view",
+      "apim:threat_protection_policy_create",
+      "apim:threat_protection_policy_manage",
+      "apim:tier_manage",
+      "apim:tier_view",
+      "openid",
+    ],
+    monetizationAttributes: [],
+    securityAuditProperties: {
+      isGlobal: null,
+      overrideGlobal: null,
+      apiToken: null,
+      collectionId: null,
+      baseUrl: null,
+    },
+    externalStoresEnabled: false,
+    docVisibilityEnabled: false,
+    crossTenantSubscriptionEnabled: false,
+    authorizationHeader: "Authorization",
+  });
+  useEffect(() => {
+    (async () => {
+      const settingPromise = await Api.getSettings();
+      setSettings(settingPromise);
+    })();
+  }, []);
   const theme = createMuiTheme(defaultTheme); // We really don't care about the styling in this tests, Need to handle Visual Regression
+  const testUser = User.fromJson({
+    name: "demo@carbon.super",
+    scopes: [
+      "apim:api_create",
+      "apim:api_delete",
+      "apim:api_generate_key",
+      "apim:api_publish",
+      "apim:api_view",
+      "apim:client_certificates_add",
+      "apim:client_certificates_update",
+      "apim:client_certificates_view",
+      "apim:comment_view",
+      "apim:comment_write",
+      "apim:document_create",
+      "apim:document_manage",
+      "apim:ep_certificates_add",
+      "apim:ep_certificates_update",
+      "apim:ep_certificates_view",
+      "apim:mediation_policy_create",
+      "apim:mediation_policy_manage",
+      "apim:mediation_policy_view",
+      "apim:pub_alert_manage",
+      "apim:publisher_settings",
+      "apim:subscription_block",
+      "apim:subscription_view",
+      "apim:threat_protection_policy_create",
+      "apim:threat_protection_policy_manage",
+      "openid",
+      "service_catalog:service_view",
+      "service_catalog:service_write",
+    ],
+    remember: false,
+    expiryTime: "1970-01-01T00:00:00.000Z",
+  }, Utils.getDefaultEnvironment().label);
+  testUser.setPartialToken("AM_ACC_TOKEN_DEFAULT_P1", -1, '/publisher');
+  testUser.setExpiryTime(9999999);
+        
+  AuthManager.setUser(testUser);
   // issues through separate testing mechanism
   return (
     <Router history={history}>
@@ -42,7 +179,7 @@ const GlobalProviders: FC = ({ children }) => {
         <ThemeProvider theme={theme}>
           <AppContextProvider
             value={{
-              settings: {},
+              settings,
               user: {},
             }}
           >

@@ -19,7 +19,7 @@
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
-import Redirect from 'react-router-dom/Redirect';
+import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';

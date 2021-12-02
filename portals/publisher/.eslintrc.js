@@ -86,6 +86,7 @@ module.exports = {
         'jsx-quotes': ['error', 'prefer-single'],
         'no-else-return': 'off',
         'no-unused-vars': ['error'],
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx", ".ts"] }],
         'react/jsx-props-no-spreading': [1, {
             exceptions:
         ['Route', 'Operation', 'Listing', 'DeferredDetails', 'Details', 'svg', 'Paper', 'EditableRow', 'CreateScope', 'EditScope', 'WrappedComponent', 'ErrorIcon', 'WarningIcon', 'CheckCircleIcon', 'InfoIcon'],

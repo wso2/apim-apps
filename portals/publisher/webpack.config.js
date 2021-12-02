@@ -83,13 +83,13 @@ module.exports = (env, argv) => {
                     secure: false,
                 },
                 '/api/am/publisher/v2/swagger.yaml': {
-                    target: 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml',
+                    target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml' : 'https://localhost:9443/api/am/publisher/v2/swagger.yaml',
                     secure: false,
                     changeOrigin: true,
                     pathRewrite: { '^/api/am/publisher/v2/swagger.yaml': '' },
                 },
                 '/api/am/service-catalog/v0/oas.yaml': {
-                    target: 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml',
+                    target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml' : 'https://localhost:8081/api/am/service-catalog/v0/oas.yaml',
                     secure: false,
                     changeOrigin: true,
                     pathRewrite: { '^/api/am/service-catalog/v0/oas.yaml': '' },

@@ -1,38 +1,93 @@
 import React from 'react';
 import {
-    fireEvent, render, screen, waitFor, within,
+    fireEvent,
+    render,
+    screen,
+    waitFor,
+    history,
 } from 'AppTests/Utils/TestingLibrary';
-import getMockServer, { resetMockHandler, onResponse } from 'AppTests/Utils/restAPI.mock';
+import getMockServer, { resetMockHandler } from 'AppTests/Utils/restAPI.mock';
 
 import { APIName } from 'AppTests/Utils/constants';
 import Landing from './index';
 
 const server = getMockServer(APIName.Publisher);
-beforeAll(() => server.listen());
+beforeAll(async () => server.listen());
 afterEach(() => {
     server.resetHandlers();
     resetMockHandler();
 });
 afterAll(() => server.close());
 
-describe('Marketplace page', () => {
-    test('Marketplace get connectors', async () => {
+describe('Landing page', () => {
+    test('Should have 4 welcome cards', async () => {
         render(<Landing />);
-        // We can't expect to have the network responses just after rending, Hence asserting on the loader element
-        // expect(screen.getByTestId('marketplace-search-loader')).toBeInTheDocument();
-        // // Since search box appears after the data feting completed assert on the `textbox` role
-        // await waitFor(() => {
-        //     expect(screen.getByRole('textbox')).toBeInTheDocument();
-        // });
-        // // `search` text(box) is available without a `wait` as well
-        // await waitFor(() => {
-        //     expect(screen.getByText(/search/i)).toBeInTheDocument();
-        // });
-        // // Check for rendered connectors list
-        // await waitFor(() => {
-        //     expect(screen.getAllByText(/by isuruboyagane/i)).toHaveLength(10);
-        // });
-        // // Expect filters list to be present in the page
-        // expect(screen.getByText(/filter by/i)).toBeInTheDocument();
+        expect(screen.getByText(/soap api/i)).toBeInTheDocument();
+        expect(screen.getByText(/^rest api/i)).toBeInTheDocument();
+        expect(screen.getByText(/^graphql/i)).toBeInTheDocument();
+        expect(screen.getByText(/streaming api/i)).toBeInTheDocument();
+    });
+
+    test('REST API Card links', async () => {
+        render(<Landing />);
+        const restAPICard = screen.getByText(/^rest api/i);
+        expect(
+            screen.queryByRole('heading', {
+                name: /start from scratch/i,
+            }),
+        ).toBeNull();
+        expect(restAPICard).toBeInTheDocument();
+        fireEvent.click(restAPICard);
+        expect(
+            screen.getByRole('link', {
+                name: /start from scratch/i,
+            }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('link', {
+                name: /import open api/i,
+            }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', {
+                name: /deploy sample api/i,
+            }),
+        ).toBeInTheDocument();
+    });
+
+    test('REST API deploy sample API', async () => {
+        render(<Landing />);
+        history.push('/publisher');
+        const restAPICard = screen.getByText(/^rest api/i);
+        expect(
+            screen.queryByRole('heading', {
+                name: /start from scratch/i,
+            }),
+        ).toBeNull();
+        expect(restAPICard).toBeInTheDocument();
+        fireEvent.click(restAPICard);
+        const deploySampleButton = screen.getByRole('button', {
+            name: /deploy sample api/i,
+        });
+        expect(deploySampleButton).toBeInTheDocument();
+        fireEvent.click(deploySampleButton);
+        expect(screen.getByText(/creating sample api \.\.\./i)).toBeInTheDocument();
+        expect(await screen.findByText('Updating sample API ...')).toBeVisible();
+        expect(
+            await screen.findByText('Creating a revision of sample API ...'),
+        ).toBeVisible();
+        expect(await screen.findByText('Deploying sample API ...')).toBeVisible();
+
+        expect(
+            await screen.findByText('Publishing sample API to developer portal ...'),
+        ).toBeVisible();
+        expect(
+            screen.queryByText('API published successfully!'),
+        ).not.toBeInTheDocument();
+        await waitFor(
+            () => {
+                expect(screen.getByText(/choose your option to create an api/i)).toBeVisible();
+            },
+        );
     });
 });

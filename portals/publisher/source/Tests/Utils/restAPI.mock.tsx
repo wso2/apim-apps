@@ -10,16 +10,21 @@
  * entered into with WSO2 governing the purchase of this software and any
  * associated services.
  */
-import { rest } from 'msw';
-import { Context, OpenAPIBackend, Request } from 'openapi-backend';
-import { setupServer } from 'msw/node';
-import { searchParamsToRequestQuery } from './TestingLibrary';
-import { APIName } from './constants';
+import { rest } from "msw";
+import { Context, OpenAPIBackend, Request } from "openapi-backend";
+import { setupServer } from "msw/node";
+import { searchParamsToRequestQuery } from "./TestingLibrary";
+import { APIName } from "./constants";
 
+// Following is a transitive dependency, Used for removing `x-examples` from swagger def
+// Temp solution
+import yaml from "js-yaml";
+
+type OASBackendMapping = { context: string; oasBackend: OpenAPIBackend };
 // Declaring the global BallerinaCentral variable set from src/setupTests.ts file
 declare global {
   const openApiBackends: {
-    [key: string]: { context: string; oasBackend: OpenAPIBackend };
+    [key: string]: OASBackendMapping;
   };
 }
 
@@ -49,80 +54,66 @@ export const { onResponse, getOverride, resetMockHandler } = (() => {
 })();
 
 // An Async function which will be passed to the `msw` library for handling intercepted incoming requests
-const createMockHandler =
-  (apiContext: string) =>
-  async (
-    req: { url?: any; method?: any; headers?: any },
-    res: any,
-    ctx: any
-  ) => {
-    const api = openApiBackends[apiContext].oasBackend;
-    // Register `notFound` handler for return 404 response, `notFound` here is a reserved handler
-    // in `openapi-backend` library (https://github.com/anttiviljami/openapi-backend)
-    api.register('notFound', (_bc, _bres, bctx) => res(bctx.status(404)));
+const createMockHandler = (apiMapping: OASBackendMapping) => async (
+  req: { url?: any; method?: any; headers?: any },
+  res: any,
+  ctx: any
+) => {
+  const thisAPIBackend = apiMapping.oasBackend;
 
-    // register 'notImplemented' (special handler) in mock API
-    api.register('notImplemented', async (bc, bres, bctx) => {
-      const { status: initialStatus, mock: initialMock } =
-        await api.mockResponseForOperation(bc.operation.operationId || '');
-      const { status = initialStatus, mock } = getOverride()(
-        bc,
-        initialMock,
-        initialStatus,
-        bres,
-        bctx
+  let mockedResponse = ctx.json({
+    error: "something went wrong",
+  });
+  try {
+    const path = req.url.pathname.replace(apiMapping.context, "");
+    const query = req.url.searchParams.toString()
+      ? searchParamsToRequestQuery(req.url.searchParams)
+      : "";
+    const { method, headers } = req;
+    const oasRequest: Request = {
+      path,
+      method,
+      headers: headers.all(),
+      query,
+    };
+    if (req.url.pathname === "/api/am/publisher/v2/swagger.yaml") {
+      const d = thisAPIBackend;
+      const patching = await fetch(thisAPIBackend.inputDocument);
+      const oasYAML = await patching.text();
+      // Temporary fix for removing x-example $refs
+      const oasDef = yaml.load(oasYAML);
+      Object.keys(oasDef.paths).forEach((path) =>
+        Object.keys(oasDef.paths[path]).forEach((verb) => {
+          delete oasDef.paths[path][verb]["x-examples"];
+        })
       );
-      // Every valid operation (path + verb) request will go through this handler
-      return res(bctx.status(status), bctx.json(mock));
-    });
-
-    let mockedResponse = ctx.json({
-      error: 'something went wrong',
-    });
-    try {
-      const path = req.url.pathname.replace(
-        openApiBackends[apiContext].context,
-        ''
-      );
-      const query = req.url.searchParams.toString()
-        ? searchParamsToRequestQuery(req.url.searchParams)
-        : '';
-      const { method, headers } = req;
-      const oasRequest: Request = {
-        path,
-        method,
-        headers: headers.all(),
-        query,
-      };
-      mockedResponse = await api.handleRequest(oasRequest, res, ctx);
-      // Debug at below point to see the mocked response
-    } catch (error) {
-      console.error(error);
+      // End of temporary fix for removing x-example $refs
+      mockedResponse = res(ctx.json(oasDef));
+    } else {
+      mockedResponse = await thisAPIBackend.handleRequest(oasRequest, res, ctx);
     }
-    return mockedResponse;
-  };
+    // Debug at below point to see the mocked response
+  } catch (error) {
+    console.error(error);
+  }
+  return mockedResponse;
+};
 
-export const getMockServer = (apiList: APIName | APIName[]) => {
+export const getMockServer = (_apiList: APIName | APIName[]) => {
   // *IMPORTANT* Should provide a unique segment in the request (ideally API context)
   // which could differentiate current API requests from others
   const mockingVerbs = [rest.get, rest.post, rest.put, rest.patch, rest.delete];
   const mockingVerbsList: any[] = [];
-  let apiNewList: any = [];
-  if (Array.isArray(apiList)) {
-    apiNewList = apiList;
-  } else {
-    apiNewList.push(apiList);
-  }
-  apiNewList.forEach((item: string) => {
-    const mockHandler = createMockHandler(item as string);
+  let apiList: any = Array.isArray(_apiList) ? _apiList : [_apiList];
+
+  apiList.forEach((APIName: string) => {
+    const apiMapping = openApiBackends[APIName];
+    const mockHandler = createMockHandler(apiMapping);
     mockingVerbs.map((verb) =>
-      mockingVerbsList.push(
-        verb(`*${openApiBackends[item as string].context}*`, mockHandler)
-      )
+      mockingVerbsList.push(verb(`*${apiMapping.context}*`, mockHandler))
     );
   });
-  const server = setupServer(...mockingVerbsList);
-  return server;
+  return setupServer(...mockingVerbsList);
 };
 
 export default getMockServer;
