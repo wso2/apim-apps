@@ -179,7 +179,6 @@ class AuthManager {
             const arrayLength = AuthManager.getUser().scopes.length;
             if (arrayLength === 2) {
                 return _.intersectionBy(AuthManager.getUser().scopes, ['apim:api_view', 'openid']);
-                // return AuthManager.getUser().scopes.includes('apim:api_view', 'openid');
             }
             return false;
         }
