@@ -243,7 +243,7 @@ const APIDetailsTopMenu = (props) => {
                 >
                     <FormattedMessage
                         id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
-                        defaultMessage='Read only'
+                        defaultMessage='Read onlyYY'
                     />
                 </MUIAlert>
             )}

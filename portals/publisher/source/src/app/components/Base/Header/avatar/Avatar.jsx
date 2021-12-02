@@ -26,8 +26,26 @@ const styles = (theme) => ({
         textTransform: 'uppercase',
         fontWeight: 'bold',
     },
+    readOnlyUserLink: {
+        color: theme.palette.getContrastText(theme.palette.background.appBar),
+        fontSize: theme.typography.fontSize,
+        textTransform: 'uppercase',
+        fontWeight: 'bold',
+        border: 'solid 2px #ccc',
+        borderRadius: 20,
+        borderColor: '#E57739',
+    },
     accountIcon: {
         marginRight: 10,
+    },
+    root: {
+        borderRadius: 20,
+        borderColor: '#000',
+    },
+    flexbox: {
+        flex: 1,
+        flexDirection: 'column',
+        display: 'inline-block',
     },
 });
 
@@ -94,7 +112,7 @@ class Avatar extends Component {
         let usr;
         const readOnlyUser = AuthManager.isReadOnlyUser();
         if (readOnlyUser) {
-            usr = username + ' (read-only)';
+            usr = username;
         } else {
             usr = username;
         }
@@ -107,7 +125,7 @@ class Avatar extends Component {
                     aria-haspopup='true'
                     color='inherit'
                     onClick={this.handleClick}
-                    className={classes.userLink}
+                    className={readOnlyUser ? classes.readOnlyUserLink : classes.userLink}
                     disableFocusRipple
                     disableRipple
                 >
@@ -117,6 +135,18 @@ class Avatar extends Component {
                     <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
                         keyboard_arrow_down
                     </Icon>
+                    {readOnlyUser && (
+                        <Box
+                            className={classes.flexbox}
+                            ml={1}
+                            color='#E57739'
+                        >
+                            <FormattedMessage
+                                id='Api.login.page.readonly.user'
+                                defaultMessage='Read only'
+                            />
+                        </Box>
+                    )}
                 </IconButton>
                 <Menu
                     id='itest-logout-menu'
