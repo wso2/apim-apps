@@ -1,30 +1,23 @@
-import React from "react";
-import "@testing-library/jest-dom";
-import { configure } from "@testing-library/react";
 import { OpenAPIBackend } from "openapi-backend";
 import * as path from "path";
 import * as fs from "fs";
-import { getOverride } from "AppTests/Utils/restAPI.mock";
 import addFormats from "ajv-formats";
 
-// Overriding default `waitFor` timeout value due to MSW latencies
-// Default asyncUtilTimeout value is 1000
-// For more info refer : https://testing-library.com/docs/dom-testing-library/api-configuration/
-configure({ asyncUtilTimeout: 30000 });
-jest.setTimeout(35000);
+/* ####### OpenAPI mock configuration ####### */
 // Iterate the OAS tools config file and generate OpenAPIBackend objects and set it to test context globals
 const oasToolConfig = JSON.parse(
   fs.readFileSync(path.join(process.cwd(), "openapitools.json"), "utf8")
 );
-
+type APIConfig = {inputSpec: any, context: string};
 const openApiBackends = {};
 Object.entries(oasToolConfig["generator-cli"].generators).map(
   ([apiName, apiConfig]) => {
-    const { inputSpec, context } = apiConfig;
+    const { inputSpec, context } = apiConfig as APIConfig;
     const oasBackend = new OpenAPIBackend({
       definition: inputSpec,
       quick: true,
-      customizeAjv: (originalAjv, ajvOpts, validationContext) => { // To fix https://github.com/anttiviljami/openapi-backend/issues/230
+      customizeAjv: (originalAjv, ajvOpts, validationContext) => {
+        // To fix https://github.com/anttiviljami/openapi-backend/issues/230
         addFormats(originalAjv);
         return originalAjv;
       },
@@ -33,40 +26,21 @@ Object.entries(oasToolConfig["generator-cli"].generators).map(
           res.status(404).json({ err: "not found" }),
       },
     });
-    oasBackend.register({
-      notImplemented: async (notImplC, notImplRes, notImplContext) => {
-        const {
-          status: initialStatus,
-          mock: initialMock,
-        } = await oasBackend.mockResponseForOperation(
-          notImplC.operation.operationId || ""
-        );
-        const { status = initialStatus, mock } = getOverride()(
-          notImplC,
-          initialMock,
-          initialStatus,
-          notImplRes,
-          notImplContext
-        );
-        // Every valid operation (path + verb) request will go through this handler
-        return notImplRes(
-          notImplContext.status(status),
-          notImplContext.json(mock)
-        );
-      },
-    });
-    oasBackend.init();
     openApiBackends[apiName] = { context, oasBackend };
   }
 );
+/* ####### End of OpenAPI mock configuration ####### */
 
 global.openApiBackends = openApiBackends;
+
+
+/* ####### DEPRECATED Old configs ####### */
 
 /*  ***** IMPORTANT *****
     Enzyme based unit/integration tests are deprecated and following configurations are solely for Enzyme based test
     Do not modify or extend it unless otherwise absolutely necessary
 */
-
+import React from "react";
 import Enzyme, { shallow, render, mount } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import renderer from "react-test-renderer";

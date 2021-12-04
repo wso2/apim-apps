@@ -18,7 +18,7 @@
 import React from 'react';
 import VerticalDivider from './VerticalDivider';
 
-describe('<VerticalDivider/> tests', () => {
+describe.skip('<VerticalDivider/> tests', () => {
     test('should render the VerticalDivider component', () => {
         const wrapper = DEPRECATED_mount(<VerticalDivider />);
         // TODO: add assertion here

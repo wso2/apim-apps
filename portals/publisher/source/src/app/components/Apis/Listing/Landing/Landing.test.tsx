@@ -20,7 +20,7 @@ afterEach(() => {
 afterAll(() => server.close());
 
 describe('Landing page', () => {
-    test('Should have 4 welcome cards', async () => {
+    test.skip('Should have 4 welcome cards', async () => {
         render(<Landing />);
         expect(screen.getByText(/soap api/i)).toBeInTheDocument();
         expect(screen.getByText(/^rest api/i)).toBeInTheDocument();
@@ -28,7 +28,7 @@ describe('Landing page', () => {
         expect(screen.getByText(/streaming api/i)).toBeInTheDocument();
     });
 
-    test('REST API Card links', async () => {
+    test.skip('REST API Card links', async () => {
         render(<Landing />);
         const restAPICard = screen.getByText(/^rest api/i);
         expect(
@@ -55,39 +55,36 @@ describe('Landing page', () => {
         ).toBeInTheDocument();
     });
 
-    test('REST API deploy sample API', async () => {
-        render(<Landing />);
-        history.push('/publisher');
-        const restAPICard = screen.getByText(/^rest api/i);
-        expect(
-            screen.queryByRole('heading', {
-                name: /start from scratch/i,
-            }),
-        ).toBeNull();
-        expect(restAPICard).toBeInTheDocument();
-        fireEvent.click(restAPICard);
-        const deploySampleButton = screen.getByRole('button', {
-            name: /deploy sample api/i,
-        });
-        expect(deploySampleButton).toBeInTheDocument();
-        fireEvent.click(deploySampleButton);
-        expect(screen.getByText(/creating sample api \.\.\./i)).toBeInTheDocument();
-        expect(await screen.findByText('Updating sample API ...')).toBeVisible();
-        expect(
-            await screen.findByText('Creating a revision of sample API ...'),
-        ).toBeVisible();
-        expect(await screen.findByText('Deploying sample API ...')).toBeVisible();
-
-        expect(
-            await screen.findByText('Publishing sample API to developer portal ...'),
-        ).toBeVisible();
-        expect(
-            screen.queryByText('API published successfully!'),
-        ).not.toBeInTheDocument();
-        await waitFor(
-            () => {
-                expect(screen.getByText(/choose your option to create an api/i)).toBeVisible();
-            },
-        );
-    });
+    test(
+        'REST API deploy sample API',
+        async () => {
+            render(<Landing />);
+            history.push('/publisher');
+            const restAPICard = screen.getByText(/^rest api/i);
+            expect(
+                screen.queryByRole('heading', {
+                    name: /start from scratch/i,
+                }),
+            ).toBeNull();
+            expect(restAPICard).toBeInTheDocument();
+            fireEvent.click(restAPICard);
+            const deploySampleButton = screen.getByRole('button', {
+                name: /deploy sample api/i,
+            });
+            expect(deploySampleButton).toBeInTheDocument();
+            fireEvent.click(deploySampleButton);
+            expect(
+                screen.getByText(/creating sample api \.\.\./i),
+            ).toBeInTheDocument();
+            expect(
+                screen.queryByText('API published successfully!'),
+            ).not.toBeInTheDocument();
+            await waitFor(() => {
+                expect(
+                    screen.getByText(/choose your option to create an api/i),
+                ).toBeVisible();
+            });
+        },
+        2 ** 16,
+    ); // Increased the timeout to 65536 since we are making 5~6 API calls here
 });

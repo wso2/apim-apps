@@ -24,7 +24,7 @@ import MenuButton from './MenuButton';
 
 const UnwrappedMenuButton = unwrap(MenuButton);
 
-describe('<MenuButton/> tests', () => {
+describe.skip('<MenuButton/> tests', () => {
     let wrapper;
     const TestingMenu = () => <div>My test menu</div>;
     beforeEach(() => {

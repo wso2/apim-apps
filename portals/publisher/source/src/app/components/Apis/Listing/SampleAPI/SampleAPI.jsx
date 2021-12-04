@@ -84,7 +84,8 @@ const SampleAPI = (props) => {
     const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
-    const internalGateways = publisherSettings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
+    const internalGateways = publisherSettings.environment.filter((p) => p.provider
+        && p.provider.toLowerCase().includes('wso2'));
 
     const taskManager = async (promisedTask, name) => {
         tasksStatusDispatcher({ name, status: { inProgress: true } });

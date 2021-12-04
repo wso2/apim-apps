@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
@@ -40,6 +40,7 @@ import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
 
 import Banner from 'AppComponents/Shared/Banner';
 import APIValidation from 'AppData/APIValidation';
@@ -67,7 +68,30 @@ export default function ProvideOpenAPI(props) {
     // If valid value is `null`,that means valid, else an error object will be there
     const [isValid, setValidity] = useState({});
     const [isValidating, setIsValidating] = useState(false);
-
+    const validateURLDebounced = useCallback(
+        debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
+            API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
+                const {
+                    body: { isValid: isValidURL, info, content },
+                } = response;
+                if (isValidURL) {
+                    info.content = content;
+                    inputsDispatcher({ action: 'preSetAPI', value: info });
+                    setValidity({ ...isValid, url: null });
+                } else {
+                    setValidity({ ...isValid, url: { message: 'OpenAPI content validation failed!' } });
+                }
+                onValidate(isValidURL);
+                setIsValidating(false);
+            }).catch((error) => {
+                setValidity({ url: { message: error.message } });
+                onValidate(false);
+                setIsValidating(false);
+                console.error(error);
+            });
+        }, 750),
+        [],
+    );
     /**
      *
      *
@@ -113,28 +137,10 @@ export default function ProvideOpenAPI(props) {
      */
     function validateURL(value) {
         const state = APIValidation.url.required().validate(value).error;
-        // State `null` means URL is valid, We do backend validation only in valid URLs
+        // State `null` means URL is valid, We do backend validation only if it's a valid URL
         if (state === null) {
             setIsValidating(true);
-            API.validateOpenAPIByUrl(apiInputs.inputValue, { returnContent: true }).then((response) => {
-                const {
-                    body: { isValid: isValidURL, info, content },
-                } = response;
-                if (isValidURL) {
-                    info.content = content;
-                    inputsDispatcher({ action: 'preSetAPI', value: info });
-                    setValidity({ ...isValid, url: null });
-                } else {
-                    setValidity({ ...isValid, url: { message: 'OpenAPI content validation failed!' } });
-                }
-                onValidate(isValidURL);
-                setIsValidating(false);
-            }).catch((error) => {
-                setValidity({ url: { message: error.message } });
-                onValidate(false);
-                setIsValidating(false);
-                console.error(error);
-            });
+            validateURLDebounced(apiInputs.inputValue);
             // Valid URL string
             // TODO: Handle catch network or api call failures ~tmkb
         } else {
@@ -207,6 +213,7 @@ export default function ProvideOpenAPI(props) {
                                 value={ProvideOpenAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI File/Archive'
+                                aria-label='OpenAPI File/Archive'
                             />
                         </RadioGroup>
                     </FormControl>

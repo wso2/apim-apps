@@ -22,7 +22,8 @@
  *      https://github.com/react-monaco-editor/react-monaco-editor/issues/133#issuecomment-403960502
  */
 module.exports = {
-    setupFilesAfterEnv: ['<rootDir>/source/Tests/setupTests.js'],
+    setupFilesAfterEnv: ['<rootDir>/source/Tests/setupFilesAfterEnv.ts'],
+    setupFiles: ['<rootDir>/source/Tests/setupTests.ts'],
     moduleNameMapper: {
         'AppComponents(.*)$': '<rootDir>/source/src/app/components/$1',
         'AppData(.*)$': '<rootDir>/source/src/app/data/$1',

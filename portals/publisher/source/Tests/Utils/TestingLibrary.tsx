@@ -12,7 +12,7 @@
  */
 
 import React, { FC, ReactElement, useEffect, useState } from "react";
-import { render, RenderOptions, RenderResult } from "@testing-library/react";
+import { render, RenderOptions, RenderResult, configure } from "@testing-library/react";
 import { IntlProvider } from "react-intl";
 import { ThemeProvider } from "@material-ui/core/styles";
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
@@ -24,6 +24,19 @@ import { AppContextProvider } from "AppComponents/Shared/AppContext";
 import AuthManager from "AppData/AuthManager";
 import User from "AppData/User";
 import Utils from "AppData/Utils";
+
+export const history = createMemoryHistory();
+
+/* ####### Timeout configurations ####### */
+// Overriding default `waitFor` timeout value due to MSW latencies
+// Default asyncUtilTimeout value is 1000
+// For more info refer : https://testing-library.com/docs/dom-testing-library/api-configuration/
+const ASYNC_TIMEOUT_MINUTES = 1;
+const asyncUtilTimeout = ASYNC_TIMEOUT_MINUTES * 60 * 10 ** 3;
+configure({ asyncUtilTimeout });
+jest.setTimeout((asyncUtilTimeout * 3) / 2);
+/* ####### End of Timeout configurations ####### */
+
 
 var localStorageMock = (function() {
   var store: { [key: string]: string } = {};
@@ -47,16 +60,16 @@ Object.defineProperty(window.document, 'cookie', {
   writable: true,
   value: 'myCookie=omnomnom',
 });
-export const history = createMemoryHistory();
 
 const GlobalProviders: FC = ({ children }) => {
-  const [settings, setSettings] = useState({
+  const settings = {
     devportalUrl: "https://localhost:9443/devportal",
     environment: [
       {
         id: "Default",
         name: "Default",
         displayName: "Default",
+        provider: "wso2",
         type: "hybrid",
         serverUrl: "https://localhost:9443/services/",
         showInApiConsole: true,
@@ -126,13 +139,7 @@ const GlobalProviders: FC = ({ children }) => {
     docVisibilityEnabled: false,
     crossTenantSubscriptionEnabled: false,
     authorizationHeader: "Authorization",
-  });
-  useEffect(() => {
-    (async () => {
-      const settingPromise = await Api.getSettings();
-      setSettings(settingPromise);
-    })();
-  }, []);
+  };
   const theme = createMuiTheme(defaultTheme); // We really don't care about the styling in this tests, Need to handle Visual Regression
   const testUser = User.fromJson({
     name: "demo@carbon.super",

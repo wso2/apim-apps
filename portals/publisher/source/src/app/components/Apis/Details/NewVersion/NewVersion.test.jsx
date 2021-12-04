@@ -29,7 +29,7 @@ import NewVersion from './NewVersion';
 
 const FIELD_EMPTY = 'This field cannot be empty';
 
-describe('Unit test for CreateNewVersion component', () => {
+describe.skip('Unit test for CreateNewVersion component', () => {
     /**
      * Mounts the CreateNewVersion component
      *

@@ -52,7 +52,7 @@ const { light } = Themes;
 const mockedHasScopes = jest.fn();
 const mockedAll = jest.fn();
 
-describe('APIs <Listing/> component tests', () => {
+describe.skip('APIs <Listing/> component tests', () => {
     beforeAll(async () => {
         API.all = mockedAll.bind(API);
         ScopeValidation.hasScopes = mockedHasScopes.bind(ScopeValidation);

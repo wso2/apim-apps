@@ -16,10 +16,6 @@ import { setupServer } from "msw/node";
 import { searchParamsToRequestQuery } from "./TestingLibrary";
 import { APIName } from "./constants";
 
-// Following is a transitive dependency, Used for removing `x-examples` from swagger def
-// Temp solution
-import yaml from "js-yaml";
-
 type OASBackendMapping = { context: string; oasBackend: OpenAPIBackend };
 // Declaring the global BallerinaCentral variable set from src/setupTests.ts file
 declare global {
@@ -30,16 +26,13 @@ declare global {
 
 type APIResponseOverride = (
   requestContext: Context,
-  mock: any,
-  status: number,
+  currentMock: any,
+  currentStatusCode: number,
   response: (status: any, mock: any) => void,
   context: { status: (s: number) => void; json: (s: string) => void }
-) => { mock: any; status?: number };
+) => [mock: any, status: number ] | {} | void;
 export const { onResponse, getOverride, resetMockHandler } = (() => {
-  const defaultHandler: APIResponseOverride = (c, mock, status) => ({
-    mock,
-    status,
-  });
+  const defaultHandler: APIResponseOverride = (c, mock, status) => {};
 
   let override: APIResponseOverride = defaultHandler;
   return {
@@ -77,11 +70,8 @@ const createMockHandler = (apiMapping: OASBackendMapping) => async (
       query,
     };
     if (req.url.pathname === "/api/am/publisher/v2/swagger.yaml") {
-      const d = thisAPIBackend;
-      const patching = await fetch(thisAPIBackend.inputDocument);
-      const oasYAML = await patching.text();
       // Temporary fix for removing x-example $refs
-      const oasDef = yaml.load(oasYAML);
+      const oasDef = thisAPIBackend.document;
       Object.keys(oasDef.paths).forEach((path) =>
         Object.keys(oasDef.paths[path]).forEach((verb) => {
           delete oasDef.paths[path][verb]["x-examples"];
@@ -108,12 +98,56 @@ export const getMockServer = (_apiList: APIName | APIName[]) => {
 
   apiList.forEach((APIName: string) => {
     const apiMapping = openApiBackends[APIName];
+    apiMapping.oasBackend.register({
+      notImplemented: async (notImplC, notImplRes, notImplContext) => {
+        const {
+          status: initialStatus,
+          mock: initialMock,
+        } = await apiMapping.oasBackend.mockResponseForOperation(
+          notImplC.operation.operationId || ""
+        );
+        const overriddenResponse = getOverride()(
+          notImplC,
+          initialMock,
+          initialStatus,
+          notImplRes,
+          notImplContext
+        );
+        let status = initialStatus, mock = initialMock;
+        if(Array.isArray(overriddenResponse)) {
+          [mock,status] = overriddenResponse;
+        } else if (overriddenResponse !== undefined) {
+          mock = overriddenResponse;
+        }
+        // Every valid operation (path + verb) request will go through this handler
+        return notImplRes(
+          notImplContext.status(status),
+          notImplContext.json(mock)
+        );
+      },
+    });
     const mockHandler = createMockHandler(apiMapping);
     mockingVerbs.map((verb) =>
       mockingVerbsList.push(verb(`*${apiMapping.context}*`, mockHandler))
     );
   });
-  return setupServer(...mockingVerbsList);
+  const server = setupServer(...mockingVerbsList);
+  return {
+    resetHandlers: server.resetHandlers,
+    close: server.close,
+    listen: async () => {
+      for (const APIName of apiList) {
+        const apiMapping = openApiBackends[APIName];
+        try {
+          await apiMapping.oasBackend.init();
+        } catch (error) {
+          console.error(error);
+          throw new Error("Error while initializing OAS Backend");
+        }
+      }
+      server.listen();
+    },
+  };
 };
 
 export default getMockServer;

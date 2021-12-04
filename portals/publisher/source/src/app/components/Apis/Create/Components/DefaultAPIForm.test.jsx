@@ -22,7 +22,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import DefaultAPIForm from './DefaultAPIForm';
 
-describe('<DefaultAPIForm/> tests', () => {
+describe.skip('<DefaultAPIForm/> tests', () => {
     test('Should have default input fields', () => {
         const wrappedComponent = (
             <MemoryRouter>

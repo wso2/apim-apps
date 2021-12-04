@@ -20,7 +20,7 @@ import { mountWithIntl } from 'AppTests/Utils/IntlHelper';
 
 import ConfirmDialog from './ConfirmDialog';
 
-describe('<ConfirmDialog/> tests', () => {
+describe.skip('<ConfirmDialog/> tests', () => {
     test('should render the ConfirmDialog component', () => {
         const wrapper = mountWithIntl(<ConfirmDialog />);
     });
