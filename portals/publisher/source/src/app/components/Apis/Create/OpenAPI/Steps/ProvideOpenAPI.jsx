@@ -19,6 +19,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -46,6 +47,8 @@ import Banner from 'AppComponents/Shared/Banner';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
+import SpecErrors from 'AppComponents/Apis/Details/Resources/components/SpecErrors';
+
 
 const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
@@ -67,12 +70,18 @@ export default function ProvideOpenAPI(props) {
     const classes = useStyles();
     // If valid value is `null`,that means valid, else an error object will be there
     const [isValid, setValidity] = useState({});
+    const [validationErrors, setValidationErrors] = useState(null);
     const [isValidating, setIsValidating] = useState(false);
+    useEffect(() => {
+        setValidationErrors(null);
+    }, [apiInputs.inputType]);
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
             API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
                 const {
-                    body: { isValid: isValidURL, info, content },
+                    body: {
+                        isValid: isValidURL, info, content, errors,
+                    },
                 } = response;
                 if (isValidURL) {
                     info.content = content;
@@ -80,6 +89,7 @@ export default function ProvideOpenAPI(props) {
                     setValidity({ ...isValid, url: null });
                 } else {
                     setValidity({ ...isValid, url: { message: 'OpenAPI content validation failed!' } });
+                    setValidationErrors(errors);
                 }
                 onValidate(isValidURL);
                 setIsValidating(false);
@@ -108,7 +118,7 @@ export default function ProvideOpenAPI(props) {
         API.validateOpenAPIByFile(file)
             .then((response) => {
                 const {
-                    body: { isValid: isValidFile, info },
+                    body: { isValid: isValidFile, info, errors },
                 } = response;
                 if (isValidFile) {
                     validFile = file;
@@ -116,6 +126,7 @@ export default function ProvideOpenAPI(props) {
                     setValidity({ ...isValid, file: null });
                 } else {
                     setValidity({ ...isValid, file: { message: 'OpenAPI content validation failed!' } });
+                    setValidationErrors(errors);
                 }
             })
             .catch((error) => {
@@ -315,6 +326,14 @@ export default function ProvideOpenAPI(props) {
                         />
                     )}
                 </Grid>
+                {validationErrors && (
+                    <Grid item xs={10} md={11}>
+                        <Box display='flex' justifyContent='right' alignItems='center'>
+                            Show Errors
+                            <SpecErrors specErrors={validationErrors} />
+                        </Box>
+                    </Grid>
+                )}
                 <Grid item xs={2} md={5} />
             </Grid>
         </>
