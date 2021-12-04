@@ -139,7 +139,9 @@ export const getMockServer = (_apiList: APIName | APIName[]) => {
       for (const APIName of apiList) {
         const apiMapping = openApiBackends[APIName];
         try {
-          await apiMapping.oasBackend.init();
+          if(!apiMapping.oasBackend.initalized) { // Prevent redundant OAS fetch
+            apiMapping.oasBackend = await apiMapping.oasBackend.init();
+          }
         } catch (error) {
           console.error(error);
           throw new Error("Error while initializing OAS Backend");
