@@ -86,5 +86,5 @@ describe('Landing page', () => {
             });
         },
         2 ** 16,
-    ); // Increased the timeout to 65536 since we are making 5~6 API calls here
+    );
 });

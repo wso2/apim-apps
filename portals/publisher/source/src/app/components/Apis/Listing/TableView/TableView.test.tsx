@@ -11,7 +11,7 @@ import getMockServer, {
     resetMockHandler,
 } from 'AppTests/Utils/restAPI.mock';
 
-import { APIName } from 'AppTests/Utils/constants';
+import { APIName, MockedUsers } from 'AppTests/Utils/constants';
 import TableView from './TableView';
 
 const server = getMockServer(APIName.Publisher);
@@ -99,5 +99,15 @@ describe('Table view', () => {
                 ).toBeInTheDocument();
             },
         );
+    });
+
+    test('should not show create API option for Publisher User', async () => {
+        render(<TableView />, { user: MockedUsers.Publisher });
+        await waitFor(() => {
+            expect(screen.getByText(/total:apis/i)).toBeInTheDocument();
+        });
+        expect(screen.queryByRole('button', {
+            name: /view create api options/i,
+        })).not.toBeInTheDocument();
     });
 });

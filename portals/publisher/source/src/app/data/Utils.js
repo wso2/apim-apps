@@ -262,7 +262,7 @@ class Utils {
 
     /**
      * Get an environment object with default values.
-     * @returns {Object} environment: {label: string, host: string, loginTokenPath: string}
+     * @returns {{label: string, host: string, loginTokenPath: string}} environment
      */
     static getDefaultEnvironment() {
         return {

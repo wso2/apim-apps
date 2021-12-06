@@ -10,19 +10,17 @@
  * entered into with WSO2 governing the purchase of this software and any
  * associated services.
  */
-// Keep this global config as a placeholder in case if one component require mocking multiple API requests
 
 import {
   OASConfigs,
   APIConfig,
-  getTempPath,
   downloadOASDefinition,
 } from "./Utils/setupUtils";
 
 export default async () => {
-  console.log("\nTo be used in starting all mock servers before all tests");
+  console.log("\nConfiguring OpenAPI mocks");
   for (const [, apiConfig] of OASConfigs()) {
-    const { inputSpec, context } = apiConfig as APIConfig;
+    const { inputSpec } = apiConfig as APIConfig;
     await downloadOASDefinition(inputSpec);
   }
 };

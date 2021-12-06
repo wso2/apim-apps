@@ -22,10 +22,10 @@ import { MemoryRouter } from 'react-router-dom';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import Themes from 'AppData/defaultTheme';
-import { mountWithIntl } from 'AppTests/Utils/IntlHelper';
+import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import API from 'AppData/api.js';
 import AuthManager from 'AppData/AuthManager';
-import { getExampleBodyById } from 'AppTests/Utils/MockAPIModel';
+import { getExampleBodyById } from 'AppTests/Utils/DEPRECATED_MockAPIModel';
 import { resourceMethod } from 'AppData/ScopeValidation';
 import HeaderSearch from './HeaderSearch';
 

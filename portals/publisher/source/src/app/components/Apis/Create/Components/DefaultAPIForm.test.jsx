@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { mountWithIntl } from 'AppTests/Utils/IntlHelper';
+import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import { MemoryRouter } from 'react-router-dom';
 
 import DefaultAPIForm from './DefaultAPIForm';
