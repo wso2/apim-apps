@@ -273,13 +273,21 @@ export default function KeyValidation(props) {
                                     && Object.entries(tokenValidation.value.body).map(([key, value]) => (
                                         <TableRow key={key}>
                                             <TableCell component='th' scope='row'>
-                                                <Typography variant='body1' gutterBottom>
+                                                <Typography
+                                                    variant='body1'
+                                                    gutterBottom
+                                                    id='key.validation.key.body'
+                                                >
                                                     {key}
                                                 </Typography>
 
                                             </TableCell>
                                             <TableCell align='right'>
-                                                <Typography variant='body1' gutterBottom>
+                                                <Typography
+                                                    variant='body1'
+                                                    gutterBottom
+                                                    id='key.validation.value.body'
+                                                >
                                                     {value}
                                                 </Typography>
 

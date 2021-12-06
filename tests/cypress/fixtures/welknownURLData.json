@@ -1,0 +1,47 @@
+{
+    "valid": true,
+    "value": {
+      "id": null,
+      "name": null,
+      "displayName": null,
+      "type": "Auth0",
+      "description": null,
+      "wellKnownEndpoint": "https://localhost:9090/oauth2/default/.well-known/oauth-authorization-server",
+      "introspectionEndpoint": "https://localhost:9090/oauth2/default/v1/introspect",
+      "clientRegistrationEndpoint": "https://localhost:9090/oauth2/v1/clients",
+      "tokenEndpoint": "https://localhost:9090/oauth2/default/v1/token",
+      "displayTokenEndpoint": null,
+      "revokeEndpoint": "https://localhost:9090/oauth2/default/v1/revoke",
+      "displayRevokeEndpoint": null,
+      "userInfoEndpoint": null,
+      "authorizeEndpoint": "https://localhost:9090/oauth2/default/v1/authorize",
+      "endpoints": [],
+      "certificates": {
+        "type": "JWKS",
+        "value": "https://localhost:9090/oauth2/default/v1/keys"
+      },
+      "issuer": "https://localhost:9090/oauth2/default",
+      "alias": null,
+      "scopeManagementEndpoint": null,
+      "availableGrantTypes": [
+        "authorization_code",
+        "implicit",
+        "refresh_token",
+        "password",
+        "client_credentials"
+      ],
+      "enableTokenGeneration": true,
+      "enableTokenEncryption": false,
+      "enableTokenHashing": false,
+      "enableMapOAuthConsumerApps": true,
+      "enableOAuthAppCreation": true,
+      "enableSelfValidationJWT": true,
+      "claimMapping": [],
+      "consumerKeyClaim": null,
+      "scopesClaim": null,
+      "tokenValidation": [],
+      "enabled": true,
+      "additionalProperties": null,
+      "tokenType": "DIRECT"
+    }
+}

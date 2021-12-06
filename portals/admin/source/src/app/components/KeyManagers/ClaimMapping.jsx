@@ -185,12 +185,20 @@ export default function ClaimMappings(props) {
                     {claimMappings.map(({ remoteClaim, localClaim }) => (
                         <TableRow key={localClaim}>
                             <TableCell component='th' scope='row'>
-                                <Typography variant='body1' gutterBottom>
+                                <Typography
+                                    variant='body1'
+                                    gutterBottom
+                                    id='claim.mapping..remote.claim.body'
+                                >
                                     {remoteClaim}
                                 </Typography>
                             </TableCell>
                             <TableCell align='right'>
-                                <Typography variant='body1' gutterBottom>
+                                <Typography
+                                    variant='body1'
+                                    gutterBottom
+                                    id='claim.mapping.local.claim.body'
+                                >
                                     {localClaim}
                                 </Typography>
                             </TableCell>

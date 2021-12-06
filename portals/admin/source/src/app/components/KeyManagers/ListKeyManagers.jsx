@@ -50,6 +50,12 @@ function apiCall() {
                             <Chip variant='outlined' color='primary' size='small' label='Exchange' />
                         </div>
                     );
+                } else {
+                    item.tokenType = (
+                        <div>
+                            <Chip variant='outlined' color='primary' size='small' label='Exchange' />
+                        </div>
+                    );
                 }
             });
             return resultList;
@@ -142,7 +148,7 @@ export default function ListKeyManagers() {
     };
     const addButtonOverride = (
         <RouterLink to='/settings/key-managers/create'>
-            <Button variant='contained' color='primary' size='small'>
+            <Button variant='contained' color='primary' size='small' id='keyManagers,create,keymanager.button'>
                 <FormattedMessage
                     id='KeyManagers.ListKeyManagers.addButtonProps.triggerButtonText'
                     defaultMessage='Add Key Manager'
@@ -152,7 +158,12 @@ export default function ListKeyManagers() {
     );
     const emptyBoxProps = {
         content: (
-            <Typography variant='body2' color='textSecondary' component='p'>
+            <Typography
+                variant='body2'
+                color='textSecondary'
+                component='p'
+                id='AdminPages.KeyManagers.List.empty.content.keymanagers.body'
+            >
                 <FormattedMessage
                     id='AdminPages.KeyManagers.List.empty.content.keymanagers'
                     defaultMessage='It is possible to register an OAuth Provider.'
@@ -160,7 +171,12 @@ export default function ListKeyManagers() {
             </Typography>
         ),
         title: (
-            <Typography gutterBottom variant='h5' component='h2'>
+            <Typography
+                gutterBottom
+                variant='h5'
+                component='h2'
+                id='KeyManagers.ListKeyManagers.empty.header'
+            >
                 <FormattedMessage
                     id='KeyManagers.ListKeyManagers.empty.title'
                     defaultMessage='Key Managers'

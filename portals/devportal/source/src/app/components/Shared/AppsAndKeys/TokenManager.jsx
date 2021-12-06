@@ -760,6 +760,7 @@ class TokenManager extends React.Component {
                                 label={keymanager.displayName || keymanager.name}
                                 value={keymanager.name}
                                 disabled={!keymanager.enabled}
+                                id={keymanager.name.replace(/\s/g, '')}
                             />
                         ))}
                     </StyledTabs>
@@ -963,9 +964,9 @@ class TokenManager extends React.Component {
                                                             onChange={this.handleChange}
                                                         >
                                                             <FormControlLabel value='DIRECT' control={<Radio/>}
-                                                                              label='Direct Token'/>
+                                                                              label='Direct Token' id='direct-token'/>
                                                             <FormControlLabel value='EXCHANGED' control={<Radio/>}
-                                                                              label='Exchange Token'/>
+                                                                              label='Exchange Token' id='exchange-token'/>
                                                         </RadioGroup>
                                                     </TableCell>
                                                 </TableRow>
@@ -1173,7 +1174,7 @@ class TokenManager extends React.Component {
                                 </DialogContent>
                                 <DialogActions>
 
-                                    <Button onClick={this.handleClose} color='primary' autoFocus>
+                                    <Button onClick={this.handleClose} color='primary' autoFocus id='close-btn'>
                                         <FormattedMessage
                                             id='Shared.AppsAndKeys.ViewKeys.consumer.close.btn'
                                             defaultMessage='Close'

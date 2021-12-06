@@ -475,6 +475,7 @@ function AddEditKeyManager(props) {
         const payload = { url: wellKnownEndpoint, type };
         setImportingConfig(true);
         restApi.keyManagersDiscover(payload).then((result) => {
+            console.log(JSON.stringify(result));
             const { obj: { value } } = result;
             for (const key of Object.keys(value)) {
                 if (unchangedKeys.includes(key)) {
@@ -548,13 +549,23 @@ function AddEditKeyManager(props) {
             <Box component='div' m={2} className={classes.root}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12} lg={3}>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
+                        <Typography
+                            color='inherit'
+                            variant='subtitle2'
+                            component='div'
+                            id='KeyManagers.AddEditKeyManager.general.details.div'
+                        >
                             <FormattedMessage
                                 id='KeyManagers.AddEditKeyManager.general.details'
                                 defaultMessage='General Details'
                             />
                         </Typography>
-                        <Typography color='inherit' variant='caption' component='p'>
+                        <Typography
+                            color='inherit'
+                            variant='caption'
+                            component='p'
+                            id='KeyManagers.AddEditKeyManager.general.details.description.div'
+                        >
                             <FormattedMessage
                                 id='KeyManagers.AddEditKeyManager.general.details.description'
                                 defaultMessage='Provide name and description of the Key Manager.'
@@ -567,6 +578,7 @@ function AddEditKeyManager(props) {
                                 <Grid container>
                                     <Grid item xs={6}>
                                         <TextField
+                                            id='name'
                                             autoFocus
                                             margin='dense'
                                             name='name'
@@ -595,6 +607,7 @@ function AddEditKeyManager(props) {
                                     <Grid item xs={6}>
                                         <Box ml={1}>
                                             <TextField
+                                                id='display-name'
                                                 autoFocus={!!id}
                                                 margin='dense'
                                                 name='displayName'
@@ -625,6 +638,7 @@ function AddEditKeyManager(props) {
 
 
                             <TextField
+                                id='description'
                                 multiline
                                 rows={4}
                                 rowsMax={10}
@@ -656,13 +670,24 @@ function AddEditKeyManager(props) {
                             </Grid>
 
                             <Grid item xs={12} md={12} lg={3}>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                <Typography
+                                    color='inherit'
+                                    variant='subtitle2'
+                                    component='div'
+                                    id='keyManager-type'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.KeyManager.type'
                                         defaultMessage='Key Manager Type'
                                     />
                                 </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
+                                <Typography
+                                    color='inherit'
+                                    color='inherit'
+                                    variant='caption'
+                                    component='p'
+                                    id='AddEditKeyManager.External.KeyManager.description.container'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.External.KeyManager
                                         .general.details.description'
@@ -685,6 +710,7 @@ function AddEditKeyManager(props) {
                                             <span className={classes.error}>*</span>
                                         </InputLabel>
                                         <Select
+                                            id='Admin.KeyManager.form.type.select'
                                             name='type'
                                             value={type}
                                             onChange={onChange}
@@ -695,7 +721,7 @@ function AddEditKeyManager(props) {
                                                     {keymanager.displayName || keymanager.type}
                                                 </MenuItem>
                                             ))}
-                                            <MenuItem key='other' value='other'>
+                                            <MenuItem key='other' value='other' id='Admin.KeyManager.form.type.menu'>
                                                 {'Other' || 'other'}
                                             </MenuItem>
                                         </Select>
@@ -715,7 +741,12 @@ function AddEditKeyManager(props) {
                                         className={classes.FormControlRoot}
                                     >
                                         <Box display='flex' marginTop={3} marginBottom={2}>
-                                            <Typography color='inherit' variant='subtitle2' component='div'>
+                                            <Typography
+                                                color='inherit'
+                                                variant='subtitle2'
+                                                component='div'
+                                                id='KeyManagers.AddEditKeyManager.api.invocation.method.div'
+                                            >
                                                 <FormattedMessage
                                                     id='KeyManagers.AddEditKeyManager.api.invocation.method'
                                                     defaultMessage='API Invocation Method'
@@ -723,12 +754,14 @@ function AddEditKeyManager(props) {
                                             </Typography>
                                         </Box>
                                         <Box component='div' m={1}>
-                                            <Grid container>
-                                                <Grid item xs={6} md={4} lg={4}>
+                                            <Grid container id='grid2'>
+                                                <Grid item xs={6} md={4} lg={4} id='grid1'>
                                                     <FormControlLabel
+                                                        id='allow-direct-token'
                                                         value='enableDirectToken'
                                                         control={(
                                                             <Checkbox
+                                                                id='checkbox-allow-direct-token'
                                                                 checked={enableDirectToken}
                                                                 onChange={onChange}
                                                                 name='enableDirectToken'
@@ -738,7 +771,7 @@ function AddEditKeyManager(props) {
                                                         )}
                                                         label={(
                                                             <FormattedMessage
-                                                                id='Admin.KeyManager.label.allow.direct.token'
+                                                                id='Admin.KeyManager.label.message.allow.direct.token'
                                                                 defaultMessage='Direct Token'
                                                             />
                                                         )}
@@ -747,9 +780,11 @@ function AddEditKeyManager(props) {
                                                 </Grid>
                                                 <Grid item xs={6} md={4} lg={4}>
                                                     <FormControlLabel
+                                                        id='allow-exchange-token'
                                                         value='enableExchangeToken'
                                                         control={(
                                                             <Checkbox
+                                                                id='checkbox-allow-exchange-token'
                                                                 checked={enableExchangeToken}
                                                                 onChange={onChange}
                                                                 name='enableExchangeToken'
@@ -780,13 +815,23 @@ function AddEditKeyManager(props) {
                                     </Grid>
 
                                     <Grid item xs={12} md={12} lg={3}>
-                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='subtitle2'
+                                            component='div'
+                                            id='KeyManagers.AddEditKeyManager.endpoints.div'
+                                        >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.endpoints'
                                                 defaultMessage='Key Manager Endpoints'
                                             />
                                         </Typography>
-                                        <Typography color='inherit' variant='caption' component='p'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='caption'
+                                            component='p'
+                                            id='KeyManagers.AddEditKeyManager.endpoints.description.div'
+                                        >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.endpoints.description'
                                                 defaultMessage={
@@ -801,6 +846,7 @@ function AddEditKeyManager(props) {
 
                                             {enableExchangeToken && (
                                                 <TextField
+                                                    id='token-audience'
                                                     margin='dense'
                                                     name='alias'
                                                     label={(
@@ -829,6 +875,7 @@ function AddEditKeyManager(props) {
                                             )}
                                             <Box display='flex' mt={2} alignItems='flex-start'>
                                                 <TextField
+                                                    id='wellKnownUrl'
                                                     margin='dense'
                                                     name='wellKnownEndpoint'
                                                     fullWidth
@@ -853,9 +900,10 @@ function AddEditKeyManager(props) {
                                                         variant='outlined'
                                                         disabled={!wellKnownEndpoint}
                                                         onClick={importKMConfig}
+                                                        id='import-button'
                                                     >
                                                         <FormattedMessage
-                                                            id='KeyManagers.AddEditKeyManager.form.import.button'
+                                                            id='KeyManagers.AddEditKeyManager.import.button.message'
                                                             defaultMessage='Import'
                                                         />
                                                     </Button>
@@ -863,6 +911,7 @@ function AddEditKeyManager(props) {
 
                                             </Box>
                                             <TextField
+                                                id='issuer'
                                                 margin='dense'
                                                 name='issuer'
                                                 fullWidth
@@ -891,6 +940,7 @@ function AddEditKeyManager(props) {
                                                 }
                                             />
                                             <TextField
+                                                id='clientRegistrationEndpoint'
                                                 margin='dense'
                                                 name='clientRegistrationEndpoint'
                                                 fullWidth
@@ -919,6 +969,7 @@ function AddEditKeyManager(props) {
                                                 })}
                                             />
                                             <TextField
+                                                id='introspectionEndpoint'
                                                 margin='dense'
                                                 name='introspectionEndpoint'
                                                 fullWidth
@@ -946,6 +997,7 @@ function AddEditKeyManager(props) {
                                                 })}
                                             />
                                             <TextField
+                                                id='tokenEndpoint'
                                                 margin='dense'
                                                 name='tokenEndpoint'
                                                 fullWidth
@@ -969,6 +1021,7 @@ function AddEditKeyManager(props) {
                                                 })}
                                             />
                                             <TextField
+                                                id='displayTokenEndpoint'
                                                 margin='dense'
                                                 name='displayTokenEndpoint'
                                                 fullWidth
@@ -989,6 +1042,7 @@ function AddEditKeyManager(props) {
                                                 })}
                                             />
                                             <TextField
+                                                id='revokeEndpoint'
                                                 margin='dense'
                                                 name='revokeEndpoint'
                                                 fullWidth
@@ -1012,6 +1066,7 @@ function AddEditKeyManager(props) {
                                                 })}
                                             />
                                             <TextField
+                                                id='displayRevokeEndpoint'
                                                 margin='dense'
                                                 name='displayRevokeEndpoint'
                                                 fullWidth
@@ -1035,6 +1090,7 @@ function AddEditKeyManager(props) {
                                                 }
                                             />
                                             <TextField
+                                                id='userInfoEndpoint'
                                                 margin='dense'
                                                 name='userInfoEndpoint'
                                                 label={(
@@ -1053,6 +1109,7 @@ function AddEditKeyManager(props) {
                                                 })}
                                             />
                                             <TextField
+                                                id='authorizeEndpoint'
                                                 margin='dense'
                                                 name='authorizeEndpoint'
                                                 label={(
@@ -1071,6 +1128,7 @@ function AddEditKeyManager(props) {
                                                 })}
                                             />
                                             <TextField
+                                                id='scopeManagementEndpoint'
                                                 margin='dense'
                                                 name='scopeManagementEndpoint'
                                                 label={(
@@ -1100,13 +1158,23 @@ function AddEditKeyManager(props) {
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={3}>
-                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='subtitle2'
+                                            component='div'
+                                            id='claim-uris'
+                                        >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.claim.uris'
                                                 defaultMessage='Claim URIs'
                                             />
                                         </Typography>
-                                        <Typography color='inherit' variant='caption' component='p'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='caption'
+                                            component='p'
+                                            id='KeyManagers.AddEditKeyManager.claim.uris.description.details'
+                                        >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.claim.uris.description'
                                                 defaultMessage='Provide claim URIs for consumer key and scopes.'
@@ -1116,6 +1184,7 @@ function AddEditKeyManager(props) {
                                     <Grid item xs={12} md={12} lg={9}>
                                         <Box component='div' m={1}>
                                             <TextField
+                                                id='consumerKeyClaim'
                                                 margin='dense'
                                                 name='consumerKeyClaim'
                                                 label={(
@@ -1136,6 +1205,7 @@ function AddEditKeyManager(props) {
                                                 )}
                                             />
                                             <TextField
+                                                id='scopesClaim'
                                                 margin='dense'
                                                 name='scopesClaim'
                                                 label={(
@@ -1172,13 +1242,23 @@ function AddEditKeyManager(props) {
                             </Grid>
 
                             <Grid item xs={12} md={12} lg={3}>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                <Typography
+                                    color='inherit'
+                                    variant='subtitle2'
+                                    component='div'
+                                    id='endpoints'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.endpoints'
                                         defaultMessage='Key Manager Endpoints'
                                     />
                                 </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
+                                <Typography
+                                    color='inherit'
+                                    variant='caption'
+                                    component='p'
+                                    id='KeyManagers.AddEditKeyManager.endpoints.details'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.endpoints.description'
                                         defaultMessage={'Configure endpoints such as client registration endpoint, '
@@ -1189,6 +1269,7 @@ function AddEditKeyManager(props) {
                             <Grid item xs={12} md={12} lg={9}>
                                 <Box component='div' m={1}>
                                     <TextField
+                                        id='token-audience'
                                         margin='dense'
                                         name='alias'
                                         label={(
@@ -1215,6 +1296,7 @@ function AddEditKeyManager(props) {
                                     />
                                     <Box display='flex' mt={2} alignItems='flex-start'>
                                         <TextField
+                                            id='wellKnownUrl'
                                             margin='dense'
                                             name='wellKnownEndpoint'
                                             fullWidth
@@ -1246,7 +1328,7 @@ function AddEditKeyManager(props) {
                                                 onClick={importKMConfig}
                                             >
                                                 <FormattedMessage
-                                                    id='KeyManagers.AddEditTokenExchangeIDP.form.import.button'
+                                                    id='KeyManagers.AddEditKeyManager.import.button.message'
                                                     defaultMessage='Import'
                                                 />
                                             </Button>
@@ -1254,6 +1336,7 @@ function AddEditKeyManager(props) {
 
                                     </Box>
                                     <TextField
+                                        id='issuer'
                                         margin='dense'
                                         name='issuer'
                                         fullWidth
@@ -1276,6 +1359,7 @@ function AddEditKeyManager(props) {
                                         })}
                                     />
                                     <TextField
+                                        id='tokenEndpoint'
                                         margin='dense'
                                         name='tokenEndpoint'
                                         fullWidth
@@ -1311,13 +1395,23 @@ function AddEditKeyManager(props) {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} md={12} lg={3}>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                <Typography
+                                    color='inherit'
+                                    variant='subtitle2'
+                                    component='div'
+                                    id='KeyManagers.AddEditKeyManager.endpoints.header'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.endpoints'
                                         defaultMessage='Key Manager Endpoints'
                                     />
                                 </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
+                                <Typography
+                                    color='inherit'
+                                    variant='caption'
+                                    component='p'
+                                    id='KeyManagers.AddEditKeyManager.endpoints.details'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.resident.endpoints.description'
                                         defaultMessage={'Configure display endpoints such as display token endpoint, '
@@ -1328,6 +1422,7 @@ function AddEditKeyManager(props) {
                             <Grid item xs={12} md={12} lg={9}>
                                 <Box component='div' m={1}>
                                     <TextField
+                                        id='displayTokenEndpoint'
                                         margin='dense'
                                         name='displayTokenEndpoint'
                                         fullWidth
@@ -1348,6 +1443,7 @@ function AddEditKeyManager(props) {
                                         })}
                                     />
                                     <TextField
+                                        id='displayRevokeEndpoint'
                                         margin='dense'
                                         name='displayRevokeEndpoint'
                                         fullWidth
@@ -1380,13 +1476,23 @@ function AddEditKeyManager(props) {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} md={12} lg={3}>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                <Typography
+                                    color='inherit'
+                                    variant='subtitle2'
+                                    component='div'
+                                    id='KeyManagers.AddEditKeyManager.grant.types.header'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.grant.types'
                                         defaultMessage='Grant Types'
                                     />
                                 </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
+                                <Typography
+                                    color='inherit'
+                                    variant='caption'
+                                    component='p'
+                                    id='KeyManagers.AddEditKeyManager.grant.types.body'
+                                >
                                     <FormattedMessage
                                         id='KeyManagers.AddEditKeyManager.grant.types.description'
                                         defaultMessage={'Add the supported grant types by the'
@@ -1432,13 +1538,23 @@ function AddEditKeyManager(props) {
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={3}>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
+                        <Typography
+                            color='inherit'
+                            variant='subtitle2'
+                            component='div'
+                            id='KeyManagers.AddEditKeyManager.certificate.header'
+                        >
                             <FormattedMessage
                                 id='KeyManagers.AddEditKeyManager.certificate'
                                 defaultMessage='Certificates'
                             />
                         </Typography>
-                        <Typography color='inherit' variant='caption' component='p'>
+                        <Typography
+                            color='inherit'
+                            variant='caption'
+                            component='p'
+                            id='KeyManagers.AddEditKeyManager.certificate.body'
+                        >
                             <FormattedMessage
                                 id='KeyManagers.AddEditKeyManager.certificate.description'
                                 defaultMessage='Upload or provide the certificate inline.'
@@ -1460,13 +1576,23 @@ function AddEditKeyManager(props) {
                             {(keymanagerConnectorConfigurations && keymanagerConnectorConfigurations.length > 0) && (
                                 <>
                                     <Grid item xs={12} md={12} lg={3}>
-                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='subtitle2'
+                                            component='div'
+                                            id='KeyManagers.AddEditKeyManager.connector.configurations.header'
+                                        >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.connector.configurations'
                                                 defaultMessage='Connector Configurations'
                                             />
                                         </Typography>
-                                        <Typography color='inherit' variant='caption' component='p'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='caption'
+                                            component='p'
+                                            id='KeyManagers.AddEditKeyManager.connector.configurations.body'
+                                        >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.connector.configurations.description'
                                                 defaultMessage='Provide connection params for the selected Key Manager.'
@@ -1494,13 +1620,23 @@ function AddEditKeyManager(props) {
                         </>
                     )}
                     <Grid item xs={12} md={12} lg={3}>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
+                        <Typography
+                            color='inherit'
+                            variant='subtitle2'
+                            component='div'
+                            id='KeyManagers.AddEditKeyManager.advanced.header'
+                        >
                             <FormattedMessage
                                 id='KeyManagers.AddEditKeyManager.advanced'
                                 defaultMessage='Advanced Configurations'
                             />
                         </Typography>
-                        <Typography color='inherit' variant='caption' component='p'>
+                        <Typography
+                            color='inherit'
+                            variant='caption'
+                            component='p'
+                            id='KeyManagers.AddEditKeyManager.advanced.body'
+                        >
                             <FormattedMessage
                                 id='KeyManagers.AddEditKeyManager.advanced.description'
                                 defaultMessage='Advanced options for the Key Manager'
@@ -1576,7 +1712,12 @@ function AddEditKeyManager(props) {
                             </Box>
                             <Box component='div' m={1}>
                                 <Box display='flex' marginTop={3} marginBottom={2}>
-                                    <Typography color='inherit' variant='subtitle2' component='div'>
+                                    <Typography
+                                        color='inherit'
+                                        variant='subtitle2'
+                                        component='div'
+                                        id='KeyManagers.AddEditKeyManager.token.validation.method.header'
+                                    >
                                         <FormattedMessage
                                             id='KeyManagers.AddEditKeyManager.token.validation.method'
                                             defaultMessage='Token Validation Method'
@@ -1615,7 +1756,12 @@ function AddEditKeyManager(props) {
                                     </FormControl>
                                 </Box>
                                 <Box display='flex' marginTop={3} marginBottom={2}>
-                                    <Typography color='inherit' variant='subtitle2' component='div'>
+                                    <Typography
+                                        color='inherit'
+                                        variant='subtitle2'
+                                        component='div'
+                                        id='KeyManagers.AddEditKeyManager.token.handling.options.header'
+                                    >
                                         <FormattedMessage
                                             id='KeyManagers.AddEditKeyManager.token.handling.options'
                                             defaultMessage='Token Handling Options'
@@ -1638,6 +1784,7 @@ function AddEditKeyManager(props) {
                                         component='a'
                                         onClick={handleExpandClick}
                                         style={{ cursor: 'pointer' }}
+                                        id='KeyManagers.AddEditKeyManager.claim.mappings.header'
                                     >
                                         <FormattedMessage
                                             id='KeyManagers.AddEditKeyManager.claim.mappings.title'
@@ -1668,6 +1815,7 @@ function AddEditKeyManager(props) {
                                             variant='caption'
                                             component='div'
                                             style={{ paddingLeft: 16 }}
+                                            id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help.body'
                                         >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help'
@@ -1690,6 +1838,7 @@ function AddEditKeyManager(props) {
                                             component='a'
                                             onClick={handleExpandClick}
                                             style={{ cursor: 'pointer' }}
+                                            id='KeyManagers.AddEditKeyManager.claim.mappings.header'
                                         >
                                             <FormattedMessage
                                                 id='KeyManagers.AddEditKeyManager.claim.mappings.title'
@@ -1720,6 +1869,7 @@ function AddEditKeyManager(props) {
                                                 variant='caption'
                                                 component='div'
                                                 style={{ paddingLeft: 16 }}
+                                                id='KeyManagers.AddEditKeyManager.claim.mappings.help.description'
                                             >
                                                 <FormattedMessage
                                                     id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help'
@@ -1740,7 +1890,7 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box component='span' m={1}>
-                            <Button variant='contained' color='primary' onClick={formSaveCallback}>
+                            <Button id='keymanager-add' variant='contained' color='primary' onClick={formSaveCallback}>
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
                                         {id ? (
