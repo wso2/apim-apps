@@ -29,7 +29,7 @@ import {
 import { green } from '@material-ui/core/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import sqlFormatter from 'sql-formatter';
+import { format } from 'sql-formatter';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Link as RouterLink } from 'react-router-dom';
@@ -78,7 +78,7 @@ const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@
 + 'INSERT INTO EligibilityStream; FROM EligibilityStream[isEligible==true]#throttler:timeBatch(1 min) '
 + 'SELECT throttleKey, (count(userId) >= 5) as isThrottled, expiryTimeStamp group by throttleKey '
 + 'INSERT ALL EVENTS into ResultStream;';
-const formattedSampleSiddhiQuery = sqlFormatter.format(sampleSiddhiQuery);
+const formattedSampleSiddhiQuery = format(sampleSiddhiQuery);
 
 
 /**
@@ -131,7 +131,7 @@ function AddEdit(props) {
     useEffect(() => {
         if (editMode) {
             restApi.customPolicyGet(policyId).then((result) => {
-                const formattedSiddhiQuery = sqlFormatter.format(result.body.siddhiQuery);
+                const formattedSiddhiQuery = format(result.body.siddhiQuery);
                 const editState = {
                     policyName: result.body.policyName,
                     description: result.body.description,
