@@ -69,6 +69,18 @@ Jest will pickup the files for test which are ending with `.test.jsx` or `.test.
 
 # Troubleshooting
 > Feel free to update this guide , If you able to find better alternatives or if you find anything that is worth adding here
+## ResolverError: Error downloading https://raw.githubusercontent.com
+
+This could be due to getting throttled out in github public requests, Wait for few seconds(max 1min) and re-run the tests
+
+![image](https://user-images.githubusercontent.com/3313885/144829122-49f6ea49-82ae-4df3-b0ed-9fcebcb3ff5f.png)
+
+```
+    ResolverError: Error downloading https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml
+
+      at node_modules/@apidevtools/json-schema-ref-parser/lib/resolvers/http.js:127:16
+```
+
 
 ## Error: ENOSPC: System limit for number of file watchers reached (Ubuntu)
 
