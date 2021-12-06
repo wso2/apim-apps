@@ -19,7 +19,7 @@
 import qs from 'qs';
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
-import _ from 'lodash';
+import intersectionBy from 'lodash.intersectionby';
 import Utils from './Utils';
 import User from './User';
 
@@ -178,7 +178,7 @@ class AuthManager {
         } else {
             const arrayLength = AuthManager.getUser().scopes.length;
             if (arrayLength === 2) {
-                return _.intersectionBy(AuthManager.getUser().scopes, ['apim:api_view', 'openid']);
+                return intersectionBy(AuthManager.getUser().scopes, ['apim:api_view', 'openid']);
             }
             return false;
         }

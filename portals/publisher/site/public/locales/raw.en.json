@@ -2,6 +2,9 @@
   "Api.category.dropdown.tooltip": {
     "defaultMessage": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
   },
+  "Api.login.page.readonly.user": {
+    "defaultMessage": "Read only"
+  },
   "Apis.APIProductCreateWrapper.error.errorMessage.create.revision": {
     "defaultMessage": "Something went wrong while creating the API Revision"
   },
@@ -322,9 +325,6 @@
   },
   "Apis.Details.APIDefinition.APIDefinition.schema.definition": {
     "defaultMessage": "Schema Definition"
-  },
-  "Apis.Details.APIDefinition.APIDefinition.update.not.allowed": {
-    "defaultMessage": "Unauthorized: Insufficient permissions to update API Definition"
   },
   "Apis.Details.APIDefinition.AuditApi\n                                                                    .OverallScoreProgress": {
     "defaultMessage": "{overallScore}"
@@ -1445,9 +1445,6 @@
   },
   "Apis.Details.Endpoints.Endpoints.missing.security.username.error": {
     "defaultMessage": "Endpoint Security User Name/ Password should not be empty"
-  },
-  "Apis.Details.Endpoints.Endpoints.update.not.allowed": {
-    "defaultMessage": "*You are not authorized to update endpoints of the API due to insufficient permissions"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.certificate.add.success": {
     "defaultMessage": "Certificate added successfully"
