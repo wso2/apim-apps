@@ -20,10 +20,15 @@
  * Refer https://jestjs.io/docs/en/configuration for more information about jest configs
  * Added monaco-editor mapping because of this issue
  *      https://github.com/react-monaco-editor/react-monaco-editor/issues/133#issuecomment-403960502
+ * - per-invocation config (globalSetup, globalTeardown)
+*  - per-worker (not existent, see Per-worker setup/teardown #8708)
+*  - per-suite (setupFiles, setupFilesAfterEnv, beforeAll, afterAll)
+*  - per-test (beforeEach, afterEach).
  */
 module.exports = {
     setupFilesAfterEnv: ['<rootDir>/source/Tests/setupFilesAfterEnv.ts'],
     setupFiles: ['<rootDir>/source/Tests/setupTests.ts'],
+    globalSetup: '<rootDir>/source/Tests/jestGlobalSetup.ts',
     moduleNameMapper: {
         'AppComponents(.*)$': '<rootDir>/source/src/app/components/$1',
         'AppData(.*)$': '<rootDir>/source/src/app/data/$1',
@@ -46,7 +51,11 @@ module.exports = {
     collectCoverage: false,
 
     // An array of glob patterns indicating a set of files for which coverage information should be collected
-    collectCoverageFrom: ['<rootDir>/source/src/**/*.{js,jsx}'],
+    collectCoverageFrom: [
+        'source/**/*.{js,jsx,ts,tsx}',
+        '!source/**/*.d.ts',
+        '!**/node_modules/**',
+    ],
 
     // The directory where Jest should output its coverage files
     coverageDirectory: 'coverage',
@@ -55,6 +64,6 @@ module.exports = {
     coverageReporters: ['json', 'text', 'lcov', 'clover', 'html'],
 
     // The test environment that will be used for testing,
-    // Default is JSDOM https://github.com/jest-community/vscode-jest/issues/165
+    // Default is node https://github.com/jest-community/vscode-jest/issues/165
     testEnvironment: 'jsdom',
 };

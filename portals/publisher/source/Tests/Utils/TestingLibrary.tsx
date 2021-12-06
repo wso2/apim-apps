@@ -31,7 +31,7 @@ export const history = createMemoryHistory();
 // Overriding default `waitFor` timeout value due to MSW latencies
 // Default asyncUtilTimeout value is 1000
 // For more info refer : https://testing-library.com/docs/dom-testing-library/api-configuration/
-const ASYNC_TIMEOUT_MINUTES = 1;
+const ASYNC_TIMEOUT_MINUTES = 0.3;
 const asyncUtilTimeout = ASYNC_TIMEOUT_MINUTES * 60 * 10 ** 3;
 configure({ asyncUtilTimeout });
 jest.setTimeout((asyncUtilTimeout * 3) / 2);

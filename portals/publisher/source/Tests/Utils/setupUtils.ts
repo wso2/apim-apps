@@ -1,0 +1,72 @@
+import * as path from "path";
+import * as fs from "fs";
+import SwaggerParser from "@apidevtools/swagger-parser";
+import { promises as fsPromises } from 'fs';
+import * as url from "url";
+import { OpenAPIV3 } from "openapi-types";
+
+export type APIConfig = { inputSpec: any; context: string };
+
+/**
+ * Download the OAS definition to a temporary location given the URL
+ * @param _url Open API definition HTTP URL
+ * @returns
+ */
+export function getTempPath(_url: string) {
+  const parsed = url.parse(_url);
+  const fileName = path.basename(parsed.pathname || "");
+  return `/tmp/${fileName}`;
+}
+
+/**
+ * This is a temporary hack, to remove x-example refs
+ * @param oasDefinition 
+ * @returns string cleaned OAS definition
+ */
+export function removeXExamples(oasDefinition: OpenAPIV3.Document): OpenAPIV3.Document {
+  Object.keys(oasDefinition.paths).forEach((path) =>
+    Object.keys(oasDefinition.paths[path]).forEach((verb) => {
+      delete oasDefinition.paths[path][verb]["x-examples"];
+    })
+  );
+  return oasDefinition;
+}
+
+/**
+ * Download and bundled the OpenAPI definition giving the OAS definition URL
+ * This was inspired by https://github.com/APIDevTools/swagger-cli/blob/master/lib/bundle.js
+ * @param apiURL 
+ * @returns Promise<string> Parsed and dereferenced OAS content
+ */
+export const downloadOASDefinition = async function bundle(apiURL: string): Promise<string> {
+  const filePath = getTempPath(apiURL);
+
+  // Throw an error if the API contains circular $refs and we're dereferencing,
+  // since the output can't be serialized as JSON
+  let opts = {
+    dereference: {
+      circular: false,
+    },
+  };
+  console.log(`Start downloading ${filePath}`);
+  let bundled = await SwaggerParser.bundle(apiURL, opts);
+  console.log(`OAS definition downloaded ${filePath} successfully!`);
+  let content = JSON.stringify(bundled, null) + "\n";
+
+  console.log(`Start saving ${filePath}`);
+  // Create the output directory, if necessary
+  await fsPromises.mkdir(path.dirname(filePath), { recursive: true });
+
+  // Write the result to the output file
+  await fsPromises.writeFile(filePath, content);
+  console.log(`OAS definition saved ${filePath} successfully!`);
+
+  return content;
+};
+
+export const OASConfigs = () => {
+  const oasToolConfig = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), "openapitools.json"), "utf8")
+  );
+  return Object.entries(oasToolConfig["generator-cli"].generators);
+};

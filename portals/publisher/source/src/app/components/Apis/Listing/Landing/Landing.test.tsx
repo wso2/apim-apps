@@ -20,7 +20,7 @@ afterEach(() => {
 afterAll(() => server.close());
 
 describe('Landing page', () => {
-    test.skip('Should have 4 welcome cards', async () => {
+    test('Should have 4 welcome cards', async () => {
         render(<Landing />);
         expect(screen.getByText(/soap api/i)).toBeInTheDocument();
         expect(screen.getByText(/^rest api/i)).toBeInTheDocument();
@@ -28,7 +28,7 @@ describe('Landing page', () => {
         expect(screen.getByText(/streaming api/i)).toBeInTheDocument();
     });
 
-    test.skip('REST API Card links', async () => {
+    test('REST API Card links', async () => {
         render(<Landing />);
         const restAPICard = screen.getByText(/^rest api/i);
         expect(

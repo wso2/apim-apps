@@ -1,20 +1,16 @@
 import { OpenAPIBackend } from "openapi-backend";
-import * as path from "path";
-import * as fs from "fs";
 import addFormats from "ajv-formats";
 
 /* ####### OpenAPI mock configuration ####### */
 // Iterate the OAS tools config file and generate OpenAPIBackend objects and set it to test context globals
-const oasToolConfig = JSON.parse(
-  fs.readFileSync(path.join(process.cwd(), "openapitools.json"), "utf8")
-);
-type APIConfig = {inputSpec: any, context: string};
+   
 const openApiBackends = {};
-Object.entries(oasToolConfig["generator-cli"].generators).map(
+
+OASConfigs().map(
   ([apiName, apiConfig]) => {
     const { inputSpec, context } = apiConfig as APIConfig;
     const oasBackend = new OpenAPIBackend({
-      definition: inputSpec,
+      definition: getTempPath(inputSpec),
       quick: true,
       customizeAjv: (originalAjv, ajvOpts, validationContext) => {
         // To fix https://github.com/anttiviljami/openapi-backend/issues/230
@@ -33,7 +29,6 @@ Object.entries(oasToolConfig["generator-cli"].generators).map(
 
 global.openApiBackends = openApiBackends;
 
-
 /* ####### DEPRECATED Old configs ####### */
 
 /*  ***** IMPORTANT *****
@@ -45,6 +40,7 @@ import Enzyme, { shallow, render, mount } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import renderer from "react-test-renderer";
 import SwaggerParser from "@apidevtools/swagger-parser";
+import { APIConfig, getTempPath, OASConfigs } from "./Utils/setupUtils";
 
 const OAS_DEFINITION_URL =
   "https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml";

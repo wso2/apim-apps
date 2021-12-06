@@ -66,7 +66,7 @@ export default function SpecErrors(props) {
                 <DialogContent dividers>
                     <List>
                         {specErrors.map((error, index) => (
-                            <>
+                            <span key={error.description}>
                                 {index % 2 !== 0 && <Divider light variant='inset' />}
                                 <ListItem>
                                     <ListItemText
@@ -84,7 +84,7 @@ export default function SpecErrors(props) {
                                         </code>
                                     </pre>
                                 </Box>
-                            </>
+                            </span>
                         ))}
                     </List>
                 </DialogContent>
