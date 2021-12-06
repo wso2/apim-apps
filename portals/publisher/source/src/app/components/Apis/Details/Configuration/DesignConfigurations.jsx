@@ -366,10 +366,10 @@ export default function DesignConfigurations() {
         }
         setIsUpdating(false);
     }
-    const isDisabled = isUpdating || api.isRevision || invalidTagsExist
-    || isRestricted(['apim:api_create', 'apim:api_publish'], api)
-    || (apiConfig.visibility === 'RESTRICTED'
-        && apiConfig.visibleRoles.length === 0);
+    const isDisabled = isRestricted(['apim:api_publish', 'apim:api_create'], api
+                    || isUpdating || api.isRevision || invalidTagsExist
+                    || (apiConfig.visibility === 'RESTRICTED'
+                    && apiConfig.visibleRoles.length === 0));
     return (
         <>
             <Container maxWidth='md'>
@@ -482,19 +482,6 @@ export default function DesignConfigurations() {
                                             />
                                         </Button>
                                     </Box>
-                                    {isRestricted(['apim:api_create'], api) && (
-                                        <Box py={1}>
-                                            <Typography variant='body2' color='primary'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Configuration.Configuration.update.not.allowed'
-                                                    defaultMessage={
-                                                        '* You are not authorized to update particular fields of'
-                                                        + ' the API due to insufficient permissions'
-                                                    }
-                                                />
-                                            </Typography>
-                                        </Box>
-                                    )}
                                 </Box>
                             </div>
                         </Paper>

@@ -30,6 +30,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import TextField from '@material-ui/core/TextField';
 import { Typography } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
+import { isRestricted } from 'AppData/AuthManager';
 
 const styles = (theme) => ({
     root: {
@@ -237,7 +238,7 @@ class Operation extends React.Component {
                     <Select
                         className={classes.dropDown}
                         value={isOperationRateLimiting ? operation.throttlingPolicy : ''}
-                        disabled={!isOperationRateLimiting}
+                        disabled={(!isOperationRateLimiting || isRestricted(['apim:api_publish', 'apim:api_create']))}
                         onChange={this.handlePolicyChange}
                         fieldName='Throttling Policy'
                     >
@@ -279,6 +280,7 @@ class Operation extends React.Component {
                         )}
                         margin='dense'
                         variant='outlined'
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                     >
                         <ListSubheader>
                             <FormattedMessage
@@ -349,6 +351,7 @@ class Operation extends React.Component {
                         onChange={this.handleChange}
                         value={isSecurity}
                         color='primary'
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                     />
                 </TableCell>
             </TableRow>

@@ -37,6 +37,7 @@ import { useTheme } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { isRestricted } from 'AppData/AuthManager';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -389,7 +390,9 @@ export default function DeploymentOnboarding(props) {
                                                             <Checkbox
                                                                 id={row.name.split(' ').join('')}
                                                                 value={row.name}
-                                                                checked={selectedSolaceEnvironment.includes(row.name)}
+                                                                checked={selectedEnvironment.includes(row.name)}
+                                                                disabled={isRestricted(['apim:api_publish',
+                                                                    'apim:api_create'])}
                                                                 onChange={handleChange}
                                                                 color='primary'
                                                                 icon={<RadioButtonUncheckedIcon />}
@@ -469,6 +472,7 @@ export default function DeploymentOnboarding(props) {
                                                 name='description'
                                                 margin='dense'
                                                 variant='outlined'
+                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                                                 label='Description'
                                                 inputProps={{ maxLength: maxCommentLength }}
                                                 helperText={(
@@ -494,7 +498,8 @@ export default function DeploymentOnboarding(props) {
                                             () => createDeployRevision(selectedSolaceEnvironment, selectedVhostDeploy)
                                         }
                                         color='primary'
-                                        disabled={selectedSolaceEnvironment.length === 0}
+                                        disabled={selectedSolaceEnvironment.length === 0
+                                            || isRestricted(['apim:api_publish', 'apim:api_create'])}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.deploy.deploy'

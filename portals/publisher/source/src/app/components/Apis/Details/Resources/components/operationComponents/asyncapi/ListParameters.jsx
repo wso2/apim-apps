@@ -28,6 +28,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FormattedMessage } from 'react-intl';
+import { isRestricted } from 'AppData/AuthManager';
 import EditParameter from './EditParameter';
 
 const useStyles = makeStyles({
@@ -115,6 +116,7 @@ export default function ListParameters(props) {
                                         )}
                                         >
                                             <IconButton
+                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                                                 onClick={() => setEditingParameter({ name: k, ...v })}
                                                 fontSize='small'
                                             >

@@ -29,6 +29,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FormattedMessage } from 'react-intl';
+import { isRestricted } from 'AppData/AuthManager';
 import EditPayloadProperty from './EditPayloadProperty';
 
 const useStyles = makeStyles({
@@ -115,9 +116,10 @@ export default function ListPayloadProperties(props) {
                                         )}
                                         >
                                             <IconButton
+                                                disabled={disableForSolace
+                                                    || isRestricted(['apim:api_publish', 'apim:api_create'])}
                                                 onClick={() => setEditingProperty({ name: k, ...v })}
                                                 fontSize='small'
-                                                disabled={disableForSolace}
                                             >
                                                 <EditIcon fontSize='small' />
                                             </IconButton>
@@ -131,7 +133,8 @@ export default function ListPayloadProperties(props) {
                                         )}
                                         >
                                             <IconButton
-                                                disabled={disableUpdate || disableForSolace}
+                                                disabled={disableUpdate || disableForSolace
+                                                    || isRestricted(['apim:api_publish', 'apim:api_create'])}
                                                 onClick={() => operationsDispatcher({
                                                     action: 'deletePayloadProperty',
                                                     data: { target, verb, value: k },

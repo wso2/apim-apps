@@ -35,6 +35,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 
 import { FormattedMessage } from 'react-intl';
+import { isRestricted } from 'AppData/AuthManager';
 import DescriptionAndSummary from './operationComponents/asyncapi/DescriptionAndSummary';
 import OperationGovernance from './operationComponents/asyncapi/OperationGovernance';
 import Parameters from './operationComponents/asyncapi/Parameters';
@@ -196,7 +197,9 @@ function AsyncOperation(props) {
                                 >
                                     <div>
                                         <IconButton
-                                            disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
+                                            disabled={Boolean(isUsedInAPIProduct)
+                                                || disableUpdate
+                                                || isRestricted(['apim:api_publish', 'apim:api_create'])}
                                             onClick={toggleDelete}
                                             aria-label='delete'
                                         >

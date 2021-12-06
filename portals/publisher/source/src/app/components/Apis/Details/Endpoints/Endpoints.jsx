@@ -532,18 +532,6 @@ function Endpoints(props) {
                                         />
                                     </Button>
                                 </Grid>
-                                {isRestricted(['apim:api_create'], api)
-                                && (
-                                    <Grid item>
-                                        <Typography variant='body2' color='primary'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.Endpoints.update.not.allowed'
-                                                defaultMessage={'*You are not authorized to update endpoints of'
-                                                + ' the API due to insufficient permissions'}
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                )}
                             </Grid>
                         </div>
                     </div>

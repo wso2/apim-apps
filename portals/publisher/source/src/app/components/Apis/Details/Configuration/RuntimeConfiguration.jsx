@@ -671,19 +671,6 @@ export default function RuntimeConfiguration() {
                                 />
                             </Button>
                         </Grid>
-                        {isRestricted(['apim:api_create'], api) && (
-                            <Grid item>
-                                <Typography variant='body2' color='primary'>
-                                    <FormattedMessage
-                                        id='Apis.Details.Configuration.Configuration.update.not.allowed'
-                                        defaultMessage={
-                                            '* You are not authorized to update particular fields of'
-                                            + ' the API due to insufficient permissions'
-                                        }
-                                    />
-                                </Typography>
-                            </Grid>
-                        )}
                     </Grid>
                 </Grid>
             </div>

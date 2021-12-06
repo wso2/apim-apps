@@ -29,6 +29,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
+import { isRestricted } from 'AppData/AuthManager';
 import APICreateMenu from './APICreateMenu';
 
 const styles = (theme) => ({
@@ -157,6 +158,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             to='/api-products/create'
                         >
                             <FormattedMessage

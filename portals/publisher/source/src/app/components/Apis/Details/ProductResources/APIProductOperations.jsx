@@ -74,6 +74,7 @@ export default function APIProductOperations() {
                         <Button
                             variant='contained'
                             color='primary'
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                         >
                             <EditIcon />
                             <FormattedMessage

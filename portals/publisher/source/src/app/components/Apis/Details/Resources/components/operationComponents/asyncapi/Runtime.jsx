@@ -30,6 +30,7 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
 import { FileCopy } from '@material-ui/icons';
+import { isRestricted } from 'AppData/AuthManager';
 
 /**
  * Renders the callback URL for WebSub and URI mapping for WebSocket.
@@ -85,6 +86,7 @@ export default function Runtime(props) {
                     <Grid item md={1} />
                     <Grid item md={5}>
                         <TextField
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             margin='dense'
                             fullWidth
                             label='URL Mapping'

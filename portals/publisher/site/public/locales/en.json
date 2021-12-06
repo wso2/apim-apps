@@ -5,6 +5,12 @@
       "value": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
     }
   ],
+  "Api.login.page.readonly.user": [
+    {
+      "type": 0,
+      "value": "Read only"
+    }
+  ],
   "Apis.APIProductCreateWrapper.error.errorMessage.create.revision": [
     {
       "type": 0,
@@ -725,12 +731,6 @@
     {
       "type": 0,
       "value": "Schema Definition"
-    }
-  ],
-  "Apis.Details.APIDefinition.APIDefinition.update.not.allowed": [
-    {
-      "type": 0,
-      "value": "Unauthorized: Insufficient permissions to update API Definition"
     }
   ],
   "Apis.Details.APIDefinition.AuditApi\n                                                                    .OverallScoreProgress": [
@@ -1565,12 +1565,6 @@
     {
       "type": 0,
       "value": "Transports"
-    }
-  ],
-  "Apis.Details.Configuration.Configuration.update.not.allowed": [
-    {
-      "type": 0,
-      "value": "* You are not authorized to update particular fields of the API due to insufficient permissions"
     }
   ],
   "Apis.Details.Configuration.Resources.save": [
@@ -3103,12 +3097,6 @@
     {
       "type": 0,
       "value": "Endpoint Security User Name/ Password should not be empty"
-    }
-  ],
-  "Apis.Details.Endpoints.Endpoints.update.not.allowed": [
-    {
-      "type": 0,
-      "value": "*You are not authorized to update endpoints of the API due to insufficient permissions"
     }
   ],
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.certificate.add.success": [

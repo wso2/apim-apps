@@ -58,11 +58,7 @@ const Apis = () => {
                 path='/api-products'
                 key={Date.now()}
                 render={(props) => {
-                    if (AuthManager.isNotPublisher()) {
-                        return <Redirect to='/apis' />;
-                    } else {
-                        return <Listing {...props} isAPIProduct />;
-                    }
+                    return <Listing {...props} isAPIProduct />;
                 }}
             />
             <Route path='/apis/search' render={(props) => <Listing {...props} isAPIProduct={false} />} />
@@ -81,11 +77,7 @@ const Apis = () => {
             <Route
                 path='/api-products/:apiProdUUID/'
                 render={(props) => {
-                    if (AuthManager.isNotPublisher()) {
-                        return <Redirect to='/apis' />;
-                    } else {
-                        return <DeferredDetails {...props} isAPIProduct />;
-                    }
+                    return <DeferredDetails {...props} isAPIProduct />;
                 }}
             />
         </Switch>

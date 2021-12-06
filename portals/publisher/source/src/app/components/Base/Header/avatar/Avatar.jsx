@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import AuthManager from 'AppData/AuthManager';
 
 const styles = (theme) => ({
     profileMenu: {
@@ -25,8 +26,26 @@ const styles = (theme) => ({
         textTransform: 'uppercase',
         fontWeight: 'bold',
     },
+    readOnlyUserLink: {
+        color: theme.palette.getContrastText(theme.palette.background.appBar),
+        fontSize: theme.typography.fontSize,
+        textTransform: 'uppercase',
+        fontWeight: 'bold',
+        border: 'solid 2px #ccc',
+        borderRadius: 20,
+        borderColor: '#E57739',
+    },
     accountIcon: {
         marginRight: 10,
+    },
+    root: {
+        borderRadius: 20,
+        borderColor: '#000',
+    },
+    flexbox: {
+        flex: 1,
+        flexDirection: 'column',
+        display: 'inline-block',
     },
 });
 
@@ -90,6 +109,13 @@ class Avatar extends Component {
         if (user.name.endsWith('@carbon.super') && count <= 1) {
             username = user.name.replace('@carbon.super', '');
         }
+        let usr;
+        const readOnlyUser = AuthManager.isReadOnlyUser();
+        if (readOnlyUser) {
+            usr = username;
+        } else {
+            usr = username;
+        }
         const { anchorEl } = this.state;
         return (
             <>
@@ -99,16 +125,28 @@ class Avatar extends Component {
                     aria-haspopup='true'
                     color='inherit'
                     onClick={this.handleClick}
-                    className={classes.userLink}
+                    className={readOnlyUser ? classes.readOnlyUserLink : classes.userLink}
                     disableFocusRipple
                     disableRipple
                 >
                     <AccountCircle className={classes.accountIcon} />
                     {' '}
-                    {username}
+                    {usr}
                     <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
                         keyboard_arrow_down
                     </Icon>
+                    {readOnlyUser && (
+                        <Box
+                            className={classes.flexbox}
+                            ml={1}
+                            color='#E57739'
+                        >
+                            <FormattedMessage
+                                id='Api.login.page.readonly.user'
+                                defaultMessage='Read only'
+                            />
+                        </Box>
+                    )}
                 </IconButton>
                 <Menu
                     id='itest-logout-menu'

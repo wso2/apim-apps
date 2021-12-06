@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function GlobalNavLinks(props) {
     const publisherUser = !AuthManager.isNotPublisher();
+    const readOnlyUser = AuthManager.isReadOnlyUser();
     const classes = useStyles();
     const { selected } = props;
     const theme = useTheme();
@@ -78,7 +79,7 @@ function GlobalNavLinks(props) {
                         defaultMessage='Services'
                     />
                 </GlobalNavLink>
-                { publisherUser
+                { (readOnlyUser || publisherUser)
                     && (
                         <GlobalNavLink
                             to='/api-products'

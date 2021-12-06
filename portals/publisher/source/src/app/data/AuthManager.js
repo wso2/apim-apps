@@ -19,6 +19,7 @@
 import qs from 'qs';
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
+import intersectionBy from 'lodash.intersectionby';
 import Utils from './Utils';
 import User from './User';
 
@@ -161,6 +162,25 @@ class AuthManager {
         } else {
             return !AuthManager.getUser().scopes.includes('apim:api_publish');
             // TODO: make this scope name configurable
+        }
+    }
+
+    /**
+     *
+     * Check whether user is a readOnly user
+     * @static
+     * @returns {Boolean} isReadOnlyUser
+     * @memberof AuthManager
+     */
+    static isReadOnlyUser() {
+        if (AuthManager.getUser() === null) {
+            return false;
+        } else {
+            const arrayLength = AuthManager.getUser().scopes.length;
+            if (arrayLength === 2) {
+                return intersectionBy(AuthManager.getUser().scopes, ['apim:api_view', 'openid']);
+            }
+            return false;
         }
     }
 
