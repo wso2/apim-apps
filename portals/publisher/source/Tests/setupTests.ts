@@ -3,28 +3,26 @@ import addFormats from "ajv-formats";
 
 /* ####### OpenAPI mock configuration ####### */
 // Iterate the OAS tools config file and generate OpenAPIBackend objects and set it to test context globals
-   
+
 const openApiBackends = {};
 
-OASConfigs().map(
-  ([apiName, apiConfig]) => {
-    const { inputSpec, context } = apiConfig as APIConfig;
-    const oasBackend = new OpenAPIBackend({
-      definition: getTempPath(inputSpec),
-      quick: true,
-      customizeAjv: (originalAjv, ajvOpts, validationContext) => {
-        // To fix https://github.com/anttiviljami/openapi-backend/issues/230
-        addFormats(originalAjv);
-        return originalAjv;
-      },
-      handlers: {
-        notFound: async (c, req, res) =>
-          res.status(404).json({ err: "not found" }),
-      },
-    });
-    openApiBackends[apiName] = { context, oasBackend };
-  }
-);
+OASConfigs().map(([apiName, apiConfig]) => {
+  const { inputSpec, context } = apiConfig as APIConfig;
+  const oasBackend = new OpenAPIBackend({
+    definition: getTempPath(inputSpec),
+    quick: true,
+    customizeAjv: (originalAjv, ajvOpts, validationContext) => {
+      // To fix https://github.com/anttiviljami/openapi-backend/issues/230
+      addFormats(originalAjv);
+      return originalAjv;
+    },
+    handlers: {
+      notFound: async (c, req, res) =>
+        res.status(404).json({ err: "not found" }),
+    },
+  });
+  openApiBackends[apiName] = { context, oasBackend };
+});
 /* ####### End of OpenAPI mock configuration ####### */
 
 global.openApiBackends = openApiBackends;
@@ -41,9 +39,6 @@ import Adapter from "enzyme-adapter-react-16";
 import renderer from "react-test-renderer";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { APIConfig, getTempPath, OASConfigs } from "./Utils/setupUtils";
-
-const OAS_DEFINITION_URL =
-  "https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml";
 
 // React 16 Enzyme adapter
 Enzyme.configure({ adapter: new Adapter() });
@@ -65,4 +60,6 @@ if (global.document) {
     },
   });
 }
-global.DEPRECATED_apiDef = SwaggerParser.dereference(OAS_DEFINITION_URL);
+global.DEPRECATED_apiDef = SwaggerParser.dereference(
+  getTempPath("publisher-api.yaml", true)
+);

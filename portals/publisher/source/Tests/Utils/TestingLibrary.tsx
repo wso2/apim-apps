@@ -84,7 +84,7 @@ const GlobalProviders: FC<{ user: any }> = ({
           <AppContextProvider
             value={{
               settings: TEMPORARY_MOCKED_SETTINGS,
-              user: {},
+              user: AuthManager.getUser(),
             }}
           >
             {children}

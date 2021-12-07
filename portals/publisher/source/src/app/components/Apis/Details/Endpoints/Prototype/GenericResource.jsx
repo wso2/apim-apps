@@ -102,7 +102,7 @@ function GenericResource(props) {
         <Grid item>
             <ExpansionPanel className={classes.chipExpansionPanel}>
                 <ExpansionPanelSummary className={classes.prototypeResourceHeader} expandIcon={<ExpandMoreIcon />}>
-                    <Grid container spacing={12}>
+                    <Grid container spacing={5}>
                         <Grid xs={1}>
                             <Chip label={resourceMethod} className={classes.chipActive} />
                         </Grid>

@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import SwaggerParser from "@apidevtools/swagger-parser";
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises } from "fs";
 import * as url from "url";
 import { OpenAPIV3 } from "openapi-types";
 
@@ -12,18 +12,23 @@ export type APIConfig = { inputSpec: any; context: string };
  * @param _url Open API definition HTTP URL
  * @returns
  */
-export function getTempPath(_url: string) {
-  const parsed = url.parse(_url);
-  const fileName = path.basename(parsed.pathname || "");
+export function getTempPath(_url: string, isFileName: boolean = false) {
+  let fileName = _url;
+  if (!isFileName) {
+    const parsed = url.parse(_url);
+    fileName = path.basename(parsed.pathname || "");
+  }
   return `/tmp/${fileName}`;
 }
 
 /**
  * This is a temporary hack, to remove x-example refs
- * @param oasDefinition 
+ * @param oasDefinition
  * @returns string cleaned OAS definition
  */
-export function removeXExamples(oasDefinition: OpenAPIV3.Document): OpenAPIV3.Document {
+export function removeXExamples(
+  oasDefinition: OpenAPIV3.Document
+): OpenAPIV3.Document {
   Object.keys(oasDefinition.paths).forEach((path) =>
     Object.keys(oasDefinition.paths[path]).forEach((verb) => {
       delete oasDefinition.paths[path][verb]["x-examples"];
@@ -35,10 +40,12 @@ export function removeXExamples(oasDefinition: OpenAPIV3.Document): OpenAPIV3.Do
 /**
  * Download and bundled the OpenAPI definition giving the OAS definition URL
  * This was inspired by https://github.com/APIDevTools/swagger-cli/blob/master/lib/bundle.js
- * @param apiURL 
+ * @param apiURL
  * @returns Promise<string> Parsed and dereferenced OAS content
  */
-export const downloadOASDefinition = async function bundle(apiURL: string): Promise<string> {
+export const downloadOASDefinition = async function bundle(
+  apiURL: string
+): Promise<string> {
   const filePath = getTempPath(apiURL);
 
   // Throw an error if the API contains circular $refs and we're dereferencing,

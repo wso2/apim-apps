@@ -71,6 +71,9 @@ const createMockHandler = (apiMapping: OASBackendMapping) => async (
     };
     if (req.url.pathname === "/api/am/publisher/v2/swagger.yaml") {
       // Temporary fix for removing x-example $refs
+      if(!thisAPIBackend.initalized) { // Prevent redundant OAS fetch
+        await apiMapping.oasBackend.init();
+      }
       const oasDef = thisAPIBackend.document;
       Object.keys(oasDef.paths).forEach((path) =>
         Object.keys(oasDef.paths[path]).forEach((verb) => {
