@@ -35,6 +35,12 @@
       "value": "Cancel"
     }
   ],
+  "Apis.Create.APIProduct.APIProductCreateWrapper.create": [
+    {
+      "type": 0,
+      "value": "Create"
+    }
+  ],
   "Apis.Create.APIProduct.APIProductCreateWrapper.defineProvide": [
     {
       "type": 0,
@@ -57,12 +63,6 @@
     {
       "type": 0,
       "value": "Next"
-    }
-  ],
-  "Apis.Create.APIProduct.APIProductCreateWrapper.publish": [
-    {
-      "type": 0,
-      "value": "Publish"
     }
   ],
   "Apis.Create.APIProduct.APIProductCreateWrapper.resources": [
@@ -4922,7 +4922,7 @@
   "Apis.Details.Overview.CustomizedStepper.prototyped": [
     {
       "type": 0,
-      "value": "Prototyped"
+      "value": "Pre-Released"
     }
   ],
   "Apis.Details.Overview.CustomizedStepper.publish": [

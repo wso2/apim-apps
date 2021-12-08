@@ -264,6 +264,12 @@ const RouteMenuMapping = (intl) => [
                 component: APIStateChange,
                 icon: <SettingsEthernetIcon />,
             },
+            {
+                id: 'API Product State Change',
+                path: '/tasks/api-product-state-change',
+                component: () => <APIStateChange isAPIProduct />,
+                icon: <SettingsEthernetIcon />,
+            },
         ],
     },
     {

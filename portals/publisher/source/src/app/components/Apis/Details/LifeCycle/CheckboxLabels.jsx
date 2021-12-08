@@ -79,9 +79,12 @@ const useStyles = makeStyles((theme) => ({
 export default function CheckboxLabels(props) {
     const classes = useStyles();
     const {
-        api, isMutualSSLEnabled, isCertAvailable, isAppLayerSecurityMandatory, isBusinessPlanAvailable,
+        api, isMutualSSLEnabled, isCertAvailable, isAppLayerSecurityMandatory, isBusinessPlanAvailable, isAPIProduct,
     } = props;
-    const isEndpointAvailable = api.endpointConfig !== null && !api.endpointConfig.implementation_status;
+    const isEndpointAvailable = !isAPIProduct
+        ? api.endpointConfig !== null && !api.endpointConfig.implementation_status
+        : false;
+    const lcState = isAPIProduct ? api.state : api.lifeCycleStatus;
 
     return (
         <Paper className={classes.paperCenter}>
@@ -99,7 +102,7 @@ export default function CheckboxLabels(props) {
                     />
                 </Typography>
             </Grid>
-            {(api.lifeCycleStatus === 'CREATED' || api.lifeCycleStatus === 'PROTOTYPED') && (
+            {(lcState === 'CREATED' || lcState === 'PROTOTYPED') && (
                 <>
                     <Grid xs={12} className={classes.labelsGrid}>
                         <Typography variant='subtitle2' component='h5'>
@@ -110,7 +113,7 @@ export default function CheckboxLabels(props) {
                         </Typography>
                     </Grid>
                     <Grid xs={12}>
-                        {api.type !== 'WEBSUB' && (
+                        {api.type !== 'WEBSUB' && !isAPIProduct && (
                             <Grid xs={12} className={classes.grid}>
                                 {isEndpointAvailable ? (
                                     <CheckIcon className={classes.iconTrue} />

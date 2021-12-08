@@ -92,7 +92,7 @@ const TryOutConsole = () => {
 
     useEffect(() => {
         tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: true } });
-        api.getDeployedRevisions().then((deploymentsResponse) => {
+        api.getDeployedRevisions(api.id).then((deploymentsResponse) => {
             tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, completed: true } });
             const currentDeployments = deploymentsResponse.body;
             const currentDeploymentsWithDisplayName = currentDeployments.map((deploy) => {
@@ -109,6 +109,7 @@ const TryOutConsole = () => {
         api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
     }, []);
 
+    const isAPIProduct = api.type === 'APIPRODUCT';
     const updatedOasDefinition = useMemo(() => {
         let oasCopy;
         if (selectedDeployment && oasDefinition) {
@@ -132,9 +133,15 @@ const TryOutConsole = () => {
                             + `in selected deployment ( ${selectedDeploymentVhost.name} )`);
                     }
                     const baseURL = `${transport}://${selectedDeployment.vhost}:${transportPort}`;
-                    const url = `${baseURL}${pathSeparator}`
-                        + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
-                            .replace('{version}', `${api.version}`);
+                    let url;
+                    if (isAPIProduct) {
+                        url = `${baseURL}${pathSeparator}`
+                            + `${selectedDeploymentVhost.httpContext}${api.context}`;
+                    } else {
+                        url = `${baseURL}${pathSeparator}`
+                            + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
+                                .replace('{version}', `${api.version}`);
+                    }
                     return { url };
                 });
                 oasCopy.servers = servers.sort((a, b) => ((a.url > b.url) ? -1 : 1));
@@ -148,8 +155,13 @@ const TryOutConsole = () => {
                     console.warn('HTTPS transport port will be used for all other transports');
                 }
                 const host = `${selectedDeploymentVhost.host}:${transportPort}`;
-                const basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
-                    .replace('{version}', `${api.version}`);
+                let basePath;
+                if (isAPIProduct) {
+                    basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}`;
+                } else {
+                    basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
+                        .replace('{version}', `${api.version}`);
+                }
                 oasCopy.schemes = api.transport.slice().sort((a, b) => ((a > b) ? -1 : 1));
                 oasCopy.basePath = basePath;
                 oasCopy.host = host;

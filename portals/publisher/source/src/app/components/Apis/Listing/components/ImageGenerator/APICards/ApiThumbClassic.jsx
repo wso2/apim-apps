@@ -181,10 +181,13 @@ class APIThumb extends Component {
         } else {
             overviewPath = `/apis/${api.apiUUID}/documents/${api.id}/details`;
         }
+        let lifecycleState;
         if (isAPIProduct) {
             api.apiType = API.CONSTS.APIProduct;
+            lifecycleState = api.state === 'PROTOTYPED' ? 'PRE-RELEASED' : api.state;
         } else {
             api.apiType = API.CONSTS.API;
+            lifecycleState = api.lifeCycleStatus === 'PROTOTYPED' ? 'PRE-RELEASED' : api.lifeCycleStatus;
         }
 
         if (!api.lifeCycleStatus) {
@@ -266,7 +269,7 @@ class APIThumb extends Component {
                     <Chip
                         size='small'
                         classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                        label={api.apiType === API.CONSTS.APIProduct ? api.state : api.lifeCycleStatus}
+                        label={lifecycleState}
                         color='default'
                     />
                     {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (

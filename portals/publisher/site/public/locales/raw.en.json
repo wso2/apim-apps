@@ -17,6 +17,9 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.cancel": {
     "defaultMessage": "Cancel"
   },
+  "Apis.Create.APIProduct.APIProductCreateWrapper.create": {
+    "defaultMessage": "Create"
+  },
   "Apis.Create.APIProduct.APIProductCreateWrapper.defineProvide": {
     "defaultMessage": "Define API Product"
   },
@@ -29,8 +32,8 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.next": {
     "defaultMessage": "Next"
   },
-  "Apis.Create.APIProduct.APIProductCreateWrapper.publish": {
-    "defaultMessage": "Publish"
+  "Apis.Create.APIProduct.APIProductCreateWrapper.create": {
+    "defaultMessage": "Create"
   },
   "Apis.Create.APIProduct.APIProductCreateWrapper.resources": {
     "defaultMessage": "Add Resources"
@@ -2329,7 +2332,7 @@
     "defaultMessage": "The request is pending"
   },
   "Apis.Details.Overview.CustomizedStepper.prototyped": {
-    "defaultMessage": "Prototyped"
+    "defaultMessage": "Pre-Released"
   },
   "Apis.Details.Overview.CustomizedStepper.publish": {
     "defaultMessage": "Published"

@@ -24,6 +24,7 @@ import Box from '@material-ui/core/Box';
 import AuthManager from 'AppData/AuthManager';
 import Typography from '@material-ui/core/Typography';
 import LinkIcon from '@material-ui/icons/Link';
+import API from 'AppData/api';
 
 const ColorlibConnector = withStyles((theme) => {
     const completedColor = theme.custom.apis.overview.stepper.completed || theme.palette.success.main;
@@ -154,11 +155,12 @@ export default function CustomizedStepper() {
     const [api, updateAPI] = useAPI();
     const [isUpdating, setUpdating] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
-    const isPrototypedAvailable = api.endpointConfig !== null
+    const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
     && api.endpointConfig.implementation_status === 'prototyped';
     const isEndpointAvailable = api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
-    const isPublished = api.lifeCycleStatus === 'PUBLISHED';
+    const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
+    const isPublished = lifecycleState === 'PUBLISHED';
     const { tenantList } = useContext(ApiContext);
     const { settings, user } = useAppContext();
     const userNameSplit = user.name.split('@');
@@ -167,7 +169,7 @@ export default function CustomizedStepper() {
     if (tenantList && tenantList.length > 0) {
         devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}`;
     }
-    const steps = (api.isWebSocket() || api.isAPIProduct() || api.isGraphql() || api.isAsyncAPI())
+    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI())
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
     const forceComplete = [];
     if (isPublished) {
@@ -179,9 +181,9 @@ export default function CustomizedStepper() {
     } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB') || (api && !isTierAvailable)) {
         activeStep = 0;
     } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && isTierAvailable
-        && deploymentsAvailable && (!isPublished && api.lifeCycleStatus !== 'PROTOTYPED')) {
+        && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
         activeStep = 3;
-    } else if ((isPublished || api.lifeCycleStatus === 'PROTOTYPED') && api
+    } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
         && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
         && isTierAvailable && deploymentsAvailable) {
         activeStep = 4;
@@ -296,7 +298,7 @@ export default function CustomizedStepper() {
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.prototyped'
-                                defaultMessage='Prototyped'
+                                defaultMessage='Pre-Released'
                             />
                         </b>
                     </Typography>
@@ -377,10 +379,10 @@ export default function CustomizedStepper() {
                 );
         }
     }
-    const isTestLinkDisabled = api.lifeCycleStatus === 'RETIERD' || !deploymentsAvailable
-    || !isEndpointAvailable
+    const isTestLinkDisabled = lifecycleState === 'RETIERD' || !deploymentsAvailable
+    || (!api.isAPIProduct() && !isEndpointAvailable)
     || !isTierAvailable
-    || (api.type !== 'HTTP' && api.type !== 'SOAP');
+    || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
     const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
     || !isTierAvailable
     || api.workflowStatus === 'CREATED');
@@ -421,7 +423,7 @@ export default function CustomizedStepper() {
                                             </Grid>
                                         </Box>
                                     </Grid>
-                                    {api.type !== 'WEBSUB' && (
+                                    {api.type !== 'WEBSUB' && api.type !== 'APIPRODUCT' && (
                                         <Box ml={3}>
                                             <Grid
                                                 container
@@ -484,7 +486,9 @@ export default function CustomizedStepper() {
                                                             underline='none'
                                                             component={RouterLink}
                                                             className={classes.pageLinks}
-                                                            to={'/apis/' + api.id + '/subscriptions'}
+                                                            to={api.isAPIProduct()
+                                                                ? '/api-products/' + api.id + '/subscriptions'
+                                                                : '/apis/' + api.id + '/subscriptions'}
                                                         >
                                                             <Typography variant='h7'>
                                                                 <FormattedMessage
@@ -534,7 +538,9 @@ export default function CustomizedStepper() {
                                                         [classes.disabledLink]: isDeployLinkDisabled,
                                                     })}
                                                     component={RouterLink}
-                                                    to={'/apis/' + api.id + '/deployments'}
+                                                    to={api.isAPIProduct()
+                                                        ? '/api-products/' + api.id + '/deployments'
+                                                        : '/apis/' + api.id + '/deployments'}
                                                 >
                                                     <Typography variant='h7'>
                                                         <FormattedMessage
@@ -556,7 +562,7 @@ export default function CustomizedStepper() {
                             )}
                             {label === 'Test' && (
                                 <Tooltip
-                                    title={api.lifeCycleStatus === 'RETIERD' ? 'Cannot use test option while API'
+                                    title={lifecycleState === 'RETIERD' ? 'Cannot use test option while API'
                                         + ' is in retired state' : ''}
                                     placement='bottom'
                                 >
@@ -574,7 +580,9 @@ export default function CustomizedStepper() {
                                                     })}
                                                     underline='none'
                                                     component={RouterLink}
-                                                    to={'/apis/' + api.id + '/test-console'}
+                                                    to={api.isAPIProduct()
+                                                        ? '/api-products/' + api.id + '/test-console'
+                                                        : '/apis/' + api.id + '/test-console'}
                                                 >
                                                     <Typography variant='h7'>
                                                         <FormattedMessage
@@ -596,7 +604,7 @@ export default function CustomizedStepper() {
                             )}
                             {label === 'Publish' && (
                                 <>
-                                    {finalLifecycleState(api.lifeCycleStatus)}
+                                    {finalLifecycleState(lifecycleState)}
                                 </>
                             )}
                         </StepLabel>

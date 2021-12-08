@@ -766,6 +766,124 @@ class APIProduct extends Resource {
             });
         return promiseGet;
     }
+
+    /**
+     * Change the LC Status of a given API Product
+     */
+    updateLcState(id, state, checkedItems) {
+        const payload = {
+            action: state,
+            apiProductId: id,
+            lifecycleChecklist: checkedItems,
+            'Content-Type': 'application/json',
+        }
+        const promise_lc_update = this.client
+            .then(client => {
+                return client.apis['API Product Lifecycle'].changeAPIProductLifecycle(
+                    payload,
+                    this._requestMetaData()
+                );
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        return promise_lc_update;
+    }
+
+    /**
+     * Get the life cycle state of an API Product by UUID
+     * @param id {string} UUID of the api product
+     */
+    getLCStateOfAPIProduct(id) {
+        const promise_lc_get = this.client.then(client => {
+            return client.apis['API Product Lifecycle'].getAPIProductLifecycleState(
+                {
+                    apiProductId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promise_lc_get;
+    }
+
+    /**
+     * Get the life cycle history data of an API Product by UUID
+     * @param id {string} UUID of the api product
+     */
+    getLCHistoryOfAPIProduct(id, callback = null) {
+        return this.client.then(client => {
+            return client.apis['API Product Lifecycle'].getAPIProductLifecycleHistory(
+                {
+                    apiProductId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the API Product information by UUID
+     * @param id {string} UUID of the api product
+     */
+    getAPIProductByID(id) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
+        return apiClient.then(client => {
+                return client.apis['API Products'].getAPIProduct(
+                    {
+                        apiProductId: id,
+                    },
+                    this._requestMetaData(),
+                );
+            });
+    }
+
+    /**
+     * Cleanup pending workflow state change task for API Product given its id (UUID)
+     * @param id {string} UUID of the api product
+     * @param callback {function} Callback function which needs to be executed in the success call
+     */
+    cleanupPendingTask(id, callback = null) {
+        const promise_deletePendingTask = this.client.then(client => {
+            return client.apis['API Product Lifecycle'].deleteAPIProductLifecycleStatePendingTasks(
+                {
+                    apiProductId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promise_deletePendingTask;
+    }
+
+    /**
+     * Return the deployed revisions of this API
+     * @returns
+     */
+    getDeployedRevisions(id) {
+        return this.client.then(client => {
+            return client.apis['API Product Revisions'].getAPIProductRevisionDeployments({
+                    apiProductId: id,
+                },
+            );
+        });
+    }
+
+    /**
+     * Get list of revisions with environments.
+     *
+     * @param {string} apiId Id of the API.
+     * */
+    getRevisionsWithEnv(apiId) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis['API Revisions'].getAPIRevisions(
+                {
+                    apiId: apiId,
+                    query: 'deployed:true',
+                },
+            );
+        });
+    }
 }
 
 export default APIProduct;

@@ -591,7 +591,7 @@ class Details extends Component {
         return promisedUpdate
             .then((updatedAPI) => {
                 if (isAPIProduct) {
-                    Alert.info(`${updatedAPI.name} API updated successfully`);
+                    Alert.info(`${updatedAPI.name} API Product updated successfully`);
                     this.setState({ api: updatedAPI });
                     return updatedAPI;
                 } else {
@@ -745,8 +745,8 @@ class Details extends Component {
                                     />
                                 </>
                             )}
-                            {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && !api.isWebSocket()
-                                && !api.isGraphql() && !isAsyncAPI && (
+                            {(isAPIProduct || (!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised
+                                && !api.isWebSocket() && !api.isGraphql() && !isAsyncAPI)) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>Test</Typography>
@@ -761,7 +761,7 @@ class Details extends Component {
                                     />
                                 </div>
                             )}
-                            {!isAPIProduct && !isRestricted(['apim:api_publish'], api) && (
+                            {!isRestricted(['apim:api_publish'], api) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>Publish</Typography>
@@ -853,6 +853,10 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.LIFE_CYCLE}
                                         component={() => <LifeCycle api={api} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.LIFE_CYCLE_PRODUCT}
+                                        component={() => <LifeCycle api={api} isAPIProduct={isAPIProduct} />}
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION}
@@ -959,6 +963,10 @@ class Details extends Component {
                                         path={Details.subPaths.TRYOUT}
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.TRYOUT_PRODUCT}
+                                        component={() => <TryOutConsole apiObj={api} />}
+                                    />
                                     <Route path={Details.subPaths.EXTERNAL_STORES} component={ExternalStores} />
                                     <Route
                                         path={Details.subPaths.COMMENTS}
@@ -988,6 +996,7 @@ Details.subPaths = {
     API_DEFINITION_PRODUCT: '/api-products/:apiprod_uuid/api definition',
     SCHEMA_DEFINITION: '/apis/:api_uuid/schema definition',
     LIFE_CYCLE: '/apis/:api_uuid/lifecycle',
+    LIFE_CYCLE_PRODUCT: '/api-products/:apiprod_uuid/lifecycle',
     CONFIGURATION: '/apis/:api_uuid/configuration',
     RUNTIME_CONFIGURATION: '/apis/:api_uuid/runtime-configuration',
     CONFIGURATION_PRODUCT: '/api-products/:apiprod_uuid/configuration',
@@ -1016,6 +1025,7 @@ Details.subPaths = {
     MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
     TRYOUT: '/apis/:api_uuid/test-console',
+    TRYOUT_PRODUCT: '/api-products/:apiprod_uuid/test-console',
     QUERYANALYSIS: '/apis/:api_uuid/queryanalysis',
     TOPICS: '/apis/:api_uuid/topics',
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi definition',
