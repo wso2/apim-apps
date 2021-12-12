@@ -16,7 +16,6 @@
  * under the License.
  */
 import React, { useReducer, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -25,7 +24,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -41,10 +40,10 @@ import ProvideGraphQL from './Steps/ProvideGraphQL';
  * @param {*} props
  * @returns
  */
-export default function ApiCreateGraphQL(props) {
+export default function ApiCreateGraphQL() {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
-    const { history } = props;
+    const history = useHistory();
     const [policies, setPolicies] = useState([]);
 
     useEffect(() => {
@@ -334,7 +333,3 @@ export default function ApiCreateGraphQL(props) {
         </APICreateBase>
     );
 }
-
-ApiCreateGraphQL.propTypes = {
-    history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-};

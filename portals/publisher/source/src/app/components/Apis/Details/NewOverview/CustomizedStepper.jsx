@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Stepper from '@material-ui/core/Stepper';
