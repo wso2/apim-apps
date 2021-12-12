@@ -17,8 +17,8 @@
  */
 
 import React from 'react';
-import { getExampleBodyById, getExampleResponseById } from 'AppTests/Utils/MockAPIModel.js';
-import { mountWithIntl } from 'AppTests/Utils/IntlHelper';
+import { getExampleBodyById, getExampleResponseById } from 'AppTests/Utils/DEPRECATED_MockAPIModel.js';
+import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import Themes from 'AppData/defaultTheme';
 import { MemoryRouter, Redirect } from 'react-router-dom';
 import { resourceMethod, resourcePath } from 'AppData/ScopeValidation';
@@ -29,7 +29,7 @@ import NewVersion from './NewVersion';
 
 const FIELD_EMPTY = 'This field cannot be empty';
 
-describe('Unit test for CreateNewVersion component', () => {
+describe.skip('Unit test for CreateNewVersion component', () => {
     /**
      * Mounts the CreateNewVersion component
      *

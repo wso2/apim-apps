@@ -33,6 +33,9 @@ module.exports = {
     },
     extends: ['airbnb', 'plugin:jsx-a11y/recommended'], // http://airbnb.io/javascript/react/
     rules: {
+        'testing-library/await-async-query': 'error',
+        'testing-library/no-await-sync-query': 'error',
+        'testing-library/no-debugging-utils': 'error',
         'max-len': ['error', { code: 120, tabWidth: 4 }],
         'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
         'require-jsdoc': [
@@ -86,6 +89,7 @@ module.exports = {
         'jsx-quotes': ['error', 'prefer-single'],
         'no-else-return': 'off',
         'no-unused-vars': ['error'],
+        'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.tsx', '.ts'] }],
         'react/jsx-props-no-spreading': [1, {
             exceptions:
         ['Route', 'Operation', 'Listing', 'DeferredDetails', 'Details', 'svg', 'Paper', 'EditableRow', 'CreateScope', 'EditScope', 'WrappedComponent', 'ErrorIcon', 'WarningIcon', 'CheckCircleIcon', 'InfoIcon'],
@@ -94,4 +98,11 @@ module.exports = {
         'react/destructuring-assignment': [1, 'always'],
     },
     plugins: ['react', 'jest', 'prettier', 'testing-library'],
+    overrides: [
+        {
+            // 3) Now we enable eslint-plugin-testing-library rules or preset only for matching files!
+            files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+            extends: ['plugin:testing-library/react'],
+        },
+    ],
 };

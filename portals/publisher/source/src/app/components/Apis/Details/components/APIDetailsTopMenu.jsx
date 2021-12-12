@@ -29,7 +29,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { withStyles } from '@material-ui/core/styles';
 import { Link, useHistory } from 'react-router-dom';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
@@ -176,14 +176,15 @@ const APIDetailsTopMenu = (props) => {
     }, [api.id]);
 
     const isDownloadable = [API.CONSTS.API, API.CONSTS.APIProduct].includes(api.apiType);
-    const { settings, user } = useAppContext();
+    const { user } = useAppContext();
+    const { data: settings } = usePublisherSettings();
     const { allRevisions, allEnvRevision } = useRevisionContext();
     const { tenantList } = useContext(ApiContext);
     const userNameSplit = user.name.split('@');
     const tenantDomain = userNameSplit[userNameSplit.length - 1];
-    let devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview`;
+    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
     if (tenantList && tenantList.length > 0) {
-        devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}`;
+        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
     }
 
     function getDeployments(revisionKey) {

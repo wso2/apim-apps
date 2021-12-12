@@ -166,6 +166,7 @@ export default function ProvideGraphQL(props) {
                             onDrop={onDrop}
                             files={apiInputs.inputValue}
                             accept={accept}
+                            ariaLabel='GraphQL file upload'
                         >
                             {isValidating ? (<CircularProgress />)
                                 : ([

@@ -24,7 +24,6 @@ import { ThemeProvider as NormalThemeProvider } from '@material-ui/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 // import MaterialDesignCustomTheme from 'AppComponents/Shared/CustomTheme';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import Api from 'AppData/api';
 import Base from 'AppComponents/Base';
 import AuthManager from 'AppData/AuthManager';
 import userThemes from 'userCustomThemes';
@@ -36,6 +35,7 @@ import { AppContextProvider } from 'AppComponents/Shared/AppContext';
 import ServiceCatalogRouting from 'AppComponents/ServiceCatalog/ServiceCatalogRouting';
 import Progress from 'AppComponents/Shared/Progress';
 import Configurations from 'Config';
+import { QueryClientProviderX } from 'AppData/hooks/ReactQueryX';
 import Scopes from 'AppComponents/Scopes/Scopes';
 import merge from 'lodash/merge';
 
@@ -64,7 +64,6 @@ export default class Protected extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            settings: null,
             theme: null,
         };
         this.environments = [];
@@ -78,12 +77,9 @@ export default class Protected extends Component {
      */
     componentDidMount() {
         const user = AuthManager.getUser();
-        const api = new Api();
-        const settingPromise = api.getSettings();
         window.addEventListener('message', this.handleMessage);
         if (user) {
             this.setState({ user });
-            settingPromise.then((settingsNew) => this.setState({ settings: settingsNew }));
             this.checkSession();
             if (user.name && user.name.indexOf('@') !== -1) {
                 const tenant = user.name.split('@')[user.name.split('@').length - 1];
@@ -105,7 +101,6 @@ export default class Protected extends Component {
                 }
                 this.setState({ user: loggedUser });
             });
-            settingPromise.then((settingsNew) => this.setState({ settings: settingsNew }));
         }
     }
 
@@ -127,12 +122,12 @@ export default class Protected extends Component {
                     if (data && data.light) {
                         this.setState({ theme: data.light });
                     } else {
-                        console.log('Error loading teant theme. Loading the default theme.');
+                        console.warn('Error loading teant theme. Loading the default theme.');
                         this.setState({ theme: userThemes.light });
                     }
                 })
                 .catch(() => {
-                    console.log('Error loading teant theme. Loading the default theme.');
+                    console.warn('Error loading teant theme. Loading the default theme.');
                     this.setState({ theme: userThemes.light });
                 });
         } else {
@@ -186,7 +181,6 @@ export default class Protected extends Component {
      */
     render() {
         const { user = AuthManager.getUser(), messages } = this.state;
-        const { settings } = this.state;
         const { theme } = this.state;
         if (!user) {
             return (
@@ -205,10 +199,10 @@ export default class Protected extends Component {
                 )}
                 >
                     <AppErrorBoundary>
-                        <Base user={user}>
-                            {settings ? (
+                        <QueryClientProviderX>
+                            <Base user={user}>
                                 <AppContextProvider value={{
-                                    settings, user,
+                                    user,
                                 }}
                                 >
                                     <Switch>
@@ -220,10 +214,8 @@ export default class Protected extends Component {
                                         <Route component={ResourceNotFound} />
                                     </Switch>
                                 </AppContextProvider>
-                            ) : (
-                                <Progress per={20} message='Loading Settings ...' />
-                            )}
-                        </Base>
+                            </Base>
+                        </QueryClientProviderX>
                     </AppErrorBoundary>
                 </ThemeProvider>
             </ThemeProvider>

@@ -20,6 +20,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -40,7 +41,7 @@ import PropTypes from 'prop-types';
 export default function SpecErrors(props) {
     const { specErrors } = props;
     const [open, setOpen] = useState(false);
-    if (specErrors.length === 0) {
+    if (!specErrors || specErrors.length === 0) {
         return null;
     }
     return (
@@ -65,7 +66,7 @@ export default function SpecErrors(props) {
                 <DialogContent dividers>
                     <List>
                         {specErrors.map((error, index) => (
-                            <>
+                            <span key={error.description}>
                                 {index % 2 !== 0 && <Divider light variant='inset' />}
                                 <ListItem>
                                     <ListItemText
@@ -76,7 +77,14 @@ export default function SpecErrors(props) {
                                         inset
                                     />
                                 </ListItem>
-                            </>
+                                <Box boxShadow={1} py={5} pr={5} border={1} borderColor='grey.500'>
+                                    <pre>
+                                        <code>
+                                            {error.description}
+                                        </code>
+                                    </pre>
+                                </Box>
+                            </span>
                         ))}
                     </List>
                 </DialogContent>

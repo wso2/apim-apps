@@ -18,8 +18,8 @@
 
 import React from 'react';
 import API from 'AppData/api.js';
-import { mountWithIntl } from 'AppTests/Utils/IntlHelper';
-import getMockedModel, { getAllScopes } from 'AppTests/Utils/MockAPIModel.js';
+import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
+import getMockedModel, { getAllScopes } from 'AppTests/Utils/DEPRECATED_MockAPIModel.js';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import Themes from 'AppData/defaultTheme';
@@ -52,7 +52,7 @@ const { light } = Themes;
 const mockedHasScopes = jest.fn();
 const mockedAll = jest.fn();
 
-describe('APIs <Listing/> component tests', () => {
+describe.skip('APIs <Listing/> component tests', () => {
     beforeAll(async () => {
         API.all = mockedAll.bind(API);
         ScopeValidation.hasScopes = mockedHasScopes.bind(ScopeValidation);

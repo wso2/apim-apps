@@ -44,7 +44,7 @@ import Box from '@material-ui/core/Box';
 import { Progress } from 'AppComponents/Shared';
 import Alert from 'AppComponents/Shared/Alert';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
-import AppContext from 'AppComponents/Shared/AppContext';
+import AppContext, { withSettings } from 'AppComponents/Shared/AppContext';
 import LastUpdatedTime from 'AppComponents/Apis/Details/components/LastUpdatedTime';
 import Divider from '@material-ui/core/Divider';
 import { RevisionContextProvider } from 'AppComponents/Shared/RevisionContext';
@@ -626,11 +626,10 @@ class Details extends Component {
             theme,
             match,
             intl,
+            settings,
             location: pageLocation,
             location: { pathname }, // nested destructuring
         } = this.props;
-
-        const { settings: settingsContext } = this.context;
 
         // pageLocation renaming is to prevent es-lint errors saying can't use global name location
         if (!Details.isValidURL(pathname)) {
@@ -775,7 +774,7 @@ class Details extends Component {
                                     />
                                 </div>
                             )}
-                            {!isAPIProduct && settingsContext.externalStoresEnabled && (
+                            {!isAPIProduct && settings && settings.externalStoresEnabled && (
                                 <>
                                     <Divider />
                                     <LeftMenuItem
@@ -1060,4 +1059,4 @@ Details.propTypes = {
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(Details));
+export default withSettings(injectIntl(withStyles(styles, { withTheme: true })(Details)));

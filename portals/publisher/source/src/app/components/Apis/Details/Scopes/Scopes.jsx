@@ -54,7 +54,7 @@ const styles = (theme) => ({
         flexGrow: 1,
         marginTop: 10,
         '& table td:nth-child(2)': {
-            'word-break': 'break-word',
+            wordBreak: 'break-word',
         },
         '& table td button span, & table th': {
             'white-space': 'nowrap',

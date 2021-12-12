@@ -62,7 +62,7 @@ export default class User {
 
     /**
      * User utility method to create an user from JSON object.
-     * @param {JSON} userJson - Need to provide user information in JSON structure to create an user object
+     * @param {Object} userJson - Need to provide user information in JSON structure to create an user object
      * @param {String} environmentName - Name of the environment to be assigned to the user
      * @returns {User} - An instance of User(this) class.
      */

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Stepper from '@material-ui/core/Stepper';
@@ -12,7 +11,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Grid from '@material-ui/core/Grid';
 import StepConnector from '@material-ui/core/StepConnector';
 import ApiContext, { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import { Link as RouterLink } from 'react-router-dom';
@@ -162,12 +161,15 @@ export default function CustomizedStepper() {
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
     const { tenantList } = useContext(ApiContext);
-    const { settings, user } = useAppContext();
+    const { user } = useAppContext();
+    const { data: settings } = usePublisherSettings();
     const userNameSplit = user.name.split('@');
     const tenantDomain = userNameSplit[userNameSplit.length - 1];
-    let devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview`;
+    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
+    // TODO: tmkasun need to handle is loading
     if (tenantList && tenantList.length > 0) {
-        devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}`;
+        // TODO: tmkasun need to handle is loading
+        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
     }
     const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI())
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
@@ -243,7 +245,7 @@ export default function CustomizedStepper() {
                             </Grid>
                             <Box ml={1}>
                                 <Grid item>
-                                    <Typography variant='h7' component='div'>
+                                    <Typography variant='h6' component='div'>
                                         <FormattedMessage
                                             id='Apis.Details.Overview.CustomizedStepper.publish'
                                             defaultMessage=' Published'
@@ -272,7 +274,7 @@ export default function CustomizedStepper() {
                                     justify='center'
                                 >
                                     <Grid item>
-                                        <Typography variant='h7' display='inline'>
+                                        <Typography variant='h6' display='inline'>
                                             <FormattedMessage
                                                 id='Apis.Details.Overview.CustomizedStepper.view.devportal'
                                                 defaultMessage='View in devportal'
@@ -294,7 +296,7 @@ export default function CustomizedStepper() {
                 );
             case 'PROTOTYPED':
                 return (
-                    <Typography variant='h7' component='div'>
+                    <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.prototyped'
@@ -305,7 +307,7 @@ export default function CustomizedStepper() {
                 );
             case 'BLOCKED':
                 return (
-                    <Typography variant='h7' component='div'>
+                    <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.blocked'
@@ -316,7 +318,7 @@ export default function CustomizedStepper() {
                 );
             case 'DEPRECATED':
                 return (
-                    <Typography variant='h7' component='div'>
+                    <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.deprecated'
@@ -327,7 +329,7 @@ export default function CustomizedStepper() {
                 );
             case 'RETIRED':
                 return (
-                    <Typography variant='h7' component='div'>
+                    <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
                                 id='Apis.Details.Overview.CustomizedStepper.retired'
@@ -414,7 +416,7 @@ export default function CustomizedStepper() {
                                         </Grid>
                                         <Box ml={1} mb={1}>
                                             <Grid>
-                                                <Typography variant='h7'>
+                                                <Typography variant='h6'>
                                                     <FormattedMessage
                                                         id='Apis.Details.Overview.CustomizedStepper.Develop'
                                                         defaultMessage=' Develop'
@@ -446,7 +448,7 @@ export default function CustomizedStepper() {
                                                             component={RouterLink}
                                                             to={'/apis/' + api.id + '/endpoints'}
                                                         >
-                                                            <Typography variant='h7'>
+                                                            <Typography variant='h6'>
                                                                 <FormattedMessage
                                                                     id='Apis.Details.Overview.
                                                                     CustomizedStepper.Endpoint'
@@ -490,7 +492,7 @@ export default function CustomizedStepper() {
                                                                 ? '/api-products/' + api.id + '/subscriptions'
                                                                 : '/apis/' + api.id + '/subscriptions'}
                                                         >
-                                                            <Typography variant='h7'>
+                                                            <Typography variant='h6'>
                                                                 <FormattedMessage
                                                                     id='Apis.Details.Overview.CustomizedStepper.Tier'
                                                                     defaultMessage=' Business Plan'
@@ -542,7 +544,7 @@ export default function CustomizedStepper() {
                                                         ? '/api-products/' + api.id + '/deployments'
                                                         : '/apis/' + api.id + '/deployments'}
                                                 >
-                                                    <Typography variant='h7'>
+                                                    <Typography variant='h6'>
                                                         <FormattedMessage
                                                             id='Apis.Details.Overview.CustomizedStepper.Deploy'
                                                             defaultMessage=' Deploy'
@@ -584,7 +586,7 @@ export default function CustomizedStepper() {
                                                         ? '/api-products/' + api.id + '/test-console'
                                                         : '/apis/' + api.id + '/test-console'}
                                                 >
-                                                    <Typography variant='h7'>
+                                                    <Typography variant='h6'>
                                                         <FormattedMessage
                                                             id='Apis.Details.Overview.CustomizedStepper.Test'
                                                             defaultMessage=' Test'
@@ -614,10 +616,3 @@ export default function CustomizedStepper() {
         </div>
     );
 }
-
-CustomizedStepper.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
-    api: PropTypes.shape({
-        id: PropTypes.string,
-    }).isRequired,
-};

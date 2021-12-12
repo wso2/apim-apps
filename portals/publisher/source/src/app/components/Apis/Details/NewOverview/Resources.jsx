@@ -154,7 +154,7 @@ class Resources extends React.Component {
                         {Object.keys(paths).map((key) => {
                             const path = paths[key];
                             return (
-                                <div className={classes.root}>
+                                <div key={key} className={classes.root}>
                                     <Typography className={classes.heading} variant='body1'>
                                         {key}
                                     </Typography>
@@ -192,12 +192,6 @@ class Resources extends React.Component {
 Resources.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
-    history: PropTypes.shape({
-        push: PropTypes.shape({}),
-    }).isRequired,
-    location: PropTypes.shape({
-        pathname: PropTypes.shape({}),
-    }).isRequired,
     parentClasses: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({ id: PropTypes.string }).isRequired,
 };

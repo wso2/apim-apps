@@ -19,7 +19,7 @@
 import React from 'react';
 import Redirecting from './Redirecting';
 
-describe('<Redirecting/> component tests', () => {
+describe.skip('<Redirecting/> component tests', () => {
     test('should render the redirect component with message', () => {
         const testMessage = "Kasun's test message";
         const wrapper = DEPRECATED_mount(<Redirecting message={testMessage} />);

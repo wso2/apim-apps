@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useReducer, useState, useEffect } from 'react';
+import React, { useReducer, useState } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -34,6 +34,11 @@ import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm'
 import APIProduct from 'AppData/APIProduct';
 import AuthManager from 'AppData/AuthManager';
 
+
+const getPolicies = async () => {
+    const response = await API.policies('subscription');
+    return response.body.list;
+};
 /**
  *
  * @export
@@ -53,23 +58,7 @@ function APICreateDefault(props) {
     const [pageError, setPageError] = useState(null);
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
-    const [policies, setPolicies] = useState([]);
 
-    useEffect(() => {
-        API.policies('subscription').then((response) => {
-            const allPolicies = response.body.list;
-            if (allPolicies.length === 0) {
-                Alert.info(intl.formatMessage({
-                    id: 'Apis.Create.Default.APICreateDefault.error.policies.not.available',
-                    defaultMessage: 'Throttling policies not available. Contact your administrator',
-                }));
-            } else if (allPolicies.filter((p) => p.name === 'Unlimited').length > 0) {
-                setPolicies(['Unlimited']);
-            } else {
-                setPolicies([allPolicies[0].name]);
-            }
-        });
-    }, []);
     const [isRevisioning, setIsRevisioning] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
     const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
@@ -125,12 +114,25 @@ function APICreateDefault(props) {
      *
      * @param {*} params
      */
-    function createAPI() {
+    async function createAPI() {
         setIsCreating(true);
         const {
             name, version, context, endpoint,
         } = apiInputs;
         let promisedCreatedAPI;
+        let policies;
+        const allPolicies = await getPolicies();
+        if (allPolicies.length === 0) {
+            Alert.info(intl.formatMessage({
+                id: 'Apis.Create.Default.APICreateDefault.error.policies.not.available',
+                defaultMessage: 'Throttling policies not available. Contact your administrator',
+            }));
+        } else if (allPolicies.filter((p) => p.name === 'Unlimited').length > 0) {
+            policies = ['Unlimited'];
+        } else {
+            policies = [allPolicies[0].name];
+        }
+
         const apiData = {
             name,
             version,
@@ -199,7 +201,8 @@ function APICreateDefault(props) {
         return promisedCreatedAPI.finally(() => setIsCreating(false));
     }
 
-    const internalGateways = settings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
+    const internalGateways = settings.environment.filter((p) => p.provider
+        && p.provider.toLowerCase().includes('wso2'));
 
     /**
      *

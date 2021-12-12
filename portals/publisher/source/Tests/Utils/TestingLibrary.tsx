@@ -11,30 +11,71 @@
  * associated services.
  */
 
-import React, { FC, ReactElement } from 'react';
-import { render, RenderOptions, RenderResult } from '@testing-library/react';
-import { IntlProvider } from 'react-intl';
-import { ThemeProvider } from '@material-ui/core/styles';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
-import defaultTheme from 'AppData/defaultTheme';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import { AppContextProvider } from 'AppComponents/Shared/AppContext';
-
-const organizationData = {
-  organizationList: [],
-  selectedOrg: {
-    handle: 'testOrg',
-    id: 123,
-    uuid: '13bbd7d0-254f-4292-80eb-6d474f487438',
-    name: 'Test Org',
-  },
-};
+import React, { FC, ReactElement, useEffect, useState } from "react";
+import {
+  render,
+  RenderOptions,
+  RenderResult,
+  configure,
+} from "@testing-library/react";
+import { IntlProvider } from "react-intl";
+import { ThemeProvider } from "@material-ui/core/styles";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import defaultTheme from "AppData/defaultTheme";
+import Api from "AppData/api";
+import { Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
+import { AppContextProvider } from "AppComponents/Shared/AppContext";
+import AuthManager from "AppData/AuthManager";
+import User from "AppData/User";
+import Utils from "AppData/Utils";
+import { MockedUsers, TEMPORARY_MOCKED_SETTINGS } from "./constants";
 
 export const history = createMemoryHistory();
 
-const GlobalProviders: FC = ({ children }) => {
-  const theme = createMuiTheme(defaultTheme); // We really don't care about the styling in this tests, Need to handle Visual Regression
+/* ####### Timeout configurations ####### */
+// Overriding default `waitFor` timeout value due to MSW latencies
+// Default asyncUtilTimeout value is 1000
+// For more info refer : https://testing-library.com/docs/dom-testing-library/api-configuration/
+const ASYNC_TIMEOUT_MINUTES = 0.5;
+const asyncUtilTimeout = ASYNC_TIMEOUT_MINUTES * 60 * 10 ** 3;
+configure({ asyncUtilTimeout });
+jest.setTimeout((asyncUtilTimeout * 3) / 2);
+/* ####### End of Timeout configurations ####### */
+
+var localStorageMock = (function() {
+  var store: { [key: string]: string } = {};
+  return {
+    getItem: function(key: string) {
+      return store[key];
+    },
+    setItem: function(key: string, value: any) {
+      store[key] = value.toString();
+    },
+    clear: function() {
+      store = {};
+    },
+    removeItem: function(key: string): void {
+      delete store[key];
+    },
+  };
+})();
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
+Object.defineProperty(window.document, "cookie", {
+  writable: true,
+  value: "",
+});
+
+const GlobalProviders: FC<{ user: any }> = ({
+  children,
+  user = MockedUsers.Admin,
+}) => {
+  const theme = createMuiTheme(defaultTheme as any); // We really don't care about the styling in this tests, Need to handle Visual Regression
+  const testUser = User.fromJson(user, Utils.getDefaultEnvironment().label);
+  testUser.setPartialToken("AM_ACC_TOKEN_DEFAULT_P1", -1, "/publisher");
+  testUser.setExpiryTime(9999999);
+
+  AuthManager.setUser(testUser);
   // issues through separate testing mechanism
   return (
     <Router history={history}>
@@ -42,8 +83,8 @@ const GlobalProviders: FC = ({ children }) => {
         <ThemeProvider theme={theme}>
           <AppContextProvider
             value={{
-              settings: {},
-              user: {},
+              settings: TEMPORARY_MOCKED_SETTINGS,
+              user: AuthManager.getUser(),
             }}
           >
             {children}
@@ -53,11 +94,16 @@ const GlobalProviders: FC = ({ children }) => {
     </Router>
   );
 };
-
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, "wrapper">
-) => render(ui, { wrapper: GlobalProviders, ...options });
+interface XOptions extends Omit<RenderOptions, "wrapper"> {
+  user: any;
+}
+const customRender = (ui: ReactElement, options?: XOptions) =>
+  render(ui, {
+    wrapper: ({ children }) => (
+      <GlobalProviders children={children} user={options?.user} />
+    ),
+    ...options,
+  });
 
 export const searchParamsToRequestQuery = (searchParams: URLSearchParams) =>
   JSON.parse(
@@ -66,6 +112,6 @@ export const searchParamsToRequestQuery = (searchParams: URLSearchParams) =>
       .replace(/&/g, '","')
       .replace(/=/g, '":"')}"}`
   );
-export * from '@testing-library/react';
+export * from "@testing-library/react";
 export { customRender as render };
-export { getMockServer } from './restAPI.mock';
+export { getMockServer } from "./restAPI.mock";

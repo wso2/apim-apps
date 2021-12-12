@@ -1,0 +1,29 @@
+{
+  "name": "apim-apps",
+  "version": "1.0.0",
+  "description": "API Manager UI portals source",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wso2/apim-apps.git"
+  },
+  "keywords": [
+    "wso2",
+    "portal",
+    "api-managment"
+  ],
+  "author": "wso2",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wso2/apim-apps/issues"
+  },
+  "homepage": "https://github.com/wso2/apim-apps#readme"
+}

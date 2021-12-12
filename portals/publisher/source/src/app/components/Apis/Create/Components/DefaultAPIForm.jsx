@@ -157,11 +157,11 @@ export default function DefaultAPIForm(props) {
     function validate(field, value) {
         switch (field) {
             case 'name': {
-                const nameValidity = APIValidation.apiName.required().validate(value, { abortEarly: false }).error;
+                const nameValidity = APIValidation.apiName.validate(value, { abortEarly: false }).error;
                 if (nameValidity === null) {
                     APIValidation.apiParameter.validate(field + ':' + value).then((result) => {
                         if (result.body.list.length > 0 && value.toLowerCase() === result.body.list[0]
-                            .name.toLowerCase()) {
+                            .name?.toLowerCase()) {
                             updateValidity({
                                 ...validity,
                                 name: { details: [{ message: 'Name ' + value + ' already exists' }] },

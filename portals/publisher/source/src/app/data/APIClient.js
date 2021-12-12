@@ -155,7 +155,7 @@ class APIClient {
         return (request) => {
             const existingUser = AuthManager.getUser(this.environment.label);
             if (!existingUser) {
-                console.log('User not found. Token refreshing failed.');
+                console.warn('Can not find a logged in user, Hence skipping the token refresh!');
                 return request;
             }
             let existingToken = AuthManager.getUser(this.environment.label).getPartialToken();

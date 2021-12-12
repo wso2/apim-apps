@@ -21,7 +21,7 @@ import { MemoryRouter, Route } from 'react-router-dom';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import Themes from 'AppData/defaultTheme';
-import { mountWithIntl } from 'AppTests/Utils/IntlHelper';
+import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import APIs from './Apis';
 import APICreateRoutes from './Create/APICreateRoutes';

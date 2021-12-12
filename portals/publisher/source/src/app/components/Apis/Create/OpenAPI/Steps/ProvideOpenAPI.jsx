@@ -15,10 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -40,11 +41,14 @@ import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
 
 import Banner from 'AppComponents/Shared/Banner';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
+import SpecErrors from 'AppComponents/Apis/Details/Resources/components/SpecErrors';
+
 
 const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
@@ -66,8 +70,38 @@ export default function ProvideOpenAPI(props) {
     const classes = useStyles();
     // If valid value is `null`,that means valid, else an error object will be there
     const [isValid, setValidity] = useState({});
+    const [validationErrors, setValidationErrors] = useState(null);
     const [isValidating, setIsValidating] = useState(false);
-
+    useEffect(() => {
+        setValidationErrors(null);
+    }, [apiInputs.inputType]);
+    const validateURLDebounced = useCallback(
+        debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
+            API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
+                const {
+                    body: {
+                        isValid: isValidURL, info, content, errors,
+                    },
+                } = response;
+                if (isValidURL) {
+                    info.content = content;
+                    inputsDispatcher({ action: 'preSetAPI', value: info });
+                    setValidity({ ...isValid, url: null });
+                } else {
+                    setValidity({ ...isValid, url: { message: 'OpenAPI content validation failed!' } });
+                    setValidationErrors(errors);
+                }
+                onValidate(isValidURL);
+                setIsValidating(false);
+            }).catch((error) => {
+                setValidity({ url: { message: error.message } });
+                onValidate(false);
+                setIsValidating(false);
+                console.error(error);
+            });
+        }, 750),
+        [],
+    );
     /**
      *
      *
@@ -84,7 +118,7 @@ export default function ProvideOpenAPI(props) {
         API.validateOpenAPIByFile(file)
             .then((response) => {
                 const {
-                    body: { isValid: isValidFile, info },
+                    body: { isValid: isValidFile, info, errors },
                 } = response;
                 if (isValidFile) {
                     validFile = file;
@@ -92,6 +126,7 @@ export default function ProvideOpenAPI(props) {
                     setValidity({ ...isValid, file: null });
                 } else {
                     setValidity({ ...isValid, file: { message: 'OpenAPI content validation failed!' } });
+                    setValidationErrors(errors);
                 }
             })
             .catch((error) => {
@@ -113,28 +148,10 @@ export default function ProvideOpenAPI(props) {
      */
     function validateURL(value) {
         const state = APIValidation.url.required().validate(value).error;
-        // State `null` means URL is valid, We do backend validation only in valid URLs
+        // State `null` means URL is valid, We do backend validation only if it's a valid URL
         if (state === null) {
             setIsValidating(true);
-            API.validateOpenAPIByUrl(apiInputs.inputValue, { returnContent: true }).then((response) => {
-                const {
-                    body: { isValid: isValidURL, info, content },
-                } = response;
-                if (isValidURL) {
-                    info.content = content;
-                    inputsDispatcher({ action: 'preSetAPI', value: info });
-                    setValidity({ ...isValid, url: null });
-                } else {
-                    setValidity({ ...isValid, url: { message: 'OpenAPI content validation failed!' } });
-                }
-                onValidate(isValidURL);
-                setIsValidating(false);
-            }).catch((error) => {
-                setValidity({ url: { message: error.message } });
-                onValidate(false);
-                setIsValidating(false);
-                console.error(error);
-            });
+            validateURLDebounced(apiInputs.inputValue);
             // Valid URL string
             // TODO: Handle catch network or api call failures ~tmkb
         } else {
@@ -207,6 +224,7 @@ export default function ProvideOpenAPI(props) {
                                 value={ProvideOpenAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI File/Archive'
+                                aria-label='OpenAPI File/Archive'
                             />
                         </RadioGroup>
                     </FormControl>
@@ -308,6 +326,14 @@ export default function ProvideOpenAPI(props) {
                         />
                     )}
                 </Grid>
+                {validationErrors && (
+                    <Grid item xs={10} md={11}>
+                        <Box display='flex' justifyContent='right' alignItems='center'>
+                            Show Errors
+                            <SpecErrors specErrors={validationErrors} />
+                        </Box>
+                    </Grid>
+                )}
                 <Grid item xs={2} md={5} />
             </Grid>
         </>

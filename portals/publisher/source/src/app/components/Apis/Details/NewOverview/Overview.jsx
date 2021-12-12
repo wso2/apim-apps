@@ -137,7 +137,7 @@ const styles = (theme) => ({
  * @returns
  */
 function Overview(props) {
-    const { classes, api: newApi, setOpenPageSearch } = props;
+    const { classes, api: newApi, setOpenPageSearch } = props; // TODO <tmkasun>: Remove newApi prop & merge to api
     const { api } = useContext(ApiContext);
     let loadEndpoints;
     useEffect(() => {
@@ -195,9 +195,9 @@ function Overview(props) {
             </Grid>
             <div className={classes.contentWrapper}>
                 <Paper className={classes.root}>
-                    <Grid container spacing={24}>
+                    <Grid container spacing={4}>
                         <Grid item xs={12} md={12} lg={12}>
-                            <Grid container spacing={24}>
+                            <Grid container spacing={4}>
                                 <Grid item xs={12} md={6} lg={6}>
                                     <MetaData parentClasses={classes} />
                                 </Grid>
@@ -208,7 +208,7 @@ function Overview(props) {
                         </Grid>
                         <Grid item xs={12} md={12} lg={12}>
                             <div className={classes.specialGap}>
-                                <Grid container spacing={24}>
+                                <Grid container spacing={4}>
                                     {
                                         api.type === 'WEBSUB' ? (
                                             <Grid item xs={12} md={12} lg={12}>

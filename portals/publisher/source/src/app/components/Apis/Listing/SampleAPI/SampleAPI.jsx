@@ -19,7 +19,7 @@
 import React, { useReducer, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import Redirect from 'react-router-dom/Redirect';
+import { Redirect, Link as RouterLink } from 'react-router-dom';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
@@ -32,7 +32,7 @@ import TaskState from 'AppComponents/Apis/Listing/SampleAPI/components/TaskState
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
+
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
 
@@ -84,7 +84,8 @@ const SampleAPI = (props) => {
     const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
-    const internalGateways = publisherSettings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
+    const internalGateways = publisherSettings.environment.filter((p) => p.provider
+        && p.provider.toLowerCase().includes('wso2'));
 
     const taskManager = async (promisedTask, name) => {
         tasksStatusDispatcher({ name, status: { inProgress: true } });

@@ -88,7 +88,7 @@ const styles = theme => ({
         width: 150,
     },
     summaryView: {
-        'word-break': 'break-word',
+        'wordBreak': 'break-word',
     },
 });
 /**
