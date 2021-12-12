@@ -11,18 +11,6 @@
       "value": "Read only"
     }
   ],
-  "Apis.APIProductCreateWrapper.error.errorMessage.create.revision": [
-    {
-      "type": 0,
-      "value": "Something went wrong while creating the API Revision"
-    }
-  ],
-  "Apis.APIProductCreateWrapper.error.errorMessage.deploy.revision": [
-    {
-      "type": 0,
-      "value": "Something went wrong while deploying the API Revision"
-    }
-  ],
   "Apis.Create.APIProduct.APIProductCreateWrapper.back": [
     {
       "type": 0,

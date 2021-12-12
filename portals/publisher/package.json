@@ -8,7 +8,7 @@
     },
     "scripts": {
         "test:dev": "DEBUG_PRINT_LIMIT=90000 jest --watch",
-        "test": "DEBUG_PRINT_LIMIT=990000 jest --silent",
+        "test": "DEBUG_PRINT_LIMIT=9000 jest --silent",
         "test:coverage": "jest --silent --coverage .; python3 -m http.server -d coverage/",
         "build:prod": "npm run i18n; npm run i18n:compile; rimraf site/public/dist/ && NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
         "build:dev": "rimraf site/public/dist/ && webpack --mode development --watch ",

@@ -1,5 +1,6 @@
 import { OpenAPIBackend } from "openapi-backend";
 import addFormats from "ajv-formats";
+import { TextEncoder, TextDecoder } from 'util'
 
 /* ####### OpenAPI mock configuration ####### */
 // Iterate the OAS tools config file and generate OpenAPIBackend objects and set it to test context globals
@@ -26,6 +27,8 @@ OASConfigs().map(([apiName, apiConfig]) => {
 /* ####### End of OpenAPI mock configuration ####### */
 
 global.openApiBackends = openApiBackends;
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
 
 /* ####### DEPRECATED Old configs ####### */
 

@@ -11,7 +11,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Grid from '@material-ui/core/Grid';
 import StepConnector from '@material-ui/core/StepConnector';
 import ApiContext, { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import { Link as RouterLink } from 'react-router-dom';
@@ -161,12 +161,15 @@ export default function CustomizedStepper() {
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
     const { tenantList } = useContext(ApiContext);
-    const { settings, user } = useAppContext();
+    const { user } = useAppContext();
+    const { data: settings } = usePublisherSettings();
     const userNameSplit = user.name.split('@');
     const tenantDomain = userNameSplit[userNameSplit.length - 1];
-    let devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview`;
+    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
+    // TODO: tmkasun need to handle is loading
     if (tenantList && tenantList.length > 0) {
-        devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}`;
+        // TODO: tmkasun need to handle is loading
+        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
     }
     const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI())
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];

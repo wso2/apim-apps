@@ -116,7 +116,7 @@ module.exports = (env, argv) => {
                 OverrideComponents: path.resolve(__dirname, 'override/src/app/components/'),
                 AppTests: path.resolve(__dirname, 'source/Tests/'),
             },
-            extensions: ['.js', '.jsx'],
+            extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
         module: {
             rules: [

@@ -15,10 +15,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import API from 'AppData/api';
+import { useQuery } from 'AppData/hooks/ReactQueryX';
 import React, { useContext } from 'react';
 
 const AppContext = React.createContext({ });
-export const usePublisherSettings = () => useContext(AppContext).settings;
+export const usePublisherSettings = () => {
+    return useQuery('api-settings-get', API.getSettings);
+};
+export const withSettings = (WrappedComponent) => {
+    const WithSettingsHOC = (props) => {
+        const { data: settings } = usePublisherSettings();
+        return <WrappedComponent {...props} settings={settings} />;
+    };
+    WithSettingsHOC.displayName = `withSettings(${WrappedComponent.displayName})`;
+    return WithSettingsHOC;
+};
 export const useAppContext = () => useContext(AppContext);
 export const useUser = () => useContext(AppContext).user;
 export const AppContextProvider = AppContext.Provider;

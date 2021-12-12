@@ -563,6 +563,7 @@ class API extends Resource {
 
     /**
      * Get settings of an API
+     * @deprecated use the static getSettings method instead
      */
     getSettings() {
         const promisedSettings = this.client.then(client => {
