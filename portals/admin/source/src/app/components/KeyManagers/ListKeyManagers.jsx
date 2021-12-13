@@ -51,11 +51,8 @@ function apiCall() {
                         </div>
                     );
                 } else {
-                    item.tokenType = (
-                        <div>
-                            <Chip variant='outlined' color='primary' size='small' label='Exchange' />
-                        </div>
-                    );
+                    // eslint-disable-next-line no-param-reassign
+                    item.tokenType = <Chip variant='outlined' color='primary' size='small' label='Exchange' />;
                 }
             });
             return resultList;

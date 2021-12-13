@@ -683,7 +683,6 @@ function AddEditKeyManager(props) {
                                 </Typography>
                                 <Typography
                                     color='inherit'
-                                    color='inherit'
                                     variant='caption'
                                     component='p'
                                     id='AddEditKeyManager.External.KeyManager.description.container'
