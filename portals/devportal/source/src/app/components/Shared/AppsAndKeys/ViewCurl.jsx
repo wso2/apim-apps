@@ -171,8 +171,8 @@ function ViewCurl(props) {
                     <Typography>
                         <FormattedMessage
                             id='Shared.AppsAndKeys.ViewCurl.error'
-                            defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager in
-                            order to use the token Exchange Approach. '
+                            defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager with selecting the urn:ietf:params:oauth:grant-type:token-exchange grant type in
+                                             order to use the token Exchange Approach. '
                         />
                     </Typography>
                 )
@@ -228,7 +228,7 @@ function ViewCurl(props) {
                                 placement='right'
                             >
                                 <CopyToClipboard
-                                    text={`curl -k -X POST ${tokenEndpoint} -d ` +
+                                    text={`curl -k -X POST ${defaultTokenEndpoint} -d ` +
                                     '"grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d ' +
                                     '"subject_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
                                     '"requested_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +

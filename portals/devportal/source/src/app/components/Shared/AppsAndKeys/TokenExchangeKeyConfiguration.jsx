@@ -412,14 +412,9 @@ const TokenExchangeKeyConfiguration = (props) => {
      * Handle on open of dialog for generating access token
      * */
     const handleClickOpen = () => {
-        if (consumerKey === false) {
             setOpen(true);
-            setShowToken(false);
+            setShowToken(true);
             setIsResidenceTokenAvailable(false);
-        } else {
-            setOpen(true);
-            setShowToken(false);
-        }
     };
     /**
      * Handle on open of dialog for generating access token and get curl
@@ -437,8 +432,6 @@ const TokenExchangeKeyConfiguration = (props) => {
 
     return (
         <>
-            {isResidenceTokenAvailable && (
-                <>
                     <Box display='flex' alignItems='center'>
                         <Table className={classes.table}>
                             <TableBody>
@@ -590,7 +583,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                                             <Typography>
                                                                 <FormattedMessage
                                                                     id='Shared.AppsAndKeys.ViewCurl.error'
-                                                                    defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager in
+                                                                    defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager with selecting the urn:ietf:params:oauth:grant-type:token-exchange grant type in
                                                                             order to use the token Exchange Approach. '
                                                                 />
                                                             </Typography>
@@ -671,9 +664,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                             </Grid>
                         </div>
                     </Box>
-                </>
-            )}
-        </>
+            </>
     );
 }
 TokenExchangeKeyConfiguration.defaultProps = {

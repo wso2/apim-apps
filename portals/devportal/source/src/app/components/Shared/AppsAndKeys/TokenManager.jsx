@@ -708,7 +708,9 @@ class TokenManager extends React.Component {
         }
 
         let isResidentKeyManagerTokensAvailable = false;
-        if (keys.has('Resident Key Manager')){
+        if (keys.has('Resident Key Manager') &&
+            keys.get('Resident Key Manager').supportedGrantTypes.
+            includes("urn:ietf:params:oauth:grant-type:token-exchange")){
             isResidentKeyManagerTokensAvailable = true;
         }
 
@@ -1165,7 +1167,7 @@ class TokenManager extends React.Component {
                                             <Typography>
                                                 <FormattedMessage
                                                     id='Shared.AppsAndKeys.ViewCurl.error'
-                                                    defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager in
+                                                    defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager with selecting the urn:ietf:params:oauth:grant-type:token-exchange grant type in
                                                                             order to use the token Exchange Approach. '
                                                 />
                                             </Typography>
