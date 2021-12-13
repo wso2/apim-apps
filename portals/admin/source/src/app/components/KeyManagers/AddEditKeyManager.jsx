@@ -475,7 +475,6 @@ function AddEditKeyManager(props) {
         const payload = { url: wellKnownEndpoint, type };
         setImportingConfig(true);
         restApi.keyManagersDiscover(payload).then((result) => {
-            console.log(JSON.stringify(result));
             const { obj: { value } } = result;
             for (const key of Object.keys(value)) {
                 if (unchangedKeys.includes(key)) {

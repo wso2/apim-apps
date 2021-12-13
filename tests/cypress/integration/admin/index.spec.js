@@ -8,7 +8,7 @@ describe("Basic login to carbon console", () => {
         cy.loginToDevportal(username, password)
     })
 
-    it.skip("Get endpoint details from wellknownUrl", () => {
+    it("Get endpoint details from wellknownUrl", () => {
         cy.visit(`${Utils.getAppOrigin()}/admin/dashboard`);
         cy.visit(`${Utils.getAppOrigin()}/admin/settings/key-managers`);
         cy.get('.Navigator-itemActiveItem-33 .MuiTypography-root').click();
@@ -38,9 +38,7 @@ describe("Basic login to carbon console", () => {
         cy.get('.MuiInputBase-inputAdornedEnd').type('sampleClientSecret');
         cy.get('#audience').click();
         cy.get('#audience').type('sampleAudience');
-        cy.intercept('POST','https://localhost:9443/api/am/admin/v2/key-managers', {fixture: 'addKeyManager.json'});
         cy.get('#keymanager-add').click();
         cy.visit(`${Utils.getAppOrigin()}/admin/settings/key-managers`);
-        cy.intercept('GET','https://localhost:9443/api/am/admin/v2/key-managers', {fixture: 'listKeyManager.json'});
     })
 })
