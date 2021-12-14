@@ -18,7 +18,7 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import 'react-tagsinput/react-tagsinput.css';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -33,6 +33,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableContainer from '@material-ui/core/TableContainer';
+import Progress from 'AppComponents/Shared/Progress';
+
 import clsx from 'clsx';
 import TableRow from '@material-ui/core/TableRow';
 import Alert from 'AppComponents/Shared/Alert';
@@ -315,7 +317,7 @@ export default function Environments() {
     const intl = useIntl();
     const { api } = useContext(APIContext);
     const history = useHistory();
-    const { settings } = useAppContext();
+    const { data: settings, isLoading } = usePublisherSettings();
     const {
         allRevisions, getRevision, allEnvRevision, getDeployedEnv,
     } = useRevisionContext();
@@ -328,13 +330,19 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
-    const externalGateways = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
-    const internalGateways = settings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
-    const defaultVhosts = internalGateways.map(
-        (e) => (e.vhosts && e.vhosts.length > 0 ? { env: e.name, vhost: e.vhosts[0].host } : undefined),
-    );
-    const [selectedVhosts, setVhosts] = useState(defaultVhosts);
-    const [selectedVhostDeploy, setVhostsDeploy] = useState(defaultVhosts);
+    const externalGateways = settings && settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+    const internalGateways = settings && settings.environment.filter((p) => p.provider.toLowerCase().includes('wso2'));
+    const [selectedVhosts, setVhosts] = useState(null);
+    const [selectedVhostDeploy, setVhostsDeploy] = useState([]);
+    useEffect(() => {
+        if (settings) {
+            const defaultVhosts = internalGateways.map(
+                (e) => (e.vhosts && e.vhosts.length > 0 ? { env: e.name, vhost: e.vhosts[0].host } : undefined),
+            );
+            setVhosts(defaultVhosts);
+            setVhostsDeploy(defaultVhosts);
+        }
+    }, [settings]);
     const [extraRevisionToDelete, setExtraRevisionToDelete] = useState(null);
     const [description, setDescription] = useState('');
     const [SelectedEnvironment, setSelectedEnvironment] = useState([]);
@@ -348,21 +356,20 @@ export default function Environments() {
     const [externalEnvEndpoints, setExternalEnvEndpoints] = useState(null);
     const triggerEffect = true;
 
-    // allEnvDeployments represents all deployments of the API with mapping
-    // environment -> {revision deployed to env, vhost deployed to env with revision}
-    const allEnvDeployments = Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision);
-
     const allExternalGatewaysMap = [];
     const allExternalGateways = [];
-    externalGateways.forEach((env) => {
-        const revision = allEnvRevision && allEnvRevision.find(
-            (r) => r.deploymentInfo.some((e) => e.name === env.name),
-        );
-        const envDetails = revision && revision.deploymentInfo.find((e) => e.name === env.name);
-        const disPlayDevportal = envDetails && envDetails.displayOnDevportal;
-        allExternalGatewaysMap[env.name] = { revision, disPlayDevportal };
-        allExternalGateways.push(env);
-    });
+    if (externalGateways) {
+        externalGateways.forEach((env) => {
+            const revision = allEnvRevision && allEnvRevision.find(
+                (r) => r.deploymentInfo.some((e) => e.name === env.name),
+            );
+            const envDetails = revision && revision.deploymentInfo.find((e) => e.name === env.name);
+            const disPlayDevportal = envDetails && envDetails.displayOnDevportal;
+            allExternalGatewaysMap[env.name] = { revision, disPlayDevportal };
+            allExternalGateways.push(env);
+        });
+    }
+
 
     const externalEnvWithEndpoints = [];
     useEffect(() => {
@@ -1381,6 +1388,13 @@ export default function Environments() {
         return '';
     }
 
+    if (isLoading || selectedVhosts === null) {
+        return <Progress per={80} message='Loading app settings ...' />;
+    }
+    // allEnvDeployments represents all deployments of the API with mapping
+    // environment -> {revision deployed to env, vhost deployed to env with revision}
+    const allEnvDeployments = Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision);
+
     return (
         <>
             {allRevisions && allRevisions.length === 0 && (
@@ -1548,7 +1562,7 @@ export default function Environments() {
                                     container
                                     spacing={3}
                                 >
-                                    {internalGateways.map((row) => (
+                                    {internalGateways && internalGateways.map((row) => (
                                         <Grid item xs={4}>
                                             <Card
                                                 className={clsx(SelectedEnvironment
@@ -2048,7 +2062,7 @@ export default function Environments() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {internalGateways.map((row) => (
+                                {internalGateways && internalGateways.map((row) => (
                                     <TableRow key={row.name}>
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}

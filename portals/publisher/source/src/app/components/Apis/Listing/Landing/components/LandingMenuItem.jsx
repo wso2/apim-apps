@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LandingMenuItem = (props) => {
     const {
-        helperText, children, id, linkTo, component = 'Link', onClick, dense,
+        helperText, children, id, linkTo, component = 'Link', onClick, dense, disabled = false,
     } = props;
     const { linkRoot } = useStyles();
     return (
@@ -45,6 +45,7 @@ const LandingMenuItem = (props) => {
                 )}
                 {component.toLowerCase() === 'button' && (
                     <Button
+                        disabled={disabled}
                         id={id}
                         size={dense ? 'small' : 'medium'}
                         onClick={onClick}

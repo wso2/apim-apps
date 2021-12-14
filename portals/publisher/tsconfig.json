@@ -4,6 +4,7 @@
     "declaration": false,
     "noImplicitAny": true,
     "noImplicitThis": true,
+    "sourceMap": true,
     "strictNullChecks": true,
     "allowJs": true /* Allow javascript files to be compiled. */,
     "skipLibCheck": true,

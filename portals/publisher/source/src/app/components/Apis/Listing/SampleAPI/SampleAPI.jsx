@@ -80,13 +80,9 @@ const SampleAPI = (props) => {
     const [showStatus, setShowStatus] = useState(false);
     const [newSampleAPI, setNewSampleAPI] = useState();
     const classes = useStyles();
-    const publisherSettings = usePublisherSettings();
-    const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
+    const { data: publisherSettings } = usePublisherSettings();
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
-    const internalGateways = publisherSettings.environment.filter((p) => p.provider
-        && p.provider.toLowerCase().includes('wso2'));
-
     const taskManager = async (promisedTask, name) => {
         tasksStatusDispatcher({ name, status: { inProgress: true } });
         let taskResult;
@@ -104,6 +100,10 @@ const SampleAPI = (props) => {
      * @memberof SampleAPI
      */
     const handleDeploySample = async () => {
+        const { defaultAdvancePolicy, defaultSubscriptionPolicy } = publisherSettings;
+        const internalGateways = publisherSettings && publisherSettings.environment.filter((p) => p.provider
+        && p.provider.toLowerCase().includes('wso2'));
+
         setShowStatus(true);
         const restApi = new API();
 
@@ -177,6 +177,7 @@ const SampleAPI = (props) => {
                 dense={dense}
                 id='itest-id-deploy-sample'
                 onClick={handleDeploySample}
+                disabled={!publisherSettings}
                 component='button'
                 helperText={(
                     <FormattedMessage
