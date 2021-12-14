@@ -1753,6 +1753,66 @@
       "value": "The API can be viewed and modified only by specific publishers and creators with the roles that you specify"
     }
   ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.label": [
+    {
+      "type": 0,
+      "value": "Make the API advertised"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.no": [
+    {
+      "type": 0,
+      "value": "No"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.yes": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint": [
+    {
+      "type": 0,
+      "value": "API External Production Endpoint"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint.help": [
+    {
+      "type": 0,
+      "value": "This is the external production endpoint of the advertised API"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint": [
+    {
+      "type": 0,
+      "value": "API External Sandbox Endpoint"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint.help": [
+    {
+      "type": 0,
+      "value": "This is the external sandbox endpoint of the advertised API"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": [
+    {
+      "type": 0,
+      "value": "Original Developer URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help": [
+    {
+      "type": 0,
+      "value": "This is the original developer portal of the advertised API"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.tooltip": [
+    {
+      "type": 0,
+      "value": "Indicates if an API is advertise only. You can use advertise only APIs to expose an externally published API through API Manager."
+    }
+  ],
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": [
     {
       "type": 0,

@@ -777,6 +777,36 @@
   "Apis.Details.Configuration.components.AccessControl.tooltip.restrict.\n                                    desc": {
     "defaultMessage": "The API can be viewed and modified only by specific publishers and creators with the roles that you specify"
   },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.label": {
+    "defaultMessage": "Make the API advertised"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.no": {
+    "defaultMessage": "No"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.yes": {
+    "defaultMessage": "Yes"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint": {
+    "defaultMessage": "API External Production Endpoint"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint.help": {
+    "defaultMessage": "This is the external production endpoint of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint": {
+    "defaultMessage": "API External Sandbox Endpoint"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint.help": {
+    "defaultMessage": "This is the external sandbox endpoint of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": {
+    "defaultMessage": "Original Developer URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help": {
+    "defaultMessage": "This is the original developer portal of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.tooltip": {
+    "defaultMessage": "Indicates if an API is advertise only. You can use advertise only APIs to expose an externally published API through API Manager."
+  },
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": {
     "defaultMessage": "Access Control Allow Headers"
   },

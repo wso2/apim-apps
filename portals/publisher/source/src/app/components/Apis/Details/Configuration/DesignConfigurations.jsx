@@ -44,6 +44,7 @@ import APIProduct from 'AppData/APIProduct';
 import DefaultVersion from './components/DefaultVersion';
 import DescriptionEditor from './components/DescriptionEditor';
 import AccessControl from './components/AccessControl';
+import AdvertiseInfo from './components/AdvertiseInfo';
 import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
@@ -120,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {Object} Deep copy of an object
  */
 function copyAPIConfig(api) {
-    return {
+    let copiedConfig = {
         id: api.id,
         name: api.name,
         description: api.description,
@@ -149,6 +150,20 @@ function copyAPIConfig(api) {
         },
         additionalProperties: [...api.additionalProperties],
     };
+    if (api.advertiseInfo) {
+        copiedConfig = {
+            ...copiedConfig,
+            advertiseInfo: {
+                advertised: api.advertiseInfo.advertised,
+                apiExternalProductionEndpoint: api.advertiseInfo.apiExternalProductionEndpoint,
+                apiExternalSandboxEndpoint: api.advertiseInfo.apiExternalSandboxEndpoint,
+                originalDevPortalUrl: api.advertiseInfo.originalDevPortalUrl,
+                apiOwner: api.advertiseInfo.apiOwner,
+                vendor: api.advertiseInfo.vendor,
+            },
+        };
+    }
+    return copiedConfig;
 }
 
 /**
@@ -200,6 +215,26 @@ function configReducer(state, configAction) {
             }
             return nextState;
         }
+        case 'advertised':
+            if (nextState.advertiseInfo) {
+                nextState.advertiseInfo[action] = value;
+            }
+            return nextState;
+        case 'apiExternalProductionEndpoint':
+            if (nextState.advertiseInfo) {
+                nextState.advertiseInfo[action] = value;
+            }
+            return nextState;
+        case 'apiExternalSandboxEndpoint':
+            if (nextState.advertiseInfo) {
+                nextState.advertiseInfo[action] = value;
+            }
+            return nextState;
+        case 'originalDevPortalUrl':
+            if (nextState.advertiseInfo) {
+                nextState.advertiseInfo[action] = value;
+            }
+            return nextState;
         default:
             return state;
     }
@@ -450,6 +485,14 @@ export default function DesignConfigurations() {
                                             githubURL={githubURLProperty && githubURLProperty.value}
                                             configDispatcher={configDispatcher}
                                         />
+                                    </Box>
+                                    <Box py={1}>
+                                        {api.apiType !== API.CONSTS.APIProduct && (
+                                            <AdvertiseInfo
+                                                api={apiConfig}
+                                                configDispatcher={configDispatcher}
+                                            />
+                                        )}
                                     </Box>
                                     <Box py={1}>
                                         {api.apiType !== API.CONSTS.APIProduct && (
