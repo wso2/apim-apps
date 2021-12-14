@@ -124,6 +124,19 @@ const styles = (theme) => ({
         paddingLeft: 5,
         paddingRight: 5,
     },
+    ribbon: {
+        fontFamily: theme.typography.fontFamily,
+        fontSize: '12px',
+        fontWeight: 800,
+        backgroundColor: '#006e9c',
+        color: 'white',
+        position: 'absolute',
+        padding: '5px',
+        width: '80px',
+        zIndex: 3,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+    },
 });
 
 /**
@@ -203,6 +216,11 @@ class APIThumb extends Component {
                 elevation={isHover ? 4 : 1}
                 className={classes.card}
             >
+                {
+                    api.advertiseOnly && (
+                        <div className={classes.ribbon}><span>advertised</span></div>
+                    )
+                }
                 <CardMedia
                     src='None'
                     component={BaseThumbnail}
