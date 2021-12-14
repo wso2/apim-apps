@@ -65,10 +65,12 @@ export default class Protected extends Component {
         super(props);
         this.state = {
             theme: null,
+            settings: null,
         };
         this.environments = [];
         this.checkSession = this.checkSession.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
+        this.updateSettings = this.updateSettings.bind(this);
     }
 
     /**
@@ -152,6 +154,14 @@ export default class Protected extends Component {
     }
 
     /**
+     *
+     * @param {any} settings Publisher settings object
+     */
+    updateSettings(settings) {
+        this.setState({ settings });
+    }
+
+    /**
      * Handle iframe message
      * @param {event} e Event
      */
@@ -181,7 +191,7 @@ export default class Protected extends Component {
      */
     render() {
         const { user = AuthManager.getUser(), messages } = this.state;
-        const { theme } = this.state;
+        const { theme, settings } = this.state;
         if (!user) {
             return (
                 <IntlProvider locale={language} messages={messages}>
@@ -203,6 +213,8 @@ export default class Protected extends Component {
                             <Base user={user}>
                                 <AppContextProvider value={{
                                     user,
+                                    settings,
+                                    updateSettings: this.updateSettings,
                                 }}
                                 >
                                     <Switch>
