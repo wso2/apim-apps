@@ -72,6 +72,9 @@ describe('Landing page', () => {
                 name: /deploy sample api/i,
             });
             expect(deploySampleButton).toBeInTheDocument();
+            await waitFor(() => {
+                expect(deploySampleButton).not.toBeDisabled();
+            });
             fireEvent.click(deploySampleButton);
             expect(
                 screen.getByText(/creating sample api \.\.\./i),
