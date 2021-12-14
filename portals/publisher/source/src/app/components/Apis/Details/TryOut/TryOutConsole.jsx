@@ -73,7 +73,7 @@ const TryOutConsole = () => {
     const [deployments, setDeployments] = useState([]);
     const [selectedDeployment, setSelectedDeployment] = useState();
     const [oasDefinition, setOasDefinition] = useState();
-    const publisherSettings = usePublisherSettings();
+    const { data: publisherSettings } = usePublisherSettings();
 
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, {
         generateKey: { inProgress: false, completed: false, error: false },
@@ -89,25 +89,29 @@ const TryOutConsole = () => {
             tasksStatusDispatcher({ name: 'generateKey', status: { inProgress: false, completed: true } });
         }).catch((error) => tasksStatusDispatcher({ name: 'generateKey', status: { error, inProgress: false } }));
     }, [api.id]);
-
+    useEffect(generateInternalKey, []); // Auto generate API Key on page load
     useEffect(() => {
         tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: true } });
-        api.getDeployedRevisions(api.id).then((deploymentsResponse) => {
-            tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, completed: true } });
-            const currentDeployments = deploymentsResponse.body;
-            const currentDeploymentsWithDisplayName = currentDeployments.map((deploy) => {
-                const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
-                const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
-                return { ...deploy, displayName };
-            });
-            setDeployments(currentDeploymentsWithDisplayName);
-            if (currentDeploymentsWithDisplayName && currentDeploymentsWithDisplayName.length > 0) {
-                const [initialDeploymentSelection] = currentDeploymentsWithDisplayName;
-                setSelectedDeployment(initialDeploymentSelection);
-            }
-        }).catch((error) => tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, error } }));
-        api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
-    }, []);
+        if (publisherSettings) {
+            api.getDeployedRevisions(api.id).then((deploymentsResponse) => {
+                tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, completed: true } });
+                const currentDeployments = deploymentsResponse.body;
+                const currentDeploymentsWithDisplayName = currentDeployments.map((deploy) => {
+                    const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
+                    const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
+                    return { ...deploy, displayName };
+                });
+                setDeployments(currentDeploymentsWithDisplayName);
+                if (currentDeploymentsWithDisplayName && currentDeploymentsWithDisplayName.length > 0) {
+                    const [initialDeploymentSelection] = currentDeploymentsWithDisplayName;
+                    setSelectedDeployment(initialDeploymentSelection);
+                }
+            }).catch(
+                (error) => tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, error } }),
+            );
+            api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
+        }
+    }, [publisherSettings]);
 
     const isAPIProduct = api.type === 'APIPRODUCT';
     const updatedOasDefinition = useMemo(() => {
@@ -171,7 +175,7 @@ const TryOutConsole = () => {
             oasCopy = oasDefinition;
         }
         return oasCopy;
-    }, [selectedDeployment, oasDefinition]);
+    }, [selectedDeployment, oasDefinition, publisherSettings]);
 
     /**
      *

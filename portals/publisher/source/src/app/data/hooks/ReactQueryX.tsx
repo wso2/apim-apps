@@ -17,7 +17,7 @@ export const useQuery = (cacheKey: string, fetcher: () => Promise<any>) => {
   const { cache } = useContext(NTCacheContext);
   const [data, setData] = useState(null);
   const [error, setError] = useState<null | Error>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     setIsLoading(true);
     (async () => {
@@ -27,11 +27,16 @@ export const useQuery = (cacheKey: string, fetcher: () => Promise<any>) => {
       }
       try {
         const response = await cacheEntry;
-        const jsonData = await response.clone().json();
+        let jsonData = response;
+        if(response.clone) {
+            jsonData = await response.clone().json();
+        }
         setData(jsonData);
       } catch (error) {
         console.error(error);
         setError(error as Error);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [cache, cacheKey, fetcher]);
