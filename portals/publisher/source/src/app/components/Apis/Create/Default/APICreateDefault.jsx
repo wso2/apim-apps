@@ -15,10 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
@@ -26,8 +27,9 @@ import { withRouter } from 'react-router';
 import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import API from 'AppData/api';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import Banner from 'AppComponents/Shared/Banner';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
@@ -54,8 +56,14 @@ function APICreateDefault(props) {
     const {
         isWebSocket, isAPIProduct, history, intl,
     } = props;
-    const { settings } = useAppContext();
+    const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
+
     const [pageError, setPageError] = useState(null);
+    useEffect(() => {
+        if (settingsError) {
+            setPageError(settingsError.message);
+        }
+    }, [settingsError]);
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
 
@@ -201,9 +209,6 @@ function APICreateDefault(props) {
         return promisedCreatedAPI.finally(() => setIsCreating(false));
     }
 
-    const internalGateways = settings.environment.filter((p) => p.provider
-        && p.provider.toLowerCase().includes('wso2'));
-
     /**
      *
      */
@@ -222,6 +227,8 @@ function APICreateDefault(props) {
                     setIsRevisioning(false);
                     const envList = settings.environment.map((env) => env.name);
                     const body1 = [];
+                    const internalGateways = settings.environment.filter((p) => p.provider
+                        && p.provider.toLowerCase().includes('wso2'));
                     const getFirstVhost = (envName) => {
                         const env = internalGateways.find(
                             (e) => e.name === envName && e.vhosts.length > 0,
@@ -391,7 +398,7 @@ function APICreateDefault(props) {
         <APICreateBase title={pageTitle}>
             <Grid container direction='row' justify='center' alignItems='center' spacing={3}>
                 {/* Page error banner */}
-                {pageError && (
+                {(pageError) && (
                     <Grid item xs={11}>
                         <Banner
                             onClose={() => setPageError(null)}
@@ -404,9 +411,17 @@ function APICreateDefault(props) {
                     </Grid>
                 )}
                 {/* end of Page error banner */}
-                <Grid item xs={12} />
+                <Grid item xs={12}>
+                    {/* This -2 is to counter act with Grid container spacing 3 */}
+                    {isLoading && (
+                        <Box mt={-2}>
+                            <LinearProgress data-testid='loading-publisher-settings' />
+                        </Box>
+                    )}
+                </Grid>
                 <Grid item md={1} xs={0} />
                 <Grid item md={11} xs={12}>
+
                     <DefaultAPIForm
                         onValidate={handleOnValidate}
                         onChange={handleOnChange}
