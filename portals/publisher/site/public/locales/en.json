@@ -11,6 +11,18 @@
       "value": "Read only"
     }
   ],
+  "Apis.APIProductCreateWrapper.error.errorMessage.create.revision": [
+    {
+      "type": 0,
+      "value": "Something went wrong while creating the API Product Revision"
+    }
+  ],
+  "Apis.APIProductCreateWrapper.error.errorMessage.deploy.revision": [
+    {
+      "type": 0,
+      "value": "Something went wrong while deploying the API Product Revision"
+    }
+  ],
   "Apis.Create.APIProduct.APIProductCreateWrapper.back": [
     {
       "type": 0,
@@ -51,6 +63,18 @@
     {
       "type": 0,
       "value": "Next"
+    }
+  ],
+  "Apis.Create.APIProduct.APIProductCreateWrapper.otherStatus": [
+    {
+      "type": 0,
+      "value": "API Product status updated successfully"
+    }
+  ],
+  "Apis.Create.APIProduct.APIProductCreateWrapper.publishStatus": [
+    {
+      "type": 0,
+      "value": "Lifecycle state change request has been sent"
     }
   ],
   "Apis.Create.APIProduct.APIProductCreateWrapper.resources": [

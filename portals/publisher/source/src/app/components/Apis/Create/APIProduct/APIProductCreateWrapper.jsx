@@ -263,7 +263,7 @@ export default function ApiProductCreateWrapper(props) {
                         setIsDeploying(true);
                         newAPIProduct.deployProductRevision(apiProduct.id, revisionId, body1)
                             .then(() => {
-                                Alert.info('API Revision Deployed Successfully');
+                                Alert.info('API Product Revision Deployed Successfully');
                                 setIsDeploying(false);
                                 setIsPublishing(true);
                                 newAPIProduct.updateLcState(apiProduct.id, 'Publish')
@@ -289,7 +289,7 @@ export default function ApiProductCreateWrapper(props) {
                                 } else {
                                     Alert.error(intl.formatMessage({
                                         id: 'Apis.APIProductCreateWrapper.error.errorMessage.deploy.revision',
-                                        defaultMessage: 'Something went wrong while deploying the API Revision',
+                                        defaultMessage: 'Something went wrong while deploying the API Product Revision',
                                     }));
                                 }
                                 console.error(error);
@@ -305,7 +305,7 @@ export default function ApiProductCreateWrapper(props) {
                         } else {
                             Alert.error(intl.formatMessage({
                                 id: 'Apis.APIProductCreateWrapper.error.errorMessage.create.revision',
-                                defaultMessage: 'Something went wrong while creating the API Revision',
+                                defaultMessage: 'Something went wrong while creating the API Product Revision',
                             }));
                         }
                         console.error(error);
