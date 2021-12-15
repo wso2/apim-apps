@@ -4541,6 +4541,18 @@
       "value": "Endpoints"
     }
   ],
+  "Apis.Details.NewOverview.Endpoints.external.production.endpoint": [
+    {
+      "type": 0,
+      "value": "External Production Endpoint"
+    }
+  ],
+  "Apis.Details.NewOverview.Endpoints.external.sandbox.endpoint": [
+    {
+      "type": 0,
+      "value": "External Sandbox Endpoint"
+    }
+  ],
   "Apis.Details.NewOverview.Endpoints.not.set": [
     {
       "type": 0,
@@ -4647,6 +4659,12 @@
     {
       "type": 0,
       "value": "Metadata"
+    }
+  ],
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl": [
+    {
+      "type": 0,
+      "value": "Original Developer Portal URL"
     }
   ],
   "Apis.Details.NewOverview.MetaData.provider": [

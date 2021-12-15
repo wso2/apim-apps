@@ -2139,6 +2139,12 @@
   "Apis.Details.NewOverview.Endpoints.endpoints": {
     "defaultMessage": "Endpoints"
   },
+  "Apis.Details.NewOverview.Endpoints.external.production.endpoint": {
+    "defaultMessage": "External Production Endpoint"
+  },
+  "Apis.Details.NewOverview.Endpoints.external.sandbox.endpoint": {
+    "defaultMessage": "External Sandbox Endpoint"
+  },
   "Apis.Details.NewOverview.Endpoints.not.set": {
     "defaultMessage": "-"
   },
@@ -2192,6 +2198,9 @@
   },
   "Apis.Details.NewOverview.MetaData.metadata": {
     "defaultMessage": "Metadata"
+  },
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl": {
+    "defaultMessage": "Original Developer Portal URL"
   },
   "Apis.Details.NewOverview.MetaData.provider": {
     "defaultMessage": "Provider"

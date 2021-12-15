@@ -258,6 +258,25 @@ function MetaData(props) {
                         </Typography>
                     </Grid>
                     <BusinessInformation parentClasses={parentClasses} />
+                    {/* Original developer portal URL for advertise only APIs */}
+                    {api.apiType === API.CONSTS.API && api.advertiseInfo.advertised && (
+                        <>
+                            <Grid item xs={12} md={6} lg={4}>
+                                <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                                    <FormattedMessage
+                                        id='Apis.Details.NewOverview.MetaData.originalDevPortalUrl'
+                                        defaultMessage='Original Developer Portal URL'
+                                    />
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6} lg={8}>
+                                <Typography component='p' variant='body1'>
+                                    {api.advertiseInfo.originalDevPortalUrl
+                                        && <>{api.advertiseInfo.originalDevPortalUrl}</>}
+                                </Typography>
+                            </Grid>
+                        </>
+                    )}
                 </Grid>
             </Box>
         </>
