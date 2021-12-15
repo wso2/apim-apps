@@ -134,7 +134,7 @@ class LifeCycleImage extends React.Component {
                             fill='#2b2b2b'
                         >
                             <tspan y='6.362' x='61' id='tspan6731'>
-                                PROTOTYPED
+                                PRE-RELEASED
                             </tspan>
                         </text>
                         <path

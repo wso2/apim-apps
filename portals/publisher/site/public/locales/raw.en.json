@@ -5,6 +5,12 @@
   "Api.login.page.readonly.user": {
     "defaultMessage": "Read only"
   },
+  "Apis.APIProductCreateWrapper.error.errorMessage.create.revision": {
+    "defaultMessage": "Something went wrong while creating the API Product Revision"
+  },
+  "Apis.APIProductCreateWrapper.error.errorMessage.deploy.revision": {
+    "defaultMessage": "Something went wrong while deploying the API Product Revision"
+  },
   "Apis.Create.APIProduct.APIProductCreateWrapper.back": {
     "defaultMessage": "Back"
   },
@@ -25,6 +31,12 @@
   },
   "Apis.Create.APIProduct.APIProductCreateWrapper.next": {
     "defaultMessage": "Next"
+  },
+  "Apis.Create.APIProduct.APIProductCreateWrapper.otherStatus": {
+    "defaultMessage": "API Product status updated successfully"
+  },
+  "Apis.Create.APIProduct.APIProductCreateWrapper.publishStatus": {
+    "defaultMessage": "Lifecycle state change request has been sent"
   },
   "Apis.Create.APIProduct.APIProductCreateWrapper.resources": {
     "defaultMessage": "Add Resources"

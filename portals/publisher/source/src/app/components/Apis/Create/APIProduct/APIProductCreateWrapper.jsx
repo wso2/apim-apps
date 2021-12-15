@@ -34,6 +34,8 @@ import APICreateProductBase from 'AppComponents/Apis/Create/Components/APICreate
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import ProductResourcesEditWorkspace from 'AppComponents/Apis/Details/ProductResources/ProductResourcesEditWorkspace';
 import API from 'AppData/api';
+import AuthManager from 'AppData/AuthManager';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 const useStyles = makeStyles((theme) => ({
     Paper: {
@@ -68,6 +70,11 @@ export default function ApiProductCreateWrapper(props) {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [apiResources, setApiResources] = useState([]);
+    const { settings } = useAppContext();
+    const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
+    const [isRevisioning, setIsRevisioning] = useState(false);
+    const [isDeploying, setIsDeploying] = useState(false);
+    const [isPublishing, setIsPublishing] = useState(false);
 
     const [policies, setPolicies] = useState([]);
 
@@ -178,6 +185,7 @@ export default function ApiProductCreateWrapper(props) {
     const [isCreating, setCreating] = useState();
     const classes = useStyles();
     const steps = getSteps();
+    let newAPIProduct;
 
     const createAPIProduct = () => {
         setCreating(true);
@@ -191,12 +199,117 @@ export default function ApiProductCreateWrapper(props) {
             apis: apiResources,
         };
         apiData.transport = ['http', 'https'];
-        const newAPIProduct = new APIProduct(apiData);
-        newAPIProduct
+        newAPIProduct = new APIProduct(apiData);
+        const promisedCreatedAPIProduct = newAPIProduct
             .saveProduct(apiData)
             .then((apiProduct) => {
                 Alert.info('API Product created successfully');
-                history.push(`/api-products/${apiProduct.id}/overview`);
+                return apiProduct;
+            })
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error('Something went wrong while adding the API Product');
+                }
+            })
+            .finally(() => setCreating(false));
+        return promisedCreatedAPIProduct.finally(() => setCreating(false));
+    };
+
+    const createAPIProductOnly = () => {
+        createAPIProduct().then((apiProduct) => {
+            history.push(`/api-products/${apiProduct.id}/overview`);
+        });
+    };
+
+    const createAndPublishAPIProduct = () => {
+        setIsPublishButtonClicked(true);
+        createAPIProduct()
+            .then((apiProduct) => {
+                setIsRevisioning(true);
+                Alert.info('API Product created successfully');
+                const body = {
+                    description: 'Initial Revision',
+                };
+                newAPIProduct.createProductRevision(apiProduct.id, body)
+                    .then((api1) => {
+                        setIsRevisioning(false);
+                        const revisionId = api1.body.id;
+                        Alert.info('API Revision created successfully');
+                        const envList = settings.environment.map((env) => env.name);
+                        const body1 = [];
+                        const getFirstVhost = (envName) => {
+                            const env = settings.environment.find(
+                                (e) => e.name === envName && e.vhosts.length > 0,
+                            );
+                            return env && env.vhosts[0].host;
+                        };
+                        if (envList && envList.length > 0) {
+                            if (envList.includes('Default') && getFirstVhost('Default')) {
+                                body1.push({
+                                    name: 'Default',
+                                    displayOnDevportal: true,
+                                    vhost: getFirstVhost('Default'),
+                                });
+                            } else if (getFirstVhost(envList[0])) {
+                                body1.push({
+                                    name: envList[0],
+                                    displayOnDevportal: true,
+                                    vhost: getFirstVhost(envList[0]),
+                                });
+                            }
+                        }
+                        setIsDeploying(true);
+                        newAPIProduct.deployProductRevision(apiProduct.id, revisionId, body1)
+                            .then(() => {
+                                Alert.info('API Product Revision Deployed Successfully');
+                                setIsDeploying(false);
+                                setIsPublishing(true);
+                                newAPIProduct.updateLcState(apiProduct.id, 'Publish')
+                                    .then((response) => {
+                                        const { workflowStatus } = response.body;
+                                        if (workflowStatus === 'CREATED') {
+                                            Alert.info(intl.formatMessage({
+                                                id: 'Apis.Create.APIProduct.APIProductCreateWrapper.publishStatus',
+                                                defaultMessage: 'Lifecycle state change request has been sent',
+                                            }));
+                                        } else {
+                                            Alert.info(intl.formatMessage({
+                                                id: 'Apis.Create.APIProduct.APIProductCreateWrapper.otherStatus',
+                                                defaultMessage: 'API Product status updated successfully',
+                                            }));
+                                        }
+                                        history.push(`/api-products/${apiProduct.id}/overview`);
+                                    });
+                            })
+                            .catch((error) => {
+                                if (error.response) {
+                                    Alert.error(error.response.body.description);
+                                } else {
+                                    Alert.error(intl.formatMessage({
+                                        id: 'Apis.APIProductCreateWrapper.error.errorMessage.deploy.revision',
+                                        defaultMessage: 'Something went wrong while deploying the API Product Revision',
+                                    }));
+                                }
+                                console.error(error);
+                            })
+                            .finally(() => {
+                                setIsPublishing(false);
+                                setIsPublishButtonClicked(false);
+                            });
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.APIProductCreateWrapper.error.errorMessage.create.revision',
+                                defaultMessage: 'Something went wrong while creating the API Product Revision',
+                            }));
+                        }
+                        console.error(error);
+                    });
             })
             .catch((error) => {
                 if (error.response) {
@@ -293,14 +406,15 @@ export default function ApiProductCreateWrapper(props) {
                                     <Button
                                         variant='contained'
                                         color='primary'
-                                        disabled={!apiInputs.isFormValid || isCreating || (apiResources.length === 0)}
-                                        onClick={createAPIProduct}
+                                        disabled={!apiInputs.isFormValid || isCreating || (apiResources.length === 0)
+                                                    || isPublishButtonClicked}
+                                        onClick={createAPIProductOnly}
                                     >
                                         <FormattedMessage
                                             id='Apis.Create.APIProduct.APIProductCreateWrapper.create'
                                             defaultMessage='Create'
                                         />
-                                        {isCreating && <CircularProgress size={24} />}
+                                        {isCreating && !isPublishButtonClicked && <CircularProgress size={24} />}
                                     </Button>
                                 )}
                                 {wizardStep === 0 && (
@@ -314,6 +428,29 @@ export default function ApiProductCreateWrapper(props) {
                                             id='Apis.Create.APIProduct.APIProductCreateWrapper.next'
                                             defaultMessage='Next'
                                         />
+                                    </Button>
+                                )}
+                            </Grid>
+                            <Grid item>
+                                {wizardStep === 1 && !AuthManager.isNotPublisher() && (
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        disabled={
+                                            !apiInputs.isFormValid || isCreating || (apiResources.length === 0)
+                                            || isDeploying || isRevisioning || !apiInputs.isFormValid
+                                        }
+                                        onClick={createAndPublishAPIProduct}
+                                    >
+                                        {(!isPublishing && !isRevisioning && !isDeploying) && 'Create & Publish'}
+                                        {(isPublishing || isRevisioning || isDeploying)
+                                        && <CircularProgress size={24} />}
+                                        {isCreating && isPublishing && 'Creating API Product. . .'}
+                                        {!isCreating && isRevisioning && !isDeploying && 'Creating Revision . . .'}
+                                        {!isCreating && isPublishing
+                                        && !isRevisioning && !isDeploying && 'Publishing API Product. . .'}
+                                        {!isCreating && isPublishing
+                                        && !isRevisioning && isDeploying && 'Deploying Revision . . .'}
                                     </Button>
                                 )}
                             </Grid>
