@@ -23,6 +23,7 @@ afterAll(() => server.close());
 describe('Create REST API From scratch', () => {
     test('Should render REST API from scratch form', async () => {
         render(<APICreateDefault />);
+        expect(await screen.findByTestId('loading-publisher-settings')).toBeInTheDocument();
         expect(screen.getByRole('heading', {
             name: /create an api/i,
         })).toBeInTheDocument();
@@ -46,6 +47,7 @@ describe('Create REST API From scratch', () => {
 
     test('Should validate name field for empty and special characters', async () => {
         render(<APICreateDefault />);
+        expect(await screen.findByTestId('loading-publisher-settings')).toBeInTheDocument();
         const NAME_INPUT = screen.getByRole('textbox', { name: /name \*/i });
         const NAME_EMPTY_ERROR = /name should not be empty/i;
         const VALID_API_NAME = 'sampleAPIName';
@@ -78,6 +80,8 @@ describe('Create REST API From scratch', () => {
 
     test('should not exceed 50 character length', async () => {
         render(<APICreateDefault />);
+        screen.logTestingPlaygroundURL();
+        expect(await screen.findByTestId('loading-publisher-settings')).toBeInTheDocument();
         const NAME_INPUT = screen.getByRole('textbox', { name: /name \*/i });
         const NAME_EXCEEDED_ERROR = /Name has exceeded the maximum number of 50 characters/i;
         userEvent.type(NAME_INPUT, 'a'.repeat(50));

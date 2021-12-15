@@ -18,9 +18,7 @@
         "i18n:compile": "formatjs compile site/public/locales/raw.en.json --ast --out-file site/public/locales/en.json",
         "start": "webpack serve --compress --https --port 8081 --mode development",
         "start:mocked": "concurrently npm:mocked 'WSO2_UI_MOCKED=true webpack serve --compress --https --port 8081 --mode production --progress'",
-        "mocked": "multi-mock-oas",
-        "serve": "ws --config-file ./configs/development/local-web-server/config.js"
-
+        "mocked": "multi-mock-oas"
     },
     "repository": {
         "type": "git",
@@ -135,7 +133,6 @@
         "jest": "^27.3.1",
         "less": "^2.7.2",
         "less-loader": "^4.0.4",
-        "local-web-server": "^5.1.1",
         "mock-local-storage": "^1.0.2",
         "monaco-editor-webpack-plugin": "^3.0.1",
         "msw": "^0.35.0",

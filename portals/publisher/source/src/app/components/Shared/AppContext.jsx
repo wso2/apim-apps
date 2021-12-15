@@ -25,8 +25,16 @@ export const usePublisherSettings = () => {
 };
 export const withSettings = (WrappedComponent) => {
     const WithSettingsHOC = (props) => {
-        const { data: settings } = usePublisherSettings();
-        return <WrappedComponent {...props} settings={settings} />;
+        const { data: settings, isLoading } = usePublisherSettings();
+        const { updateSettings } = useContext(AppContext);
+        return (
+            <WrappedComponent
+                {...props}
+                settings={settings}
+                isSettingsLoading={isLoading}
+                updateSettings={updateSettings}
+            />
+        );
     };
     WithSettingsHOC.displayName = `withSettings(${WrappedComponent.displayName})`;
     return WithSettingsHOC;

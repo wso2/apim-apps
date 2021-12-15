@@ -251,11 +251,16 @@ class Details extends Component {
      * @returns
      * @memberof Details
      */
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         const { api } = this.state;
-        const { match, isAPIProduct } = this.props;
+        const { settings: prevSettings } = prevProps;
+
+        const { match, isAPIProduct, settings } = this.props;
         const { apiUUID } = match.params;
         const { apiProdUUID } = match.params;
+        if (prevSettings !== settings) {
+            this.props.updateSettings(settings);
+        }
         if (!api || (api.id === apiUUID || api.id === apiProdUUID)) {
             return;
         }
@@ -627,6 +632,7 @@ class Details extends Component {
             match,
             intl,
             settings,
+            isSettingsLoading,
             location: pageLocation,
             location: { pathname }, // nested destructuring
         } = this.props;
@@ -669,6 +675,8 @@ class Details extends Component {
 
         if (!api) {
             return <Progress per={70} message='Loading API data ...' />;
+        } else if (isSettingsLoading) {
+            return <Progress per={80} message='Loading portal settings ...' />;
         }
         const { leftMenuIconMainSize } = theme.custom;
         return (
