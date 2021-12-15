@@ -174,7 +174,7 @@ export default function DevelopSectionMenu(props) {
                             to={pathPrefix + 'business info'}
                             Icon={<BusinessIcon />}
                         />
-                        {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && (
+                        {!isAPIProduct && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.subscriptions',
@@ -242,8 +242,7 @@ export default function DevelopSectionMenu(props) {
                 </AccordianSummary>
                 <AccordionDetails>
                     <div>
-                        {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised
-                        && !api.isWebSocket() && (api.gatewayVendor === 'wso2') && (
+                        {!isAPIProduct && !api.isWebSocket() && (api.gatewayVendor === 'wso2') && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.runtime.configs',
@@ -265,7 +264,7 @@ export default function DevelopSectionMenu(props) {
                                 Icon={<RuntimeConfigurationIcon />}
                             />
                         )}
-                        {api.advertiseInfo && !api.advertiseInfo.advertised && api.isWebSocket() && (
+                        {api.isWebSocket() && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.runtime.configs',
@@ -276,9 +275,7 @@ export default function DevelopSectionMenu(props) {
                                 Icon={<RuntimeConfigurationIcon />}
                             />
                         )}
-                        {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised
-                            && getLeftMenuItemForResourcesByType(api.type)}
-                        {isAPIProduct && getLeftMenuItemForResourcesByType(api.type)}
+                        {getLeftMenuItemForResourcesByType(api.type)}
                         {getLeftMenuItemForDefinitionByType(api.type)}
                         {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct
                             && api.type !== 'WEBSUB' && (
@@ -291,8 +288,7 @@ export default function DevelopSectionMenu(props) {
                                 Icon={<EndpointIcon />}
                             />
                         )}
-                        {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct
-                        && (api.gatewayVendor === 'wso2') && (
+                        {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.left.menu.scope',
@@ -315,8 +311,7 @@ export default function DevelopSectionMenu(props) {
 
                         {!api.isWebSocket() && !isRestricted(['apim:api_publish'], api) && (
                             <>
-                                {!isAPIProduct && api.advertiseInfo
-                                && !api.advertiseInfo.advertised && (api.gatewayVendor === 'wso2') && (
+                                {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
                                     <LeftMenuItem
                                         text={intl.formatMessage({
                                             id: 'Apis.Details.index.monetization',

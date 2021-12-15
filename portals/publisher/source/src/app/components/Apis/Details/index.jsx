@@ -724,7 +724,7 @@ class Details extends Component {
                                 getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
                             />
                             <Divider />
-                            {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && (
+                            {!isAPIProduct && (
                                 <>
                                     <Typography className={classes.headingText}>Deploy</Typography>
                                     <LeftMenuItem
@@ -752,8 +752,8 @@ class Details extends Component {
                                     />
                                 </>
                             )}
-                            {(isAPIProduct || (!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised
-                                && !api.isWebSocket() && !api.isGraphql() && !isAsyncAPI)) && (
+                            {(isAPIProduct || (!isAPIProduct && !api.isWebSocket() && !api.isGraphql()
+                                && !isAsyncAPI)) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>Test</Typography>
