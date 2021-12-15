@@ -4667,6 +4667,12 @@
       "value": "Original Developer Portal URL"
     }
   ],
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl.not.set": [
+    {
+      "type": 0,
+      "value": "-"
+    }
+  ],
   "Apis.Details.NewOverview.MetaData.provider": [
     {
       "type": 0,

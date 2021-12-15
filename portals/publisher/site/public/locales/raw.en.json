@@ -2202,6 +2202,9 @@
   "Apis.Details.NewOverview.MetaData.originalDevPortalUrl": {
     "defaultMessage": "Original Developer Portal URL"
   },
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl.not.set": {
+    "defaultMessage": "-"
+  },
   "Apis.Details.NewOverview.MetaData.provider": {
     "defaultMessage": "Provider"
   },
