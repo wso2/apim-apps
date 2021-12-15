@@ -196,9 +196,9 @@ class LifeCycleUpdate extends Component {
             action = 'Deploy as a Prototype';
         }
         const {
-            api: { id: apiUUID },
+            api: { id: apiUUID, advertiseInfo },
         } = this.props;
-        if (action === 'Publish' && !deploymentsAvailable) {
+        if (action === 'Publish' && !deploymentsAvailable && !advertiseInfo.advertised) {
             this.setIsOpen(true);
         } else {
             this.updateLCStateOfAPI(apiUUID, action);
@@ -246,11 +246,12 @@ class LifeCycleUpdate extends Component {
                 return {
                     ...state,
                     disabled:
-                        (api.type !== 'WEBSUB' && api.endpointConfig === null && !isAPIProduct)
+                        ((api.type !== 'WEBSUB' && api.endpointConfig === null && !isAPIProduct)
                         || (isMutualSSLEnabled && !isCertAvailable)
                         || (isAppLayerSecurityMandatory && !isBusinessPlanAvailable)
                         || (api.type !== 'WEBSUB' && api.endpointConfig != null
-                            && api.endpointConfig.implementation_status === 'prototyped'),
+                            && api.endpointConfig.implementation_status === 'prototyped'))
+                        && !api.advertiseInfo.advertised,
                 };
             }
             return {
@@ -278,7 +279,7 @@ class LifeCycleUpdate extends Component {
                                     <LifeCycleImage lifeCycleStatus={newState || lifeCycleStatus} />
                                 </Grid>
                                 {(lifeCycleStatus === 'CREATED'
-                                    || lifeCycleStatus === 'PROTOTYPED') && (
+                                    || lifeCycleStatus === 'PROTOTYPED') && !api.advertiseInfo.advertised && (
                                     <Grid item xs={3}>
                                         <CheckboxLabels
                                             api={api}
