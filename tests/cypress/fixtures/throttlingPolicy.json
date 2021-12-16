@@ -1,0 +1,26 @@
+{
+  "name": "Unlimited",
+  "description": "Allows unlimited requests",
+  "policyLevel": "APPLICATION",
+  "attributes": {},
+  "requestCount": 2147483647,
+  "dataUnit": null,
+  "unitTime": 0,
+  "timeUnit": "ms",
+  "rateLimitCount": 0,
+  "rateLimitTimeUnit": null,
+  "quotaPolicyType": null,
+  "tierPlan": "FREE",
+  "stopOnQuotaReach": true,
+  "monetizationAttributes": {
+    "billingType": null,
+    "billingCycle": null,
+    "fixedPrice": null,
+    "pricePerRequest": null,
+    "currencyType": null
+  },
+  "throttlingPolicyPermissions": {
+    "type": "ALLOW",
+    "roles": ["Internal/everyone"]
+  }
+}

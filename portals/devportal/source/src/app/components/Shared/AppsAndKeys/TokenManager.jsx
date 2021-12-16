@@ -864,6 +864,7 @@ class TokenManager extends React.Component {
                                                 {!isUserOwner ? (
                                                     <>
                                                         <Button
+                                                            id='generate-keys'
                                                             variant='contained'
                                                             color='primary'
                                                             className={classes.button}
@@ -885,6 +886,7 @@ class TokenManager extends React.Component {
                                                 ) : (
                                                     <Box display='flex'>
                                                         <Button
+                                                            id='generate-keys'
                                                             variant='contained'
                                                             color='primary'
                                                             className={classes.button}
@@ -1061,6 +1063,7 @@ class TokenManager extends React.Component {
                                                         {!isUserOwner ? (
                                                             <>
                                                                 <Button
+                                                                    id='generate-keys'
                                                                     variant='contained'
                                                                     color='primary'
                                                                     className={classes.button}
@@ -1082,6 +1085,7 @@ class TokenManager extends React.Component {
                                                         ) : (
                                                             <Box display='flex'>
                                                                 <Button
+                                                                    id='generate-keys'
                                                                     variant='contained'
                                                                     color='primary'
                                                                     className={classes.button}

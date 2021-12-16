@@ -529,6 +529,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                     <TableCell>
                                         <Box maxWidth={600}>
                                             <TextField
+                                                id='external-idp-token'
                                                 onChange={onExternalIDPTokenChange}
                                                 size="small"
                                                 fullWidth
@@ -647,6 +648,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                             />
                                         </Button>
                                         <Button
+                                            id='curl-to-generate-access-token-btn'
                                             variant='outlined'
                                             size='small'
                                             color='primary'
