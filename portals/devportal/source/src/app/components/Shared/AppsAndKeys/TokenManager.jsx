@@ -708,7 +708,9 @@ class TokenManager extends React.Component {
         }
 
         let isResidentKeyManagerTokensAvailable = false;
-        if (keys.has('Resident Key Manager')){
+        if (keys.has('Resident Key Manager') &&
+            keys.get('Resident Key Manager').supportedGrantTypes.
+            includes("urn:ietf:params:oauth:grant-type:token-exchange")){
             isResidentKeyManagerTokensAvailable = true;
         }
 
@@ -760,6 +762,7 @@ class TokenManager extends React.Component {
                                 label={keymanager.displayName || keymanager.name}
                                 value={keymanager.name}
                                 disabled={!keymanager.enabled}
+                                id={keymanager.name.replace(/\s/g, '')}
                             />
                         ))}
                     </StyledTabs>
@@ -861,6 +864,7 @@ class TokenManager extends React.Component {
                                                 {!isUserOwner ? (
                                                     <>
                                                         <Button
+                                                            id='generate-keys'
                                                             variant='contained'
                                                             color='primary'
                                                             className={classes.button}
@@ -882,6 +886,7 @@ class TokenManager extends React.Component {
                                                 ) : (
                                                     <Box display='flex'>
                                                         <Button
+                                                            id='generate-keys'
                                                             variant='contained'
                                                             color='primary'
                                                             className={classes.button}
@@ -963,9 +968,9 @@ class TokenManager extends React.Component {
                                                             onChange={this.handleChange}
                                                         >
                                                             <FormControlLabel value='DIRECT' control={<Radio/>}
-                                                                              label='Direct Token'/>
+                                                                              label='Direct Token' id='direct-token'/>
                                                             <FormControlLabel value='EXCHANGED' control={<Radio/>}
-                                                                              label='Exchange Token'/>
+                                                                              label='Exchange Token' id='exchange-token'/>
                                                         </RadioGroup>
                                                     </TableCell>
                                                 </TableRow>
@@ -1058,6 +1063,7 @@ class TokenManager extends React.Component {
                                                         {!isUserOwner ? (
                                                             <>
                                                                 <Button
+                                                                    id='generate-keys'
                                                                     variant='contained'
                                                                     color='primary'
                                                                     className={classes.button}
@@ -1079,6 +1085,7 @@ class TokenManager extends React.Component {
                                                         ) : (
                                                             <Box display='flex'>
                                                                 <Button
+                                                                    id='generate-keys'
                                                                     variant='contained'
                                                                     color='primary'
                                                                     className={classes.button}
@@ -1164,7 +1171,7 @@ class TokenManager extends React.Component {
                                             <Typography>
                                                 <FormattedMessage
                                                     id='Shared.AppsAndKeys.ViewCurl.error'
-                                                    defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager in
+                                                    defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager with selecting the urn:ietf:params:oauth:grant-type:token-exchange grant type in
                                                                             order to use the token Exchange Approach. '
                                                 />
                                             </Typography>
@@ -1173,7 +1180,7 @@ class TokenManager extends React.Component {
                                 </DialogContent>
                                 <DialogActions>
 
-                                    <Button onClick={this.handleClose} color='primary' autoFocus>
+                                    <Button onClick={this.handleClose} color='primary' autoFocus id='close-btn'>
                                         <FormattedMessage
                                             id='Shared.AppsAndKeys.ViewKeys.consumer.close.btn'
                                             defaultMessage='Close'

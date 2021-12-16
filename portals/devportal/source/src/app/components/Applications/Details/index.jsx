@@ -347,6 +347,7 @@ class Details extends Component {
                         route='productionkeys'
                         to={pathPrefix + '/productionkeys/oauth'}
                         open
+                        id='production-keys'
                     />
                     <LeftMenuItem
                         text={(

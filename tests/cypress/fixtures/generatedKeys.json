@@ -1,0 +1,26 @@
+{
+  "keyMappingId": "2a5da60d-c8d5-4306-ac4c-3bda5d2232b6",
+  "keyManager": "f47d1c4c-fbc6-46ac-bda1-c8e3fb7539c2",
+  "consumerKey": "hawB9KXRtMidkyET96fYoyXJ9uIa",
+  "consumerSecret": "aUb20BaH75JW_MZTiIipp781qNka",
+  "supportedGrantTypes": ["refresh_token", "urn:ietf:params:oauth:grant-type:saml2-bearer", "password", "client_credentials", "iwa:ntlm", "urn:ietf:params:oauth:grant-type:token-exchange", "urn:ietf:params:oauth:grant-type:jwt-bearer"],
+  "callbackUrl": "",
+  "keyState": "APPROVED",
+  "keyType": "PRODUCTION",
+  "mode": "CREATED",
+  "groupId": null,
+  "token": {
+    "accessToken": "eyJ4NXQiOiJNell4TW1Ga09HWXdNV0kwWldObU5EY3hOR1NNFpUQTNNV0kyTkRBelpHUXpOR00wWkdSbE5qSmtPREZrWkRSaU9URmtNV0ZoTXpVMlpHVmxOZyIsImtpZCI6Ik16WXhNbUZrT0dZd01XSTBaV05tTkRjeE5HWXdZbU00WlRBM0REF6WkdRek5HTTBaR1JsTmpKa09ERmtaRFJpT1RGa01XRmhNelUyWkdWbE5nX1JTMjU2IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZG1pbiIsImF1dCI6IkFQUExJOIiwiYXVkIjoiaGF3QjlLWFJ0TWlka3lFVDk2ZllveVhKOXVJYSIsIm5iZiI6MTYzOTU5NDUyMiwiYXpwIjoiaGF3QjlLWFJ0TWlka3lFVDk2ZllveVhKOXVJYSIsInNjb3BlIjoiZGVmYXVsdCIsImlzcyI6Imh0dHBzOlwvXC9sb2NhbGhvc3Q6OTQ0M1wvb2F1dGgyXC90b2tlbiIsImV4cCI6MTYzOTU5ODEyMiwiaWF0IjoxNjM5NTk0NTIyLCJqdGkiOiJiMTFkMGZiZC1lYWE1LTRmNTYtYWU3NS1kYmZiYjUwMGE3NGYifQ.qJ1ywm5B3xC4ACStxYL0QRU1EDa4A-VihzQJCaUs1wkmSfRuMUijj3LA4dGcojMwXAz5fTcX76bCA9kjKWGpcj-1_Kf2UZUWWCuaDn1LUtdiHg2q9v2G0U_s4kDGYa4BrQqRRS1nkekxHItDtqiBReMsH2wsl1MTUfXDb6oPAE9Al_bo1JqLBxSmfBM_l87FOqGSBZaG1oninbznDyZfRo9qBM1-v0tIv3x51OxkbTUe54ZxdNpdW3XpFasONUX3Pvr5fQy6NqkSfyldGBGy_CiT86NR7TTjwYUgdb0UQzeh_HqdswgXmezwo9w8RTR82CDGvtE-kc9CWdjqAdxWuQ",
+    "tokenScopes": ["default"],
+    "validityTime": 3600
+  },
+  "additionalProperties": {
+    "id_token_expiry_time": 3600,
+    "application_access_token_expiry_time": 3600,
+    "user_access_token_expiry_time": 3600,
+    "bypassClientCredentials": false,
+    "pkceMandatory": false,
+    "pkceSupportPlain": false,
+    "refresh_token_expiry_time": 86400
+  }
+}

@@ -83,12 +83,13 @@ export default function Certificates(props) {
                     value={type}
                     onChange={handleChange}
                 >
-                    <FormControlLabel value='PEM' control={<Radio />} label='PEM' />
-                    <FormControlLabel value='JWKS' control={<Radio />} label='JWKS' />
+                    <FormControlLabel id='pem-certificate' value='PEM' control={<Radio />} label='PEM' />
+                    <FormControlLabel id='jwks-certificate' value='JWKS' control={<Radio />} label='JWKS' />
                 </RadioGroup>
             </FormControl>
             {type === 'JWKS' && (
                 <TextField
+                    id='jwks-url'
                     label={intl.formatMessage(
                         {
                             id: 'KeyManagers.Certificates.jwks.url',
@@ -113,6 +114,7 @@ export default function Certificates(props) {
                     {selectedTab === 0
                         ? (
                             <TextField
+                                id='KeyManagers.Certificates.paste.label.header'
                                 label={intl.formatMessage(
                                     {
                                         id: 'KeyManagers.Certificates.paste.label',
@@ -133,7 +135,10 @@ export default function Certificates(props) {
                                     <Box m={1} display='flex' flexDirection='row' alignItems='center'>
                                         <SecurityIcon />
                                         <Box flex='1'>{file.name}</Box>
-                                        <Typography variant='caption'>
+                                        <Typography
+                                            variant='caption'
+                                            id='KeyManagers.Certificates.override.message.body'
+                                        >
                                             <FormattedMessage
                                                 id='KeyManagers.Certificates.override.message'
                                                 defaultMessage='Upload new file to override the current certificate'

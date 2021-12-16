@@ -613,6 +613,7 @@ class ViewKeys extends React.Component {
                                         </Button>
                                     )}
                                 <Button
+                                    id='curl-to-generate-access-token-btn'
                                     variant='outlined'
                                     size='small'
                                     color='primary'

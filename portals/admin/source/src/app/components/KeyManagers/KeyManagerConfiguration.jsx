@@ -88,6 +88,7 @@ export default function KeyManagerConfiguration(props) {
             }
             return (
                 <TextField
+                    id={keymanagerConnectorConfiguration.name}
                     margin='dense'
                     name={keymanagerConnectorConfiguration.name}
                     label={(
@@ -146,6 +147,7 @@ export default function KeyManagerConfiguration(props) {
         } else {
             return (
                 <TextField
+                    id={keymanagerConnectorConfiguration.name}
                     margin='dense'
                     name={keymanagerConnectorConfiguration.name}
                     label={keymanagerConnectorConfiguration.label}

@@ -138,11 +138,23 @@ class ViewToken extends React.Component {
             classes, token, consumerSecret,
         } = this.props;
         const { tokenCopied } = this.state;
-        return (
+
+        if (consumerSecret == null) {
+            return (
+                <Typography>
+                    <FormattedMessage
+                        id='Shared.AppsAndKeys.ViewCurl.error'
+                        defaultMessage='Please generate the Consumer Key and Secret for Residence Key Manager with selecting the urn:ietf:params:oauth:grant-type:token-exchange grant type in
+                                             order to use the token Exchange Approach. '
+                    />
+                </Typography>
+            )
+        } else {
+            return (
             <div className={classes.root}>
                 {consumerSecret && (
                     <div className={classes.secretWrapper}>
-                        <ViewSecret secret={{ consumerSecret }} />
+                        <ViewSecret secret={{consumerSecret}}/>
                     </div>
                 )}
                 <InlineMessage type='warn'>
@@ -233,10 +245,10 @@ class ViewToken extends React.Component {
                             defaultMessage=') scopes'
                         />
                     )}
-.
+                    .
                 </FormHelperText>
             </div>
-        );
+        )};
     }
 }
 

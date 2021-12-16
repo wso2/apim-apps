@@ -1,0 +1,29 @@
+{
+  "count": 1,
+  "list": [{
+    "keyMappingId": "2a5da60d-c8d5-4306-ac4c-3bda5d2232b6",
+    "keyManager": "Resident Key Manager",
+    "consumerKey": "hawB9KXRtMidkyET96fYoyXJ9uIa",
+    "consumerSecret": "aUb20BaH75JW_MZTiIipp781qNka",
+    "supportedGrantTypes": ["refresh_token", "urn:ietf:params:oauth:grant-type:saml2-bearer", "password", "client_credentials", "iwa:ntlm", "urn:ietf:params:oauth:grant-type:token-exchange", "urn:ietf:params:oauth:grant-type:jwt-bearer"],
+    "callbackUrl": "",
+    "keyState": "COMPLETED",
+    "keyType": "PRODUCTION",
+    "mode": "CREATED",
+    "groupId": null,
+    "token": {
+      "accessToken": null,
+      "tokenScopes": [],
+      "validityTime": 0
+    },
+    "additionalProperties": {
+      "id_token_expiry_time": 3600,
+      "application_access_token_expiry_time": 3600,
+      "user_access_token_expiry_time": 3600,
+      "bypassClientCredentials": false,
+      "pkceMandatory": false,
+      "pkceSupportPlain": false,
+      "refresh_token_expiry_time": 86400
+    }
+  }]
+}
