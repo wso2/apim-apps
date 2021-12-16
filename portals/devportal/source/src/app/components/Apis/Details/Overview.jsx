@@ -26,7 +26,6 @@ import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
-import LaunchIcon from '@material-ui/icons/Launch';
 import Card from '@material-ui/core/Card';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -522,7 +521,7 @@ function Overview() {
                             </>
                         )}
                         <Box mt={6}>
-                            {(!api.advertiseInfo.advertised && showComments) && (
+                            {showComments && (
                                 <>
                                     <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                                         <FormattedMessage
@@ -541,7 +540,7 @@ function Overview() {
                     </Box>
                 </Grid>
                 <Grid item xs={4} xl={3}>
-                    {!api.advertiseInfo.advertised && user && showRating && (
+                    {user && showRating && (
                         <Box display='flex' flexDirection='row' alignItems='center'>
                             <StarRatingSummary avgRating={rating.avgRating} reviewCount={rating.total} returnCount={rating.count} />
                             <VerticalDivider height={30} />
@@ -556,27 +555,6 @@ function Overview() {
                     <Box mt={6}>
                         <Social />
                     </Box>
-                    {api.advertiseInfo.advertised && (
-                        <>
-                            <a
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                href={api.advertiseInfo.originalStoreUrl}
-                                className={classes.viewInPubStoreLauncher}
-                            >
-                                <div>
-                                    <LaunchIcon />
-                                </div>
-                                <div className={classes.linkText}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Overview.visit.publisher.portal'
-                                        defaultMessage='Visit Publisher Portal'
-                                    />
-                                </div>
-                            </a>
-                            <VerticalDivider height={70} />
-                        </>
-                    )}
                     <Box mt={6} mb={1}>
                         <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                             <FormattedMessage
