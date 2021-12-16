@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -68,11 +69,19 @@ const useStyles = makeStyles((theme) => ({
 const AdvertiseInfo = (props) => {
     const {
         configDispatcher,
-        api: { advertiseInfo },
+        api: { advertiseInfo, type },
     } = props;
     const classes = useStyles();
     const [apiFromContext] = useAPI();
-    // const isAdvertised = advertiseInfo.advertised;
+
+    const infoMsg = () => {
+        if (type === 'ASYNC') {
+            return 'The "Other" type streaming APIs will serve as advertise only APIs. If you want to deploy and API'
+                + ' in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API.';
+        }
+        return null;
+    };
+
     return (
         <Grid container spacing={1} alignItems='flex-start' xs={11}>
             <Grid item>
@@ -96,7 +105,8 @@ const AdvertiseInfo = (props) => {
                             style={{ display: 'flow-root' }}
                         >
                             <FormControlLabel
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isRestricted(['apim:api_create'], apiFromContext)
+                                    || type === 'ASYNC'}
                                 value
                                 control={<Radio color='primary' />}
                                 label={(
@@ -107,7 +117,8 @@ const AdvertiseInfo = (props) => {
                                 )}
                             />
                             <FormControlLabel
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isRestricted(['apim:api_create'], apiFromContext)
+                                    || type === 'ASYNC'}
                                 value={false}
                                 control={<Radio color='primary' />}
                                 label={(
@@ -229,6 +240,9 @@ const AdvertiseInfo = (props) => {
                     </>
                 )}
             </Grid>
+            {infoMsg() !== null && (
+                <MuiAlert severity='info' className={classes.alert}>{infoMsg()}</MuiAlert>
+            )}
         </Grid>
     );
 };

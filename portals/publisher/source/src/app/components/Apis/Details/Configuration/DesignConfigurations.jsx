@@ -149,6 +149,7 @@ function copyAPIConfig(api) {
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
         additionalProperties: [...api.additionalProperties],
+        type: api.type,
     };
     if (api.advertiseInfo) {
         copiedConfig = {
