@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -54,6 +55,11 @@ export default function ApiCreateAsyncAPI(props) {
     // eslint-disable-next-line no-use-before-define
     const classes = useStyles();
     const [hideEndpoint, setHideEndpoint] = useState(true);
+    const [hideExternalEndpoints, setHideExternalEndpoints] = useState(true);
+    const [apiExternalProductionEndpointTemp, setApiExternalProductionEndpointTemp] = useState('');
+    const [apiExternalSandboxEndpointTemp, setApiExternalSandboxEndpointTemp] = useState('');
+    const [isValidExternalProductionEndpoint, setValidExternalProductionEndpoint] = useState(false);
+    const [isValidExternalSandboxEndpoint, setValidExternalSandboxEndpoint] = useState(false);
 
     /**
      *
@@ -89,6 +95,10 @@ export default function ApiCreateAsyncAPI(props) {
                     gatewayVendor: value.gatewayVendor,
                     asyncTransportProtocols: value.asyncTransportProtocols,
                 };
+            case 'apiExternalProductionEndpoint':
+                return { ...currentState, [action]: value };
+            case 'apiExternalSandboxEndpoint':
+                return { ...currentState, [action]: value };
             default:
                 return currentState;
         }
@@ -117,12 +127,18 @@ export default function ApiCreateAsyncAPI(props) {
             displayName: 'SSE',
             description: 'Server-Sent Events',
         },
+        {
+            name: 'other',
+            displayName: 'Other',
+            description: 'Other Async APIs such as AMQP, MQTT etc.',
+        },
     ];
 
     const protocolKeys = {
         WebSocket: 'WS',
         SSE: 'SSE',
         WebSub: 'WEBSUB',
+        Other: 'ASYNC',
     };
 
     /**
@@ -144,8 +160,77 @@ export default function ApiCreateAsyncAPI(props) {
         const { name: action, value } = event.target;
         if (value === 'WebSub') {
             setHideEndpoint(true);
+            setHideExternalEndpoints(true);
+        } else if (value === 'Other') {
+            setHideEndpoint(true);
+            setHideExternalEndpoints(false);
         } else {
             setHideEndpoint(false);
+            setHideExternalEndpoints(true);
+        }
+        inputsDispatcher({ action, value });
+    }
+
+    /**
+     * Validate external production endpoints
+     *
+     * @param event
+     */
+    function handleOnChangeExternalProductionEndpoint(event) {
+        // TODO: update the validation method
+        const { name: action, value } = event.target;
+        setApiExternalProductionEndpointTemp(value);
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                setValidExternalProductionEndpoint(false);
+                setApiExternalProductionEndpointTemp('');
+            }
+            if (url) {
+                setValidExternalProductionEndpoint(true);
+            } else {
+                setValidExternalProductionEndpoint(false);
+                setApiExternalProductionEndpointTemp('');
+            }
+        } else if (apiExternalSandboxEndpointTemp.length === 0) {
+            setValidExternalProductionEndpoint(false);
+        } else {
+            setValidExternalProductionEndpoint(true);
+            setValidExternalSandboxEndpoint(true);
+        }
+        inputsDispatcher({ action, value });
+    }
+
+    /**
+     * Validate external production endpoints
+     *
+     * @param event
+     */
+    function handleOnChangeExternalSandboxEndpoint(event) {
+        // TODO: update the validation method
+        const { name: action, value } = event.target;
+        setApiExternalSandboxEndpointTemp(value);
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                setValidExternalSandboxEndpoint(false);
+                setApiExternalSandboxEndpointTemp('');
+            }
+            if (url) {
+                setValidExternalSandboxEndpoint(true);
+            } else {
+                setValidExternalSandboxEndpoint(false);
+                setApiExternalSandboxEndpointTemp('');
+            }
+        } else if (apiExternalProductionEndpointTemp.length === 0) {
+            setValidExternalSandboxEndpoint(false);
+        } else {
+            setValidExternalProductionEndpoint(true);
+            setValidExternalSandboxEndpoint(true);
         }
         inputsDispatcher({ action, value });
     }
@@ -174,6 +259,7 @@ export default function ApiCreateAsyncAPI(props) {
         setCreating(true);
         const {
             name, version, context, endpoint, policies, inputValue, inputType, protocol, gatewayVendor,
+            apiExternalProductionEndpoint, apiExternalSandboxEndpoint,
         } = apiInputs;
         const additionalProperties = {
             name,
@@ -195,6 +281,16 @@ export default function ApiCreateAsyncAPI(props) {
                 production_endpoints: {
                     url: endpoint,
                 },
+            };
+        }
+        if (protocolKeys[protocol] === 'ASYNC') {
+            additionalProperties.advertiseInfo = {
+                advertised: true,
+                apiExternalProductionEndpoint,
+                apiExternalSandboxEndpoint,
+                originalDevPortalUrl: '',
+                apiOwner: 'admin',
+                vendor: 'WSO2',
             };
         }
         const newAPI = new API(additionalProperties);
@@ -349,6 +445,81 @@ export default function ApiCreateAsyncAPI(props) {
                                     ))}
                                 </TextField>
                             )}
+                            {!hideExternalEndpoints && (
+                                <>
+                                    <TextField
+                                        fullWidth
+                                        id='itest-id-api-external-production-endpoint-input'
+                                        label={(
+                                            <>
+                                                <FormattedMessage
+                                                    id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
+                                                    + '.apiExternalProductionEndpoint'}
+                                                    defaultMessage='External Production Endpoint'
+                                                />
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            </>
+                                        )}
+                                        name='apiExternalProductionEndpoint'
+                                        value={apiInputs.apiExternalProductionEndpoint}
+                                        onChange={handleOnChangeExternalProductionEndpoint}
+                                        helperText={
+                                            !isValidExternalProductionEndpoint && (
+                                                <div style={{ marginTop: '10px' }}>
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
+                                                        + '.apiExternalProductionEndpoint.error'}
+                                                        defaultMessage='Invalid External Production Endpoint URL'
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                        error={!isValidExternalProductionEndpoint}
+                                        margin='normal'
+                                        variant='outlined'
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        id='itest-id-api-external-sandbox-endpoint-input'
+                                        label={(
+                                            <>
+                                                <FormattedMessage
+                                                    id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
+                                                    + '.apiExternalSandboxEndpoint'}
+                                                    defaultMessage='External Sandbox Endpoint'
+                                                />
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            </>
+                                        )}
+                                        name='apiExternalSandboxEndpoint'
+                                        value={apiInputs.apiExternalSandboxEndpoint}
+                                        onChange={handleOnChangeExternalSandboxEndpoint}
+                                        helperText={
+                                            !isValidExternalSandboxEndpoint && (
+                                                <div style={{ marginTop: '10px' }}>
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
+                                                        + '.apiExternalSandboxEndpoint.error'}
+                                                        defaultMessage='Invalid External Sandbox Endpoint URL'
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                        error={!isValidExternalSandboxEndpoint}
+                                        margin='normal'
+                                        variant='outlined'
+                                    />
+                                    <MuiAlert severity='warning' className={classes.externalEndpointWarning}>
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning'
+                                            defaultMessage={'"Other" type streaming APIs will be created as Advertise'
+                                            + ' Only APIs. API Manager only supports the streaming APIs of types'
+                                            + ' WebSocket, SSE and WebSub. Please create one of the supported types'
+                                            + ' if you want to deploy it in the gateway.'}
+                                        />
+                                    </MuiAlert>
+                                </>
+                            )}
                         </DefaultAPIForm>
                     )}
                 </Grid>
@@ -387,7 +558,8 @@ export default function ApiCreateAsyncAPI(props) {
                                 <Button
                                     variant='contained'
                                     color='primary'
-                                    disabled={!apiInputs.isFormValid || isCreating}
+                                    disabled={!apiInputs.isFormValid || isCreating
+                                    || !(isValidExternalProductionEndpoint && isValidExternalSandboxEndpoint)}
                                     onClick={createAPI}
                                 >
                                     Create
@@ -411,5 +583,9 @@ const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
+    },
+    externalEndpointWarning: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
     },
 }));

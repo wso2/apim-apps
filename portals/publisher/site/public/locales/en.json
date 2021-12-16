@@ -89,6 +89,36 @@
       "value": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
     }
   ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": [
+    {
+      "type": 0,
+      "value": "\"Other\" type streaming APIs will be created as Advertise Only APIs. API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalProductionEndpoint": [
+    {
+      "type": 0,
+      "value": "External Production Endpoint"
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalProductionEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid External Production Endpoint URL"
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalSandboxEndpoint": [
+    {
+      "type": 0,
+      "value": "External Sandbox Endpoint"
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalSandboxEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid External Sandbox Endpoint URL"
+    }
+  ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": [
     {
       "type": 0,
