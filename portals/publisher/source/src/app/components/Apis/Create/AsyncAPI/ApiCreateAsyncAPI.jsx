@@ -55,11 +55,8 @@ export default function ApiCreateAsyncAPI(props) {
     // eslint-disable-next-line no-use-before-define
     const classes = useStyles();
     const [hideEndpoint, setHideEndpoint] = useState(true);
-    const [hideExternalEndpoints, setHideExternalEndpoints] = useState(true);
-    const [apiExternalProductionEndpointTemp, setApiExternalProductionEndpointTemp] = useState('');
-    const [apiExternalSandboxEndpointTemp, setApiExternalSandboxEndpointTemp] = useState('');
-    const [isValidExternalProductionEndpoint, setValidExternalProductionEndpoint] = useState(false);
-    const [isValidExternalSandboxEndpoint, setValidExternalSandboxEndpoint] = useState(false);
+    const [hideExternalEndpoint, setHideExternalEndpoint] = useState(true);
+    const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(false);
 
     /**
      *
@@ -95,9 +92,7 @@ export default function ApiCreateAsyncAPI(props) {
                     gatewayVendor: value.gatewayVendor,
                     asyncTransportProtocols: value.asyncTransportProtocols,
                 };
-            case 'apiExternalProductionEndpoint':
-                return { ...currentState, [action]: value };
-            case 'apiExternalSandboxEndpoint':
+            case 'externalEndpoint':
                 return { ...currentState, [action]: value };
             default:
                 return currentState;
@@ -160,77 +155,38 @@ export default function ApiCreateAsyncAPI(props) {
         const { name: action, value } = event.target;
         if (value === 'WebSub') {
             setHideEndpoint(true);
-            setHideExternalEndpoints(true);
+            setHideExternalEndpoint(true);
         } else if (value === 'Other') {
             setHideEndpoint(true);
-            setHideExternalEndpoints(false);
+            setHideExternalEndpoint(false);
         } else {
             setHideEndpoint(false);
-            setHideExternalEndpoints(true);
+            setHideExternalEndpoint(true);
         }
         inputsDispatcher({ action, value });
     }
 
     /**
-     * Validate external production endpoints
+     * Validate external endpoint
      *
      * @param event
      */
-    function handleOnChangeExternalProductionEndpoint(event) {
-        // TODO: update the validation method
+    function handleOnChangeExternalEndpoint(event) {
         const { name: action, value } = event.target;
-        setApiExternalProductionEndpointTemp(value);
         if (value && value.length > 0) {
             let url;
             try {
                 url = new URL(value);
             } catch (_) {
-                setValidExternalProductionEndpoint(false);
-                setApiExternalProductionEndpointTemp('');
+                setValidExternalEndpoint(false);
             }
             if (url) {
-                setValidExternalProductionEndpoint(true);
+                setValidExternalEndpoint(true);
             } else {
-                setValidExternalProductionEndpoint(false);
-                setApiExternalProductionEndpointTemp('');
+                setValidExternalEndpoint(false);
             }
-        } else if (apiExternalSandboxEndpointTemp.length === 0) {
-            setValidExternalProductionEndpoint(false);
         } else {
-            setValidExternalProductionEndpoint(true);
-            setValidExternalSandboxEndpoint(true);
-        }
-        inputsDispatcher({ action, value });
-    }
-
-    /**
-     * Validate external production endpoints
-     *
-     * @param event
-     */
-    function handleOnChangeExternalSandboxEndpoint(event) {
-        // TODO: update the validation method
-        const { name: action, value } = event.target;
-        setApiExternalSandboxEndpointTemp(value);
-        if (value && value.length > 0) {
-            let url;
-            try {
-                url = new URL(value);
-            } catch (_) {
-                setValidExternalSandboxEndpoint(false);
-                setApiExternalSandboxEndpointTemp('');
-            }
-            if (url) {
-                setValidExternalSandboxEndpoint(true);
-            } else {
-                setValidExternalSandboxEndpoint(false);
-                setApiExternalSandboxEndpointTemp('');
-            }
-        } else if (apiExternalProductionEndpointTemp.length === 0) {
-            setValidExternalSandboxEndpoint(false);
-        } else {
-            setValidExternalProductionEndpoint(true);
-            setValidExternalSandboxEndpoint(true);
+            setValidExternalEndpoint(false);
         }
         inputsDispatcher({ action, value });
     }
@@ -259,7 +215,7 @@ export default function ApiCreateAsyncAPI(props) {
         setCreating(true);
         const {
             name, version, context, endpoint, policies, inputValue, inputType, protocol, gatewayVendor,
-            apiExternalProductionEndpoint, apiExternalSandboxEndpoint,
+            externalEndpoint,
         } = apiInputs;
         const additionalProperties = {
             name,
@@ -286,8 +242,8 @@ export default function ApiCreateAsyncAPI(props) {
         if (protocolKeys[protocol] === 'ASYNC') {
             additionalProperties.advertiseInfo = {
                 advertised: true,
-                apiExternalProductionEndpoint,
-                apiExternalSandboxEndpoint,
+                apiExternalProductionEndpoint: externalEndpoint,
+                apiExternalSandboxEndpoint: externalEndpoint,
                 originalDevPortalUrl: '',
                 apiOwner: 'admin',
                 vendor: 'WSO2',
@@ -445,67 +401,35 @@ export default function ApiCreateAsyncAPI(props) {
                                     ))}
                                 </TextField>
                             )}
-                            {!hideExternalEndpoints && (
+                            {!hideExternalEndpoint && (
                                 <>
                                     <TextField
                                         fullWidth
-                                        id='itest-id-api-external-production-endpoint-input'
+                                        id='itest-id-api-external-endpoint-input'
                                         label={(
                                             <>
                                                 <FormattedMessage
-                                                    id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
-                                                    + '.apiExternalProductionEndpoint'}
-                                                    defaultMessage='External Production Endpoint'
+                                                    id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint'
+                                                    defaultMessage='External Endpoint'
                                                 />
                                                 <sup className={classes.mandatoryStar}>*</sup>
                                             </>
                                         )}
-                                        name='apiExternalProductionEndpoint'
-                                        value={apiInputs.apiExternalProductionEndpoint}
-                                        onChange={handleOnChangeExternalProductionEndpoint}
+                                        name='externalEndpoint'
+                                        value={apiInputs.externalEndpoint}
+                                        onChange={handleOnChangeExternalEndpoint}
                                         helperText={
-                                            !isValidExternalProductionEndpoint && (
+                                            !isValidExternalEndpoint && (
                                                 <div style={{ marginTop: '10px' }}>
                                                     <FormattedMessage
                                                         id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
-                                                        + '.apiExternalProductionEndpoint.error'}
-                                                        defaultMessage='Invalid External Production Endpoint URL'
+                                                        + '.externalEndpoint.error'}
+                                                        defaultMessage='Invalid Endpoint URL'
                                                     />
                                                 </div>
                                             )
                                         }
-                                        error={!isValidExternalProductionEndpoint}
-                                        margin='normal'
-                                        variant='outlined'
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        id='itest-id-api-external-sandbox-endpoint-input'
-                                        label={(
-                                            <>
-                                                <FormattedMessage
-                                                    id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
-                                                    + '.apiExternalSandboxEndpoint'}
-                                                    defaultMessage='External Sandbox Endpoint'
-                                                />
-                                                <sup className={classes.mandatoryStar}>*</sup>
-                                            </>
-                                        )}
-                                        name='apiExternalSandboxEndpoint'
-                                        value={apiInputs.apiExternalSandboxEndpoint}
-                                        onChange={handleOnChangeExternalSandboxEndpoint}
-                                        helperText={
-                                            !isValidExternalSandboxEndpoint && (
-                                                <div style={{ marginTop: '10px' }}>
-                                                    <FormattedMessage
-                                                        id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
-                                                        + '.apiExternalSandboxEndpoint.error'}
-                                                        defaultMessage='Invalid External Sandbox Endpoint URL'
-                                                    />
-                                                </div>
-                                            )
-                                        }
-                                        error={!isValidExternalSandboxEndpoint}
+                                        error={!isValidExternalEndpoint}
                                         margin='normal'
                                         variant='outlined'
                                     />
@@ -558,8 +482,7 @@ export default function ApiCreateAsyncAPI(props) {
                                 <Button
                                     variant='contained'
                                     color='primary'
-                                    disabled={!apiInputs.isFormValid || isCreating
-                                    || !(isValidExternalProductionEndpoint && isValidExternalSandboxEndpoint)}
+                                    disabled={!apiInputs.isFormValid || isCreating || !isValidExternalEndpoint}
                                     onClick={createAPI}
                                 >
                                     Create

@@ -95,34 +95,22 @@
       "value": "\"Other\" type streaming APIs will be created as Advertise Only APIs. API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
     }
   ],
-  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalProductionEndpoint": [
-    {
-      "type": 0,
-      "value": "External Production Endpoint"
-    }
-  ],
-  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalProductionEndpoint.error": [
-    {
-      "type": 0,
-      "value": "Invalid External Production Endpoint URL"
-    }
-  ],
-  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalSandboxEndpoint": [
-    {
-      "type": 0,
-      "value": "External Sandbox Endpoint"
-    }
-  ],
-  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.apiExternalSandboxEndpoint.error": [
-    {
-      "type": 0,
-      "value": "Invalid External Sandbox Endpoint URL"
-    }
-  ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": [
     {
       "type": 0,
       "value": "Cancel"
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint": [
+    {
+      "type": 0,
+      "value": "External Endpoint"
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
     }
   ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.heading": [
