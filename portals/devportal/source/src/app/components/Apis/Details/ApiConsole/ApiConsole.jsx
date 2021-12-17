@@ -100,6 +100,8 @@ class ApiConsole extends React.Component {
             productionApiKey: '',
             sandboxApiKey: '',
             selectedKeyManager: 'Resident Key Manager',
+            advAuthHeader: 'Authorization',
+            advAuthHeaderValue: '',
         };
         this.accessTokenProvider = this.accessTokenProvider.bind(this);
         this.updateSwagger = this.updateSwagger.bind(this);
@@ -116,6 +118,8 @@ class ApiConsole extends React.Component {
         this.setProductionApiKey = this.setProductionApiKey.bind(this);
         this.setSandboxApiKey = this.setSandboxApiKey.bind(this);
         this.converttopostman = this.convertToPostman.bind(this);
+        this.setAdvAuthHeader = this.setAdvAuthHeader.bind(this);
+        this.setAdvAuthHeaderValue = this.setAdvAuthHeaderValue.bind(this);
     }
 
     /**
@@ -279,11 +283,27 @@ class ApiConsole extends React.Component {
     setKeys(keys) {
         this.setState({ keys });
     }
+
+    /**
+     * Set authorization header of advertise only APIs
+     * @param advAuthHeader authorization header
+     */
+    setAdvAuthHeader(advAuthHeader) {
+        this.setState({ advAuthHeader });
+    }
+
+    /**
+     * Set authorization header value of advertise only APIs
+     * @param advAuthHeaderValue authorization header value
+     */
+    setAdvAuthHeaderValue(advAuthHeaderValue) {
+        this.setState({ advAuthHeaderValue });
+    }
+
     /**
      * Converting an OpenAPI file to a postman collection
      * @memberof ApiConsole
    */
-
     convertToPostman(fr) {
         openapiToPostman.convert({ type: 'string', data: fr },
             {}, (err, conversionResult) => {
@@ -350,9 +370,12 @@ class ApiConsole extends React.Component {
      */
     accessTokenProvider() {
         const {
-            securitySchemeType, username, password, productionAccessToken,
-            sandboxAccessToken, selectedKeyType, productionApiKey, sandboxApiKey,
+            securitySchemeType, username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
+            productionApiKey, sandboxApiKey, api, advAuthHeaderValue,
         } = this.state;
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
         if (securitySchemeType === 'BASIC') {
             const credentials = username + ':' + password;
             return btoa(credentials);
@@ -399,7 +422,7 @@ class ApiConsole extends React.Component {
         const {
             api, notFound, swagger, securitySchemeType, selectedEnvironment, environments, scopes,
             username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
-            sandboxApiKey, productionApiKey, selectedKeyManager,
+            sandboxApiKey, productionApiKey, selectedKeyManager, advAuthHeader, advAuthHeaderValue,
         } = this.state;
         const user = AuthManager.getUser();
         const downloadSwagger = JSON.stringify({ ...swagger });
@@ -420,11 +443,22 @@ class ApiConsole extends React.Component {
                 authorizationHeader = 'apikey';
             }
         }
+        let swaggerSpec = swagger;
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            authorizationHeader = advAuthHeader;
+            swaggerSpec = {
+                ...swagger,
+                servers: [
+                    { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                    { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                ],
+            };
+        }
         return (
             <>
                 <Paper className={classes.paper}>
                     <Grid container className={classes.grid}>
-                        {!user && (
+                        {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                             <Grid item md={6}>
                                 <Paper className={classes.userNotificationPaper}>
                                     <Typography variant='h5' component='h3'>
@@ -471,6 +505,10 @@ class ApiConsole extends React.Component {
                         setSandboxApiKey={this.setSandboxApiKey}
                         productionApiKey={productionApiKey}
                         sandboxApiKey={sandboxApiKey}
+                        setAdvAuthHeader={this.setAdvAuthHeader}
+                        setAdvAuthHeaderValue={this.setAdvAuthHeaderValue}
+                        advAuthHeader={advAuthHeader}
+                        advAuthHeaderValue={advAuthHeaderValue}
                         api={this.state.api}
                         URLs={null}
                     />
@@ -506,7 +544,7 @@ class ApiConsole extends React.Component {
                     <SwaggerUI
                         api={this.state.api}
                         accessTokenProvider={this.accessTokenProvider}
-                        spec={swagger}
+                        spec={swaggerSpec}
                         authorizationHeader={authorizationHeader}
                         securitySchemeType={securitySchemeType}
                     />
