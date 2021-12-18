@@ -398,6 +398,7 @@ class Details extends Component {
             case 'WS':
             case 'WEBSUB':
             case 'SSE':
+            case 'ASYNC':
                 return (
                     <>
                         <LeftMenuItem
@@ -458,6 +459,7 @@ class Details extends Component {
             case 'WS':
             case 'WEBSUB':
             case 'SSE':
+            case 'ASYNC':
                 return (
                     <>
                         <LeftMenuItem
@@ -644,7 +646,8 @@ class Details extends Component {
         const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
         const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
         const redirectUrl = pathPrefix;
-        const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE');
+        const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE'
+            || api.type === 'ASYNC');
         if (apiNotFound) {
             const { apiUUID } = match.params;
             const resourceNotFoundMessageText = defineMessages({
