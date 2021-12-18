@@ -25,7 +25,8 @@ const CONSTS = {
     API_TYPES: {
         SSE: 'SSE',
         WS: 'WS',
-        WEBSUB: 'WEBSUB'
+        WEBSUB: 'WEBSUB',
+        ASYNC: 'ASYNC'
     },
 };
 

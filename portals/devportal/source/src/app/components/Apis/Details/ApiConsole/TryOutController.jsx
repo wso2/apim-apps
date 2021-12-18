@@ -115,6 +115,9 @@ const styles = makeStyles((theme) => ({
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
+    authHeader: {
+        marginBottom: '20px',
+    },
 }));
 
 /**
@@ -781,7 +784,7 @@ function TryOutController(props) {
                             </Grid>
                         </Box>
                     ) : (
-                        <Box display='block' justifyContent='center'>
+                        <Box display='block' justifyContent='center' className={classes.authHeader}>
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 <Grid x={12} md={12} item>
                                     <TextField

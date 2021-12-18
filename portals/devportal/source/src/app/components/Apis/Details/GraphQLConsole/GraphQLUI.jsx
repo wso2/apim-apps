@@ -80,6 +80,17 @@ export default function GraphQLUI(props) {
         setIsExplorerOpen(newExplorerIsOpen);
     };
 
+    const getURLs = () => {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return [
+                api.advertiseInfo.apiExternalProductionEndpoint,
+                api.advertiseInfo.apiExternalSandboxEndpoint,
+            ];
+        } else {
+            return URLs && URLs.https;
+        }
+    };
+
     /**
      * Execute GraphQL query
      * @param {*} graphQLParams GraphQL query parameters
@@ -87,14 +98,16 @@ export default function GraphQLUI(props) {
      */
     function graphiQLFetcher(graphQLParams) {
         let token;
-        if (authorizationHeader === 'apikey') {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            token = accessTokenProvider();
+        } else if (authorizationHeader === 'apikey') {
             token = accessTokenProvider();
         } else if (securitySchemeType === 'BASIC') {
             token = 'Basic ' + accessTokenProvider();
         } else {
             token = 'Bearer ' + accessTokenProvider();
         }
-        return fetch((URLs && URLs.https), {
+        return fetch(getURLs(), {
             method: 'post',
             headers: {
                 Accept: 'application/json',

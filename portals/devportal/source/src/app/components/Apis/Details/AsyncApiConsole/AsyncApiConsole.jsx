@@ -72,6 +72,8 @@ export default function AsyncApiConsole() {
     const environmentObject = api.endpointURLs;
     const [URLs, setURLs] = useState(environmentObject.length > 0 ? environmentObject[0].URLs : []);
     const [notFound, setNotFound] = useState(false);
+    const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
+    const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
 
     const user = AuthManager.getUser();
 
@@ -152,6 +154,9 @@ export default function AsyncApiConsole() {
 
 
     function accessTokenProvider() {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
         if (securitySchemeType === 'BASIC') {
             const credentials = username + ':' + password;
             return btoa(credentials);
@@ -187,6 +192,20 @@ export default function AsyncApiConsole() {
         }
     }
 
+    if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        authorizationHeader = advAuthHeader;
+    }
+
+    const getURLs = () => {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return [
+                api.advertiseInfo.apiExternalProductionEndpoint,
+                api.advertiseInfo.apiExternalSandboxEndpoint,
+            ];
+        }
+        return URLs;
+    };
+
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -194,7 +213,7 @@ export default function AsyncApiConsole() {
             </Typography>
             <Paper className={classes.paper}>
                 <Grid container className={classes.grid}>
-                    {!user && (
+                    {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                         <Grid item md={6}>
                             <Paper className={classes.userNotificationPaper}>
                                 <Typography variant='h5' component='h3'>
@@ -239,6 +258,10 @@ export default function AsyncApiConsole() {
                     productionApiKey={productionApiKey}
                     sandboxApiKey={sandboxApiKey}
                     environmentObject={environmentObject}
+                    setAdvAuthHeader={setAdvAuthHeader}
+                    setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                    advAuthHeader={advAuthHeader}
+                    advAuthHeaderValue={advAuthHeaderValue}
                     api={api}
                     URLs={null}
                 />
@@ -246,7 +269,7 @@ export default function AsyncApiConsole() {
             <Paper className={classes.paper}>
                 <AsyncApiUI
                     authorizationHeader={authorizationHeader}
-                    URLs={URLs}
+                    URLs={getURLs()}
                     securitySchemeType={securitySchemeType}
                     accessTokenProvider={accessTokenProvider}
                 />
