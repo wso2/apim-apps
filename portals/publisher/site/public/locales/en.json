@@ -1225,6 +1225,18 @@
       "value": "Try Out"
     }
   ],
+  "Apis.Details.ApiConsole.adv.auth.header": [
+    {
+      "type": 0,
+      "value": "Authorization Header"
+    }
+  ],
+  "Apis.Details.ApiConsole.adv.auth.header.value": [
+    {
+      "type": 0,
+      "value": "Authorization Header Value"
+    }
+  ],
   "Apis.Details.ApiConsole.deployments.api.gateways": [
     {
       "type": 0,

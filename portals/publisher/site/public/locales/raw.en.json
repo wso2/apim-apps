@@ -519,6 +519,12 @@
   "Apis.Details.ApiConsole.ApiConsole.title": {
     "defaultMessage": "Try Out"
   },
+  "Apis.Details.ApiConsole.adv.auth.header": {
+    "defaultMessage": "Authorization Header"
+  },
+  "Apis.Details.ApiConsole.adv.auth.header.value": {
+    "defaultMessage": "Authorization Header Value"
+  },
   "Apis.Details.ApiConsole.deployments.api.gateways": {
     "defaultMessage": "API Gateways"
   },
