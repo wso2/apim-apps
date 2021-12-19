@@ -96,6 +96,7 @@ export default function SaveOperations(props) {
                             </Button>
                         ) : (
                             <CustomSplitButton
+                                api={api}
                                 handleSave={handleSave}
                                 handleSaveAndDeploy={handleSaveAndDeploy}
                                 isUpdating={isUpdating}

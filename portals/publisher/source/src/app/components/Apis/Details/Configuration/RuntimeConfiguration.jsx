@@ -653,6 +653,7 @@ export default function RuntimeConfiguration() {
                                     </Button>
                                 ) : (
                                     <CustomSplitButton
+                                        api={api}
                                         handleSave={handleSave}
                                         handleSaveAndDeploy={handleSaveAndDeploy}
                                         isUpdating={isUpdating}

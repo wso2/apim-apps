@@ -127,6 +127,7 @@ function ProductResourcesEdit() {
                         <Grid item>
                             <div>
                                 <CustomSplitButton
+                                    api={api}
                                     handleSave={handleSave}
                                     handleSaveAndDeploy={handleSaveAndDeploy}
                                     isUpdating={isUpdating}
