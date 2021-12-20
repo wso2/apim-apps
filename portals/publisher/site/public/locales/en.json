@@ -4352,13 +4352,19 @@
   "Apis.Details.LifeCycle.components.confirm.publish.message": [
     {
       "type": 0,
-      "value": "The API will not be available for consumption unless it is deployed."
+      "value": "The API will not be available for consumption unless it is deployed. If you want to publish as an advertise only API, please add the external endpoint."
     }
   ],
   "Apis.Details.LifeCycle.components.confirm.publish.title": [
     {
       "type": 0,
       "value": "Publish API without deployments"
+    }
+  ],
+  "Apis.Details.LifeCycle.components.externalEndpoint": [
+    {
+      "type": 0,
+      "value": "External Endpoint"
     }
   ],
   "Apis.Details.LifeCycle.publish.content.info.deployments": [

@@ -60,6 +60,10 @@ const styles = (theme) => ({
         display: 'inline-flex',
         lineHeight: '38px',
     },
+    mandatoryStar: {
+        color: theme.palette.error.main,
+        marginLeft: theme.spacing(0.1),
+    },
 });
 
 /**
@@ -296,9 +300,7 @@ class LifeCycleUpdate extends Component {
                 return {
                     ...state,
                     disabled:
-                        ((api.type !== 'WEBSUB' && api.endpointConfig === null && !isAPIProduct)
-                        || (isMutualSSLEnabled && !isCertAvailable)
-                        || (isAppLayerSecurityMandatory && !isBusinessPlanAvailable)
+                        ((isMutualSSLEnabled && !isCertAvailable)
                         || (api.type !== 'WEBSUB' && api.endpointConfig != null
                             && api.endpointConfig.implementation_status === 'prototyped'))
                         && !api.advertiseInfo.advertised,
@@ -417,7 +419,8 @@ class LifeCycleUpdate extends Component {
                 )}
                 {/* end of Page error banner */}
                 <PublishWithoutDeploy
-                    apiID={api.id}
+                    classes={classes}
+                    api={api}
                     handleClick={this.handleClick}
                     handleClose={() => this.setIsOpen(false)}
                     open={isOpen}

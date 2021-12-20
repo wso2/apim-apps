@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -33,6 +33,8 @@ import Box from '@material-ui/core/Box';
 // import Link from '@material-ui/core/Link';
 import Divider from '@material-ui/core/Divider';
 import { Link as RouterLink } from 'react-router-dom';
+import TextField from '@material-ui/core/TextField';
+import Alert from 'AppComponents/Shared/Alert';
 
 const styles = (theme) => ({
     root: {
@@ -82,8 +84,105 @@ const DialogActions = withStyles((theme) => ({
  */
 export default function PublishWithoutDeploy(props) {
     const {
-        apiID, handleClick, open, handleClose,
+        classes, api, handleClick, open, handleClose,
     } = props;
+
+    let isExternalEndpointAvailable = false;
+    let availableExternalEndpoint = '';
+    if (api.advertiseInfo.apiExternalProductionEndpoint && api.advertiseInfo.apiExternalProductionEndpoint.length > 0) {
+        isExternalEndpointAvailable = true;
+        availableExternalEndpoint = api.advertiseInfo.apiExternalProductionEndpoint;
+    } else if (api.advertiseInfo.apiExternalSandboxEndpoint
+        && api.advertiseInfo.apiExternalSandboxEndpoint.length > 0) {
+        isExternalEndpointAvailable = true;
+        availableExternalEndpoint = api.advertiseInfo.apiExternalSandboxEndpoint;
+    }
+
+    const [externalEndpoint, setExternalEndpoint] = useState(availableExternalEndpoint);
+    const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(isExternalEndpointAvailable);
+
+    /**
+     * Validate external endpoint
+     *
+     * @param event
+     */
+    const handleOnChangeExternalEndpoint = (event) => {
+        const { value } = event.target;
+        setExternalEndpoint(value);
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                setValidExternalEndpoint(false);
+            }
+            if (url) {
+                setValidExternalEndpoint(true);
+            } else {
+                setValidExternalEndpoint(false);
+            }
+        } else {
+            setValidExternalEndpoint(false);
+        }
+    };
+
+    const handlePublishClick = () => {
+        if (externalEndpoint && externalEndpoint.length > 0) {
+            const updatedAPI = {
+                id: api.id,
+                name: api.name,
+                description: api.description,
+                lifeCycleStatus: api.lifeCycleStatus,
+                accessControl: api.accessControl,
+                authorizationHeader: api.authorizationHeader,
+                responseCachingEnabled: api.responseCachingEnabled,
+                cacheTimeout: api.cacheTimeout,
+                visibility: api.visibility,
+                isDefaultVersion: api.isDefaultVersion,
+                enableSchemaValidation: api.enableSchemaValidation,
+                accessControlRoles: [...api.accessControlRoles],
+                visibleRoles: [...api.visibleRoles],
+                tags: [...api.tags],
+                maxTps: api.maxTps,
+                transport: [...api.transport],
+                wsdlUrl: api.wsdlUrl,
+                securityScheme: [...api.securityScheme],
+                categories: [...api.categories],
+                corsConfiguration: {
+                    corsConfigurationEnabled: api.corsConfiguration.corsConfigurationEnabled,
+                    accessControlAllowCredentials: api.corsConfiguration.accessControlAllowCredentials,
+                    accessControlAllowOrigins: [...api.corsConfiguration.accessControlAllowOrigins],
+                    accessControlAllowHeaders: [...api.corsConfiguration.accessControlAllowHeaders],
+                    accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
+                },
+                additionalProperties: [...api.additionalProperties],
+                type: api.type,
+                advertiseInfo: {
+                    advertised: true,
+                    apiExternalProductionEndpoint: externalEndpoint,
+                    apiExternalSandboxEndpoint: externalEndpoint,
+                    originalDevPortalUrl: api.advertiseInfo.originalDevPortalUrl,
+                    apiOwner: api.advertiseInfo.apiOwner,
+                    vendor: api.advertiseInfo.vendor,
+                },
+            };
+            const promisedUpdate = api.update(updatedAPI);
+            promisedUpdate
+                .then(() => {
+                    Alert.info('API updated successfully');
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        const message = 'Something went wrong while updating the API';
+                        Alert.error(message);
+                    }
+                    console.error(error);
+                });
+            handleClick();
+        }
+    };
 
     return (
         <Dialog onClose={handleClose} aria-labelledby='publish-api-confirmation' open={open}>
@@ -100,26 +199,58 @@ export default function PublishWithoutDeploy(props) {
                         <Typography variant='subtitle1' display='block' gutterBottom>
                             <FormattedMessage
                                 id='Apis.Details.LifeCycle.components.confirm.publish.message'
-                                defaultMessage={'The API will not be available for '
-                                        + 'consumption unless it is deployed.'}
+                                defaultMessage={'The API will not be available for consumption unless it is deployed.'
+                                + ' If you want to publish as an advertise only API, please add the external endpoint.'}
                             />
                         </Typography>
                     </DialogContentText>
                 </Box>
-
+                <Box my={1}>
+                    <TextField
+                        fullWidth
+                        id='itest-id-api-external-endpoint-input'
+                        label={(
+                            <>
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.components.externalEndpoint'
+                                    defaultMessage='External Endpoint'
+                                />
+                                <sup className={classes.mandatoryStar}>*</sup>
+                            </>
+                        )}
+                        name='externalEndpoint'
+                        value={externalEndpoint}
+                        onChange={handleOnChangeExternalEndpoint}
+                        helperText={
+                            !isValidExternalEndpoint && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <FormattedMessage
+                                        id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
+                                        + '.externalEndpoint.error'}
+                                        defaultMessage='Invalid Endpoint URL'
+                                    />
+                                </div>
+                            )
+                        }
+                        error={!isValidExternalEndpoint}
+                        margin='normal'
+                        variant='outlined'
+                    />
+                </Box>
             </DialogContent>
             <DialogActions>
                 <Button
                     color='primary'
-                    onClick={handleClick}
+                    disabled={!isValidExternalEndpoint}
+                    onClick={handlePublishClick}
                 >
-                    Publish
+                    Advertise
                 </Button>
                 <Button
                     variant='contained'
                     color='primary'
                     component={RouterLink}
-                    to={'/apis/' + apiID + '/deployments'}
+                    to={'/apis/' + api.id + '/deployments'}
                 >
                     <Box fontSize='button.fontSize' alignItems='center' display='flex' fontFamily='fontFamily'>
                         <FormattedMessage
