@@ -65,7 +65,8 @@ const LoadableSwitch = withRouter((props) => {
     let tryoutRoute;
     if (api.type === 'GRAPHQL') {
         tryoutRoute = <Route path='/apis/:apiUuid/test' component={GraphQLConsole} />;
-    } else if (api.type === CONSTANTS.API_TYPES.WS || api.type === CONSTANTS.API_TYPES.WEBSUB || api.type === CONSTANTS.API_TYPES.SSE) {
+    } else if (api.type === CONSTANTS.API_TYPES.WS || api.type === CONSTANTS.API_TYPES.WEBSUB
+        || api.type === CONSTANTS.API_TYPES.SSE || api.type === CONSTANTS.API_TYPES.ASYNC) {
         tryoutRoute = <Route path='/apis/:apiUuid/test' component={AsyncApiConsole} />;
     } else {
         tryoutRoute = <Route path='/apis/:apiUuid/test' component={ApiConsole} />;
@@ -388,7 +389,8 @@ class Details extends React.Component {
         return (api
             && (api.type === CONSTANTS.API_TYPES.WS
                 || api.type === CONSTANTS.API_TYPES.WEBSUB
-                || api.type === CONSTANTS.API_TYPES.SSE));
+                || api.type === CONSTANTS.API_TYPES.SSE
+                || api.type === CONSTANTS.API_TYPES.ASYNC));
     }
 
     /**
