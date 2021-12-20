@@ -206,6 +206,56 @@ class LifeCycleUpdate extends Component {
     }
 
     /**
+     * This method is used to render publish and unpublish buttons for advertise only APIs
+     *
+     * @param api current API
+     * @param lifecycleButtons available life cycle states
+     * @param classes CSS classes
+     * @returns {JSX.Element} publish and unpublish buttons
+     */
+    renderAdvertiseOnlyButtons(api, lifecycleButtons, classes) {
+        const isPublishDisabled = !lifecycleButtons.some((transitionState) => {
+            return transitionState.event === 'Publish';
+        });
+        const isUnpublishDisabled = !lifecycleButtons.some((transitionState) => {
+            return transitionState.event === 'Demote to Created';
+        });
+
+        return (
+            <>
+                <Button
+                    disabled={isPublishDisabled || this.state.isUpdating || api.isRevision}
+                    variant='contained'
+                    color='primary'
+                    className={classes.stateButton}
+                    key='Publish'
+                    data-value='Publish'
+                    onClick={this.updateLifeCycleState}
+                >
+                    Publish
+                    {this.state.isUpdating === 'Publish' && (
+                        <CircularProgress size={18} />
+                    )}
+                </Button>
+                <Button
+                    disabled={isUnpublishDisabled || this.state.isUpdating || api.isRevision}
+                    variant='contained'
+                    color='primary'
+                    className={classes.stateButton}
+                    key='Demote to Created'
+                    data-value='Demote to Created'
+                    onClick={this.updateLifeCycleState}
+                >
+                    Unpublish
+                    {this.state.isUpdating === 'Demote to Created' && (
+                        <CircularProgress size={18} />
+                    )}
+                </Button>
+            </>
+        );
+    }
+
+    /**
      * @inheritdoc
      * @memberof LifeCycleUpdate
      */
@@ -262,38 +312,40 @@ class LifeCycleUpdate extends Component {
 
         return (
             <Grid container>
-                {isWorkflowPending ? (
-                    <Grid item xs={12}>
-                        <LifecyclePending currentState={lcState.state} />
-                    </Grid>
-                ) : (
-                    <Grid item xs={12}>
-                        {theme.custom.lifeCycleImage ? (
-                            <img
-                                src={Configurations.app.context + theme.custom.lifeCycleImage}
-                                alt='life cycles'
-                            />
-                        ) : (
-                            <Grid container spacing={3}>
-                                <Grid item xs={8}>
-                                    <LifeCycleImage lifeCycleStatus={newState || lifeCycleStatus} />
-                                </Grid>
-                                {(lifeCycleStatus === 'CREATED'
-                                    || lifeCycleStatus === 'PROTOTYPED') && !api.advertiseInfo.advertised && (
-                                    <Grid item xs={3}>
-                                        <CheckboxLabels
-                                            api={api}
-                                            isMutualSSLEnabled={isMutualSSLEnabled}
-                                            isAppLayerSecurityMandatory={isAppLayerSecurityMandatory}
-                                            isCertAvailable={isCertAvailable}
-                                            isBusinessPlanAvailable={isBusinessPlanAvailable}
-                                            isAPIProduct={isAPIProduct}
-                                        />
+                {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                    isWorkflowPending ? (
+                        <Grid item xs={12}>
+                            <LifecyclePending currentState={lcState.state} />
+                        </Grid>
+                    ) : (
+                        <Grid item xs={12}>
+                            {theme.custom.lifeCycleImage ? (
+                                <img
+                                    src={Configurations.app.context + theme.custom.lifeCycleImage}
+                                    alt='life cycles'
+                                />
+                            ) : (
+                                <Grid container spacing={3}>
+                                    <Grid item xs={8}>
+                                        <LifeCycleImage lifeCycleStatus={newState || lifeCycleStatus} />
                                     </Grid>
-                                )}
-                            </Grid>
-                        )}
-                    </Grid>
+                                    {(lifeCycleStatus === 'CREATED'
+                                        || lifeCycleStatus === 'PROTOTYPED') && !api.advertiseInfo.advertised && (
+                                        <Grid item xs={3}>
+                                            <CheckboxLabels
+                                                api={api}
+                                                isMutualSSLEnabled={isMutualSSLEnabled}
+                                                isAppLayerSecurityMandatory={isAppLayerSecurityMandatory}
+                                                isCertAvailable={isCertAvailable}
+                                                isBusinessPlanAvailable={isBusinessPlanAvailable}
+                                                isAPIProduct={isAPIProduct}
+                                            />
+                                        </Grid>
+                                    )}
+                                </Grid>
+                            )}
+                        </Grid>
+                    )
                 )}
                 <Grid item xs={12}>
                     {!isWorkflowPending && (
@@ -316,28 +368,37 @@ class LifeCycleUpdate extends Component {
                     )}
                     <ScopeValidation resourcePath={resourcePath.API_CHANGE_LC} resourceMethod={resourceMethod.POST}>
                         <div className={classes.buttonsWrapper}>
-                            {!isWorkflowPending
-                                && lifecycleButtons.map((transitionState) => {
-                                    /* Skip when transitions available for current state ,
-                            this occurs in states where have allowed re-publishing in prototype and published sates */
-                                    return (
-                                        <Button
-                                            disabled={transitionState.disabled
+                            {(api.advertiseInfo && api.advertiseInfo.advertised) ? (
+                                <>
+                                    {!isWorkflowPending
+                                    && this.renderAdvertiseOnlyButtons(api, lifecycleButtons, classes)}
+                                </>
+                            ) : (
+                                <>
+                                    {!isWorkflowPending
+                                    && lifecycleButtons.map((transitionState) => {
+                                        /* Skip when transitions available for current state, this occurs in states
+                                        where have allowed re-publishing in prototype and published sates */
+                                        return (
+                                            <Button
+                                                disabled={transitionState.disabled
                                                 || this.state.isUpdating || api.isRevision}
-                                            variant='contained'
-                                            color='primary'
-                                            className={classes.stateButton}
-                                            key={transitionState.event}
-                                            data-value={transitionState.event}
-                                            onClick={this.updateLifeCycleState}
-                                        >
-                                            {transitionState.displayName}
-                                            {this.state.isUpdating === transitionState.event && (
-                                                <CircularProgress size={18} />
-                                            )}
-                                        </Button>
-                                    );
-                                })}
+                                                variant='contained'
+                                                color='primary'
+                                                className={classes.stateButton}
+                                                key={transitionState.event}
+                                                data-value={transitionState.event}
+                                                onClick={this.updateLifeCycleState}
+                                            >
+                                                {transitionState.displayName}
+                                                {this.state.isUpdating === transitionState.event && (
+                                                    <CircularProgress size={18} />
+                                                )}
+                                            </Button>
+                                        );
+                                    })}
+                                </>
+                            )}
                         </div>
                     </ScopeValidation>
                 </Grid>
