@@ -277,7 +277,7 @@ export default function DevelopSectionMenu(props) {
                         )}
                         {getLeftMenuItemForResourcesByType(api.type)}
                         {getLeftMenuItemForDefinitionByType(api.type)}
-                        {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct
+                        {(!api.advertiseInfo || !api.advertiseInfo.advertised) && !isAPIProduct
                             && api.type !== 'WEBSUB' && (
                             <LeftMenuItem
                                 text={intl.formatMessage({

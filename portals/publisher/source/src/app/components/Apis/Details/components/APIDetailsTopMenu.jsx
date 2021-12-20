@@ -269,7 +269,7 @@ const APIDetailsTopMenu = (props) => {
                     />
                 </MUIAlert>
             )}
-            {(api.advertiseInfo && !api.advertiseInfo.advertised) && (
+            {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                 <div className={classes.topRevisionStyle}>
                     <TextField
                         id='revision-selector'
