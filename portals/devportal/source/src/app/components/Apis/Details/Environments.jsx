@@ -158,6 +158,15 @@ function Environments(props) {
             return null;
         }
     };
+
+    const externalEndpoint = () => {
+        if (api.advertiseInfo.apiExternalProductionEndpoint) {
+            return api.advertiseInfo.apiExternalProductionEndpoint;
+        } else if (api.advertiseInfo.apiExternalProductionEndpoint) {
+            return api.advertiseInfo.apiExternalProductionEndpoint;
+        }
+        return null;
+    };
     /**
      *  @inheritdoc
      */
@@ -167,7 +176,7 @@ function Environments(props) {
     return (
         <Box display='flex' flexDirection='column' width='100%'>
             <Box mr={5} display='flex' area-label='API URL details' alignItems='center' width='100%' flexDirection='row'>
-                {selectedEndpoint && (
+                {selectedEndpoint && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                     <>
                         <Typography
                             variant='subtitle2'
@@ -321,7 +330,62 @@ function Environments(props) {
                         </Paper>
                     </>
                 )}
-                {!selectedEndpoint && (
+                {api.advertiseInfo && api.advertiseInfo.advertised
+                    && (api.advertiseInfo.apiExternalProductionEndpoint || api.advertiseInfo.apiExternalSandboxEndpoint)
+                    && (
+                        <>
+                            <Typography
+                                variant='subtitle2'
+                                component='label'
+                                for='external-endpoint-url'
+                                gutterBottom
+                                align='left'
+                                className={classes.sectionTitle}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Environments.externalEndpoint.label.url'
+                                    defaultMessage='External Endpoint URL'
+                                />
+                            </Typography>
+                            <Paper id='external-endpoint-url' component='form' className={classes.root}>
+                                <InputBase
+                                    className={classes.input}
+                                    inputProps={{ 'aria-label': 'api url' }}
+                                    value={externalEndpoint()}
+                                />
+                                <Avatar className={classes.avatar} sizes={30}>
+                                    <Tooltip
+                                        title={
+                                            urlCopied
+                                                ? intl.formatMessage({
+                                                    defaultMessage: 'Copied',
+                                                    id: 'Apis.Details.Environments.copied',
+                                                })
+                                                : intl.formatMessage({
+                                                    defaultMessage: 'Copy to clipboard',
+                                                    id: 'Apis.Details.Environments.copy.to.clipboard',
+                                                })
+                                        }
+                                        interactive
+                                        placement='right'
+                                        className={classes.iconStyle}
+                                    >
+                                        <CopyToClipboard
+                                            text={externalEndpoint()}
+                                            onCopy={() => onCopy('urlCopied')}
+                                        >
+                                            <IconButton aria-label='Copy the API URL to clipboard'>
+                                                <Icon color='secondary'>file_copy</Icon>
+                                            </IconButton>
+                                        </CopyToClipboard>
+                                    </Tooltip>
+                                </Avatar>
+                            </Paper>
+                        </>
+                    )}
+                {!selectedEndpoint && (api.advertiseInfo && api.advertiseInfo.advertised
+                    && !(api.advertiseInfo.apiExternalProductionEndpoint
+                    || api.advertiseInfo.apiExternalSandboxEndpoint)) && (
                     <Typography variant='subtitle2' component='p' gutterBottom align='left' className={classes.sectionTitle}>
                         <FormattedMessage
                             id='Apis.Details.Environments.label.noendpoint'
@@ -331,13 +395,15 @@ function Environments(props) {
                 )}
                 <GoToTryOut />
             </Box>
-            <Box ml={8} alignItems='center' mt={1}>
-                {selectedEndpoint && (
-                    <Typography variant='caption'>
-                        {getDefaultVersionUrl()}
-                    </Typography>
-                )}
-            </Box>
+            {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                <Box ml={8} alignItems='center' mt={1}>
+                    {selectedEndpoint && (
+                        <Typography variant='caption'>
+                            {getDefaultVersionUrl()}
+                        </Typography>
+                    )}
+                </Box>
+            )}
         </Box>
 
     );
