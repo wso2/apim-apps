@@ -552,45 +552,67 @@ class Credentials extends React.Component {
                 <Grid item md={12} lg={11}>
                     <Grid container spacing={2}>
                         <Grid item md={12}>
-                            <Typography onClick={this.handleExpandClick} variant='h4' component='div' className={classes.titleSub}>
-                                {applicationsAvailable.length > 0 && (
-                                    <Link
-                                        to={(isOnlyMutualSSL || isOnlyBasicAuth
-                                            || !isSetAllorResidentKeyManagers) ? null
-                                            : `/apis/${api.id}/credentials/wizard`}
-                                        style={!api.isSubscriptionAvailable
-                                            ? { pointerEvents: 'none' } : null}
-                                        className={classes.addLinkWrapper}
+                            {api.tiers.length > 0 ? (
+                                <>
+                                    <Typography
+                                        onClick={this.handleExpandClick}
+                                        variant='h4'
+                                        component='div'
+                                        className={classes.titleSub}
                                     >
-                                        <Button
-                                            color='secondary'
-                                            disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
-                                                 || isOnlyBasicAuth
-                                                 || !isSetAllorResidentKeyManagers}
-                                            size='small'
-                                        >
-                                            <Icon>add_circle_outline</Icon>
+                                        {applicationsAvailable.length > 0 && (
+                                            <Link
+                                                to={(isOnlyMutualSSL || isOnlyBasicAuth
+                                                    || !isSetAllorResidentKeyManagers) ? null
+                                                    : `/apis/${api.id}/credentials/wizard`}
+                                                style={!api.isSubscriptionAvailable
+                                                    ? { pointerEvents: 'none' } : null}
+                                                className={classes.addLinkWrapper}
+                                            >
+                                                <Button
+                                                    color='secondary'
+                                                    disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
+                                                    || isOnlyBasicAuth
+                                                    || !isSetAllorResidentKeyManagers}
+                                                    size='small'
+                                                >
+                                                    <Icon>add_circle_outline</Icon>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Credentials.'
+                                                        + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
+                                                        defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                    />
+                                                </Button>
+                                            </Link>
+                                        )}
+                                    </Typography>
+                                    <Paper elevation={0} className={classes.paper}>
+                                        <Typography variant='body2' className={classes.descWrapper}>
                                             <FormattedMessage
-                                                id={'Apis.Details.Credentials.'
-                                                + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
-                                                defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                id='Apis.Details.Credentials.Credentials.'
+                                                defaultMessage={`An application is primarily used to decouple the 
+                                                consumer from the APIs. It allows you to generate and use a single 
+                                                key for multiple APIs and subscribe multiple times to a single API 
+                                                with different SLA levels.`}
                                             />
-                                        </Button>
-                                    </Link>
-                                )}
-                            </Typography>
-                            <Paper elevation={0} className={classes.paper}>
-                                <Typography variant='body2' className={classes.descWrapper}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Credentials.Credentials.'
-                                        defaultMessage={`An application 
-                                        is primarily used to decouple the consumer from the APIs. It allows you to 
-                                        generate and use a single key for multiple APIs and subscribe multiple times to 
-                                        a single API with different SLA levels.`}
-                                    />
-                                </Typography>
-                                {renderCredentialInfo()}
-                            </Paper>
+                                        </Typography>
+                                        {renderCredentialInfo()}
+                                    </Paper>
+                                </>
+                            ) : (
+                                <Grid item md={12}>
+                                    <Paper elevation={0} className={classes.paper}>
+                                        <InlineMessage type='info' className={classes.dialogContainer}>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Creadentials.credetials.no.tiers'
+                                                    defaultMessage='No tiers are available for the API.'
+                                                />
+                                            </Typography>
+                                        </InlineMessage>
+                                    </Paper>
+                                </Grid>
+                            )}
                         </Grid>
                     </Grid>
                 </Grid>
