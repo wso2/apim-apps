@@ -179,8 +179,10 @@ export default function PublishWithoutDeploy(props) {
                         Alert.error(message);
                     }
                     console.error(error);
+                })
+                .finally(() => {
+                    handleClick();
                 });
-            handleClick();
         }
     };
 
