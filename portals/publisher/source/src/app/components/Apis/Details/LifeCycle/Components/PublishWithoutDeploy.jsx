@@ -89,10 +89,11 @@ export default function PublishWithoutDeploy(props) {
 
     let isExternalEndpointAvailable = false;
     let availableExternalEndpoint = '';
-    if (api.advertiseInfo.apiExternalProductionEndpoint && api.advertiseInfo.apiExternalProductionEndpoint.length > 0) {
+    if (api.advertiseInfo && api.advertiseInfo.apiExternalProductionEndpoint
+        && api.advertiseInfo.apiExternalProductionEndpoint.length > 0) {
         isExternalEndpointAvailable = true;
         availableExternalEndpoint = api.advertiseInfo.apiExternalProductionEndpoint;
-    } else if (api.advertiseInfo.apiExternalSandboxEndpoint
+    } else if (api.advertiseInfo && api.advertiseInfo.apiExternalSandboxEndpoint
         && api.advertiseInfo.apiExternalSandboxEndpoint.length > 0) {
         isExternalEndpointAvailable = true;
         availableExternalEndpoint = api.advertiseInfo.apiExternalSandboxEndpoint;
