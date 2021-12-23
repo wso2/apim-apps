@@ -123,7 +123,7 @@ class AppsTableContent extends Component {
             <TableBody className={classes.fullHeight}>
                 {appsTableData
                     .map((app) => {
-                        const isAppOwner = app.owner === AuthManager.getUser().name;
+                        const isAppOwner = app.owner.toLowerCase() === AuthManager.getUser().name.toLowerCase();
                         return (
                             <StyledTableRow className={classes.tableRow} key={app.applicationId}>
                                 <StyledTableCell align='left' className={classes.appName}>
@@ -133,7 +133,7 @@ class AppsTableContent extends Component {
                                         app.name
                                     )}
                                 </StyledTableCell>
-                                <StyledTableCell align='left'>{app.owner}</StyledTableCell>
+                                <StyledTableCell align='left'>{app.owner.toLowerCase()}</StyledTableCell>
                                 <StyledTableCell align='left'>{app.throttlingPolicy}</StyledTableCell>
                                 <StyledTableCell align='left'>
                                     {app.status === this.APPLICATION_STATES.APPROVED && (
