@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Footer from 'AppComponents/Base/Footer/Footer';
 import Header from 'AppComponents/Base/Header';
+import { Toaster } from 'react-hot-toast';
 // import CssBaseline from '@material-ui/core/CssBaseline';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,6 +62,24 @@ const Base = ({ children, user }) => {
     return (
         <>
             {/* <CssBaseline /> */}
+            <Toaster
+                position='bottom-right'
+                gutter={8}
+                toastOptions={{
+                    style: {
+                        background: '#DDEFFF',
+                    },
+                    success: {
+                        style: { backgroundColor: '#C7FFBE' },
+                    },
+                    error: {
+                        style: { backgroundColor: '#FFC7BE' },
+                    },
+                    custom: {
+                        style: { backgroundColor: '#DDEFFF' },
+                    },
+                }}
+            />
             <div className={classes.wrapper}>
                 <Header user={user} />
                 <main className={classes.contentWrapper}>

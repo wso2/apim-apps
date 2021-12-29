@@ -71,6 +71,7 @@
         "react-dom": "^16.14.0",
         "react-draft-wysiwyg": "^1.14.7",
         "react-dropzone": "^v10.1.7",
+        "react-hot-toast": "^2.1.1",
         "react-intl": "^v5.12.2",
         "react-markdown": "^4.0.8",
         "react-modal": "^2.2.2",
