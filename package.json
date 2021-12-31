@@ -3,13 +3,19 @@
   "version": "1.0.0",
   "description": "API Manager UI portals source",
   "main": "index.js",
+  "workspaces": [
+    "portals/publisher",
+    "portals/devportal",
+    "portals/admin"
+  ],
   "directories": {
     "test": "tests"
   },
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
-    "test": "jest test"
+    "test": "npm test --workspace=portals/publisher",
+    "build": "npm run build:prod --workspaces --if-present"
   },
   "repository": {
     "type": "git",
@@ -20,8 +26,8 @@
     "portal",
     "api-managment"
   ],
-  "author": "wso2",
-  "license": "ISC",
+  "author": "WSO2 Inc.",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/wso2/apim-apps/issues"
   },

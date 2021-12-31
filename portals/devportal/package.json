@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "description": "WSO2 API Manager Developer Portal Web App Note: reverted the swagger-ui version from 3.24.3 to 3.22.2 as POST was not working within swagger console",
     "main": "source/src/index.js",
+    "engines": {
+        "node": "16.*"
+    },
     "scripts": {
         "test": "jest --silent",
         "test:integration": "jest -c source/Tests/Integration/jest.config.js",
