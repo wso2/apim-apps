@@ -18,7 +18,7 @@
  *
  */
 var path = require('path');
-const fs = require('fs');
+const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -151,6 +151,7 @@ module.exports = function (env, argv) {
                 quiet: true,
                 exclude: ['node_modules'],
             }),
+            new webpack.ProgressPlugin(),
         ],
     };
     return config;

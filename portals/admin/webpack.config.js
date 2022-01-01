@@ -18,6 +18,7 @@
  */
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/auth_login.js');
@@ -152,6 +153,7 @@ module.exports = function (env,args) {
                 quiet: true,
                 exclude: ['node_modules'],
             }),
+            new webpack.ProgressPlugin(),
         ],
     };
     

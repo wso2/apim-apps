@@ -20,6 +20,7 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./services/dev_proxy/auth_login.js');
@@ -201,6 +202,7 @@ module.exports = (env, argv) => {
                 quiet: true,
                 exclude: ['node_modules'],
             }),
+            new webpack.ProgressPlugin(),
         ],
     };
     const isAnalysis = process.env && process.env.NODE_ENVS === 'analysis';
