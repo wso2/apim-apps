@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 /**
  * Reducer
  * @param {JSON} state The second number.
@@ -494,6 +493,5 @@ AddEdit.propTypes = {
     match: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({}).isRequired,
 };
-
 
 export default AddEdit;

@@ -47,7 +47,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import API from 'AppData/api';
 import Joi from '@hapi/joi';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
 import base64url from 'base64url';
 import Error from '@material-ui/icons/Error';
 import InputAdornment from '@material-ui/core/InputAdornment';

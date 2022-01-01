@@ -46,7 +46,6 @@ class Avatar extends Component {
         this.handleClose = this.handleClose.bind(this);
     }
 
-
     /**
      * Do OIDC logout redirection
      * @param {React.SyntheticEvent} e Click event of the submit button

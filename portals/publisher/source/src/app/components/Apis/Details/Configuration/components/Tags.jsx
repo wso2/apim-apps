@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';

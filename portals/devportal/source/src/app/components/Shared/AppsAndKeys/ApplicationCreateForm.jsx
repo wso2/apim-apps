@@ -22,7 +22,7 @@ import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input'; // DEPRECATED: DON'T USE THIS COMPONENT or even COPY
 
 
 /**

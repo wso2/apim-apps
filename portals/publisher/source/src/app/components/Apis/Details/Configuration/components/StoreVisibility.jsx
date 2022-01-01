@@ -25,7 +25,7 @@ import { FormattedMessage } from 'react-intl';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
 import base64url from 'base64url';
 import Error from '@material-ui/icons/Error';

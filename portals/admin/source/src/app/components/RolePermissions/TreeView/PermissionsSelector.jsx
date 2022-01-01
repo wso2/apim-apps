@@ -30,7 +30,6 @@ import cloneDeep from 'lodash.clonedeep';
 import Alert from 'AppComponents/Shared/Alert';
 import PermissionTree from './PermissionTree';
 
-
 /**
  *
  *

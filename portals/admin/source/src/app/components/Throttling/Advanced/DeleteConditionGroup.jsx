@@ -68,7 +68,6 @@ function DeleteConditionGroup({ deleteThisGroup }) {
                         defaultMessage='Do you want to remove this condition group?'
                     />
 
-
                 </DialogContentText>
             </FormDialogBase>
         </Box>

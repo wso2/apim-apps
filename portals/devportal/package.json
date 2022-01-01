@@ -1,6 +1,6 @@
 {
     "name": "@wso2apim/devportal",
-    "version": "1.0.0",
+    "version": "4.0.1",
     "description": "WSO2 API Manager Developer Portal Web App Note: reverted the swagger-ui version from 3.24.3 to 3.22.2 as POST was not working within swagger console",
     "main": "source/src/index.js",
     "engines": {
@@ -56,7 +56,7 @@
         "lodash.isplainobject": "^4.0.6",
         "lodash.merge": "^4.6.2",
         "material-design-icons": "^3.0.1",
-        "material-ui-chip-input": "^1.0.0",
+        "material-ui-chip-input": "^2.0.0-beta.2",
         "mui-datatables": "^2.8.1",
         "openapi-to-postmanv2": "^1.2.7",
         "prop-types": "^15.6.0",

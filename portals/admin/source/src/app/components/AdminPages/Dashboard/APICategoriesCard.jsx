@@ -115,7 +115,6 @@ export default function APICategoriesCard() {
                     />
                 </Typography>
 
-
                 <Box mt={3}>
                     <Button
                         size='small'

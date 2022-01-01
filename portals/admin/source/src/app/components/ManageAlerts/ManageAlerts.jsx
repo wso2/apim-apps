@@ -43,7 +43,7 @@ import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import Configurations from 'Config';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
 import PropTypes from 'prop-types';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 

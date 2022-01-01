@@ -70,7 +70,6 @@ function getComparator(order, orderBy) {
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-
 /**
  *
  *
@@ -87,7 +86,6 @@ function stableSort(array, comparator) {
     });
     return stabilizedThis.map((el) => el[0]);
 }
-
 
 /**
  *

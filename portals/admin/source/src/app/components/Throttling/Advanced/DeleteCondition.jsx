@@ -71,7 +71,6 @@ function DeleteCondition({ row, item, callBack }) {
                     defaultMessage=' will be deleted.'
                 />
 
-
             </DialogContentText>
         </FormDialogBase>
     );

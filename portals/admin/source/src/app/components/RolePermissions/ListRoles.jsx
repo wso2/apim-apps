@@ -34,7 +34,6 @@ import ListAddOns from './Commons/ListAddOns';
 import DeletePermission from './Commons/DeletePermission';
 import AddRoleWizard from './Commons/AddRoleWizard';
 
-
 const headCells = [
     {
         id: 'role', numeric: false, disablePadding: false, label: 'Roles', enableSort: true,
@@ -82,7 +81,6 @@ function extractMappings(permissionMapping) {
     }
     return [roleMapping, appMapping];
 }
-
 
 /**
  *

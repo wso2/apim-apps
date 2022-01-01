@@ -19,7 +19,6 @@
 import APIClient from './APIClient';
 import Utils from './Utils';
 
-
 /**
  * Class representing a Factory of APIClients
  */

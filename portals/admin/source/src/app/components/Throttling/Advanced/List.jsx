@@ -194,7 +194,6 @@ export default function ListMG() {
     /*
     Send the following props to ListBase to override the action column.
 
-
     To disable the Edit button pass an empty component. Ex EditComponent={() => <span />}
     To disable the Delete button pass an empty component. Ex DeleteComponent={() => <span />}
     To make the edit link go to a new page send a react-router-dom as the EditComponent.

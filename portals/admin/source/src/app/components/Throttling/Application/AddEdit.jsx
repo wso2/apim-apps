@@ -53,7 +53,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 /**
  * Reducer
  * @param {JSON} state The second number.

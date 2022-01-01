@@ -1,6 +1,6 @@
 {
     "name": "@wso2apim/publisher",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "description": "WSO2 API Manager Publisher Web App Note: `eslint-plugin-react` have a fixed version due to implementing prop-types does mark nested destructed props from `eslint-plugin-react` next version onwards\n --max_old_space_size: This is max size of the old space( managed heap) in Mbytes make sure not to increase it more than the memory size of builder machines(Prod build)",
     "main": "/source/index.jsx",
     "engines": {
@@ -53,7 +53,7 @@
         "lodash.clonedeep": "^4.5.0",
         "lodash.intersectionby": "^4.7.0",
         "lodash.isempty": "^4.4.0",
-        "material-ui-chip-input": "^1.1.0",
+        "material-ui-chip-input": "^2.0.0-beta.2",
         "moment": "^2.22.2",
         "mui-datatables": "^3.7.7",
         "openapi-types": "^10.0.0",
