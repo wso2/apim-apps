@@ -56,7 +56,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
 import { Alert as MUIAlert } from '@material-ui/lab';
 
-
 const useStyles = makeStyles((theme) => ({
     searchInput: {
         fontSize: theme.typography.fontSize,

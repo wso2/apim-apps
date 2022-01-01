@@ -42,7 +42,6 @@ import Progress from 'AppComponents/Shared/Progress';
 import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
 import Alert from 'AppComponents/Shared/Alert';
 
-
 const theme = createMuiTheme(Themes.light);
 const { drawerWidth } = Themes.light.custom;
 /**

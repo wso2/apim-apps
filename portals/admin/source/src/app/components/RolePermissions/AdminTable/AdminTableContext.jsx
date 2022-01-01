@@ -21,7 +21,6 @@ const AdminTableContext = React.createContext();
 AdminTableContext.displayName = 'AdminTableContext';
 const { Provider: TableContextProvider, Consumer: TableContextConsumer } = AdminTableContext;
 
-
 /**
  *
  *

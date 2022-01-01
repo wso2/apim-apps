@@ -243,6 +243,12 @@
       "value": "Something went wrong while publishing the API"
     }
   ],
+  "Apis.Create.Default.APICreateDefault.error.otherStatus": [
+    {
+      "type": 0,
+      "value": "Error while publishing the API"
+    }
+  ],
   "Apis.Create.Default.APICreateDefault.error.policies.not.available": [
     {
       "type": 0,

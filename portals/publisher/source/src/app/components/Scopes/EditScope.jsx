@@ -29,7 +29,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
 import Chip from '@material-ui/core/Chip';
 import { red } from '@material-ui/core/colors/';

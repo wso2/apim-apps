@@ -1,7 +1,6 @@
 // Experiment 1 https://github.com/wso2/carbon-apimgt/pull/8190/files
 const https = require('https');
 const fetch = require('node-fetch');
-const querystring = require('querystring');
 const fs = require('fs');
 const path = require('path');
 
@@ -86,7 +85,7 @@ async function doDCR() {
     return data;
 }
 
-const clientRoutingBypass = (req, res, proxyOptions) => {
+const clientRoutingBypass = (req) => {
     if (req.path.startsWith('/admin/site/public/images/')) {
         return req.path.split('/admin')[1];
     } else if (req.headers.accept.indexOf('html') !== -1) {
@@ -102,8 +101,8 @@ const clientRoutingBypass = (req, res, proxyOptions) => {
  * @param {*} server
  * @param {*} compiler
  */
-function devServerBefore(app, server, compiler) {
-    app.get('/admin/services/auth/login', async (req, res, next) => {
+function devServerBefore(app) {
+    app.get('/admin/services/auth/login', async (req, res) => {
         const dcrData = await doDCR();
         const { clientId } = dcrData;
         const settingsData = await getSettings();
@@ -117,7 +116,7 @@ function devServerBefore(app, server, compiler) {
 
         res.redirect(location);
     });
-    app.get('/admin/services/auth/callback/login', async (req, res, next) => {
+    app.get('/admin/services/auth/callback/login', async (req, res) => {
         const { code, session_state } = req.query;
         const keys = oauthAppCache();
         const tokens = await generateToken(code, keys);

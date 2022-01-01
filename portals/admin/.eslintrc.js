@@ -85,6 +85,7 @@ module.exports = {
     "jsx-quotes": ["error", "prefer-single"],
     "no-else-return": "off",
     "no-unused-vars": ["error"],
+    "camelcase": ["error", {"properties": "never", ignoreDestructuring: true}],
     "react/jsx-props-no-spreading": [1, {
       "exceptions":
         ["Route", "Operation", "Listing", "DeferredDetails", "Details", "svg", "Paper", "EditableRow", "CreateScope", "EditScope", "WrappedComponent", "ErrorIcon", "WarningIcon","CheckCircleIcon","InfoIcon"]

@@ -1,10 +1,10 @@
 {
     "name": "@wso2apim/publisher",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "description": "WSO2 API Manager Publisher Web App Note: `eslint-plugin-react` have a fixed version due to implementing prop-types does mark nested destructed props from `eslint-plugin-react` next version onwards\n --max_old_space_size: This is max size of the old space( managed heap) in Mbytes make sure not to increase it more than the memory size of builder machines(Prod build)",
     "main": "/source/index.jsx",
     "engines": {
-        "node": "14.*"
+        "node": "16.*"
     },
     "scripts": {
         "test:dev": "DEBUG_PRINT_LIMIT=90000 jest --watch",
@@ -53,7 +53,7 @@
         "lodash.clonedeep": "^4.5.0",
         "lodash.intersectionby": "^4.7.0",
         "lodash.isempty": "^4.4.0",
-        "material-ui-chip-input": "^1.1.0",
+        "material-ui-chip-input": "^2.0.0-beta.2",
         "moment": "^2.22.2",
         "mui-datatables": "^3.7.7",
         "openapi-types": "^10.0.0",
@@ -71,6 +71,7 @@
         "react-dom": "^16.14.0",
         "react-draft-wysiwyg": "^1.14.7",
         "react-dropzone": "^v10.1.7",
+        "react-hot-toast": "^2.1.1",
         "react-intl": "^v5.12.2",
         "react-markdown": "^4.0.8",
         "react-modal": "^2.2.2",
@@ -84,7 +85,7 @@
         "react-tap-event-plugin": "^2.0.1",
         "react-toastify": "^1.7.0",
         "swagger-client": "^3.17.0",
-        "swagger-ui-react": "^3.45.0",
+        "swagger-ui-react": "^3.52.5",
         "typeface-roboto": "0.0.35",
         "url-loader": "^0.5.9",
         "xml-beautifier": "^0.5.0"

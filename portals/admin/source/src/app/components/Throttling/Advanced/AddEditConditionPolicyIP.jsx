@@ -177,7 +177,6 @@ function AddEditConditionPolicyIP(props) {
         queryParameterCondition: null,
     };
 
-
     if (item) {
         initialState = { ...item };
     }

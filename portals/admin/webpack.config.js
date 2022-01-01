@@ -19,6 +19,7 @@
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/auth_login.js');
 
 module.exports = function (env,args) {
@@ -145,24 +146,18 @@ module.exports = function (env,args) {
                 filename: path.resolve(__dirname, 'site/public/pages/index.jag'),
                 minify: false, // Make this true to get exploded, formatted index.jag file
             }),
+            new ESLintPlugin({
+                extensions: ['js', 'ts', 'jsx'],
+                failOnError: true,
+                quiet: true,
+                exclude: ['node_modules'],
+            }),
         ],
     };
     
     // Note: for more info about monaco plugin: https://github.com/Microsoft/monaco-editor-webpack-plugin
     if (process.env.NODE_ENV === 'development') {
         config.watch = true;
-    } else if (process.env.NODE_ENV === 'production') {
-        /* ESLint will only run in production build to increase the continues build(watch) time in the development mode */
-        const esLintLoader = {
-            enforce: 'pre',
-            test: /\.(js|jsx)$/,
-            loader: 'eslint-loader',
-            options: {
-                failOnError: true,
-                quiet: true,
-            },
-        };
-        config.module.rules.push(esLintLoader);
     }
 
     if (env && env.analysis) {

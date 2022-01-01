@@ -36,7 +36,6 @@ class Permissions extends Resource {
         this.scopes = scopes;
     }
 
-
     /**
      *
      *
@@ -73,7 +72,6 @@ class Permissions extends Resource {
         });
     }
 
-
     /**
      *
      *
@@ -87,7 +85,6 @@ class Permissions extends Resource {
             return client.apis['System Scopes'].get_system_scopes_role_aliases();
         });
     }
-
 
     /**
      *

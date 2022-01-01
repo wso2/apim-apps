@@ -80,7 +80,6 @@ const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@
 + 'INSERT ALL EVENTS into ResultStream;';
 const formattedSampleSiddhiQuery = format(sampleSiddhiQuery);
 
-
 /**
  * Reducer
  * @param {JSON} state The second number.

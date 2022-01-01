@@ -113,6 +113,9 @@
   "Apis.Create.Default.APICreateDefault.error.errorMessage.publish": {
     "defaultMessage": "Something went wrong while publishing the API"
   },
+  "Apis.Create.Default.APICreateDefault.error.otherStatus": {
+    "defaultMessage": "Error while publishing the API"
+  },
   "Apis.Create.Default.APICreateDefault.error.policies.not.available": {
     "defaultMessage": "Throttling policies not available. Contact your administrator"
   },

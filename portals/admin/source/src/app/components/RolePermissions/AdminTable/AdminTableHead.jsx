@@ -26,7 +26,6 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { useTableContext } from './AdminTableContext';
 
-
 const useStyles = makeStyles(() => ({
     visuallyHidden: {
         border: 0,

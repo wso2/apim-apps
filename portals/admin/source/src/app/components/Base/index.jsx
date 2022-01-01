@@ -75,7 +75,6 @@ function Base(props) {
         classes, children, leftMenu, header,
     } = props;
 
-
     return (
         <div className={classes.root}>
             <CssBaseline />

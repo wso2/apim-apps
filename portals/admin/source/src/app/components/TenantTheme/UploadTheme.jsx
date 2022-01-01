@@ -128,7 +128,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 /**
  * Render a pop-up dialog to add/edit an Microgateway label
  * @param {JSON} props .

@@ -31,7 +31,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Certificates from 'AppComponents/KeyManagers/Certificates';
 import Checkbox from '@material-ui/core/Checkbox';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ClaimMappings from 'AppComponents/KeyManagers/ClaimMapping';
 import Collapse from '@material-ui/core/Collapse';
@@ -523,7 +523,6 @@ function AddEditKeyManager(props) {
         setExpanded(!expanded);
     };
 
-
     return (
         <ContentBase
             pageStyle='half'
@@ -634,7 +633,6 @@ function AddEditKeyManager(props) {
                                     </Grid>
                                 </Grid>
                             )}
-
 
                             <TextField
                                 id='description'
@@ -1917,7 +1915,6 @@ function AddEditKeyManager(props) {
                     </Grid>
                 </Grid>
             </Box>
-
 
         </ContentBase>
     );

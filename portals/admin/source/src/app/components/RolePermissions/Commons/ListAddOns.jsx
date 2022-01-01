@@ -28,7 +28,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
-
 const useStyles = makeStyles((theme) => ({
     searchBar: {
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
@@ -46,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
         borderColor: 'rgba(255, 255, 255, 0.7)',
     },
 }));
-
 
 /**
  *

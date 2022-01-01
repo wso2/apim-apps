@@ -2,7 +2,6 @@ import React from 'react';
 import sortby from 'lodash.sortby';
 import KeyValidation from './KeyValidation';
 
-
 /**
  * Key Validation entries form
  * @export

@@ -38,8 +38,14 @@ import AuthManager from 'AppData/AuthManager';
 
 
 const getPolicies = async () => {
-    const response = await API.policies('subscription');
-    return response.body.list;
+    const promisedPolicies = API.policies('subscription');
+    Alert.loading(promisedPolicies, {
+        loading: 'Loading policies',
+        success: 'Policies loaded successfully',
+        error: 'Error in loading policies',
+    });
+    const policies = await promisedPolicies;
+    return policies.body.list;
 };
 /**
  *
@@ -171,40 +177,37 @@ function APICreateDefault(props) {
                     return apiProduct;
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                        setPageError(error.response.body);
-                    } else {
-                        // TODO add i18n ~tmkb
-                        const message = 'Something went wrong while adding the API Product';
-                        Alert.error(message);
-                        setPageError(message);
-                    }
                     console.error(error);
+                    if (error.response) {
+                        setPageError(error.response.body);
+                        return error.response.body.description;
+                    } else {
+                        const message = 'Something went wrong while adding the API Product';
+                        setPageError(message);
+                        // TODO add i18n ~tmkb
+                        return message;
+                    }
                 });
         } else {
             const newAPI = new API(apiData);
             promisedCreatedAPI = newAPI
-                .save()
-                .then((api) => {
-                    Alert.info('API created successfully');
-                    return api;
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                        setPageError(error.response.body);
-                    } else {
-                        const message = 'Something went wrong while adding the API';
-                        Alert.error(message);
-                        setPageError(message);
-                    }
+                .save();
+            Alert.loading(promisedCreatedAPI, {
+                loading: 'Creating API...',
+                success: 'API created successfully',
+                error: (error) => {
                     console.error(error);
                     setIsPublishing(false); // We don't publish if something when wrong
-                })
-                .finally(() => {
-                    setIsCreating(false);
-                });
+                    if (error.response) {
+                        setPageError(error.response.body);
+                        return error.response.body.description;
+                    } else {
+                        const message = 'Something went wrong while adding the API';
+                        setPageError(message);
+                        return message;
+                    }
+                },
+            });
         }
         return promisedCreatedAPI.finally(() => setIsCreating(false));
     }
@@ -220,107 +223,108 @@ function APICreateDefault(props) {
             const body = {
                 description: 'Initial Revision',
             };
-            restApi.createRevision(api.id, body)
-                .then((api1) => {
-                    const revisionId = api1.body.id;
-                    Alert.info('API Revision created successfully');
-                    setIsRevisioning(false);
-                    const envList = settings.environment.map((env) => env.name);
-                    const body1 = [];
-                    const internalGateways = settings.environment.filter((p) => p.provider
-                        && p.provider.toLowerCase().includes('wso2'));
-                    const getFirstVhost = (envName) => {
-                        const env = internalGateways.find(
-                            (e) => e.name === envName && e.vhosts.length > 0,
-                        );
-                        return env && env.vhosts[0].host;
-                    };
-                    if (envList && envList.length > 0) {
-                        if (envList.includes('Default') && getFirstVhost('Default')) {
-                            body1.push({
-                                name: 'Default',
-                                displayOnDevportal: true,
-                                vhost: getFirstVhost('Default'),
-                            });
-                        } else if (getFirstVhost(envList[0])) {
-                            body1.push({
-                                name: envList[0],
-                                displayOnDevportal: true,
-                                vhost: getFirstVhost(envList[0]),
-                            });
-                        }
-                    }
-                    setIsDeploying(true);
-                    restApi.deployRevision(api.id, revisionId, body1)
-                        .then(() => {
-                            Alert.info('API Revision Deployed Successfully');
-                            setIsDeploying(false);
-                            // Publishing API after deploying
-                            setIsPublishing(true);
-                            api.publish()
-                                .then((response) => {
-                                    const { workflowStatus } = response.body;
-                                    if (workflowStatus === APICreateDefault.WORKFLOW_STATUS.CREATED) {
-                                        Alert.info(intl.formatMessage({
-                                            id: 'Apis.Create.Default.APICreateDefault.success.publishStatus',
-                                            defaultMessage: 'Lifecycle state change request has been sent',
-                                        }));
-                                    } else {
-                                        Alert.info(intl.formatMessage({
-                                            id: 'Apis.Create.Default.APICreateDefault.success.otherStatus',
-                                            defaultMessage: 'API updated successfully',
-                                        }));
-                                    }
-                                    history.push(`/apis/${api.id}/overview`);
-                                })
-                                .catch((error) => {
-                                    if (error.response) {
-                                        Alert.error(error.response.body.description);
-                                        setPageError(error.response.body);
-                                    } else {
-                                        Alert.error(intl.formatMessage({
-                                            id: 'Apis.Create.Default.APICreateDefault.error.errorMessage.publish',
-                                            defaultMessage: 'Something went wrong while publishing the API',
-                                        }));
-                                        setPageError('Something went wrong while publishing the API');
-                                    }
-                                    console.error(error);
-                                })
-                                .finally(() => {
-                                    setIsPublishing(false);
-                                    setIsPublishButtonClicked(false);
-                                });
-                        })
-                        .catch((error) => {
-                            if (error.response) {
-                                Alert.error(error.response.body.description);
-                                setPageError(error.response.body);
-                            } else {
-                                Alert.error(intl.formatMessage({
-                                    id: 'Apis.Create.Default.APICreateDefault.error.errorMessage.deploy.revision',
-                                    defaultMessage: 'Something went wrong while deploying the API Revision',
-                                }));
-                                setPageError('Something went wrong while deploying the API Revision');
-                            }
-                            console.error(error);
-                        })
-                        .finally(() => {
-                            setIsDeploying(false);
-                        });
-                })
-                .catch((error) => {
+            const promisedAPIRevision = restApi.createRevision(api.id, body);
+            Alert.loading(promisedAPIRevision, {
+                success: 'API revision created successfully',
+                error: (error) => {
+                    console.error(error);
                     if (error.response) {
-                        Alert.error(error.response.body.description);
                         setPageError(error.response.body);
+                        return error.response.body.description;
                     } else {
-                        Alert.error(intl.formatMessage({
+                        setPageError('Something went wrong while creating the API Revision');
+                        return intl.formatMessage({
                             id: 'Apis.Create.Default.APICreateDefault.error.errorMessage.create.revision',
                             defaultMessage: 'Something went wrong while creating the API Revision',
-                        }));
-                        setPageError('Something went wrong while creating the API Revision');
+                        });
                     }
-                    console.error(error);
+                },
+                loading: 'Creating API revision...',
+            });
+            promisedAPIRevision.then((api1) => {
+                const revisionId = api1.body.id;
+                setIsRevisioning(false);
+                const envList = settings.environment.map((env) => env.name);
+                const body1 = [];
+                const internalGateways = settings.environment.filter((p) => p.provider
+                        && p.provider.toLowerCase().includes('wso2'));
+                const getFirstVhost = (envName) => {
+                    const env = internalGateways.find(
+                        (e) => e.name === envName && e.vhosts.length > 0,
+                    );
+                    return env && env.vhosts[0].host;
+                };
+                if (envList && envList.length > 0) {
+                    if (envList.includes('Default') && getFirstVhost('Default')) {
+                        body1.push({
+                            name: 'Default',
+                            displayOnDevportal: true,
+                            vhost: getFirstVhost('Default'),
+                        });
+                    } else if (getFirstVhost(envList[0])) {
+                        body1.push({
+                            name: envList[0],
+                            displayOnDevportal: true,
+                            vhost: getFirstVhost(envList[0]),
+                        });
+                    }
+                }
+                setIsDeploying(true);
+                const promisedDeployment = restApi.deployRevision(api.id, revisionId, body1);
+                Alert.loading(promisedDeployment, {
+                    loading: 'Deploying API...',
+                    success: 'API deployed successfully',
+                    error: (error) => {
+                        console.error(error);
+                        if (error.response) {
+                            setPageError(error.response.body);
+                            return error.response.body.description;
+                        } else {
+                            setPageError('Something went wrong while publishing the API');
+
+                            return intl.formatMessage({
+                                id: 'Apis.Create.Default.APICreateDefault.error.errorMessage.publish',
+                                defaultMessage: 'Something went wrong while publishing the API',
+                            });
+                        }
+                    },
+                });
+                promisedDeployment.then(() => {
+                    setIsDeploying(false);
+                    // Publishing API after deploying
+                    setIsPublishing(true);
+                    const promisedPublish = api.publish();
+                    Alert.loading(promisedPublish, {
+                        loading: 'Publishing API...',
+                        success: (response) => {
+                            const { workflowStatus } = response.body;
+                            if (workflowStatus === APICreateDefault.WORKFLOW_STATUS.CREATED) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Create.Default.APICreateDefault.success.publishStatus',
+                                    defaultMessage: 'Lifecycle state change request has been sent',
+                                });
+                            } else {
+                                return intl.formatMessage({
+                                    id: 'Apis.Create.Default.APICreateDefault.success.otherStatus',
+                                    defaultMessage: 'API updated successfully',
+                                });
+                            }
+                        },
+                        error: () => intl.formatMessage({
+                            id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
+                            defaultMessage: 'Error while publishing the API',
+                        }),
+                    });
+                    promisedPublish.then(() => history.push(`/apis/${api.id}/overview`))
+                        .finally(() => {
+                            setIsPublishing(false);
+                            setIsPublishButtonClicked(false);
+                        });
                 })
+                    .finally(() => {
+                        setIsDeploying(false);
+                    });
+            })
                 .finally(() => {
                     setIsRevisioning(false);
                 });
