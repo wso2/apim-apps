@@ -202,7 +202,11 @@ module.exports = (env, argv) => {
                 quiet: true,
                 exclude: ['node_modules'],
             }),
-            new webpack.ProgressPlugin(),
+            new webpack.ProgressPlugin((percentage, message, ...args) => {
+                // e.g. Output each progress message directly to the console:
+                const pres = Math.round(percentage * 100);
+                if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
+            }),
         ],
     };
     const isAnalysis = process.env && process.env.NODE_ENVS === 'analysis';
