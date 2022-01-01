@@ -49,10 +49,9 @@
                         <configuration>
                             <executable>npm</executable>
                             <arguments>
-                                <argument>run</argument>
-                                <argument>bootstrap</argument>
+                                <argument>ci</argument>
                             </arguments>
-                            <workingDirectory>${basedir}/portals</workingDirectory>
+                            <workingDirectory>${basedir}</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>
