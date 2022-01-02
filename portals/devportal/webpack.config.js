@@ -18,7 +18,7 @@
  *
  */
 var path = require('path');
-const fs = require('fs');
+const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -150,6 +150,11 @@ module.exports = function (env, argv) {
                 failOnError: true,
                 quiet: true,
                 exclude: ['node_modules'],
+            }),
+            new webpack.ProgressPlugin((percentage, message, ...args) => {
+                // e.g. Output each progress message directly to the console:
+                const pres = Math.round(percentage * 100);
+                if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
             }),
         ],
     };
