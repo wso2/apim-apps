@@ -19,7 +19,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Subscription from 'AppData/Subscription';
 import GenericDisplayDialog from 'AppComponents/Shared/GenericDisplayDialog';
@@ -29,6 +28,8 @@ import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import Link from '@material-ui/core/Link';
+import LaunchIcon from '@material-ui/icons/Launch';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Application from 'AppData/Application';
@@ -155,6 +156,12 @@ const styles = (theme) => ({
         '& span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
+    },
+    launchIcon: {
+        paddingLeft: theme.spacing(1),
+    },
+    originalDevPortalLink: {
+        marginTop: theme.spacing(2),
     },
 });
 
@@ -348,6 +355,36 @@ class Credentials extends React.Component {
          && !api.securityScheme.includes('api_key');
         const isSetAllorResidentKeyManagers = (api.keyManagers && api.keyManagers.includes('all'))
             || (api.keyManagers && api.keyManagers.includes('Resident Key Manager'));
+        const renderOriginalDevPortalDetails = () => {
+            if (api.advertiseInfo && api.advertiseInfo.advertised && api.advertiseInfo.originalDevPortalUrl) {
+                return (
+                    <>
+                        <Typography variant='h5' component='h2'>
+                            <FormattedMessage
+                                id={'Apis.Details.Credentials.Credentials.'
+                                + 'original.developer.portal.title'}
+                                defaultMessage='Original Developer Portal'
+                            />
+                        </Typography>
+                        <Link
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={api.advertiseInfo.originalDevPortalUrl}
+                            variant='body2'
+                        >
+                            <div className={classes.originalDevPortalLink}>
+                                <FormattedMessage
+                                    id='Apis.Details.Credentials.Credentials.visit.original.developer.portal'
+                                    defaultMessage='Visit Original Developer Portal'
+                                />
+                                <LaunchIcon className={classes.launchIcon} />
+                            </div>
+                        </Link>
+                    </>
+                );
+            }
+            return null;
+        };
         const renderCredentialInfo = () => {
             if (isOnlyMutualSSL || isOnlyBasicAuth) {
                 return (
@@ -552,6 +589,9 @@ class Credentials extends React.Component {
                 <Grid item md={12} lg={11}>
                     <Grid container spacing={2}>
                         <Grid item md={12}>
+                            <Paper elevation={0} className={classes.paper}>
+                                {renderOriginalDevPortalDetails()}
+                            </Paper>
                             {api.tiers.length > 0 ? (
                                 <>
                                     <Typography
@@ -600,18 +640,16 @@ class Credentials extends React.Component {
                                     </Paper>
                                 </>
                             ) : (
-                                <Grid item md={12}>
-                                    <Paper elevation={0} className={classes.paper}>
-                                        <InlineMessage type='info' className={classes.dialogContainer}>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Creadentials.credetials.no.tiers'
-                                                    defaultMessage='No tiers are available for the API.'
-                                                />
-                                            </Typography>
-                                        </InlineMessage>
-                                    </Paper>
-                                </Grid>
+                                <Paper elevation={0} className={classes.paper}>
+                                    <InlineMessage type='info' className={classes.dialogContainer}>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Creadentials.credetials.no.tiers'
+                                                defaultMessage='No tiers are available for the API.'
+                                            />
+                                        </Typography>
+                                    </InlineMessage>
+                                </Paper>
                             )}
                         </Grid>
                     </Grid>
