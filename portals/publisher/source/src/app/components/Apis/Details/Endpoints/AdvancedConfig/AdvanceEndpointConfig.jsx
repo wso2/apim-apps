@@ -89,7 +89,7 @@ function AdvanceEndpointConfig(props) {
         const config = {};
         if (isSOAPEndpoint) {
             config.format = 'soap11';
-            config.optimize = 'SWA';
+            config.optimize = 'leave-as-is';
         }
         config.actionDuration = '30000';
         config.actionSelect = 'fault';
