@@ -489,7 +489,10 @@ class ApplicationFormHandler extends React.Component {
                                             variant='contained'
                                             color='primary'
                                             onClick={isEdit ? this.saveEdit : this.saveApplication}
-                                            disabled={isEdit && AuthManager.getUser().name !== applicationOwner}
+                                            disabled={
+                                                isEdit
+                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase()
+                                            }
                                             className={classes.button}
                                         >
                                             <FormattedMessage
