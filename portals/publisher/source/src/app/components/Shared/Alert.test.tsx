@@ -16,11 +16,11 @@
  * under the License.
  */
 
-import React from 'react';
-import Protected from './ProtectedApp';
+import Alert from './Alert';
 
-describe('Protected component tests', () => {
-    test('should render the Protected app component', () => {
-        DEPRECATED_shallow(<Protected />);
+describe('Alert tost messages', () => {
+    test('Alert info should return positive alert ID', async () => {
+        const alertID = Alert.info('This is an info message');
+        expect(alertID).toEqual('1');
     });
 });

@@ -65,6 +65,21 @@ Object.defineProperty(window.document, "cookie", {
   writable: true,
   value: "",
 });
+// `matchMedia` polyfill for react-hot-tost Alerting
+// For more info https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // Deprecated
+    removeListener: jest.fn(), // Deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
 
 const GlobalProviders: FC<{ user: any }> = ({
   children,
@@ -112,6 +127,16 @@ export const searchParamsToRequestQuery = (searchParams: URLSearchParams) =>
       .replace(/&/g, '","')
       .replace(/=/g, '":"')}"}`
   );
+
+/**
+ * Only use this method for wait and check the output, DON'T use it for testing the component
+ * @param sec Wait time in seconds
+ * @returns 
+ */
+export function dummyWait(sec: number = 1) {
+  console.warn("dummyWait is only intended to be used in tests development time, Remove it after finalizing the test");
+  return new Promise((resolve) => setTimeout(resolve, sec * 1000));
+}
 export * from "@testing-library/react";
 export { customRender as render };
 export { getMockServer } from "./restAPI.mock";

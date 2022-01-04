@@ -4,7 +4,6 @@ import {
     render,
     screen,
     waitFor,
-    within,
 } from 'AppTests/Utils/TestingLibrary';
 import getMockServer, { onResponse, resetMockHandler } from 'AppTests/Utils/restAPI.mock';
 import userEvent from '@testing-library/user-event';
@@ -80,8 +79,7 @@ describe('Create REST API From scratch', () => {
 
     test('should not exceed 50 character length', async () => {
         render(<APICreateDefault />);
-        screen.logTestingPlaygroundURL();
-        expect(await screen.findByTestId('loading-publisher-settings')).toBeInTheDocument();
+        expect(screen.getByTestId('loading-publisher-settings')).toBeInTheDocument();
         const NAME_INPUT = screen.getByRole('textbox', { name: /name \*/i });
         const NAME_EXCEEDED_ERROR = /Name has exceeded the maximum number of 50 characters/i;
         userEvent.type(NAME_INPUT, 'a'.repeat(50));

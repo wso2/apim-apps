@@ -180,7 +180,11 @@ export default class Protected extends Component {
                 // Check session will only trigger if user is available
                 const { clientId, sessionState } = AuthManager.getUser().getAppInfo();
                 const msg = clientId + ' ' + sessionState;
-                document.getElementById('iframeOP').contentWindow.postMessage(msg, Configurations.idp.origin);
+                if (document.getElementById('iframeOP')) {
+                    document.getElementById('iframeOP').contentWindow.postMessage(msg, Configurations.idp.origin);
+                } else {
+                    console.warn("Can't post message to iframe, Unable to find `iframeOP` iframe element");
+                }
             }, Configurations.app.singleLogout.timeout);
         }
     }

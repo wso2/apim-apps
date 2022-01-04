@@ -38,7 +38,7 @@ const Progress = (props) => {
                     display: 'flex',
                     justifyContent: 'center',
                     fontFamily: '"Open Sans", "Helvetica", "Arial", sans-serif',
-                    'padding-bottom': '14px',
+                    paddingBottom: '14px',
                 }}
                 >
                     {message}

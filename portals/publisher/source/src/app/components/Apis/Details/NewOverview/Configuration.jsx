@@ -98,14 +98,12 @@ function Configuration(props) {
                             <Grid item xs={12} md={6} lg={8}>
                                 <Typography component='p' variant='body1'>
                                     {api.transport && api.transport.length !== 0 && (
-                                        <>
-                                            {api.transport.map((item, index) => (
-                                                <span>
-                                                    {upperCaseString(item)}
-                                                    {api.transport.length !== index + 1 && ', '}
-                                                </span>
-                                            ))}
-                                        </>
+                                        api.transport.map((item, index) => (
+                                            <span key={item}>
+                                                {upperCaseString(item)}
+                                                {api.transport.length !== index + 1 && ', '}
+                                            </span>
+                                        ))
                                     )}
                                     {!api.transport && (
                                         <>

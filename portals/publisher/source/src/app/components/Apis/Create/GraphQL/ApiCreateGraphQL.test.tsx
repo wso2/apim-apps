@@ -32,7 +32,6 @@ describe('Import a GraphQL API', () => {
         expect(screen.getByRole('button', {
             name: /next/i,
         })).toBeDisabled();
-        screen.logTestingPlaygroundURL();
     });
 
     test('Should allow proceed with valid graphql file', async () => {
@@ -41,15 +40,11 @@ describe('Import a GraphQL API', () => {
         sampleGraphQLSDL.on = jest.fn();
         sampleGraphQLSDL.pause = jest.fn();
         sampleGraphQLSDL.resume = jest.fn();
-        onResponse((c, m) => {
-            debugger;
-        });
         // const sampleGraphQLSDL = fs.createReadStream('/home/user/Downloads/sample.sdl');
         render(<ApiCreateGraphQL />);
         const graphQLFileUploadInput = screen.getByLabelText('GraphQL file upload');
         userEvent.upload(graphQLFileUploadInput, sampleGraphQLSDL);
         await screen.findByRole('progressbar');
         await screen.findByRole('button', { name: /delete/i });
-        screen.logTestingPlaygroundURL();
     });
 });

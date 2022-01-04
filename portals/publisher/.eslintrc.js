@@ -37,7 +37,6 @@ module.exports = {
         'testing-library/no-await-sync-query': 'error',
         'testing-library/no-debugging-utils': 'error',
         'max-len': ['error', { code: 120, tabWidth: 4 }],
-        'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
         'require-jsdoc': [
             'warn',
             {

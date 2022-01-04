@@ -355,7 +355,7 @@ export default function CustomIcon(props) {
                 aria-hidden='true'
                 xmlns='http://www.w3.org/2000/svg'
             >
-                <title>1359ABD8-ABF3-4FE9-8AF4-014881DB78CF</title>
+                <title>Global Scopes</title>
                 <g id='Customer-Portal' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
                     <g
                         id='apim-scopes-icon'
@@ -387,6 +387,6 @@ CustomIcon.propTypes = {
     strokeColor: PropTypes.string,
     width: PropTypes.number,
     height: PropTypes.number,
-    icon: PropTypes.oneOf(['overview', 'api']),
+    icon: PropTypes.oneOf(['overview', 'api', 'analytics', 'scopes', 'api-product']),
     className: '',
 };
