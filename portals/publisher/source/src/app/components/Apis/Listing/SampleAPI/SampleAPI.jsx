@@ -89,8 +89,9 @@ const SampleAPI = (props) => {
         try {
             taskResult = await promisedTask;
         } catch (errors) {
-            console.error(errors);
-            tasksStatusDispatcher({ name, status: { errors } });
+            throw new Error(errors);
+            // console.error(errors);
+            // tasksStatusDispatcher({ name, status: { errors } });
         }
         tasksStatusDispatcher({ name, status: { inProgress: false, completed: true } });
         return taskResult;
@@ -113,7 +114,6 @@ const SampleAPI = (props) => {
         const sampleAPI = await taskManager(sampleAPIObj.save(), 'create');
         setNewSampleAPI(sampleAPI);
         if (!sampleAPI) {
-            console.error('*******************Error while creating sample API');
             throw new Error('Error while creating sample API');
         }
         // Update the sample API -- 2nd API call
