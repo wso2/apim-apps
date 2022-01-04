@@ -112,7 +112,10 @@ const SampleAPI = (props) => {
         // Creat the sample API -- 1st API call
         const sampleAPI = await taskManager(sampleAPIObj.save(), 'create');
         setNewSampleAPI(sampleAPI);
-
+        if (!sampleAPI) {
+            console.error('*******************Error while creating sample API');
+            throw new Error('Error while creating sample API');
+        }
         // Update the sample API -- 2nd API call
         await taskManager(sampleAPI
             .updateSwagger(
