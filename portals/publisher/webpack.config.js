@@ -140,7 +140,7 @@ module.exports = (env, argv) => {
                 {
                     test: /\.tsx?$/,
                     use: 'ts-loader',
-                    exclude: /node_modules/,
+                    exclude: [/node_modules/, /source\/Tests/],
                 },
                 {
                     test: /\.css$/i,
@@ -200,7 +200,7 @@ module.exports = (env, argv) => {
                 extensions: ['js', 'ts', 'jsx'],
                 failOnError: true,
                 quiet: true,
-                exclude: ['node_modules'],
+                exclude: ['node_modules', 'source/Tests'],
             }),
             new webpack.ProgressPlugin((percentage, message, ...args) => {
                 // e.g. Output each progress message directly to the console:

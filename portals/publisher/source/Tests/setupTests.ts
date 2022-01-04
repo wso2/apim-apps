@@ -4,8 +4,7 @@ import { TextEncoder, TextDecoder } from 'util'
 
 /* ####### OpenAPI mock configuration ####### */
 // Iterate the OAS tools config file and generate OpenAPIBackend objects and set it to test context globals
-
-const openApiBackends = {};
+const openApiBackends: {[key: string]: {}} = {};
 
 OASConfigs().map(([apiName, apiConfig]) => {
   const { inputSpec, context } = apiConfig as APIConfig;
