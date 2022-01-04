@@ -14,7 +14,7 @@
   "dependencies": {},
   "devDependencies": {},
   "scripts": {
-    "test": "npm test --workspace=portals/publisher",
+    "test": "npm run test:ci --workspace=portals/publisher",
     "build": "npm run build:prod --workspaces --if-present"
   },
   "repository": {

@@ -10,9 +10,9 @@
 
 ---
 
-|  Branch / Status | Azure | Travis CI |
+|  Branch / Status | Azure | Jenkins |
 | :------------ |:------------- |:-------------
-| master      | [![Build Status](https://dev.azure.com/apim-apps/apim-apps/_apis/build/status/wso2.apim-apps?branchName=main)](https://dev.azure.com/apim-apps/apim-apps/_build/latest?definitionId=2&branchName=main) | [![Build Status](https://travis-ci.com/wso2/apim-apps.svg?branch=main)](https://travis-ci.org/wso2/apim-apps) |
+| master      | [![Build Status](https://dev.azure.com/apim-apps/apim-apps/_apis/build/status/wso2.apim-apps?branchName=main)](https://dev.azure.com/apim-apps/apim-apps/_build/latest?definitionId=2&branchName=main) | [![Build Status](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/badge/icon)](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/) |
 
 
 WSO2 API Manager apps consists of several loosely coupled modules.
@@ -24,7 +24,7 @@ WSO2 API Manager apps consists of several loosely coupled modules.
 Setup build environment
 ==================================
 
-1. Install NodeJS 14.x or later LTS version from [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
+1. Install NodeJS 16.x or later LTS version from [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
  > **_Note :-_** 
    >  
    > You may use [nvm](https://github.com/nvm-sh/nvm) tool to manage NodeJS on your development environment
