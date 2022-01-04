@@ -89,9 +89,8 @@ const SampleAPI = (props) => {
         try {
             taskResult = await promisedTask;
         } catch (errors) {
-            throw new Error(errors);
-            // console.error(errors);
-            // tasksStatusDispatcher({ name, status: { errors } });
+            console.error(errors);
+            tasksStatusDispatcher({ name, status: { errors } });
         }
         tasksStatusDispatcher({ name, status: { inProgress: false, completed: true } });
         return taskResult;
