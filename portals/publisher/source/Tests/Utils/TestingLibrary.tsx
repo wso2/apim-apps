@@ -61,6 +61,7 @@ var localStorageMock = (function() {
   };
 })();
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
+Object.defineProperty(window, "location", { value: {} });
 Object.defineProperty(window.document, "cookie", {
   writable: true,
   value: "",

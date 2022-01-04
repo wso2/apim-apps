@@ -403,7 +403,7 @@ class Utils {
 
     /**
      * Force service definition download in browser
-     *
+     * @deprecated Use the above `forceDownload` method instead TODO: Dedup this method
      * @static
      * @param {*} response
      * @param {*} serviceDefinitionType

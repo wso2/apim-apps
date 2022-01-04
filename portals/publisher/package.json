@@ -7,7 +7,7 @@
         "node": "16.*"
     },
     "scripts": {
-        "test:ci": "CI=true ; jest --silent --ci --watchAll=false --watch=false --coverage --coverageReporters=text-summary --runInBand",
+        "test:ci": "export CI=true jest --silent --ci --watchAll=false --watch=false --coverage --coverageReporters=cobertura",
         "test": "DEBUG_PRINT_LIMIT=9000 jest --watch",
         "test:coverage": "jest --silent --coverage .; python3 -m http.server -d coverage/",
         "build:prod": "npm run i18n; npm run i18n:compile; rimraf site/public/dist/ && NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
