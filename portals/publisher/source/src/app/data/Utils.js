@@ -95,7 +95,7 @@ class Utils {
         validityPeriod,
         path = '/',
         environmentName = Utils.getCurrentEnvironment().label,
-        secured = true,
+        secured = false,
     ) {
         let expiresDirective = '';
         const securedDirective = secured ? '; Secure' : '';

@@ -91,6 +91,7 @@ const SampleAPI = (props) => {
         } catch (errors) {
             console.error(errors);
             tasksStatusDispatcher({ name, status: { errors } });
+            throw errors;
         }
         tasksStatusDispatcher({ name, status: { inProgress: false, completed: true } });
         return taskResult;

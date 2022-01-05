@@ -23,7 +23,7 @@ import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import Themes from 'AppData/defaultTheme';
 import LeftMenuItem from './LeftMenuItem';
 
-describe('<LeftMenuItem/> tests', () => {
+describe.skip('<LeftMenuItem/> tests', () => {
     test.todo('should render <LeftMenuItem/> component with dark theme styles');
     test.todo('should render <LeftMenuItem/> component without themes (unwrapped)');
     test.todo('should render <LeftMenuItem/> contains the property text in wrapped instance');

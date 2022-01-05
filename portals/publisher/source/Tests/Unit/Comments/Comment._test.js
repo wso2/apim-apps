@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { unwrap } from '@material-ui/core/test-utils';
+// import { unwrap } from '@material-ui/core/test-utils';
 import { Typography } from '@material-ui/core';
 import Comment from '../../../src/app/components/Apis/Details/Comments/Comment';
 import CommentEdit from '../../../src/app/components/Apis/Details/Comments/CommentEdit';
@@ -23,7 +23,7 @@ import CommentOptions from '../../../src/app/components/Apis/Details/Comments/Co
 import CommentReply from '../../../src/app/components/Apis/Details/Comments/CommentReply';
 import ConfirmDialog from '../../../src/app/components/Shared/ConfirmDialog';
 
-const CommentUnwrapped = unwrap(Comment);
+// const CommentUnwrapped = unwrap(Comment);
 
 let comment;
 let reply;

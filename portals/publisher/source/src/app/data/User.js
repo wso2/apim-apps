@@ -66,9 +66,14 @@ export default class User {
      * @param {String} environmentName - Name of the environment to be assigned to the user
      * @returns {User} - An instance of User(this) class.
      */
-    static fromJson(userJson, environmentName = Utils.getCurrentEnvironment().label) {
+    static fromJson(
+        userJson,
+        environmentName = Utils.getCurrentEnvironment().label,
+    ) {
         if (!userJson.name) {
-            throw new Error('Need to provide user `name` key in the JSON object, to create an user');
+            throw new Error(
+                'Need to provide user `name` key in the JSON object, to create an user',
+            );
         }
 
         const _user = new User(environmentName, userJson.name);
@@ -82,7 +87,10 @@ export default class User {
      * @returns {String|null}
      */
     getPartialToken() {
-        return Utils.getCookie(User.CONST.WSO2_AM_TOKEN_1, this._environmentName);
+        return Utils.getCookie(
+            User.CONST.WSO2_AM_TOKEN_1,
+            this._environmentName,
+        );
     }
 
     /**
@@ -90,7 +98,10 @@ export default class User {
      * @returns {String|null}
      */
     getRefreshPartialToken() {
-        return Utils.getCookie(User.CONST.WSO2_AM_REFRESH_TOKEN_1, this._environmentName);
+        return Utils.getCookie(
+            User.CONST.WSO2_AM_REFRESH_TOKEN_1,
+            this._environmentName,
+        );
     }
 
     /**
@@ -99,9 +110,19 @@ export default class User {
      * @param {Number} validityPeriod - Validity period of the cookie in seconds
      * @param {String} path - Path which need to be set to cookie
      */
-    setPartialToken(newToken, validityPeriod, path) {
-        Utils.deleteCookie(User.CONST.WSO2_AM_TOKEN_1, path, this._environmentName);
-        Utils.setCookie(User.CONST.WSO2_AM_TOKEN_1, newToken, validityPeriod, path, this._environmentName);
+    setPartialToken(newToken, validityPeriod, path = '/') {
+        Utils.deleteCookie(
+            User.CONST.WSO2_AM_TOKEN_1,
+            path,
+            this._environmentName,
+        );
+        Utils.setCookie(
+            User.CONST.WSO2_AM_TOKEN_1,
+            newToken,
+            validityPeriod,
+            path,
+            this._environmentName,
+        );
     }
 
     /**
@@ -126,7 +147,10 @@ export default class User {
         }
         const currentTime = Date.now();
         const timeDiff = 1000 * expireTime;
-        localStorage.setItem(User.CONST.USER_EXPIRY_TIME, currentTime + timeDiff);
+        localStorage.setItem(
+            User.CONST.USER_EXPIRY_TIME,
+            currentTime + timeDiff,
+        );
         this.expiryTime = new Date(currentTime + timeDiff);
         return this.expiryTime;
     }
@@ -176,8 +200,12 @@ export default class User {
      */
     getAppInfo() {
         return {
-            clientId: Utils.getCookieWithoutEnvironment(User.CONST.PUBLISHER_CLIENT_ID),
-            sessionState: Utils.getCookieWithoutEnvironment(User.CONST.PUBLISHER_SESSION_STATE),
+            clientId: Utils.getCookieWithoutEnvironment(
+                User.CONST.PUBLISHER_CLIENT_ID,
+            ),
+            sessionState: Utils.getCookieWithoutEnvironment(
+                User.CONST.PUBLISHER_SESSION_STATE,
+            ),
         };
     }
 
@@ -188,8 +216,12 @@ export default class User {
      */
     getProperty(name) {
         if (!Object.values(User.PROPERTIES).includes(name)) {
-            throw new Error(`${name} is not a valid property, `
-            + `property name should be one of ${Object.values(User.PROPERTIES).join(',')} `);
+            throw new Error(
+                `${name} is not a valid property, ` +
+                    `property name should be one of ${Object.values(
+                        User.PROPERTIES,
+                    ).join(',')} `,
+            );
         }
         return JSON.parse(localStorage.getItem(`wso2_pub_user_${name}`));
     }
@@ -201,10 +233,17 @@ export default class User {
      */
     setProperty(name, value) {
         if (!Object.values(User.PROPERTIES).includes(name)) {
-            throw new Error(`${name} is not a valid property, `
-            + `property name should be one of ${Object.values(User.PROPERTIES).join(',')} `);
+            throw new Error(
+                `${name} is not a valid property, ` +
+                    `property name should be one of ${Object.values(
+                        User.PROPERTIES,
+                    ).join(',')} `,
+            );
         }
-        localStorage.setItem(`${User.CONST.PROPERTY_PREFIX}${name}`, JSON.stringify(value));
+        localStorage.setItem(
+            `${User.CONST.PROPERTY_PREFIX}${name}`,
+            JSON.stringify(value),
+        );
     }
 
     /**
@@ -231,7 +270,7 @@ User.PROPERTIES = {
     API_CONFIG_OPEN: 'apis_details_api_config_open_state',
 };
 
-Object.freeze(User.PROPERTIES);// Do not allow to add properties dynamically
+Object.freeze(User.PROPERTIES); // Do not allow to add properties dynamically
 /**
  * Map of users (key = environmentLabel, value = User instance)
  * @type {Map}
