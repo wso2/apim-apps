@@ -19,7 +19,7 @@
 import React from 'react';
 import APIsNavigation from './Apis';
 
-describe('APIs', () => {
+describe.skip('APIs', () => {
     test('should ', () => {
         const a = DEPRECATED_shallow(<APIsNavigation intl={{ formatMessage: jest.fn() }} />);
         // expect(a).type.to.be('WithStyles(PageNav)');

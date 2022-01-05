@@ -17,12 +17,12 @@
  */
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import { unwrap } from '@material-ui/core/test-utils';
+// import { unwrap } from '@material-ui/core/test-utils';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 import MenuButton from './MenuButton';
 
-const UnwrappedMenuButton = unwrap(MenuButton);
+// const UnwrappedMenuButton = unwrap(MenuButton);
 
 describe.skip('<MenuButton/> tests', () => {
     let wrapper;

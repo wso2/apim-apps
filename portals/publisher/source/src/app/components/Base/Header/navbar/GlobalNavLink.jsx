@@ -106,14 +106,14 @@ function GlobalNavLinks(props) {
     if (!title) {
         tooltipTitle = children;
     }
-
+    const linkTo = !isExternalLink ? to : '#';
     const iconWidth = 25;
     return (
         <Link
             id={id}
             underline='none'
             component={!isExternalLink && RouterLink}
-            to={!isExternalLink && to}
+            to={linkTo}
         >
             <Tooltip
                 classes={{ arrow: classes.arrow, tooltip: classes.tooltip }}

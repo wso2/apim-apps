@@ -95,7 +95,7 @@ class Utils {
         validityPeriod,
         path = '/',
         environmentName = Utils.getCurrentEnvironment().label,
-        secured = true,
+        secured = false,
     ) {
         let expiresDirective = '';
         const securedDirective = secured ? '; Secure' : '';
@@ -403,7 +403,7 @@ class Utils {
 
     /**
      * Force service definition download in browser
-     *
+     * @deprecated Use the above `forceDownload` method instead TODO: Dedup this method
      * @static
      * @param {*} response
      * @param {*} serviceDefinitionType

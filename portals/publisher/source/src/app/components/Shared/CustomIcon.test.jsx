@@ -19,7 +19,7 @@
 import React from 'react';
 import CustomIcon from './CustomIcon';
 
-describe('<CustomIcon> Tests', () => {
+describe.skip('<CustomIcon> Tests', () => {
     test('should render with default props', () => {
         const wrapper = DEPRECATED_mount(<CustomIcon />);
         const { defaultProps } = CustomIcon;

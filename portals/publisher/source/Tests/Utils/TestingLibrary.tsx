@@ -43,36 +43,13 @@ configure({ asyncUtilTimeout });
 jest.setTimeout((asyncUtilTimeout * 3) / 2);
 /* ####### End of Timeout configurations ####### */
 
-var localStorageMock = (function() {
-  var store: { [key: string]: string } = {};
-  return {
-    getItem: function(key: string) {
-      return store[key];
-    },
-    setItem: function(key: string, value: any) {
-      store[key] = value.toString();
-    },
-    clear: function() {
-      store = {};
-    },
-    removeItem: function(key: string): void {
-      delete store[key];
-    },
-  };
-})();
-Object.defineProperty(window, "localStorage", { value: localStorageMock });
-Object.defineProperty(window.document, "cookie", {
-  writable: true,
-  value: "",
-});
-
 const GlobalProviders: FC<{ user: any }> = ({
   children,
   user = MockedUsers.Admin,
 }) => {
   const theme = createMuiTheme(defaultTheme as any); // We really don't care about the styling in this tests, Need to handle Visual Regression
   const testUser = User.fromJson(user, Utils.getDefaultEnvironment().label);
-  testUser.setPartialToken("AM_ACC_TOKEN_DEFAULT_P1", -1, "/publisher");
+  testUser.setPartialToken("AM_ACC_TOKEN_DEFAULT_P1", -1);
   testUser.setExpiryTime(9999999);
 
   AuthManager.setUser(testUser);
@@ -112,6 +89,16 @@ export const searchParamsToRequestQuery = (searchParams: URLSearchParams) =>
       .replace(/&/g, '","')
       .replace(/=/g, '":"')}"}`
   );
+
+/**
+ * Only use this method for wait and check the output, DON'T use it for testing the component
+ * @param sec Wait time in seconds
+ * @returns 
+ */
+export function dummyWait(sec: number = 1) {
+  console.warn("dummyWait is only intended to be used in tests development time, Remove it after finalizing the test");
+  return new Promise((resolve) => setTimeout(resolve, sec * 1000));
+}
 export * from "@testing-library/react";
 export { customRender as render };
 export { getMockServer } from "./restAPI.mock";

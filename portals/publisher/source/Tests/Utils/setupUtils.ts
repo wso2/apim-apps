@@ -1,11 +1,12 @@
-import * as path from "path";
-import * as fs from "fs";
-import SwaggerParser from "@apidevtools/swagger-parser";
-import { promises as fsPromises } from "fs";
-import * as url from "url";
-import { OpenAPIV3 } from "openapi-types";
+import * as path from 'path';
+import * as fs from 'fs';
+import SwaggerParser from '@apidevtools/swagger-parser';
+import { promises as fsPromises } from 'fs';
+import * as url from 'url';
+import { OpenAPIV3 } from 'openapi-types';
 
 export type APIConfig = { inputSpec: any; context: string };
+const MAX_DOWNLOAD_RETRY = 3;
 
 /**
  * Download the OAS definition to a temporary location given the URL
@@ -13,12 +14,12 @@ export type APIConfig = { inputSpec: any; context: string };
  * @returns
  */
 export function getTempPath(_url: string, isFileName: boolean = false) {
-  let fileName = _url;
-  if (!isFileName) {
-    const parsed = url.parse(_url);
-    fileName = path.basename(parsed.pathname || "");
-  }
-  return `/tmp/${fileName}`;
+    let fileName = _url;
+    if (!isFileName) {
+        const parsed = url.parse(_url);
+        fileName = path.basename(parsed.pathname || '');
+    }
+    return `/tmp/${fileName}`;
 }
 
 /**
@@ -27,14 +28,12 @@ export function getTempPath(_url: string, isFileName: boolean = false) {
  * @returns string cleaned OAS definition
  */
 export function removeXExamples(
-  oasDefinition: OpenAPIV3.Document
+    oasDefinition: OpenAPIV3.Document,
 ): OpenAPIV3.Document {
-  Object.keys(oasDefinition.paths).forEach((path) =>
-    Object.keys(oasDefinition.paths[path]).forEach((verb) => {
-      delete oasDefinition.paths[path][verb]["x-examples"];
-    })
-  );
-  return oasDefinition;
+    Object.keys(oasDefinition.paths).forEach((path) => Object.keys(oasDefinition.paths[path]).forEach((verb) => {
+        delete oasDefinition.paths[path][verb]['x-examples'];
+    }));
+    return oasDefinition;
 }
 
 /**
@@ -44,36 +43,55 @@ export function removeXExamples(
  * @returns Promise<string> Parsed and dereferenced OAS content
  */
 export const downloadOASDefinition = async function bundle(
-  apiURL: string
+    apiURL: string,
 ): Promise<string> {
-  const filePath = getTempPath(apiURL);
+    const filePath = getTempPath(apiURL);
 
-  // Throw an error if the API contains circular $refs and we're dereferencing,
-  // since the output can't be serialized as JSON
-  let opts = {
-    dereference: {
-      circular: false,
-    },
-  };
-  console.log(`Start downloading ${filePath}`);
-  let bundled = await SwaggerParser.bundle(apiURL, opts);
-  console.log(`OAS definition downloaded ${filePath} successfully!`);
-  let content = JSON.stringify(bundled, null) + "\n";
+    // Throw an error if the API contains circular $refs and we're dereferencing,
+    // since the output can't be serialized as JSON
+    const opts = {
+        dereference: {
+            circular: false,
+        },
+    };
+    console.log(`Start downloading ${filePath}`);
+    let retries = 0;
+    let bundled;
+    while (retries < MAX_DOWNLOAD_RETRY) {
+        try {
+            // disabled the rule to do fail re-tries
+            // eslint-disable-next-line no-await-in-loop
+            bundled = await SwaggerParser.bundle(apiURL, opts);
+            break;
+        } catch (error) {
+            retries += 1;
+            console.warn(`Tries: ${retries} : Error while downloading ${apiURL}`);
+        }
+    }
+    if (!bundled) {
+        const downloadError = `Could not download the ${apiURL} after`
+      + ` ${MAX_DOWNLOAD_RETRY} attempts your internet connection!!!`;
+        console.error(downloadError);
+        throw new Error(downloadError);
+    }
 
-  console.log(`Start saving ${filePath}`);
-  // Create the output directory, if necessary
-  await fsPromises.mkdir(path.dirname(filePath), { recursive: true });
+    console.log(`OAS definition downloaded ${filePath} successfully!`);
+    const content = JSON.stringify(bundled, null) + '\n';
 
-  // Write the result to the output file
-  await fsPromises.writeFile(filePath, content);
-  console.log(`OAS definition saved ${filePath} successfully!`);
+    console.log(`Start saving ${filePath}`);
+    // Create the output directory, if necessary
+    await fsPromises.mkdir(path.dirname(filePath), { recursive: true });
 
-  return content;
+    // Write the result to the output file
+    await fsPromises.writeFile(filePath, content);
+    console.log(`OAS definition saved ${filePath} successfully!`);
+
+    return content;
 };
 
 export const OASConfigs = () => {
-  const oasToolConfig = JSON.parse(
-    fs.readFileSync(path.join(process.cwd(), "openapitools.json"), "utf8")
-  );
-  return Object.entries(oasToolConfig["generator-cli"].generators);
+    const oasToolConfig = JSON.parse(
+        fs.readFileSync(path.join(process.cwd(), 'openapitools.json'), 'utf8'),
+    );
+    return Object.entries(oasToolConfig['generator-cli'].generators);
 };

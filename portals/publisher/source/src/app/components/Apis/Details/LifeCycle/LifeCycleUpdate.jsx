@@ -38,7 +38,7 @@ import LifeCycleImage from './LifeCycleImage';
 import CheckboxLabels from './CheckboxLabels';
 import LifecyclePending from './LifecyclePending';
 import { API_SECURITY_MUTUAL_SSL_MANDATORY, API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY }
-    from '../Configuration/components/APISecurity/components/apiSecurityConstants';
+from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const styles = (theme) => ({
     buttonsWrapper: {

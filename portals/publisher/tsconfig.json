@@ -27,7 +27,7 @@
     }
   },
   "include": ["source"],
-  "exclude": ["node_modules", "coverage", "site", "services", "source/Tests/**/*", "**/*.test.tsx"], // Excluding tests related file for ts-loader
+  "exclude": ["node_modules", "coverage", "site", "services"], // "source/Tests/**/*", "**/*.test.tsx" Excluding tests related file for ts-loader
   "typeAcquisition": {
     "include": ["jest"]
   }

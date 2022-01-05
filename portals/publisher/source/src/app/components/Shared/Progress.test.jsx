@@ -19,7 +19,7 @@
 import React from 'react';
 import Progress from './Progress';
 
-describe('Progress component test', () => {
+describe.skip('Progress component test', () => {
     test('should comply with the snapshot', () => {
         const snapShotTree = DEPRECATED_renderer.create(<Progress />).toJSON();
         expect(snapShotTree).toMatchSnapshot();
