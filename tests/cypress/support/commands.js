@@ -279,12 +279,10 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
     cy.get('[data-testid="policy-item-Unlimited"]').click();
     cy.get('#menu-policies').click('topLeft');
 
-
-    // finish the wizard
-    cy.get('[data-testid="api-create-finish-btn"]').click();
-
     // validate
     cy.intercept('**/lifecycle-state').as('lifeCycleStatus');
+    // finish the wizard
+    cy.get('[data-testid="api-create-finish-btn"]').click();
     cy.wait('@lifeCycleStatus', { requestTimeout: 30000 });
 
     // publish
