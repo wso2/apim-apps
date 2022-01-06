@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LandingMenu = (props) => {
+const   LandingMenu = (props) => {
     const {
         title, icon, children, id,
     } = props;
@@ -135,7 +135,7 @@ const LandingMenu = (props) => {
                                 spacing={4}
                             >
                                 {/* Menu links or buttons */}
-                                {children}
+                                {isCollapsed? children: null}
                             </Grid>
                         </Box>
                     </Fade>

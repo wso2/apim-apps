@@ -80,7 +80,7 @@ const SampleAPI = (props) => {
     const [showStatus, setShowStatus] = useState(false);
     const [newSampleAPI, setNewSampleAPI] = useState();
     const classes = useStyles();
-    const { data: publisherSettings } = usePublisherSettings();
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const taskManager = async (promisedTask, name) => {
@@ -180,7 +180,7 @@ const SampleAPI = (props) => {
                 dense={dense}
                 id='itest-id-deploy-sample'
                 onClick={handleDeploySample}
-                disabled={!publisherSettings}
+                disabled={!publisherSettings || isLoading}
                 component='button'
                 helperText={(
                     <FormattedMessage

@@ -20,15 +20,16 @@ afterEach(() => {
 afterAll(() => server.close());
 
 describe('Landing page', () => {
-    test.skip('Should have 4 welcome cards', async () => {
+    test('Should have 4 welcome cards', async () => {
         render(<Landing />);
+        await new Promise(resolve => setTimeout(resolve, 8000));
         expect(screen.getByText(/soap api/i)).toBeInTheDocument();
         expect(screen.getByText(/^rest api/i)).toBeInTheDocument();
         expect(screen.getByText(/^graphql/i)).toBeInTheDocument();
         expect(screen.getByText(/streaming api/i)).toBeInTheDocument();
     });
 
-    test.skip('REST API Card links', async () => {
+    test('REST API Card links', async () => {
         render(<Landing />);
         const restAPICard = screen.getByText(/^rest api/i);
         expect(
@@ -38,6 +39,9 @@ describe('Landing page', () => {
         ).toBeNull();
         expect(restAPICard).toBeInTheDocument();
         fireEvent.click(restAPICard);
+        await waitFor(() => expect(screen.getByRole('button', {
+            name: /deploy sample api/i
+        })).not.toBeDisabled());
         expect(
             screen.getByRole('link', {
                 name: /start from scratch/i,
@@ -54,7 +58,7 @@ describe('Landing page', () => {
             }),
         ).toBeInTheDocument();
     });
-    // Skipped until we fix 
+    // TODO: tmkasun Skipped until we fix 
     // node:35339) UnhandledPromiseRejectionWarning: TypeError: Cannot read property '_origin' of null
     test.skip(
         'REST API deploy sample API',

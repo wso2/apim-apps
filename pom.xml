@@ -51,7 +51,6 @@
                             <arguments>
                                 <argument>ci</argument>
                             </arguments>
-                            <workingDirectory>${basedir}</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>
