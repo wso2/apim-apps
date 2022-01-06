@@ -92,6 +92,7 @@
                             <workingDirectory>./</workingDirectory>
                             <executable>${npm.executable}</executable>
                             <arguments>
+                                <argument>run</argument>
                                 <argument>${npm.test.command}</argument>
                             </arguments>
                         </configuration>

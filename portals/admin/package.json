@@ -7,7 +7,7 @@
         "node": "16.*"
     },
     "scripts": {
-        "test": "echo To be implemented",
+        "test:ci": "echo To be implemented",
         "test:coverage": "jest --coverage",
         "build:prod": "rm -R site/public/dist/; npm rum i18n && NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
         "build:dev": "rm -R site/public/dist/; NODE_ENV=development webpack --mode development --watch ",

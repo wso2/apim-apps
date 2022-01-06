@@ -7,7 +7,7 @@
         "node": "16.*"
     },
     "scripts": {
-        "test": "jest --silent",
+        "test:ci": "jest --silent",
         "test:integration": "jest -c source/Tests/Integration/jest.config.js",
         "test:coverage": "jest --coverage",
         "build:prod": "rimraf site/public/dist/ && npm rum i18n && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
