@@ -102,6 +102,18 @@ function GlobalNavLinks(props) {
                 >
                     <FormattedMessage id='Base.Header.navbar.GlobalNavBar.scopes' defaultMessage='Scopes' />
                 </GlobalNavLink>
+                <GlobalNavLink
+                    id='policy-templates'
+                    to='/policy-templates'
+                    type='policy-templates'
+                    title='Policy Templates'
+                    active={selected === 'policy-templates'}
+                >
+                    <FormattedMessage
+                        id='Base.Header.navbar.GlobalNavBar.policyTemplates'
+                        defaultMessage='Policies Templates'
+                    />
+                </GlobalNavLink>
                 {analyticsMenuEnabled && (
                     <>
                         <Divider />

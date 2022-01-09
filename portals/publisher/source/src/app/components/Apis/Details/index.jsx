@@ -73,6 +73,7 @@ import APIDetailsTopMenu from './components/APIDetailsTopMenu';
 import BusinessInformation from './BusinessInformation/BusinessInformation';
 import Properties from './Properties/Properties';
 import Monetization from './Monetization';
+import Policies from './Policies';
 import ExternalStores from './ExternalStores/ExternalStores';
 import { APIProvider } from './components/ApiContext';
 import CreateNewVersion from './NewVersion/NewVersion';
@@ -982,6 +983,10 @@ class Details extends Component {
                                         path={Details.subPaths.COMMENTS}
                                         component={() => <Comments apiObj={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.POLICIES}
+                                        component={() => <Policies api={api} />}
+                                    />
                                 </Switch>
                             </div>
                         </RevisionContextProvider>
@@ -1039,6 +1044,7 @@ Details.subPaths = {
     QUERYANALYSIS: '/apis/:api_uuid/queryanalysis',
     TOPICS: '/apis/:api_uuid/topics',
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi definition',
+    POLICIES: '/apis/:api_uuid/policies',
 };
 
 // To make sure that paths will not change by outsiders, Basically an enum

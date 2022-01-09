@@ -152,6 +152,11 @@ export default {
             mutation: '#c1dea0',
             subscription: '#ffcc80',
         },
+        policyFlowChipColor: {
+            request: '#b3e6fe',
+            response: '#c1dea0',
+            fault: '#fcacb6',
+        },
         overviewStepper: {
             backgrounds: {
                 completed: '#eeeeee',
@@ -244,6 +249,7 @@ export default {
                 streamingApiIcon: '/site/public/images/landing-icons/streamingapi.svg',
                 serviceCatalogApiIcon: '/site/public/images/landing-icons/servicecatalogapi.svg',
                 scopesAddIcon: '/site/public/images/landing-icons/scopes.svg',
+                policyTemplateAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 apiproductAddIcon: '/site/public/images/landing-icons/apiproduct.svg',
             },
             menu: {

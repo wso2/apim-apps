@@ -37,6 +37,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import Configurations from 'Config';
 import { QueryClientProviderX } from 'AppData/hooks/ReactQueryX';
 import Scopes from 'AppComponents/Scopes/Scopes';
+import PolicyTemplates from 'AppComponents/PolicyTemplates/PolicyTemplates';
 import merge from 'lodash/merge';
 
 const ThemeProvider = CoreThemeProvider || NormalThemeProvider;
@@ -226,6 +227,7 @@ export default class Protected extends Component {
                                         <Route path='/apis' component={DeferredAPIs} />
                                         <Route path='/api-products' component={DeferredAPIs} />
                                         <Route path='/scopes' component={Scopes} />
+                                        <Route path='/policy-templates' component={PolicyTemplates} />
                                         <Route path='/service-catalog' component={ServiceCatalogRouting} />
                                         <Route component={ResourceNotFound} />
                                     </Switch>
