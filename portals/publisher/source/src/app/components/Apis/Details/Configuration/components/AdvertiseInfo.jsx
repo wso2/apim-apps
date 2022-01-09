@@ -22,6 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import MuiAlert from 'AppComponents/Shared/MuiAlert';
+import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -57,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
+    alert: {
+        marginBottom: '20px',
+    },
 }));
 
 /**
@@ -71,19 +75,34 @@ const AdvertiseInfo = (props) => {
         configDispatcher,
         api: { advertiseInfo, type },
     } = props;
+    const {
+        allRevisions,
+    } = useRevisionContext();
     const classes = useStyles();
     const [apiFromContext] = useAPI();
-
+    const isDeployed = () => {
+        if (allRevisions) {
+            for (let i = 0; i < allRevisions.length; i++) {
+                if (allRevisions[i].deploymentInfo.length > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
     const infoMsg = () => {
         if (type === 'ASYNC') {
             return 'The "Other" type streaming APIs will serve as advertise only APIs. If you want to deploy and API'
                 + ' in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API.';
+        } else if (isDeployed()) {
+            return 'There are active deployments in the API. Please undeploy the revision before changing the API to'
+                + ' an advertise only API.';
         }
         return null;
     };
 
     return (
-        <Grid container spacing={1} alignItems='flex-start' xs={11}>
+        <Grid container spacing={1} alignItems='flex-start'>
             <Grid item>
                 <Box>
                     <FormControl component='fieldset' style={{ display: 'flex' }}>
@@ -106,7 +125,7 @@ const AdvertiseInfo = (props) => {
                         >
                             <FormControlLabel
                                 disabled={isRestricted(['apim:api_create'], apiFromContext)
-                                    || type === 'ASYNC'}
+                                    || type === 'ASYNC' || isDeployed()}
                                 value
                                 control={<Radio color='primary' />}
                                 label={(
@@ -118,7 +137,7 @@ const AdvertiseInfo = (props) => {
                             />
                             <FormControlLabel
                                 disabled={isRestricted(['apim:api_create'], apiFromContext)
-                                    || type === 'ASYNC'}
+                                    || type === 'ASYNC' || isDeployed()}
                                 value={false}
                                 control={<Radio color='primary' />}
                                 label={(
@@ -152,6 +171,11 @@ const AdvertiseInfo = (props) => {
                     </Tooltip>
                 </Box>
             </Grid>
+            {infoMsg() !== null && (
+                <Grid>
+                    <MuiAlert severity='info' className={classes.alert}>{infoMsg()}</MuiAlert>
+                </Grid>
+            )}
             <Grid>
                 {advertiseInfo.advertised && (
                     <>
@@ -240,9 +264,6 @@ const AdvertiseInfo = (props) => {
                     </>
                 )}
             </Grid>
-            {infoMsg() !== null && (
-                <MuiAlert severity='info' className={classes.alert}>{infoMsg()}</MuiAlert>
-            )}
         </Grid>
     );
 };

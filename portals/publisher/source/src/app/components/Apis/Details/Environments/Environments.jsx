@@ -19,6 +19,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
 import 'react-tagsinput/react-tagsinput.css';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -1397,6 +1398,17 @@ export default function Environments() {
 
     return (
         <>
+            {api.advertiseInfo && api.advertiseInfo.advertised && (
+                <MuiAlert severity='info'>
+                    <Typography variant='body' align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.advertise.only.warning'
+                            defaultMessage={'This API is marked as an advertise only API. The requests are not proxied'
+                            + ' through the gateway. Hence, deployments are not required.'}
+                        />
+                    </Typography>
+                </MuiAlert>
+            )}
             {allRevisions && allRevisions.length === 0 && (
                 <DeploymentOnbording
                     classes={classes}
@@ -1405,6 +1417,7 @@ export default function Environments() {
                     description
                     setDescription={setDescription}
                     gatewayVendor={api.gatewayVendor}
+                    api={api}
                 />
             )}
             {allRevisions && allRevisions.length !== 0 && (
@@ -1428,7 +1441,8 @@ export default function Environments() {
                 <Grid container>
                     <Button
                         onClick={toggleDeployRevisionPopup}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                    || (api.advertiseInfo && api.advertiseInfo.advertised)}
                         variant='contained'
                         color='primary'
                         size='large'
@@ -1808,7 +1822,8 @@ export default function Environments() {
                             color='primary'
                             disabled={SelectedEnvironment.length === 0
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                || (api.advertiseInfo && api.advertiseInfo.advertised)}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Environments.Environments.deploy.deploy'
@@ -2230,7 +2245,7 @@ export default function Environments() {
                                                                 (r) => r.env === row.name && r.revision,
                                                             ) || !selectedVhosts.some(
                                                                 (v) => v.env === row.name && v.vhost,
-                                                            )}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,
@@ -2444,7 +2459,7 @@ export default function Environments() {
                                                             className={classes.button2}
                                                             disabled={api.isRevision || !selectedRevision.some(
                                                                 (r) => r.env === row.name && r.revision,
-                                                            )}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,
