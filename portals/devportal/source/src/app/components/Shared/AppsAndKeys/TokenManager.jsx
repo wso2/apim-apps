@@ -24,6 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Alert from 'AppComponents/Shared/Alert';
@@ -750,22 +751,26 @@ class TokenManager extends React.Component {
         return (
             <>
                 {(keyManagers && keyManagers.length > 1) && (
-                    <StyledTabs
+                    <AppBar position="static" color="default">
+                        <Tabs
                         value={selectedTab}
-                        indicatorColor='primary'
-                        textColor='primary'
                         onChange={this.handleTabChange}
-                        aria-label='key manager tabs'
-                    >
-                        {keyManagers.map((keymanager) => (
-                            <StyledTab
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        aria-label="scrollable auto tabs example"
+                        >
+                            {keyManagers.map((keymanager) => (
+                            <Tab
                                 label={keymanager.displayName || keymanager.name}
                                 value={keymanager.name}
                                 disabled={!keymanager.enabled}
                                 id={keymanager.name.replace(/\s/g, '')}
                             />
-                        ))}
-                    </StyledTabs>
+                            ))}
+                        </Tabs>
+                    </AppBar>
                 )}
                 <div className={classes.root}>
                     <Box mb={1}>
