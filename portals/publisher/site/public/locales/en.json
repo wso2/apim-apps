@@ -7232,7 +7232,7 @@
   "Apis.Shared.AppErrorBoundary.something.went.wrong": [
     {
       "type": 0,
-      "value": "Something went wrong"
+      "value": "Oops! This is embarrassing"
     }
   ],
   "Apis.Shared.ConfirmDialog.are.you.sure": [
