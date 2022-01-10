@@ -585,18 +585,68 @@ function TryOutController(props) {
             <Grid xs={12} md={12} item>
                 <Box display='block'>
                     {user && subscriptions
-                                && subscriptions.length > 0 && securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
-                                && (!api.advertiseInfo || !api.advertiseInfo.advertised)
-                                && (
-                                    <SelectAppPanel
-                                        subscriptions={subscriptions}
-                                        handleChanges={handleChanges}
-                                        selectedApplication={selectedApplication}
-                                        selectedKeyManager={selectedKeyManager}
-                                        selectedKeyType={selectedKeyType}
-                                        keyManagers={keyManagers}
+                        && subscriptions.length > 0 && securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised)
+                        && (
+                            <SelectAppPanel
+                                subscriptions={subscriptions}
+                                handleChanges={handleChanges}
+                                selectedApplication={selectedApplication}
+                                selectedKeyManager={selectedKeyManager}
+                                selectedKeyType={selectedKeyType}
+                                keyManagers={keyManagers}
+                            />
+                        )}
+                    {api.advertiseInfo && api.advertiseInfo.advertised && (
+                        <Grid x={12} md={6} className={classes.centerItems}>
+                            <Typography
+                                variant='h6'
+                                component='label'
+                                id='key-type'
+                                color='textSecondary'
+                                className={classes.tryoutHeading}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.ApiConsole.TryOutController.select.key.type.heading'
+                                    defaultMessage='Key Type'
+                                />
+                            </Typography>
+                            <FormControl component='fieldset'>
+                                <RadioGroup
+                                    name='selectedKeyType'
+                                    value={selectedKeyType}
+                                    onChange={handleChanges}
+                                    aria-labelledby='key-type'
+                                    row
+                                >
+                                    <FormControlLabel
+                                        value='PRODUCTION'
+                                        control={<Radio />}
+                                        disabled={api.advertiseInfo && api.advertiseInfo.advertised
+                                            && !api.advertiseInfo.apiExternalProductionEndpoint}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Apis.Details.ApiConsole.TryOutController.production.radio'
+                                                defaultMessage='Production'
+                                            />
+                                        )}
                                     />
-                                )}
+                                    <FormControlLabel
+                                        value='SANDBOX'
+                                        control={<Radio />}
+                                        disabled={api.advertiseInfo && api.advertiseInfo.advertised
+                                            && !api.advertiseInfo.apiExternalSandboxEndpoint}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Apis.Details.ApiConsole.TryOutController.sandbox.radio'
+                                                defaultMessage='Sandbox'
+                                            />
+                                        )}
+                                    />
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+                    )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
@@ -785,8 +835,8 @@ function TryOutController(props) {
                         </Box>
                     ) : (
                         <Box display='block' justifyContent='center' className={classes.authHeader}>
-                            <Grid x={8} md={6} className={classes.tokenType} item>
-                                <Grid x={12} md={12} item>
+                            <Grid container spacing={2} x={8} md={6} direction='row' className={classes.tokenType}>
+                                <Grid xs={6} md={4} item>
                                     <TextField
                                         margin='normal'
                                         variant='outlined'
@@ -802,6 +852,8 @@ function TryOutController(props) {
                                         value={advAuthHeader || ''}
                                         fullWidth
                                     />
+                                </Grid>
+                                <Grid xs={6} md={8} item>
                                     <TextField
                                         margin='normal'
                                         variant='outlined'

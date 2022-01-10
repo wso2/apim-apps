@@ -261,7 +261,8 @@ class ApiConsole extends React.Component {
      * @memberof ApiConsole
      */
     setSelectedKeyType(selectedKeyType, isUpdateToken, selectedApplication) {
-        if (isUpdateToken) {
+        const { api } = this.state;
+        if (isUpdateToken && (!api.advertiseInfo || !api.advertiseInfo.advertised)) {
             this.setState({ selectedKeyType }, this.updateAccessToken(selectedApplication));
         } else {
             this.setState({ selectedKeyType });
@@ -446,13 +447,21 @@ class ApiConsole extends React.Component {
         let swaggerSpec = swagger;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             authorizationHeader = advAuthHeader;
-            swaggerSpec = {
-                ...swagger,
-                servers: [
-                    { url: api.advertiseInfo.apiExternalProductionEndpoint },
-                    { url: api.advertiseInfo.apiExternalSandboxEndpoint },
-                ],
-            };
+            if (selectedKeyType === 'PRODUCTION') {
+                swaggerSpec = {
+                    ...swagger,
+                    servers: [
+                        { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                    ],
+                };
+            } else {
+                swaggerSpec = {
+                    ...swagger,
+                    servers: [
+                        { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                    ],
+                };
+            }
         }
         return (
             <>

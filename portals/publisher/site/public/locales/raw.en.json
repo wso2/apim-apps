@@ -540,6 +540,15 @@
   "Apis.Details.ApiConsole.generate.test.key": {
     "defaultMessage": "Generate Key"
   },
+  "Apis.Details.ApiConsole.production.radio": {
+    "defaultMessage": "Production"
+  },
+  "Apis.Details.ApiConsole.sandbox.radio": {
+    "defaultMessage": "Sandbox"
+  },
+  "Apis.Details.ApiConsole.select.key.type.heading": {
+    "defaultMessage": "Key Type"
+  },
   "Apis.Details.BusinessInformation.BusinessInformation.APIProduct.sub.heading": {
     "defaultMessage": "Business Information of the API Product"
   },
@@ -1808,6 +1817,9 @@
   },
   "Apis.Details.Environments.Environments.Deployments": {
     "defaultMessage": "Revisions"
+  },
+  "Apis.Details.Environments.Environments.advertise.only.warning": {
+    "defaultMessage": "This API is marked as an advertise only API. The requests are not proxied through the gateway. Hence, deployments are not required."
   },
   "Apis.Details.Environments.Environments.api.gateways.heading": {
     "defaultMessage": "API Gateways"

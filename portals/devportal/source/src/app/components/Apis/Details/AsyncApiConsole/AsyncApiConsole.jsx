@@ -145,7 +145,7 @@ export default function AsyncApiConsole() {
      * @param {*} isUpdateToken
      */
     function setSelectedKeyType(selectedKey, isUpdateToken) {
-        if (isUpdateToken) {
+        if (isUpdateToken && (!api.advertiseInfo || !api.advertiseInfo.advertised)) {
             setSelectedKey(selectedKey, updateAccessToken);
         } else {
             setSelectedKey(selectedKey);

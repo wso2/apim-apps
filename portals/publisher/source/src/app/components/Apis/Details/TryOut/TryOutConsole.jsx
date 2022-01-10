@@ -30,8 +30,14 @@ import React, {
 
 import Alert from 'AppComponents/Shared/MuiAlert';
 import Api from 'AppData/api';
+import withStyles from '@material-ui/core/styles/withStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import CONSTS from 'AppData/Constants';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -55,6 +61,21 @@ import { isRestricted } from 'AppData/AuthManager';
 // eslint-disable-next-line max-len
 const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/TryOut/SwaggerUI' /* webpackChunkName: "TryoutConsoleSwaggerUI" */));
 
+/**
+ * @inheritdoc
+ * @param {*} theme theme
+ */
+const useStyles = makeStyles(() => ({
+    centerItems: {
+        margin: 'auto',
+    },
+    tryoutHeading: {
+        paddingTop: '20px',
+        fontWeight: 400,
+        display: 'block',
+    },
+}));
+
 dayjs.extend(relativeTime);
 
 const tasksReducer = (state, action) => {
@@ -68,6 +89,7 @@ const tasksReducer = (state, action) => {
  * @extends {React.Component}
  */
 const TryOutConsole = () => {
+    const classes = useStyles();
     const [api] = useAPI();
     const [apiKey, setAPIKey] = useState('');
     const [deployments, setDeployments] = useState([]);
@@ -75,6 +97,7 @@ const TryOutConsole = () => {
     const [oasDefinition, setOasDefinition] = useState();
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
+    const [keyType, setKeyType] = useState('PRODUCTION');
     const { data: publisherSettings } = usePublisherSettings();
 
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, {
@@ -177,13 +200,18 @@ const TryOutConsole = () => {
             oasCopy = oasDefinition;
         }
         if (oasCopy && api.advertiseInfo && api.advertiseInfo.advertised) {
-            oasCopy.servers = [
-                { url: api.advertiseInfo.apiExternalProductionEndpoint },
-                { url: api.advertiseInfo.apiExternalSandboxEndpoint },
-            ];
+            if (keyType === 'PRODUCTION') {
+                oasCopy.servers = [
+                    { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                ];
+            } else {
+                oasCopy.servers = [
+                    { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                ];
+            }
         }
         return oasCopy;
-    }, [selectedDeployment, oasDefinition, publisherSettings]);
+    }, [keyType, selectedDeployment, oasDefinition, publisherSettings]);
 
     /**
      *
@@ -353,40 +381,96 @@ const TryOutConsole = () => {
                         </Box>
                     </>
                 ) : (
-                    <Box display='flex' justifyContent='center'>
-                        <Grid xs={11} md={6} item>
-                            <TextField
-                                margin='normal'
-                                variant='outlined'
-                                id='advAuthHeader'
-                                label={(
+                    <>
+                        <Box display='flex' justifyContent='center'>
+                            <Grid x={12} md={6} className={classes.centerItems}>
+                                <Typography
+                                    variant='h6'
+                                    component='label'
+                                    id='key-type'
+                                    color='textSecondary'
+                                    className={classes.tryoutHeading}
+                                >
                                     <FormattedMessage
-                                        id='Apis.Details.ApiConsole.adv.auth.header'
-                                        defaultMessage='Authorization Header'
+                                        id='Apis.Details.ApiConsole.select.key.type.heading'
+                                        defaultMessage='Key Type'
                                     />
-                                )}
-                                name='advAuthHeader'
-                                onChange={(event) => { setAdvAuthHeader(event.target.value); }}
-                                value={advAuthHeader || ''}
-                                fullWidth
-                            />
-                            <TextField
-                                margin='normal'
-                                variant='outlined'
-                                id='advAuthHeaderValue'
-                                label={(
-                                    <FormattedMessage
-                                        id='Apis.Details.ApiConsole.adv.auth.header.value'
-                                        defaultMessage='Authorization Header Value'
+                                </Typography>
+                                <FormControl component='fieldset'>
+                                    <RadioGroup
+                                        name='selectedKeyType'
+                                        value={keyType}
+                                        onChange={(event) => { setKeyType(event.target.value); }}
+                                        aria-labelledby='key-type'
+                                        row
+                                    >
+                                        <FormControlLabel
+                                            value='PRODUCTION'
+                                            control={<Radio />}
+                                            disabled={api.advertiseInfo && api.advertiseInfo.advertised
+                                            && !api.advertiseInfo.apiExternalProductionEndpoint}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.ApiConsole.production.radio'
+                                                    defaultMessage='Production'
+                                                />
+                                            )}
+                                        />
+                                        <FormControlLabel
+                                            value='SANDBOX'
+                                            control={<Radio />}
+                                            disabled={api.advertiseInfo && api.advertiseInfo.advertised
+                                            && !api.advertiseInfo.apiExternalSandboxEndpoint}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.ApiConsole.sandbox.radio'
+                                                    defaultMessage='Sandbox'
+                                                />
+                                            )}
+                                        />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
+                        </Box>
+                        <Box display='flex' justifyContent='center'>
+                            <Grid container spacing={2} x={8} md={6} direction='row'>
+                                <Grid xs={6} md={4} item>
+                                    <TextField
+                                        margin='normal'
+                                        variant='outlined'
+                                        id='advAuthHeader'
+                                        label={(
+                                            <FormattedMessage
+                                                id='Apis.Details.ApiConsole.adv.auth.header'
+                                                defaultMessage='Authorization Header'
+                                            />
+                                        )}
+                                        name='advAuthHeader'
+                                        onChange={(event) => { setAdvAuthHeader(event.target.value); }}
+                                        value={advAuthHeader || ''}
+                                        fullWidth
                                     />
-                                )}
-                                name='advAuthHeaderValue'
-                                onChange={(event) => { setAdvAuthHeaderValue(event.target.value); }}
-                                value={advAuthHeaderValue || ''}
-                                fullWidth
-                            />
-                        </Grid>
-                    </Box>
+                                </Grid>
+                                <Grid xs={6} md={8} item>
+                                    <TextField
+                                        margin='normal'
+                                        variant='outlined'
+                                        id='advAuthHeaderValue'
+                                        label={(
+                                            <FormattedMessage
+                                                id='Apis.Details.ApiConsole.adv.auth.header.value'
+                                                defaultMessage='Authorization Header Value'
+                                            />
+                                        )}
+                                        name='advAuthHeaderValue'
+                                        onChange={(event) => { setAdvAuthHeaderValue(event.target.value); }}
+                                        value={advAuthHeaderValue || ''}
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </>
                 )}
                 {updatedOasDefinition ? (
                     <Suspense
@@ -421,4 +505,4 @@ TryOutConsole.propTypes = {
     }).isRequired,
 };
 
-export default TryOutConsole;
+export default withStyles(makeStyles)(TryOutConsole);

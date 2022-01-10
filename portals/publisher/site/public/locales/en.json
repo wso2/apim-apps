@@ -1279,6 +1279,24 @@
       "value": "Generate Key"
     }
   ],
+  "Apis.Details.ApiConsole.production.radio": [
+    {
+      "type": 0,
+      "value": "Production"
+    }
+  ],
+  "Apis.Details.ApiConsole.sandbox.radio": [
+    {
+      "type": 0,
+      "value": "Sandbox"
+    }
+  ],
+  "Apis.Details.ApiConsole.select.key.type.heading": [
+    {
+      "type": 0,
+      "value": "Key Type"
+    }
+  ],
   "Apis.Details.BusinessInformation.BusinessInformation.APIProduct.sub.heading": [
     {
       "type": 0,
@@ -3823,6 +3841,12 @@
     {
       "type": 0,
       "value": "Revisions"
+    }
+  ],
+  "Apis.Details.Environments.Environments.advertise.only.warning": [
+    {
+      "type": 0,
+      "value": "This API is marked as an advertise only API. The requests are not proxied through the gateway. Hence, deployments are not required."
     }
   ],
   "Apis.Details.Environments.Environments.api.gateways.heading": [
