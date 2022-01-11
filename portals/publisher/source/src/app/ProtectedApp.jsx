@@ -28,7 +28,7 @@ import Base from 'AppComponents/Base';
 import AuthManager from 'AppData/AuthManager';
 import userThemes from 'userCustomThemes';
 import defaultTheme from 'AppData/defaultTheme';
-import AppErrorBoundary from 'AppComponents/Shared/AppErrorBoundary';
+import AppErrorBoundary from 'AppComponents/Shared/AppErrorBoundary/AppErrorBoundary';
 import RedirectToLogin from 'AppComponents/Shared/RedirectToLogin';
 import { IntlProvider } from 'react-intl';
 import { AppContextProvider } from 'AppComponents/Shared/AppContext';

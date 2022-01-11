@@ -19,15 +19,17 @@ import React from 'react';
 import { Toolbar, AppBar } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import Footer from 'AppComponents/Base/Footer/Footer';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
+import ErrorDetails from './ErrorDetails';
 
 const styles = (theme) => {
-    return ({
+    return {
         appBar: {
-            zIndex: theme.zIndex.modal + 1,
             position: 'relative',
             background: theme.palette.background.appBar,
         },
@@ -49,13 +51,14 @@ const styles = (theme) => {
             },
         },
         menuIcon: {
-            color: theme.palette.getContrastText(theme.palette.background.appBar),
+            color: theme.palette.getContrastText(
+                theme.palette.background.appBar,
+            ),
             fontSize: 35,
         },
         errorDisplay: {
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'center',
         },
         errorDisplayContent: {
             width: 960,
@@ -73,9 +76,11 @@ const styles = (theme) => {
             },
         },
         link: {
-            color: theme.palette.getContrastText(theme.palette.background.default),
+            color: theme.palette.getContrastText(
+                theme.palette.background.default,
+            ),
         },
-    });
+    };
 };
 /**
  * Error boundary for the application.catch JavaScript errors anywhere in their child component tree,
@@ -95,6 +100,7 @@ class AppErrorBoundary extends React.Component {
         super(props);
         this.state = {
             hasError: false,
+            isDetailsOpen: false,
         };
     }
 
@@ -115,8 +121,10 @@ class AppErrorBoundary extends React.Component {
      * @memberof AppErrorBoundary
      */
     render() {
-        const { hasError, error, info } = this.state;
+        // eslint-disable-next-line no-unused-vars
+        const { hasError, error, info, isDetailsOpen } = this.state;
         const { children, classes, theme } = this.props;
+        // eslint-disable-next-line no-unused-vars
         const errorStackStyle = {
             background: '#fff8dc',
         };
@@ -125,47 +133,81 @@ class AppErrorBoundary extends React.Component {
                 <>
                     <AppBar className={classes.appBar} position='fixed'>
                         <Toolbar className={classes.toolbar}>
-                            <div className={classes.errorDisplay} style={{ width: '100%' }}>
+                            <div
+                                className={classes.errorDisplay}
+                                style={{ width: '100%' }}
+                            >
                                 <div className={classes.errorDisplayContent}>
                                     <a href={Configurations.app.context}>
                                         <img
-                                            src={Configurations.app.context + theme.custom.logo}
+                                            src={
+                                                Configurations.app.context +
+                                                theme.custom.logo
+                                            }
                                             alt={`${theme.custom.title.prefix} ${theme.custom.title.suffix}`}
-                                            style={{ height: theme.custom.logoHeight, width: theme.custom.logoWidth }}
+                                            style={{
+                                                height: theme.custom.logoHeight,
+                                                width: theme.custom.logoWidth,
+                                            }}
                                         />
                                     </a>
                                 </div>
                             </div>
                         </Toolbar>
                     </AppBar>
-
-                    <div className={classes.errorDisplay}>
-                        <div className={classes.errorDisplayContent}>
-                            <div className={classes.errorTitle}>
-                                <img src={`${Configurations.app.context}/site/public/images/robo.png`} alt='OOPS' />
-                                <Typography variant='h2' gutterBottom>
-                                    <FormattedMessage
-                                        id='Apis.Shared.AppErrorBoundary.something.went.wrong'
-                                        defaultMessage='Something went wrong'
-                                    />
-                                </Typography>
-                            </div>
-                            <a href={`${Configurations.app.context}/apis/`}>
-                                <h3 className={classes.link}>API Listing</h3>
-                            </a>
-                        </div>
-                    </div>
-                    <div className={classes.errorDisplay}>
-                        <div className={classes.errorDisplayContent}>
-                            <h3 style={{ color: 'red' }}>{error.message}</h3>
-                            <pre style={errorStackStyle}>
-                                <u>{error.stack}</u>
-                            </pre>
-                            <pre style={errorStackStyle}>
-                                <u>{info.componentStack}</u>
-                            </pre>
-                        </div>
-                    </div>
+                    <Box
+                        bgcolor='#f1f1f1'
+                        flexDirection='column'
+                        justifyContent='flex-start'
+                        alignItems='center'
+                        display='flex'
+                        height={1}
+                    >
+                        <Box pt={2} display='flex'>
+                            <img
+                                src={`${Configurations.app.context}/site/public/images/robo.png`}
+                                alt='OOPS'
+                            />
+                        </Box>
+                        <Box pt={4} display='flex'>
+                            <Typography variant='h2' gutterBottom>
+                                <FormattedMessage
+                                    id='Apis.Shared.AppErrorBoundary.something.went.wrong'
+                                    defaultMessage='Oops! This is embarrassing'
+                                />
+                            </Typography>
+                        </Box>
+                        <Box pt={1} display='flex' color='text.secondary'>
+                            <Typography variant='body1' gutterBottom>
+                                Something went terribly wrong. Will you please
+                                refresh and try again.
+                            </Typography>
+                        </Box>
+                        <Box display='flex' mt={6}>
+                            {/* eslint-disable-next-line no-restricted-globals */}
+                            <Button onClick={()=> location.reload()} color='primary' variant='outlined'>
+                                Refresh
+                            </Button>
+                            <Box ml={2} display='inline'>
+                                <Button
+                                    variant='outlined'
+                                    onClick={() =>
+                                        this.setState({ isDetailsOpen: true })
+                                    }
+                                >
+                                    Details
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                    {isDetailsOpen && (
+                        <ErrorDetails
+                            error={error}
+                            handleClose={() =>
+                                this.setState({ isDetailsOpen: false })
+                            }
+                        />
+                    )}
                     <Footer />
                 </>
             );

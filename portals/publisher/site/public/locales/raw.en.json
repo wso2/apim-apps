@@ -3445,7 +3445,7 @@
     "defaultMessage": "Import From Service Catalog"
   },
   "Apis.Shared.AppErrorBoundary.something.went.wrong": {
-    "defaultMessage": "Something went wrong"
+    "defaultMessage": "Oops! This is embarrassing"
   },
   "Apis.Shared.ConfirmDialog.are.you.sure": {
     "defaultMessage": "Are you sure?"
