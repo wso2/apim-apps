@@ -1819,6 +1819,12 @@
       "value": "Yes"
     }
   ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
+    }
+  ],
   "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint": [
     {
       "type": 0,
@@ -1847,6 +1853,12 @@
     {
       "type": 0,
       "value": "Original Developer URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.error": [
+    {
+      "type": 0,
+      "value": "Invalid Original Developer Portal URL"
     }
   ],
   "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help": [

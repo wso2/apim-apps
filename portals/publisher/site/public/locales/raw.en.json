@@ -810,6 +810,9 @@
   "Apis.Details.Configuration.components.AdvertiseInfo.advertised.yes": {
     "defaultMessage": "Yes"
   },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
+  },
   "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint": {
     "defaultMessage": "API External Production Endpoint"
   },
@@ -824,6 +827,9 @@
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": {
     "defaultMessage": "Original Developer URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.error": {
+    "defaultMessage": "Invalid Original Developer Portal URL"
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help": {
     "defaultMessage": "This is the original developer portal of the advertised API"

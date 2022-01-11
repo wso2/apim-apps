@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -99,6 +99,56 @@ const AdvertiseInfo = (props) => {
                 + ' an advertise only API.';
         }
         return null;
+    };
+
+    const checkApiExternalEndpointValidity = (endpointType, value) => {
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                return false;
+            }
+            return !!url;
+        } else return endpointType !== 'PRODUCTION';
+    };
+
+    const [isValidApiExternalProductionEndpoint, setValidApiExternalProductionEndpoint] = useState(
+        checkApiExternalEndpointValidity('PRODUCTION', advertiseInfo.apiExternalProductionEndpoint),
+    );
+    const [isValidApiExternalSandboxEndpoint, setValidApiExternalSandboxEndpoint] = useState(
+        checkApiExternalEndpointValidity('SANDBOX', advertiseInfo.apiExternalSandboxEndpoint),
+    );
+    const [isValidOriginalDevPortalUrl, setValidOriginalDevPortalUrl] = useState(true);
+
+    const handleOnChangeApiExternalEndpointUrl = (endpointType, event) => {
+        const { value } = event.target;
+        if (endpointType === 'PRODUCTION') {
+            setValidApiExternalProductionEndpoint(checkApiExternalEndpointValidity(endpointType, value));
+            configDispatcher({ action: 'apiExternalProductionEndpoint', value });
+        } else {
+            setValidApiExternalSandboxEndpoint(checkApiExternalEndpointValidity(endpointType, value));
+            configDispatcher({ action: 'apiExternalSandboxEndpoint', value });
+        }
+    };
+
+    const handleOnChangeOriginalDevPortalUrl = ({ target: { value } }) => {
+        if (value && value.length > 0) {
+            let url;
+            try {
+                url = new URL(value);
+            } catch (_) {
+                setValidOriginalDevPortalUrl(false);
+            }
+            if (url && (url.protocol === 'http:' || url.protocol === 'https:')) {
+                setValidOriginalDevPortalUrl(true);
+            } else {
+                setValidOriginalDevPortalUrl(false);
+            }
+        } else {
+            setValidOriginalDevPortalUrl(true);
+        }
+        configDispatcher({ action: 'originalDevPortalUrl', value });
     };
 
     return (
@@ -191,19 +241,24 @@ const AdvertiseInfo = (props) => {
                                 </>
                             )}
                             variant='outlined'
+                            name='apiExternalProductionEndpoint'
                             value={advertiseInfo.apiExternalProductionEndpoint}
                             fullWidth
                             margin='normal'
-                            onChange={(e) => configDispatcher({
-                                action: 'apiExternalProductionEndpoint',
-                                value: e.target.value,
-                            })}
+                            onChange={(e) => { handleOnChangeApiExternalEndpointUrl('PRODUCTION', e); }}
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                            helperText={(
+                            error={!isValidApiExternalProductionEndpoint}
+                            helperText={isValidApiExternalProductionEndpoint ? (
                                 <FormattedMessage
                                     id={'Apis.Details.Configuration.components.AdvertiseInfo'
                                     + '.apiExternalProductionEndpoint.help'}
                                     defaultMessage='This is the external production endpoint of the advertised API'
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id={'Apis.Details.Configuration.components.AdvertiseInfo'
+                                    + '.apiExternalEndpoint.error'}
+                                    defaultMessage='Invalid Endpoint URL'
                                 />
                             )}
                             style={{ marginTop: 0 }}
@@ -216,23 +271,27 @@ const AdvertiseInfo = (props) => {
                                         + '.apiExternalSandboxEndpoint'}
                                         defaultMessage='API External Sandbox Endpoint'
                                     />
-                                    <sup className={classes.mandatoryStar}>*</sup>
                                 </>
                             )}
                             variant='outlined'
+                            name='apiExternalSandboxEndpoint'
                             value={advertiseInfo.apiExternalSandboxEndpoint}
                             fullWidth
                             margin='normal'
-                            onChange={(e) => configDispatcher({
-                                action: 'apiExternalSandboxEndpoint',
-                                value: e.target.value,
-                            })}
+                            onChange={(e) => { handleOnChangeApiExternalEndpointUrl('SANDBOX', e); }}
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                            helperText={(
+                            error={!isValidApiExternalSandboxEndpoint}
+                            helperText={isValidApiExternalSandboxEndpoint ? (
                                 <FormattedMessage
                                     id={'Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint'
                                     + '.help'}
                                     defaultMessage='This is the external sandbox endpoint of the advertised API'
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id={'Apis.Details.Configuration.components.AdvertiseInfo'
+                                    + '.apiExternalEndpoint.error'}
+                                    defaultMessage='Invalid Endpoint URL'
                                 />
                             )}
                             style={{ marginTop: 0 }}
@@ -245,18 +304,23 @@ const AdvertiseInfo = (props) => {
                                 />
                             )}
                             variant='outlined'
+                            name='originalDevPortalUrl'
                             value={advertiseInfo.originalDevPortalUrl}
                             fullWidth
                             margin='normal'
-                            onChange={(e) => configDispatcher({
-                                action: 'originalDevPortalUrl',
-                                value: e.target.value,
-                            })}
+                            onChange={handleOnChangeOriginalDevPortalUrl}
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                            helperText={(
+                            error={!isValidOriginalDevPortalUrl}
+                            helperText={isValidOriginalDevPortalUrl ? (
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help'
                                     defaultMessage='This is the original developer portal of the advertised API'
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id={'Apis.Details.Configuration.components.AdvertiseInfo'
+                                    + '.originalDevPortalUrl.error'}
+                                    defaultMessage='Invalid Original Developer Portal URL'
                                 />
                             )}
                             style={{ marginTop: 0 }}
