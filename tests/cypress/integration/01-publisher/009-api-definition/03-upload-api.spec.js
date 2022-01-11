@@ -37,24 +37,25 @@ describe("Upload api spec from the api definition page", () => {
         // upload the swagger
         cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
             const filepath = 'api_artifacts/swagger_2.0_.json'
-            cy.get('input[type="file"]').attachFile(filepath)            
+            cy.get('input[type="file"]').attachFile(filepath);
+            // provide the swagger url
+            cy.get('[data-testid="import-open-api-btn"]').click();
+
+            // Wait until the api is saved
+            cy.intercept('**/apis/**').as('apiGet');
+            cy.wait('@apiGet');
+
+            // Check the resource exists
+            cy.get('[data-testid="left-menu-itemresources"]').click();
+            cy.get('[data-testid="operation-/toy/{petId}/uploadImage-post"]', { timeout: 30000 });
+            cy.get('[data-testid="operation-/toy/{petId}/uploadImage-post"]').should('be.visible');
         });
-        // provide the swagger url
-        cy.get('[data-testid="import-open-api-btn"]').click();
 
-        // Wait until the api is saved
-        cy.intercept('**/apis/**').as('apiGet');
-        cy.wait('@apiGet');
-
-        // Check the resource exists
-        cy.get('[data-testid="left-menu-itemresources"]').click();
-        cy.get('[data-testid="operation-/pet/{petId}/uploadImage-post"]', { timeout: 30000 });
-        cy.get('[data-testid="operation-/pet/{petId}/uploadImage-post"]').should('be.visible');
     });
 
     after(function () {
-          // Test is done. Now delete the api
-          cy.deleteApi(apiName, apiVersion);
+        // Test is done. Now delete the api
+        cy.deleteApi(apiName, apiVersion);
 
         cy.visit('carbon/user/user-mgt.jsp');
         cy.deleteUser(publisher);

@@ -172,7 +172,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     cy.get('[data-testid="itest-id-apiendpoint-input"]').click();
     cy.get('[data-testid="itest-id-apiendpoint-input"]').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('[data-testid="itest-create-default-api-button"]').click();
-    // There is a UI error in the carbon console. We need to skip this so that the test will not fail.
+    // There is a UI error in the console. We need to skip this so that the test will not fail.
     Cypress.on('uncaught:exception', (err, runnable) => {
         // returning false here prevents Cypress from
         // failing the test
