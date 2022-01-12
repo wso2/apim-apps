@@ -344,7 +344,7 @@ function Environments(props) {
                             >
                                 <FormattedMessage
                                     id='Apis.Details.Environments.externalEndpoint.label.url'
-                                    defaultMessage='External Endpoint URL'
+                                    defaultMessage='URL'
                                 />
                             </Typography>
                             <Paper id='external-endpoint-url' component='form' className={classes.root}>

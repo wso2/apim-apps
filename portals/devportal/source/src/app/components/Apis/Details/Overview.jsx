@@ -34,6 +34,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CardContent from '@material-ui/core/CardContent';
+import LaunchIcon from '@material-ui/icons/Launch';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
@@ -109,6 +110,15 @@ const useStyles = makeStyles((theme) => ({
     },
     requestUnit: {
         fontSize: 13,
+    },
+    launchIcon: {
+        paddingLeft: theme.spacing(1),
+    },
+    originalDevportalUrl: {
+        color: '#424242',
+        fontSize: '0.85rem',
+        marginRight: 20,
+        fontWeight: 400,
     },
 }));
 /**
@@ -421,6 +431,34 @@ function Overview() {
                                     <Environments updateSelectedEndpoint={updateSelectedEndpoint} selectedEndpoint={selectedEndpoint} />
                                 )
                             }
+                        </Box>
+                        <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
+                            {api.advertiseInfo && api.advertiseInfo.advertised
+                                && api.advertiseInfo.originalDevPortalUrl && (
+                                <>
+                                    <div className={classes.originalDevportalUrl}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Overview.originaldevportal.url.label'
+                                            defaultMessage='Original Developer Portal URL'
+                                        />
+                                    </div>
+                                    <MUILink
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        href={api.advertiseInfo.originalDevPortalUrl}
+                                        variant='body3'
+                                    >
+                                        <div>
+                                            <FormattedMessage
+                                                id={'Apis.Details.Credentials.Credentials.visit.original.'
+                                                + 'developer.portal'}
+                                                defaultMessage='Visit Original Developer Portal'
+                                            />
+                                            <LaunchIcon className={classes.launchIcon} />
+                                        </div>
+                                    </MUILink>
+                                </>
+                            )}
                         </Box>
                         {(api.gatewayVendor === 'wso2') && (
                             <>
