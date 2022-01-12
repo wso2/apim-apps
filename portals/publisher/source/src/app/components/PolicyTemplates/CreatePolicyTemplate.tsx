@@ -113,12 +113,16 @@ const DefaultPolicyDefinition = {
     policyAttributes: [],
 };
 
+interface props {
+    isAPI: boolean;
+}
+
 /**
  * Create a new global policy template
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Create policy template UI to render.
  */
-const CreatePolicyTemplate: React.FC = () => {
+const CreatePolicyTemplate: React.FC<props> = ({isAPI}) => {
     const classes = useStyles();
     const history = useHistory();
     const url = '/policy-templates';
@@ -129,8 +133,9 @@ const CreatePolicyTemplate: React.FC = () => {
     const steps = [
         {
             label: 'Upload Policy Template',
-            description: `Upload the Policy logic inclusive template file that you wish to add in
-                as a Global Policy Template.`,
+            description: (!isAPI) ? ( `Upload the Policy logic inclusive template file that you wish to add in
+                as a Global Policy Template.`) : ( `Upload the Policy logic inclusive template file that you wish to add in
+                as an API Policy Template.`),
         },
         {
             label: 'Add Policy Definition',
@@ -146,7 +151,12 @@ const CreatePolicyTemplate: React.FC = () => {
     const handleNext = () => {
         if (activeStep === steps.length - 1) {
             // console.log('Policy Definition: ', policyDefinition)
-            history.push('/policy-templates');
+            if (!isAPI) {
+                history.push('/policy-templates');
+            } else {
+
+            }
+            
         }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
@@ -272,13 +282,22 @@ const CreatePolicyTemplate: React.FC = () => {
                                                 >
                                                     {index === steps.length - 1 ? 'Save' : 'Continue'}
                                                 </Button>
+                                                {(index === 1) && (
                                                 <Button
                                                     color='primary'
-                                                    disabled={index === 0}
                                                     onClick={handleBack}
                                                 >
                                                     Back
                                                 </Button>
+                                                )}
+                                                {(index === 0) && (
+                                                    <Button
+                                                        color='primary'
+                                                        onClick={handleNext}
+                                                    >
+                                                        Skip
+                                                    </Button>
+                                                )}
                                             </Box>
                                         </StepContent>
                                     </Step>

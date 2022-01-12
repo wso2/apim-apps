@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,11 +17,11 @@
  */
 
 import {
-    Button, Grid, Icon, Typography, makeStyles, Paper,
+    Button, Grid, makeStyles, Paper,
 } from '@material-ui/core';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import React, { useRef, useState }  from 'react';
+import { FormattedMessage} from 'react-intl';
+import CreatePolicyTemplate from 'AppComponents/PolicyTemplates/CreatePolicyTemplate';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -93,8 +93,17 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
+interface Policy {
+    id: number;
+    policy: string;
+    description: string;
+    flows: string[];
+    isDone: boolean;
+}
+
 interface IProps {
-    api: any;
+    handleAdd: any;
+    handleCloseAddPolicyPopup: React.Dispatch<React.SetStateAction<any>>;
 }
 
 /**
@@ -102,185 +111,67 @@ interface IProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Create policy page.
  */
-const CreatePolicy: React.FC<IProps> = ({ api }) => {
+const CreatePolicy: React.FC<IProps> = ({ handleAdd, handleCloseAddPolicyPopup }) => {
     const classes = useStyles();
-    const url = `/apis/${api.id}/policies`;
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [policyName, setPolicyName] = useState<string>("");
+    const [policyDescription, setPolicyDescription] = useState<string>("");
+    const [policyFlows, setPolicyFlows] = useState<Array<string>>([]);
+
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        //setAddPolicy({id:Date.now(), policy: policyName, description: "", flows: [], isDone: false});
+        handleAdd({id:Date.now(), policy: policyName, description: policyDescription, flows: [], isDone: false});
+      };
+      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          if (e.target.name === 'policyName') {
+            setPolicyName(e.target.value);
+          } else if (e.target.name === 'policyDesc') {
+            setPolicyDescription(e.target.value);
+          }
+        
+      }
 
     return (
         <Grid container spacing={3}>
-            <Grid item sm={12} md={12} />
-            <Grid item sm={2} md={2} />
             <Grid item sm={12} md={8}>
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
-                        <div className={classes.titleWrapper}>
-                            <Link to={url} className={classes.titleLink}>
-                                <Typography variant='h4' component='h2'>
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.heading'
-                                        defaultMessage='Policies'
-                                    />
-                                </Typography>
-                            </Link>
-                            <Icon>keyboard_arrow_right</Icon>
-                            <Typography variant='h4' component='h3'>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.CreatePolicy.heading'
-                                    defaultMessage='Create New Policy'
-                                />
-                            </Typography>
-                        </div>
-                    </Grid>
-                    <Grid item md={12}>
-                        <Paper elevation={0} className={classes.root}>
-                            {/* <FormControl margin='normal'>
-                                <TextField
-                                    id='name'
-                                    label='Name'
-                                    placeholder='Scope Name'
-                                    error={this.state.valid.name.invalid}
-                                    helperText={
-                                        this.state.valid.name.invalid ? (
-                                            this.state.valid.name.error
-                                        ) : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Scopes.CreateScope.short.description.name'
-                                                defaultMessage='Enter Scope Name ( E.g.,: creator )'
-                                            />
-                                        )
-                                    }
-                                    fullWidth
-                                    margin='normal'
-                                    variant='outlined'
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    value={this.state.apiScope.name || ''}
-                                    onChange={this.handleScopeNameInput}
-                                />
-                            </FormControl>
-                            <FormControl margin='normal'>
-                                <TextField
-                                    id='displayName'
-                                    label='Display Name'
-                                    placeholder='Scope Display Name'
-                                    error={this.state.valid.displayName.invalid}
-                                    helperText={
-                                        this.state.valid.displayName.invalid ? (
-                                            this.state.valid.displayName.error
-                                        ) : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Scopes.CreateScope.short.description.name'
-                                                defaultMessage='Enter Scope Name ( E.g.,: creator )'
-                                            />
-                                        )
-                                    }
-                                    fullWidth
-                                    margin='normal'
-                                    variant='outlined'
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    value={this.state.apiScope.displayName || ''}
-                                    onChange={this.validateScopeDisplayName}
-                                />
-                            </FormControl>
-                            <FormControl margin='normal' classes={{ root: classes.descriptionForm }}>
-                                <TextField
-                                    id='description'
-                                    label='Description'
-                                    variant='outlined'
-                                    placeholder='Short description about the scope'
-                                    error={this.state.valid.description.invalid}
-                                    helperText={
-                                        this.state.valid.description.invalid ? (
-                                            this.state.valid.description.error
-                                        ) : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Scopes.CreateScope.description.about.the.scope'
-                                                defaultMessage='Short description about the scope'
-                                            />
-                                        )
-                                    }
-                                    margin='normal'
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    onChange={this.validateScopeDescription}
-                                    value={this.state.apiScope.description || ''}
-                                    multiline
-                                />
-                            </FormControl>
-                            <FormControl margin='normal'>
-                                <ChipInput
-                                    label='Roles'
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    variant='outlined'
-                                    value={validRoles.concat(invalidRoles)}
-                                    alwaysShowPlaceholder={false}
-                                    placeholder='Enter roles and press Enter'
-                                    blurBehavior='clear'
-                                    InputProps={{
-                                        endAdornment: !roleValidity && (
-                                            <InputAdornment position='end'>
-                                                <Error color='error' />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    onAdd={this.handleRoleAddition}
-                                    error={!roleValidity}
-                                    helperText={
-                                        !roleValidity ? (
-                                            <FormattedMessage
-                                                id='Apis.Details.Scopes.Roles.Invalid'
-                                                defaultMessage='Role is invalid'
-                                            />
-                                        ) : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Scopes.CreateScope.roles.help'
-                                                defaultMessage='Enter a valid role and press `Enter`.'
-                                            />
-                                        )
-                                    }
-                                    chipRenderer={({ value }, key) => (
-                                        <Chip
-                                            key={key}
-                                            label={value}
-                                            onDelete={() => {
-                                                this.handleRoleDeletion(value);
-                                            }}
-                                            style={{
-                                                backgroundColor: invalidRoles.includes(value) ? red[300] : null,
-                                                margin: '8px 8px 8px 0',
-                                                float: 'left',
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </FormControl> */}
-                            <div className={classes.addNewOther}>
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    // onClick={this.addScope}
-                                    // disabled={
-                                    //     isRestricted(['apim:api_create'], api)
-                                    //     || this.state.valid.name.invalid
-                                    //     || invalidRoles.length !== 0
-                                    //     || scopeAddDisabled
-                                    //     || api.isRevision
-                                    //     || this.state.valid.description.invalid
-                                    // }
-                                    className={classes.saveButton}
+                        <Paper elevation={1} className={classes.root}>
+                                <div>
+                                <form
+                                className="input"
+                                onSubmit={(e) => {
+                                    submit(e);
+                                }}
                                 >
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.CreatePolicy.save'
-                                        defaultMessage='Save'
-                                    />
-                                </Button>
-                                <Button>
+                                <input
+                                    name="policyName"
+                                    type="text"
+                                    placeholder="Add API Policy"
+                                    value={policyName}
+                                    ref={inputRef}
+                                    onChange={(e) => handleChange(e)}
+                                    className="input__box"
+                                />
+                                <br/>
+                                <input
+                                    name="policyDesc"
+                                    type="text"
+                                    placeholder="Add API Policy Desc"
+                                    value={policyDescription}
+                                    ref={inputRef}
+                                    onChange={(e) => handleChange(e)}
+                                    className="input__box"
+                                />
+                                <button type="submit" className="input_submit">
+                                    GO
+                                </button>
+                                </form>
+                            </div>
+                            <CreatePolicyTemplate isAPI={true} />
+                            <div className={classes.addNewOther}>
+                                <Button onClick={handleCloseAddPolicyPopup}>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.CreatePolicy.cancel'
                                         defaultMessage='Cancel'
