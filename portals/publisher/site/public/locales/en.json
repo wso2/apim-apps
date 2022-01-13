@@ -1681,6 +1681,48 @@
       "value": "Runtime Configurations"
     }
   ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message": [
+    {
+      "type": 0,
+      "value": "This API is currently published and by changing to a normal API, it will not be available for consumption since it has no active deployments."
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.continue": [
+    {
+      "type": 0,
+      "value": "Continue"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.dialog.title": [
+    {
+      "type": 0,
+      "value": "Restore to a normal API"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.tier.message": [
+    {
+      "type": 0,
+      "value": "Business Plans:"
+    }
+  ],
   "Apis.Details.Configuration.components.APILevelRateLimitingPolicies.configuration": [
     {
       "type": 0,
@@ -4401,6 +4443,12 @@
     {
       "type": 0,
       "value": "External Endpoint"
+    }
+  ],
+  "Apis.Details.LifeCycle.externalEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
     }
   ],
   "Apis.Details.LifeCycle.publish.content.info.deployments": [

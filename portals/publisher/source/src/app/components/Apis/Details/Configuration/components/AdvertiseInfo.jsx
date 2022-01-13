@@ -73,7 +73,15 @@ const useStyles = makeStyles((theme) => ({
 const AdvertiseInfo = (props) => {
     const {
         configDispatcher,
-        api: { advertiseInfo, type },
+        oldApi: { policies: oldPolicies, endpointConfig: oldEndpointConfig },
+        api: {
+            advertiseInfo,
+            type,
+            policies,
+            lifeCycleStatus,
+            endpointConfig,
+        },
+        setIsOpen,
     } = props;
     const {
         allRevisions,
@@ -151,6 +159,16 @@ const AdvertiseInfo = (props) => {
         configDispatcher({ action: 'originalDevPortalUrl', value });
     };
 
+    const handleOnChangeAdvertised = ({ target: { value } }) => {
+        configDispatcher({ action: 'advertised', value: value === 'true' });
+        if (value === 'false' && lifeCycleStatus === 'PUBLISHED' && (policies.length === 0 || endpointConfig)) {
+            setIsOpen(true);
+        } else if (value === 'true' && lifeCycleStatus === 'PUBLISHED') {
+            configDispatcher({ action: 'policies', value: oldPolicies });
+            configDispatcher({ action: 'endpointConfig', value: oldEndpointConfig });
+        }
+    };
+
     return (
         <Grid container spacing={1} alignItems='flex-start'>
             <Grid item>
@@ -166,11 +184,7 @@ const AdvertiseInfo = (props) => {
                             aria-label='Make the API advertised'
                             name='advertised'
                             value={advertiseInfo.advertised}
-                            onChange={({
-                                target: { value },
-                            }) => configDispatcher({
-                                action: 'advertised', value: value === 'true',
-                            })}
+                            onChange={handleOnChangeAdvertised}
                             style={{ display: 'flow-root' }}
                         >
                             <FormControlLabel

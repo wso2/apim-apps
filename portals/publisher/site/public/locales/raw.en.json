@@ -741,6 +741,27 @@
   "Apis.Details.Configuration.RuntimeConfigurationWebSocket.topic.header": {
     "defaultMessage": "Runtime Configurations"
   },
+  "Apis.Details.Configuration.UpdateWithoutDetails.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message": {
+    "defaultMessage": "This API is currently published and by changing to a normal API, it will not be available for consumption since it has no active deployments."
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.continue": {
+    "defaultMessage": "Continue"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.dialog.title": {
+    "defaultMessage": "Restore to a normal API"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint": {
+    "defaultMessage": "Endpoint"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.tier.message": {
+    "defaultMessage": "Business Plans:"
+  },
   "Apis.Details.Configuration.components.APILevelRateLimitingPolicies.configuration": {
     "defaultMessage": "Rate Limiting Configuration"
   },
@@ -2069,6 +2090,9 @@
   },
   "Apis.Details.LifeCycle.components.externalEndpoint": {
     "defaultMessage": "External Endpoint"
+  },
+  "Apis.Details.LifeCycle.externalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
   },
   "Apis.Details.LifeCycle.publish.content.info.deployments": {
     "defaultMessage": "Deployments"

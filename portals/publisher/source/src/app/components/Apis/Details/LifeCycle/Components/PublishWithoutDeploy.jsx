@@ -228,8 +228,7 @@ export default function PublishWithoutDeploy(props) {
                             !isValidExternalEndpoint && (
                                 <div style={{ marginTop: '10px' }}>
                                     <FormattedMessage
-                                        id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
-                                        + '.externalEndpoint.error'}
+                                        id='Apis.Details.LifeCycle.externalEndpoint.error'
                                         defaultMessage='Invalid Endpoint URL'
                                     />
                                 </div>

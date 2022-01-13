@@ -37,6 +37,7 @@ import CONSTS from 'AppData/Constants';
 import Alert from 'AppComponents/Shared/Alert';
 
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
+import UpdateWithoutDetails from 'AppComponents/Apis/Details/Configuration/components/UpdateWithoutDetails';
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api.js';
@@ -110,6 +111,10 @@ const useStyles = makeStyles((theme) => ({
     btnSpacing: {
         marginRight: theme.spacing(1),
     },
+    tierList: {
+        marginLeft: theme.spacing(1),
+        fontFamily: theme.typography.fontFamily,
+    },
 }));
 
 /**
@@ -150,6 +155,8 @@ function copyAPIConfig(api) {
         },
         additionalProperties: [...api.additionalProperties],
         type: api.type,
+        policies: [...api.policies],
+        endpointConfig: api.endpointConfig,
     };
     if (api.advertiseInfo) {
         copiedConfig = {
@@ -236,6 +243,10 @@ function configReducer(state, configAction) {
                 nextState.advertiseInfo[action] = value;
             }
             return nextState;
+        case 'endpointConfig':
+            return { ...state, [action]: value };
+        case 'policies':
+            return { ...state, [action]: value };
         default:
             return state;
     }
@@ -255,6 +266,7 @@ export default function DesignConfigurations() {
     const [descriptionType, setDescriptionType] = useState('');
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
     const [slackURLProperty, githubURLProperty] = useMemo(() => [
         apiConfig.additionalProperties.find((prop) => prop.name === 'slack_url'),
         apiConfig.additionalProperties.find((prop) => prop.name === 'github_repo'),
@@ -402,10 +414,52 @@ export default function DesignConfigurations() {
         }
         setIsUpdating(false);
     }
+
+    const handleClick = (availableTiers, endpointUrl, endpointType) => {
+        configDispatcher({ action: 'policies', value: availableTiers });
+        // create endpoint config
+        let updatedEndpointConfig;
+        if (apiConfig.endpointConfig) {
+            updatedEndpointConfig = { ...apiConfig.endpointConfig };
+            if (endpointType === 'PRODUCTION') {
+                updatedEndpointConfig = {
+                    ...apiConfig.endpointConfig,
+                    production_endpoints: { url: endpointUrl, ...apiConfig.endpointConfig.production_endpoints },
+                };
+            } else {
+                updatedEndpointConfig = {
+                    ...apiConfig.endpointConfig,
+                    sandbox_endpoints: { url: endpointUrl, ...apiConfig.endpointConfig.sandbox_endpoints },
+                };
+            }
+        } else {
+            updatedEndpointConfig = {
+                endpoint_type: 'http',
+            };
+            if (endpointType === 'PRODUCTION') {
+                updatedEndpointConfig.production_endpoints = {
+                    url: endpointUrl,
+                };
+            } else {
+                updatedEndpointConfig.sandbox_endpoints = {
+                    url: endpointUrl,
+                };
+            }
+        }
+        configDispatcher({ action: 'endpointConfig', value: updatedEndpointConfig });
+        setIsOpen(false);
+    };
+
+    const handleClose = () => {
+        configDispatcher({ action: 'advertised', value: api.advertiseInfo.advertised });
+        setIsOpen(false);
+    };
+
     const isDisabled = isRestricted(['apim:api_publish', 'apim:api_create'], api
                     || isUpdating || api.isRevision || invalidTagsExist
                     || (apiConfig.visibility === 'RESTRICTED'
                     && apiConfig.visibleRoles.length === 0));
+
     return (
         <>
             <Container maxWidth='md'>
@@ -490,7 +544,9 @@ export default function DesignConfigurations() {
                                     <Box py={1}>
                                         {api.apiType !== API.CONSTS.APIProduct && (
                                             <AdvertiseInfo
+                                                oldApi={api}
                                                 api={apiConfig}
+                                                setIsOpen={setIsOpen}
                                                 configDispatcher={configDispatcher}
                                             />
                                         )}
@@ -531,6 +587,14 @@ export default function DesignConfigurations() {
                         </Paper>
                     </Grid>
                 </Grid>
+                <UpdateWithoutDetails
+                    classes={classes}
+                    api={api}
+                    apiConfig={apiConfig}
+                    handleClick={handleClick}
+                    handleClose={handleClose}
+                    open={isOpen}
+                />
             </Container>
         </>
     );
