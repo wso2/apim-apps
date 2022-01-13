@@ -1237,6 +1237,12 @@
       "value": "Authorization Header Value"
     }
   ],
+  "Apis.Details.ApiConsole.authentication.heading": [
+    {
+      "type": 0,
+      "value": "Authentication"
+    }
+  ],
   "Apis.Details.ApiConsole.deployments.api.gateways": [
     {
       "type": 0,
@@ -1267,6 +1273,24 @@
       "value": " before trying out"
     }
   ],
+  "Apis.Details.ApiConsole.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint type"
+    }
+  ],
+  "Apis.Details.ApiConsole.endpoint.help": [
+    {
+      "type": 0,
+      "value": "Please select an endpoint type"
+    }
+  ],
+  "Apis.Details.ApiConsole.enpoint.heading": [
+    {
+      "type": 0,
+      "value": "API Endpoint"
+    }
+  ],
   "Apis.Details.ApiConsole.environment": [
     {
       "type": 0,
@@ -1277,24 +1301,6 @@
     {
       "type": 0,
       "value": "Generate Key"
-    }
-  ],
-  "Apis.Details.ApiConsole.production.radio": [
-    {
-      "type": 0,
-      "value": "Production"
-    }
-  ],
-  "Apis.Details.ApiConsole.sandbox.radio": [
-    {
-      "type": 0,
-      "value": "Sandbox"
-    }
-  ],
-  "Apis.Details.ApiConsole.select.key.type.heading": [
-    {
-      "type": 0,
-      "value": "Key Type"
     }
   ],
   "Apis.Details.BusinessInformation.BusinessInformation.APIProduct.sub.heading": [

@@ -102,6 +102,7 @@ class ApiConsole extends React.Component {
             selectedKeyManager: 'Resident Key Manager',
             advAuthHeader: 'Authorization',
             advAuthHeaderValue: '',
+            selectedEndpoint: 'PRODUCTION',
         };
         this.accessTokenProvider = this.accessTokenProvider.bind(this);
         this.updateSwagger = this.updateSwagger.bind(this);
@@ -120,6 +121,7 @@ class ApiConsole extends React.Component {
         this.converttopostman = this.convertToPostman.bind(this);
         this.setAdvAuthHeader = this.setAdvAuthHeader.bind(this);
         this.setAdvAuthHeaderValue = this.setAdvAuthHeaderValue.bind(this);
+        this.setSelectedEndpoint = this.setSelectedEndpoint.bind(this);
     }
 
     /**
@@ -261,8 +263,7 @@ class ApiConsole extends React.Component {
      * @memberof ApiConsole
      */
     setSelectedKeyType(selectedKeyType, isUpdateToken, selectedApplication) {
-        const { api } = this.state;
-        if (isUpdateToken && (!api.advertiseInfo || !api.advertiseInfo.advertised)) {
+        if (isUpdateToken) {
             this.setState({ selectedKeyType }, this.updateAccessToken(selectedApplication));
         } else {
             this.setState({ selectedKeyType });
@@ -299,6 +300,14 @@ class ApiConsole extends React.Component {
      */
     setAdvAuthHeaderValue(advAuthHeaderValue) {
         this.setState({ advAuthHeaderValue });
+    }
+
+    /**
+     * Set selected endpoint type of advertise only APIs
+     * @param selectedEndpoint selected endpoint type
+     */
+    setSelectedEndpoint(selectedEndpoint) {
+        this.setState({ selectedEndpoint });
     }
 
     /**
@@ -423,7 +432,7 @@ class ApiConsole extends React.Component {
         const {
             api, notFound, swagger, securitySchemeType, selectedEnvironment, environments, scopes,
             username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
-            sandboxApiKey, productionApiKey, selectedKeyManager, advAuthHeader, advAuthHeaderValue,
+            sandboxApiKey, productionApiKey, selectedKeyManager, advAuthHeader, advAuthHeaderValue, selectedEndpoint,
         } = this.state;
         const user = AuthManager.getUser();
         const downloadSwagger = JSON.stringify({ ...swagger });
@@ -447,7 +456,7 @@ class ApiConsole extends React.Component {
         let swaggerSpec = swagger;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             authorizationHeader = advAuthHeader;
-            if (selectedKeyType === 'PRODUCTION') {
+            if (selectedEndpoint === 'PRODUCTION') {
                 swaggerSpec = {
                     ...swagger,
                     servers: [
@@ -518,6 +527,8 @@ class ApiConsole extends React.Component {
                         setAdvAuthHeaderValue={this.setAdvAuthHeaderValue}
                         advAuthHeader={advAuthHeader}
                         advAuthHeaderValue={advAuthHeaderValue}
+                        setSelectedEndpoint={this.setSelectedEndpoint}
+                        selectedEndpoint={selectedEndpoint}
                         api={this.state.api}
                         URLs={null}
                     />

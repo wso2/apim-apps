@@ -525,6 +525,9 @@
   "Apis.Details.ApiConsole.adv.auth.header.value": {
     "defaultMessage": "Authorization Header Value"
   },
+  "Apis.Details.ApiConsole.authentication.heading": {
+    "defaultMessage": "Authentication"
+  },
   "Apis.Details.ApiConsole.deployments.api.gateways": {
     "defaultMessage": "API Gateways"
   },
@@ -534,20 +537,20 @@
   "Apis.Details.ApiConsole.deployments.no": {
     "defaultMessage": "{artifactType} is not deployed yet! Please deploy the {artifactType} before trying out"
   },
+  "Apis.Details.ApiConsole.endpoint": {
+    "defaultMessage": "Endpoint type"
+  },
+  "Apis.Details.ApiConsole.endpoint.help": {
+    "defaultMessage": "Please select an endpoint type"
+  },
+  "Apis.Details.ApiConsole.enpoint.heading": {
+    "defaultMessage": "API Endpoint"
+  },
   "Apis.Details.ApiConsole.environment": {
     "defaultMessage": "Environment"
   },
   "Apis.Details.ApiConsole.generate.test.key": {
     "defaultMessage": "Generate Key"
-  },
-  "Apis.Details.ApiConsole.production.radio": {
-    "defaultMessage": "Production"
-  },
-  "Apis.Details.ApiConsole.sandbox.radio": {
-    "defaultMessage": "Sandbox"
-  },
-  "Apis.Details.ApiConsole.select.key.type.heading": {
-    "defaultMessage": "Key Type"
   },
   "Apis.Details.BusinessInformation.BusinessInformation.APIProduct.sub.heading": {
     "defaultMessage": "Business Information of the API Product"

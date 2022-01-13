@@ -34,10 +34,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import CONSTS from 'AppData/Constants';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -65,7 +61,7 @@ const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/TryOut/SwaggerUI
  * @inheritdoc
  * @param {*} theme theme
  */
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     centerItems: {
         margin: 'auto',
     },
@@ -73,6 +69,16 @@ const useStyles = makeStyles(() => ({
         paddingTop: '20px',
         fontWeight: 400,
         display: 'block',
+    },
+    menuItem: {
+        color: theme.palette.getContrastText(theme.palette.background.paper),
+    },
+    tokenType: {
+        margin: 'auto',
+        display: 'flex',
+        '& .MuiButton-contained.Mui-disabled span.MuiButton-label': {
+            color: '#6d6d6d',
+        },
     },
 }));
 
@@ -97,7 +103,7 @@ const TryOutConsole = () => {
     const [oasDefinition, setOasDefinition] = useState();
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
-    const [keyType, setKeyType] = useState('PRODUCTION');
+    const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
     const { data: publisherSettings } = usePublisherSettings();
 
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, {
@@ -200,7 +206,7 @@ const TryOutConsole = () => {
             oasCopy = oasDefinition;
         }
         if (oasCopy && api.advertiseInfo && api.advertiseInfo.advertised) {
-            if (keyType === 'PRODUCTION') {
+            if (selectedEndpoint === 'PRODUCTION') {
                 oasCopy.servers = [
                     { url: api.advertiseInfo.apiExternalProductionEndpoint },
                 ];
@@ -211,7 +217,7 @@ const TryOutConsole = () => {
             }
         }
         return oasCopy;
-    }, [keyType, selectedDeployment, oasDefinition, publisherSettings]);
+    }, [selectedEndpoint, selectedDeployment, oasDefinition, publisherSettings]);
 
     /**
      *
@@ -382,7 +388,7 @@ const TryOutConsole = () => {
                     </>
                 ) : (
                     <>
-                        <Box display='flex' justifyContent='center'>
+                        <Box display='block' justifyContent='center'>
                             <Grid x={12} md={6} className={classes.centerItems}>
                                 <Typography
                                     variant='h6'
@@ -392,48 +398,12 @@ const TryOutConsole = () => {
                                     className={classes.tryoutHeading}
                                 >
                                     <FormattedMessage
-                                        id='Apis.Details.ApiConsole.select.key.type.heading'
-                                        defaultMessage='Key Type'
+                                        id='Apis.Details.ApiConsole.authentication.heading'
+                                        defaultMessage='Authentication'
                                     />
                                 </Typography>
-                                <FormControl component='fieldset'>
-                                    <RadioGroup
-                                        name='selectedKeyType'
-                                        value={keyType}
-                                        onChange={(event) => { setKeyType(event.target.value); }}
-                                        aria-labelledby='key-type'
-                                        row
-                                    >
-                                        <FormControlLabel
-                                            value='PRODUCTION'
-                                            control={<Radio />}
-                                            disabled={api.advertiseInfo && api.advertiseInfo.advertised
-                                            && !api.advertiseInfo.apiExternalProductionEndpoint}
-                                            label={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.ApiConsole.production.radio'
-                                                    defaultMessage='Production'
-                                                />
-                                            )}
-                                        />
-                                        <FormControlLabel
-                                            value='SANDBOX'
-                                            control={<Radio />}
-                                            disabled={api.advertiseInfo && api.advertiseInfo.advertised
-                                            && !api.advertiseInfo.apiExternalSandboxEndpoint}
-                                            label={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.ApiConsole.sandbox.radio'
-                                                    defaultMessage='Sandbox'
-                                                />
-                                            )}
-                                        />
-                                    </RadioGroup>
-                                </FormControl>
                             </Grid>
-                        </Box>
-                        <Box display='flex' justifyContent='center'>
-                            <Grid container spacing={2} x={8} md={6} direction='row'>
+                            <Grid container spacing={2} x={8} md={6} direction='row' className={classes.tokenType}>
                                 <Grid xs={6} md={4} item>
                                     <TextField
                                         margin='normal'
@@ -468,6 +438,63 @@ const TryOutConsole = () => {
                                         fullWidth
                                     />
                                 </Grid>
+                            </Grid>
+                        </Box>
+                        <Box display='flex' justifyContent='center'>
+                            <Grid x={12} md={6} className={classes.centerItems}>
+                                <Typography
+                                    variant='h6'
+                                    component='label'
+                                    id='key-type'
+                                    color='textSecondary'
+                                    className={classes.tryoutHeading}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.enpoint.heading'
+                                        defaultMessage='API Endpoint'
+                                    />
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    select
+                                    id='selectedEndpoint'
+                                    label={(
+                                        <FormattedMessage
+                                            defaultMessage='Endpoint type'
+                                            id='Apis.Details.ApiConsole.endpoint'
+                                        />
+                                    )}
+                                    value={selectedEndpoint}
+                                    name='selectedEndpoint'
+                                    onChange={(event) => { setSelectedEndpoint(event.target.value); }}
+                                    helperText={(
+                                        <FormattedMessage
+                                            defaultMessage='Please select an endpoint type'
+                                            id='Apis.Details.ApiConsole.endpoint.help'
+                                        />
+                                    )}
+                                    margin='normal'
+                                    variant='outlined'
+                                >
+                                    {api.advertiseInfo.apiExternalProductionEndpoint && (
+                                        <MenuItem
+                                            value='PRODUCTION'
+                                            key='PRODUCTION'
+                                            className={classes.menuItem}
+                                        >
+                                            Production
+                                        </MenuItem>
+                                    )}
+                                    {api.advertiseInfo.apiExternalSandboxEndpoint && (
+                                        <MenuItem
+                                            value='SANDBOX'
+                                            key='SANDBOX'
+                                            className={classes.menuItem}
+                                        >
+                                            Sandbox
+                                        </MenuItem>
+                                    )}
+                                </TextField>
                             </Grid>
                         </Box>
                     </>

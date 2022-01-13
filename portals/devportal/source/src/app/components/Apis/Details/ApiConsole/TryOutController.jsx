@@ -129,12 +129,11 @@ const styles = makeStyles((theme) => ({
 function TryOutController(props) {
     const {
         securitySchemeType, selectedEnvironment, environments,
-        productionAccessToken, sandboxAccessToken, selectedKeyType, setKeys, setSelectedKeyType,
-        setSelectedKeyManager,
-        setSelectedEnvironment, setProductionAccessToken, setSandboxAccessToken, scopes,
-        setSecurityScheme, setUsername, setPassword, username, password, updateSwagger,
-        setProductionApiKey, setSandboxApiKey, productionApiKey, sandboxApiKey, environmentObject, setURLs,
-        setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader, advAuthHeaderValue, api, URLs,
+        productionAccessToken, sandboxAccessToken, selectedKeyType, setKeys, setSelectedKeyType, setSelectedKeyManager,
+        setSelectedEnvironment, setProductionAccessToken, setSandboxAccessToken, scopes, setSecurityScheme, setUsername,
+        setPassword, username, password, updateSwagger, setProductionApiKey, setSandboxApiKey, productionApiKey,
+        sandboxApiKey, environmentObject, setURLs, setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader,
+        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
@@ -430,6 +429,9 @@ function TryOutController(props) {
             case 'advAuthHeaderValue':
                 setAdvAuthHeaderValue(value);
                 break;
+            case 'selectedEndpoint':
+                setSelectedEndpoint(value);
+                break;
             default:
         }
     }
@@ -597,56 +599,6 @@ function TryOutController(props) {
                                 keyManagers={keyManagers}
                             />
                         )}
-                    {api.advertiseInfo && api.advertiseInfo.advertised && (
-                        <Grid x={12} md={6} className={classes.centerItems}>
-                            <Typography
-                                variant='h6'
-                                component='label'
-                                id='key-type'
-                                color='textSecondary'
-                                className={classes.tryoutHeading}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.ApiConsole.TryOutController.select.key.type.heading'
-                                    defaultMessage='Key Type'
-                                />
-                            </Typography>
-                            <FormControl component='fieldset'>
-                                <RadioGroup
-                                    name='selectedKeyType'
-                                    value={selectedKeyType}
-                                    onChange={handleChanges}
-                                    aria-labelledby='key-type'
-                                    row
-                                >
-                                    <FormControlLabel
-                                        value='PRODUCTION'
-                                        control={<Radio />}
-                                        disabled={api.advertiseInfo && api.advertiseInfo.advertised
-                                            && !api.advertiseInfo.apiExternalProductionEndpoint}
-                                        label={(
-                                            <FormattedMessage
-                                                id='Apis.Details.ApiConsole.TryOutController.production.radio'
-                                                defaultMessage='Production'
-                                            />
-                                        )}
-                                    />
-                                    <FormControlLabel
-                                        value='SANDBOX'
-                                        control={<Radio />}
-                                        disabled={api.advertiseInfo && api.advertiseInfo.advertised
-                                            && !api.advertiseInfo.apiExternalSandboxEndpoint}
-                                        label={(
-                                            <FormattedMessage
-                                                id='Apis.Details.ApiConsole.TryOutController.sandbox.radio'
-                                                defaultMessage='Sandbox'
-                                            />
-                                        )}
-                                    />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
-                    )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
@@ -835,6 +787,20 @@ function TryOutController(props) {
                         </Box>
                     ) : (
                         <Box display='block' justifyContent='center' className={classes.authHeader}>
+                            <Grid x={12} md={6} className={classes.centerItems}>
+                                <Typography
+                                    variant='h6'
+                                    component='label'
+                                    id='authentication-heading'
+                                    color='textSecondary'
+                                    className={classes.tryoutHeading}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.TryOutController.authentication.heading'
+                                        defaultMessage='Authentication'
+                                    />
+                                </Typography>
+                            </Grid>
                             <Grid container spacing={2} x={8} md={6} direction='row' className={classes.tokenType}>
                                 <Grid xs={6} md={4} item>
                                     <TextField
@@ -870,6 +836,61 @@ function TryOutController(props) {
                                         fullWidth
                                     />
                                 </Grid>
+                            </Grid>
+                            <Grid x={12} md={6} className={classes.centerItems}>
+                                <Typography
+                                    variant='h6'
+                                    component='label'
+                                    id='key-type'
+                                    color='textSecondary'
+                                    className={classes.tryoutHeading}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.TryOutController.enpoint.heading'
+                                        defaultMessage='API Endpoint'
+                                    />
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    select
+                                    id='selectedEndpoint'
+                                    label={(
+                                        <FormattedMessage
+                                            defaultMessage='Endpoint type'
+                                            id='Apis.Details.ApiConsole.TryOutController.endpoint'
+                                        />
+                                    )}
+                                    value={selectedEndpoint}
+                                    name='selectedEndpoint'
+                                    onChange={handleChanges}
+                                    helperText={(
+                                        <FormattedMessage
+                                            defaultMessage='Please select an endpoint type'
+                                            id='Apis.Details.ApiConsole.TryOutController.endpoint.help'
+                                        />
+                                    )}
+                                    margin='normal'
+                                    variant='outlined'
+                                >
+                                    {api.advertiseInfo.apiExternalProductionEndpoint && (
+                                        <MenuItem
+                                            value='PRODUCTION'
+                                            key='PRODUCTION'
+                                            className={classes.menuItem}
+                                        >
+                                            Production
+                                        </MenuItem>
+                                    )}
+                                    {api.advertiseInfo.apiExternalSandboxEndpoint && (
+                                        <MenuItem
+                                            value='SANDBOX'
+                                            key='SANDBOX'
+                                            className={classes.menuItem}
+                                        >
+                                            Sandbox
+                                        </MenuItem>
+                                    )}
+                                </TextField>
                             </Grid>
                         </Box>
                     )}

@@ -74,6 +74,7 @@ export default function AsyncApiConsole() {
     const [notFound, setNotFound] = useState(false);
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
+    const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
 
     const user = AuthManager.getUser();
 
@@ -198,10 +199,15 @@ export default function AsyncApiConsole() {
 
     const getURLs = () => {
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
-            return [
-                api.advertiseInfo.apiExternalProductionEndpoint,
-                api.advertiseInfo.apiExternalSandboxEndpoint,
-            ];
+            if (selectedEndpoint === 'PRODUCTION') {
+                return [
+                    api.advertiseInfo.apiExternalProductionEndpoint,
+                ];
+            } else if (selectedEndpoint === 'SANDBOX') {
+                return [
+                    api.advertiseInfo.apiExternalSandboxEndpoint,
+                ];
+            }
         }
         return URLs;
     };
@@ -262,6 +268,8 @@ export default function AsyncApiConsole() {
                     setAdvAuthHeaderValue={setAdvAuthHeaderValue}
                     advAuthHeader={advAuthHeader}
                     advAuthHeaderValue={advAuthHeaderValue}
+                    setSelectedEndpoint={setSelectedEndpoint}
+                    selectedEndpoint={selectedEndpoint}
                     api={api}
                     URLs={null}
                 />

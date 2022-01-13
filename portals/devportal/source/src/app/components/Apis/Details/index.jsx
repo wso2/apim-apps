@@ -491,7 +491,8 @@ class Details extends React.Component {
 
                             </>
                         )}
-                        {showTryout && (api.gatewayVendor === 'wso2') && (
+                        {showTryout && (api.gatewayVendor === 'wso2') && !(api.type === 'GRAPHQL'
+                            && api.advertiseInfo && api.advertiseInfo.advertised) && (
                             <LeftMenuItem
                                 text={(
                                     <FormattedMessage
