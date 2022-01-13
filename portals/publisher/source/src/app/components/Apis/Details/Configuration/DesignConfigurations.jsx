@@ -433,8 +433,12 @@ export default function DesignConfigurations() {
                 };
             }
         } else {
+            let endpointTypeForApi = 'http';
+            if (apiConfig.type === 'WS') {
+                endpointTypeForApi = 'ws';
+            }
             updatedEndpointConfig = {
-                endpoint_type: 'http',
+                endpoint_type: endpointTypeForApi,
             };
             if (endpointType === 'PRODUCTION') {
                 updatedEndpointConfig.production_endpoints = {
@@ -446,7 +450,9 @@ export default function DesignConfigurations() {
                 };
             }
         }
-        configDispatcher({ action: 'endpointConfig', value: updatedEndpointConfig });
+        if (api.type !== 'WEBSUB') {
+            configDispatcher({ action: 'endpointConfig', value: updatedEndpointConfig });
+        }
         setIsOpen(false);
     };
 
