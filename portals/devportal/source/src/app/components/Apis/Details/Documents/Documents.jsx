@@ -177,6 +177,9 @@ function Documents(props) {
                         }
                     }
                 }
+                // Sort the documents by name
+                types.forEach((a) => a.docs.sort((b, c) => ((b.name.toUpperCase()
+                    > c.name.toUpperCase()) ? 1 : -1)));
                 changeDocumentList(types);
                 if (!documentId && types.length > 0) {
                     setSelectedDoc(types[0].docs[0]);
