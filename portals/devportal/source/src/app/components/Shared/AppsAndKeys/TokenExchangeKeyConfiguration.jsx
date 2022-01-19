@@ -591,7 +591,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                                         </React.Fragment>
                                                     )}
                                                     {showToken &&
-                                                    <ViewToken token={{...tokenResponse, isOauth: true}}/>}
+                                                    <ViewToken token={{...tokenResponse, isOauth: true}} isTokenExchange={true} />}
                                                 </DialogContentText>
                                             )}
                                             {showCurl && (

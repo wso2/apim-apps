@@ -135,11 +135,11 @@ class ViewToken extends React.Component {
      */
     render() {
         const {
-            classes, token, consumerSecret,
+            classes, token, consumerSecret, isTokenExchange
         } = this.props;
         const { tokenCopied } = this.state;
 
-        if (consumerSecret == null) {
+        if (isTokenExchange && consumerSecret == null) {
             return (
                 <Typography>
                     <FormattedMessage
