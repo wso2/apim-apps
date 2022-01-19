@@ -13,9 +13,11 @@ This branch contains the UI tests for API Manager 3.2.0. See the following steps
 >  Currently the **application sharing feature** and the **product profiles** are not added to the tests. Therefore, they need to be tested manually.
 
 > **_Note :-_**
->  If an issue occurs with the node version, try running tests with node 14. You can use the following commands to switch to node 14.\
-> `nvm install 14`\
-> `nvm use 14`
+>  If an issue occurs with the node version, try running tests with node 14. You can use the following commands to switch to node 14.
+> ```
+> nvm install 14
+> nvm use 14
+> ```
 
 ## Troubleshooting
 
@@ -23,4 +25,6 @@ If there are any test failures, you can run the dev server and run the failed te
 
 Use the below command to run the test server,
 
-`npm run test:dev`
+```
+npm run test:dev
+```
