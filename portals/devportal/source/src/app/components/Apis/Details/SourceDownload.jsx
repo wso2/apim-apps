@@ -102,7 +102,7 @@ function SourceDownload(props) {
                 if (process.env.NODE_ENV !== 'production') {
                     console.log(error);
                     Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Environments.download.wsdl.error',
+                        id: 'Apis.Details.Environments.download.graphql.error',
                         defaultMessage: 'Error downloading the GraphQL Schema',
                     }));
                 }
@@ -199,7 +199,7 @@ function SourceDownload(props) {
                 >
                     <CloudDownloadRounded className={classes.buttonIcon} />
                     <FormattedMessage
-                        id='Apis.Details.Environments.download.swagger.text'
+                        id='Apis.Details.Environments.download.graphql.text'
                         defaultMessage='Download GraphQL'
                     />
                 </MUILink>
