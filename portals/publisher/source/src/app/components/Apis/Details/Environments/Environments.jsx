@@ -1059,13 +1059,23 @@ export default function Environments() {
         >
             <Grid item className={classes.shapeRec} />
             <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
-                <Grid
-                    onClick={handleClickOpen}
-                    className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
-                    style={{ cursor: 'pointer' }}
-                >
-                    <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
-                </Grid>
+                {api.advertiseInfo && api.advertiseInfo.advertised ? (
+                    <Grid
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <AddIcon color='disabled' style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                    </Grid>
+                ) : (
+                    <Grid
+                        onClick={handleClickOpen}
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                    </Grid>
+                )}
+
             </Grid>
             <Grid item className={classes.shapeRecBack} />
         </Grid>
@@ -1076,13 +1086,23 @@ export default function Environments() {
         >
             <Grid item className={classes.shapeRec} />
             <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
-                <Grid
-                    onClick={handleClickOpen}
-                    className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
-                    style={{ cursor: 'pointer' }}
-                >
-                    <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
-                </Grid>
+                {api.advertiseInfo && api.advertiseInfo.advertised ? (
+                    <Grid
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <AddIcon color='disabled' style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                    </Grid>
+                ) : (
+                    <Grid
+                        onClick={handleClickOpen}
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                        disabled={api.advertiseInfo && api.advertiseInfo.advertised}
+                    >
+                        <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                    </Grid>
+                )}
             </Grid>
         </Grid>
     );
