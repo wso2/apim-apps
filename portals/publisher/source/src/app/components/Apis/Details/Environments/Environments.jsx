@@ -783,15 +783,12 @@ export default function Environments() {
                 .then((response) => {
                     Alert.info('Revision Created Successfully');
                     const body1 = [];
-                    for (let i = 0; i < envList.length; i++) {
-                        if (settings.environment.includes(envList[i])) {
-                            body1.push({
-                                name: envList[i],
-                                vhost: api.gatewayVendor === 'wso2'
-                                    ? vhostList.find((v) => v.env === envList[i]).vhost : ' ',
-                                displayOnDevportal: true,
-                            });
-                        }
+                    for (const env of envList) {
+                        body1.push({
+                            name: env,
+                            vhost: api.gatewayVendor === 'wso2' ? vhostList.find((v) => v.env === env).vhost : ' ',
+                            displayOnDevportal: true,
+                        });
                     }
                     restApi.deployRevision(api.id, response.body.id, body1)
                         .then(() => {
