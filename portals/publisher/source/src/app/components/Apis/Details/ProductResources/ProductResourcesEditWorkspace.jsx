@@ -438,7 +438,10 @@ function ProductResourcesEdit(props) {
                 const {
                     body: { list },
                 } = response;
-                const filteredList = list.filter((theApi) => theApi.lifeCycleStatus !== 'PROTOTYPED');
+                const filteredList = list.filter((theApi) => theApi.lifeCycleStatus !== 'PROTOTYPED' &&
+                    (theApi.lifeCycleStatus !== 'RETIRED') &&
+                    (theApi.lifeCycleStatus !== 'DEPRECATED')
+                );
 
                 setAllApis(filteredList);
                 if (filteredList.length > 0) {
