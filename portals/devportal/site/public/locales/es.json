@@ -98,6 +98,7 @@
  "Apis.Details.Documents.Documentation.no.docs": "No hay documentos disponibles",
  "Apis.Details.Documents.View.error.downloading": "Error al descargar el archivo",
  "Apis.Details.Environments.download.wsdl.error": "Error al descargar el Swagger",
+ "Apis.Details.Environments.download.graphql.error": "Error al descargar el GraphQL",
  "Apis.Details.GraphQLConsole.GraphQLUI.URLs": "URL de puerta de enlace",
  "Apis.Details.Environments.download.wsdl": "WSDL",
  "Apis.Details.InfoBar.download.Schema": "Descargar Schema",

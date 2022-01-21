@@ -230,11 +230,10 @@ class Utils {
         }
     }
 
-    static downloadFile = (response) => {
-        let fileName = '';
+    static downloadFile = (response, fileName) => {
         const contentDisposition = response.headers['content-disposition'];
 
-        if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+        if (!fileName && contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
             const fileNameReg = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
             const matches = fileNameReg.exec(contentDisposition);
             if (matches != null && matches[1]) fileName = matches[1].replace(/['"]/g, '');
