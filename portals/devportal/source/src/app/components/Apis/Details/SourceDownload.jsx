@@ -89,14 +89,8 @@ function SourceDownload(props) {
         const newAPI = new API();
         const promisedGraphQL = newAPI.getGraphQLSchemaByAPIId(api.id);
         promisedGraphQL.then((response) => {
-            const windowUrl = window.URL || window.webkitURL;
-            const binary = new Blob([response.data]);
-            const url = windowUrl.createObjectURL(binary);
-            const anchor = document.createElement('a');
-            anchor.href = url;
-            anchor.download = api.provider + '-' + api.name + '-' + api.version + '.graphql';
-            anchor.click();
-            windowUrl.revokeObjectURL(url);
+            const fileName = api.provider + '-' + api.name + '-' + api.version + '.graphql';
+            Utils.downloadFile(response, fileName);
         })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
