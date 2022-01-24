@@ -36,8 +36,6 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 import { isRestricted } from 'AppData/AuthManager';
 import Operation from 'AppComponents/Apis/Details/Resources/components/Operation';
 import GroupOfOperations from 'AppComponents/Apis/Details/Resources/components/GroupOfOperations';
-import OperationsGroup from './OperationsGroup'
-import OperationPolicy from './OperationPolicy'
 import {
     extractPathParameters, isSelectAll, mapAPIOperations, getVersion, VERSIONS,
 } from 'AppComponents/Apis/Details/Resources/operationUtils';
@@ -45,6 +43,8 @@ import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/
 import SaveOperations from 'AppComponents/Apis/Details/Resources/components/SaveOperations';
 import Icon from '@material-ui/core/Icon';
 import MUIDataTable from 'mui-datatables';
+import OperationPolicy from './OperationPolicy'
+import OperationsGroup from './OperationsGroup'
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -144,68 +144,68 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      * @param {Object} operationAction action and payload
      * @return {Object} next next state
      */
-         function operationsReducer(currentOperations: any, operationAction: any) {
-            // Please read the note above before updating the reducer
-            const { action, data } = operationAction;
-            const { target, verb, value } = data || {};
-            let updatedOperation;
-            let addedOperations;
-            if (target && verb) {
-                updatedOperation = cloneDeep(currentOperations[target][verb]);
-            } else {
-                addedOperations = cloneDeep(currentOperations);
-            }
-            let newData = {};
-            if (action === 'removeAllSecurity') {
-                newData = cloneDeep(openAPISpec.paths);
-            }
-            if (action === 'init') {
-                newData = data || openAPISpec.paths;
-            }
-            switch (action) {
-                case 'init':
-                    setSelectedOperation({});
-                    return data || openAPISpec.paths;
-                case 'description':
-                case 'summary':
-                    updatedOperation[action] = value;
-                    break;
-                case 'parameter':
-                    if (updatedOperation.parameters) {
-                        // Get the index to check whether the same parameter exists.
-                        const index = updatedOperation.parameters.findIndex(
-                            (e:any) => e.in === value.in && e.name === value.name,
-                        );
-                        if (index === -1) { // Parameter with name and in does not exists.
-                            if (value.in === 'body') {
-                                // Get the index of existing body param.
-                                // This replaces if a new body parameter is added when another one exists.
-                                const bodyIndex = updatedOperation.parameters.findIndex((parameter: any) => {
-                                    return parameter.in === 'body';
-                                });
-                                if (bodyIndex !== -1) {
-                                    updatedOperation.parameters[bodyIndex] = value;
-                                } else {
-                                    updatedOperation.parameters.push(value);
-                                }
+    function operationsReducer(currentOperations: any, operationAction: any) {
+        // Please read the note above before updating the reducer
+        const { action, data } = operationAction;
+        const { target, verb, value } = data || {};
+        let updatedOperation;
+        let addedOperations;
+        if (target && verb) {
+            updatedOperation = cloneDeep(currentOperations[target][verb]);
+        } else {
+            addedOperations = cloneDeep(currentOperations);
+        }
+        let newData = {};
+        if (action === 'removeAllSecurity') {
+            newData = cloneDeep(openAPISpec.paths);
+        }
+        if (action === 'init') {
+            newData = data || openAPISpec.paths;
+        }
+        switch (action) {
+            case 'init':
+                setSelectedOperation({});
+                return data || openAPISpec.paths;
+            case 'description':
+            case 'summary':
+                updatedOperation[action] = value;
+                break;
+            case 'parameter':
+                if (updatedOperation.parameters) {
+                    // Get the index to check whether the same parameter exists.
+                    const index = updatedOperation.parameters.findIndex(
+                        (e:any) => e.in === value.in && e.name === value.name,
+                    );
+                    if (index === -1) { // Parameter with name and in does not exists.
+                        if (value.in === 'body') {
+                            // Get the index of existing body param.
+                            // This replaces if a new body parameter is added when another one exists.
+                            const bodyIndex = updatedOperation.parameters.findIndex((parameter: any) => {
+                                return parameter.in === 'body';
+                            });
+                            if (bodyIndex !== -1) {
+                                updatedOperation.parameters[bodyIndex] = value;
                             } else {
                                 updatedOperation.parameters.push(value);
                             }
                         } else {
-                            updatedOperation.parameters[index] = value;
+                            updatedOperation.parameters.push(value);
                         }
                     } else {
-                        updatedOperation.parameters = [value];
+                        updatedOperation.parameters[index] = value;
                     }
-                    break;
-                case 'requestBody':
-                    updatedOperation[action] = value;
-                    break;
-                default:
-                    return currentOperations;
-            }
-            return { ...currentOperations, [target]: { ...currentOperations[target], [verb]: updatedOperation } };
+                } else {
+                    updatedOperation.parameters = [value];
+                }
+                break;
+            case 'requestBody':
+                updatedOperation[action] = value;
+                break;
+            default:
+                return currentOperations;
         }
+        return { ...currentOperations, [target]: { ...currentOperations[target], [verb]: updatedOperation } };
+    }
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
     const [openAPISpec, setOpenAPISpec] = useState<any>({});
 
@@ -239,7 +239,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         setOpenAPISpec(rawSpec);
     }
 
-        /**
+    /**
      *
      * Save the OpenAPI changes using REST API, type parameter is required to
      * identify the locally created data structured, i:e type `operation` will assume that `data` contains the
@@ -249,48 +249,48 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      * @param {Object} data Data object
      * @returns {Promise|null} A promise object which resolve to Swagger PUT response body.
      */
-         function updateOpenAPI(type: any) {
-            const copyOfOperations = cloneDeep(operations);
-            // switch (type) {
-            //     case 'save':
-            //         if (isSelectAll(markedOperations, copyOfOperations)) {
-            //             const message = 'At least one operation is required for the API';
-            //             Alert.warning(message);
-            //             return Promise.reject(new Error(message));
-            //         }
-            //         for (const [target, verbs] of Object.entries(markedOperations)) {
-            //             for (const verb of Object.keys(verbs)) {
-            //                 delete copyOfOperations[target][verb];
-            //                 if (isEmpty(copyOfOperations[target])) {
-            //                     delete copyOfOperations[target];
-            //                 }
-            //             }
-            //         }
-            //         // TODO: use better alternative (optimize performance) to identify newly added operations ~tmkb
-            //         for (const [, verbs] of Object.entries(copyOfOperations)) {
-            //             for (const [, verbInfo] of Object.entries(verbs)) {
-            //                 if (verbInfo['x-wso2-new']) {
-            //                     delete verbInfo['x-wso2-new'];
-            //                 }
-            //             }
-            //         }
-            //         break;
-            //     default:
-            //         return Promise.reject(new Error('Unsupported resource operation!'));
-            // }
-            // updateSecurityDefinition(copyOfOperations);
-            // setSpecScopesFromSecurityDefScopes();
-            // if (apiThrottlingPolicy !== api.apiThrottlingPolicy) {
-            //     return updateAPI({ apiThrottlingPolicy })
-            //         .catch((error) => {
-            //             console.error(error);
-            //             Alert.error('Error while updating the API');
-            //         })
-            //         .then(() => updateSwagger({ ...openAPISpec, paths: copyOfOperations }));
-            // } else {
-            //     return updateSwagger({ ...openAPISpec, paths: copyOfOperations });
-            // }
-        }
+    function updateOpenAPI(type: any) {
+        const copyOfOperations = cloneDeep(operations);
+        // switch (type) {
+        //     case 'save':
+        //         if (isSelectAll(markedOperations, copyOfOperations)) {
+        //             const message = 'At least one operation is required for the API';
+        //             Alert.warning(message);
+        //             return Promise.reject(new Error(message));
+        //         }
+        //         for (const [target, verbs] of Object.entries(markedOperations)) {
+        //             for (const verb of Object.keys(verbs)) {
+        //                 delete copyOfOperations[target][verb];
+        //                 if (isEmpty(copyOfOperations[target])) {
+        //                     delete copyOfOperations[target];
+        //                 }
+        //             }
+        //         }
+        //         // TODO: use better alternative (optimize performance) to identify newly added operations ~tmkb
+        //         for (const [, verbs] of Object.entries(copyOfOperations)) {
+        //             for (const [, verbInfo] of Object.entries(verbs)) {
+        //                 if (verbInfo['x-wso2-new']) {
+        //                     delete verbInfo['x-wso2-new'];
+        //                 }
+        //             }
+        //         }
+        //         break;
+        //     default:
+        //         return Promise.reject(new Error('Unsupported resource operation!'));
+        // }
+        // updateSecurityDefinition(copyOfOperations);
+        // setSpecScopesFromSecurityDefScopes();
+        // if (apiThrottlingPolicy !== api.apiThrottlingPolicy) {
+        //     return updateAPI({ apiThrottlingPolicy })
+        //         .catch((error) => {
+        //             console.error(error);
+        //             Alert.error('Error while updating the API');
+        //         })
+        //         .then(() => updateSwagger({ ...openAPISpec, paths: copyOfOperations }));
+        // } else {
+        //     return updateSwagger({ ...openAPISpec, paths: copyOfOperations });
+        // }
+    }
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed

@@ -25,10 +25,9 @@ import { FormattedMessage } from 'react-intl';
 
 interface Policy {
   id: number;
-  policy: string;
+  name: string;
   description: string;
   flows: string[];
-  isDone: boolean;
 }
 
 interface props {
@@ -37,63 +36,63 @@ interface props {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-  buttonIcon: {
-      marginRight: theme.spacing(1),
-  },
-  addPolicyBtn: {
-      marginLeft: theme.spacing(1),
-  },
-  notConfigured: {
-    color: 'rgba(0, 0, 0, 0.54)',
-  },
- textTrim: {
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  },
+    root: {
+        flexGrow: 1,
+        backgroundColor: theme.palette.background.paper,
+    },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
+    },
+    addPolicyBtn: {
+        marginLeft: theme.spacing(1),
+    },
+    notConfigured: {
+        color: 'rgba(0, 0, 0, 0.54)',
+    },
+    textTrim: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
 }));
 
 const EditPolicy: React.FC<props> = ({ policy, handleEdit }) => {
-  const classes = useStyles();
-  return (
-    <>
-    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-      <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
-        <Box pb={2}>
-        <Typography component='p' variant='subtitle2' className={classes.notConfigured}>
-          <FormattedMessage
-            id={'Apis.Details.Policies.'
+    const classes = useStyles();
+    return (
+        <>
+            <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
+                    <Box pb={2}>
+                        <Typography component='p' variant='subtitle2' className={classes.notConfigured}>
+                            <FormattedMessage
+                                id={'Apis.Details.Policies.'
                 + 'EditPolicies'}
-                defaultMessage='Name'
-          />
-        </Typography>
-        <Typography component='p' variant='body1' className={classes.textTrim}>
-          <>
-            {policy.policy}
-          </>
-        </Typography>
-        </Box>
-        <Box pb={2}>
-        <Typography component='p' variant='subtitle2' className={classes.notConfigured}>
-          <FormattedMessage
-            id={'Apis.Details.Policies.'
+                                defaultMessage='Name'
+                            />
+                        </Typography>
+                        <Typography component='p' variant='body1' className={classes.textTrim}>
+                            <>
+                                {policy.name}
+                            </>
+                        </Typography>
+                    </Box>
+                    <Box pb={2}>
+                        <Typography component='p' variant='subtitle2' className={classes.notConfigured}>
+                            <FormattedMessage
+                                id={'Apis.Details.Policies.'
                 + 'EditPolicies'}
-                defaultMessage='Description'
-          />
-        </Typography>
-        <Typography component='p' variant='body1' className={classes.textTrim}>
-          <>
-            {policy.description}
-          </>
-        </Typography>
-        </Box>
-      </Grid>
-    </Grid>
-    </>
-  );
+                                defaultMessage='Description'
+                            />
+                        </Typography>
+                        <Typography component='p' variant='body1' className={classes.textTrim}>
+                            <>
+                                {policy.description}
+                            </>
+                        </Typography>
+                    </Box>
+                </Grid>
+            </Grid>
+        </>
+    );
 };
 
 export default EditPolicy;

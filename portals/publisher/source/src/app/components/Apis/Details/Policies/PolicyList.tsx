@@ -36,9 +36,9 @@ import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import SinglePolicy from "./SinglePolicy";
 import { Droppable } from "react-beautiful-dnd";
 import { FormattedMessage } from 'react-intl';
+import SinglePolicy from "./SinglePolicy";
 import "./styles.css";
 import CreatePolicy from './CreatePolicy';
 
@@ -48,37 +48,37 @@ interface TabPanelProps {
     value: any;
   }
   
-  function TabPanel(props: TabPanelProps) {
+function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
   
     return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box p={3}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
+        <div
+            role='tabpanel'
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
     );
-  }
+}
   
-  function a11yProps(index: any) {
+function a11yProps(index: any) {
     return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
     };
-  }
+}
   
-  const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     root: {
-      flexGrow: 1,
-      backgroundColor: theme.palette.background.paper,
+        flexGrow: 1,
+        backgroundColor: theme.palette.background.paper,
     },
     buttonIcon: {
         marginRight: theme.spacing(1),
@@ -95,14 +95,13 @@ interface TabPanelProps {
         height: '90%',
         width: '90%',
     },
-  }));
+}));
 
 interface Policy {
     id: number;
-    policy: string;
+    name: string;
     description: string;
     flows: string[];
-    isDone: boolean;
 }
 
 interface props {
@@ -118,31 +117,31 @@ interface props {
 }
 
 const PolicyList: React.FC<props> = ({
-  policies,
-  setPolicies,
-  RequestFlowPolicies,
-  setRequestFlowPolicies,
-  ResponseFlowPolicies,
-  setResponseFlowPolicies,
-  FaultFlowPolicies,
-  setFaultFlowPolicies,
-  handleAdd,
+    policies,
+    setPolicies,
+    RequestFlowPolicies,
+    setRequestFlowPolicies,
+    ResponseFlowPolicies,
+    setResponseFlowPolicies,
+    FaultFlowPolicies,
+    setFaultFlowPolicies,
+    handleAdd,
 }) => {
-  const classes = useStyles();
-  const [value, setValue] = useState(0);
-  const [openAddPolicyPopup, setAddPolicyPopup] = useState<boolean>(false);
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  };
+    const classes = useStyles();
+    const [value, setValue] = useState(0);
+    const [openAddPolicyPopup, setAddPolicyPopup] = useState<boolean>(false);
+    const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+        setValue(newValue);
+    };
 
-  const toggleAddPolicyPopup = () => {
-    setAddPolicyPopup(!openAddPolicyPopup);
-};
+    const toggleAddPolicyPopup = () => {
+        setAddPolicyPopup(!openAddPolicyPopup);
+    };
 
-const handleCloseAddPolicyPopup = () => {
-    setAddPolicyPopup(false);
-};
-  return (
+    const handleCloseAddPolicyPopup = () => {
+        setAddPolicyPopup(false);
+    };
+    return (
         <Container>
             <Grid spacing={1} container direction='column' justify='flex-start' alignItems='stretch'>
                 <Grid item xs={12} md={12}>
@@ -154,26 +153,26 @@ const handleCloseAddPolicyPopup = () => {
                                 Flow
                             </Typography>
                             <ArrowForwardIcon/>
-                            <Droppable droppableId="RequestFlowPolicies" direction="horizontal">
+                            <Droppable droppableId='RequestFlowPolicies' direction='horizontal'>
                                 {(provided, snapshot) => (
-                                <div
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                    className={`policies  ${
-                                    snapshot.isDraggingOver ? "dragcomplete" : "remove"
-                                    }`}
-                                >
-                                    {RequestFlowPolicies?.map((policy, index) => (
-                                    <SinglePolicy
-                                        index={index}
-                                        policies={RequestFlowPolicies}
-                                        policy={policy}
-                                        key={policy.id}
-                                        setPolicies={setRequestFlowPolicies}
-                                    />
-                                    ))}
-                                    {provided.placeholder}
-                                </div>
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className={`policies  ${
+                                            snapshot.isDraggingOver ? "dragcomplete" : "remove"
+                                        }`}
+                                    >
+                                        {RequestFlowPolicies?.map((policy, index) => (
+                                            <SinglePolicy
+                                                index={index}
+                                                policies={RequestFlowPolicies}
+                                                policy={policy}
+                                                key={policy.id}
+                                                setPolicies={setRequestFlowPolicies}
+                                            />
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
                                 )}
                             </Droppable>
                         </Grid>
@@ -184,27 +183,27 @@ const handleCloseAddPolicyPopup = () => {
                                 Flow
                             </Typography>
                             <ArrowBackIcon/>
-                            <Droppable droppableId="ResponseFlowPolicies" direction="horizontal">
-                            {(provided, snapshot) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                className={`policies ${
-                                snapshot.isDraggingOver ? "dragcomplete" : "remove"
-                                }`}
-                            >
-                                {ResponseFlowPolicies?.map((policy, index) => (
-                                <SinglePolicy
-                                    index={index}
-                                    policies={ResponseFlowPolicies}
-                                    policy={policy}
-                                    key={policy.id}
-                                    setPolicies={setResponseFlowPolicies}
-                                />
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                            )}
+                            <Droppable droppableId='ResponseFlowPolicies' direction='horizontal'>
+                                {(provided, snapshot) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className={`policies ${
+                                            snapshot.isDraggingOver ? "dragcomplete" : "remove"
+                                        }`}
+                                    >
+                                        {ResponseFlowPolicies?.map((policy, index) => (
+                                            <SinglePolicy
+                                                index={index}
+                                                policies={ResponseFlowPolicies}
+                                                policy={policy}
+                                                key={policy.id}
+                                                setPolicies={setResponseFlowPolicies}
+                                            />
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
                             </Droppable>
                         </Grid>
                         <Grid item xs={12} md={12}>
@@ -214,27 +213,27 @@ const handleCloseAddPolicyPopup = () => {
                                 Flow
                             </Typography>
                             <ArrowBackIcon/>
-                            <Droppable droppableId="FaultFlowPolicies" direction="horizontal">
-                            {(provided, snapshot) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                className={`policies ${
-                                snapshot.isDraggingOver ? "dragcomplete" : "remove"
-                                }`}
-                            >
-                                {FaultFlowPolicies?.map((policy, index) => (
-                                <SinglePolicy
-                                    index={index}
-                                    policies={FaultFlowPolicies}
-                                    policy={policy}
-                                    key={policy.id}
-                                    setPolicies={setFaultFlowPolicies}
-                                />
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                            )}
+                            <Droppable droppableId='FaultFlowPolicies' direction='horizontal'>
+                                {(provided, snapshot) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className={`policies ${
+                                            snapshot.isDraggingOver ? "dragcomplete" : "remove"
+                                        }`}
+                                    >
+                                        {FaultFlowPolicies?.map((policy, index) => (
+                                            <SinglePolicy
+                                                index={index}
+                                                policies={FaultFlowPolicies}
+                                                policy={policy}
+                                                key={policy.id}
+                                                setPolicies={setFaultFlowPolicies}
+                                            />
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
                             </Droppable>
                         </Grid>
                     </Grid>
@@ -244,81 +243,81 @@ const handleCloseAddPolicyPopup = () => {
                         <CardContent>
                             <Grid item xs={12} style={{ position: 'relative' }}>
                                 <Typography variant='subtitle2'>
-                                    Policies
+                                    Policy
                                     {' '}
                                     List
                                 </Typography>
-                                <AppBar position="static">
-                                    <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-                                    <Tab label="Request Flow" {...a11yProps(0)} />
-                                    <Tab label="Response Flow" {...a11yProps(1)} />
-                                    <Tab label="Fault Flow" {...a11yProps(2)} />
+                                <AppBar position='static'>
+                                    <Tabs value={value} onChange={handleChange} aria-label='simple tabs example'>
+                                        <Tab label='Request Flow' {...a11yProps(0)} />
+                                        <Tab label='Response Flow' {...a11yProps(1)} />
+                                        <Tab label='Fault Flow' {...a11yProps(2)} />
                                     </Tabs>
                                 </AppBar>
                                 <TabPanel value={value} index={0}>
-                                    <Droppable droppableId="PoliciesList" direction="vertical">
-                                    {(provided, snapshot) => (
-                                    <div
-                                        className={`policiesColumn ${snapshot.isDraggingOver ? "dragactive" : ""}`}
-                                        ref={provided.innerRef}
-                                        {...provided.droppableProps}
-                                    >
-                                        {policies?.map((policy, index) => (
-                                        <SinglePolicy
-                                            index={index}
-                                            policies={policies}
-                                            policy={policy}
-                                            key={policy.id}
-                                            setPolicies={setPolicies}
-                                        />
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                    )}
+                                    <Droppable droppableId='PoliciesList' direction='vertical'>
+                                        {(provided, snapshot) => (
+                                            <div
+                                                className={`policiesColumn ${snapshot.isDraggingOver ? "dragactive" : ""}`}
+                                                ref={provided.innerRef}
+                                                {...provided.droppableProps}
+                                            >
+                                                {policies?.map((policy, index) => (
+                                                    <SinglePolicy
+                                                        index={index}
+                                                        policies={policies}
+                                                        policy={policy}
+                                                        key={policy.id}
+                                                        setPolicies={setPolicies}
+                                                    />
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
                                     </Droppable>
                                 </TabPanel>
                                 <TabPanel value={value} index={1}>
-                                    <Droppable droppableId="PoliciesList" direction="vertical">
-                                    {(provided, snapshot) => (
-                                    <div
-                                        className={`policiesColumn ${snapshot.isDraggingOver ? "dragactive" : ""}`}
-                                        ref={provided.innerRef}
-                                        {...provided.droppableProps}
-                                    >
-                                        {policies?.map((policy, index) => (
-                                        <SinglePolicy
-                                            index={index}
-                                            policies={policies}
-                                            policy={policy}
-                                            key={policy.id}
-                                            setPolicies={setPolicies}
-                                        />
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                    )}
+                                    <Droppable droppableId='PoliciesList' direction='vertical'>
+                                        {(provided, snapshot) => (
+                                            <div
+                                                className={`policiesColumn ${snapshot.isDraggingOver ? "dragactive" : ""}`}
+                                                ref={provided.innerRef}
+                                                {...provided.droppableProps}
+                                            >
+                                                {policies?.map((policy, index) => (
+                                                    <SinglePolicy
+                                                        index={index}
+                                                        policies={policies}
+                                                        policy={policy}
+                                                        key={policy.id}
+                                                        setPolicies={setPolicies}
+                                                    />
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
                                     </Droppable>
                                 </TabPanel>
                                 <TabPanel value={value} index={2}>
-                                    <Droppable droppableId="PoliciesList" direction="vertical">
-                                    {(provided, snapshot) => (
-                                    <div
-                                        className={`policiesColumn ${snapshot.isDraggingOver ? "dragactive" : ""}`}
-                                        ref={provided.innerRef}
-                                        {...provided.droppableProps}
-                                    >
-                                        {policies?.map((policy, index) => (
-                                        <SinglePolicy
-                                            index={index}
-                                            policies={policies}
-                                            policy={policy}
-                                            key={policy.id}
-                                            setPolicies={setPolicies}
-                                        />
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                    )}
+                                    <Droppable droppableId='PoliciesList' direction='vertical'>
+                                        {(provided, snapshot) => (
+                                            <div
+                                                className={`policiesColumn ${snapshot.isDraggingOver ? "dragactive" : ""}`}
+                                                ref={provided.innerRef}
+                                                {...provided.droppableProps}
+                                            >
+                                                {policies?.map((policy, index) => (
+                                                    <SinglePolicy
+                                                        index={index}
+                                                        policies={policies}
+                                                        policy={policy}
+                                                        key={policy.id}
+                                                        setPolicies={setPolicies}
+                                                    />
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
                                     </Droppable>
                                 </TabPanel>
                                 <Grid container>
@@ -344,7 +343,7 @@ const handleCloseAddPolicyPopup = () => {
                                         aria-labelledby='form-dialog-title'
                                         classes={{ paper: classes.dialogPaper }}
                                         fullWidth
-                                        maxWidth="md"
+                                        maxWidth='md'
                                     >
                                         <DialogTitle id='form-dialog-title'>
                                             <FormattedMessage
@@ -353,10 +352,10 @@ const handleCloseAddPolicyPopup = () => {
                                             />
                                         </DialogTitle>
                                         <DialogContent className={classes.dialogContent}>
-                                        <CreatePolicy 
-                                            handleAdd={handleAdd}
-                                            handleCloseAddPolicyPopup={handleCloseAddPolicyPopup}
-                                        />
+                                            <CreatePolicy 
+                                                handleAdd={handleAdd}
+                                                handleCloseAddPolicyPopup={handleCloseAddPolicyPopup}
+                                            />
                                         </DialogContent>
                                     </Dialog>
                                 </Grid>
@@ -366,7 +365,7 @@ const handleCloseAddPolicyPopup = () => {
                 </Grid>
             </Grid>
         </Container>
-  );
+    );
 };
 
 export default PolicyList;

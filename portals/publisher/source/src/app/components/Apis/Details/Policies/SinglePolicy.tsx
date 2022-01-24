@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from "react";
-import { useRef } from "react";
+import React, { useEffect, useState , useRef } from "react";
+
 import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
 import Avatar from '@material-ui/core/Avatar';
@@ -26,10 +26,9 @@ import { Draggable } from "react-beautiful-dnd";
 
 interface Policy {
   id: number;
-  policy: string;
+  name: string;
   description: string;
   flows: string[];
-  isDone: boolean;
 }
 
 const SinglePolicy: React.FC<{
@@ -38,109 +37,110 @@ const SinglePolicy: React.FC<{
   policies: Array<Policy>;
   setPolicies: React.Dispatch<React.SetStateAction<Array<Policy>>>;
 }> = ({ index, policy, policies, setPolicies }) => {
-  const [edit, setEdit] = useState<boolean>(false);
-  const [editPolicy, setEditPolicy] = useState<string>(policy.policy);
-  const [policyName, setPolicyName] = useState<string>(policy.policy);
+    const [edit, setEdit] = useState<boolean>(false);
+    const [editPolicy, setEditPolicy] = useState<string>(policy.name);
+    const [policyName, setPolicyName] = useState<string>(policy.name);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [edit]);
+    const inputRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, [edit]);
 
-  const handleEdit = (e: React.FormEvent, id: number) => {
-    e.preventDefault();
-    setPolicies(
-      policies.map((policy) => (policy.id === id ? { ...policy, todo: editPolicy } : policy))
-    );
-    setEdit(false);
-  };
-
-  const handleDelete = (id: number) => {
-    setPolicies(policies.filter((policy) => policy.id !== id));
-  };
-
-  const handleDone = (id: number) => {
-    setPolicies(
-      policies.map((policy) =>
-      policy.id === id ? { ...policy, isDone: !policy.isDone } : policy
-      )
-    );
-  };
-
-  const stringToColor = (word:string) => {
-    let hash = 0;
-    let i;
-  
-    /* eslint-disable no-bitwise */
-    for (i = 0; i < word.length; i += 1) {
-      hash = word.charCodeAt(i) + ((hash << 5) - hash);
-    }
-  
-    let color = '#';
-  
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.substr(-2);
-    }
-    /* eslint-enable no-bitwise */
-  
-    return color;
-  }
-  
-  const stringAvatar = (name:string)  => {
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-      },
-      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    const handleEdit = (e: React.FormEvent, id: number) => {
+        e.preventDefault();
+        setPolicies(
+            policies.map((policy) => (policy.id === id ? { ...policy, todo: editPolicy } : policy))
+        );
+        setEdit(false);
     };
-  }
 
-  return (
-    <Draggable draggableId={policy.id.toString()} index={index}>
-      {(provided, snapshot) => (
-        <form
-          onSubmit={(e) => handleEdit(e, policy.id)}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          className={`policy__single ${snapshot.isDragging ? "drag" : ""}`}
-        >
-          {edit ? (
-            <input
-              value={editPolicy}
-              onChange={(e) => setEditPolicy(e.target.value)}
-              className="todos__single--text"
-              ref={inputRef}
-            />
-          ) : policy.isDone ? (
-            <s className="todos__single--text">{policy.policy}</s>
-          ) : (
-            // <span className="todos__single--text">{policy.policy}</span>
-            <Avatar {...stringAvatar(policyName)} />
-          )}
-          <div>
-            <span
-              className="icon"
-              onClick={() => {
-                if (!edit && !policy.isDone) {
-                  setEdit(!edit);
-                }
-              }}
-            >
-              <EditIcon />
-            </span>
-            <span className="icon" onClick={() => handleDelete(policy.id)}>
-              <DeleteIcon />
-            </span>
-            <span className="icon" onClick={() => handleDone(policy.id)}>
-              <SaveIcon />
-            </span>
-          </div>
-        </form>
-      )}
-    </Draggable>
-  );
+    const handleDelete = (id: number) => {
+        setPolicies(policies.filter((policy) => policy.id !== id));
+    };
+
+    // const handleDone = (id: number) => {
+    //     setPolicies(
+    //         policies.map((policy) =>
+    //             policy.id === id ? { ...policy, isDone: !policy.isDone } : policy
+    //         )
+    //     );
+    // };
+
+    const stringToColor = (word:string) => {
+        let hash = 0;
+        let i;
+  
+        /* eslint-disable no-bitwise */
+        for (i = 0; i < word.length; i += 1) {
+            hash = word.charCodeAt(i) + ((hash << 5) - hash);
+        }
+  
+        let color = '#';
+  
+        for (i = 0; i < 3; i += 1) {
+            const value = (hash >> (i * 8)) & 0xff;
+            color += `00${value.toString(16)}`.substr(-2);
+        }
+        /* eslint-enable no-bitwise */
+  
+        return color;
+    }
+  
+    const stringAvatar = (name:string)  => {
+        return {
+            sx: {
+                bgcolor: stringToColor(name),
+            },
+            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+        };
+    }
+
+    return (
+        <Draggable draggableId={policy.id.toString()} index={index}>
+            {(provided, snapshot) => (
+                <form
+                    onSubmit={(e) => handleEdit(e, policy.id)}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    ref={provided.innerRef}
+                    className={`policy__single ${snapshot.isDragging ? "drag" : ""}`}
+                >
+                    {/* {edit ? (
+                        <input
+                            value={editPolicy}
+                            onChange={(e) => setEditPolicy(e.target.value)}
+                            className='todos__single--text'
+                            ref={inputRef}
+                        />
+                    ) : policy.isDone ? (
+                        <s className='todos__single--text'>{policy.policy}</s>
+                    ) : (
+                    // <span className="todos__single--text">{policy.policy}</span>
+                        <Avatar {...stringAvatar(policyName)} />
+                    )} */}
+                    <Avatar {...stringAvatar(policyName)} />
+                    <div>
+                        {/* <span
+                            className='icon'
+                            onClick={() => {
+                                if (!edit && !policy.isDone) {
+                                    setEdit(!edit);
+                                }
+                            }}
+                        >
+                            <EditIcon />
+                        </span> */}
+                        <span className='icon' onClick={() => handleDelete(policy.id)}>
+                            <DeleteIcon />
+                        </span>
+                        {/* <span className='icon' onClick={() => handleDone(policy.id)}>
+                            <SaveIcon />
+                        </span> */}
+                    </div>
+                </form>
+            )}
+        </Draggable>
+    );
 };
 
 export default SinglePolicy;

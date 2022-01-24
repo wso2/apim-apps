@@ -95,10 +95,9 @@ const useStyles = makeStyles((theme: any) => ({
 
 interface Policy {
     id: number;
-    policy: string;
+    name: string;
     description: string;
     flows: string[];
-    isDone: boolean;
 }
 
 interface IProps {
@@ -120,17 +119,17 @@ const CreatePolicy: React.FC<IProps> = ({ handleAdd, handleCloseAddPolicyPopup }
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        //setAddPolicy({id:Date.now(), policy: policyName, description: "", flows: [], isDone: false});
-        handleAdd({id:Date.now(), policy: policyName, description: policyDescription, flows: [], isDone: false});
-      };
-      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          if (e.target.name === 'policyName') {
+        // setAddPolicy({id:Date.now(), policy: policyName, description: "", flows: [], isDone: false});
+        handleAdd({id:Date.now(), name: policyName, description: policyDescription, flows: []});
+    };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.name === 'policyName') {
             setPolicyName(e.target.value);
-          } else if (e.target.name === 'policyDesc') {
+        } else if (e.target.name === 'policyDesc') {
             setPolicyDescription(e.target.value);
-          }
+        }
         
-      }
+    }
 
     return (
         <Grid container spacing={3}>
@@ -138,38 +137,38 @@ const CreatePolicy: React.FC<IProps> = ({ handleAdd, handleCloseAddPolicyPopup }
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <Paper elevation={1} className={classes.root}>
-                                <div>
+                            <div>
                                 <form
-                                className="input"
-                                onSubmit={(e) => {
-                                    submit(e);
-                                }}
+                                    className='input'
+                                    onSubmit={(e) => {
+                                        submit(e);
+                                    }}
                                 >
-                                <input
-                                    name="policyName"
-                                    type="text"
-                                    placeholder="Add API Policy"
-                                    value={policyName}
-                                    ref={inputRef}
-                                    onChange={(e) => handleChange(e)}
-                                    className="input__box"
-                                />
-                                <br/>
-                                <input
-                                    name="policyDesc"
-                                    type="text"
-                                    placeholder="Add API Policy Desc"
-                                    value={policyDescription}
-                                    ref={inputRef}
-                                    onChange={(e) => handleChange(e)}
-                                    className="input__box"
-                                />
-                                <button type="submit" className="input_submit">
-                                    GO
-                                </button>
+                                    <input
+                                        name='policyName'
+                                        type='text'
+                                        placeholder='Add API Policy'
+                                        value={policyName}
+                                        ref={inputRef}
+                                        onChange={(e) => handleChange(e)}
+                                        className='input__box'
+                                    />
+                                    <br/>
+                                    <input
+                                        name='policyDesc'
+                                        type='text'
+                                        placeholder='Add API Policy Desc'
+                                        value={policyDescription}
+                                        ref={inputRef}
+                                        onChange={(e) => handleChange(e)}
+                                        className='input__box'
+                                    />
+                                    <button type='submit' className='input_submit'>
+                                        GO
+                                    </button>
                                 </form>
                             </div>
-                            <CreatePolicyTemplate isAPI={true} />
+                            <CreatePolicyTemplate isAPI />
                             <div className={classes.addNewOther}>
                                 <Button onClick={handleCloseAddPolicyPopup}>
                                     <FormattedMessage

@@ -153,10 +153,7 @@ const CreatePolicyTemplate: React.FC<props> = ({isAPI}) => {
             // console.log('Policy Definition: ', policyDefinition)
             if (!isAPI) {
                 history.push('/policy-templates');
-            } else {
-
             }
-            
         }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
