@@ -2961,6 +2961,24 @@
       "value": "Region"
     }
   ],
+  "Apis.Details.APIDefinition.Addservice.success": [
+    {
+      "type": 0,
+      "value": "Service added to the API successfully!"
+    }
+  ],
+  "Apis.Details.APIDefinition.Addservice.error": [
+    {
+      "type": 0,
+      "value": "Error while adding service to the API"
+    }
+  ],
+  "Apis.Details.APIDefinition.Addservice.endpoint.ready": [
+    {
+      "type": 0,
+      "value": "Endpoint is ready"
+    }
+  ],
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.secretKey": [
     {
       "type": 0,
