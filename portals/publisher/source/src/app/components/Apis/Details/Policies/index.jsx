@@ -20,7 +20,6 @@ import { Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-// import EditScope from './EditScope';
 import Policies from './Policies';
 import CreatePolicy from './CreatePolicy';
 

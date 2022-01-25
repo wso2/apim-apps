@@ -17,7 +17,7 @@
  */
 
 import {
-    Button, Grid, IconButton, makeStyles, Tooltip, Typography,
+    Button, Container, Grid, IconButton, makeStyles, Tooltip, Typography,
 } from '@material-ui/core';
 import { AddCircle } from '@material-ui/icons';
 import Alert from 'AppComponents/Shared/Alert';
@@ -42,7 +42,10 @@ import {
 import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/OperationsSelector';
 import SaveOperations from 'AppComponents/Apis/Details/Resources/components/SaveOperations';
 import Icon from '@material-ui/core/Icon';
-import MUIDataTable from 'mui-datatables';
+import Card from '@material-ui/core/Card';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import CardContent from '@material-ui/core/CardContent';
 import OperationPolicy from './OperationPolicy'
 import OperationsGroup from './OperationsGroup'
 
@@ -85,8 +88,14 @@ const useStyles = makeStyles((theme: any) => ({
         fontWeight: 200,
     },
     addPolicyBtn: {
-        marginLeft: theme.spacing(1),
+        marginLeft: 'auto',
     },
+    flowTab: {
+        fontSize: 'smaller',
+        minWidth: 50,
+        paddingLeft: 0,
+        paddingRight: 0,
+    }
 }));
 
 interface IStatePolicy {
@@ -105,6 +114,12 @@ interface Iverb {
     verbObject: Record<string, {code: string}>
 }
 
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: any;
+  }
+
 /**
  * Renders the policy management page.
  * @param {JSON} props Input props from parent components.
@@ -116,6 +131,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const createUrl = `/apis/${api.id}/policies/create`;
     const viewUrl = `/apis/${api.id}/policies/view`;
     // const { policies } = api;
+    const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [policies, setPolicies] = useState <IStatePolicy['policy']>([
         {
             name: 'LeBron James',
@@ -209,12 +225,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
     const [openAPISpec, setOpenAPISpec] = useState<any>({});
 
-    // const columns = [
-    //     { name: 'Policy Name', options: { filterOptions: { fullWidth: true } } },
-    //     'Description',
-    //     'Flows',
-    // ];
-
     function resolveAndUpdateSpec(rawSpec: any) {
         /*
          * Deep copying the spec.
@@ -292,6 +302,31 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         // }
     }
 
+    /**
+     * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault)
+     * @param {JSON} props Input props
+     * @returns {TSX} Tab panel to render
+     */
+    function TabPanel(props: TabPanelProps) {
+        const { children, value, index, ...other } = props;
+
+        return (
+            <div
+                role='tabpanel'
+                hidden={selectedTab !== index}
+                id={`simple-tabpanel-${index}`}
+                aria-labelledby={`simple-tab-${index}`}
+                {...other}
+            >
+                {selectedTab === index && (
+                    <Box>
+                        <Typography>Hi</Typography>
+                    </Box>
+                )}
+            </div>
+        );
+    }
+
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
         api.getSwagger()
@@ -314,74 +349,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         }),
         [api],
     );
-
-    const columns = [
-        'Policy Name',
-        'Description',
-        'Flows',
-        'Actions',
-        // {
-        //     options: {
-        //         customBodyRender: (value: any, tableMeta: any) => {
-        //             if (tableMeta.rowData) {
-        //                 const policyName = tableMeta.rowData[0];
-        //                 return (
-        //                     <table>
-        //                         <tr>
-        //                             <td>
-        //                                 <Button
-        //                                     aria-label={'View' + policyName}
-        //                                     component={Link}
-        //                                     to={viewUrl}
-        //                                 >
-        //                                     <Icon>View</Icon>
-        //                                     <FormattedMessage
-        //                                         id='Apis.Details.Policies.Policies.policy.view'
-        //                                         defaultMessage='View'
-        //                                     />
-        //                                 </Button>
-        //                             </td>
-        //                             {/* <td>
-        //                                 <Delete scopeName={scopeName} api={api} isAPIProduct />
-        //                             </td> */}
-        //                         </tr>
-        //                     </table>
-        //                 );
-        //             }
-        //             return false;
-        //         },
-        //         filter: false,
-        //         sort: false,
-        //         label: (
-        //             <FormattedMessage
-        //                 id='Apis.Details.Policies.Policies.table.header.actions'
-        //                 defaultMessage='Actions'
-        //             />
-        //         ),
-        //     },
-        // },
-    ];
-
-    const policiesList = policies.map((policyTemplate) => {
-        const policy = [];
-        policy.push(policyTemplate.name);
-        policy.push(policyTemplate.description);
-        policy.push(policyTemplate.flows);
-        return policy;
-    });
-
-    const options = {
-        // filterType: 'multiselect',
-        // selectableRows: false,
-        title: false,
-        filter: false,
-        sort: false,
-        print: false,
-        download: false,
-        viewColumns: false,
-        // customToolbar: false,
-    };
-
+    
     return (
         <>
             <Box mb={4}>
@@ -393,10 +361,10 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                 </Typography>
             </Box>
             <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
-                <Grid item md={12}>
+                <Grid item xs={8}>
                     <Paper>
                         {Object.entries(operations).map(([target, verbObject]:[string, any]) => (
-                            <Grid key={target} item md={12}>
+                            <Grid key={target} item xs={12}>
                                 <OperationsGroup openAPI={openAPISpec} tag={target}>
                                     <Grid
                                         container
@@ -441,10 +409,74 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                             <SaveOperations
                                 operationsDispatcher={operationsDispatcher}
                                 updateOpenAPI={updateOpenAPI}
-                                api={api}
+                                // api={api}
                             />
                         </Grid>
                     </Grid> */}
+                </Grid>
+                <Grid item xs={4}>
+                    <Paper>
+                        <Box maxHeight='50vh'>
+                            <Card variant='outlined'>
+                                <CardContent>
+                                    <Grid container>
+                                        <Typography variant='subtitle2'>
+                                            Policy List
+                                        </Typography>
+                                        <Button
+                                            // onClick={toggleAddPolicyPopup}
+                                            disabled={false}
+                                            variant='outlined'
+                                            color='primary'
+                                            size='small'
+                                            className={classes.addPolicyBtn}
+                                        >
+                                            <AddCircle className={classes.buttonIcon} />
+                                            <FormattedMessage
+                                                id='Apis.Details.Policies.APIPolicyList.new.policy'
+                                                defaultMessage='Add New Policy'
+                                            />
+                                        </Button>
+                                    </Grid>
+                                    <Grid container>
+                                        <Tabs
+                                            value={selectedTab}
+                                            onChange={(event, tab) => setSelectedTab(tab)}
+                                            indicatorColor='primary'
+                                            textColor='primary'
+                                            variant='standard'
+                                            aria-label='Policies local to API'
+                                        >
+                                            <Tab 
+                                                label={<span className={classes.flowTab}>Request</span>}
+                                                id='simple-tab-0'
+                                                aria-controls='simple-tabpanel-0' 
+                                            />
+                                            <Tab
+                                                label={<span className={classes.flowTab}>Response</span>}
+                                                id='simple-tab-1'
+                                                aria-controls='simple-tabpanel-1' 
+                                            />
+                                            <Tab
+                                                label={<span className={classes.flowTab}>Fault</span>}
+                                                id='simple-tab-2'
+                                                aria-controls='simple-tabpanel-2'
+                                            />
+                                        </Tabs>
+                                        <TabPanel value={policies} index={0}>
+                                            Item One
+                                        </TabPanel>
+                                        <TabPanel value={policies} index={1}>
+                                            Item Two
+                                        </TabPanel>
+                                        <TabPanel value={policies} index={2}>
+                                            Item Three
+                                        </TabPanel>
+                                    </Grid>
+                                </CardContent>
+                            </Card>
+                        </Box>
+                    </Paper>
                 </Grid>
             </Grid>
         </>

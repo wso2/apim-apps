@@ -39,7 +39,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import PolicyList from "./PolicyList";
-import EditPolicy from './EditPolicy';
 
 interface Policy {
     id: number;
@@ -164,10 +163,6 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
         if (addPolicy) {
             setPolicies([...policies, e]);
         }
-    };
-      
-    const handleEdit = () => {
-
     };
 
     const onDragEnd = (result: DropResult) => {
@@ -340,9 +335,6 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                             defaultMessage={configPolicyMsg}
                                         />
                                     </DialogTitle>
-                                    <DialogContent className={classes.dialogContent}>
-                                        <EditPolicy policy={selectedPolicy} handleEdit={handleEdit} />
-                                    </DialogContent>
                                 </Dialog>
                             </Grid>
                         </Grid>

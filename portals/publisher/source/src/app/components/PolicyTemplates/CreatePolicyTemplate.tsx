@@ -134,8 +134,8 @@ const CreatePolicyTemplate: React.FC<props> = ({isAPI}) => {
         {
             label: 'Upload Policy Template',
             description: (!isAPI) ? ( `Upload the Policy logic inclusive template file that you wish to add in
-                as a Global Policy Template.`) : ( `Upload the Policy logic inclusive template file that you wish to add in
-                as an API Policy Template.`),
+                as a Global Policy Template.`) : ( `Upload the Policy logic inclusive template file that you
+                wish to add in as an API Policy Template.`),
         },
         {
             label: 'Add Policy Definition',
@@ -279,22 +279,12 @@ const CreatePolicyTemplate: React.FC<props> = ({isAPI}) => {
                                                 >
                                                     {index === steps.length - 1 ? 'Save' : 'Continue'}
                                                 </Button>
-                                                {(index === 1) && (
                                                 <Button
                                                     color='primary'
-                                                    onClick={handleBack}
+                                                    onClick={(index === 0 ? handleNext : handleBack)}
                                                 >
-                                                    Back
+                                                    {(index === 0 ? 'Skip' : 'Back')}
                                                 </Button>
-                                                )}
-                                                {(index === 0) && (
-                                                    <Button
-                                                        color='primary'
-                                                        onClick={handleNext}
-                                                    >
-                                                        Skip
-                                                    </Button>
-                                                )}
                                             </Box>
                                         </StepContent>
                                     </Step>

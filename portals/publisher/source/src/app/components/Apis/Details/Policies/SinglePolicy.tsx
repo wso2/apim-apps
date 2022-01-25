@@ -18,8 +18,6 @@
 
 import React, { useEffect, useState , useRef } from "react";
 
-import SaveIcon from '@material-ui/icons/Save';
-import EditIcon from '@material-ui/icons/Edit';
 import Avatar from '@material-ui/core/Avatar';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Draggable } from "react-beautiful-dnd";
@@ -37,22 +35,22 @@ const SinglePolicy: React.FC<{
   policies: Array<Policy>;
   setPolicies: React.Dispatch<React.SetStateAction<Array<Policy>>>;
 }> = ({ index, policy, policies, setPolicies }) => {
-    const [edit, setEdit] = useState<boolean>(false);
-    const [editPolicy, setEditPolicy] = useState<string>(policy.name);
+    // const [edit, setEdit] = useState<boolean>(false);
+    // const [editPolicy, setEditPolicy] = useState<string>(policy.name);
     const [policyName, setPolicyName] = useState<string>(policy.name);
 
     const inputRef = useRef<HTMLInputElement>(null);
-    useEffect(() => {
-        inputRef.current?.focus();
-    }, [edit]);
+    // useEffect(() => {
+    //     inputRef.current?.focus();
+    // }, [edit]);
 
-    const handleEdit = (e: React.FormEvent, id: number) => {
-        e.preventDefault();
-        setPolicies(
-            policies.map((policy) => (policy.id === id ? { ...policy, todo: editPolicy } : policy))
-        );
-        setEdit(false);
-    };
+    // const handleEdit = (e: React.FormEvent, id: number) => {
+    //     e.preventDefault();
+    //     setPolicies(
+    //         policies.map((policy) => (policy.id === id ? { ...policy, todo: editPolicy } : policy))
+    //     );
+    //     setEdit(false);
+    // };
 
     const handleDelete = (id: number) => {
         setPolicies(policies.filter((policy) => policy.id !== id));
@@ -99,7 +97,7 @@ const SinglePolicy: React.FC<{
         <Draggable draggableId={policy.id.toString()} index={index}>
             {(provided, snapshot) => (
                 <form
-                    onSubmit={(e) => handleEdit(e, policy.id)}
+                    // onSubmit={(e) => handleEdit(e, policy.id)}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                     ref={provided.innerRef}

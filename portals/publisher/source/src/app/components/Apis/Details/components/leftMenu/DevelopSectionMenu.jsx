@@ -307,6 +307,7 @@ export default function DevelopSectionMenu(props) {
                                     id: 'Apis.Details.index.policies',
                                     defaultMessage: 'Policies',
                                 })}
+                                route='policies'
                                 to={pathPrefix + 'policies'}
                                 Icon={<PoliciesIcon />}
                             />
