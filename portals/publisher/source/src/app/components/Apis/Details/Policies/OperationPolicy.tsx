@@ -75,6 +75,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
             paperStyles: {
                 border: `1px solid ${backgroundColor}`,
                 borderBottom: '',
+                width: '100%',
             },
             customDivider: {
                 backgroundColor,

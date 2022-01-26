@@ -48,6 +48,7 @@ import Tab from '@material-ui/core/Tab';
 import CardContent from '@material-ui/core/CardContent';
 import OperationPolicy from './OperationPolicy'
 import OperationsGroup from './OperationsGroup'
+import DraggablePolicyCard from './DraggablePolicyCard';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -90,20 +91,33 @@ const useStyles = makeStyles((theme: any) => ({
     addPolicyBtn: {
         marginLeft: 'auto',
     },
+    flowTabs: {
+        '& button': {
+            minWidth: 50,
+        }
+    },
     flowTab: {
         fontSize: 'smaller',
-        minWidth: 50,
-        paddingLeft: 0,
-        paddingRight: 0,
+    },
+    gridItem: {
+        display: 'flex',
+        width: '100%',
+    },
+    policyListBox: {
+        position: 'fixed',
+        right: '20',
     }
 }));
 
+interface Policy {
+    id: number;
+    name: string;
+    description: string;
+    flows: string[];
+}
+
 interface IStatePolicy {
-    policy: {
-        name: string;
-        description: string,
-        flows: string[];
-    }[]
+    policy: Policy[];
 }
 
 interface IProps {
@@ -134,14 +148,16 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [policies, setPolicies] = useState <IStatePolicy['policy']>([
         {
-            name: 'LeBron James',
-            description: 'Desc',
-            flows: ['in'],
+            id: 1,
+            name: 'Add Header',
+            description: 'With this policy, user can add a new header to the request',
+            flows: ['Request', 'Response', 'Fault'],
         },
         {
-            name: 'Kobe Bryant',
-            description: 'Desc',
-            flows: ['in'],
+            id: 2,
+            name: 'Rewrite HTTP Method',
+            description: 'User should be able to change the HTTP method of a resource',
+            flows: ['Request'],
         },
     ]);
 
@@ -149,6 +165,16 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [resolvedSpec, setResolvedSpec] = useState({});
     const [markedOperations, setSelectedOperation] = useState({});
     const [expandedResource, setExpandedResource] = useState(false);
+    const [requestFlowPolicies, setRequestFlowPolicies] = useState<Array<Policy>>([]);
+    const [responseFlowPolicies, setResponseFlowPolicies] = useState<Array<Policy>>([]);
+    const [faultFlowPolicies, setFaultFlowPolicies] = useState<Array<Policy>>([]);
+
+
+    useEffect(() => {
+        // {Object.values(policies).map((policy: Policy) => (
+
+        // ))}
+    }, [policies])
 
     /**
      *
@@ -308,7 +334,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      * @returns {TSX} Tab panel to render
      */
     function TabPanel(props: TabPanelProps) {
-        const { children, value, index, ...other } = props;
+        const { children, value, index} = props;
 
         return (
             <div
@@ -316,12 +342,15 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                 hidden={selectedTab !== index}
                 id={`simple-tabpanel-${index}`}
                 aria-labelledby={`simple-tab-${index}`}
-                {...other}
             >
                 {selectedTab === index && (
-                    <Box>
-                        <Typography>Hi</Typography>
-                    </Box>
+                    value.map((singlePolicy: Policy) => {
+                        return (
+                            <DraggablePolicyCard
+                                policyObj={singlePolicy}
+                            />
+                        );
+                    })
                 )}
             </div>
         );
@@ -375,7 +404,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                     >
                                         {Object.entries(verbObject).map(([verb, operation]) => {
                                             return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                                <Grid key={`${target}/${verb}`} item>
+                                                <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
                                                     <OperationPolicy
                                                         target={target}
                                                         verb={verb}
@@ -416,7 +445,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                 </Grid>
                 <Grid item xs={4}>
                     <Paper>
-                        <Box maxHeight='50vh'>
+                        <Box maxHeight='40vh' className={classes.policyListBox}>
                             <Card variant='outlined'>
                                 <CardContent>
                                     <Grid container>
@@ -446,6 +475,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                             textColor='primary'
                                             variant='standard'
                                             aria-label='Policies local to API'
+                                            className={classes.flowTabs}
                                         >
                                             <Tab 
                                                 label={<span className={classes.flowTab}>Request</span>}
@@ -463,15 +493,11 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                 aria-controls='simple-tabpanel-2'
                                             />
                                         </Tabs>
-                                        <TabPanel value={policies} index={0}>
-                                            Item One
-                                        </TabPanel>
-                                        <TabPanel value={policies} index={1}>
-                                            Item Two
-                                        </TabPanel>
-                                        <TabPanel value={policies} index={2}>
-                                            Item Three
-                                        </TabPanel>
+                                        <Grid container>
+                                            <TabPanel value={policies} index={0} />
+                                            <TabPanel value={policies} index={1} />
+                                            <TabPanel value={policies} index={2} />
+                                        </Grid>
                                     </Grid>
                                 </CardContent>
                             </Card>
