@@ -93,6 +93,7 @@
  "Apis.Details.Credentials.Wizard.Wizard.copy.access.token": "ප්‍රවේශ ටෝකනය පිටපත් කරන්න",
  "Apis.Details.Credentials.Wizard.GenerateKeysStep.list.tokenEndpoint": "ටෝකන් එන්ඩ්පොයින්ට්",
  "Apis.Details.Environments.download.wsdl.error": "Swagger බාගත කිරීමේදී දෝෂයකි",
+ "Apis.Details.Environments.download.graphql.error": "GraphQL බාගත කිරීමේදී දෝෂයකි",
  "Apis.Details.Credentials.Wizard.Wizard.finish": "අවසන් කරන්න",
  "Apis.Details.Credentials.SubscriptionTableRow.prod.keys": "නිෂ්පාදන යතුරු",
  "Apis.Details.GraphQLConsole.GraphQLUI.URLs": "ද්වාර URL",

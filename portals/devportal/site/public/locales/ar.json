@@ -39,6 +39,7 @@
  "Apis.Details.Documents.View.file.availability": "لا يوجد ملف متاح",
  "Apis.Details.Environments.copied": "نسخ",
  "Apis.Details.Environments.download.wsdl.error": "خطأ في تنزيل Swagger",
+ "Apis.Details.Environments.download.graphql.error": "خطأ في تنزيل GraphQL",
  "Apis.Details.GraphQLConsole.GraphQLConsole.title": "جرب أو حاول",
  "Apis.Details.InfoBar.keyManagers": "المدراء الرئيسيون",
  "Apis.Details.Environments.download.wsdl": "WSDL",

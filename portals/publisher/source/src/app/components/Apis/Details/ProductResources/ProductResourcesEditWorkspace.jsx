@@ -178,6 +178,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const resourceMethod = {
+    POST: 'post',
+    PUT: 'put',
+    GET: 'get',
+    DELETE: 'delete',
+    PATCH: 'patch',
+    OPTIONS: 'options',
+    HEAD: 'head',
+};
+
 /**
  *
  *
@@ -224,6 +234,17 @@ function ProductResourcesEdit(props) {
             });
         }
     };
+
+    const isValidHttpVerb = (innerKey) => {
+        if (innerKey === resourceMethod.DELETE || innerKey === resourceMethod.POST
+                || innerKey === resourceMethod.GET || innerKey === resourceMethod.PUT
+                || innerKey === resourceMethod.PATCH || innerKey === resourceMethod.OPTIONS
+                || innerKey === resourceMethod.HEAD) {
+            return true;
+        }
+        return false;
+    };
+
     const addPropsToSelectedApiPaths = (paths, apiId, latestApiResources = apiResources) => {
         /* Add checked field to each resource object */
         Object.keys(paths).map((key) => {
@@ -231,39 +252,41 @@ function ProductResourcesEdit(props) {
             Object.keys(methodObj).map((innerKey) => {
                 // We are setting the check property at this level because we need to
                 // add resources for each verb ( post, get, put etc.. )
-                methodObj[innerKey].checked = false;
+                if (isValidHttpVerb(innerKey)) {
+                    methodObj[innerKey].checked = false;
 
-                // We need to check the latestApiResources for the same
-                // API/Resource Name / Verb and  indicate it differently
-                // Loop latestApiResources object
-                const target = key;
-                const verb = innerKey;
-                let resourceFound = false;
-                if (latestApiResources) {
-                    Object.keys(latestApiResources).map((resourcekey) => {
-                        const apiResource = latestApiResources[resourcekey];
+                    // We need to check the latestApiResources for the same
+                    // API/Resource Name / Verb and  indicate it differently
+                    // Loop latestApiResources object
+                    const target = key;
+                    const verb = innerKey;
+                    let resourceFound = false;
+                    if (latestApiResources) {
+                        Object.keys(latestApiResources).map((resourcekey) => {
+                            const apiResource = latestApiResources[resourcekey];
 
-                        // Check if the the api slected from UI is same as the operation api id checking
-                        if (apiResource && apiId === apiResource.apiId) {
-                            // API is the same
-                            Object.keys(apiResource.operations).map((operationKey) => {
-                                const operation = apiResource.operations[operationKey];
-                                if (
-                                    operation
-                                    && operation.target === target
-                                    && operation.verb.toLowerCase() === verb.toLowerCase()
-                                ) {
-                                    // Operation is already there
-                                    resourceFound = true;
-                                }
-                            });
-                        }
-                    });
-                }
-                if (resourceFound) {
-                    methodObj[innerKey].allreadyAdded = true;
-                } else {
-                    methodObj[innerKey].allreadyAdded = false;
+                            // Check if the the api slected from UI is same as the operation api id checking
+                            if (apiResource && apiId === apiResource.apiId) {
+                                // API is the same
+                                Object.keys(apiResource.operations).map((operationKey) => {
+                                    const operation = apiResource.operations[operationKey];
+                                    if (
+                                        operation
+                                        && operation.target === target
+                                        && operation.verb.toLowerCase() === verb.toLowerCase()
+                                    ) {
+                                        // Operation is already there
+                                        resourceFound = true;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    if (resourceFound) {
+                        methodObj[innerKey].allreadyAdded = true;
+                    } else {
+                        methodObj[innerKey].allreadyAdded = false;
+                    }
                 }
             });
         });
@@ -411,7 +434,7 @@ function ProductResourcesEdit(props) {
             Object.keys(methodObj).map((innerKey) => {
                 // We are setting the check property at this level because we need to
                 // add resources for each verb ( post, get, put etc.. )
-                if (methodObj[innerKey].checked || addAll) {
+                if ((methodObj[innerKey].checked || addAll) && isValidHttpVerb(innerKey)) {
                     // We need to add this to apiResources array
                     updateResourceTree(
                         {
@@ -438,7 +461,9 @@ function ProductResourcesEdit(props) {
                 const {
                     body: { list },
                 } = response;
-                const filteredList = list.filter((theApi) => theApi.lifeCycleStatus !== 'PROTOTYPED');
+                const filteredList = list.filter((theApi) => theApi.lifeCycleStatus !== 'PROTOTYPED' &&
+                    theApi.lifeCycleStatus !== 'RETIRED' && theApi.lifeCycleStatus !== 'DEPRECATED'
+                );
 
                 setAllApis(filteredList);
                 if (filteredList.length > 0) {

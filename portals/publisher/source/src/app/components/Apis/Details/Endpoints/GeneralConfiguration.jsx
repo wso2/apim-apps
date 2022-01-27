@@ -152,7 +152,7 @@ function GeneralConfiguration(props) {
 
     // Get the certificates from backend.
     useEffect(() => {
-        if (!isRestricted(['apim:ep_certificates_view'])) {
+        if (!isRestricted(['apim:ep_certificates_view', 'apim:api_view'])) {
             const endpointCertificatesList = [];
             const aliases = [];
 
@@ -199,7 +199,7 @@ function GeneralConfiguration(props) {
                 expanded={isConfigExpanded}
                 onChange={() => setConfigExpand(!isConfigExpanded)}
                 className={classes.generalConfigPanel}
-                disabled={isRestricted(['apim:ep_certificates_view'])}
+                disabled={isRestricted(['apim:ep_certificates_view', 'apim:api_view'])}
             >
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -220,7 +220,7 @@ function GeneralConfiguration(props) {
                             :
                             {' '}
                             {endpointCertificates.length}
-                            {isRestricted(['apim:ep_certificates_view']) && (
+                            {isRestricted(['apim:ep_certificates_view', 'apim:api_view']) && (
                                 <Box ml={2}>
                                     <Typography variant='body2' color='primary'>
                                         <FormattedMessage

@@ -85,6 +85,24 @@ function SourceDownload(props) {
             });
     };
 
+    const downloadGraphQLSchema = () => {
+        const newAPI = new API();
+        const promisedGraphQL = newAPI.getGraphQLSchemaByAPIId(api.id);
+        promisedGraphQL.then((response) => {
+            const fileName = api.provider + '-' + api.name + '-' + api.version + '.graphql';
+            Utils.downloadFile(response, fileName);
+        })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Environments.download.graphql.error',
+                        defaultMessage: 'Error downloading the GraphQL Schema',
+                    }));
+                }
+            });
+    };
+
     /**
      * Downloads the swagger of the api for the provided environment
      *
@@ -151,6 +169,32 @@ function SourceDownload(props) {
                     <FormattedMessage
                         id='Apis.Details.Environments.download.swagger.text'
                         defaultMessage='Download Swagger'
+                    />
+                </MUILink>
+            </Tooltip>
+        );
+    }
+    if (api.type === 'GRAPHQL') {
+        return (
+            <Tooltip
+                title={(
+                    <FormattedMessage
+                        id='Apis.Details.Environments.download.graphQL'
+                        defaultMessage='GraphQL'
+                    />
+                )}
+                placement='right'
+                className={classes.iconStyle}
+            >
+                <MUILink
+                    href='#'
+                    onClick={() => downloadGraphQLSchema()}
+                    className={classes.downloadLink}
+                >
+                    <CloudDownloadRounded className={classes.buttonIcon} />
+                    <FormattedMessage
+                        id='Apis.Details.Environments.download.graphql.text'
+                        defaultMessage='Download GraphQL'
                     />
                 </MUILink>
             </Tooltip>

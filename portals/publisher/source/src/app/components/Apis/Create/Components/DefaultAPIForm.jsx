@@ -186,7 +186,7 @@ export default function DefaultAPIForm(props) {
                             updateValidity({
                                 ...validity,
                                 // eslint-disable-next-line max-len
-                                context: { details: [{ message: apiContext + isWebSocket ? ' channel already exists' : ' context already exists' }] },
+                                context: { details: [{ message:  isWebSocket ? apiContext + ' channel already exists' : apiContext + ' context already exists' }] },
                             });
                         } else if (count > 0 && checkContext(value, result.body.list[0].contextTemplate)) {
                             updateValidity({
