@@ -47,6 +47,7 @@ export default function GraphQLUI(props) {
         URLs,
         securitySchemeType,
         accessTokenProvider,
+        additionalHeaders,
 
     } = props;
     const { api } = useContext(ApiContext);
@@ -94,13 +95,21 @@ export default function GraphQLUI(props) {
         } else {
             token = 'Bearer ' + accessTokenProvider();
         }
+        const headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            [authorizationHeader]: token,
+        };
+        const {
+            additionalHeaderName,
+            additionalHeaderValue,
+        } = additionalHeaders;
+        if (additionalHeaderName && additionalHeaderValue) {
+            headers[additionalHeaderName] = additionalHeaderValue;
+        }
         return fetch((URLs && URLs.https), {
             method: 'post',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                [authorizationHeader]: token,
-            },
+            headers,
             body: JSON.stringify(graphQLParams),
         }).then((response) => response.json());
     }

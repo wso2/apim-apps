@@ -20,6 +20,8 @@ import React, { useState, useContext, useEffect } from 'react';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,7 +34,6 @@ import TryOutController from '../ApiConsole/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
-
 
 const useStyles = makeStyles((theme) => ({
     buttonIcon: {
@@ -57,12 +58,17 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(2),
     },
 }));
-
+/**
+ *
+ * @returns {JSX} GraphQL Console component.
+ */
 export default function GraphQLConsole() {
     const classes = useStyles();
     const { api } = useContext(ApiContext);
     const environmentObject = api.endpointURLs;
-    const [URLs, setURLs] = useState(environmentObject.length > 0 ? environmentObject[0].URLs : null);
+    const [URLs, setURLs] = useState(
+        environmentObject.length > 0 ? environmentObject[0].URLs : null,
+    );
     const [securitySchemeType, setSecurityScheme] = useState('OAUTH');
     const [notFound, setNotFound] = useState(false);
     const [username, setUsername] = useState('');
@@ -75,6 +81,8 @@ export default function GraphQLConsole() {
     const [selectedKeyType, setSelectedKey] = useState('PRODUCTION');
     const [sandboxApiKey, setSandboxApiKey] = useState('');
     const [productionApiKey, setProductionApiKey] = useState('');
+    const [additionalHeaderName, setAdditionalHeaderName] = useState('');
+    const [additionalHeaderValue, setAdditionalHeaderValue] = useState('');
     const [keys, setKeys] = useState([]);
     const user = AuthManager.getUser();
 
@@ -88,12 +96,17 @@ export default function GraphQLConsole() {
                 const apiData = apiResponse.obj;
                 if (apiData.endpointURLs) {
                     const environment = apiData.endpointURLs.map((endpoint) => {
-                        return { name: endpoint.environmentName, displayName: endpoint.environmentDisplayName };
+                        return {
+                            name: endpoint.environmentName,
+                            displayName: endpoint.environmentDisplayName,
+                        };
                     });
                     setEnvironments(environment);
                 }
                 if (apiData.scopes) {
-                    const scopeList = apiData.scopes.map((scope) => { return scope.name; });
+                    const scopeList = apiData.scopes.map((scope) => {
+                        return scope.name;
+                    });
                     setScopes(scopeList);
                 }
             })
@@ -108,10 +121,9 @@ export default function GraphQLConsole() {
             });
     }, []);
 
-
     /**
-     * Load the access token for given key type
-     */
+   * Load the access token for given key type
+   */
     function updateAccessToken() {
         let accessToken;
         if (keys.get(selectedKeyType)) {
@@ -125,10 +137,10 @@ export default function GraphQLConsole() {
     }
 
     /**
-     * set Password
-     * @param {*} selectedKey
-     * @param {*} isUpdateToken
-     */
+   * set Password
+   * @param {*} selectedKey
+   * @param {*} isUpdateToken
+   */
     function setSelectedKeyType(selectedKey, isUpdateToken) {
         if (isUpdateToken) {
             setSelectedKey(selectedKey, updateAccessToken);
@@ -156,24 +168,25 @@ export default function GraphQLConsole() {
     }
 
     function grapgQLToPostman(graphQL, URL) {
-        converter.convert({
-            type: 'string',
-            data: graphQL,
-        }, {}, (error, result) => {
-            if (error) {
-                console.log(error);
-            } else {
-                const urlValue = URL.https;
-                const results = result;
-                results.output[0].data.variable[0].value = urlValue;
-                const outputData = results.output[0].data;
-                fileDownload(
-                    JSON.stringify(outputData),
-                    'postman collection',
-                );
-                console.log('Conversion success');
-            }
-        });
+        converter.convert(
+            {
+                type: 'string',
+                data: graphQL,
+            },
+            {},
+            (error, result) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    const urlValue = URL.https;
+                    const results = result;
+                    results.output[0].data.variable[0].value = urlValue;
+                    const outputData = results.output[0].data;
+                    fileDownload(JSON.stringify(outputData), 'postman collection');
+                    console.log('Conversion success');
+                }
+            },
+        );
     }
 
     if (api == null) {
@@ -184,7 +197,9 @@ export default function GraphQLConsole() {
     }
     let isApiKeyEnabled = false;
 
-    let authorizationHeader = api.authorizationHeader ? api.authorizationHeader : 'Authorization';
+    let authorizationHeader = api.authorizationHeader
+        ? api.authorizationHeader
+        : 'Authorization';
 
     if (api && api.securityScheme) {
         isApiKeyEnabled = api.securityScheme.includes('api_key');
@@ -196,7 +211,10 @@ export default function GraphQLConsole() {
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
-                <FormattedMessage id='Apis.Details.GraphQLConsole.GraphQLConsole.title' defaultMessage='Try Out' />
+                <FormattedMessage
+                    id='Apis.Details.GraphQLConsole.GraphQLConsole.title'
+                    defaultMessage='Try Out'
+                />
             </Typography>
             <Paper className={classes.paper}>
                 <Grid container className={classes.grid}>
@@ -211,9 +229,11 @@ export default function GraphQLConsole() {
                                 <Typography component='p'>
                                     <FormattedMessage
                                         id='api.console.require.access.token'
-                                        defaultMessage={'You need an access token to try the API. Please log '
-                                            + 'in and subscribe to the API to generate an access token. If you already '
-                                            + 'have an access token, please provide it below.'}
+                                        defaultMessage={
+                                            'You need an access token to try the API. Please log '
+                      + 'in and subscribe to the API to generate an access token. If you already '
+                      + 'have an access token, please provide it below.'
+                                        }
                                     />
                                 </Typography>
                             </Paper>
@@ -248,6 +268,44 @@ export default function GraphQLConsole() {
                     api={api}
                     URLs={URLs}
                 />
+                <Box display='flex' justifyContent='center'>
+                    <Box
+                        width='50%'
+                        display='flex'
+                        flexDirection='column'
+                    >
+                        <Box ml={-5} display='flex'>
+                            <Typography variant='h5' component='h3' color='textPrimary'>
+                                <FormattedMessage
+                                    id='api.console.gql.additional.headers'
+                                    defaultMessage='Additional Headers'
+                                />
+                            </Typography>
+                        </Box>
+                        <Box display='flex' flexDirection='row'>
+                            <Box width={1 / 2} display='flex'>
+                                <TextField
+                                    fullWidth
+                                    label='Header name'
+                                    margin='dense'
+                                    variant='outlined'
+                                    value={additionalHeaderName}
+                                    onChange={(event) => setAdditionalHeaderName(event.target.value)}
+                                />
+                            </Box>
+                            <Box width={1 / 2} ml={1} display='flex'>
+                                <TextField
+                                    fullWidth
+                                    label='Header value'
+                                    margin='dense'
+                                    variant='outlined'
+                                    value={additionalHeaderValue}
+                                    onChange={(event) => setAdditionalHeaderValue(event.target.value)}
+                                />
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
             </Paper>
             <Paper className={classes.paper}>
                 <GraphQLUI
@@ -255,6 +313,7 @@ export default function GraphQLConsole() {
                     URLs={URLs}
                     securitySchemeType={securitySchemeType}
                     accessTokenProvider={accessTokenProvider}
+                    additionalHeaders={{ additionalHeaderName, additionalHeaderValue }}
                 />
             </Paper>
         </>
