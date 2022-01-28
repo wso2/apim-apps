@@ -34,12 +34,6 @@ import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined'
 
 import { FormattedMessage } from 'react-intl';
 
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import PolicyList from "./PolicyList";
-
 interface Policy {
     id: number;
     name: string;
@@ -166,63 +160,6 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
         }
     };
 
-    const onDragEnd = (result: DropResult) => {
-        const { destination, source } = result;
-      
-        console.log(result);
-      
-        if (!destination) {
-            return;
-        }
-      
-        if (
-            destination.droppableId === source.droppableId &&
-            destination.index === source.index
-        ) {
-            return;
-        }
-      
-        let add;
-        const policyList = policies;
-        const requestFlowPolicies = RequestFlowPolicies;
-        const responseFlowPolicies = ResponseFlowPolicies;
-        const faultFlowPolicies = FaultFlowPolicies;
-        // Source Logic
-        if (source.droppableId === "PoliciesList") {
-            add = policyList[source.index];
-            policyList.splice(source.index, 1);
-        } else if (source.droppableId === "RequestFlowPolicies") {
-            add = requestFlowPolicies[source.index];
-            requestFlowPolicies.splice(source.index, 1);
-        } else if (source.droppableId === "ResponseFlowPolicies") {
-            add = responseFlowPolicies[source.index];
-            responseFlowPolicies.splice(source.index, 1);
-        } else {
-            add = faultFlowPolicies[source.index];
-            faultFlowPolicies.splice(source.index, 1);
-        }
-      
-        // Destination Logic
-        if (destination.droppableId === "PoliciesList") {
-            policyList.splice(destination.index, 0, add);
-        } else if (destination.droppableId === "RequestFlowPolicies") {
-            requestFlowPolicies.splice(destination.index, 0, add);
-        } else if (destination.droppableId === "ResponseFlowPolicies") {
-            responseFlowPolicies.splice(destination.index, 0, add);
-        } else {
-            faultFlowPolicies.splice(destination.index, 0, add);
-        }
-      
-        setRequestFlowPolicies(requestFlowPolicies);
-        setResponseFlowPolicies(responseFlowPolicies);
-        setFaultFlowPolicies(faultFlowPolicies);
-        setPolicies(policyList);
-        toggleAddPolicyPopup();
-        setSelectedPolicy(add);
-        const msg = "Configure " + add.name + " Policy";
-        setConfigPolicyMsg(msg);
-    };
-
     return (
         <>
             <ExpansionPanel
@@ -301,16 +238,8 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                 <Divider light className={classes.customDivider} />
                 <ExpansionPanelDetails>
                     <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
-                        {/* <Grid item xs={12} md={12}>
-                            <Typography variant='subtitle1'>
-                                Operation
-                                {' '}
-                                Policy
-                                <Divider variant='middle' />
-                            </Typography>
-                        </Grid> */}
                         <Grid item xs={12} md={12}>
-                            <DragDropContext onDragEnd={onDragEnd}>
+                            {/* <DragDropContext onDragEnd={onDragEnd}>
                                 <PolicyList
                                     policies={policies}
                                     setPolicies={setPolicies}
@@ -337,7 +266,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                         />
                                     </DialogTitle>
                                 </Dialog>
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </Grid>
                 </ExpansionPanelDetails>

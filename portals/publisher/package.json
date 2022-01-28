@@ -75,6 +75,8 @@
         "react-circular-progressbar": "^2.0.2",
         "react-copy-to-clipboard": "^5.0.1",
         "react-diff-viewer": "^3.1.1",
+        "react-dnd": "^14.0.5",
+        "react-dnd-html5-backend": "^14.1.0",
         "react-dom": "^16.14.0",
         "react-draft-wysiwyg": "^1.14.7",
         "react-dropzone": "^v10.1.7",

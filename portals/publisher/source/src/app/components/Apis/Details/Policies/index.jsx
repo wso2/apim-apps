@@ -17,6 +17,8 @@
  */
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import PropTypes from 'prop-types';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
@@ -27,11 +29,13 @@ const Policy = () => {
     const [api, updateAPI] = useAPI();
     return (
         <Switch>
-            <Route
-                exact
-                path='/apis/:api_uuid/policies'
-                component={() => <Policies api={api} updateAPI={updateAPI} />}
-            />
+            <DndProvider backend={HTML5Backend}>
+                <Route
+                    exact
+                    path='/apis/:api_uuid/policies'
+                    component={() => <Policies api={api} updateAPI={updateAPI} />}
+                />
+            </DndProvider>
             <Route
                 exact
                 path='/apis/:api_uuid/policies/create'
