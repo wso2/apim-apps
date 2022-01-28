@@ -33,7 +33,6 @@ const style: CSSProperties = {
 interface Policy {
     id: number;
     name: string;
-    description: string;
     flows: string[];
 }
 
@@ -53,7 +52,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
 }) => {
     const [{ opacity }, drag] = useDrag(
         () => ({
-            type: 'box',
+            type: 'policy',
             options: {
                 dropEffect: showCopyIcon ? 'copy' : 'move',
             },
@@ -76,7 +75,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
         let color = '#';
 
         for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
+            const value = (hash >> (i * 8)) & 0xbb;
             color += `00${value.toString(16)}`.substr(-2);
         }
         /* eslint-enable no-bitwise */
@@ -102,7 +101,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                 borderColor: stringToColor(policyObj.name),
             }}
         >
-            <ListItem key={policyObj.id} style={{maxHeight: '100%', overflow: 'auto'}}>
+            <ListItem key={policyObj.id} style={{ maxHeight: '100%', overflow: 'auto'}}>
                 <ListItemAvatar>
                     <Avatar
                         style={{
@@ -114,7 +113,11 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                         )}
                     />
                 </ListItemAvatar>
-                <ListItemText id={policyObj.name} primary={policyObj.name} />
+                <ListItemText
+                    id={policyObj.name}
+                    primary={policyObj.name}
+                    // primaryTypographyProps={{ variant: 'subtitle2' }}
+                />
             </ListItem>
         </div>
     );

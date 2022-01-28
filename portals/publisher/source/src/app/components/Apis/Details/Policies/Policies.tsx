@@ -19,7 +19,6 @@
 import {
     Button, Grid, makeStyles, Typography,
 } from '@material-ui/core';
-import { AddCircle } from '@material-ui/icons';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState,  useReducer, useEffect, useCallback, useMemo, } from 'react';
 import cloneDeep from 'lodash.clonedeep';
@@ -41,15 +40,10 @@ import {
 } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/OperationsSelector';
 import SaveOperations from 'AppComponents/Apis/Details/Resources/components/SaveOperations';
-import Icon from '@material-ui/core/Icon';
-import Card from '@material-ui/core/Card';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import LaunchIcon from '@material-ui/icons/Launch';
-import CardContent from '@material-ui/core/CardContent';
-import OperationPolicy from './OperationPolicy'
-import OperationsGroup from './OperationsGroup'
-import DraggablePolicyCard from './DraggablePolicyCard';
+import OperationPolicy from './OperationPolicy';
+import OperationsGroup from './OperationsGroup';
+import LocalPolicyList from './LocalPolicyList';
+import PolicyTemplateList from './PolicyTemplateList';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -80,42 +74,20 @@ const useStyles = makeStyles((theme: any) => ({
     mainTitle: {
         paddingLeft: 0,
     },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
     content: {
         margin: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`,
     },
     head: {
         fontWeight: 200,
     },
-    addPolicyBtn: {
-        marginLeft: 'auto',
-    },
-    flowTabs: {
-        '& button': {
-            minWidth: 50,
-        }
-    },
-    flowTab: {
-        fontSize: 'smaller',
-    },
     gridItem: {
         display: 'flex',
         width: '100%',
     },
-    policyListPaper: {
-        maxHeight: '35vh',
-        overflow: 'auto',
-        marginBottom: theme.spacing(2),
-    },
-    link: {
-        color: theme.palette.primary.dark,
-        marginLeft: theme.spacing(2),
-        display: 'inline',
-    },
-    managePolicyTemplatesBtn: {
-        marginLeft: 'auto',
+    operationListingGrid: {
+        overflowY: 'scroll',
+        maxHeight: '85vh',
+        paddingTop: '10px',
     },
 }));
 
@@ -133,11 +105,6 @@ interface IStatePolicy {
 interface IProps {
     disableUpdate: any;
 }
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: any;
-  }
 
 /**
  * Renders the policy management page.
@@ -150,7 +117,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const createUrl = `/apis/${api.id}/policies/create`;
     const viewUrl = `/apis/${api.id}/policies/view`;
     // const { policies } = api;
-    const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [policies, setPolicies] = useState <IStatePolicy['policy']>([
         {
             id: 1,
@@ -175,33 +141,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             name: 'JSON Fault',
             description: 'Description ...',
             flows: ['Fault']
-        }
+        },
     ]);
 
     const [pageError, setPageError] = useState(false);
     const [resolvedSpec, setResolvedSpec] = useState({});
     const [markedOperations, setSelectedOperation] = useState({});
     const [expandedResource, setExpandedResource] = useState(false);
-    const [requestFlowPolicies, setRequestFlowPolicies] = useState<Array<Policy>>([]);
-    const [responseFlowPolicies, setResponseFlowPolicies] = useState<Array<Policy>>([]);
-    const [faultFlowPolicies, setFaultFlowPolicies] = useState<Array<Policy>>([]);
-
-    useEffect(() => {
-        Object.values(policies).map((policy: Policy) => {
-            if (policy.flows.includes('Request')) {;
-                requestFlowPolicies.push(policy)
-                // setRequestFlowPolicies(requestFlowPolicies => ({ ...requestFlowPolicies, policy }));
-            }
-            if (policy.flows.includes('Response')) {
-                responseFlowPolicies.push(policy);
-                // setResponseFlowPolicies(responseFlowPolicies => ({ ...responseFlowPolicies, policy }));
-            }
-            if (policy.flows.includes('Fault')) {
-                faultFlowPolicies.push(policy);
-                // setFaultFlowPolicies(faultFlowPolicies => ({ ...faultFlowPolicies, policy }));
-            }
-        })
-    }, [policies])
 
     /**
      *
@@ -355,35 +301,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         // }
     }
 
-    /**
-     * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault)
-     * @param {JSON} props Input props
-     * @returns {TSX} Tab panel to render
-     */
-    function TabPanel(props: TabPanelProps) {
-        const { value, index} = props;
-
-        return (
-            <div
-                role='tabpanel'
-                hidden={selectedTab !== index}
-                id={`simple-tabpanel-${index}`}
-                aria-labelledby={`simple-tab-${index}`}
-            >
-                {selectedTab === index && (
-                    value?.map((singlePolicy: Policy) => {
-                        return (
-                            <DraggablePolicyCard
-                                policyObj={singlePolicy}
-                                showCopyIcon
-                            />
-                        );
-                    })
-                )}
-            </div>
-        );
-    }
-
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
         api.getSwagger()
@@ -418,7 +335,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                 </Typography>
             </Box>
             <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
-                <Grid item xs={8}>
+                <Grid item xs={8} className={classes.operationListingGrid}>
                     <Paper>
                         {Object.entries(operations).map(([target, verbObject]:[string, any]) => (
                             <Grid key={target} item xs={12}>
@@ -472,124 +389,12 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Grid> */}
                 </Grid>
                 <Grid item xs={4}>
-                    <Paper className={classes.policyListPaper} >
-                        <Box>
-                            <Card variant='outlined'>
-                                <CardContent>
-                                    <Grid container>
-                                        <Typography variant='subtitle2'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Policies.LocalPolicyList.title'
-                                                defaultMessage='Local Policy List'
-                                            />
-                                        </Typography>
-                                        <Button
-                                            // onClick={toggleAddPolicyPopup}
-                                            disabled={false}
-                                            variant='outlined'
-                                            color='primary'
-                                            size='small'
-                                            className={classes.addPolicyBtn}
-                                        >
-                                            <AddCircle className={classes.buttonIcon} />
-                                            <FormattedMessage
-                                                id='Apis.Details.Policies.APIPolicyList.new.policy'
-                                                defaultMessage='Add New Policy'
-                                            />
-                                        </Button>
-                                    </Grid>
-                                    <Grid container>
-                                        <Tabs
-                                            value={selectedTab}
-                                            onChange={(event, tab) => setSelectedTab(tab)}
-                                            indicatorColor='primary'
-                                            textColor='primary'
-                                            variant='standard'
-                                            aria-label='Policies local to API'
-                                            className={classes.flowTabs}
-                                        >
-                                            <Tab 
-                                                label={<span className={classes.flowTab}>Request</span>}
-                                                id='simple-tab-0'
-                                                aria-controls='simple-tabpanel-0' 
-                                            />
-                                            <Tab
-                                                label={<span className={classes.flowTab}>Response</span>}
-                                                id='simple-tab-1'
-                                                aria-controls='simple-tabpanel-1' 
-                                            />
-                                            <Tab
-                                                label={<span className={classes.flowTab}>Fault</span>}
-                                                id='simple-tab-2'
-                                                aria-controls='simple-tabpanel-2'
-                                            />
-                                        </Tabs>
-                                        <Grid container>
-                                            <TabPanel value={requestFlowPolicies} index={0} />
-                                            <TabPanel value={responseFlowPolicies} index={1} />
-                                            <TabPanel value={faultFlowPolicies} index={2} />
-                                        </Grid>
-                                    </Grid>
-                                </CardContent>
-                            </Card>
-                        </Box>
-                    </Paper>
-                    <Paper className={classes.policyListPaper} >
-                        <Box>
-                            <Card variant='outlined'>
-                                <CardContent>
-                                    <Grid container>
-                                        <Typography variant='subtitle2'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Policies.PolicyTemplates.title'
-                                                defaultMessage='Policy Templates'
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                    <Grid container>
-                                        <Tabs
-                                            value={selectedTab}
-                                            onChange={(event, tab) => setSelectedTab(tab)}
-                                            indicatorColor='primary'
-                                            textColor='primary'
-                                            variant='standard'
-                                            aria-label='Policies local to API'
-                                            className={classes.flowTabs}
-                                        >
-                                            <Tab 
-                                                label={<span className={classes.flowTab}>Request</span>}
-                                                id='simple-tab-0'
-                                                aria-controls='simple-tabpanel-0' 
-                                            />
-                                            <Tab
-                                                label={<span className={classes.flowTab}>Response</span>}
-                                                id='simple-tab-1'
-                                                aria-controls='simple-tabpanel-1' 
-                                            />
-                                            <Tab
-                                                label={<span className={classes.flowTab}>Fault</span>}
-                                                id='simple-tab-2'
-                                                aria-controls='simple-tabpanel-2'
-                                            />
-                                        </Tabs>
-                                        <Grid container>
-                                            <TabPanel value={requestFlowPolicies} index={0} />
-                                            <TabPanel value={responseFlowPolicies} index={1} />
-                                            <TabPanel value={faultFlowPolicies} index={2} />
-                                        </Grid>
-                                        <Box m={1} className={classes.managePolicyTemplatesBtn}>
-                                            <Link to='/policy-templates'>
-                                                <Typography className={classes.link} variant='caption'>
-                                                    Manage Policy Templates
-                                                    <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />
-                                                </Typography>
-                                            </Link>
-                                        </Box>
-                                    </Grid>
-                                </CardContent>
-                            </Card>
-                        </Box>
-                    </Paper>
+                    <LocalPolicyList
+                        policyList={policies}
+                    />
+                    <PolicyTemplateList
+                        policyList={policies}
+                    />
                 </Grid>
             </Grid>
         </>

@@ -33,6 +33,7 @@ import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 
 import { FormattedMessage } from 'react-intl';
+import PolicyDropzone from './PolicyDropzone';
 
 interface Policy {
     id: number;
@@ -89,7 +90,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                 right: '10%',
             },
             targetText: {
-                maxWidth: 180,
+                maxWidth: 300,
                 margin: '0px 20px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
@@ -108,6 +109,15 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                 overflow: 'auto',
                 height: '90%',
             },
+            flowSpecificPolicyAttachGrid: {
+                marginTop: theme.spacing(1),
+            },
+            operationSummaryGrid: {
+                display: 'flex',
+                alignItems: 'center',
+                flexBasis: '100%',
+                maxWidth: '100%',
+            }
         };
     });
     const classes = useStyles();
@@ -124,41 +134,24 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
         
     const [addPolicy, setAddPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
     const [selectedPolicy, setSelectedPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
-    const [configPolicyMsg, setConfigPolicyMsg] = useState<string>('');
-    const [policies, setPolicies] = useState<Array<Policy>>([
-        {
-            id: 1,
-            name: 'Add Header',
-            description: 'With this policy, user can add a new header to the request',
-            flows: ['Request', 'Response', 'Fault']
-        },
-        {
-            id: 2,
-            name: 'Rewrite HTTP Method',
-            description: 'User should be able to change the HTTP method of a resource',
-            flows: ['Request']
-        }
-    ]);
-    const [RequestFlowPolicies, setRequestFlowPolicies] = useState<Array<Policy>>([]);
-    const [ResponseFlowPolicies, setResponseFlowPolicies] = useState<Array<Policy>>([]);
-    const [FaultFlowPolicies, setFaultFlowPolicies] = useState<Array<Policy>>([]);
-
-    const [openAddPolicyPopup, setAddPolicyPopup] = useState<boolean>(false);
-
-    const toggleAddPolicyPopup = () => {
-        setAddPolicyPopup(!openAddPolicyPopup);
-    };
-      
-    const handleCloseAddPolicyPopup = () => {
-        setAddPolicyPopup(false);
-    };
-      
-    const handleAdd = (e: Policy) => {
-        setAddPolicy(e);
-        if (addPolicy) {
-            setPolicies([...policies, e]);
-        }
-    };
+    // const [configPolicyMsg, setConfigPolicyMsg] = useState<string>('');
+    // const [policies, setPolicies] = useState<Array<Policy>>([
+    //     {
+    //         id: 1,
+    //         name: 'Add Header',
+    //         description: 'With this policy, user can add a new header to the request',
+    //         flows: ['Request', 'Response', 'Fault']
+    //     },
+    //     {
+    //         id: 2,
+    //         name: 'Rewrite HTTP Method',
+    //         description: 'User should be able to change the HTTP method of a resource',
+    //         flows: ['Request']
+    //     }
+    // ]);
+    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<Array<Policy>>([]);
+    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<Array<Policy>>([]);
+    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<Array<Policy>>([]);
 
     return (
         <>
@@ -177,7 +170,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                     classes={{ content: classes.contentNoMargin }}
                 >
                     <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                        <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
+                        <Grid item md={4} className={classes.operationSummaryGrid}>
                             <Badge
                                 invisible={!operation['x-wso2-new']}
                                 color='error'
@@ -239,34 +232,39 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                 <ExpansionPanelDetails>
                     <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
                         <Grid item xs={12} md={12}>
-                            {/* <DragDropContext onDragEnd={onDragEnd}>
-                                <PolicyList
-                                    policies={policies}
-                                    setPolicies={setPolicies}
-                                    RequestFlowPolicies={RequestFlowPolicies}
-                                    setRequestFlowPolicies={setRequestFlowPolicies}
-                                    ResponseFlowPolicies={ResponseFlowPolicies}
-                                    setResponseFlowPolicies={setResponseFlowPolicies}
-                                    FaultFlowPolicies={FaultFlowPolicies}
-                                    setFaultFlowPolicies={setFaultFlowPolicies}
-                                    handleAdd={handleAdd}
+                            <Grid container className={classes.flowSpecificPolicyAttachGrid}>
+                                <Typography variant='subtitle2' align='left'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.Operation.request.flow.title'
+                                        defaultMessage='Request Flow'
+                                    />
+                                </Typography>
+                                <PolicyDropzone
+                                    policyDisplayStartDirection='left'
                                 />
-                            </DragDropContext>
-                            <Grid container>
-                                <Dialog
-                                    open={openAddPolicyPopup}
-                                    onClose={handleCloseAddPolicyPopup}
-                                    aria-labelledby='form-dialog-title'
-                                    classes={{ paper: classes.dialogPaper }}
-                                >
-                                    <DialogTitle id='form-dialog-title'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.PoliciesList.edit.policy'
-                                            defaultMessage={configPolicyMsg}
-                                        />
-                                    </DialogTitle>
-                                </Dialog>
-                            </Grid> */}
+                            </Grid>
+                            <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
+                                <Typography variant='subtitle2' align='left'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.Operation.response.flow.title'
+                                        defaultMessage='Response Flow'
+                                    />
+                                </Typography>
+                                <PolicyDropzone
+                                    policyDisplayStartDirection='right'
+                                />
+                            </Grid>
+                            <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
+                                <Typography variant='subtitle2' align='left'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.Operation.fault.flow.title'
+                                        defaultMessage='Fault Flow'
+                                    />
+                                </Typography>
+                                <PolicyDropzone
+                                    policyDisplayStartDirection='right'
+                                />
+                            </Grid>
                         </Grid>
                     </Grid>
                 </ExpansionPanelDetails>
