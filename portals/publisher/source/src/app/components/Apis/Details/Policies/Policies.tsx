@@ -94,12 +94,7 @@ const useStyles = makeStyles((theme: any) => ({
 interface Policy {
     id: number;
     name: string;
-    description: string;
     flows: string[];
-}
-
-interface IStatePolicy {
-    policy: Policy[];
 }
 
 interface IProps {
@@ -117,37 +112,62 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const createUrl = `/apis/${api.id}/policies/create`;
     const viewUrl = `/apis/${api.id}/policies/view`;
     // const { policies } = api;
-    const [policies, setPolicies] = useState <IStatePolicy['policy']>([
+    const [policies, setPolicies] = useState <Policy[]>([
         {
             id: 1,
             name: 'Add Header',
-            description: 'With this policy, user can add a new header to the request',
             flows: ['Request', 'Response', 'Fault']
         },
         {
             id: 2,
-            name: 'Rewrite HTTP Method',
-            description: 'User should be able to change the HTTP method of a resource',
+            name: 'Rename Header',
             flows: ['Request']
         },
         {
             id: 3,
-            name: 'Disable Chunking',
-            description: 'Description',
-            flows: ['Request', 'Response']
+            name: 'Rewrite HTTP Method',
+            flows: ['Request']
         },
         {
             id: 4,
+            name: 'Disable Chunking',
+            flows: ['Request', 'Response']
+        },
+        {
+            id: 5,
             name: 'JSON Fault',
-            description: 'Description ...',
             flows: ['Fault']
         },
+        {
+            id: 6,
+            name: 'OPA',
+            flows: ['Request']
+        },
+    ]);
+
+    const [policyTemplates, setPolicyTemplates] = useState <Policy[]>([
+        {
+            id: 1,
+            name: 'Rename Query Parameter',
+            flows: ['Request']
+        },
+        {
+            id: 2,
+            name: 'XML Validator',
+            flows: ['Request']
+        },
+        {
+            id: 3,
+            name: 'Debug JSON Fault',
+            flows: ['Fault']
+        }
     ]);
 
     const [pageError, setPageError] = useState(false);
     const [resolvedSpec, setResolvedSpec] = useState({});
     const [markedOperations, setSelectedOperation] = useState({});
     const [expandedResource, setExpandedResource] = useState(false);
+    const [droppedPolicy, setDroppedPolicy] = useState<Policy>({id: 0, name: '', flows: []});
 
     /**
      *
@@ -391,9 +411,11 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                 <Grid item xs={4}>
                     <LocalPolicyList
                         policyList={policies}
+                        setDroppedPolicy={setDroppedPolicy}
                     />
                     <PolicyTemplateList
-                        policyList={policies}
+                        policyList={policyTemplates}
+                        setDroppedPolicy={setDroppedPolicy}
                     />
                 </Grid>
             </Grid>

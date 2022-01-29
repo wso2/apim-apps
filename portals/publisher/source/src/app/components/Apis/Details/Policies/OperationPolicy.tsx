@@ -17,7 +17,6 @@
  */
 
 import React, { FC, useState } from 'react';
-// import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -38,7 +37,6 @@ import PolicyDropzone from './PolicyDropzone';
 interface Policy {
     id: number;
     name: string;
-    description: string;
     flows: string[];
 }
 
@@ -132,8 +130,8 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
     };
 
         
-    const [addPolicy, setAddPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
-    const [selectedPolicy, setSelectedPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
+    // const [addPolicy, setAddPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
+    // const [selectedPolicy, setSelectedPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
     // const [configPolicyMsg, setConfigPolicyMsg] = useState<string>('');
     // const [policies, setPolicies] = useState<Array<Policy>>([
     //     {
@@ -241,6 +239,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                 </Typography>
                                 <PolicyDropzone
                                     policyDisplayStartDirection='left'
+                                    currentPolicyList={requestFlowPolicyList}
                                 />
                             </Grid>
                             <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
@@ -252,6 +251,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                 </Typography>
                                 <PolicyDropzone
                                     policyDisplayStartDirection='right'
+                                    currentPolicyList={responseFlowPolicyList}
                                 />
                             </Grid>
                             <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
@@ -263,6 +263,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                 </Typography>
                                 <PolicyDropzone
                                     policyDisplayStartDirection='right'
+                                    currentPolicyList={faultFlowPolicyList}
                                 />
                             </Grid>
                         </Grid>

@@ -68,6 +68,7 @@ interface Policy {
 
 interface PolicyTemplateListPorps {
     policyList: Policy[];
+    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy>>;
 }
 
 interface TabPanelProps {
@@ -82,7 +83,7 @@ interface TabPanelProps {
  * @returns {TSX} List of globally maintained shared policies.
  */
 const PolicyTemplateList: FC<PolicyTemplateListPorps> = ({
-    policyList
+    policyList, setDroppedPolicy
 }) => {
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
@@ -126,6 +127,7 @@ const PolicyTemplateList: FC<PolicyTemplateListPorps> = ({
                             <DraggablePolicyCard
                                 policyObj={singlePolicy}
                                 showCopyIcon
+                                setDroppedPolicy={setDroppedPolicy}
                             />
                         );
                     })

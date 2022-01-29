@@ -25,7 +25,9 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 
 const style: CSSProperties = {
     border: '2px solid',
-    marginTop: '0.4rem',
+    // marginTop: '0.1rem',
+    height: '100%',
+    // width: 20,
     cursor: 'move',
     borderRadius: '0.3em',
 };
@@ -36,41 +38,30 @@ interface Policy {
     flows: string[];
 }
 
-interface DraggablePolicyCardProps {
+interface AttachedPolicyCardProps {
     policyObj: Policy;
-    showCopyIcon?: boolean;
-    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy>>;
 }
 
 /**
  * Renders a single draggable policy block.
- * @param {any} DraggablePolicyCardProps Input props from parent components.
+ * @param {any} AttachedPolicyCardProps Input props from parent components.
  * @returns {TSX} Draggable Policy card UI.
  */
-const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
+const AttachedPolicyCard: React.FC<AttachedPolicyCardProps> = ({
     policyObj,
-    showCopyIcon,
-    setDroppedPolicy
 }) => {
-    const [{ opacity }, drag] = useDrag(
-        () => ({
-            type: 'policyCard',
-            item: policyObj,
-            end: (item, monitor) => {
-                const dropResult = monitor.getDropResult<Policy>()
-                if (item && dropResult) {
-                    setDroppedPolicy(item);
-                }
-            },
-            options: {
-                dropEffect: showCopyIcon ? 'copy' : 'move',
-            },
-            collect: (monitor) => ({
-                opacity: monitor.isDragging() ? 0.4 : 1,
-            }),
-        }),
-        [showCopyIcon],
-    );
+    // const [{ opacity }, drag] = useDrag(
+    //     () => ({
+    //         type: 'policy',
+    //         options: {
+    //             dropEffect: showCopyIcon ? 'copy' : 'move',
+    //         },
+    //         collect: (monitor) => ({
+    //             opacity: monitor.isDragging() ? 0.4 : 1,
+    //         }),
+    //     }),
+    //     [showCopyIcon],
+    // );
 
     const stringToColor = (string: string) => {
         let hash = 0;
@@ -105,31 +96,32 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
 
     return (
         <div
-            ref={drag}
+            // ref={drag}
             style={{
                 ...style,
-                opacity,
+                // opacity,
                 borderColor: stringToColor(policyObj.name),
             }}
         >
-            <ListItem key={policyObj.id} style={{ maxHeight: '100%', overflow: 'auto'}}>
-                <ListItemAvatar>
-                    <Avatar
-                        style={{
-                            backgroundColor: stringToColor(policyObj.name),
-                        }}
-                        // eslint-disable-next-line react/jsx-props-no-spreading
-                        { ...stringAvatar(policyObj.name.toUpperCase())}
-                    />
-                </ListItemAvatar>
-                <ListItemText
+            {/* <ListItem key={policyObj.id} style={{ maxHeight: '100%', overflow: 'auto'}}> */}
+                {/* <ListItemAvatar> */}
+            <Avatar
+                style={{
+                    margin: '0.2em',
+                    backgroundColor: stringToColor(policyObj.name),
+                }}
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                { ...stringAvatar(policyObj.name.toUpperCase())}
+            />
+                {/* </ListItemAvatar> */}
+                {/* <ListItemText
                     id={policyObj.name}
                     primary={policyObj.name}
                     // primaryTypographyProps={{ variant: 'subtitle2' }}
-                />
-            </ListItem>
+                /> */}
+            {/* </ListItem> */}
         </div>
     );
 };
 
-export default DraggablePolicyCard;
+export default AttachedPolicyCard;
