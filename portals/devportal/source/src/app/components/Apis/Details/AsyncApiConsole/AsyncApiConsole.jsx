@@ -197,16 +197,27 @@ export default function AsyncApiConsole() {
         authorizationHeader = advAuthHeader;
     }
 
+    const generateUrls = (url) => {
+        const urlObject = new URL(url);
+        const urlJson = {
+            http: null,
+            https: null,
+            ws: null,
+            wss: null,
+        };
+        const { protocol } = urlObject;
+        if (protocol === 'http:' || protocol === 'https:' || protocol === 'ws:' || protocol === 'wss:') {
+            urlJson[protocol.substring(0, protocol.length - 1)] = url;
+        }
+        return urlJson;
+    };
+
     const getURLs = () => {
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             if (selectedEndpoint === 'PRODUCTION') {
-                return [
-                    api.advertiseInfo.apiExternalProductionEndpoint,
-                ];
+                return generateUrls(api.advertiseInfo.apiExternalProductionEndpoint);
             } else if (selectedEndpoint === 'SANDBOX') {
-                return [
-                    api.advertiseInfo.apiExternalSandboxEndpoint,
-                ];
+                return generateUrls(api.advertiseInfo.apiExternalSandboxEndpoint);
             }
         }
         return URLs;

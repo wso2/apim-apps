@@ -239,7 +239,7 @@ export default function AsyncApiUI(props) {
                 ))}
                 {api.type === CONSTANTS.API_TYPES.ASYNC && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
-                        generateGenericSubscriptionCommand={generateASYNCSubscriptionCommand()}
+                        generateGenericSubscriptionCommand={generateASYNCSubscriptionCommand}
                         topic={topic}/>
                 ))}
             </>
