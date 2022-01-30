@@ -52,6 +52,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
+import AdvertiseDetailsPanel from "AppComponents/Apis/Details/TryOut/AdvertiseDetailsPanel";
 
 // disabled because webpack magic comment for chunk name require to be in the same line
 // eslint-disable-next-line max-len
@@ -387,117 +388,16 @@ const TryOutConsole = () => {
                         </Box>
                     </>
                 ) : (
-                    <>
-                        <Box display='block' justifyContent='center'>
-                            <Grid x={12} md={6} className={classes.centerItems}>
-                                <Typography
-                                    variant='h6'
-                                    component='label'
-                                    id='key-type'
-                                    color='textSecondary'
-                                    className={classes.tryoutHeading}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.ApiConsole.authentication.heading'
-                                        defaultMessage='Authentication'
-                                    />
-                                </Typography>
-                            </Grid>
-                            <Grid container spacing={2} x={8} md={6} direction='row' className={classes.tokenType}>
-                                <Grid xs={6} md={4} item>
-                                    <TextField
-                                        margin='normal'
-                                        variant='outlined'
-                                        id='advAuthHeader'
-                                        label={(
-                                            <FormattedMessage
-                                                id='Apis.Details.ApiConsole.adv.auth.header'
-                                                defaultMessage='Authorization Header'
-                                            />
-                                        )}
-                                        name='advAuthHeader'
-                                        onChange={(event) => { setAdvAuthHeader(event.target.value); }}
-                                        value={advAuthHeader || ''}
-                                        fullWidth
-                                    />
-                                </Grid>
-                                <Grid xs={6} md={8} item>
-                                    <TextField
-                                        margin='normal'
-                                        variant='outlined'
-                                        id='advAuthHeaderValue'
-                                        label={(
-                                            <FormattedMessage
-                                                id='Apis.Details.ApiConsole.adv.auth.header.value'
-                                                defaultMessage='Authorization Header Value'
-                                            />
-                                        )}
-                                        name='advAuthHeaderValue'
-                                        onChange={(event) => { setAdvAuthHeaderValue(event.target.value); }}
-                                        value={advAuthHeaderValue || ''}
-                                        fullWidth
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Box>
-                        <Box display='flex' justifyContent='center'>
-                            <Grid x={12} md={6} className={classes.centerItems}>
-                                <Typography
-                                    variant='h6'
-                                    component='label'
-                                    id='key-type'
-                                    color='textSecondary'
-                                    className={classes.tryoutHeading}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.ApiConsole.enpoint.heading'
-                                        defaultMessage='API Endpoint'
-                                    />
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    select
-                                    id='selectedEndpoint'
-                                    label={(
-                                        <FormattedMessage
-                                            defaultMessage='Endpoint type'
-                                            id='Apis.Details.ApiConsole.endpoint'
-                                        />
-                                    )}
-                                    value={selectedEndpoint}
-                                    name='selectedEndpoint'
-                                    onChange={(event) => { setSelectedEndpoint(event.target.value); }}
-                                    helperText={(
-                                        <FormattedMessage
-                                            defaultMessage='Please select an endpoint type'
-                                            id='Apis.Details.ApiConsole.endpoint.help'
-                                        />
-                                    )}
-                                    margin='normal'
-                                    variant='outlined'
-                                >
-                                    {api.advertiseInfo.apiExternalProductionEndpoint && (
-                                        <MenuItem
-                                            value='PRODUCTION'
-                                            key='PRODUCTION'
-                                            className={classes.menuItem}
-                                        >
-                                            Production
-                                        </MenuItem>
-                                    )}
-                                    {api.advertiseInfo.apiExternalSandboxEndpoint && (
-                                        <MenuItem
-                                            value='SANDBOX'
-                                            key='SANDBOX'
-                                            className={classes.menuItem}
-                                        >
-                                            Sandbox
-                                        </MenuItem>
-                                    )}
-                                </TextField>
-                            </Grid>
-                        </Box>
-                    </>
+                    <AdvertiseDetailsPanel
+                        classes={classes}
+                        advAuthHeader={advAuthHeader}
+                        setAdvAuthHeader={setAdvAuthHeader}
+                        advAuthHeaderValue={advAuthHeaderValue}
+                        setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                        selectedEndpoint={selectedEndpoint}
+                        setSelectedEndpoint={setSelectedEndpoint}
+                        advertiseInfo={api.advertiseInfo}
+                    />
                 )}
                 {updatedOasDefinition ? (
                     <Suspense
