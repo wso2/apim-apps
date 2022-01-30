@@ -16,14 +16,15 @@
  * under the License.
  */
 
-import React, { useState, useEffect, FC } from 'react';
-import { Box, Grid, Icon, makeStyles, Typography } from '@material-ui/core';
+import React, { FC } from 'react';
+import { Grid, makeStyles, Typography } from '@material-ui/core';
 import { useDrop } from 'react-dnd'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import classNames from 'classnames';
+import update from 'immutability-helper';
 import AttachedPolicyCard from './AttachedPolicyCard';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -39,7 +40,7 @@ const useStyles = makeStyles((theme: any) => ({
         borderRadius: '0.3em',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        overflowX: 'scroll',
     },
     acceptDrop: {
         backgroundColor: green[50],
@@ -48,6 +49,15 @@ const useStyles = makeStyles((theme: any) => ({
     rejectDrop: {
         backgroundColor: red[50],
         borderColor: 'red',
+    },
+    alignLeft: {
+        justifyContent: 'left',
+    },
+    alignRight: {
+        justifyContent: 'right'
+    },
+    alignCenter: {
+        justifyContent: 'center',
     }
 }));
 
@@ -60,6 +70,8 @@ interface Policy {
 interface PolicyDropzoneProps {
     policyDisplayStartDirection: string;
     currentPolicyList: Policy[];
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
+    droppablePolicyList: string[];
 }
 
 /**
@@ -68,25 +80,55 @@ interface PolicyDropzoneProps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const PolicyDropzone: FC<PolicyDropzoneProps> = ({
-    policyDisplayStartDirection, currentPolicyList
+    policyDisplayStartDirection, currentPolicyList, setCurrentPolicyList, droppablePolicyList
 }) => {
     const classes = useStyles();
+
+    const addDroppedPolicyToList = (policy: Policy) => {
+        setCurrentPolicyList(currentPolicyList => [...currentPolicyList, policy]);
+    }
+
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
-        accept: 'policyCard',
-        drop: () => ({ name: 'Dropzone' }),
+        accept: droppablePolicyList,
+        drop: (item: any) => addDroppedPolicyToList(item.droppedPolicy),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
         }),
     }))
 
-    const isActive = canDrop && isOver
-    // let backgroundColor = '#222'
-    // if (isActive) {
-    //     backgroundColor = 'darkgreen'
-    // } else if (canDrop) {
-    //     backgroundColor = 'darkkhaki'
-    // }
+    const isActive = canDrop && isOver;
+
+    const sortPolicyList = (dragIndex: number, hoverIndex: number) => {
+        const dragCard = currentPolicyList[dragIndex]
+        setCurrentPolicyList(
+            update(currentPolicyList, {
+                $splice: [
+                    [dragIndex, 1],
+                    [hoverIndex, 0, dragCard],
+                ],
+            }),
+        )
+    }
+
+    const renderAttachedPolicyList = () => {
+        const reversedPolicyList = [...currentPolicyList].reverse()
+        return (
+            policyDisplayStartDirection === 'left'  
+                ? currentPolicyList.map((policy: Policy) => (
+                    <AttachedPolicyCard
+                        policyObj={policy}
+                        sortPolicyList={sortPolicyList}
+                    />
+                ))
+                : reversedPolicyList.map((policy: Policy) => (
+                    <AttachedPolicyCard
+                        policyObj={policy}
+                        sortPolicyList={sortPolicyList}
+                    />
+                ))
+        )
+    }
     
     return (
         <Grid container>
@@ -94,22 +136,20 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                 ? <ArrowForwardIcon/>
                 : <ArrowBackIcon/>
             }
-            <div ref={drop} role='Dropzone' className={classNames(
+            <div ref={drop} className={classNames(
                 classes.dropzoneDiv,
                 isActive ? classes.acceptDrop : null,
-                canDrop ? null: null,
+                // eslint-disable-next-line no-nested-ternary
+                currentPolicyList.length !== 0 && policyDisplayStartDirection === 'left'
+                    ? classes.alignLeft 
+                    : currentPolicyList.length !== 0 && policyDisplayStartDirection === 'right'
+                        ? classes.alignRight
+                        : classes.alignCenter
             )}>
                 {currentPolicyList.length === 0
                     ? <Typography>Drag and drop policies here</Typography>
-                    : currentPolicyList.map((policy: Policy) => (
-                        <AttachedPolicyCard policyObj={policy} />
-                    ))
+                    : renderAttachedPolicyList()
                 }
-                {/* {!isActive 
-                    ? <Typography>Drag and drop policies here</Typography>
-                    : (
-                        <AttachedPolicyCard policyObj={tempPolicy}/>
-                    )} */}
             </div>
         </Grid>
     );

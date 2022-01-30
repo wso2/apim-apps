@@ -64,7 +64,6 @@ interface Policy {
 
 interface LocalPolicyListPorps {
     policyList: Policy[];
-    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy>>;
 }
 
 interface TabPanelProps {
@@ -79,7 +78,7 @@ interface TabPanelProps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const LocalPolicyList: FC<LocalPolicyListPorps> = ({
-    policyList, setDroppedPolicy
+    policyList
 }) => {
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
@@ -110,6 +109,7 @@ const LocalPolicyList: FC<LocalPolicyListPorps> = ({
      */
     function TabPanel(props: TabPanelProps) {
         const { value, index} = props;
+        const flowNames = ['Request', 'Response', 'Fault'];
 
         return (
             <div
@@ -124,7 +124,7 @@ const LocalPolicyList: FC<LocalPolicyListPorps> = ({
                             <DraggablePolicyCard
                                 policyObj={singlePolicy}
                                 showCopyIcon
-                                setDroppedPolicy={setDroppedPolicy}
+                                currentFlow={flowNames[index]}
                             />
                         );
                     })

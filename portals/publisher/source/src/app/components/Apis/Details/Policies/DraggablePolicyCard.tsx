@@ -39,7 +39,7 @@ interface Policy {
 interface DraggablePolicyCardProps {
     policyObj: Policy;
     showCopyIcon?: boolean;
-    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy>>;
+    currentFlow: string;
 }
 
 /**
@@ -50,18 +50,11 @@ interface DraggablePolicyCardProps {
 const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     policyObj,
     showCopyIcon,
-    setDroppedPolicy
 }) => {
     const [{ opacity }, drag] = useDrag(
         () => ({
-            type: 'policyCard',
-            item: policyObj,
-            end: (item, monitor) => {
-                const dropResult = monitor.getDropResult<Policy>()
-                if (item && dropResult) {
-                    setDroppedPolicy(item);
-                }
-            },
+            type: `policyCard-${policyObj.id}`,
+            item: {droppedPolicy: policyObj},
             options: {
                 dropEffect: showCopyIcon ? 'copy' : 'move',
             },

@@ -147,17 +147,17 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
 
     const [policyTemplates, setPolicyTemplates] = useState <Policy[]>([
         {
-            id: 1,
+            id: 11,
             name: 'Rename Query Parameter',
             flows: ['Request']
         },
         {
-            id: 2,
+            id: 12,
             name: 'XML Validator',
             flows: ['Request']
         },
         {
-            id: 3,
+            id: 13,
             name: 'Debug JSON Fault',
             flows: ['Fault']
         }
@@ -167,7 +167,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [resolvedSpec, setResolvedSpec] = useState({});
     const [markedOperations, setSelectedOperation] = useState({});
     const [expandedResource, setExpandedResource] = useState(false);
-    const [droppedPolicy, setDroppedPolicy] = useState<Policy>({id: 0, name: '', flows: []});
 
     /**
      *
@@ -383,6 +382,8 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                         }
                                                         expandedResource={expandedResource}
                                                         setExpandedResource={setExpandedResource}
+                                                        localPolicyList={policies}
+                                                        globalPolicyList={policyTemplates}
                                                     />
                                                 </Grid>
                                             ) : null;
@@ -411,11 +412,9 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                 <Grid item xs={4}>
                     <LocalPolicyList
                         policyList={policies}
-                        setDroppedPolicy={setDroppedPolicy}
                     />
                     <PolicyTemplateList
                         policyList={policyTemplates}
-                        setDroppedPolicy={setDroppedPolicy}
                     />
                 </Grid>
             </Grid>

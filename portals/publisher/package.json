@@ -53,6 +53,7 @@
         "fastestsmallesttextencoderdecoder": "^1.0.22",
         "file-loader": "^6.2.0",
         "html-to-draftjs": "^1.4.0",
+        "immutability-helper": "^3.1.1",
         "js-yaml": "^3.14.0",
         "lodash.clonedeep": "^4.5.0",
         "lodash.intersectionby": "^4.7.0",

@@ -25,9 +25,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 
 const style: CSSProperties = {
     border: '2px solid',
-    // marginTop: '0.1rem',
-    height: '100%',
-    // width: 20,
+    height: '90%',
     cursor: 'move',
     borderRadius: '0.3em',
 };
@@ -40,6 +38,7 @@ interface Policy {
 
 interface AttachedPolicyCardProps {
     policyObj: Policy;
+    sortPolicyList: (dragIndex: number, hoverIndex: number) => void;
 }
 
 /**
@@ -48,7 +47,7 @@ interface AttachedPolicyCardProps {
  * @returns {TSX} Draggable Policy card UI.
  */
 const AttachedPolicyCard: React.FC<AttachedPolicyCardProps> = ({
-    policyObj,
+    policyObj, sortPolicyList
 }) => {
     // const [{ opacity }, drag] = useDrag(
     //     () => ({
@@ -99,12 +98,11 @@ const AttachedPolicyCard: React.FC<AttachedPolicyCardProps> = ({
             // ref={drag}
             style={{
                 ...style,
-                // opacity,
                 borderColor: stringToColor(policyObj.name),
+                marginLeft: '0.2em',
+                marginRight: '0.2em',
             }}
         >
-            {/* <ListItem key={policyObj.id} style={{ maxHeight: '100%', overflow: 'auto'}}> */}
-                {/* <ListItemAvatar> */}
             <Avatar
                 style={{
                     margin: '0.2em',
@@ -113,13 +111,6 @@ const AttachedPolicyCard: React.FC<AttachedPolicyCardProps> = ({
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 { ...stringAvatar(policyObj.name.toUpperCase())}
             />
-                {/* </ListItemAvatar> */}
-                {/* <ListItemText
-                    id={policyObj.name}
-                    primary={policyObj.name}
-                    // primaryTypographyProps={{ variant: 'subtitle2' }}
-                /> */}
-            {/* </ListItem> */}
         </div>
     );
 };

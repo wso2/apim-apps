@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -51,10 +51,12 @@ interface OPProps {
   verb: any;
   expandedResource: any;
   setExpandedResource: any;
+  localPolicyList: Policy[];
+  globalPolicyList: Policy[];
 }
 
 const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlight, api, disableUpdate,
-    spec, target, verb, expandedResource, setExpandedResource }) => {
+    spec, target, verb, expandedResource, setExpandedResource, localPolicyList, globalPolicyList }) => {
 
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -125,31 +127,44 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
         apiOperation.usedProductIds,
     ) && apiOperation.usedProductIds.length;
 
-    const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {
-        setExpandedResource(isExpanded ? panel : false);
-    };
-
-        
-    // const [addPolicy, setAddPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
-    // const [selectedPolicy, setSelectedPolicy] = useState<Policy>({id:0, name: "", description: "", flows: []});
-    // const [configPolicyMsg, setConfigPolicyMsg] = useState<string>('');
-    // const [policies, setPolicies] = useState<Array<Policy>>([
-    //     {
-    //         id: 1,
-    //         name: 'Add Header',
-    //         description: 'With this policy, user can add a new header to the request',
-    //         flows: ['Request', 'Response', 'Fault']
-    //     },
-    //     {
-    //         id: 2,
-    //         name: 'Rewrite HTTP Method',
-    //         description: 'User should be able to change the HTTP method of a resource',
-    //         flows: ['Request']
-    //     }
-    // ]);
+    // Policies attached for each request, response and fault flow
     const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<Array<Policy>>([]);
     const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<Array<Policy>>([]);
     const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<Array<Policy>>([]);
+
+    // Droppable policy identifier list for each request, response and fault flow
+    const [requestFlowDroppablePolicyList, setRequestDroppableFlowPolicyList] = useState<string[]>([]);
+    const [responseFlowDroppablePolicyList, setResponseDroppableFlowPolicyList] = useState<string[]>([]);
+    const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
+
+    useEffect(() => {
+        Object.values(localPolicyList).map((policy: Policy) => {
+            if (policy.flows.includes('Request')) {
+                requestFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+            }
+            if (policy.flows.includes('Response')) {
+                responseFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+            }
+            if (policy.flows.includes('Fault')) {
+                faultFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+            }
+        })
+        Object.values(globalPolicyList).map((policy: Policy) => {
+            if (policy.flows.includes('Request')) {
+                requestFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+            }
+            if (policy.flows.includes('Response')) {
+                responseFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+            }
+            if (policy.flows.includes('Fault')) {
+                faultFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+            }
+        })
+    }, [localPolicyList, globalPolicyList])
+
+    const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {
+        setExpandedResource(isExpanded ? panel : false);
+    };
 
     return (
         <>
@@ -240,6 +255,8 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                 <PolicyDropzone
                                     policyDisplayStartDirection='left'
                                     currentPolicyList={requestFlowPolicyList}
+                                    setCurrentPolicyList={setRequestFlowPolicyList}
+                                    droppablePolicyList={requestFlowDroppablePolicyList}
                                 />
                             </Grid>
                             <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
@@ -252,6 +269,8 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                 <PolicyDropzone
                                     policyDisplayStartDirection='right'
                                     currentPolicyList={responseFlowPolicyList}
+                                    setCurrentPolicyList={setResponseFlowPolicyList}
+                                    droppablePolicyList={responseFlowDroppablePolicyList}
                                 />
                             </Grid>
                             <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
@@ -264,6 +283,8 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                 <PolicyDropzone
                                     policyDisplayStartDirection='right'
                                     currentPolicyList={faultFlowPolicyList}
+                                    setCurrentPolicyList={setFaultFlowPolicyList}
+                                    droppablePolicyList={faultFlowDroppablePolicyList}
                                 />
                             </Grid>
                         </Grid>
