@@ -60,14 +60,12 @@ export default function AsyncApiUI(props) {
         accessTokenProvider,
     } = props;
     const { api } = useContext(ApiContext);
+    const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
     let initialEndpoint;
-    if (api.advertiseInfo && api.advertiseInfo.advertised) {
-        if (api.advertiseInfo.apiExternalProductionEndpoint) {
-            initialEndpoint = api.advertiseInfo.apiExternalProductionEndpoint;
-        } else if (apiExternalSandboxEndpoint) {
-            initialEndpoint = api.advertiseInfo.apiExternalSandboxEndpoint;
-        }
+    if (isAdvertised) {
+        initialEndpoint = api.advertiseInfo.apiExternalProductionEndpoint
+            || api.advertiseInfo.apiExternalSandboxEndpoint;
     } else {
         initialEndpoint = URLs && URLs.http;
         if (api.type === CONSTANTS.API_TYPES.WS) {
@@ -103,7 +101,7 @@ export default function AsyncApiUI(props) {
             token = accessTokenProvider();
         } else if (securitySchemeType === 'BASIC') {
             token = 'Basic ' + accessTokenProvider();
-        } else if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        } else if (isAdvertised) {
             token = accessTokenProvider();
         } else {
             token = 'Bearer ' + accessTokenProvider();
@@ -132,7 +130,7 @@ export default function AsyncApiUI(props) {
             return curl;
         } else {
             let curl = `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}' -H 'Authorization: ${token}'`;
-            if (api.advertiseInfo && api.advertiseInfo.advertised && authorizationHeader !== '') {
+            if (isAdvertised && authorizationHeader !== '') {
                 curl = `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
@@ -152,13 +150,13 @@ export default function AsyncApiUI(props) {
         const token = generateAccessToken();
         if (topic.name.includes('*')) {
             let wscat = `wscat -c '${endPoint}' -H 'Authorization: ${token}'`;
-            if (api.advertiseInfo && api.advertiseInfo.advertised && authorizationHeader !== '') {
+            if (isAdvertised && authorizationHeader !== '') {
                 wscat = `wscat -c '${endPoint}' -H '${authorizationHeader}: ${token}'`;
             }
             return wscat;
         } else {
             let wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
-            if (api.advertiseInfo && api.advertiseInfo.advertised && authorizationHeader !== '') {
+            if (isAdvertised && authorizationHeader !== '') {
                 wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
             }
             return wscat;
@@ -169,13 +167,13 @@ export default function AsyncApiUI(props) {
         const token = generateAccessToken();
         if (topic.name.includes('*')) {
             let curl = `curl -X GET '${endPoint}' -H 'Authorization: ${token}'`;
-            if (api.advertiseInfo && api.advertiseInfo.advertised && authorizationHeader !== '') {
+            if (isAdvertised && authorizationHeader !== '') {
                 curl = `curl -X GET '${endPoint}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         } else {
             let curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
-            if (api.advertiseInfo && api.advertiseInfo.advertised && authorizationHeader !== '') {
+            if (isAdvertised && authorizationHeader !== '') {
                 curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
