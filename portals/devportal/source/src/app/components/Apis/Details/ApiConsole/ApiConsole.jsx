@@ -311,6 +311,27 @@ class ApiConsole extends React.Component {
     }
 
     /**
+     * Update swagger for properties for Swagger 2.0 advertise only APIs
+     * @param spec api definition
+     * @param serverUrl server url
+     * @returns {*}
+     */
+    setServersSpec(spec, serverUrl) {
+        let schemes;
+        const [protocol, host] = serverUrl.split('://');
+        if (protocol === 'http') {
+            schemes = ['http'];
+        } else if (protocol === 'https') {
+            schemes = ['https'];
+        }
+        return {
+            ...spec,
+            schemes,
+            host,
+        };
+    }
+
+    /**
      * Converting an OpenAPI file to a postman collection
      * @memberof ApiConsole
    */
@@ -456,20 +477,26 @@ class ApiConsole extends React.Component {
         let swaggerSpec = swagger;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             authorizationHeader = advAuthHeader;
-            if (selectedEndpoint === 'PRODUCTION') {
-                swaggerSpec = {
-                    ...swagger,
-                    servers: [
-                        { url: api.advertiseInfo.apiExternalProductionEndpoint },
-                    ],
-                };
+            if (swaggerSpec.openapi) {
+                if (selectedEndpoint === 'PRODUCTION') {
+                    swaggerSpec = {
+                        ...swagger,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                        ],
+                    };
+                } else {
+                    swaggerSpec = {
+                        ...swagger,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                        ],
+                    };
+                }
+            } else if (selectedEndpoint === 'PRODUCTION') {
+                swaggerSpec = this.setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalProductionEndpoint);
             } else {
-                swaggerSpec = {
-                    ...swagger,
-                    servers: [
-                        { url: api.advertiseInfo.apiExternalSandboxEndpoint },
-                    ],
-                };
+                swaggerSpec = this.setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalSandboxEndpoint);
             }
         }
         return (

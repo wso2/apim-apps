@@ -146,6 +146,21 @@ const TryOutConsole = () => {
     }, [publisherSettings]);
 
     const isAPIProduct = api.type === 'APIPRODUCT';
+    const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
+    const setServersSpec = (spec, serverUrl) => {
+        let schemes;
+        const [protocol, host] = serverUrl.split('://');
+        if (protocol === 'http') {
+            schemes = ['http'];
+        } else if (protocol === 'https') {
+            schemes = ['https'];
+        }
+        return {
+            ...spec,
+            schemes,
+            host,
+        };
+    };
     const updatedOasDefinition = useMemo(() => {
         let oasCopy;
         if (selectedDeployment && oasDefinition) {
@@ -206,15 +221,29 @@ const TryOutConsole = () => {
             // If no deployment just show the OAS definition
             oasCopy = oasDefinition;
         }
-        if (oasCopy && api.advertiseInfo && api.advertiseInfo.advertised) {
-            if (selectedEndpoint === 'PRODUCTION') {
-                oasCopy.servers = [
-                    { url: api.advertiseInfo.apiExternalProductionEndpoint },
-                ];
+        if (oasCopy && isAdvertised) {
+            if (oasCopy.openapi) {
+                // Assume the API definition is an OAS 3.x definition
+                if (selectedEndpoint === 'PRODUCTION') {
+                    oasCopy = {
+                        ...oasCopy,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                        ]
+                    };
+                } else {
+                    oasCopy = {
+                        ...oasCopy,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                        ]
+                    };
+                }
+            } else if (selectedEndpoint === 'PRODUCTION') {
+                // Assume the API definition is Swagger 2
+                oasCopy = setServersSpec(oasCopy, api.advertiseInfo.apiExternalProductionEndpoint);
             } else {
-                oasCopy.servers = [
-                    { url: api.advertiseInfo.apiExternalSandboxEndpoint },
-                ];
+                oasCopy = setServersSpec(oasCopy, api.advertiseInfo.apiExternalSandboxEndpoint);
             }
         }
         return oasCopy;
@@ -233,14 +262,14 @@ const TryOutConsole = () => {
     const isAPIRetired = api.lifeCycleStatus === 'RETIRED';
 
     const accessTokenProvider = () => {
-        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        if (isAdvertised) {
             return advAuthHeaderValue;
         }
         return apiKey;
     };
 
     const getAuthorizationHeader = () => {
-        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        if (isAdvertised) {
             return advAuthHeader;
         }
         return 'Internal-Key';
