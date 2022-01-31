@@ -533,7 +533,7 @@ class ApiConsole extends React.Component {
                         setProductionAccessToken={this.setProductionAccessToken}
                         sandboxAccessToken={sandboxAccessToken}
                         setSandboxAccessToken={this.setSandboxAccessToken}
-                        swagger={swagger}
+                        swagger={swaggerSpec}
                         environments={environments}
                         scopes={scopes}
                         setUsername={this.setUsername}
