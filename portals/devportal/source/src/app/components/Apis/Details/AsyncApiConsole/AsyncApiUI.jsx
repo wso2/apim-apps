@@ -63,14 +63,9 @@ export default function AsyncApiUI(props) {
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
     let initialEndpoint;
-    if (isAdvertised) {
-        initialEndpoint = api.advertiseInfo.apiExternalProductionEndpoint
-            || api.advertiseInfo.apiExternalSandboxEndpoint;
-    } else {
-        initialEndpoint = URLs && URLs.http;
-        if (api.type === CONSTANTS.API_TYPES.WS) {
-            initialEndpoint = URLs && URLs.ws;
-        }
+    initialEndpoint = URLs && URLs.http;
+    if (api.type === CONSTANTS.API_TYPES.WS) {
+        initialEndpoint = URLs && URLs.ws;
     }
 
     const [allTopics, setAllTopics] = useState('');

@@ -198,16 +198,15 @@ export default function AsyncApiConsole() {
     }
 
     const generateUrls = (url) => {
-        const urlObject = new URL(url);
         const urlJson = {
             http: null,
             https: null,
             ws: null,
             wss: null,
         };
-        const { protocol } = urlObject;
-        if (protocol === 'http:' || protocol === 'https:' || protocol === 'ws:' || protocol === 'wss:') {
-            urlJson[protocol.substring(0, protocol.length - 1)] = url;
+        const [protocol] = url.split('://');
+        if (protocol === 'http' || protocol === 'https' || protocol === 'ws' || protocol === 'wss') {
+            urlJson[protocol] = url;
         }
         return urlJson;
     };
