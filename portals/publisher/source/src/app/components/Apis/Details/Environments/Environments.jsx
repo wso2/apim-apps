@@ -413,7 +413,7 @@ export default function Environments() {
             });
             setExternalEnvEndpoints(externalEnvWithEndpoints);
         });
-    }, [triggerEffect]);
+    }, [triggerEffect, externalGateways]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
         setRevisionToDelete([revisionName, revisionId]);
@@ -865,7 +865,6 @@ export default function Environments() {
      * @param {Object} length the length of the list
      */
     function handleCreateAndDeployRevision(envList, vhostList) {
-        console.log('envList', envList);
         if (extraRevisionToDelete) {
             deleteRevision(extraRevisionToDelete[0])
                 .then(() => {
@@ -2339,30 +2338,32 @@ export default function Environments() {
                                         </TableCell>
                                         {externalEnvEndpoints && (
                                             <TableCell align='left'>
-                                                {externalEnvEndpoints[row.name].map((e) => {
-                                                    return (
-                                                        <Grid container spacing={2}>
-                                                            <Grid item>
-                                                                <Chip
-                                                                    label={upperCaseString(e.protocol)}
-                                                                    size='small'
-                                                                    color='primary'
-                                                                    variant='outlined'
-                                                                />
+                                                {externalEnvEndpoints[row.name] &&
+                                                    externalEnvEndpoints[row.name].map((e) => {
+                                                        return (
+                                                            <Grid container spacing={2}>
+                                                                <Grid item>
+                                                                    <Chip
+                                                                        label={upperCaseString(e.protocol)}
+                                                                        size='small'
+                                                                        color='primary'
+                                                                        variant='outlined'
+                                                                    />
+                                                                </Grid>
+                                                                <Grid
+                                                                    item
+                                                                    style={{
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                    }}
+                                                                >
+                                                                    {e.uri}
+                                                                </Grid>
                                                             </Grid>
-                                                            <Grid
-                                                                item
-                                                                style={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                }}
-                                                            >
-                                                                {e.uri}
-                                                            </Grid>
-                                                        </Grid>
-                                                    );
-                                                })}
+                                                        );
+                                                    })
+                                                }
                                             </TableCell>
                                         )}
                                         <TableCell align='left'>

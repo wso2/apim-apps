@@ -390,7 +390,7 @@ export default function DeploymentOnboarding(props) {
                                                             <Checkbox
                                                                 id={row.name.split(' ').join('')}
                                                                 value={row.name}
-                                                                checked={selectedEnvironment.includes(row.name)}
+                                                                checked={selectedSolaceEnvironment.includes(row.name)}
                                                                 disabled={isRestricted(['apim:api_publish',
                                                                     'apim:api_create'])}
                                                                 onChange={handleChange}
