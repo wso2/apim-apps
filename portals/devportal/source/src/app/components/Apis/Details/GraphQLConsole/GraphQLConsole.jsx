@@ -77,8 +77,10 @@ export default function GraphQLConsole() {
     const [productionApiKey, setProductionApiKey] = useState('');
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
+    const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
     const [keys, setKeys] = useState([]);
     const user = AuthManager.getUser();
+    const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
     useEffect(() => {
         const apiID = api.id;
@@ -127,12 +129,46 @@ export default function GraphQLConsole() {
     }
 
     /**
+     * Generate the URLs object for advertise only APIs
+     * @param url endpoint URL
+     * @returns {{wss: null, http: null, https: null, ws: null}}
+     */
+    function generateUrls(url) {
+        const urlJson = {
+            http: null,
+            https: null,
+            ws: null,
+            wss: null,
+        };
+        const [protocol] = url.split('://');
+        if (protocol === 'http' || protocol === 'https' || protocol === 'ws' || protocol === 'wss') {
+            urlJson[protocol] = url;
+        }
+        return urlJson;
+    }
+
+    /**
+     * get the URLs object for GraphQL APIs
+     * @returns {*}
+     */
+    function getURLs() {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            if (selectedEndpoint === 'PRODUCTION') {
+                return generateUrls(api.advertiseInfo.apiExternalProductionEndpoint);
+            } else if (selectedEndpoint === 'SANDBOX') {
+                return generateUrls(api.advertiseInfo.apiExternalSandboxEndpoint);
+            }
+        }
+        return URLs;
+    }
+
+    /**
      * set Password
      * @param {*} selectedKey
      * @param {*} isUpdateToken
      */
     function setSelectedKeyType(selectedKey, isUpdateToken) {
-        if (isUpdateToken && (!api.advertiseInfo || !api.advertiseInfo.advertised)) {
+        if (isUpdateToken && !isAdvertised) {
             setSelectedKey(selectedKey, updateAccessToken);
         } else {
             setSelectedKey(selectedKey);
@@ -140,7 +176,7 @@ export default function GraphQLConsole() {
     }
 
     function accessTokenProvider() {
-        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        if (isAdvertised) {
             return advAuthHeaderValue;
         }
         if (securitySchemeType === 'BASIC') {
@@ -198,7 +234,7 @@ export default function GraphQLConsole() {
         }
     }
 
-    if (api.advertiseInfo && api.advertiseInfo.advertised) {
+    if (isAdvertised) {
         authorizationHeader = advAuthHeader;
     }
 
@@ -209,7 +245,7 @@ export default function GraphQLConsole() {
             </Typography>
             <Paper className={classes.paper}>
                 <Grid container className={classes.grid}>
-                    {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                    {!user && !isAdvertised && (
                         <Grid item md={6}>
                             <Paper className={classes.userNotificationPaper}>
                                 <Typography variant='h5' component='h3'>
@@ -258,6 +294,8 @@ export default function GraphQLConsole() {
                     setAdvAuthHeaderValue={setAdvAuthHeaderValue}
                     advAuthHeader={advAuthHeader}
                     advAuthHeaderValue={advAuthHeaderValue}
+                    setSelectedEndpoint={setSelectedEndpoint}
+                    selectedEndpoint={selectedEndpoint}
                     api={api}
                     URLs={URLs}
                 />
@@ -265,7 +303,7 @@ export default function GraphQLConsole() {
             <Paper className={classes.paper}>
                 <GraphQLUI
                     authorizationHeader={authorizationHeader}
-                    URLs={URLs}
+                    URLs={getURLs()}
                     securitySchemeType={securitySchemeType}
                     accessTokenProvider={accessTokenProvider}
                 />
