@@ -36,7 +36,6 @@ import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import LockIcon from '@material-ui/icons//Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
-// spliced operation components
 
 import { FormattedMessage } from 'react-intl';
 import DescriptionAndSummary from './operationComponents/DescriptionAndSummary';

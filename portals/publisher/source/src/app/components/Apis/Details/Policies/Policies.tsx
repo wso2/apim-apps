@@ -42,8 +42,7 @@ import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/
 import SaveOperations from 'AppComponents/Apis/Details/Resources/components/SaveOperations';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
-import LocalPolicyList from './LocalPolicyList';
-import PolicyTemplateList from './PolicyTemplateList';
+import LocalPolicyList from './PolicyList';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -143,24 +142,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             name: 'OPA',
             flows: ['Request']
         },
-    ]);
-
-    const [policyTemplates, setPolicyTemplates] = useState <Policy[]>([
-        {
-            id: 11,
-            name: 'Rename Query Parameter',
-            flows: ['Request']
-        },
-        {
-            id: 12,
-            name: 'XML Validator',
-            flows: ['Request']
-        },
-        {
-            id: 13,
-            name: 'Debug JSON Fault',
-            flows: ['Fault']
-        }
     ]);
 
     const [pageError, setPageError] = useState(false);
@@ -383,7 +364,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                         expandedResource={expandedResource}
                                                         setExpandedResource={setExpandedResource}
                                                         localPolicyList={policies}
-                                                        globalPolicyList={policyTemplates}
                                                     />
                                                 </Grid>
                                             ) : null;
@@ -412,9 +392,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                 <Grid item xs={4}>
                     <LocalPolicyList
                         policyList={policies}
-                    />
-                    <PolicyTemplateList
-                        policyList={policyTemplates}
                     />
                 </Grid>
             </Grid>

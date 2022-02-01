@@ -16,39 +16,60 @@
  * under the License.
  */
 
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { useDrag } from 'react-dnd';
+import Box from '@material-ui/core/Box';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import { ListItemIcon } from '@material-ui/core';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import { Drawer, makeStyles } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { Settings, Close } from '@material-ui/icons';
+import Divider from '@material-ui/core/Divider';
+
+const useStyles = makeStyles((theme: any) => ({
+    drawerPaper: {
+        backgroundColor: 'white',
+    }
+}));
 
 const style: CSSProperties = {
     border: '2px solid',
     height: '90%',
     cursor: 'move',
     borderRadius: '0.3em',
+    padding: '0.2em'
 };
 
 interface Policy {
     id: number;
     name: string;
     flows: string[];
+    // timestamp: Date;
 }
 
 interface AttachedPolicyCardProps {
+    index: number;
     policyObj: Policy;
     sortPolicyList: (dragIndex: number, hoverIndex: number) => void;
+    currentPolicyList: Policy[];
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
 }
 
 /**
- * Renders a single draggable policy block.
+ * Renders a single draggable policy card.
  * @param {any} AttachedPolicyCardProps Input props from parent components.
  * @returns {TSX} Draggable Policy card UI.
  */
-const AttachedPolicyCard: React.FC<AttachedPolicyCardProps> = ({
-    policyObj, sortPolicyList
+const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
+    index, policyObj, sortPolicyList, currentPolicyList, setCurrentPolicyList
 }) => {
+    const classes = useStyles();
     // const [{ opacity }, drag] = useDrag(
     //     () => ({
     //         type: 'policy',
@@ -61,6 +82,17 @@ const AttachedPolicyCard: React.FC<AttachedPolicyCardProps> = ({
     //     }),
     //     [showCopyIcon],
     // );
+
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const handleDelete = (event: React.MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>) => {
+        let policyList = [...currentPolicyList]
+        policyList.splice(index, 1);
+        setCurrentPolicyList(policyList);
+        event.stopPropagation();
+        event.preventDefault();
+        return;
+    };
 
     const stringToColor = (string: string) => {
         let hash = 0;
@@ -93,25 +125,91 @@ const AttachedPolicyCard: React.FC<AttachedPolicyCardProps> = ({
         };
     };
 
+    const hexToRgb = (hex: string) => {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if(result){
+            var r= parseInt(result[1], 16);
+            var g= parseInt(result[2], 16);
+            var b= parseInt(result[3], 16);
+            return r+", "+g+", "+b;
+        } 
+        return null;
+    }
+
+    const toggleDrawer =
+        (open: boolean) =>
+        (event: KeyboardEvent | MouseEvent) => {
+            if (
+                event.type === 'keydown' &&
+                ((event as KeyboardEvent).key === 'Tab' ||
+                    (event as KeyboardEvent).key === 'Shift')
+            ) {
+                return;
+            }
+
+            setDrawerOpen(open);
+        };
+    
+    const policyColor = stringToColor(policyObj.name);
+    const policyBackgroundColor = drawerOpen ? `rgba(${hexToRgb(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
+
     return (
-        <div
-            // ref={drag}
-            style={{
-                ...style,
-                borderColor: stringToColor(policyObj.name),
-                marginLeft: '0.2em',
-                marginRight: '0.2em',
-            }}
-        >
-            <Avatar
+        <>
+            <div
+                // ref={drag}
                 style={{
-                    margin: '0.2em',
-                    backgroundColor: stringToColor(policyObj.name),
+                    ...style,
+                    borderColor: policyColor,
+                    marginLeft: '0.2em',
+                    marginRight: '0.2em',
+                    backgroundColor: policyBackgroundColor,
                 }}
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                { ...stringAvatar(policyObj.name.toUpperCase())}
-            />
-        </div>
+                onClick={toggleDrawer(true)}
+            >
+                <Tooltip title={policyObj.name} placement='top'>
+                    <Avatar
+                        style={{
+                            margin: '0.2em',
+                            backgroundColor: policyColor,
+                        }}
+                        // eslint-disable-next-line react/jsx-props-no-spreading
+                        { ...stringAvatar(policyObj.name.toUpperCase())}
+                    />
+                </Tooltip>
+                <div>
+                    <IconButton
+                        // onClick={handleDelete}
+                        aria-label='delete attached policy'
+                        style = {{ marginTop: '1.5em'}}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </div>
+            </div>
+            <Drawer
+                anchor={'right'}
+                open={drawerOpen}
+                onClose={toggleDrawer(false)}
+                classes={{ paper: classes.drawerPaper }}
+            >
+                <Box role='presentation'>
+                    <List>
+                        <ListItem key={'policy-config'}>
+                        <ListItemIcon>
+                            <Settings />
+                        </ListItemIcon>
+                        <ListItemText primary={'Configure'} />
+                        <ListItemIcon>
+                            <IconButton onClick={toggleDrawer(false)}>
+                                <Close />
+                            </IconButton>
+                        </ListItemIcon>
+                        </ListItem>
+                    </List>
+                    <Divider />
+                </Box>
+            </Drawer>
+        </>
     );
 };
 

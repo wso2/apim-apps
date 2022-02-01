@@ -31,11 +31,6 @@ import { Button, makeStyles } from '@material-ui/core';
 import DraggablePolicyCard from './DraggablePolicyCard';
 
 const useStyles = makeStyles((theme: any) => ({
-    policyListPaper: {
-        // maxHeight: '35vh',
-        // overflow: 'auto',
-        marginBottom: theme.spacing(2),
-    },
     flowTabs: {
         '& button': {
             minWidth: 50,
@@ -52,7 +47,8 @@ const useStyles = makeStyles((theme: any) => ({
     },
     tabContentGrid: {
         overflowY: 'scroll',
-        height: '25vh',
+        height: '50vh',
+        paddingTop: '10px',
     }
 }));
 
@@ -62,7 +58,7 @@ interface Policy {
     flows: string[];
 }
 
-interface LocalPolicyListPorps {
+interface PolicyListPorps {
     policyList: Policy[];
 }
 
@@ -77,7 +73,7 @@ interface TabPanelProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} List of policies local to the API segment.
  */
-const LocalPolicyList: FC<LocalPolicyListPorps> = ({
+const PolicyList: FC<PolicyListPorps> = ({
     policyList
 }) => {
     const classes = useStyles();
@@ -88,7 +84,10 @@ const LocalPolicyList: FC<LocalPolicyListPorps> = ({
 
 
     useEffect(() => {
-        // eslint-disable-next-line array-callback-return
+        // for (const policy of policyList) {
+            
+        // }
+        // policyList.filter()
         Object.values(policyList).map((policy: Policy) => {
             if (policy.flows.includes('Request')) {
                 requestFlowPolicyList.push(policy);
@@ -102,6 +101,7 @@ const LocalPolicyList: FC<LocalPolicyListPorps> = ({
         })
     }, [policyList]);
 
+    // Create sperate component
     /**
      * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault)
      * @param {JSON} props Input props
@@ -134,69 +134,71 @@ const LocalPolicyList: FC<LocalPolicyListPorps> = ({
     }
 
     return (
-        <Paper className={classes.policyListPaper} >
-            <Box>
-                <Card variant='outlined'>
-                    <CardContent>
-                        <Grid container>
-                            <Typography variant='subtitle2'>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.LocalPolicyList.title'
-                                    defaultMessage='Local Policy List'
-                                />
-                            </Typography>
-                            <Button
-                                // onClick={toggleAddPolicyPopup}
-                                disabled={false}
-                                variant='outlined'
-                                color='primary'
-                                size='small'
-                                className={classes.addPolicyBtn}
-                            >
-                                <AddCircle className={classes.buttonIcon} />
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.APIPolicyList.new.policy'
-                                    defaultMessage='Add New Policy'
-                                />
-                            </Button>
+        <Paper>
+            {/* <Box> */}
+            <Card variant='outlined'>
+                <CardContent>
+                    <Grid container>
+                        <Typography variant='subtitle2'>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyList.title'
+                                defaultMessage='Policy List'
+                            />
+                        </Typography>
+                        <Button
+                            // onClick={toggleAddPolicyPopup}
+                            disabled={false}
+                            variant='outlined'
+                            color='primary'
+                            size='small'
+                            className={classes.addPolicyBtn}
+                        >
+                            <AddCircle className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='Apis.Details.Policies.APIPolicyList.new.policy'
+                                defaultMessage='Add New Policy'
+                            />
+                        </Button>
+                    </Grid>
+                    {/* use Box instead of Grid */}
+                    <Grid container> 
+                        <Tabs
+                            value={selectedTab}
+                            onChange={(event, tab) => setSelectedTab(tab)}
+                            indicatorColor='primary'
+                            textColor='primary'
+                            variant='standard'
+                            aria-label='Policies local to API'
+                            className={classes.flowTabs}
+                        >
+                            <Tab 
+                                label={<span className={classes.flowTab}>Request</span>}
+                                id='simple-tab-0'
+                                aria-controls='simple-tabpanel-0' 
+                            />
+                            <Tab
+                                label={<span className={classes.flowTab}>Response</span>}
+                                id='simple-tab-1'
+                                aria-controls='simple-tabpanel-1' 
+                            />
+                            <Tab
+                                label={<span className={classes.flowTab}>Fault</span>}
+                                id='simple-tab-2'
+                                aria-controls='simple-tabpanel-2'
+                            />
+                        </Tabs>
+                        <Grid container className={classes.tabContentGrid}>
+                            {/* // usefilter */}
+                            <TabPanel value={requestFlowPolicyList} index={0} />
+                            <TabPanel value={responseFlowPolicyList} index={1} />
+                            <TabPanel value={faultFlowPolicyList} index={2} />
                         </Grid>
-                        <Grid container>
-                            <Tabs
-                                value={selectedTab}
-                                onChange={(event, tab) => setSelectedTab(tab)}
-                                indicatorColor='primary'
-                                textColor='primary'
-                                variant='standard'
-                                aria-label='Policies local to API'
-                                className={classes.flowTabs}
-                            >
-                                <Tab 
-                                    label={<span className={classes.flowTab}>Request</span>}
-                                    id='simple-tab-0'
-                                    aria-controls='simple-tabpanel-0' 
-                                />
-                                <Tab
-                                    label={<span className={classes.flowTab}>Response</span>}
-                                    id='simple-tab-1'
-                                    aria-controls='simple-tabpanel-1' 
-                                />
-                                <Tab
-                                    label={<span className={classes.flowTab}>Fault</span>}
-                                    id='simple-tab-2'
-                                    aria-controls='simple-tabpanel-2'
-                                />
-                            </Tabs>
-                            <Grid container className={classes.tabContentGrid}>
-                                <TabPanel value={requestFlowPolicyList} index={0} />
-                                <TabPanel value={responseFlowPolicyList} index={1} />
-                                <TabPanel value={faultFlowPolicyList} index={2} />
-                            </Grid>
-                        </Grid>
-                    </CardContent>
-                </Card>
-            </Box>
+                    </Grid>
+                </CardContent>
+            </Card>
+            {/* </Box> */}
         </Paper>
     );
 }
 
-export default LocalPolicyList;
+export default PolicyList;

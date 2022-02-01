@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme: any) => ({
     },
     alignCenter: {
         justifyContent: 'center',
-    }
+    },
 }));
 
 interface Policy {
@@ -75,7 +75,7 @@ interface PolicyDropzoneProps {
 }
 
 /**
- * Renders the dropzone which can.
+ * Renders the dropzone which accepts policy cards that are dragged and dropped.
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} List of policies local to the API segment.
  */
@@ -85,7 +85,11 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     const classes = useStyles();
 
     const addDroppedPolicyToList = (policy: Policy) => {
-        setCurrentPolicyList(currentPolicyList => [...currentPolicyList, policy]);
+        setCurrentPolicyList(currentPolicyList => [...currentPolicyList, {
+            id: policy.id,
+            name: policy.name,
+            flows: policy.flows,
+        }]);
     }
 
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
@@ -113,20 +117,17 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
 
     const renderAttachedPolicyList = () => {
         const reversedPolicyList = [...currentPolicyList].reverse()
+        const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
         return (
-            policyDisplayStartDirection === 'left'  
-                ? currentPolicyList.map((policy: Policy) => (
-                    <AttachedPolicyCard
-                        policyObj={policy}
-                        sortPolicyList={sortPolicyList}
-                    />
-                ))
-                : reversedPolicyList.map((policy: Policy) => (
-                    <AttachedPolicyCard
-                        policyObj={policy}
-                        sortPolicyList={sortPolicyList}
-                    />
-                ))
+            policyListToDisplay.map((policy: Policy, index: number) => (
+                <AttachedPolicyCard
+                    index={index}
+                    policyObj={policy}
+                    sortPolicyList={sortPolicyList}
+                    currentPolicyList={currentPolicyList}
+                    setCurrentPolicyList={setCurrentPolicyList}
+                />
+            ))
         )
     }
     

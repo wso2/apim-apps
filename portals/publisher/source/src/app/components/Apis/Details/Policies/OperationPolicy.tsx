@@ -52,11 +52,10 @@ interface OPProps {
   expandedResource: any;
   setExpandedResource: any;
   localPolicyList: Policy[];
-  globalPolicyList: Policy[];
 }
 
 const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlight, api, disableUpdate,
-    spec, target, verb, expandedResource, setExpandedResource, localPolicyList, globalPolicyList }) => {
+    spec, target, verb, expandedResource, setExpandedResource, localPolicyList }) => {
 
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -128,9 +127,9 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
     ) && apiOperation.usedProductIds.length;
 
     // Policies attached for each request, response and fault flow
-    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<Array<Policy>>([]);
-    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<Array<Policy>>([]);
-    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<Array<Policy>>([]);
+    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<Policy[]>([]);
+    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<Policy[]>([]);
+    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<Policy[]>([]);
 
     // Droppable policy identifier list for each request, response and fault flow
     const [requestFlowDroppablePolicyList, setRequestDroppableFlowPolicyList] = useState<string[]>([]);
@@ -149,18 +148,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                 faultFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
             }
         })
-        Object.values(globalPolicyList).map((policy: Policy) => {
-            if (policy.flows.includes('Request')) {
-                requestFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
-            }
-            if (policy.flows.includes('Response')) {
-                responseFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
-            }
-            if (policy.flows.includes('Fault')) {
-                faultFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
-            }
-        })
-    }, [localPolicyList, globalPolicyList])
+    }, [localPolicyList])
 
     const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {
         setExpandedResource(isExpanded ? panel : false);
