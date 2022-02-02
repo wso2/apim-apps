@@ -26,7 +26,7 @@ import Box from '@material-ui/core/Box';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const showEndpoint = (api, type) => {
-    if (api.advertiseInfo.advertised) {
+    if (api.advertiseInfo && api.advertiseInfo.advertised) {
         if (type === 'prod') {
             return api.advertiseInfo.apiExternalProductionEndpoint;
         }
@@ -66,7 +66,7 @@ function Endpoints(props) {
                 </Typography>
             </div>
             <Box p={1}>
-                { !api.advertiseInfo.advertised && (
+                {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6} lg={4}>
                             {/* Production Endpoint (TODO) fix the endpoint
@@ -187,7 +187,7 @@ function Endpoints(props) {
                         </Grid>
                     </Grid>
                 )}
-                { api.advertiseInfo.advertised && (
+                {api.advertiseInfo && api.advertiseInfo.advertised && (
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6} lg={4}>
                             <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
