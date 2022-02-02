@@ -306,6 +306,11 @@ const useStyles = makeStyles((theme) => ({
         gridAutoColumns: 'minmax(160px,1fr)',
         overflowX: 'auto',
     },
+    infoAlert: {
+        clear: 'both',
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(2),
+    },
 }));
 
 /**
@@ -1419,7 +1424,7 @@ export default function Environments() {
     return (
         <>
             {api.advertiseInfo && api.advertiseInfo.advertised && (
-                <MuiAlert severity='info'>
+                <MuiAlert severity='info' className={classes.infoAlert}>
                     <Typography variant='body' align='left'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.advertise.only.warning'
