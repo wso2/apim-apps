@@ -126,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {Object} Deep copy of an object
  */
 function copyAPIConfig(api) {
-    let copiedConfig = {
+    const copiedConfig = {
         id: api.id,
         name: api.name,
         description: api.description,
@@ -159,17 +159,14 @@ function copyAPIConfig(api) {
         endpointConfig: api.endpointConfig,
     };
     if (api.advertiseInfo) {
-        copiedConfig = {
-            ...copiedConfig,
-            advertiseInfo: {
-                advertised: api.advertiseInfo.advertised,
-                apiExternalProductionEndpoint: api.advertiseInfo.apiExternalProductionEndpoint,
-                apiExternalSandboxEndpoint: api.advertiseInfo.apiExternalSandboxEndpoint,
-                originalDevPortalUrl: api.advertiseInfo.originalDevPortalUrl,
-                apiOwner: api.advertiseInfo.apiOwner,
-                vendor: api.advertiseInfo.vendor,
-            },
-        };
+        copiedConfig.advertiseInfo = {
+            advertised: api.advertiseInfo.advertised,
+            apiExternalProductionEndpoint: api.advertiseInfo.apiExternalProductionEndpoint,
+            apiExternalSandboxEndpoint: api.advertiseInfo.apiExternalSandboxEndpoint,
+            originalDevPortalUrl: api.advertiseInfo.originalDevPortalUrl,
+            apiOwner: api.advertiseInfo.apiOwner,
+            vendor: api.advertiseInfo.vendor,
+        }
     }
     return copiedConfig;
 }
@@ -224,20 +221,8 @@ function configReducer(state, configAction) {
             return nextState;
         }
         case 'advertised':
-            if (nextState.advertiseInfo) {
-                nextState.advertiseInfo[action] = value;
-            }
-            return nextState;
         case 'apiExternalProductionEndpoint':
-            if (nextState.advertiseInfo) {
-                nextState.advertiseInfo[action] = value;
-            }
-            return nextState;
         case 'apiExternalSandboxEndpoint':
-            if (nextState.advertiseInfo) {
-                nextState.advertiseInfo[action] = value;
-            }
-            return nextState;
         case 'originalDevPortalUrl':
             if (nextState.advertiseInfo) {
                 nextState.advertiseInfo[action] = value;
