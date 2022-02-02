@@ -21,7 +21,7 @@ const options = ['Save and deploy', 'Save'];
 export default function CustomSplitButton(props) {
     const [open, setOpen] = React.useState(false);
     const {
-        api, handleSave, handleSaveAndDeploy, isUpdating,
+        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating,
     } = props;
     const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = React.useState(1);
@@ -50,7 +50,7 @@ export default function CustomSplitButton(props) {
 
     return (
         <Grid container direction='column' alignItems='center'>
-            {(api.advertiseInfo && api.advertiseInfo.advertised) ? (
+            {(advertiseInfo && advertiseInfo.advertised) ? (
                 <Grid item xs={12}>
                     <Button
                         onClick={handleSave}
