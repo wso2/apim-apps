@@ -178,19 +178,6 @@ function Overview(props) {
         }
     }
 
-    function renderCustomizedStepper() {
-        if (api.apiType === API.CONSTS.API && api.advertiseInfo.advertised) {
-            return null;
-        }
-        return (
-            <Grid container spacing={12}>
-                <Grid item xs={12} s={12} md={12} lg={12}>
-                    <CustomizedStepper />
-                </Grid>
-            </Grid>
-        );
-    }
-
     if (newApi.apiType === API.CONSTS.APIProduct) {
         api.type = API.CONSTS.APIProduct;
     }
@@ -202,7 +189,13 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {renderCustomizedStepper()}
+            {(!api.apiType === API.CONSTS.API || !api.advertiseInfo.advertised) && (
+                <Grid container spacing={12}>
+                    <Grid item xs={12} s={12} md={12} lg={12}>
+                        <CustomizedStepper />
+                    </Grid>
+                </Grid>
+            )}
             <div className={classes.contentWrapper}>
                 <Paper className={classes.root}>
                     <Grid container spacing={4}>
