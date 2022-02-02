@@ -1903,6 +1903,30 @@
       "value": "This is the external sandbox endpoint of the advertised API"
     }
   ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning": [
+    {
+      "type": 0,
+      "value": "If you want to deploy and API in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title": [
+    {
+      "type": 0,
+      "value": "The \"Other\" type streaming APIs will serve as advertise only APIs."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning": [
+    {
+      "type": 0,
+      "value": "Please undeploy the revision before changing the API to an advertise only API."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title": [
+    {
+      "type": 0,
+      "value": "There are active deployments in the API."
+    }
+  ],
   "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": [
     {
       "type": 0,

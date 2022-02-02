@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -34,6 +34,7 @@ import Radio from '@material-ui/core/Radio';
 import FormControl from '@material-ui/core/FormControl';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import Tooltip from '@material-ui/core/Tooltip';
+import { AlertTitle } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     expansionPanel: {
@@ -58,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    alert: {
-        marginBottom: '20px',
+    alertGrid: {
+        width: '100%',
     },
 }));
 
@@ -88,7 +89,7 @@ const AdvertiseInfo = (props) => {
     } = useRevisionContext();
     const classes = useStyles();
     const [apiFromContext] = useAPI();
-    const isDeployed = () => {
+    const isDeployed = useMemo(() => {
         if (allRevisions) {
             for (let i = 0; i < allRevisions.length; i++) {
                 if (allRevisions[i].deploymentInfo.length > 0) {
@@ -97,17 +98,7 @@ const AdvertiseInfo = (props) => {
             }
         }
         return false;
-    };
-    const infoMsg = () => {
-        if (type === 'ASYNC') {
-            return 'The "Other" type streaming APIs will serve as advertise only APIs. If you want to deploy and API'
-                + ' in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API.';
-        } else if (isDeployed()) {
-            return 'There are active deployments in the API. Please undeploy the revision before changing the API to'
-                + ' an advertise only API.';
-        }
-        return null;
-    };
+    }, [allRevisions]);
 
     const checkApiExternalEndpointValidity = (endpointType, value) => {
         if (value && value.length > 0) {
@@ -161,7 +152,7 @@ const AdvertiseInfo = (props) => {
 
     const handleOnChangeAdvertised = ({ target: { value } }) => {
         configDispatcher({ action: 'advertised', value: value === 'true' });
-        if (value === 'false' && lifeCycleStatus === 'PUBLISHED' && (policies.length === 0 || endpointConfig)) {
+        if (value === 'false' && lifeCycleStatus === 'PUBLISHED' && (policies.length === 0 || !endpointConfig)) {
             setIsOpen(true);
         } else if (value === 'true' && lifeCycleStatus === 'PUBLISHED') {
             configDispatcher({ action: 'policies', value: oldPolicies });
@@ -189,7 +180,7 @@ const AdvertiseInfo = (props) => {
                         >
                             <FormControlLabel
                                 disabled={isRestricted(['apim:api_create'], apiFromContext)
-                                    || type === 'ASYNC' || isDeployed()}
+                                    || type === 'ASYNC' || isDeployed}
                                 value
                                 control={<Radio color='primary' />}
                                 label={(
@@ -201,7 +192,7 @@ const AdvertiseInfo = (props) => {
                             />
                             <FormControlLabel
                                 disabled={isRestricted(['apim:api_create'], apiFromContext)
-                                    || type === 'ASYNC' || isDeployed()}
+                                    || type === 'ASYNC' || isDeployed}
                                 value={false}
                                 control={<Radio color='primary' />}
                                 label={(
@@ -235,11 +226,38 @@ const AdvertiseInfo = (props) => {
                     </Tooltip>
                 </Box>
             </Grid>
-            {infoMsg() !== null && (
-                <Grid>
-                    <MuiAlert severity='info' className={classes.alert}>{infoMsg()}</MuiAlert>
-                </Grid>
-            )}
+            <Grid className={classes.alertGrid}>
+                {type === 'ASYNC' && (
+                    <MuiAlert severity='info'>
+                        <AlertTitle>
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title'
+                                defaultMessage='The "Other" type streaming APIs will serve as advertise only APIs.'
+                            />
+                        </AlertTitle>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning'
+                            defaultMessage={'If you want to deploy and API in the gateway, please create a WebSocket,'
+                            + ' SSE or WebSub type of a streaming API.'}
+                        />
+                    </MuiAlert>
+                )}
+                {isDeployed && (
+                    <MuiAlert severity='info' className={classes.alert}>
+                        <AlertTitle>
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title'
+                                defaultMessage='There are active deployments in the API.'
+                            />
+                        </AlertTitle>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning'
+                            defaultMessage={'Please undeploy the revision before changing the API to an advertise only'
+                            + ' API.'}
+                        />
+                    </MuiAlert>
+                )}
+            </Grid>
             <Grid>
                 {advertiseInfo.advertised && (
                     <>
@@ -275,7 +293,6 @@ const AdvertiseInfo = (props) => {
                                     defaultMessage='Invalid Endpoint URL'
                                 />
                             )}
-                            style={{ marginTop: 0 }}
                         />
                         <TextField
                             label={(

@@ -852,6 +852,18 @@
   "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint.help": {
     "defaultMessage": "This is the external sandbox endpoint of the advertised API"
   },
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning": {
+    "defaultMessage": "If you want to deploy and API in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title": {
+    "defaultMessage": "The \"Other\" type streaming APIs will serve as advertise only APIs."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning": {
+    "defaultMessage": "Please undeploy the revision before changing the API to an advertise only API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title": {
+    "defaultMessage": "There are active deployments in the API."
+  },
   "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": {
     "defaultMessage": "Original Developer URL"
   },
