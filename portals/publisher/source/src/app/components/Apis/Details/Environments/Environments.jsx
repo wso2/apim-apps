@@ -128,6 +128,7 @@ const useStyles = makeStyles((theme) => ({
     plusIconStyle: {
         marginTop: 8,
         marginLeft: 8,
+        fontSize: 30,
     },
     shapeDottedStart1: {
         backgroundColor: '#1CB1BF',
@@ -1064,7 +1065,7 @@ export default function Environments() {
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <AddIcon color='disabled' style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                        <AddIcon color='disabled' className={classes.plusIconStyle} />
                     </Grid>
                 ) : (
                     <Grid
@@ -1072,7 +1073,7 @@ export default function Environments() {
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                        <AddIcon className={classes.plusIconStyle} />
                     </Grid>
                 )}
 
@@ -1091,16 +1092,15 @@ export default function Environments() {
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <AddIcon color='disabled' style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                        <AddIcon color='disabled' className={classes.plusIconStyle} />
                     </Grid>
                 ) : (
                     <Grid
                         onClick={handleClickOpen}
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
-                        disabled={api.advertiseInfo && api.advertiseInfo.advertised}
                     >
-                        <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
+                        <AddIcon className={classes.plusIconStyle} />
                     </Grid>
                 )}
             </Grid>
