@@ -92,7 +92,13 @@
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": [
     {
       "type": 0,
-      "value": "\"Other\" type streaming APIs will be created as Advertise Only APIs. API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+      "value": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title": [
+    {
+      "type": 0,
+      "value": "\"Other\" type streaming APIs will be created as Advertise Only APIs."
     }
   ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": [

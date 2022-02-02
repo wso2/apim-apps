@@ -31,7 +31,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
-import MuiAlert from 'AppComponents/Shared/MuiAlert';
 
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -39,7 +38,9 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Chip from '@material-ui/core/Chip';
+import Joi from '@hapi/joi';
 import { upperCaseString } from 'AppData/stringFormatter';
+import ExternalEndpoint from 'AppComponents/Apis/Create/AsyncAPI/ExternalEndpoint';
 import ProvideAsyncAPI from './Steps/ProvideAsyncAPI';
 
 /**
@@ -56,7 +57,7 @@ export default function ApiCreateAsyncAPI(props) {
     const classes = useStyles();
     const [hideEndpoint, setHideEndpoint] = useState(true);
     const [hideExternalEndpoint, setHideExternalEndpoint] = useState(true);
-    const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(false);
+    const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(true);
 
     /**
      *
@@ -147,6 +148,19 @@ export default function ApiCreateAsyncAPI(props) {
     }
 
     /**
+     * Validate the external endpoint URL
+     * @param value endpoint URL
+     * @returns {boolean} validity of the URL
+     */
+    function validateEndpoint(value) {
+        if (value) {
+            const urlSchema = Joi.string().uri().empty();
+            return !urlSchema.validate(value).error;
+        }
+        return false;
+    }
+
+    /**
      *
      *
      * @param {*} event
@@ -156,37 +170,15 @@ export default function ApiCreateAsyncAPI(props) {
         if (value === 'WebSub') {
             setHideEndpoint(true);
             setHideExternalEndpoint(true);
+            setValidExternalEndpoint(true);
         } else if (value === 'Other') {
             setHideEndpoint(true);
             setHideExternalEndpoint(false);
+            setValidExternalEndpoint(validateEndpoint(apiInputs.externalEndpoint));
         } else {
             setHideEndpoint(false);
             setHideExternalEndpoint(true);
-        }
-        inputsDispatcher({ action, value });
-    }
-
-    /**
-     * Validate external endpoint
-     *
-     * @param event
-     */
-    function handleOnChangeExternalEndpoint(event) {
-        const { name: action, value } = event.target;
-        if (value && value.length > 0) {
-            let url;
-            try {
-                url = new URL(value);
-            } catch (_) {
-                setValidExternalEndpoint(false);
-            }
-            if (url) {
-                setValidExternalEndpoint(true);
-            } else {
-                setValidExternalEndpoint(false);
-            }
-        } else {
-            setValidExternalEndpoint(false);
+            setValidExternalEndpoint(true);
         }
         inputsDispatcher({ action, value });
     }
@@ -402,47 +394,14 @@ export default function ApiCreateAsyncAPI(props) {
                                 </TextField>
                             )}
                             {!hideExternalEndpoint && (
-                                <>
-                                    <TextField
-                                        fullWidth
-                                        id='itest-id-api-external-endpoint-input'
-                                        label={(
-                                            <>
-                                                <FormattedMessage
-                                                    id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint'
-                                                    defaultMessage='External Endpoint'
-                                                />
-                                                <sup className={classes.mandatoryStar}>*</sup>
-                                            </>
-                                        )}
-                                        name='externalEndpoint'
-                                        value={apiInputs.externalEndpoint}
-                                        onChange={handleOnChangeExternalEndpoint}
-                                        helperText={
-                                            !isValidExternalEndpoint && (
-                                                <div style={{ marginTop: '10px' }}>
-                                                    <FormattedMessage
-                                                        id={'Apis.Create.AsyncAPI.ApiCreateAsyncAPI'
-                                                        + '.externalEndpoint.error'}
-                                                        defaultMessage='Invalid Endpoint URL'
-                                                    />
-                                                </div>
-                                            )
-                                        }
-                                        error={!isValidExternalEndpoint}
-                                        margin='normal'
-                                        variant='outlined'
-                                    />
-                                    <MuiAlert severity='warning' className={classes.externalEndpointWarning}>
-                                        <FormattedMessage
-                                            id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning'
-                                            defaultMessage={'"Other" type streaming APIs will be created as Advertise'
-                                            + ' Only APIs. API Manager only supports the streaming APIs of types'
-                                            + ' WebSocket, SSE and WebSub. Please create one of the supported types'
-                                            + ' if you want to deploy it in the gateway.'}
-                                        />
-                                    </MuiAlert>
-                                </>
+                                <ExternalEndpoint
+                                    classes={classes}
+                                    apiInputs={apiInputs}
+                                    inputsDispatcher={inputsDispatcher}
+                                    isValidExternalEndpoint={isValidExternalEndpoint}
+                                    setValidExternalEndpoint={setValidExternalEndpoint}
+                                    validateEndpoint={validateEndpoint}
+                                />
                             )}
                         </DefaultAPIForm>
                     )}

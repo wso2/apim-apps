@@ -45,7 +45,10 @@
     "defaultMessage": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": {
-    "defaultMessage": "\"Other\" type streaming APIs will be created as Advertise Only APIs. API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+    "defaultMessage": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title": {
+    "defaultMessage": "\"Other\" type streaming APIs will be created as Advertise Only APIs."
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": {
     "defaultMessage": "Cancel"
