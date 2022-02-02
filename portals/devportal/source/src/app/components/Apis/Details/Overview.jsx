@@ -115,10 +115,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(1),
     },
     originalDevportalUrl: {
-        color: '#424242',
-        fontSize: '0.85rem',
-        marginRight: 20,
-        fontWeight: 400,
+        marginTop: theme.spacing(4),
     },
 }));
 /**
@@ -140,7 +137,11 @@ function Overview() {
         },
     } = theme;
     const intl = useIntl();
-    const { api, subscribedApplications } = useContext(ApiContext);
+    const {
+        api,
+        api: { advertiseInfo },
+        subscribedApplications,
+    } = useContext(ApiContext);
     const [descriptionHidden, setDescriptionHidden] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [notFound, setNotFound] = useState(false);
@@ -432,35 +433,24 @@ function Overview() {
                                 )
                             }
                         </Box>
-                        <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
-                            {api.advertiseInfo && api.advertiseInfo.advertised
-                                && api.advertiseInfo.originalDevPortalUrl && (
-                                <>
-                                    <div className={classes.originalDevportalUrl}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Overview.originaldevportal.url.label'
-                                            defaultMessage='Original Developer Portal URL'
-                                        />
-                                    </div>
-                                    <MUILink
-                                        target='_blank'
-                                        rel='noopener noreferrer'
-                                        href={api.advertiseInfo.originalDevPortalUrl}
-                                        variant='body3'
-                                    >
-                                        <div>
-                                            <FormattedMessage
-                                                id={'Apis.Details.Credentials.Credentials.visit.original.'
-                                                + 'developer.portal'}
-                                                defaultMessage='Visit Original Developer Portal'
-                                            />
-                                            <LaunchIcon className={classes.launchIcon} />
-                                        </div>
-                                    </MUILink>
-                                </>
+                        <Box display='flex' flexDirection='row' alignItems='center' className={classes.originalDevportalUrl} mt={2} pr={6}>
+                            {advertiseInfo && advertiseInfo.advertised && advertiseInfo.originalDevPortalUrl && (
+                                <MUILink
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    href={advertiseInfo.originalDevPortalUrl}
+                                    variant='body3'
+                                >
+                                    <FormattedMessage
+                                        id={'Apis.Details.Credentials.Credentials.visit.original.'
+                                        + 'developer.portal'}
+                                        defaultMessage='Visit Original Developer Portal'
+                                    />
+                                    <LaunchIcon className={classes.launchIcon} />
+                                </MUILink>
                             )}
                         </Box>
-                        {(api.gatewayVendor === 'wso2') && (
+                        {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && (
                             <>
                                 <Box mt={6}>
                                     <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
