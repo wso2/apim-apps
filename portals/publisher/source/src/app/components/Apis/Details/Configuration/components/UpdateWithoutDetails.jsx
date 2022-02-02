@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { FormattedMessage } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Dialog from '@material-ui/core/Dialog';
@@ -27,55 +27,13 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
 import API from 'AppData/api';
-
-const styles = (theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-});
-
-const DialogTitle = withStyles(styles)((props) => {
-    const {
-        children, classes, onClose, ...other
-    } = props;
-    return (
-        <MuiDialogTitle disableTypography className={classes.root} {...other}>
-            <Typography variant='h6'>{children}</Typography>
-            {onClose ? (
-                <IconButton aria-label='close' className={classes.closeButton} onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
-            ) : null}
-        </MuiDialogTitle>
-    );
-});
-
-const DialogContent = withStyles((theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles((theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(1),
-    },
-}))(MuiDialogActions);
+import Joi from '@hapi/joi';
 
 /**
  *
@@ -83,17 +41,25 @@ const DialogActions = withStyles((theme) => ({
  */
 export default function UpdateWithoutDetails(props) {
     const {
-        classes, api, apiConfig, handleClick, open, handleClose,
+        classes,
+        api,
+        apiConfig: {
+            endpointConfig,
+            policies,
+        },
+        handleClick,
+        open,
+        handleClose,
     } = props;
 
     let availableEndpoint = '';
     let endpointType = 'PRODUCTION';
-    if (apiConfig.endpointConfig) {
-        if (apiConfig.endpointConfig.production_endpoints) {
-            availableEndpoint = apiConfig.endpointConfig.production_endpoints.url;
+    if (endpointConfig) {
+        if (endpointConfig.production_endpoints) {
+            availableEndpoint = endpointConfig.production_endpoints.url;
             endpointType = 'PRODUCTION';
-        } else if (apiConfig.endpointConfig.sandbox_endpoints) {
-            availableEndpoint = apiConfig.endpointConfig.sandbox_endpoints.url;
+        } else if (endpointConfig.sandbox_endpoints) {
+            availableEndpoint = endpointConfig.sandbox_endpoints.url;
             endpointType = 'SANDBOX';
         }
     } else if (api.advertiseInfo && api.advertiseInfo.apiExternalProductionEndpoint) {
@@ -109,8 +75,8 @@ export default function UpdateWithoutDetails(props) {
     const [availableTiers, setAvailableTiers] = useState([]);
 
     useEffect(() => {
-        if (apiConfig.policies.length > 0) {
-            setAvailableTiers(apiConfig.policies);
+        if (policies.length > 0) {
+            setAvailableTiers(policies);
         } else {
             const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE'
                 || api.type === 'ASYNC');
@@ -128,7 +94,7 @@ export default function UpdateWithoutDetails(props) {
                 });
             }
         }
-    }, [apiConfig]);
+    }, [endpointConfig, policies]);
 
     /**
      * Validate external endpoint
@@ -138,21 +104,8 @@ export default function UpdateWithoutDetails(props) {
     const handleOnChangeEndpoint = (event) => {
         const { value } = event.target;
         setEndpointUrl(value);
-        if (value && value.length > 0) {
-            let url;
-            try {
-                url = new URL(value);
-            } catch (_) {
-                setValidEndpoint(false);
-            }
-            if (url) {
-                setValidEndpoint(true);
-            } else {
-                setValidEndpoint(false);
-            }
-        } else {
-            setValidEndpoint(false);
-        }
+        const urlSchema = Joi.string().uri().empty();
+        setValidEndpoint(!urlSchema.validate(value).error);
     };
 
     const handleSave = () => {
@@ -161,14 +114,21 @@ export default function UpdateWithoutDetails(props) {
 
     return (
         <Dialog onClose={handleClose} aria-labelledby='update-api-confirmation' open={open}>
-            <DialogTitle id='itest-update-confirmation' onClose={handleClose}>
-                <FormattedMessage
-                    id='Apis.Details.Configuration.UpdateWithoutDetails.dialog.title'
-                    defaultMessage='Restore to a normal API'
-                />
-            </DialogTitle>
+            <MuiDialogTitle disableTypography className={classes.dialogTitle}>
+                <Typography variant='h6'>
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.UpdateWithoutDetails.dialog.title'
+                        defaultMessage='Restore to a Regular API'
+                    />
+                </Typography>
+                {handleClose ? (
+                    <IconButton aria-label='close' className={classes.closeButton} onClick={handleClose}>
+                        <CloseIcon />
+                    </IconButton>
+                ) : null}
+            </MuiDialogTitle>
             <Divider light />
-            <DialogContent>
+            <MuiDialogContent>
                 <Box my={1}>
                     <DialogContentText id='itest-confirm-update-text'>
                         <Typography variant='subtitle1' display='block' gutterBottom>
@@ -232,8 +192,8 @@ export default function UpdateWithoutDetails(props) {
                         variant='outlined'
                     />
                 </Box>
-            </DialogContent>
-            <DialogActions>
+            </MuiDialogContent>
+            <MuiDialogActions>
                 <Button
                     disabled={!isValidEndpoint}
                     variant='contained'
@@ -255,7 +215,7 @@ export default function UpdateWithoutDetails(props) {
                         defaultMessage='Cancel'
                     />
                 </Button>
-            </DialogActions>
+            </MuiDialogActions>
         </Dialog>
     );
 }
