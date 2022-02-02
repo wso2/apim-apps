@@ -100,11 +100,7 @@ function actualContext({ context, version }, isWebSocket) {
  */
 function checkContext(value, result) {
     const contextVal = value.startsWith('/') ? value.toLowerCase() : '/' + value.toLowerCase();
-    if (contextVal === '/' + result.toLowerCase().slice(result.toLowerCase().lastIndexOf('/') + 1)
-     || contextVal === result.toLowerCase()) {
-        return true;
-    }
-    return false;
+    return contextVal === result.toLowerCase();
 }
 
 /**
