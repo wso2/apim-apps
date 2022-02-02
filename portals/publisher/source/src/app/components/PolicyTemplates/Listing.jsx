@@ -181,6 +181,7 @@ const Listing = (props) => {
                                     }
                                     return (
                                         <Chip
+                                            key={flow}
                                             label={flow.toUpperCase()}
                                             style={{
                                                 backgroundColor: chipColor,

@@ -22,6 +22,16 @@ import { useDrag } from 'react-dnd';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import { makeStyles } from '@material-ui/core';
+import type { Policy } from './Types';
+
+const useStyles = makeStyles(() => ({
+    policyCardText: {
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+    }
+}));
 
 const style: CSSProperties = {
     border: '2px solid',
@@ -30,16 +40,9 @@ const style: CSSProperties = {
     borderRadius: '0.3em',
 };
 
-interface Policy {
-    id: number;
-    name: string;
-    flows: string[];
-}
-
 interface DraggablePolicyCardProps {
     policyObj: Policy;
     showCopyIcon?: boolean;
-    currentFlow: string;
 }
 
 /**
@@ -51,6 +54,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     policyObj,
     showCopyIcon,
 }) => {
+    const classes = useStyles();
     const [{ opacity }, drag] = useDrag(
         () => ({
             type: `policyCard-${policyObj.id}`,
@@ -118,6 +122,9 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                 <ListItemText
                     id={policyObj.name}
                     primary={policyObj.name}
+                    classes={{
+                        primary: classes.policyCardText
+                    }} 
                     // primaryTypographyProps={{ variant: 'subtitle2' }}
                 />
             </ListItem>

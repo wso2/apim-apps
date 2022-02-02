@@ -42,7 +42,8 @@ import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/
 import SaveOperations from 'AppComponents/Apis/Details/Resources/components/SaveOperations';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
-import LocalPolicyList from './PolicyList';
+import PolicyList from './PolicyList';
+import type { Policy } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -89,12 +90,6 @@ const useStyles = makeStyles((theme: any) => ({
         paddingTop: '10px',
     },
 }));
-
-interface Policy {
-    id: number;
-    name: string;
-    flows: string[];
-}
 
 interface IProps {
     disableUpdate: any;
@@ -363,7 +358,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                         }
                                                         expandedResource={expandedResource}
                                                         setExpandedResource={setExpandedResource}
-                                                        localPolicyList={policies}
+                                                        policyList={policies}
                                                     />
                                                 </Grid>
                                             ) : null;
@@ -390,7 +385,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Grid> */}
                 </Grid>
                 <Grid item xs={4}>
-                    <LocalPolicyList
+                    <PolicyList
                         policyList={policies}
                     />
                 </Grid>

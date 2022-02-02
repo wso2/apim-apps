@@ -30,15 +30,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
 import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
-
 import { FormattedMessage } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
-
-interface Policy {
-    id: number;
-    name: string;
-    flows: string[];
-}
+import type { Policy } from './Types';
 
 interface OPProps {
   operation : any;
@@ -51,11 +45,11 @@ interface OPProps {
   verb: any;
   expandedResource: any;
   setExpandedResource: any;
-  localPolicyList: Policy[];
+  policyList: Policy[];
 }
 
 const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlight, api, disableUpdate,
-    spec, target, verb, expandedResource, setExpandedResource, localPolicyList }) => {
+    spec, target, verb, expandedResource, setExpandedResource, policyList }) => {
 
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -132,12 +126,36 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
     const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<Policy[]>([]);
 
     // Droppable policy identifier list for each request, response and fault flow
-    const [requestFlowDroppablePolicyList, setRequestDroppableFlowPolicyList] = useState<string[]>([]);
-    const [responseFlowDroppablePolicyList, setResponseDroppableFlowPolicyList] = useState<string[]>([]);
+    const [requestFlowDroppablePolicyList, setRequestFlowDroppablePolicyList] = useState<string[]>([]);
+    const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
+    // const [a, setA] = useState<string[]>([]);
+    // const [b, setB] = useState<string[]>([]);
+    // const [c, setC] = useState<string[]>([]);
+
     useEffect(() => {
-        Object.values(localPolicyList).map((policy: Policy) => {
+        // const requestList = [];
+        // const responseList = [];
+        // const faultList = [];
+        // for (const policy of policyList) {
+        //     if (policy.flows.includes('Request')) {
+        //         requestList.push(`policyCard-${policy.id}`);
+        //     }
+        //     if (policy.flows.includes('Response')) {
+        //         responseList.push(`policyCard-${policy.id}`);
+        //     }
+        //     if (policy.flows.includes('Fault')) {
+        //         faultList.push(`policyCard-${policy.id}`);
+        //     }
+        // }
+        // setRequestFlowDroppablePolicyList(requestList);
+        // setResponseFlowDroppablePolicyList(responseList);
+        // setFaultFlowDroppablePolicyList(faultList);
+
+        // 
+
+        Object.values(policyList).map((policy: Policy) => {
             if (policy.flows.includes('Request')) {
                 requestFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
             }
@@ -148,7 +166,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                 faultFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
             }
         })
-    }, [localPolicyList])
+    }, [policyList])
 
     const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {
         setExpandedResource(isExpanded ? panel : false);

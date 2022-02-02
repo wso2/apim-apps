@@ -26,6 +26,7 @@ import red from '@material-ui/core/colors/red';
 import classNames from 'classnames';
 import update from 'immutability-helper';
 import AttachedPolicyCard from './AttachedPolicyCard';
+import type { Policy } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     dropzoneDiv: {
@@ -61,12 +62,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-interface Policy {
-    id: number;
-    name: string;
-    flows: string[];
-}
-
 interface PolicyDropzoneProps {
     policyDisplayStartDirection: string;
     currentPolicyList: Policy[];
@@ -89,6 +84,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
             id: policy.id,
             name: policy.name,
             flows: policy.flows,
+            timestamp: Date.now(),
         }]);
     }
 
@@ -119,9 +115,8 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
         const reversedPolicyList = [...currentPolicyList].reverse()
         const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
         return (
-            policyListToDisplay.map((policy: Policy, index: number) => (
+            policyListToDisplay.map((policy: Policy) => (
                 <AttachedPolicyCard
-                    index={index}
                     policyObj={policy}
                     sortPolicyList={sortPolicyList}
                     currentPolicyList={currentPolicyList}
@@ -137,16 +132,13 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                 ? <ArrowForwardIcon/>
                 : <ArrowBackIcon/>
             }
-            <div ref={drop} className={classNames(
-                classes.dropzoneDiv,
-                isActive ? classes.acceptDrop : null,
-                // eslint-disable-next-line no-nested-ternary
-                currentPolicyList.length !== 0 && policyDisplayStartDirection === 'left'
-                    ? classes.alignLeft 
-                    : currentPolicyList.length !== 0 && policyDisplayStartDirection === 'right'
-                        ? classes.alignRight
-                        : classes.alignCenter
-            )}>
+            <div ref={drop} className={classNames({
+                [classes.dropzoneDiv]: true,
+                [classes.acceptDrop]: isActive,
+                [classes.alignCenter]: currentPolicyList.length === 0,
+                [classes.alignLeft]: currentPolicyList.length !== 0 && policyDisplayStartDirection === 'left',
+                [classes.alignRight]: currentPolicyList.length !== 0 && policyDisplayStartDirection === 'right',
+            })}>
                 {currentPolicyList.length === 0
                     ? <Typography>Drag and drop policies here</Typography>
                     : renderAttachedPolicyList()

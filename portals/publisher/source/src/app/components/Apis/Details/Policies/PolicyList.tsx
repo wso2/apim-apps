@@ -28,9 +28,13 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { AddCircle } from '@material-ui/icons';
 import { Button, makeStyles } from '@material-ui/core';
-import DraggablePolicyCard from './DraggablePolicyCard';
+import type { Policy } from './Types';
+import TabPanel from './components/TabPanel';
 
 const useStyles = makeStyles((theme: any) => ({
+    headerBox: {
+        display: 'flex',
+    },
     flowTabs: {
         '& button': {
             minWidth: 50,
@@ -45,27 +49,16 @@ const useStyles = makeStyles((theme: any) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
-    tabContentGrid: {
+    tabContentBox: {
         overflowY: 'scroll',
         height: '50vh',
         paddingTop: '10px',
-    }
+        width: '70%',
+    },
 }));
-
-interface Policy {
-    id: number;
-    name: string;
-    flows: string[];
-}
 
 interface PolicyListPorps {
     policyList: Policy[];
-}
-
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: any;
 }
 
 /**
@@ -78,67 +71,12 @@ const PolicyList: FC<PolicyListPorps> = ({
 }) => {
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
-    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<Array<Policy>>([]);
-    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<Array<Policy>>([]);
-    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<Array<Policy>>([]);
-
-
-    useEffect(() => {
-        // for (const policy of policyList) {
-            
-        // }
-        // policyList.filter()
-        Object.values(policyList).map((policy: Policy) => {
-            if (policy.flows.includes('Request')) {
-                requestFlowPolicyList.push(policy);
-            }
-            if (policy.flows.includes('Response')) {
-                responseFlowPolicyList.push(policy);
-            }
-            if (policy.flows.includes('Fault')) {
-                faultFlowPolicyList.push(policy);
-            }
-        })
-    }, [policyList]);
-
-    // Create sperate component
-    /**
-     * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault)
-     * @param {JSON} props Input props
-     * @returns {TSX} Tab panel to render
-     */
-    function TabPanel(props: TabPanelProps) {
-        const { value, index} = props;
-        const flowNames = ['Request', 'Response', 'Fault'];
-
-        return (
-            <div
-                role='tabpanel'
-                hidden={selectedTab !== index}
-                id={`simple-tabpanel-${index}`}
-                aria-labelledby={`simple-tab-${index}`}
-            >
-                {selectedTab === index && (
-                    value?.map((singlePolicy: Policy) => {
-                        return (
-                            <DraggablePolicyCard
-                                policyObj={singlePolicy}
-                                showCopyIcon
-                                currentFlow={flowNames[index]}
-                            />
-                        );
-                    })
-                )}
-            </div>
-        );
-    }
-
+ 
     return (
         <Paper>
-            {/* <Box> */}
             <Card variant='outlined'>
                 <CardContent>
-                    <Grid container>
+                    <Box className={classes.headerBox}>
                         <Typography variant='subtitle2'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.PolicyList.title'
@@ -159,9 +97,8 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 defaultMessage='Add New Policy'
                             />
                         </Button>
-                    </Grid>
-                    {/* use Box instead of Grid */}
-                    <Grid container> 
+                    </Box>
+                    <Box> 
                         <Tabs
                             value={selectedTab}
                             onChange={(event, tab) => setSelectedTab(tab)}
@@ -173,30 +110,40 @@ const PolicyList: FC<PolicyListPorps> = ({
                         >
                             <Tab 
                                 label={<span className={classes.flowTab}>Request</span>}
-                                id='simple-tab-0'
-                                aria-controls='simple-tabpanel-0' 
+                                id='request-tab'
+                                aria-controls='request-tabpanel' 
                             />
                             <Tab
                                 label={<span className={classes.flowTab}>Response</span>}
-                                id='simple-tab-1'
-                                aria-controls='simple-tabpanel-1' 
+                                id='response-tab'
+                                aria-controls='response-tabpanel' 
                             />
                             <Tab
                                 label={<span className={classes.flowTab}>Fault</span>}
-                                id='simple-tab-2'
-                                aria-controls='simple-tabpanel-2'
+                                id='fault-tab'
+                                aria-controls='fault-tabpanel'
                             />
                         </Tabs>
-                        <Grid container className={classes.tabContentGrid}>
-                            {/* // usefilter */}
-                            <TabPanel value={requestFlowPolicyList} index={0} />
-                            <TabPanel value={responseFlowPolicyList} index={1} />
-                            <TabPanel value={faultFlowPolicyList} index={2} />
-                        </Grid>
-                    </Grid>
+                        <Box className={classes.tabContentBox}>
+                            <TabPanel
+                                value={policyList.filter((policy) => policy.flows.includes('Request'))}
+                                index={0}
+                                selectedTab={selectedTab}
+                            />
+                            <TabPanel
+                                value={policyList.filter((policy) => policy.flows.includes('Response'))}
+                                index={1} 
+                                selectedTab={selectedTab}
+                            />
+                            <TabPanel
+                                value={policyList.filter((policy) => policy.flows.includes('Fault'))}
+                                index={2}
+                                selectedTab={selectedTab}
+                            />
+                        </Box>
+                    </Box>
                 </CardContent>
             </Card>
-            {/* </Box> */}
         </Paper>
     );
 }

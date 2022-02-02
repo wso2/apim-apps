@@ -22,7 +22,7 @@ import { useDrag } from 'react-dnd';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { ListItemIcon } from '@material-ui/core';
+import { Icon, ListItemIcon } from '@material-ui/core';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import { Drawer, makeStyles } from '@material-ui/core';
@@ -31,11 +31,18 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import type { Policy } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     drawerPaper: {
         backgroundColor: 'white',
-    }
+    },
+    actionsBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: '1em',
+    },
 }));
 
 const style: CSSProperties = {
@@ -46,15 +53,7 @@ const style: CSSProperties = {
     padding: '0.2em'
 };
 
-interface Policy {
-    id: number;
-    name: string;
-    flows: string[];
-    // timestamp: Date;
-}
-
 interface AttachedPolicyCardProps {
-    index: number;
     policyObj: Policy;
     sortPolicyList: (dragIndex: number, hoverIndex: number) => void;
     currentPolicyList: Policy[];
@@ -67,7 +66,7 @@ interface AttachedPolicyCardProps {
  * @returns {TSX} Draggable Policy card UI.
  */
 const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
-    index, policyObj, sortPolicyList, currentPolicyList, setCurrentPolicyList
+    policyObj, sortPolicyList, currentPolicyList, setCurrentPolicyList
 }) => {
     const classes = useStyles();
     // const [{ opacity }, drag] = useDrag(
@@ -85,14 +84,15 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const handleDelete = (event: React.MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>) => {
-        let policyList = [...currentPolicyList]
-        policyList.splice(index, 1);
-        setCurrentPolicyList(policyList);
+    const handleDelete = (event: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+        setCurrentPolicyList(currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp));
         event.stopPropagation();
         event.preventDefault();
-        return;
     };
+
+    const handlePolicyDownload = () => {
+
+    }
 
     const stringToColor = (string: string) => {
         let hash = 0;
@@ -149,7 +149,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 
             setDrawerOpen(open);
         };
-    
+
     const policyColor = stringToColor(policyObj.name);
     const policyBackgroundColor = drawerOpen ? `rgba(${hexToRgb(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
 
@@ -166,31 +166,41 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 }}
                 onClick={toggleDrawer(true)}
             >
-                <Tooltip title={policyObj.name} placement='top'>
+                <Tooltip key={policyObj.id} title={policyObj.name} placement='top'>
                     <Avatar
                         style={{
                             margin: '0.2em',
                             backgroundColor: policyColor,
                         }}
-                        // eslint-disable-next-line react/jsx-props-no-spreading
                         { ...stringAvatar(policyObj.name.toUpperCase())}
                     />
                 </Tooltip>
-                <div>
+                <Box className={classes.actionsBox}>
                     <IconButton
-                        // onClick={handleDelete}
+                        key={`${policyObj.id}-download`}
+                        aria-label='Download policy'
+                        size='small'
+                        onClick={handlePolicyDownload} 
+                    >
+                        <CloudDownloadIcon />
+                        {/* <Icon onClick={handlePolicyDownload}>vertical_align_bottom</Icon> */}
+                    </IconButton>
+                    <IconButton
+                        key={`${policyObj.id}-delete`}
                         aria-label='delete attached policy'
-                        style = {{ marginTop: '1.5em'}}
+                        size='small'
+                        onClick={handleDelete}
                     >
                         <DeleteIcon />
                     </IconButton>
-                </div>
+                </Box>
             </div>
             <Drawer
                 anchor={'right'}
                 open={drawerOpen}
                 onClose={toggleDrawer(false)}
                 classes={{ paper: classes.drawerPaper }}
+                key={policyObj.id}
             >
                 <Box role='presentation'>
                     <List>

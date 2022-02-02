@@ -16,8 +16,9 @@
  * under the License.
  */
 
-export interface Policy {
+export type Policy = {
     id: number;
     name: string;
     flows: string[];
+    timestamp?: number;
 };
