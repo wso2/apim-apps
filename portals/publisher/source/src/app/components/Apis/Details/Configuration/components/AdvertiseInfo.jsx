@@ -23,6 +23,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import MuiAlert from 'AppComponents/Shared/MuiAlert';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
+import Joi from '@hapi/joi';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -100,54 +101,38 @@ const AdvertiseInfo = (props) => {
         return false;
     }, [allRevisions]);
 
-    const checkApiExternalEndpointValidity = (endpointType, value) => {
-        if (value && value.length > 0) {
-            let url;
-            try {
-                url = new URL(value);
-            } catch (_) {
-                return false;
-            }
-            return !!url;
-        } else return endpointType !== 'PRODUCTION';
+    const validateUrl = (value, isEmptyAllowed=true) => {
+        let urlSchema = Joi.string().uri().empty();
+        if (isEmptyAllowed) {
+            urlSchema = Joi.string().uri().allow('', null);
+        }
+        return !urlSchema.validate(value).error;
     };
 
     const [isValidApiExternalProductionEndpoint, setValidApiExternalProductionEndpoint] = useState(
-        checkApiExternalEndpointValidity('PRODUCTION', advertiseInfo.apiExternalProductionEndpoint),
+        validateUrl(advertiseInfo.apiExternalProductionEndpoint, false),
     );
     const [isValidApiExternalSandboxEndpoint, setValidApiExternalSandboxEndpoint] = useState(
-        checkApiExternalEndpointValidity('SANDBOX', advertiseInfo.apiExternalSandboxEndpoint),
+        validateUrl(advertiseInfo.apiExternalSandboxEndpoint),
     );
-    const [isValidOriginalDevPortalUrl, setValidOriginalDevPortalUrl] = useState(true);
+    const [isValidOriginalDevPortalUrl, setValidOriginalDevPortalUrl] = useState(
+        validateUrl(advertiseInfo.originalDevPortalUrl)
+    );
 
-    const handleOnChangeApiExternalEndpointUrl = (endpointType, event) => {
-        const { value } = event.target;
-        if (endpointType === 'PRODUCTION') {
-            setValidApiExternalProductionEndpoint(checkApiExternalEndpointValidity(endpointType, value));
-            configDispatcher({ action: 'apiExternalProductionEndpoint', value });
-        } else {
-            setValidApiExternalSandboxEndpoint(checkApiExternalEndpointValidity(endpointType, value));
-            configDispatcher({ action: 'apiExternalSandboxEndpoint', value });
+    const handleOnChange = (event) => {
+        const { name, value } = event.target;
+        switch (name) {
+            case 'apiExternalProductionEndpoint':
+                setValidApiExternalProductionEndpoint(validateUrl(value, false));
+                break;
+            case 'apiExternalSandboxEndpoint':
+                setValidApiExternalSandboxEndpoint(validateUrl(value));
+                break;
+            default:
+                setValidOriginalDevPortalUrl(validateUrl(value));
+                break;
         }
-    };
-
-    const handleOnChangeOriginalDevPortalUrl = ({ target: { value } }) => {
-        if (value && value.length > 0) {
-            let url;
-            try {
-                url = new URL(value);
-            } catch (_) {
-                setValidOriginalDevPortalUrl(false);
-            }
-            if (url && (url.protocol === 'http:' || url.protocol === 'https:')) {
-                setValidOriginalDevPortalUrl(true);
-            } else {
-                setValidOriginalDevPortalUrl(false);
-            }
-        } else {
-            setValidOriginalDevPortalUrl(true);
-        }
-        configDispatcher({ action: 'originalDevPortalUrl', value });
+        configDispatcher({ action: name, value });
     };
 
     const handleOnChangeAdvertised = ({ target: { value } }) => {
@@ -277,7 +262,7 @@ const AdvertiseInfo = (props) => {
                             value={advertiseInfo.apiExternalProductionEndpoint}
                             fullWidth
                             margin='normal'
-                            onChange={(e) => { handleOnChangeApiExternalEndpointUrl('PRODUCTION', e); }}
+                            onChange={handleOnChange}
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
                             error={!isValidApiExternalProductionEndpoint}
                             helperText={isValidApiExternalProductionEndpoint ? (
@@ -309,7 +294,7 @@ const AdvertiseInfo = (props) => {
                             value={advertiseInfo.apiExternalSandboxEndpoint}
                             fullWidth
                             margin='normal'
-                            onChange={(e) => { handleOnChangeApiExternalEndpointUrl('SANDBOX', e); }}
+                            onChange={handleOnChange}
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
                             error={!isValidApiExternalSandboxEndpoint}
                             helperText={isValidApiExternalSandboxEndpoint ? (
@@ -339,7 +324,7 @@ const AdvertiseInfo = (props) => {
                             value={advertiseInfo.originalDevPortalUrl}
                             fullWidth
                             margin='normal'
-                            onChange={handleOnChangeOriginalDevPortalUrl}
+                            onChange={handleOnChange}
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
                             error={!isValidOriginalDevPortalUrl}
                             helperText={isValidOriginalDevPortalUrl ? (
