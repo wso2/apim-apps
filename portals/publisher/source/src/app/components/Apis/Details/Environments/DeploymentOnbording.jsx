@@ -81,7 +81,7 @@ export default function DeploymentOnboarding(props) {
         description,
         setDescription,
         gatewayVendor,
-        api,
+        advertiseInfo,
     } = props;
     const classes1 = useStyles();
     const theme = useTheme();
@@ -357,7 +357,7 @@ export default function DeploymentOnboarding(props) {
                                         }
                                         color='primary'
                                         disabled={selectedEnvironment.length === 0
-                                            || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                            || (advertiseInfo && advertiseInfo.advertised)}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.deploy.deploy'

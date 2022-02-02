@@ -1442,7 +1442,7 @@ export default function Environments() {
                     description
                     setDescription={setDescription}
                     gatewayVendor={api.gatewayVendor}
-                    api={api}
+                    advertiseInfo={api.advertiseInfo}
                 />
             )}
             {allRevisions && allRevisions.length !== 0 && (
