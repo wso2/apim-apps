@@ -35,6 +35,7 @@ import Divider from '@material-ui/core/Divider';
 import { Link as RouterLink } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Alert from 'AppComponents/Shared/Alert';
+import Joi from '@hapi/joi';
 
 const styles = (theme) => ({
     root: {
@@ -110,21 +111,8 @@ export default function PublishWithoutDeploy(props) {
     const handleOnChangeExternalEndpoint = (event) => {
         const { value } = event.target;
         setExternalEndpoint(value);
-        if (value && value.length > 0) {
-            let url;
-            try {
-                url = new URL(value);
-            } catch (_) {
-                setValidExternalEndpoint(false);
-            }
-            if (url) {
-                setValidExternalEndpoint(true);
-            } else {
-                setValidExternalEndpoint(false);
-            }
-        } else {
-            setValidExternalEndpoint(false);
-        }
+        const urlSchema = Joi.string().uri().empty();
+        setValidExternalEndpoint(!urlSchema.validate(value).error);
     };
 
     const handlePublishClick = () => {
