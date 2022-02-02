@@ -128,7 +128,7 @@ const styles = (theme) => ({
         fontFamily: theme.typography.fontFamily,
         fontSize: '12px',
         fontWeight: 800,
-        backgroundColor: '#006e9c',
+        backgroundColor: theme.palette.primary.main,
         color: 'white',
         position: 'absolute',
         padding: '5px',
@@ -216,11 +216,9 @@ class APIThumb extends Component {
                 elevation={isHover ? 4 : 1}
                 className={classes.card}
             >
-                {
-                    api.advertiseOnly && (
-                        <div className={classes.ribbon}><span>advertised</span></div>
-                    )
-                }
+                {api.advertiseOnly && (
+                    <div className={classes.ribbon}>advertised</div>
+                )}
                 <CardMedia
                     src='None'
                     component={BaseThumbnail}
