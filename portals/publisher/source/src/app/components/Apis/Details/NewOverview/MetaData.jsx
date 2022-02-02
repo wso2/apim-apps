@@ -276,12 +276,10 @@ function MetaData(props) {
                                 </Typography>
                                 <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
                                     {!api.advertiseInfo.originalDevPortalUrl && (
-                                        <>
-                                            <FormattedMessage
-                                                id='Apis.Details.NewOverview.MetaData.originalDevPortalUrl.not.set'
-                                                defaultMessage='-'
-                                            />
-                                        </>
+                                        <FormattedMessage
+                                            id='Apis.Details.NewOverview.MetaData.originalDevPortalUrl.not.set'
+                                            defaultMessage='-'
+                                        />
                                     )}
                                 </Typography>
                             </Grid>
