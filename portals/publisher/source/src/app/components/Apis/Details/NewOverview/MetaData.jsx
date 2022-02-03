@@ -258,7 +258,7 @@ function MetaData(props) {
                         </Typography>
                     </Grid>
                     <BusinessInformation parentClasses={parentClasses} />
-                    {/* Original developer portal URL for advertise only APIs */}
+                    {/* Original developer portal URL for third party APIs */}
                     {api.apiType === API.CONSTS.API && api.advertiseInfo.advertised && (
                         <>
                             <Grid item xs={12} md={6} lg={4}>

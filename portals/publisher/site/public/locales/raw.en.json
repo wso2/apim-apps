@@ -48,7 +48,7 @@
     "defaultMessage": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title": {
-    "defaultMessage": "\"Other\" type streaming APIs will be created as Advertise Only APIs."
+    "defaultMessage": "\"Other\" type streaming APIs will be created as third party APIs."
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": {
     "defaultMessage": "Cancel"
@@ -829,7 +829,7 @@
     "defaultMessage": "The API can be viewed and modified only by specific publishers and creators with the roles that you specify"
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.advertised.label": {
-    "defaultMessage": "Make the API advertised"
+    "defaultMessage": "Mark the API as third party"
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.advertised.no": {
     "defaultMessage": "No"
@@ -856,10 +856,10 @@
     "defaultMessage": "If you want to deploy and API in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API."
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title": {
-    "defaultMessage": "The \"Other\" type streaming APIs will serve as advertise only APIs."
+    "defaultMessage": "The \"Other\" type streaming APIs will serve as third party APIs."
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning": {
-    "defaultMessage": "Please undeploy the revision before changing the API to an advertise only API."
+    "defaultMessage": "Please undeploy the revision before changing the API to a third party API."
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title": {
     "defaultMessage": "There are active deployments in the API."
@@ -874,7 +874,7 @@
     "defaultMessage": "This is the original developer portal of the advertised API"
   },
   "Apis.Details.Configuration.components.AdvertiseInfo.tooltip": {
-    "defaultMessage": "Indicates if an API is advertise only. You can use advertise only APIs to expose an externally published API through API Manager."
+    "defaultMessage": "Indicates if an API is a third party API. You can use third party APIs to expose an externally published API through API Manager."
   },
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": {
     "defaultMessage": "Access Control Allow Headers"
@@ -1864,7 +1864,7 @@
     "defaultMessage": "Revisions"
   },
   "Apis.Details.Environments.Environments.advertise.only.warning": {
-    "defaultMessage": "This API is marked as an advertise only API. The requests are not proxied through the gateway. Hence, deployments are not required."
+    "defaultMessage": "This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required."
   },
   "Apis.Details.Environments.Environments.api.gateways.heading": {
     "defaultMessage": "API Gateways"
@@ -2101,7 +2101,7 @@
     "defaultMessage": "Select a plan for the API product."
   },
   "Apis.Details.LifeCycle.PublishWithoutDeploy.advertise": {
-    "defaultMessage": "Advertise"
+    "defaultMessage": "Publish"
   },
   "Apis.Details.LifeCycle.PublishWithoutDeploy.see.less": {
     "defaultMessage": "See less"
@@ -2113,7 +2113,7 @@
     "defaultMessage": "The API will not be available for consumption unless it is deployed."
   },
   "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": {
-    "defaultMessage": "If you want to publish as an advertise only API, please add the external endpoint and press \"Advertise\"."
+    "defaultMessage": "If you want to publish as a third party API, please provide the external endpoint and press \"Publish\"."
   },
   "Apis.Details.LifeCycle.components.confirm.publish.title": {
     "defaultMessage": "Publish API without deployments"
@@ -3220,7 +3220,7 @@
     "defaultMessage": "Internal API Key"
   },
   "Apis.Details.components.APIDetailsTopMenu.advertise.only.label": {
-    "defaultMessage": "Advertise Only"
+    "defaultMessage": "Third Party"
   },
   "Apis.Details.components.APIDetailsTopMenu.created.by": {
     "defaultMessage": "Created by:"

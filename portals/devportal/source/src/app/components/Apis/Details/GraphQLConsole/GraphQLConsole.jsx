@@ -129,7 +129,7 @@ export default function GraphQLConsole() {
     }
 
     /**
-     * Generate the URLs object for advertise only APIs
+     * Generate the URLs object for third party APIs
      * @param url endpoint URL
      * @returns {{wss: null, http: null, https: null, ws: null}}
      */

@@ -217,7 +217,7 @@ class APIThumb extends Component {
                 className={classes.card}
             >
                 {api.advertiseOnly && (
-                    <div className={classes.ribbon}>advertised</div>
+                    <div className={classes.ribbon}>third party</div>
                 )}
                 <CardMedia
                     src='None'

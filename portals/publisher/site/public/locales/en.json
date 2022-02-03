@@ -98,7 +98,7 @@
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title": [
     {
       "type": 0,
-      "value": "\"Other\" type streaming APIs will be created as Advertise Only APIs."
+      "value": "\"Other\" type streaming APIs will be created as third party APIs."
     }
   ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": [
@@ -1858,7 +1858,7 @@
   "Apis.Details.Configuration.components.AdvertiseInfo.advertised.label": [
     {
       "type": 0,
-      "value": "Make the API advertised"
+      "value": "Mark the API as third party"
     }
   ],
   "Apis.Details.Configuration.components.AdvertiseInfo.advertised.no": [
@@ -1912,13 +1912,13 @@
   "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title": [
     {
       "type": 0,
-      "value": "The \"Other\" type streaming APIs will serve as advertise only APIs."
+      "value": "The \"Other\" type streaming APIs will serve as third party APIs."
     }
   ],
   "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning": [
     {
       "type": 0,
-      "value": "Please undeploy the revision before changing the API to an advertise only API."
+      "value": "Please undeploy the revision before changing the API to a third party API."
     }
   ],
   "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title": [
@@ -1948,7 +1948,7 @@
   "Apis.Details.Configuration.components.AdvertiseInfo.tooltip": [
     {
       "type": 0,
-      "value": "Indicates if an API is advertise only. You can use advertise only APIs to expose an externally published API through API Manager."
+      "value": "Indicates if an API is a third party API. You can use third party APIs to expose an externally published API through API Manager."
     }
   ],
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": [
@@ -3936,7 +3936,7 @@
   "Apis.Details.Environments.Environments.advertise.only.warning": [
     {
       "type": 0,
-      "value": "This API is marked as an advertise only API. The requests are not proxied through the gateway. Hence, deployments are not required."
+      "value": "This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required."
     }
   ],
   "Apis.Details.Environments.Environments.api.gateways.heading": [
@@ -4466,7 +4466,7 @@
   "Apis.Details.LifeCycle.PublishWithoutDeploy.advertise": [
     {
       "type": 0,
-      "value": "Advertise"
+      "value": "Publish"
     }
   ],
   "Apis.Details.LifeCycle.PublishWithoutDeploy.see.less": [
@@ -4490,7 +4490,7 @@
   "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": [
     {
       "type": 0,
-      "value": "If you want to publish as an advertise only API, please add the external endpoint and press \"Advertise\"."
+      "value": "If you want to publish as a third party API, please provide the external endpoint and press \"Publish\"."
     }
   ],
   "Apis.Details.LifeCycle.components.confirm.publish.title": [
@@ -6736,7 +6736,7 @@
   "Apis.Details.components.APIDetailsTopMenu.advertise.only.label": [
     {
       "type": 0,
-      "value": "Advertise Only"
+      "value": "Third Party"
     }
   ],
   "Apis.Details.components.APIDetailsTopMenu.created.by": [

@@ -153,11 +153,11 @@ const AdvertiseInfo = (props) => {
                         <FormLabel component='legend'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.AdvertiseInfo.advertised.label'
-                                defaultMessage='Make the API advertised'
+                                defaultMessage='Mark the API as third party'
                             />
                         </FormLabel>
                         <RadioGroup
-                            aria-label='Make the API advertised'
+                            aria-label='Mark the API as third party'
                             name='advertised'
                             value={advertiseInfo.advertised}
                             onChange={handleOnChangeAdvertised}
@@ -198,7 +198,7 @@ const AdvertiseInfo = (props) => {
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.AdvertiseInfo.tooltip'
                                 defaultMessage={
-                                    'Indicates if an API is advertise only. You can use advertise only APIs to expose'
+                                    'Indicates if an API is a third party API. You can use third party APIs to expose'
                                     + ' an externally published API through API Manager.'
                                 }
                             />
@@ -217,7 +217,7 @@ const AdvertiseInfo = (props) => {
                         <AlertTitle>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title'
-                                defaultMessage='The "Other" type streaming APIs will serve as advertise only APIs.'
+                                defaultMessage='The "Other" type streaming APIs will serve as third party APIs.'
                             />
                         </AlertTitle>
                         <FormattedMessage
@@ -237,7 +237,7 @@ const AdvertiseInfo = (props) => {
                         </AlertTitle>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning'
-                            defaultMessage={'Please undeploy the revision before changing the API to an advertise only'
+                            defaultMessage={'Please undeploy the revision before changing the API to a third party'
                             + ' API.'}
                         />
                     </MuiAlert>

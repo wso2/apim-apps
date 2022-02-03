@@ -265,7 +265,7 @@ const APIDetailsTopMenu = (props) => {
                 >
                     <FormattedMessage
                         id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
-                        defaultMessage='Advertise Only'
+                        defaultMessage='Third Party'
                     />
                 </MUIAlert>
             )}

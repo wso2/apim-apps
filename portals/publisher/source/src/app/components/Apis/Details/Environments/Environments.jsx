@@ -1428,7 +1428,7 @@ export default function Environments() {
                     <Typography variant='body' align='left'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.advertise.only.warning'
-                            defaultMessage={'This API is marked as an advertise only API. The requests are not proxied'
+                            defaultMessage={'This API is marked as a third party API. The requests are not proxied'
                             + ' through the gateway. Hence, deployments are not required.'}
                         />
                     </Typography>

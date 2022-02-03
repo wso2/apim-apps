@@ -67,7 +67,7 @@ const ExternalEndpoint = (props) => {
                 <AlertTitle>
                     <FormattedMessage
                         id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title'
-                        defaultMessage='"Other" type streaming APIs will be created as Advertise Only APIs.'
+                        defaultMessage='"Other" type streaming APIs will be created as third party APIs.'
                     />
                 </AlertTitle>
                 <FormattedMessage

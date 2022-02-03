@@ -287,7 +287,7 @@ class ApiConsole extends React.Component {
     }
 
     /**
-     * Set authorization header of advertise only APIs
+     * Set authorization header of third party APIs
      * @param advAuthHeader authorization header
      */
     setAdvAuthHeader(advAuthHeader) {
@@ -295,7 +295,7 @@ class ApiConsole extends React.Component {
     }
 
     /**
-     * Set authorization header value of advertise only APIs
+     * Set authorization header value of third party APIs
      * @param advAuthHeaderValue authorization header value
      */
     setAdvAuthHeaderValue(advAuthHeaderValue) {
@@ -303,7 +303,7 @@ class ApiConsole extends React.Component {
     }
 
     /**
-     * Set selected endpoint type of advertise only APIs
+     * Set selected endpoint type of third party APIs
      * @param selectedEndpoint selected endpoint type
      */
     setSelectedEndpoint(selectedEndpoint) {
@@ -311,7 +311,7 @@ class ApiConsole extends React.Component {
     }
 
     /**
-     * Update swagger for properties for Swagger 2.0 advertise only APIs
+     * Update swagger for properties for Swagger 2.0 third party APIs
      * @param spec api definition
      * @param serverUrl server url
      * @returns {*}

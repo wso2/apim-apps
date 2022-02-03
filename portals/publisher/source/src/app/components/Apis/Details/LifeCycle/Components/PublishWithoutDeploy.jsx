@@ -205,8 +205,8 @@ export default function PublishWithoutDeploy(props) {
                                 <Typography variant='subtitle1' display='block' gutterBottom>
                                     <FormattedMessage
                                         id='Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only'
-                                        defaultMessage={'If you want to publish as an advertise only API, please add '
-                                        + 'the external endpoint and press "Advertise".'}
+                                        defaultMessage={'If you want to publish as a third party API, please provide '
+                                        + 'the external endpoint and press "Publish".'}
                                     />
                                 </Typography>
                             </DialogContentText>
@@ -274,7 +274,7 @@ export default function PublishWithoutDeploy(props) {
                         >
                             <FormattedMessage
                                 id='Apis.Details.LifeCycle.PublishWithoutDeploy.advertise'
-                                defaultMessage='Advertise'
+                                defaultMessage='Publish'
                             />
                         </Button>
                     </>
