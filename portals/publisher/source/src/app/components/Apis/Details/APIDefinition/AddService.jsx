@@ -17,26 +17,93 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
+import {
+    FormControl,
+    Grid,
+    Paper,
+    Box,
+    Typography,
+    withStyles,
+    Radio,
+    FormControlLabel,
+    Collapse,
+    RadioGroup, Checkbox, Dialog, DialogTitle, DialogContent, DialogContentText,
+    IconButton, Button, DialogActions, Icon,
+} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import ServiceCatalog from 'AppData/ServiceCatalog';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api.js';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-// import ReactDiffViewer from 'react-diff-viewer';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
+import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
+import { makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+        height: 250,
+    },
+    container: {
+        flexGrow: 1,
+        position: 'relative',
+    },
+    paper: {
+        position: 'absolute',
+        zIndex: theme.zIndex.goToSearch,
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(1),
+        left: 0,
+        right: 0,
+    },
+    chip: {
+        margin: theme.spacing(0.5, 0.25),
+    },
+    inputRoot: {
+        flexWrap: 'wrap',
+    },
+    inputInput: {
+        width: 'auto',
+        flexGrow: 1,
+        fontSize: '20px',
+    },
+    divider: {
+        height: theme.spacing(2),
+    },
+    linkButton: {
+        display: 'grid',
+        alignItems: 'center',
+        flexDirection: 'column',
+        padding: 10,
+        cursor: 'pointer',
+        minWidth: 30,
+    },
+    goToWrapper: {
+        position: 'relative',
+    },
+    downshiftWrapper: {
+        padding: theme.spacing(1),
+        background: theme.palette.background.paper,
+        borderRadius: 10,
+        width: '70vw',
+        marginBottom: '20%',
+        boxShadow: '0px 0px 20px 3px rgb(0 0 0 / 56%)',
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+        backdropFilter: 'blur(1px)',
+    },
+}));
 
 
 // eslint-disable-next-line valid-jsdoc
@@ -48,8 +115,9 @@ import { Link } from 'react-router-dom';
 export default function AddService(props) {
     const {
         api,
-        classes,
+        services
     } = props;
+    const classes = useStyles();
     // const [serviceKey, setserviceKey] = useState();
     // const [showEndpointReady, setshowEndpointReady] = useState(false);
     // const [isRendering, setIsRendering] = useState(false);
@@ -62,9 +130,11 @@ export default function AddService(props) {
     /**
      * Re import service definition
     * */
-    function updateSwaggerByServiceKey() {
+    function updateSwaggerByServiceKey(serviceKey) {
+
         const newAPI = new API();
-        const promisedReimportService = newAPI.updateSwaggerByServiceKey(api.id, "SwaggerPetstore-1.0.0");
+        const promisedReimportService = newAPI.updateSwaggerByServiceKey(api.id,
+            serviceKey);
         promisedReimportService.then(() => {
             Alert.info(
                 <FormattedMessage
@@ -91,15 +161,14 @@ export default function AddService(props) {
 
 
     /**
-     * Show diff between old service definition and new service definition
+     * Find a service which is mapped to the perticular API
      */
     function findEndpointReady() {
         // setIsRendering(true);
-        const promisedServices = ServiceCatalog.searchServiceByKey("SwaggerPetstore-1.0.0");
+        const promisedServices = ServiceCatalog.getServiceList();
         promisedServices.then((response) => {
-            setServicesList(response.body.list);
-            // setserviceKey(serviceKeyn);
-            console.log(servicesList);
+
+            setServicesList(response.list);
 
         }).catch((error) => {
             if (error.response) {
@@ -107,14 +176,14 @@ export default function AddService(props) {
             } else {
                 Alert.error(
                     <FormattedMessage
-                        id='Apis.Details.APIDefinition.DefinitionOutdated.service.retrieve.error'
-                        defaultMessage='Something went wrong while rendering diff for API Definition'
+                        id='Apis.Details.APIDefinition.Addservice.service.retrieve.error'
+                        defaultMessage='Something went wrong while retrieving the services'
                     />,
                 );
             }
             console.error(error);
         }).finally(() => {
-            // setIsRendering(false);
+            
         });
     }
 
@@ -137,20 +206,155 @@ export default function AddService(props) {
 
     return (
         <>
-            <div>
-                {(api.lifeCycleStatus === "CREATED" && servicesList.length) && (
-                    <div>
-                        <Button
-                            size='small'
-                            className={classes.button}
-                            onClick={handleOpen}
-                        >
 
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.Addservice.endpoint.ready'
-                                defaultMessage='Endpoint is ready'
-                            />
-                        </Button>
+            <div className={classes.goToWrapper}>
+                {(servicesList.length > 0) &&
+                    <>
+                        <Grid container spacing={2}>
+                            <Grid item xs={3}>
+                                <Autocomplete
+                                    id="combo-box-demo"
+                                    options={servicesList}
+                                    getOptionLabel={(option) => option.name}
+                                    style={{ width: 300 }}
+                                    renderInput={(params) => <TextField {...params} label="Services" variant="outlined" />}
+                                />
+                            </Grid>
+                            <Grid item xs={9}>
+                                <div className={classes.endpointInputWrapper}>
+                                    <TextField
+                                        disabled
+                                        label={name}
+                                        id={id}
+                                        className={classes.textField}
+                                        value={serviceUrl}
+                                        placeholder={!serviceUrl ? 'http://appserver/resource' : ''}
+                                        onChange={(event) => setServiceUrl(event.target.value)}
+                                        onBlur={() => {
+                                            editEndpoint(index, category, serviceUrl);
+                                        }}
+                                        error={!serviceUrl}
+                                    
+                                        variant='outlined'
+                                        margin='normal'
+                                        required
+                                        InputProps={{
+                                            readOnly,
+                                            autoFocus,
+                                            endAdornment: (
+                                                <InputAdornment position='end'>
+                                                    {statusCode && (
+                                                        <Chip
+                                                            label={statusCode}
+                                                            className={isEndpointValid ? classes.endpointValidChip : iff(
+                                                                isErrorCode,
+                                                                classes.endpointErrorChip, classes.endpointInvalidChip,
+                                                            )}
+                                                            variant='outlined'
+                                                        />
+                                                    )}
+                                                   
+                                                    {type === 'prototyped'
+                                                        ? <div />
+                                                        : (
+                                                            <>
+                                                                <IconButton
+                                                                    className={classes.iconButton}
+                                                                    aria-label='Settings'
+                                                                    onClick={() => setAdvancedConfigOpen(index, type, category)}
+                                                                    disabled={(isRestricted(['apim:api_create'], api))}
+                                                                >
+                                                                    <Tooltip
+                                                                        placement='top-start'
+                                                                        interactive
+                                                                        title={(
+                                                                            <FormattedMessage
+                                                                                id='Apis.Details.Endpoints.GenericEndpoint.config.endpoint'
+                                                                                defaultMessage='Endpoint configurations'
+                                                                            />
+                                                                        )}
+                                                                    >
+                                                                        <Icon>
+                                                                            settings
+                                                                        </Icon>
+                                                                    </Tooltip>
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    className={classes.iconButton}
+                                                                    aria-label='Security'
+                                                                    onClick={() => setESConfigOpen(type, esCategory)}
+                                                                    disabled={(isRestricted(['apim:api_create'], api))}
+                                                                >
+                                                                    <Tooltip
+                                                                        placement='top-start'
+                                                                        interactive
+                                                                        title={(
+                                                                            <FormattedMessage
+                                                                                id='Apis.Details.Endpoints.GenericEndpoint.security.endpoint'
+                                                                                defaultMessage='Endpoint security'
+                                                                            />
+                                                                        )}
+                                                                    >
+                                                                        <Icon>
+                                                                            security
+                                                                        </Icon>
+                                                                    </Tooltip>
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    className={classes.iconButton}
+                                                                    aria-label='Security'
+                                                                    onClick={() => setConfigureBackendOpen(type, esCategory)}
+                                                                    disabled={(isRestricted(['apim:api_create'], api))}
+                                                                >
+                                                                    <Tooltip
+                                                                        placement='top-start'
+                                                                        interactive
+                                                                        title={(
+                                                                            <FormattedMessage
+                                                                                id='Apis.Details.Endpoints.GenericEndpoint.available.services'
+                                                                                defaultMessage='Available services'
+                                                                            />
+                                                                        )}
+                                                                    >
+                                                                        <Icon>
+                                                                            ballot
+                                                                        </Icon>
+                                                                    </Tooltip>
+                                                                </IconButton>
+                                                            </>
+                                                        )}
+                                                    {(index > 0) ? <Divider className={classes.divider} /> : <div />}
+                                                    {(type === 'load_balance' || type === 'failover') ? (
+                                                        <IconButton
+                                                            className={classes.iconButton}
+                                                            aria-label='Delete'
+                                                            color='secondary'
+                                                            onClick={() => deleteEndpoint(index, type, category)}
+                                                            disabled={(isRestricted(['apim:api_create'], api))}
+                                                        >
+                                                            <Icon>
+                                                                delete
+                                                            </Icon>
+                                                        </IconButton>
+                                                    ) : (<div />)}
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </div>
+                            </Grid>
+
+                        </Grid>
+
+
+
+
+
+
+
+
+
+
                         <Dialog
                             open={openDialog}
                             onClose={handleClose}
@@ -162,7 +366,7 @@ export default function AddService(props) {
                             <DialogTitle id='alert-dialog-title'>
                                 <Typography align='left'>
                                     <FormattedMessage
-                                        id='Apis.Details.APIDefinition.DefinitionOutdated.outdated.definition'
+                                        id='Apis.Details.APIDefinition.Addservice.available.services'
                                         defaultMessage='Available Services'
                                     />
                                 </Typography>
@@ -170,9 +374,8 @@ export default function AddService(props) {
                             <DialogContent>
                                 <DialogContentText id='alert-dialog-description'>
                                     <FormattedMessage
-                                        id='Apis.Details.APIDefinition.DefinitionOutdated.api.outdated.definition'
-                                        defaultMessage='Current API definition is outdated.
-                               You can either re-import the new definition or create a new version of this API.'
+                                        id='Apis.Details.APIDefinition.Addservice.link.service'
+                                        defaultMessage='Select a service to link to the API.'
                                     />
                                 </DialogContentText>
 
@@ -182,27 +385,21 @@ export default function AddService(props) {
                                             <TableCell>
                                                 <b>
                                                     <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Usages.api.name'
-                                                        defaultMessage='API Name'
+                                                        id='Apis.Details.APIDefinition.service.name'
+                                                        defaultMessage='Service Name'
                                                     />
                                                 </b>
                                             </TableCell>
                                             <TableCell>
                                                 <b>
                                                     <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Usages.api.context'
-                                                        defaultMessage='Context'
-                                                    />
-                                                </b>
-                                            </TableCell>
-                                            <TableCell>
-                                                <b>
-                                                    <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Usages.api.version'
+                                                        id='Apis.Details.APIDefinition.service.version'
                                                         defaultMessage='Version'
                                                     />
                                                 </b>
                                             </TableCell>
+                                            <TableCell />
+                                            <TableCell />
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -219,16 +416,24 @@ export default function AddService(props) {
                                                     <span>{service.version}</span>
                                                 </TableCell>
                                                 <TableCell>
+
+                                                    <FormattedMessage
+                                                        id='Apis.Details.APIDefinition.add.service.compatible'
+                                                        defaultMessage='Compatible contract'
+                                                    />
+
+                                                </TableCell>
+                                                <TableCell>
                                                     <Button
-                                                        onClick={updateSwaggerByServiceKey}
+                                                        onClick={() => updateSwaggerByServiceKey(service.serviceKey)}
                                                         color='primary'
                                                         autoFocus
                                                         variant='contained'
+                                                        on
                                                     >
                                                         <FormattedMessage
-                                                            id='Apis.Details.APIDefinition.DefinitionOutdated.
-                                                            btn.reimport'
-                                                            defaultMessage='Re-import'
+                                                            id='Apis.Details.APIDefinition.add.service.configure'
+                                                            defaultMessage='Confgure Endpoint'
                                                         />
                                                     </Button>
                                                 </TableCell>
@@ -247,8 +452,8 @@ export default function AddService(props) {
                                 </Button>
                             </DialogActions>
                         </Dialog>
-                    </div>
-                )}
+                    </>
+                }
 
             </div>
         </>
@@ -259,6 +464,9 @@ export default function AddService(props) {
 AddService.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
+        id: PropTypes.string,
+    }).isRequired,
+    services: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
     intl: PropTypes.shape({
