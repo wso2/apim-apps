@@ -16,25 +16,23 @@
  * under the License.
  */
 
-import React, { useState, useEffect, FC } from 'react';
+import React, { useState, FC, MouseEventHandler } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import CardContent from '@material-ui/core/CardContent';
-import Grid from '@material-ui/core/Grid';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { AddCircle } from '@material-ui/icons';
 import { Button, makeStyles } from '@material-ui/core';
+import Backdrop from '@material-ui/core/Backdrop';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
+import CreatePolicy from './CreatePolicy';
 
 const useStyles = makeStyles((theme: any) => ({
-    headerBox: {
-        display: 'flex',
-    },
     flowTabs: {
         '& button': {
             minWidth: 50,
@@ -50,10 +48,12 @@ const useStyles = makeStyles((theme: any) => ({
         marginRight: theme.spacing(1),
     },
     tabContentBox: {
-        overflowY: 'scroll',
-        height: '50vh',
-        paddingTop: '10px',
-        width: '70%',
+        // overflowY: 'scroll',
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+        backdropFilter: 'blur(1px)',
     },
 }));
 
@@ -71,12 +71,21 @@ const PolicyList: FC<PolicyListPorps> = ({
 }) => {
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
- 
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+
+    const handleAddPolicy = () => {
+        setDialogOpen(true);
+    }
+
+    const handleAddPolicyClose = () => {
+        setDialogOpen(false);
+    }
+
     return (
         <Paper>
             <Card variant='outlined'>
                 <CardContent>
-                    <Box className={classes.headerBox}>
+                    <Box display='flex'>
                         <Typography variant='subtitle2'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.PolicyList.title'
@@ -84,7 +93,7 @@ const PolicyList: FC<PolicyListPorps> = ({
                             />
                         </Typography>
                         <Button
-                            // onClick={toggleAddPolicyPopup}
+                            onClick={handleAddPolicy}
                             disabled={false}
                             variant='outlined'
                             color='primary'
@@ -124,7 +133,7 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 aria-controls='fault-tabpanel'
                             />
                         </Tabs>
-                        <Box className={classes.tabContentBox}>
+                        <Box className={classes.tabContentBox} height='50vh' pt={1} overflow='scroll'>
                             <TabPanel
                                 value={policyList.filter((policy) => policy.flows.includes('Request'))}
                                 index={0}
@@ -144,6 +153,16 @@ const PolicyList: FC<PolicyListPorps> = ({
                     </Box>
                 </CardContent>
             </Card>
+            <Backdrop
+                className={classes.backdrop}
+                open={dialogOpen}
+                onClick={handleAddPolicyClose}    
+            >
+                <CreatePolicy
+                    dialogOpen={dialogOpen}
+                    handleDialogClose={handleAddPolicyClose}
+                />
+            </Backdrop>
         </Paper>
     );
 }

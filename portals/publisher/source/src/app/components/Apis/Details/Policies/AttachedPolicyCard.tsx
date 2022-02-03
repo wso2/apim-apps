@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useState } from 'react';
+import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { useDrag } from 'react-dnd';
 import Box from '@material-ui/core/Box';
@@ -32,6 +32,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Utils from 'AppData/Utils';
 import type { Policy } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -53,9 +54,15 @@ const style: CSSProperties = {
     padding: '0.2em'
 };
 
+interface DragItem {
+    index: number;
+    policy: Policy
+}
+
 interface AttachedPolicyCardProps {
+    index: number;
     policyObj: Policy;
-    sortPolicyList: (dragIndex: number, hoverIndex: number) => void;
+    movePolicyCard: (dragIndex: number, hoverIndex: number) => void;
     currentPolicyList: Policy[];
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
 }
@@ -66,10 +73,11 @@ interface AttachedPolicyCardProps {
  * @returns {TSX} Draggable Policy card UI.
  */
 const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
-    policyObj, sortPolicyList, currentPolicyList, setCurrentPolicyList
+    policyObj, movePolicyCard, currentPolicyList, setCurrentPolicyList
 }) => {
     const classes = useStyles();
-    // const [{ opacity }, drag] = useDrag(
+
+    // const [{ handlerId }, drag] = useDrag(
     //     () => ({
     //         type: 'policy',
     //         options: {
@@ -94,48 +102,6 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 
     }
 
-    const stringToColor = (string: string) => {
-        let hash = 0;
-        let i;
-
-        /* eslint-disable no-bitwise */
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xaa;
-            color += `00${value.toString(16)}`.substr(-2);
-        }
-        /* eslint-enable no-bitwise */
-
-        return color;
-    };
-
-    const stringAvatar = (name: string) => {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: name.split(' ').length > 1 
-                ? `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
-                : `${name.split(' ')[0][0]}`,
-        };
-    };
-
-    const hexToRgb = (hex: string) => {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        if(result){
-            var r= parseInt(result[1], 16);
-            var g= parseInt(result[2], 16);
-            var b= parseInt(result[3], 16);
-            return r+", "+g+", "+b;
-        } 
-        return null;
-    }
-
     const toggleDrawer =
         (open: boolean) =>
         (event: KeyboardEvent | MouseEvent) => {
@@ -150,8 +116,8 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             setDrawerOpen(open);
         };
 
-    const policyColor = stringToColor(policyObj.name);
-    const policyBackgroundColor = drawerOpen ? `rgba(${hexToRgb(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
+    const policyColor = Utils.stringToColor(policyObj.name);
+    const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
 
     return (
         <>
@@ -172,7 +138,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                             margin: '0.2em',
                             backgroundColor: policyColor,
                         }}
-                        { ...stringAvatar(policyObj.name.toUpperCase())}
+                        { ...Utils.stringAvatar(policyObj.name.toUpperCase())}
                     />
                 </Tooltip>
                 <Box className={classes.actionsBox}>
@@ -180,7 +146,9 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                         key={`${policyObj.id}-download`}
                         aria-label='Download policy'
                         size='small'
-                        onClick={handlePolicyDownload} 
+                        onClick={handlePolicyDownload}
+                        disableFocusRipple
+                        disableRipple
                     >
                         <CloudDownloadIcon />
                         {/* <Icon onClick={handlePolicyDownload}>vertical_align_bottom</Icon> */}
@@ -190,6 +158,8 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                         aria-label='delete attached policy'
                         size='small'
                         onClick={handleDelete}
+                        disableFocusRipple
+                        disableRipple
                     >
                         <DeleteIcon />
                     </IconButton>

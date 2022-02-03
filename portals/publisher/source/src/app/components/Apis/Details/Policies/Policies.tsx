@@ -84,10 +84,8 @@ const useStyles = makeStyles((theme: any) => ({
         display: 'flex',
         width: '100%',
     },
-    operationListingGrid: {
+    operationListingBox: {
         overflowY: 'scroll',
-        maxHeight: '85vh',
-        paddingTop: '10px',
     },
 }));
 
@@ -329,8 +327,8 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     />
                 </Typography>
             </Box>
-            <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
-                <Grid item xs={8} className={classes.operationListingGrid}>
+            <Box display='flex' flexDirection='row'>
+                <Box width='65%' pr={1} height='85vh' pt={1} className={classes.operationListingBox}>
                     <Paper>
                         {Object.entries(operations).map(([target, verbObject]:[string, any]) => (
                             <Grid key={target} item xs={12}>
@@ -368,6 +366,53 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                             </Grid>
                         ))}
                     </Paper>
+                </Box>
+                <Box width='35%' pl={1}>
+                    <PolicyList
+                        policyList={policies}
+                    />
+                </Box>
+            </Box>
+
+            {/* <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
+                <Grid item xs={8} className={classes.operationListingGrid}>
+                    <Paper>
+                        {Object.entries(operations).map(([target, verbObject]:[string, any]) => (
+                            <Grid key={target} item xs={12}>
+                                <OperationsGroup openAPI={openAPISpec} tag={target}>
+                                    <Grid
+                                        container
+                                        direction='column'
+                                        justify='flex-start'
+                                        spacing={1}
+                                        alignItems='stretch'
+                                    >
+                                        {Object.entries(verbObject).map(([verb, operation]) => {
+                                            return CONSTS.HTTP_METHODS.includes(verb) ? (
+                                                <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
+                                                    <OperationPolicy
+                                                        target={target}
+                                                        verb={verb}
+                                                        highlight
+                                                        operationsDispatcher={operationsDispatcher}
+                                                        spec={openAPISpec}
+                                                        operation={operation}
+                                                        api={localAPI}
+                                                        disableUpdate={
+                                                            disableUpdate || isRestricted(['apim:api_create'], api)
+                                                        }
+                                                        expandedResource={expandedResource}
+                                                        setExpandedResource={setExpandedResource}
+                                                        policyList={policies}
+                                                    />
+                                                </Grid>
+                                            ) : null;
+                                        })}
+                                    </Grid>
+                                </OperationsGroup>
+                            </Grid>
+                        ))}
+                    </Paper> */}
                     {/* <Grid
                         style={{ marginTop: '25px' }}
                         container
@@ -383,13 +428,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                             />
                         </Grid>
                     </Grid> */}
-                </Grid>
+                {/* </Grid>
                 <Grid item xs={4}>
                     <PolicyList
                         policyList={policies}
                     />
                 </Grid>
-            </Grid>
+            </Grid> */}
         </>
     );
 };

@@ -104,6 +104,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
             },
             flowSpecificPolicyAttachGrid: {
                 marginTop: theme.spacing(1),
+                overflowX: 'scroll'
             },
             operationSummaryGrid: {
                 display: 'flex',
@@ -130,42 +131,24 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
     const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
-    // const [a, setA] = useState<string[]>([]);
-    // const [b, setB] = useState<string[]>([]);
-    // const [c, setC] = useState<string[]>([]);
-
     useEffect(() => {
-        // const requestList = [];
-        // const responseList = [];
-        // const faultList = [];
-        // for (const policy of policyList) {
-        //     if (policy.flows.includes('Request')) {
-        //         requestList.push(`policyCard-${policy.id}`);
-        //     }
-        //     if (policy.flows.includes('Response')) {
-        //         responseList.push(`policyCard-${policy.id}`);
-        //     }
-        //     if (policy.flows.includes('Fault')) {
-        //         faultList.push(`policyCard-${policy.id}`);
-        //     }
-        // }
-        // setRequestFlowDroppablePolicyList(requestList);
-        // setResponseFlowDroppablePolicyList(responseList);
-        // setFaultFlowDroppablePolicyList(faultList);
-
-        // 
-
-        Object.values(policyList).map((policy: Policy) => {
+        const requestList = [];
+        const responseList = [];
+        const faultList = [];
+        for (const policy of policyList) {
             if (policy.flows.includes('Request')) {
-                requestFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+                requestList.push(`policyCard-${policy.id}`);
             }
             if (policy.flows.includes('Response')) {
-                responseFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+                responseList.push(`policyCard-${policy.id}`);
             }
             if (policy.flows.includes('Fault')) {
-                faultFlowDroppablePolicyList.push(`policyCard-${policy.id}`);
+                faultList.push(`policyCard-${policy.id}`);
             }
-        })
+        }
+        setRequestFlowDroppablePolicyList(requestList);
+        setResponseFlowDroppablePolicyList(responseList);
+        setFaultFlowDroppablePolicyList(faultList);
     }, [policyList])
 
     const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {
@@ -251,48 +234,54 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                 <ExpansionPanelDetails>
                     <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
                         <Grid item xs={12} md={12}>
-                            <Grid container className={classes.flowSpecificPolicyAttachGrid}>
+                            <Box className={classes.flowSpecificPolicyAttachGrid}>
                                 <Typography variant='subtitle2' align='left'>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.Operation.request.flow.title'
                                         defaultMessage='Request Flow'
                                     />
                                 </Typography>
-                                <PolicyDropzone
-                                    policyDisplayStartDirection='left'
-                                    currentPolicyList={requestFlowPolicyList}
-                                    setCurrentPolicyList={setRequestFlowPolicyList}
-                                    droppablePolicyList={requestFlowDroppablePolicyList}
-                                />
-                            </Grid>
-                            <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
+                                {requestFlowDroppablePolicyList.length !==0 && (
+                                    <PolicyDropzone
+                                        policyDisplayStartDirection='left'
+                                        currentPolicyList={requestFlowPolicyList}
+                                        setCurrentPolicyList={setRequestFlowPolicyList}
+                                        droppablePolicyList={requestFlowDroppablePolicyList}
+                                    />
+                                )}
+                            </Box>
+                            <Box  className={classes.flowSpecificPolicyAttachGrid}>
                                 <Typography variant='subtitle2' align='left'>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.Operation.response.flow.title'
                                         defaultMessage='Response Flow'
                                     />
                                 </Typography>
-                                <PolicyDropzone
-                                    policyDisplayStartDirection='right'
-                                    currentPolicyList={responseFlowPolicyList}
-                                    setCurrentPolicyList={setResponseFlowPolicyList}
-                                    droppablePolicyList={responseFlowDroppablePolicyList}
-                                />
-                            </Grid>
-                            <Grid container  className={classes.flowSpecificPolicyAttachGrid}>
+                                {responseFlowDroppablePolicyList.length !==0 && (
+                                    <PolicyDropzone
+                                        policyDisplayStartDirection='right'
+                                        currentPolicyList={responseFlowPolicyList}
+                                        setCurrentPolicyList={setResponseFlowPolicyList}
+                                        droppablePolicyList={responseFlowDroppablePolicyList}
+                                    />
+                                )}
+                            </Box>
+                            <Box className={classes.flowSpecificPolicyAttachGrid}>
                                 <Typography variant='subtitle2' align='left'>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.Operation.fault.flow.title'
                                         defaultMessage='Fault Flow'
                                     />
                                 </Typography>
-                                <PolicyDropzone
-                                    policyDisplayStartDirection='right'
-                                    currentPolicyList={faultFlowPolicyList}
-                                    setCurrentPolicyList={setFaultFlowPolicyList}
-                                    droppablePolicyList={faultFlowDroppablePolicyList}
-                                />
-                            </Grid>
+                                {faultFlowDroppablePolicyList.length !== 0 && (
+                                    <PolicyDropzone
+                                        policyDisplayStartDirection='right'
+                                        currentPolicyList={faultFlowPolicyList}
+                                        setCurrentPolicyList={setFaultFlowPolicyList}
+                                        droppablePolicyList={faultFlowDroppablePolicyList}
+                                    />
+                                )}
+                            </Box>
                         </Grid>
                     </Grid>
                 </ExpansionPanelDetails>

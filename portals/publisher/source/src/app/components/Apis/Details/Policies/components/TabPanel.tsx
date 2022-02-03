@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import { Box } from '@material-ui/core';
 import React, { FC } from 'react';
 import DraggablePolicyCard from '../DraggablePolicyCard';
 import type { Policy } from '../Types';
@@ -49,10 +50,13 @@ const TabPanel: FC<TabPanelProps> = ({
             {selectedTab === index && (
                 value?.map((singlePolicy: Policy) => {
                     return (
-                        <DraggablePolicyCard
-                            policyObj={singlePolicy}
-                            showCopyIcon
-                        />
+                        <Box width='70%'>
+                            <DraggablePolicyCard
+                                key={singlePolicy.id}
+                                policyObj={singlePolicy}
+                                showCopyIcon
+                            />
+                        </Box>
                     );
                 })
             )}

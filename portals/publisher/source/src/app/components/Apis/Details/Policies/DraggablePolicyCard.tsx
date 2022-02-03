@@ -23,6 +23,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import { makeStyles } from '@material-ui/core';
+import Utils from 'AppData/Utils';
 import type { Policy } from './Types';
 
 const useStyles = makeStyles(() => ({
@@ -69,54 +70,23 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
         [showCopyIcon],
     );
 
-    const stringToColor = (string: string) => {
-        let hash = 0;
-        let i;
-
-        /* eslint-disable no-bitwise */
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xaa;
-            color += `00${value.toString(16)}`.substr(-2);
-        }
-        /* eslint-enable no-bitwise */
-
-        return color;
-    };
-
-    const stringAvatar = (name: string) => {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: name.split(' ').length > 1 
-                ? `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
-                : `${name.split(' ')[0][0]}`,
-        };
-    };
-
     return (
         <div
             ref={drag}
             style={{
                 ...style,
                 opacity,
-                borderColor: stringToColor(policyObj.name),
+                borderColor: Utils.stringToColor(policyObj.name),
             }}
         >
             <ListItem key={policyObj.id} style={{ maxHeight: '100%', overflow: 'auto'}}>
                 <ListItemAvatar>
                     <Avatar
                         style={{
-                            backgroundColor: stringToColor(policyObj.name),
+                            backgroundColor: Utils.stringToColor(policyObj.name),
                         }}
                         // eslint-disable-next-line react/jsx-props-no-spreading
-                        { ...stringAvatar(policyObj.name.toUpperCase())}
+                        { ...Utils.stringAvatar(policyObj.name.toUpperCase())}
                     />
                 </ListItemAvatar>
                 <ListItemText

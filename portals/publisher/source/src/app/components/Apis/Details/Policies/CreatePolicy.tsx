@@ -16,93 +16,17 @@
  * under the License.
  */
 
+import React  from 'react';
 import {
-    Button, Grid, makeStyles, Paper,
+    Box,
+    Dialog, DialogContent, DialogContentText, Icon, IconButton, Typography,
 } from '@material-ui/core';
-import React, { useRef, useState }  from 'react';
 import { FormattedMessage} from 'react-intl';
-import CreatePolicyTemplate from 'AppComponents/PolicyTemplates/CreatePolicyTemplate';
+import PolicyStepper from './components/PolicyStepper';
 
-const useStyles = makeStyles((theme: any) => ({
-    root: {
-        flexGrow: 1,
-        marginTop: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 20,
-    },
-    titleWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: theme.spacing(3),
-    },
-    titleLink: {
-        color: theme.palette.primary.main,
-        marginRight: theme.spacing(1),
-    },
-    contentWrapper: {
-        maxWidth: theme.custom.contentAreaWidth,
-    },
-    mainTitle: {
-        paddingLeft: 0,
-    },
-    FormControl: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
-        width: '100%',
-        marginTop: 0,
-    },
-    FormControlOdd: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
-        backgroundColor: theme.palette.background.paper,
-        width: '100%',
-        marginTop: 0,
-    },
-    FormControlLabel: {
-        marginBottom: theme.spacing(1),
-        marginTop: theme.spacing(1),
-        fontSize: theme.typography.caption.fontSize,
-    },
-    buttonSection: {
-        paddingTop: theme.spacing(3),
-    },
-    saveButton: {
-        marginRight: theme.spacing(1),
-    },
-    helpText: {
-        color: theme.palette.text.hint,
-        marginTop: theme.spacing(1),
-    },
-    extraPadding: {
-        paddingLeft: theme.spacing(2),
-    },
-    addNewOther: {
-        paddingTop: 40,
-    },
-    titleGrid: {
-        ' & .MuiGrid-item': {
-            padding: 0,
-            margin: 0,
-        },
-    },
-    descriptionForm: {
-        marginTop: theme.spacing(1),
-    },
-    progress: {
-        marginLeft: theme.spacing(1),
-    },
-}));
-
-interface Policy {
-    id: number;
-    name: string;
-    description: string;
-    flows: string[];
-}
-
-interface IProps {
-    handleAdd: any;
-    handleCloseAddPolicyPopup: React.Dispatch<React.SetStateAction<any>>;
+interface CreatePolicyProps {
+    handleDialogClose: () => void;
+    dialogOpen: boolean;
 }
 
 /**
@@ -110,78 +34,59 @@ interface IProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Create policy page.
  */
-const CreatePolicy: React.FC<IProps> = ({ handleAdd, handleCloseAddPolicyPopup }) => {
-    const classes = useStyles();
-    const inputRef = useRef<HTMLInputElement>(null);
-    const [policyName, setPolicyName] = useState<string>("");
-    const [policyDescription, setPolicyDescription] = useState<string>("");
-    const [policyFlows, setPolicyFlows] = useState<Array<string>>([]);
+const CreatePolicy: React.FC<CreatePolicyProps> = ({
+    handleDialogClose, dialogOpen
+}) => {
+    const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+    }
 
-    const submit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // setAddPolicy({id:Date.now(), policy: policyName, description: "", flows: [], isDone: false});
-        handleAdd({id:Date.now(), name: policyName, description: policyDescription, flows: []});
-    };
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.name === 'policyName') {
-            setPolicyName(e.target.value);
-        } else if (e.target.name === 'policyDesc') {
-            setPolicyDescription(e.target.value);
-        }
-        
+    const toggleOpen = () => {
+        handleDialogClose();
     }
 
     return (
-        <Grid container spacing={3}>
-            <Grid item sm={12} md={8}>
-                <Grid container spacing={5} className={classes.titleGrid}>
-                    <Grid item md={12}>
-                        <Paper elevation={1} className={classes.root}>
-                            <div>
-                                <form
-                                    className='input'
-                                    onSubmit={(e) => {
-                                        submit(e);
-                                    }}
-                                >
-                                    <input
-                                        name='policyName'
-                                        type='text'
-                                        placeholder='Add API Policy'
-                                        value={policyName}
-                                        ref={inputRef}
-                                        onChange={(e) => handleChange(e)}
-                                        className='input__box'
-                                    />
-                                    <br/>
-                                    <input
-                                        name='policyDesc'
-                                        type='text'
-                                        placeholder='Add API Policy Desc'
-                                        value={policyDescription}
-                                        ref={inputRef}
-                                        onChange={(e) => handleChange(e)}
-                                        className='input__box'
-                                    />
-                                    <button type='submit' className='input_submit'>
-                                        GO
-                                    </button>
-                                </form>
-                            </div>
-                            <CreatePolicyTemplate isAPI />
-                            <div className={classes.addNewOther}>
-                                <Button onClick={handleCloseAddPolicyPopup}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.CreatePolicy.cancel'
-                                        defaultMessage='Cancel'
-                                    />
-                                </Button>
-                            </div>
-                        </Paper>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
+        <>
+            <Dialog
+                maxWidth='md'
+                open={dialogOpen}
+                aria-labelledby='form-dialog-title'
+                onClose={handleDialogClose}
+                onClick={stopPropagation}
+                fullWidth
+            >
+                <Box
+                    display='flex'
+                    justifyContent='space-between'
+                    alignItems='center'
+                    flexDirection='row'
+                    px={3}
+                    pt={3}
+                >
+                    <Box display='flex'>
+                        <Typography variant='h4' component='h2'>
+                            <FormattedMessage
+                                id='Policies.CreatePolicy.listing.heading'
+                                defaultMessage='Create New Policy'
+                            />
+                        </Typography>
+                    </Box>
+                    <Box display='flex'>
+                        <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                            <Icon>close</Icon>
+                        </IconButton>
+                    </Box>
+                </Box>
+                <DialogContent>
+                    <DialogContentText>
+                        <PolicyStepper
+                            isAPI
+                            onSave={toggleOpen}
+                        />
+                    </DialogContentText>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 };
 

@@ -39,7 +39,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import PolicyDefinitionEditor from './PolicyDefinitionEditor';
+import PolicyDefinitionEditor from '../Apis/Details/Policies/components/PolicyDefinitionEditor';
 
 
 const useStyles = makeStyles((theme: any) => ({
