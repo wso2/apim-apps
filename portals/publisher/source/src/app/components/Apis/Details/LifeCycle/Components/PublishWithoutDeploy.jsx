@@ -29,6 +29,8 @@ import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import LinkIcon from '@material-ui/icons/Link';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import Box from '@material-ui/core/Box';
 // import Link from '@material-ui/core/Link';
 import Divider from '@material-ui/core/Divider';
@@ -102,6 +104,7 @@ export default function PublishWithoutDeploy(props) {
 
     const [externalEndpoint, setExternalEndpoint] = useState(availableExternalEndpoint);
     const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(isExternalEndpointAvailable);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     /**
      * Validate external endpoint
@@ -190,52 +193,92 @@ export default function PublishWithoutDeploy(props) {
                         <Typography variant='subtitle1' display='block' gutterBottom>
                             <FormattedMessage
                                 id='Apis.Details.LifeCycle.components.confirm.publish.message'
-                                defaultMessage={'The API will not be available for consumption unless it is deployed.'
-                                + ' If you want to publish as an advertise only API, please add the external endpoint.'}
+                                defaultMessage='The API will not be available for consumption unless it is deployed.'
                             />
                         </Typography>
                     </DialogContentText>
                 </Box>
-                <Box my={1}>
-                    <TextField
-                        fullWidth
-                        id='itest-id-api-external-endpoint-input'
-                        label={(
-                            <>
-                                <FormattedMessage
-                                    id='Apis.Details.LifeCycle.components.externalEndpoint'
-                                    defaultMessage='External Endpoint'
-                                />
-                                <sup className={classes.mandatoryStar}>*</sup>
-                            </>
-                        )}
-                        name='externalEndpoint'
-                        value={externalEndpoint}
-                        onChange={handleOnChangeExternalEndpoint}
-                        helperText={
-                            !isValidExternalEndpoint && (
-                                <div style={{ marginTop: '10px' }}>
+                {isExpanded && (
+                    <>
+                        <Box my={1}>
+                            <DialogContentText id='itest-confirm-publish-text'>
+                                <Typography variant='subtitle1' display='block' gutterBottom>
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only'
+                                        defaultMessage={'If you want to publish as an advertise only API, please add '
+                                        + 'the external endpoint and press "Advertise".'}
+                                    />
+                                </Typography>
+                            </DialogContentText>
+                        </Box>
+                        <Box my={1}>
+                            <TextField
+                                fullWidth
+                                id='itest-id-api-external-endpoint-input'
+                                label={(
+                                    <>
+                                        <FormattedMessage
+                                            id='Apis.Details.LifeCycle.components.externalEndpoint'
+                                            defaultMessage='External Endpoint'
+                                        />
+                                        <sup className={classes.mandatoryStar}>*</sup>
+                                    </>
+                                )}
+                                name='externalEndpoint'
+                                value={externalEndpoint}
+                                onChange={handleOnChangeExternalEndpoint}
+                                helperText={!isValidExternalEndpoint && (
                                     <FormattedMessage
                                         id='Apis.Details.LifeCycle.externalEndpoint.error'
                                         defaultMessage='Invalid Endpoint URL'
                                     />
-                                </div>
-                            )
-                        }
-                        error={!isValidExternalEndpoint}
-                        margin='normal'
-                        variant='outlined'
-                    />
-                </Box>
+                                )}
+                                error={!isValidExternalEndpoint}
+                                margin='normal'
+                                variant='outlined'
+                            />
+                        </Box>
+                    </>
+                )}
             </DialogContent>
             <DialogActions>
-                <Button
-                    color='primary'
-                    disabled={!isValidExternalEndpoint}
-                    onClick={handlePublishClick}
-                >
-                    Advertise
-                </Button>
+                {!isExpanded && (
+                    <Button
+                        color='primary'
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        endIcon={<ArrowDropDownIcon />}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.LifeCycle.PublishWithoutDeploy.see.more'
+                            defaultMessage='See more'
+                        />
+                    </Button>
+                )}
+                {isExpanded && (
+                    <>
+                        <Button
+                            color='primary'
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            endIcon={<ArrowDropUpIcon />}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.LifeCycle.PublishWithoutDeploy.see.less'
+                                defaultMessage='See less'
+                            />
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            disabled={!isValidExternalEndpoint}
+                            onClick={handlePublishClick}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.LifeCycle.PublishWithoutDeploy.advertise'
+                                defaultMessage='Advertise'
+                            />
+                        </Button>
+                    </>
+                )}
                 <Button
                     variant='contained'
                     color='primary'
