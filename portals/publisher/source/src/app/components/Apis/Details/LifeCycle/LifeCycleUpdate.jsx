@@ -253,7 +253,7 @@ class LifeCycleUpdate extends Component {
                         ((isMutualSSLEnabled && !isCertAvailable)
                         || (api.type !== 'WEBSUB' && api.endpointConfig != null
                             && api.endpointConfig.implementation_status === 'prototyped'))
-                        && !api.advertiseInfo.advertised,
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised),
                 };
             }
             return {
@@ -281,7 +281,7 @@ class LifeCycleUpdate extends Component {
                                     <LifeCycleImage lifeCycleStatus={newState || lifeCycleStatus} />
                                 </Grid>
                                 {(lifeCycleStatus === 'CREATED' || lifeCycleStatus === 'PROTOTYPED')
-                                    && !api.advertiseInfo.advertised && (
+                                    && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                                     <Grid item xs={3}>
                                         <CheckboxLabels
                                             api={api}

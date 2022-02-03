@@ -189,7 +189,7 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {(!api.apiType === API.CONSTS.API || !api.advertiseInfo.advertised) && (
+            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
                 <Grid container spacing={12}>
                     <Grid item xs={12} s={12} md={12} lg={12}>
                         <CustomizedStepper />
