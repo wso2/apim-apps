@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, FC, MouseEventHandler } from 'react';
+import React, { useState, FC } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';

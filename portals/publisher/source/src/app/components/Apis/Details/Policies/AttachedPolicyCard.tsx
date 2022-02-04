@@ -60,7 +60,6 @@ interface DragItem {
 }
 
 interface AttachedPolicyCardProps {
-    index: number;
     policyObj: Policy;
     movePolicyCard: (dragIndex: number, hoverIndex: number) => void;
     currentPolicyList: Policy[];

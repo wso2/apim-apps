@@ -362,6 +362,21 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                             ) : null;
                                         })}
                                     </Grid>
+                                    {/* <Grid
+                                        style={{ marginTop: '25px' }}
+                                        container
+                                        direction='row'
+                                        justify='space-between'
+                                        alignItems='center'
+                                    >
+                                        <Grid item>
+                                            <SaveOperations
+                                                operationsDispatcher={operationsDispatcher}
+                                                updateOpenAPI={updateOpenAPI}
+                                                // api={api}
+                                            />
+                                        </Grid>
+                                    </Grid> */}
                                 </OperationsGroup>
                             </Grid>
                         ))}
@@ -373,68 +388,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     />
                 </Box>
             </Box>
-
-            {/* <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
-                <Grid item xs={8} className={classes.operationListingGrid}>
-                    <Paper>
-                        {Object.entries(operations).map(([target, verbObject]:[string, any]) => (
-                            <Grid key={target} item xs={12}>
-                                <OperationsGroup openAPI={openAPISpec} tag={target}>
-                                    <Grid
-                                        container
-                                        direction='column'
-                                        justify='flex-start'
-                                        spacing={1}
-                                        alignItems='stretch'
-                                    >
-                                        {Object.entries(verbObject).map(([verb, operation]) => {
-                                            return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                                <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
-                                                    <OperationPolicy
-                                                        target={target}
-                                                        verb={verb}
-                                                        highlight
-                                                        operationsDispatcher={operationsDispatcher}
-                                                        spec={openAPISpec}
-                                                        operation={operation}
-                                                        api={localAPI}
-                                                        disableUpdate={
-                                                            disableUpdate || isRestricted(['apim:api_create'], api)
-                                                        }
-                                                        expandedResource={expandedResource}
-                                                        setExpandedResource={setExpandedResource}
-                                                        policyList={policies}
-                                                    />
-                                                </Grid>
-                                            ) : null;
-                                        })}
-                                    </Grid>
-                                </OperationsGroup>
-                            </Grid>
-                        ))}
-                    </Paper> */}
-                    {/* <Grid
-                        style={{ marginTop: '25px' }}
-                        container
-                        direction='row'
-                        justify='space-between'
-                        alignItems='center'
-                    >
-                        <Grid item>
-                            <SaveOperations
-                                operationsDispatcher={operationsDispatcher}
-                                updateOpenAPI={updateOpenAPI}
-                                // api={api}
-                            />
-                        </Grid>
-                    </Grid> */}
-                {/* </Grid>
-                <Grid item xs={4}>
-                    <PolicyList
-                        policyList={policies}
-                    />
-                </Grid>
-            </Grid> */}
         </>
     );
 };

@@ -26,7 +26,7 @@ import {
 import { Progress } from 'AppComponents/Shared';
 import { ControlledEditor, monaco } from "@monaco-editor/react";
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import policyDefJsonSchema from '../../../../PolicyTemplates/JsonSchema.json';
+import policyDefJsonSchema from './JsonSchema.json'
 
 const useStyles = makeStyles((theme: any) => ({
     root: {

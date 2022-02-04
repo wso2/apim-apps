@@ -192,7 +192,6 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                             <Typography
                                 display='inline'
                                 variant='h6'
-                                component='div'
                                 gutterBottom
                                 className={classes.targetText}
                                 title={target}

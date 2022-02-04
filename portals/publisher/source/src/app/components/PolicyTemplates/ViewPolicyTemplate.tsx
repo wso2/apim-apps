@@ -133,7 +133,6 @@ const ViewPolicyTemplate: React.FC = () => {
     const history = useHistory();
     const url = '/policy-templates';
     const [activeStep, setActiveStep] = useState(0);
-    const [policyTemplateFile, setPolicyTemplateFile] = useState<any[]>([]);
     const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinitionProps>(DummyDefaultPolicyDefinition);
 
     const steps = [

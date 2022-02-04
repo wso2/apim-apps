@@ -17,7 +17,7 @@
  */
 
 import React, { FC } from 'react';
-import { Box, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Typography } from '@material-ui/core';
 import { useDrop } from 'react-dnd'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -80,7 +80,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     const classes = useStyles();
 
     const addDroppedPolicyToList = (policy: Policy) => {
-        setCurrentPolicyList(currentPolicyList => [...currentPolicyList, {
+        setCurrentPolicyList(prevPolicyList => [...prevPolicyList, {
             id: policy.id,
             name: policy.name,
             flows: policy.flows,
@@ -112,13 +112,12 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     }
 
     const renderAttachedPolicyList = () => {
-        const reversedPolicyList = [...currentPolicyList].reverse()
+        const reversedPolicyList = [...currentPolicyList].reverse();
         const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
         return (
-            policyListToDisplay.map((policy: Policy, index: number) => (
+            policyListToDisplay.map((policy: Policy) => (
                 <AttachedPolicyCard
                     key={policy.id}
-                    index={index}
                     policyObj={policy}
                     movePolicyCard={movePolicyCard}
                     currentPolicyList={currentPolicyList}
