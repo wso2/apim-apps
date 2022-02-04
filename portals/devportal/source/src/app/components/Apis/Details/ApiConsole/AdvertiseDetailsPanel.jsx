@@ -23,11 +23,42 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
+import MuiAlert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 
 const AdvertiseDetailsPanel = (props) => {
     const {
-        classes, advAuthHeader, advAuthHeaderValue, handleChanges, selectedEndpoint, advertiseInfo,
+        classes,
+        advAuthHeader,
+        advAuthHeaderValue,
+        handleChanges,
+        selectedEndpoint,
+        api: {
+            advertiseInfo,
+            transport,
+            securityScheme,
+            authorizationHeader,
+        },
     } = props;
+
+    const availableTransports = transport.join(', ').toUpperCase();
+    let securitySchemes = '';
+    securityScheme.forEach((scheme, index) => {
+        if (index !== 0) {
+            securitySchemes += ', ';
+        }
+        if (scheme === 'basic_auth') {
+            securitySchemes += 'Basic';
+        } else if (scheme === 'oauth2') {
+            securitySchemes += 'OAuth2';
+        } else if (scheme === 'mutualssl') {
+            securitySchemes += 'Mutual SSL';
+        } else if (scheme === 'api_key') {
+            securitySchemes += 'API Key';
+        } else {
+            securitySchemes = securitySchemes.substring(0, securitySchemes.length - 2);
+        }
+    });
 
     return (
         <Box display='block' justifyContent='center' className={classes.authHeader}>
@@ -40,7 +71,7 @@ const AdvertiseDetailsPanel = (props) => {
                     className={classes.tryoutHeading}
                 >
                     <FormattedMessage
-                        id='Apis.Details.ApiConsole.TryOutController.authentication.heading'
+                        id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.authentication.heading'
                         defaultMessage='Authentication'
                     />
                 </Typography>
@@ -53,7 +84,7 @@ const AdvertiseDetailsPanel = (props) => {
                         id='advAuthHeader'
                         label={(
                             <FormattedMessage
-                                id='Apis.Details.ApiConsole.TryOutController.adv.auth.header'
+                                id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header'
                                 defaultMessage='Authorization Header'
                             />
                         )}
@@ -70,7 +101,7 @@ const AdvertiseDetailsPanel = (props) => {
                         id='advAuthHeaderValue'
                         label={(
                             <FormattedMessage
-                                id='Apis.Details.ApiConsole.TryOutController.adv.auth.header.value'
+                                id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header.value'
                                 defaultMessage='Authorization Header Value'
                             />
                         )}
@@ -90,7 +121,7 @@ const AdvertiseDetailsPanel = (props) => {
                     className={classes.tryoutHeading}
                 >
                     <FormattedMessage
-                        id='Apis.Details.ApiConsole.TryOutController.enpoint.heading'
+                        id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint.heading'
                         defaultMessage='API Endpoint'
                     />
                 </Typography>
@@ -101,7 +132,7 @@ const AdvertiseDetailsPanel = (props) => {
                     label={(
                         <FormattedMessage
                             defaultMessage='Endpoint type'
-                            id='Apis.Details.ApiConsole.TryOutController.endpoint'
+                            id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint'
                         />
                     )}
                     value={selectedEndpoint}
@@ -110,7 +141,7 @@ const AdvertiseDetailsPanel = (props) => {
                     helperText={(
                         <FormattedMessage
                             defaultMessage='Please select an endpoint type'
-                            id='Apis.Details.ApiConsole.TryOutController.endpoint.help'
+                            id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint.help'
                         />
                     )}
                     margin='normal'
@@ -134,6 +165,36 @@ const AdvertiseDetailsPanel = (props) => {
                     )}
                 </TextField>
             </Grid>
+            {(availableTransports || securitySchemes || authorizationHeader) && (
+                <Grid x={12} md={6} className={classes.centerItems} style={{ marginTop: '10px' }}>
+                    <MuiAlert severity='info'>
+                        <AlertTitle>
+                            <FormattedMessage
+                                id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.security.details'
+                                defaultMessage='Security Details'
+                            />
+                        </AlertTitle>
+                        {availableTransports && (
+                            <div>
+                                <strong>Transports: </strong>
+                                {availableTransports}
+                            </div>
+                        )}
+                        {securitySchemes && (
+                            <div>
+                                <strong>Security schemes: </strong>
+                                {securitySchemes}
+                            </div>
+                        )}
+                        {authorizationHeader && (
+                            <div>
+                                <strong>Authorization header: </strong>
+                                {authorizationHeader}
+                            </div>
+                        )}
+                    </MuiAlert>
+                </Grid>
+            )}
         </Box>
     );
 };

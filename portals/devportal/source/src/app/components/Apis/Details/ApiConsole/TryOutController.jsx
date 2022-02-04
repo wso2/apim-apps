@@ -793,7 +793,7 @@ function TryOutController(props) {
                             advAuthHeaderValue={advAuthHeaderValue}
                             handleChanges={handleChanges}
                             selectedEndpoint={selectedEndpoint}
-                            advertiseInfo={api.advertiseInfo}
+                            api={api}
                         />
                     )}
                     {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
