@@ -17,27 +17,92 @@
  */
 
 import React, { FC } from 'react';
-import { Grid, makeStyles, Typography } from '@material-ui/core';
+import { HelpOutline } from '@material-ui/icons';
+import Tooltip from '@material-ui/core/Tooltip';
+import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { isRestricted } from 'AppData/AuthManager';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { Radio } from '@material-ui/core';
 
-const useStyles = makeStyles((theme: any) => ({
-
-}));
-
+const SupportedGatewayTypes = {
+    REGULAR: 'Regular Gateway',
+    CC: 'Microgateway',
+};
 interface GatewaySelectorProps {
 }
 
 /**
- * Renders the policy configuring drawer.
+ * Renders the Gateway selection section.
  * @param {JSON} props Input props from parent components.
- * @returns {TSX} Right drawer for policy configuration.
+ * @returns {TSX} Radio group for the API Gateway.
  */
-const GatewaySelector: FC<GatewaySelectorProps> = ({
-    
-}) => {
-    const classes = useStyles();
+const GatewaySelector: FC<GatewaySelectorProps> = () => {
+    const [apiFromContext] = useAPI();
 
     return (
-        <h1>Hello</h1>
+        <Paper>
+            <Grid container direction='row' spacing={3} justify='flex-start' alignItems='flex-start'>
+                <Grid item md={12} xs={12}>
+                    <Box ml={1}>
+                        <Typography variant='subtitle1' component='h3' gutterBottom>
+                            API Gateway Selector
+                            <Tooltip
+                                title='Policy list is dependant on the selected Gateway'
+                                placement='right-start'
+                                interactive
+                            >
+                                <IconButton aria-label='API Gateway selector help text'>
+                                    <HelpOutline />
+                                </IconButton>
+                            </Tooltip>
+                        </Typography>
+                    </Box>
+                    <Divider light variant='middle' />
+                    <Box display='flex' flexDirection='row' justifyContent='center' pt={1} pb={1}>
+                        <FormControl component='fieldset'>
+                            <RadioGroup
+                                aria-label='gateway'
+                                name='gateway-selector-radio-buttons-group'
+                                row
+                            >
+                                <FormControlLabel
+                                    // value={SupportedGatewayTypes.REGULAR}
+                                    defaultChecked
+                                    control={(
+                                        <Radio
+                                            color='primary'
+                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        />
+                                    )}
+                                    label='Regular Gateway'
+                                    labelPlacement='end'
+                                />
+                                <FormControlLabel
+                                    value={SupportedGatewayTypes.CC}
+                                    disabled
+                                    control={(
+                                        <Radio
+                                            color='primary'
+                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        />
+                                    )}
+                                    label='Microgateway'
+                                    labelPlacement='end'
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                    </Box>
+                </Grid>
+            </Grid>
+        </Paper>
     );
 }
 

@@ -2547,15 +2547,6 @@
   "Apis.Details.Overview.ProductResources.resources": {
     "defaultMessage": "Resources"
   },
-  "Apis.Details.Policies.PolicyTable.header.description": {
-    "defaultMessage": "Description"
-  },
-  "Apis.Details.Policies.PolicyTable.header.flows": {
-    "defaultMessage": "Flows"
-  },
-  "Apis.Details.Policies.PolicyTable.header.name": {
-    "defaultMessage": "Policy Name"
-  },
   "Apis.Details.Policies.PolicyTemplates.heading.tooltip": {
     "defaultMessage": "You can use these policy templates at the resource level of a desired API by navigating to the Policies tab under that API"
   },

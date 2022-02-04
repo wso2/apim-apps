@@ -44,6 +44,7 @@ import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
 import type { Policy } from './Types';
+import GatewaySelector from './GatewaySelector';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -327,8 +328,11 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     />
                 </Typography>
             </Box>
+            <Box mb={4}>
+                <GatewaySelector />
+            </Box>
             <Box display='flex' flexDirection='row'>
-                <Box width='65%' pr={1} height='85vh' pt={1} className={classes.operationListingBox}>
+                <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox}>
                     <Paper>
                         {Object.entries(operations).map(([target, verbObject]:[string, any]) => (
                             <Grid key={target} item xs={12}>

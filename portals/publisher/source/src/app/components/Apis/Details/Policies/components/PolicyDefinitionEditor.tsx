@@ -74,7 +74,7 @@ const PolicyDefinitionEditor: React.FC<PolicyDefinitionEditorProps> = ({
         // });
         const policyDefSchemaVal = policyDefJsonSchema;
         setPolicyDefinitionSchema(policyDefSchemaVal);
-    }, [policyDefinitionSchema]);
+    }, []);
 
     
     monaco

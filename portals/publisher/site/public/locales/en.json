@@ -5357,24 +5357,6 @@
       "value": "Resources"
     }
   ],
-  "Apis.Details.Policies.PolicyTable.header.description": [
-    {
-      "type": 0,
-      "value": "Description"
-    }
-  ],
-  "Apis.Details.Policies.PolicyTable.header.flows": [
-    {
-      "type": 0,
-      "value": "Flows"
-    }
-  ],
-  "Apis.Details.Policies.PolicyTable.header.name": [
-    {
-      "type": 0,
-      "value": "Policy Name"
-    }
-  ],
   "Apis.Details.Policies.PolicyTemplates.heading.tooltip": [
     {
       "type": 0,
