@@ -135,17 +135,17 @@ const PolicyList: FC<PolicyListPorps> = ({
                         </Tabs>
                         <Box className={classes.tabContentBox} height='50vh' pt={1} overflow='scroll'>
                             <TabPanel
-                                value={policyList.filter((policy) => policy.flows.includes('Request'))}
+                                policyList={policyList.filter((policy) => policy.flows.includes('Request'))}
                                 index={0}
                                 selectedTab={selectedTab}
                             />
                             <TabPanel
-                                value={policyList.filter((policy) => policy.flows.includes('Response'))}
+                                policyList={policyList.filter((policy) => policy.flows.includes('Response'))}
                                 index={1} 
                                 selectedTab={selectedTab}
                             />
                             <TabPanel
-                                value={policyList.filter((policy) => policy.flows.includes('Fault'))}
+                                policyList={policyList.filter((policy) => policy.flows.includes('Fault'))}
                                 index={2}
                                 selectedTab={selectedTab}
                             />

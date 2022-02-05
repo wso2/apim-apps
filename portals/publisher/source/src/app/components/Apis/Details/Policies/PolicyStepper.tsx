@@ -37,6 +37,7 @@ import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import { FormattedMessage } from 'react-intl';
 import PolicyDefinitionEditor from './PolicyDefinitionEditor';
+import type { PolicyDefinition } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -80,21 +81,12 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-const DefaultPolicyDefinition = {
-    policyCategory: 'Mediation',
-    policyName: '',
-    policyDisplayName: '',
-    policyDescription: '',
-    multipleAllowed: false,
-    applicableFlows: ['Request', 'Response', 'Fault'],
-    supportedGateways: ['Synapse'],
-    supportedApiTypes: ['REST'],
-    policyAttributes: [],
-};
-
 interface PolicyStepperProps {
     isAPI: boolean;
     onSave: () => void;
+    isReadOnly: boolean;
+    policyDefinition: PolicyDefinition;
+    setPolicyDefinition: React.Dispatch<React.SetStateAction<PolicyDefinition>>;
 }
 
 /**
@@ -103,22 +95,21 @@ interface PolicyStepperProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyStepper: FC<PolicyStepperProps> = ({
-    isAPI, onSave, 
+    onSave, isReadOnly, policyDefinition, setPolicyDefinition
 }) => {
     const classes = useStyles();
     const [activeStep, setActiveStep] = useState(0);
-    const [policyDefinition, setPolicyDefinition] = useState(DefaultPolicyDefinition);
     const [policyTemplateFile, setPolicyTemplateFile] = useState<any[]>([]);
 
     const steps = [
         {
-            label: 'Upload Policy Template',
-            description: (!isAPI) ? ( `Upload the Policy logic inclusive template file that you wish to add in
-                as a Global Policy Template.`) : ( `Upload the Policy logic inclusive template file that you
-                wish to add in as an API Policy Template.`),
+            label: isReadOnly ? 'Policy Template' : 'Upload Policy Template',
+            description: isReadOnly 
+                ? (`Policy logic inclusive template file.`) 
+                : (`Upload the Policy logic inclusive template file.`),
         },
         {
-            label: 'Add Policy Definition',
+            label: isReadOnly ? 'Policy Definition' : 'Add Policy Definition',
             // description:
             // 'Policy Definition describes the meta data related to the policy in order to render the UI dynamically.',
         },
@@ -140,6 +131,10 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
     const handleDrop = (policyTemplate: any) => {
         setPolicyTemplateFile(policyTemplate);
     };
+
+    const handlePolicyTemplateDownload = () => {
+
+    }
 
     const renderPolicyFileDropzone = () => {
         return (
@@ -189,7 +184,7 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                 {step.description && (
                                     <Typography variant='overline'>{step.description}</Typography>
                                 )}
-                                {(index === 0) && (
+                                {(index === 0 && !isReadOnly) && (
                                     (policyTemplateFile.length === 0) ? (
                                         renderPolicyFileDropzone()
                                     ) : (
@@ -204,6 +199,49 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                                     primary={`${policyTemplateFile[0].path}`}
                                                 />
                                                 <ListItemSecondaryAction>
+                                                    {isReadOnly ? (
+                                                        <IconButton
+                                                            edge='end'
+                                                            aria-label='Download policy template'
+                                                            onClick={() => handlePolicyTemplateDownload()}
+                                                        >
+                                                            <Icon>vertical_align_bottom</Icon>
+                                                        </IconButton>
+                                                    ) : (
+                                                        <IconButton
+                                                            edge='end'
+                                                            aria-label='delete'
+                                                            onClick={() => setPolicyTemplateFile([])}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    )}
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        </List>
+                                    )
+                                )}
+                                {(index === 0 && isReadOnly) && (
+                                    <List className={classes.uploadedFileDetails}>
+                                        <ListItem key='policy-template-file-info,'>
+                                            <ListItemAvatar>
+                                                <Avatar>
+                                                    <InsertDriveFile />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary='Test.xml'
+                                            />
+                                            <ListItemSecondaryAction>
+                                                {isReadOnly ? (
+                                                    <IconButton
+                                                        edge='end'
+                                                        aria-label='Download policy template'
+                                                        onClick={() => handlePolicyTemplateDownload()}
+                                                    >
+                                                        <Icon>vertical_align_bottom</Icon>
+                                                    </IconButton>
+                                                ) : (
                                                     <IconButton
                                                         edge='end'
                                                         aria-label='delete'
@@ -211,36 +249,55 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                                     >
                                                         <DeleteIcon />
                                                     </IconButton>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        </List>
-                                    )
+                                                )}
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    </List>
                                 )}
                                 {(index === 1) && (
                                     <PolicyDefinitionEditor
-                                        key={isAPI ? 'shared-policy-editor' : 'local-policy-editor'}
-                                        isReadOnly={false}
+                                        isReadOnly={isReadOnly}
                                         policyDefinition={policyDefinition}
                                         setPolicyDefinition={setPolicyDefinition}
                                     />
                                 )}
                                 <Box mt={2}>
-                                    <Button
-                                        variant='contained'
-                                        color='primary'
-                                        onClick={handleNext}
-                                        disabled={
-                                            (index === 0 && policyTemplateFile.length === 0)
-                                        }
-                                    >
-                                        {index === steps.length - 1 ? 'Save' : 'Continue'}
-                                    </Button>
-                                    <Button
-                                        color='primary'
-                                        onClick={(index === 0 ? handleNext : handleBack)}
-                                    >
-                                        {(index === 0 ? 'Skip' : 'Back')}
-                                    </Button>
+                                    {!isReadOnly ? (
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            onClick={handleNext}
+                                            disabled={
+                                                (index === 0 && policyTemplateFile.length === 0)
+                                            }
+                                        >
+                                            {index === steps.length - 1 ? 'Save' : 'Continue'}
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            onClick={handleNext}
+                                        >
+                                            {index === steps.length - 1 ? 'Done' : 'Continue'}
+                                        </Button>
+                                    )}
+                                    {!isReadOnly ? (
+                                        <Button
+                                            color='primary'
+                                            onClick={(index === 0 ? handleNext : handleBack)}
+                                        >
+                                            {(index === 0 ? 'Skip' : 'Back')}
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            color='primary'
+                                            disabled={index === 0}
+                                            onClick={handleBack}
+                                        >
+                                            Back
+                                        </Button>
+                                    )}
                                 </Box>
                             </StepContent>
                         </Step>

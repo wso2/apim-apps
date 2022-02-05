@@ -16,34 +16,30 @@
  * under the License.
  */
 
-import React, { useState }  from 'react';
+import React, { useEffect, useState }  from 'react';
 import {
-    Typography, makeStyles, Theme
+    Typography,
 } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import { Link } from 'react-router-dom';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage} from 'react-intl';
 import PolicyStepper from './PolicyStepper';
-import type { PolicyDefinition } from './Types';
+import type { Policy, PolicyDefinition } from './Types';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    link: {
-        color: theme.palette.primary.dark,
-        marginLeft: theme.spacing(2),
-        display: 'inline',
-    }
-}));
+interface ViewPolicyProps {
+    handleDialogClose: () => void;
+    dialogOpen: boolean;
+    policyObj: Policy;
+}
 
-const DefaultPolicyDefinition = {
+const DummyDefaultPolicyDefinition = {
     policyCategory: 'Mediation',
-    policyName: '',
-    policyDisplayName: '',
+    policyName: 'Add Header',
+    policyDisplayName: 'Add Header',
     policyDescription: '',
     multipleAllowed: false,
     applicableFlows: ['Request', 'Response', 'Fault'],
@@ -52,22 +48,21 @@ const DefaultPolicyDefinition = {
     policyAttributes: [],
 };
 
-interface CreatePolicyProps {
-    handleDialogClose: () => void;
-    dialogOpen: boolean;
-}
 
 /**
- * Renders the UI to create a new policy.
+ * Renders the UI to view a policy selected from the policy list.
  * @param {JSON} props Input props from parent components.
- * @returns {TSX} Policy create UI.
+ * @returns {TSX} Policy view UI.
  */
-const CreatePolicy: React.FC<CreatePolicyProps> = ({
-    handleDialogClose, dialogOpen
+const ViewPolicy: React.FC<ViewPolicyProps> = ({
+    handleDialogClose, dialogOpen, policyObj
 }) => {
-    const classes = useStyles();
-    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DefaultPolicyDefinition);
+    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DummyDefaultPolicyDefinition);
 
+    useEffect(() => {
+        setPolicyDefinition(DummyDefaultPolicyDefinition);
+    }, [])
+    
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
     }
@@ -96,10 +91,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                 >
                     <Box display='flex'>
                         <Typography variant='h4' component='h2'>
-                            <FormattedMessage
-                                id='Policies.CreatePolicy.listing.heading'
-                                defaultMessage='Create New Policy'
-                            />
+                            View {policyObj.name} Policy
                         </Typography>
                     </Box>
                     <Box display='flex'>
@@ -113,23 +105,15 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                         <PolicyStepper
                             isAPI
                             onSave={toggleOpen}
-                            isReadOnly={false}
+                            isReadOnly
                             policyDefinition={policyDefinition}
                             setPolicyDefinition={setPolicyDefinition}
                         />
                     </DialogContentText>
                 </DialogContent>
-                <Box display='flex' flexDirection='row' justifyContent='right' px={3} pb={3}>
-                    <Link to='/policy-templates'>
-                        <Typography className={classes.link} variant='caption'>
-                            Want to create a common policy that will be visible to all APIs instead?
-                            <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />
-                        </Typography>
-                    </Link>
-                </Box>
             </Dialog>
         </>
     );
 };
 
-export default CreatePolicy;
+export default ViewPolicy;

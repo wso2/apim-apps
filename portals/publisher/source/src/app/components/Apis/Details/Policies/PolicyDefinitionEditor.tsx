@@ -26,7 +26,7 @@ import {
 import { Progress } from 'AppComponents/Shared';
 import { ControlledEditor, monaco } from "@monaco-editor/react";
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import policyDefJsonSchema from './JsonSchema.json'
+import policyDefJsonSchema from './components/JsonSchema.json'
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -82,11 +82,12 @@ const PolicyDefinitionEditor: React.FC<PolicyDefinitionEditorProps> = ({
         .then((monacol) => {
             monacol.languages.json.jsonDefaults.setDiagnosticsOptions({
                 validate: true,
+                schemaValidation: 'error',
                 schemas: [{
                     uri: 'http://myserver/foo-schema.json',
                     fileMatch: ['*'],
                     schema: policyDefinitionSchema,
-                }]
+                }],
             });
         })
         .catch((error) => {

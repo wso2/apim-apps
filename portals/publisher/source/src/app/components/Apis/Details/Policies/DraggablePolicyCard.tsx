@@ -16,22 +16,42 @@
  * under the License.
  */
 
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useCallback, useMemo, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { useDrag } from 'react-dnd';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import { makeStyles } from '@material-ui/core';
+import { Box, makeStyles, Theme, Tooltip } from '@material-ui/core';
 import Utils from 'AppData/Utils';
+import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import IconButton from '@material-ui/core/IconButton';
+import { FormattedMessage } from 'react-intl';
+import Backdrop from '@material-ui/core/Backdrop';
 import type { Policy } from './Types';
+import ViewPolicy from './ViewPolicy';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
     policyCardText: {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-    }
+    },
+    outerDiv: {
+        flexDirection: 'row',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    listItem: {
+        maxHeight: '100%',
+        overflow: 'auto',
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+        backdropFilter: 'blur(1px)',
+    },
 }));
 
 const style: CSSProperties = {
@@ -44,6 +64,7 @@ const style: CSSProperties = {
 interface DraggablePolicyCardProps {
     policyObj: Policy;
     showCopyIcon?: boolean;
+    isLocalToAPI: boolean;
 }
 
 /**
@@ -54,51 +75,127 @@ interface DraggablePolicyCardProps {
 const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     policyObj,
     showCopyIcon,
+    isLocalToAPI,
 }) => {
     const classes = useStyles();
-    const [{ opacity }, drag] = useDrag(
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [forbidDrag, setForbidDrag] = useState(false);
+
+    const [{ isDragging }, drag] = useDrag(
         () => ({
             type: `policyCard-${policyObj.id}`,
+            // canDrag: !forbidDrag,
             item: {droppedPolicy: policyObj},
             options: {
                 dropEffect: showCopyIcon ? 'copy' : 'move',
             },
             collect: (monitor) => ({
-                opacity: monitor.isDragging() ? 0.4 : 1,
+                isDragging: monitor.isDragging(),
             }),
         }),
         [showCopyIcon],
     );
 
+    const containerStyle = useMemo(
+        () => ({
+            ...style,
+            opacity: (isDragging || forbidDrag) ? 0.4 : 1,
+            cursor: forbidDrag ? 'default' : 'move',
+            borderColor: Utils.stringToColor(policyObj.name),
+            width: '70%',
+        }),
+        [isDragging, forbidDrag],
+    )
+
+    const toggleDelete = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setForbidDrag(!forbidDrag);
+        event.stopPropagation();
+        event.preventDefault();
+    }, [forbidDrag, setForbidDrag]);
+
+    const handleViewPolicy = () => {
+        setDialogOpen(true);
+    }
+
+    const handleViewPolicyClose = () => {
+        setDialogOpen(false);
+    }
+
     return (
-        <div
-            ref={drag}
-            style={{
-                ...style,
-                opacity,
-                borderColor: Utils.stringToColor(policyObj.name),
-            }}
-        >
-            <ListItem key={policyObj.id} style={{ maxHeight: '100%', overflow: 'auto'}}>
-                <ListItemAvatar>
-                    <Avatar
-                        style={{
-                            backgroundColor: Utils.stringToColor(policyObj.name),
-                        }}
-                        // eslint-disable-next-line react/jsx-props-no-spreading
-                        { ...Utils.stringAvatar(policyObj.name.toUpperCase())}
-                    />
-                </ListItemAvatar>
-                <ListItemText
-                    id={policyObj.name}
-                    primary={policyObj.name}
-                    classes={{
-                        primary: classes.policyCardText
-                    }} 
-                    // primaryTypographyProps={{ variant: 'subtitle2' }}
+        <>
+            <div className={classes.outerDiv}>
+                <div
+                    ref={drag}
+                    style={containerStyle}
+                >
+                    <ListItem key={policyObj.id} className={classes.listItem}>
+                        <ListItemAvatar>
+                            <Avatar
+                                style={{
+                                    backgroundColor: Utils.stringToColor(policyObj.name),
+                                }}
+                                // eslint-disable-next-line react/jsx-props-no-spreading
+                                { ...Utils.stringAvatar(policyObj.name.toUpperCase())}
+                            />
+                        </ListItemAvatar>
+                        <ListItemText
+                            id={policyObj.name}
+                            primary={policyObj.name}
+                            classes={{
+                                primary: classes.policyCardText
+                            }} 
+                        />
+                    </ListItem>
+                </div>
+                <Box display='flex' width='30%' justifyContent='flex-end' height='35px'>
+                    <Tooltip
+                        placement='top'
+                        title={
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyList.Policy.View'
+                                defaultMessage='View'
+                            />
+                        }
+                    >
+                        <IconButton
+                            disabled={!isLocalToAPI}
+                            onClick={handleViewPolicy}
+                            aria-label='view operation'
+                        >
+                            <VisibilityIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                        placement='top'
+                        title={
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyList.Policy.Delete'
+                                defaultMessage='Delete'
+                            />
+                        }
+                    >
+                        <IconButton
+                            disabled={!isLocalToAPI}
+                            onClick={toggleDelete}
+                            aria-label='delete operation'
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+            </div>
+            <Backdrop
+                className={classes.backdrop}
+                open={dialogOpen}
+                onClick={handleViewPolicyClose}    
+            >
+                <ViewPolicy
+                    dialogOpen={dialogOpen}
+                    handleDialogClose={handleViewPolicyClose}
+                    policyObj={policyObj}
                 />
-            </ListItem>
-        </div>
+            </Backdrop>
+        </>
     );
 };
 

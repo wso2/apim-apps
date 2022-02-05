@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
@@ -25,7 +25,8 @@ import {
 } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
-import PolicyStepper from 'AppComponents/Apis/Details/Policies/components/PolicyStepper';
+import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
+import type { PolicyDefinition } from 'AppComponents/Apis/Details/Policies/Types';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -46,6 +47,18 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
+const DefaultPolicyDefinition = {
+    policyCategory: 'Mediation',
+    policyName: '',
+    policyDisplayName: '',
+    policyDescription: '',
+    multipleAllowed: false,
+    applicableFlows: ['Request', 'Response', 'Fault'],
+    supportedGateways: ['Synapse'],
+    supportedApiTypes: ['REST'],
+    policyAttributes: [],
+};
+
 /**
  * Create a new global policy template
  * @param {JSON} props Input props from parent components.
@@ -55,6 +68,7 @@ const CreatePolicyTemplate: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
     const redirectUrl = '/policy-templates';
+    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DefaultPolicyDefinition);
 
     const redirectToPolicyTemplates = () => {
         history.push(redirectUrl);
@@ -89,6 +103,9 @@ const CreatePolicyTemplate: React.FC = () => {
                         <PolicyStepper 
                             isAPI={false}
                             onSave={redirectToPolicyTemplates}
+                            isReadOnly={false}
+                            policyDefinition={policyDefinition}
+                            setPolicyDefinition={setPolicyDefinition}
                         />
                     </Grid>
                 </Grid>

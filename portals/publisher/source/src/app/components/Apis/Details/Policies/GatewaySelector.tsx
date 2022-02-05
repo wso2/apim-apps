@@ -53,7 +53,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = () => {
                 <Grid item md={12} xs={12}>
                     <Box ml={1}>
                         <Typography variant='subtitle1' component='h3' gutterBottom>
-                            API Gateway Selector
+                            API Gateway
                             <Tooltip
                                 title='Policy list is dependant on the selected Gateway'
                                 placement='right-start'

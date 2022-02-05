@@ -22,3 +22,15 @@ export type Policy = {
     flows: string[];
     timestamp?: number;
 };
+
+export type PolicyDefinition = {
+    policyCategory: string;
+    policyName: string;
+    policyDisplayName: string;
+    policyDescription: string;
+    multipleAllowed: boolean;
+    applicableFlows: string[];
+    supportedGateways: string[];
+    supportedApiTypes: string[];
+    policyAttributes: any;
+}

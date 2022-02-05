@@ -18,29 +18,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import StepContent from '@material-ui/core/StepContent';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import {
-    Box, Grid, Icon, IconButton,
-} from '@material-ui/core';
+import { Grid, Icon } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
-import List from '@material-ui/core/List';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import PolicyDefinitionEditor from '../Apis/Details/Policies/components/PolicyDefinitionEditor';
-
+import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
+import type { PolicyDefinition } from 'AppComponents/Apis/Details/Policies/Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -99,18 +84,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-interface PolicyDefinitionProps {
-    policyCategory: string;
-    policyName: string;
-    policyDisplayName: string;
-    policyDescription: string;
-    multipleAllowed: boolean;
-    applicableFlows: string[];
-    supportedGateways: string[];
-    supportedApiTypes: string[];
-    policyAttributes: any;
-}
-
 const DummyDefaultPolicyDefinition = {
     policyCategory: 'Mediation',
     policyName: 'Add Header',
@@ -131,43 +104,15 @@ const DummyDefaultPolicyDefinition = {
 const ViewPolicyTemplate: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const url = '/policy-templates';
-    const [activeStep, setActiveStep] = useState(0);
-    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinitionProps>(DummyDefaultPolicyDefinition);
-
-    const steps = [
-        {
-            label: 'Policy Template',
-            description: `Policy logic inclusive template file of the Global Policy Template.`,
-        },
-        {
-            label: 'Policy Definition',
-            // description:
-            // 'Policy Definition describes the meta data related to the policy in order to render the UI dynamically.',
-        },
-    ];
+    const redirectUrl = '/policy-templates';
+    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DummyDefaultPolicyDefinition);
 
     useEffect(() => {
         setPolicyDefinition(DummyDefaultPolicyDefinition);
-        // effect
-        // return () => {
-        //     cleanup
-        // }
     }, [])
 
-    const handleNext = () => {
-        if (activeStep === steps.length - 1) {
-            history.push('/policy-templates');
-        }
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
-
-    const handlePolicyTemplateDownload = () => {
-
+    const redirectToPolicyTemplates = () => {
+        history.push(redirectUrl);
     }
 
     return (
@@ -178,7 +123,7 @@ const ViewPolicyTemplate: React.FC = () => {
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
-                            <Link to={url} className={classes.titleLink}>
+                            <Link to={redirectUrl} className={classes.titleLink}>
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
                                         id='PolicyTemplates.CreatePolicyTemplate.listing.heading'
@@ -193,67 +138,13 @@ const ViewPolicyTemplate: React.FC = () => {
                         </div>
                     </Grid>
                     <Grid item md={12}>
-                        <Paper elevation={0} className={classes.root}>
-                            <Stepper activeStep={activeStep} orientation='vertical'>
-                                {steps.map((step, index) => (
-                                    <Step key={step.label}>
-                                        <StepLabel>{step.label}</StepLabel>
-                                        <StepContent>
-                                            {step.description && (
-                                                <Typography variant='overline'>{step.description}</Typography>
-                                            )}
-                                            {(index === 0) && (
-                                                <List className={classes.uploadedFileDetails}>
-                                                    <ListItem key='policy-template-file-info'>
-                                                        <ListItemAvatar>
-                                                            <Avatar>
-                                                                <InsertDriveFile />
-                                                            </Avatar>
-                                                        </ListItemAvatar>
-                                                        <ListItemText
-                                                            primary='Test.xml'
-                                                            // primary={`${policyTemplateFile[0].path}`}
-                                                        />
-                                                        <ListItemSecondaryAction>
-                                                            <IconButton
-                                                                edge='end'
-                                                                aria-label='Download policy template'
-                                                                onClick={() => handlePolicyTemplateDownload()}
-                                                            >
-                                                                <Icon>vertical_align_bottom</Icon>
-                                                            </IconButton>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItem>
-                                                </List>
-                                            )}
-                                            {(index === 1) && (
-                                                <PolicyDefinitionEditor
-                                                    isReadOnly
-                                                    policyDefinition={policyDefinition}
-                                                    setPolicyDefinition={setPolicyDefinition}
-                                                />
-                                            )}
-                                            <Box mt={2}>
-                                                <Button
-                                                    variant='contained'
-                                                    color='primary'
-                                                    onClick={handleNext}
-                                                >
-                                                    {index === steps.length - 1 ? 'Done' : 'Continue'}
-                                                </Button>
-                                                <Button
-                                                    color='primary'
-                                                    disabled={index === 0}
-                                                    onClick={handleBack}
-                                                >
-                                                    Back
-                                                </Button>
-                                            </Box>
-                                        </StepContent>
-                                    </Step>
-                                ))}
-                            </Stepper>
-                        </Paper>
+                        <PolicyStepper
+                            isAPI={false}
+                            onSave={redirectToPolicyTemplates}
+                            isReadOnly
+                            policyDefinition={policyDefinition}
+                            setPolicyDefinition={setPolicyDefinition}
+                        />
                     </Grid>
                 </Grid>
             </Grid>
