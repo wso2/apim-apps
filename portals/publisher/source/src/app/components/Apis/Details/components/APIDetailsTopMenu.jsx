@@ -42,7 +42,6 @@ import API from 'AppData/api';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
-import AddService from '../APIDefinition/AddService';
 
 const styles = (theme) => ({
     root: {
@@ -385,10 +384,6 @@ const APIDetailsTopMenu = (props) => {
             {isAPIProduct || api.isRevision
                 ? null : <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher} api={api} />}
             {(isDownloadable) && <VerticalDivider height={70} />}
-            <AddService
-                api={api}
-                classes={classes}
-            />
             <div className={classes.downloadApi}>
                 {(isDownloadable) && (
                     <a
