@@ -239,18 +239,14 @@ class ServiceCatalog {
 
     /**
      * Get a service by API Id
-     * @param apiId {string} name of the service.
      * @returns {promise} Service Entry promise.
      */
-    static getServiceByAPIId(apiId) {
+    static getServiceList() {
         const serviceCatalog = new APIClientFactory()
             .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.SERVICE_CATALOG_CLIENT)
             .client;
         const promisedServices = serviceCatalog.then((client) => {
             return client.apis.Services.searchServices(
-                {
-                    apiId,
-                },
                 this._requestMetaData(),
             );
         });

@@ -156,6 +156,12 @@ function Endpoints(props) {
                     endpointImplementationType,
                 };
             }
+            case 'set_service': {
+                return {
+                    ...initState,
+                    serviceInfo: value
+                };
+            }
             default: {
                 return initState;
             }
@@ -169,13 +175,13 @@ function Endpoints(props) {
      * @param {boolean} isRedirect Used for dynamic endpoints to redirect to the runtime config page.
      */
     const handleSave = (isRedirect) => {
-        const { endpointConfig, endpointImplementationType } = apiObject;
+        const { endpointConfig, endpointImplementationType, serviceInfo } = apiObject;
         setUpdating(true);
         if (endpointImplementationType === 'INLINE') {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType });
+                updateAPI({ endpointConfig, endpointImplementationType, serviceInfo });
             }).finally(() => {
                 setUpdating(false);
                 if (isRedirect) {
