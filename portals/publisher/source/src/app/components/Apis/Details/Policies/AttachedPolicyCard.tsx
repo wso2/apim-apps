@@ -92,7 +92,8 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const handleDelete = (event: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-        setCurrentPolicyList(currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp));
+        const filteredList = currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp);
+        setCurrentPolicyList(filteredList);
         event.stopPropagation();
         event.preventDefault();
     };

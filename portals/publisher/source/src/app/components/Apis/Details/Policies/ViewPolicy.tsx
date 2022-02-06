@@ -26,7 +26,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import { FormattedMessage} from 'react-intl';
 import PolicyStepper from './PolicyStepper';
 import type { Policy, PolicyDefinition } from './Types';
 
