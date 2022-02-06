@@ -238,7 +238,7 @@ class ServiceCatalog {
     }
 
     /**
-     * Get a service by API Id
+     * Get the service list
      * @returns {promise} Service Entry promise.
      */
     static getServiceList() {

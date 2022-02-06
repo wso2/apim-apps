@@ -2943,34 +2943,6 @@ class API extends Resource {
         });
         return promise_updated;
     }
-
-    /**
-     * Update an api via PUT HTTP method, Need to give the service key as the argument.
-     * @param id {string} API id.
-     * @param serviceKey {string} serivice key of the service in the service catelog.
-     */
-     updateSwaggerByServiceKey(id, serviceKey) {
-        const promised_update = this.client.then(client => {
-            const payload = {
-                apiId: id,
-                'Content-Type': 'multipart/form-data',
-            };
-
-            const requestBody = {
-                requestBody: {
-                    serviceKey: serviceKey,
-                }
-            };
-            return client.apis['APIs'].updateAPISwagger(
-                payload,
-                requestBody,
-                this._requestMetaData({
-                    'Content-Type': 'multipart/form-data',
-                }),
-            );
-        });
-        return promised_update;
-    }
 }
 
 
