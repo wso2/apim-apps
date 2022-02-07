@@ -2945,27 +2945,173 @@ class API extends Resource {
         return promise_updated;
     }
 
-    // /**
-    //  * Retrieve policy definition schema
-    //  */
-    // policyDefinitionSchemaGet() {
+    /**
+     * Get all common operation policies to all the APIs
+     * @param {String} limit limit of the common operation policies which needs to be retrieved
+     * @param {String} offset offset of the common operation policies which needs to be retrieved
+     * @returns {Promise} Promise containing a list of all common operation policies that can be used by any API
+     */
+    static getCommonOperationPolicies(limit = null, offset = null) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        // const limit = Configurations.app.operationPolicyCount;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].getAllCommonOperationPolicies(
+                {limit, offset},
+                this._requestMetaData(),
+            );
+        });
+    }
 
-    //     // return this.client.then((client) => {
-    //     //     return client.apis['Policy Definition Schema'].exportTenantConfigSchema();
-    //     // });
-    // }
+    /**
+     * Add a common operation policy
+     * @param {Object} policySpec policy specification of the common operation policy to upload
+     * @param {any} policyDefinition policy definition of the common operation policy to upload
+     * @returns {Promise} Promise containing uploaded operation policy specification
+     */
+    static addCommonOperationPolicy(policySpec, policyDefinition) {
+        const promised_addCommonOperationPolicy = this.client.then(client => {
+            const payload = {
+                'Content-Type': 'multipart/form-data',
+            };
+            const requestBody = {
+                requestBody: {
+                    policySpecFile: JSON.stringify(policySpec),
+                    policyDefinitionFile: policyDefinition,
+                }
+            }
+            return client.apis['Operation Policies'].addCommonOperationPolicy(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                })
+            );
+        });
+        return promised_addCommonOperationPolicy;
+    }
 
-    // /**
-    //  * Retrieve policy definition
-    //  */
-    // policyDefinitionGet() {
+    /**
+     * Delete a common operation policy
+     * @param {String} policyId UUID of the common operation policy
+     * @returns {Promise}
+     */
+    static deleteCommonOperationPolicy(policyId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].deleteCommonOperationPolicyByPolicyId(
+                {
+                    operationPolicyId: policyId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
 
-    //     // return this.client.then((client) => {
-    //     //     return client.apis['Tenant Config'].exportTenantConfig();
-    //     // });
-    // }
+    /**
+     * Get the content of a common operation policy
+     * @param {String} policyId UUID of the common operation policy
+     * @returns {Promise} Promise containing content of the requested common operation policy
+     */
+    static getCommonOperationPolicyContent(policyId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].getCommonOperationPolicyContentByPolicyId(
+                {
+                    operationPolicyId: policyId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the content of an API specific operation policy
+     * @param {String} policyId UUID of the operation policy
+     * @param {String} apiId UUID of the API
+     * @returns {Promise} Promise containing content of the requested operation policy
+     */
+    static getOperationPolicyContent(policyId, apiId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].getAPISpecificOperationPolicyContentByPolicyId(
+                {
+                    operationPolicyId: policyId,
+                    apiId: apiId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+    
+    /**
+     * Get API specific operation policies
+     * @param {String} apiId UUID of the API
+     * @param {String} limit limit of the operation policies which needs to be retrieved
+     * @param {String} offset offset of the operation policies which needs to be retrieved
+     * @returns {Promise} Promise with list of operation policies
+     */
+    static getOperationPolicies(apiId, limit = null, offset = null) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        // const limit = Configurations.app.operationPolicyCount;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].getAllAPISpecificOperationPolicies(
+                {
+                    apiId: apiId,
+                    limit: limit,
+                    offset: offset,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an API specific operation policy
+     * @param {Object} policySpec policy specification of the operation policy
+     * @param {any} policyDefinition policy definition of the operation policy
+     * @param {String} apiId UUID of the API
+     * @returns {Promise} Promise containing added operation policy specification
+     */
+    static addOperationPolicy(policySpec, policyDefinition, apiId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].addAPISpecificOperationPolicy(
+                {
+                    apiId: apiId,
+                },
+                {
+                    requestBody: {
+                        policySpecFile: JSON.stringify(policySpec),
+                        policyDefinitionFile: policyDefinition,
+                    },
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Delete an API specific operation policy by the API uuid and policy uuid
+     * @param {*} apiId UUID of the API
+     * @param {*} policyId UUID of the operation policy to delete
+     * @returns {Promise}
+     */
+    static deleteOperationPolicy(apiId, policyId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Mediation Policy'].deleteAPISpecificOperationPolicyByPolicyId(
+                {
+                    apiId: apiId,
+                    operationPolicyId: policyId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
 }
-
 
 API.CONSTS = {
     API: 'API',
