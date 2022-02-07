@@ -34,7 +34,7 @@ import { Radio } from '@material-ui/core';
 
 const SupportedGatewayTypes = {
     REGULAR: 'Regular Gateway',
-    CC: 'Microgateway',
+    CC: 'Choreo Connect',
 };
 interface GatewaySelectorProps {
 }
@@ -94,7 +94,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = () => {
                                             disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                         />
                                     )}
-                                    label='Microgateway'
+                                    label='Choreo Connect'
                                     labelPlacement='end'
                                 />
                             </RadioGroup>
