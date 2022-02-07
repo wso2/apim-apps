@@ -371,7 +371,7 @@ export default function CustomIcon(props) {
                 </g>
             </svg>
         );
-    } else if (icon === 'policy-templates') {
+    } else if (icon === 'policies') {
         return (
             <svg
                 width={width}

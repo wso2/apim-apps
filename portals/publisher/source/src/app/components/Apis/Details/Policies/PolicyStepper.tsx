@@ -36,8 +36,8 @@ import classNames from 'classnames';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import { FormattedMessage } from 'react-intl';
-import PolicyDefinitionEditor from './PolicyDefinitionEditor';
-import type { PolicyDefinition } from './Types';
+import PolicyDefinitionEditor from './PolicySpecificationEditor';
+import type { PolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -85,8 +85,10 @@ interface PolicyStepperProps {
     isAPI: boolean;
     onSave: () => void;
     isReadOnly: boolean;
-    policyDefinition: PolicyDefinition;
-    setPolicyDefinition: React.Dispatch<React.SetStateAction<PolicyDefinition>>;
+    policyDefinitionFile: any[];
+    setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
+    policySpec: PolicySpec;
+    setPolicySpec: React.Dispatch<React.SetStateAction<PolicySpec>>;
 }
 
 /**
@@ -95,29 +97,25 @@ interface PolicyStepperProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyStepper: FC<PolicyStepperProps> = ({
-    onSave, isReadOnly, policyDefinition, setPolicyDefinition
+    onSave, isReadOnly, policyDefinitionFile, setPolicyDefinitionFile, policySpec, setPolicySpec
 }) => {
     const classes = useStyles();
     const [activeStep, setActiveStep] = useState(0);
-    const [policyTemplateFile, setPolicyTemplateFile] = useState<any[]>([]);
 
     const steps = [
         {
-            label: isReadOnly ? 'Policy Template' : 'Upload Policy Template',
+            label: isReadOnly ? 'Policy Definition' : 'Upload Policy Definition',
             description: isReadOnly 
-                ? (`Policy logic inclusive template file.`) 
-                : (`Upload the Policy logic inclusive template file.`),
+                ? (`Policy logic inclusive file`) 
+                : (`Upload the policy logic inclusive file`),
         },
         {
-            label: isReadOnly ? 'Policy Definition' : 'Add Policy Definition',
-            // description:
-            // 'Policy Definition describes the meta data related to the policy in order to render the UI dynamically.',
+            label: isReadOnly ? 'Policy Specification' : 'Add Policy Specification',
         },
     ];
 
     const handleNext = () => {
         if (activeStep === steps.length - 1) {
-            // console.log('Policy Definition: ', policyDefinition)
             onSave();
         }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -128,8 +126,8 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleDrop = (policyTemplate: any) => {
-        setPolicyTemplateFile(policyTemplate);
+    const handleDrop = (policyDefinition: any) => {
+        setPolicyDefinitionFile(policyDefinition);
     };
 
     const handlePolicyTemplateDownload = () => {
@@ -140,7 +138,7 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
         return (
             <Dropzone
                 multiple={false}
-                accept='application/xml,text/xml'
+                // accept='.j2' 
                 onDrop={handleDrop}
             >
                 {({
@@ -161,8 +159,8 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                 <Icon>cloud_upload</Icon>
                                 <Typography>
                                     <FormattedMessage
-                                        id='PolicyTemplates.CreatePolicyTemplate.upload.template'
-                                        defaultMessage='Click or drag the policy template file to upload.'
+                                        id='Policies.CreatePolicy.upload.policy.definition'
+                                        defaultMessage='Click or drag the policy definition file to upload'
                                     />
                                 </Typography>
                             </div>
@@ -185,24 +183,24 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                     <Typography variant='overline'>{step.description}</Typography>
                                 )}
                                 {(index === 0 && !isReadOnly) && (
-                                    (policyTemplateFile.length === 0) ? (
+                                    (policyDefinitionFile.length === 0) ? (
                                         renderPolicyFileDropzone()
                                     ) : (
                                         <List className={classes.uploadedFileDetails}>
-                                            <ListItem key={policyTemplateFile[0].path}>
+                                            <ListItem key={policyDefinitionFile[0].path}>
                                                 <ListItemAvatar>
                                                     <Avatar>
                                                         <InsertDriveFile />
                                                     </Avatar>
                                                 </ListItemAvatar>
                                                 <ListItemText
-                                                    primary={`${policyTemplateFile[0].path}`}
+                                                    primary={`${policyDefinitionFile[0].path}`}
                                                 />
                                                 <ListItemSecondaryAction>
                                                     <IconButton
                                                         edge='end'
                                                         aria-label='delete'
-                                                        onClick={() => setPolicyTemplateFile([])}
+                                                        onClick={() => setPolicyDefinitionFile([])}
                                                     >
                                                         <DeleteIcon />
                                                     </IconButton>
@@ -220,7 +218,7 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                                 </Avatar>
                                             </ListItemAvatar>
                                             <ListItemText
-                                                primary='Test.xml'
+                                                primary='AddHeader.j2'
                                             />
                                             <ListItemSecondaryAction>
                                                 <IconButton
@@ -237,8 +235,8 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                 {(index === 1) && (
                                     <PolicyDefinitionEditor
                                         isReadOnly={isReadOnly}
-                                        policyDefinition={policyDefinition}
-                                        setPolicyDefinition={setPolicyDefinition}
+                                        policySpec={policySpec}
+                                        setPolicySpec={setPolicySpec}
                                     />
                                 )}
                                 <Box mt={2}>
@@ -248,7 +246,7 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                             color='primary'
                                             onClick={handleNext}
                                             disabled={
-                                                (index === 0 && policyTemplateFile.length === 0)
+                                                (index === 0 && policyDefinitionFile.length === 0)
                                             }
                                         >
                                             {index === steps.length - 1 ? 'Save' : 'Continue'}

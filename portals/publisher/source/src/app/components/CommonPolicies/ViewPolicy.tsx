@@ -25,7 +25,7 @@ import { Link, useHistory } from 'react-router-dom';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
-import type { PolicyDefinition } from 'AppComponents/Apis/Details/Policies/Types';
+import type { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -84,34 +84,35 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-const DummyDefaultPolicyDefinition = {
-    policyCategory: 'Mediation',
-    policyName: 'Add Header',
-    policyDisplayName: 'Add Header',
-    policyDescription: '',
+const DummyDefaultPolicySpec = {
+    category: 'Mediation',
+    name: 'Add Header',
+    displayName: 'Add Header',
+    description: '',
     multipleAllowed: false,
-    applicableFlows: ['Request', 'Response', 'Fault'],
+    applicableFlows: ['request', 'response', 'fault'],
     supportedGateways: ['Synapse'],
     supportedApiTypes: ['REST'],
     policyAttributes: [],
 };
 
 /**
- * Renders the view policy template UI
+ * Renders the view policy UI
  * @param {JSON} props Input props from parent components.
- * @returns {TSX} Policy template view UI.
+ * @returns {TSX} Policy view UI.
  */
-const ViewPolicyTemplate: React.FC = () => {
+const ViewPolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const redirectUrl = '/policy-templates';
-    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DummyDefaultPolicyDefinition);
+    const redirectUrl = '/policies';
+    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [policySpec, setPolicySpec] = useState<PolicySpec>(DummyDefaultPolicySpec);
 
     useEffect(() => {
-        setPolicyDefinition(DummyDefaultPolicyDefinition);
+        setPolicySpec(DummyDefaultPolicySpec);
     }, [])
 
-    const redirectToPolicyTemplates = () => {
+    const redirectToPolicies = () => {
         history.push(redirectUrl);
     }
 
@@ -126,24 +127,26 @@ const ViewPolicyTemplate: React.FC = () => {
                             <Link to={redirectUrl} className={classes.titleLink}>
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
-                                        id='PolicyTemplates.CreatePolicyTemplate.listing.heading'
-                                        defaultMessage='Policy Templates'
+                                        id='CommonPolicies.CreatePolicy.listing.heading'
+                                        defaultMessage='Policies'
                                     />
                                 </Typography>
                             </Link>
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h3'>
-                                {`View ${policyDefinition.policyName}`}
+                                {`View ${policySpec.name}`}
                             </Typography>
                         </div>
                     </Grid>
                     <Grid item md={12}>
                         <PolicyStepper
                             isAPI={false}
-                            onSave={redirectToPolicyTemplates}
+                            onSave={redirectToPolicies}
                             isReadOnly
-                            policyDefinition={policyDefinition}
-                            setPolicyDefinition={setPolicyDefinition}
+                            policyDefinitionFile={policyDefinitionFile}
+                            setPolicyDefinitionFile={setPolicyDefinitionFile}
+                            policySpec={policySpec}
+                            setPolicySpec={setPolicySpec}
                         />
                     </Grid>
                 </Grid>
@@ -152,4 +155,4 @@ const ViewPolicyTemplate: React.FC = () => {
     );
 };
 
-export default ViewPolicyTemplate;
+export default ViewPolicy;

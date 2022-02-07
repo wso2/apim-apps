@@ -76,17 +76,17 @@ import { isRestricted } from 'AppData/AuthManager';
 
 /**
  * Renders the policy management page.
- * @param {any} props Input props needed for policy template deletion.
- * @returns {JSX} Returns the rendered UI for policy template delete.
+ * @param {any} props Input props needed for common policy deletion.
+ * @returns {JSX} Returns the rendered UI for common policy delete.
  */
-const DeletePolicyTemplate = ({
+const DeletePolicy = ({
     policyId, policyName, policies, setPolicies,
 }) => {
     const [open, setOpen] = useState(false);
     const toggleOpen = () => {
         setOpen(!open);
     };
-    const deletePolicyTemplate = () => {
+    const deletePolicy = () => {
         // const restApi = new API();
         // const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
         // const deleteResponse = restApi.deletePolicyTemplate(policyId);
@@ -108,7 +108,7 @@ const DeletePolicyTemplate = ({
 
     const runAction = (confirm) => {
         if (confirm) {
-            deletePolicyTemplate();
+            deletePolicy();
         } else {
             setOpen(!open);
         }
@@ -161,11 +161,11 @@ const DeletePolicyTemplate = ({
     );
 };
 
-DeletePolicyTemplate.propTypes = {
+DeletePolicy.propTypes = {
     policyId: PropTypes.number.isRequired,
     policyName: PropTypes.string.isRequired,
     policies: PropTypes.shape({}).isRequired,
     setPolicies: PropTypes.func.isRequired,
 };
 
-export default DeletePolicyTemplate;
+export default DeletePolicy;

@@ -18,15 +18,16 @@
 
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-
 import Typography from '@material-ui/core/Typography';
 import {
     Grid, Icon,
 } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
+import Alert from 'AppComponents/Shared/Alert';
+import API from 'AppData/api.js';
 import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
-import type { PolicyDefinition } from 'AppComponents/Apis/Details/Policies/Types';
+import type { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -47,31 +48,53 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-const DefaultPolicyDefinition = {
-    policyCategory: 'Mediation',
-    policyName: '',
-    policyDisplayName: '',
-    policyDescription: '',
+const DefaultPolicySpec = {
+    category: 'Mediation',
+    name: '',
+    displayName: '',
+    description: '',
     multipleAllowed: false,
-    applicableFlows: ['Request', 'Response', 'Fault'],
+    applicableFlows: ['request', 'response', 'fault'],
     supportedGateways: ['Synapse'],
     supportedApiTypes: ['REST'],
     policyAttributes: [],
 };
 
 /**
- * Create a new global policy template
+ * Create a new common policy
  * @param {JSON} props Input props from parent components.
- * @returns {TSX} Create policy template UI to render.
+ * @returns {TSX} Create common policy UI to render.
  */
-const CreatePolicyTemplate: React.FC = () => {
+const CreatePolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const redirectUrl = '/policy-templates';
-    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DefaultPolicyDefinition);
+    const redirectUrl = '/policies';
+    const api = new API();
+    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [policySpec, setPolicySpec] = useState<PolicySpec>(DefaultPolicySpec);
 
-    const redirectToPolicyTemplates = () => {
-        history.push(redirectUrl);
+    const addCommonPolicy = (policySpecContent: PolicySpec, policyDefinition: any) => {
+        const promisedCommonPolicyAdd = api.addCommonOperationPolicy(policySpecContent, policyDefinition);
+        promisedCommonPolicyAdd
+            .then(() => {
+                Alert.info('Policy created successfully');
+                setPolicyDefinitionFile([]);
+                setPolicySpec(DefaultPolicySpec);
+                history.push(redirectUrl);
+            })
+            .catch((error) => {
+                history.push(redirectUrl);
+                const { response } = error;
+                if (response.body) {
+                    const { description } = response.body;
+                    console.log(description);
+                    Alert.error('Something went wrong while creating policy');
+                }
+            });
+    }
+
+    const onPolicyCreateSave = () => {
+        addCommonPolicy(policySpec, policyDefinitionFile);
     }
 
     return (
@@ -85,16 +108,16 @@ const CreatePolicyTemplate: React.FC = () => {
                             <Link to={redirectUrl} className={classes.titleLink}>
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
-                                        id='PolicyTemplates.CreatePolicyTemplate.SharedPolicy.listing.heading'
-                                        defaultMessage='Policy Templates'
+                                        id='CommonPolicies.CreatePolicy.CommonPolicy.listing.heading'
+                                        defaultMessage='Policies'
                                     />
                                 </Typography>
                             </Link>
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h3'>
                                 <FormattedMessage
-                                    id='PolicyTemplates.CreatePolicyTemplate.SharedPolicy.main.heading'
-                                    defaultMessage='Create New Policy Template'
+                                    id='CommonPolicies.CreatePolicy.CommonPolicy.main.heading'
+                                    defaultMessage='Create New Policy'
                                 />
                             </Typography>
                         </div>
@@ -102,10 +125,12 @@ const CreatePolicyTemplate: React.FC = () => {
                     <Grid item md={12}>
                         <PolicyStepper 
                             isAPI={false}
-                            onSave={redirectToPolicyTemplates}
+                            onSave={onPolicyCreateSave}
                             isReadOnly={false}
-                            policyDefinition={policyDefinition}
-                            setPolicyDefinition={setPolicyDefinition}
+                            policyDefinitionFile={policyDefinitionFile}
+                            setPolicyDefinitionFile={setPolicyDefinitionFile}
+                            policySpec={policySpec}
+                            setPolicySpec={setPolicySpec}
                         />
                     </Grid>
                 </Grid>
@@ -114,4 +139,4 @@ const CreatePolicyTemplate: React.FC = () => {
     );
 };
 
-export default CreatePolicyTemplate;
+export default CreatePolicy;

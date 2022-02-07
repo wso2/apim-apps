@@ -26,7 +26,8 @@ import {
 import { Progress } from 'AppComponents/Shared';
 import { ControlledEditor, monaco } from "@monaco-editor/react";
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import policyDefJsonSchema from './components/JsonSchema.json'
+import policyDefJsonSchema from './components/JsonSchema.json';
+import type { PolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -37,22 +38,11 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-interface PolicyDefinitionProps {
-    policyCategory: string;
-    policyName: string;
-    policyDisplayName: string;
-    policyDescription: string;
-    multipleAllowed: boolean;
-    applicableFlows: string[];
-    supportedGateways: string[];
-    supportedApiTypes: string[];
-    policyAttributes: any;
-}
 
-interface PolicyDefinitionEditorProps {
+interface PolicySpecificationEditorProps {
     isReadOnly: boolean;
-    policyDefinition: PolicyDefinitionProps;
-    setPolicyDefinition: Dispatch<SetStateAction<PolicyDefinitionProps>>;
+    policySpec: PolicySpec;
+    setPolicySpec: Dispatch<SetStateAction<PolicySpec>>;
 }
 
 /**
@@ -60,8 +50,8 @@ interface PolicyDefinitionEditorProps {
  * @param {any} PolicyDefinitionEditorProps Input props from parent components.
  * @returns {TSX} Policy definition editor UI.
  */
-const PolicyDefinitionEditor: React.FC<PolicyDefinitionEditorProps> = ({
-    isReadOnly, policyDefinition, setPolicyDefinition,
+const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
+    isReadOnly, policySpec, setPolicySpec,
 }) => {
     const classes = useStyles();
     const [policyDefinitionSchema, setPolicyDefinitionSchema] = useState<any>();
@@ -99,7 +89,7 @@ const PolicyDefinitionEditor: React.FC<PolicyDefinitionEditorProps> = ({
     };
 
     const handleEditorChange = (ev: monacoEditor.editor.IModelContentChangedEvent, value: string | undefined) => {
-        setPolicyDefinition(JSON.parse(value || ''));
+        setPolicySpec(JSON.parse(value || ''));
     }
 
     return (
@@ -113,7 +103,7 @@ const PolicyDefinitionEditor: React.FC<PolicyDefinitionEditorProps> = ({
                                 language='json'
                                 theme='vs-dark'
                                 options={monacoEditorOptions}
-                                value={JSON.stringify(policyDefinition, null, 2)}
+                                value={JSON.stringify(policySpec, null, 2)}
                                 onChange={handleEditorChange}
                             />
                         </Suspense>
@@ -124,4 +114,4 @@ const PolicyDefinitionEditor: React.FC<PolicyDefinitionEditorProps> = ({
     );
 };
 
-export default PolicyDefinitionEditor;
+export default PolicySpecificationEditor;

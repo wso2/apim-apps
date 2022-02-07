@@ -27,7 +27,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import PolicyStepper from './PolicyStepper';
-import type { Policy, PolicyDefinition } from './Types';
+import type { Policy, PolicySpec } from './Types';
 
 interface ViewPolicyProps {
     handleDialogClose: () => void;
@@ -35,18 +35,17 @@ interface ViewPolicyProps {
     policyObj: Policy;
 }
 
-const DummyDefaultPolicyDefinition = {
-    policyCategory: 'Mediation',
-    policyName: 'Add Header',
-    policyDisplayName: 'Add Header',
-    policyDescription: '',
+const DummyDefaultPolicySpec = {
+    category: 'Mediation',
+    name: 'Add Header',
+    displayName: 'Add Header',
+    description: '',
     multipleAllowed: false,
-    applicableFlows: ['Request', 'Response', 'Fault'],
+    applicableFlows: ['request', 'response', 'fault'],
     supportedGateways: ['Synapse'],
     supportedApiTypes: ['REST'],
     policyAttributes: [],
 };
-
 
 /**
  * Renders the UI to view a policy selected from the policy list.
@@ -56,10 +55,11 @@ const DummyDefaultPolicyDefinition = {
 const ViewPolicy: React.FC<ViewPolicyProps> = ({
     handleDialogClose, dialogOpen, policyObj
 }) => {
-    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DummyDefaultPolicyDefinition);
+    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [policySpec, setPolicySpec] = useState<PolicySpec>(DummyDefaultPolicySpec);
 
     useEffect(() => {
-        setPolicyDefinition(DummyDefaultPolicyDefinition);
+        setPolicySpec(DummyDefaultPolicySpec);
     }, [])
     
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -105,8 +105,10 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                             isAPI
                             onSave={toggleOpen}
                             isReadOnly
-                            policyDefinition={policyDefinition}
-                            setPolicyDefinition={setPolicyDefinition}
+                            policyDefinitionFile={policyDefinitionFile}
+                            setPolicyDefinitionFile={setPolicyDefinitionFile}
+                            policySpec={policySpec}
+                            setPolicySpec={setPolicySpec}
                         />
                     </DialogContentText>
                 </DialogContent>

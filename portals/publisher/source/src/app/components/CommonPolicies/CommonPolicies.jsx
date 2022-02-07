@@ -19,26 +19,26 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Listing from './Listing';
-import CreatePolicyTemplate from './CreatePolicyTemplate';
-import ViewPolicyTemplate from './ViewPolicyTemplate';
+import CreatePolicy from './CreatePolicy';
+import ViewPolicy from './ViewPolicy';
 
 /**
  * Have used key={Date.now()} for `Route` element in `/policies`
  * @returns {JSX} Route components related to globally maintained policy template list.
  */
-const PolicyTemplates = () => {
+const CommonPolicies = () => {
     return (
         <Switch>
             <Route
                 exact
-                path='/policy-templates'
+                path='/policies'
                 key={Date.now()}
                 component={Listing}
             />
-            <Route exact path='/policy-templates/create' component={CreatePolicyTemplate} />
-            <Route exact path='/policy-templates/view' component={ViewPolicyTemplate} />
+            <Route exact path='/policies/create' component={CreatePolicy} />
+            <Route exact path='/policies/view' component={ViewPolicy} />
         </Switch>
     );
 };
 
-export default PolicyTemplates;
+export default CommonPolicies;

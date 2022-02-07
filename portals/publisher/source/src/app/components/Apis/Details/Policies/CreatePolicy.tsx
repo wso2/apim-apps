@@ -30,7 +30,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage} from 'react-intl';
 import PolicyStepper from './PolicyStepper';
-import type { PolicyDefinition } from './Types';
+import type { PolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: Theme) => ({
     link: {
@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
 }));
 
-const DefaultPolicyDefinition = {
-    policyCategory: 'Mediation',
-    policyName: '',
-    policyDisplayName: '',
-    policyDescription: '',
+const DefaultPolicySpec = {
+    category: 'Mediation',
+    name: '',
+    displayName: '',
+    description: '',
     multipleAllowed: false,
-    applicableFlows: ['Request', 'Response', 'Fault'],
+    applicableFlows: ['request', 'response', 'fault'],
     supportedGateways: ['Synapse'],
     supportedApiTypes: ['REST'],
     policyAttributes: [],
@@ -66,7 +66,8 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     handleDialogClose, dialogOpen
 }) => {
     const classes = useStyles();
-    const [policyDefinition, setPolicyDefinition] = useState<PolicyDefinition>(DefaultPolicyDefinition);
+    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [policySpec, setPolicySpec] = useState<PolicySpec>(DefaultPolicySpec);
 
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
@@ -114,13 +115,15 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                             isAPI
                             onSave={toggleOpen}
                             isReadOnly={false}
-                            policyDefinition={policyDefinition}
-                            setPolicyDefinition={setPolicyDefinition}
+                            policyDefinitionFile={policyDefinitionFile}
+                            setPolicyDefinitionFile={setPolicyDefinitionFile}
+                            policySpec={policySpec}
+                            setPolicySpec={setPolicySpec}
                         />
                     </DialogContentText>
                 </DialogContent>
                 <Box display='flex' flexDirection='row' justifyContent='right' px={3} pb={3}>
-                    <Link to='/policy-templates'>
+                    <Link to='/policies'>
                         <Typography className={classes.link} variant='caption'>
                             Want to create a common policy that will be visible to all APIs instead?
                             <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />

@@ -2966,7 +2966,7 @@ class API extends Resource {
      * @param {any} policyDefinition policy definition of the common operation policy to upload
      * @returns {Promise} Promise containing uploaded operation policy specification
      */
-    static addCommonOperationPolicy(policySpec, policyDefinition) {
+    addCommonOperationPolicy(policySpec, policyDefinition) {
         const promised_addCommonOperationPolicy = this.client.then(client => {
             const payload = {
                 'Content-Type': 'multipart/form-data',

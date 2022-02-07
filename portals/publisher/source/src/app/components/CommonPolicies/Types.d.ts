@@ -16,21 +16,9 @@
  * under the License.
  */
 
-export type Policy = {
-    id: number;
+export type CommonPolicy = {
+    id: string;
     name: string;
-    flows: string[];
-    timestamp?: number;
-};
-
-export type PolicySpec = {
-    category: string;
-    name: string;
-    displayName: string;
     description: string;
     applicableFlows: string[];
-    supportedGateways: string[];
-    supportedApiTypes: string[];
-    multipleAllowed: boolean;
-    policyAttributes: any;
-}
+};

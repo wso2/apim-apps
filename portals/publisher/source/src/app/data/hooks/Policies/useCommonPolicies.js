@@ -16,21 +16,11 @@
  * under the License.
  */
 
-export type Policy = {
-    id: number;
-    name: string;
-    flows: string[];
-    timestamp?: number;
-};
+import React from 'react'
 
-export type PolicySpec = {
-    category: string;
-    name: string;
-    displayName: string;
-    description: string;
-    applicableFlows: string[];
-    supportedGateways: string[];
-    supportedApiTypes: string[];
-    multipleAllowed: boolean;
-    policyAttributes: any;
+function useCommonPolicies() {
+
+
 }
+
+export default useCommonPolicies

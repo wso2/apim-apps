@@ -249,7 +249,7 @@ export default {
                 streamingApiIcon: '/site/public/images/landing-icons/streamingapi.svg',
                 serviceCatalogApiIcon: '/site/public/images/landing-icons/servicecatalogapi.svg',
                 scopesAddIcon: '/site/public/images/landing-icons/scopes.svg',
-                policyTemplateAddIcon: '/site/public/images/landing-icons/scopes.svg',
+                commonPolicyAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 apiproductAddIcon: '/site/public/images/landing-icons/apiproduct.svg',
             },
             menu: {
