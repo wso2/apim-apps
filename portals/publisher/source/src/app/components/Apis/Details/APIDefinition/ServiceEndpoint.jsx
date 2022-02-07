@@ -50,11 +50,11 @@ const styles = (theme) => ({
 
 });
 
-// eslint-disable-next-line valid-jsdoc
 /**
- * Renders an Environments list
- * @class Environments
- * @extends {React.Component}
+ * This is Service endpoint component.
+ * 
+ * @param {any} props The input props
+ * @returns {any} The HTML representation of the component.
  */
 function ServiceEndpoint(props) {
     const {
