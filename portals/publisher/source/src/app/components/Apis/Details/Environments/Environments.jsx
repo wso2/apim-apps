@@ -1419,7 +1419,7 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2'
+            {!api.isRevision && allRevisions && allRevisions.length !== 0
             && (
                 <Grid container>
                     <Button
