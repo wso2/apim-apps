@@ -1651,7 +1651,7 @@
       "value": "Save"
     }
   ],
-  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.\n                                                    product.endpoint": [
+  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.product.endpoint": [
     {
       "type": 0,
       "value": "Please refer respective APIs for endpoint information"
@@ -1702,7 +1702,7 @@
   "Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message": [
     {
       "type": 0,
-      "value": "This API is currently published and by changing to a normal API, it will not be available for consumption since it has no active deployments."
+      "value": "This API is currently published and by changing to a regular API, it will not be available for consumption since it has no active deployments."
     }
   ],
   "Apis.Details.Configuration.UpdateWithoutDetails.continue": [

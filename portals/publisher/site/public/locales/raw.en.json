@@ -726,7 +726,7 @@
   "Apis.Details.Configuration.Resources.save": {
     "defaultMessage": "Save"
   },
-  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.\n                                                    product.endpoint": {
+  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.product.endpoint": {
     "defaultMessage": "Please refer respective APIs for endpoint information"
   },
   "Apis.Details.Configuration.RuntimeConfiguration.no.km.error": {
@@ -751,7 +751,7 @@
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message": {
-    "defaultMessage": "This API is currently published and by changing to a normal API, it will not be available for consumption since it has no active deployments."
+    "defaultMessage": "This API is currently published and by changing to a regular API, it will not be available for consumption since it has no active deployments."
   },
   "Apis.Details.Configuration.UpdateWithoutDetails.continue": {
     "defaultMessage": "Continue"

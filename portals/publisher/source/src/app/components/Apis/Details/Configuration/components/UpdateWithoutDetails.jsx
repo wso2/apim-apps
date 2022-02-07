@@ -134,7 +134,7 @@ export default function UpdateWithoutDetails(props) {
                         <Typography variant='subtitle1' display='block' gutterBottom>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message'
-                                defaultMessage={'This API is currently published and by changing to a normal API, '
+                                defaultMessage={'This API is currently published and by changing to a regular API, '
                                 + 'it will not be available for consumption since it has no active deployments.'}
                             />
                         </Typography>
