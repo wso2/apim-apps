@@ -18,7 +18,7 @@
 
 import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
-import { useDrag } from 'react-dnd';
+import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from 'react-dnd';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -32,6 +32,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { XYCoord } from 'dnd-core'
 import Utils from 'AppData/Utils';
 import type { Policy } from './Types';
 
@@ -54,16 +55,19 @@ const style: CSSProperties = {
     padding: '0.2em'
 };
 
-interface DragItem {
-    index: number;
-    policy: Policy
-}
+// interface MovableItem {
+//     index: number;
+//     id: string;
+//     type: string;
+// }
 
 interface AttachedPolicyCardProps {
+    index: number;
     policyObj: Policy;
     movePolicyCard: (dragIndex: number, hoverIndex: number) => void;
     currentPolicyList: Policy[];
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
+    currentFlow: string;
 }
 
 /**
@@ -72,24 +76,80 @@ interface AttachedPolicyCardProps {
  * @returns {TSX} Draggable Policy card UI.
  */
 const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
-    policyObj, movePolicyCard, currentPolicyList, setCurrentPolicyList
+    index, policyObj, movePolicyCard, currentPolicyList, setCurrentPolicyList, currentFlow
 }) => {
     const classes = useStyles();
-
-    // const [{ handlerId }, drag] = useDrag(
-    //     () => ({
-    //         type: 'policy',
-    //         options: {
-    //             dropEffect: showCopyIcon ? 'copy' : 'move',
-    //         },
-    //         collect: (monitor) => ({
-    //             opacity: monitor.isDragging() ? 0.4 : 1,
-    //         }),
-    //     }),
-    //     [showCopyIcon],
-    // );
-
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null)
+    const policyColor = Utils.stringToColor(policyObj.name);
+    const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
+
+    const [, drop] = useDrop({
+        accept: `attachedPolicyCard-${currentFlow}`,
+        collect(monitor) {
+            return {
+                handlerId: monitor.getHandlerId(),
+            }
+        },
+        hover(item: any, monitor: DropTargetMonitor) {
+            if (!ref.current) {
+                return
+            }
+            const dragIndex = item.index;
+            const hoverIndex = index;
+        
+            // Don't replace items with themselves
+            if (dragIndex === hoverIndex) {
+                return;
+            }
+        
+            // Determine rectangle on screen
+            const hoverBoundingRect = ref.current?.getBoundingClientRect();
+        
+            // Get vertical middle
+            const hoverMiddleY =
+                (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        
+            // Determine mouse position
+            const clientOffset = monitor.getClientOffset();
+        
+            // Get pixels to the top
+            const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+        
+            // Only perform the move when the mouse has crossed half of the items height
+            // When dragging downwards, only move when the cursor is below 50%
+            // When dragging upwards, only move when the cursor is above 50%
+        
+            // Dragging downwards
+            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+                return
+            }
+        
+            // Dragging upwards
+            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+                return
+            }
+        
+            // Time to actually perform the action
+            movePolicyCard(dragIndex, hoverIndex);
+        
+            // Note: we're mutating the monitor item here!
+            // Generally it's better to avoid mutations,
+            // but it's good here for the sake of performance
+            // to avoid expensive index searches.
+            item.index = hoverIndex
+        },
+    })
+
+    const [{ isDragging }, drag] = useDrag({
+        type: `attachedPolicyCard-${currentFlow}`,
+        item: { index, droppedPolicy: policyObj },
+        collect: (monitor: DragSourceMonitor) => ({
+          isDragging: monitor.isDragging(),
+        }),
+      })
+
+    const opacity = isDragging ? 0 : 1;
 
     const handleDelete = (event: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
         const filteredList = currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp);
@@ -116,13 +176,12 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             setDrawerOpen(open);
         };
 
-    const policyColor = Utils.stringToColor(policyObj.name);
-    const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
+    drag(drop(ref));
 
     return (
         <>
             <div
-                // ref={drag}
+                ref={drag}
                 style={{
                     ...style,
                     borderColor: policyColor,

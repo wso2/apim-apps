@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme: any) => ({
     },
     uploadedFileDetails: {
         marginTop: '2em',
-        width: '75%',
+        width: '50%',
     },
 }));
 
@@ -199,23 +199,13 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                                     primary={`${policyTemplateFile[0].path}`}
                                                 />
                                                 <ListItemSecondaryAction>
-                                                    {isReadOnly ? (
-                                                        <IconButton
-                                                            edge='end'
-                                                            aria-label='Download policy template'
-                                                            onClick={() => handlePolicyTemplateDownload()}
-                                                        >
-                                                            <Icon>vertical_align_bottom</Icon>
-                                                        </IconButton>
-                                                    ) : (
-                                                        <IconButton
-                                                            edge='end'
-                                                            aria-label='delete'
-                                                            onClick={() => setPolicyTemplateFile([])}
-                                                        >
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    )}
+                                                    <IconButton
+                                                        edge='end'
+                                                        aria-label='delete'
+                                                        onClick={() => setPolicyTemplateFile([])}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
                                                 </ListItemSecondaryAction>
                                             </ListItem>
                                         </List>
@@ -233,23 +223,13 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                                 primary='Test.xml'
                                             />
                                             <ListItemSecondaryAction>
-                                                {isReadOnly ? (
-                                                    <IconButton
-                                                        edge='end'
-                                                        aria-label='Download policy template'
-                                                        onClick={() => handlePolicyTemplateDownload()}
-                                                    >
-                                                        <Icon>vertical_align_bottom</Icon>
-                                                    </IconButton>
-                                                ) : (
-                                                    <IconButton
-                                                        edge='end'
-                                                        aria-label='delete'
-                                                        onClick={() => setPolicyTemplateFile([])}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                )}
+                                                <IconButton
+                                                    // edge='end'
+                                                    aria-label='Download policy template'
+                                                    onClick={() => handlePolicyTemplateDownload()}
+                                                >
+                                                    <Icon>vertical_align_bottom</Icon>
+                                                </IconButton>
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                     </List>

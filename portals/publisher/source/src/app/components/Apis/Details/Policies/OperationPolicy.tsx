@@ -246,6 +246,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                         currentPolicyList={requestFlowPolicyList}
                                         setCurrentPolicyList={setRequestFlowPolicyList}
                                         droppablePolicyList={requestFlowDroppablePolicyList}
+                                        currentFlow='request'
                                     />
                                 )}
                             </Box>
@@ -262,6 +263,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                         currentPolicyList={responseFlowPolicyList}
                                         setCurrentPolicyList={setResponseFlowPolicyList}
                                         droppablePolicyList={responseFlowDroppablePolicyList}
+                                        currentFlow='response'
                                     />
                                 )}
                             </Box>
@@ -278,6 +280,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
                                         currentPolicyList={faultFlowPolicyList}
                                         setCurrentPolicyList={setFaultFlowPolicyList}
                                         droppablePolicyList={faultFlowDroppablePolicyList}
+                                        currentFlow='fault'
                                     />
                                 )}
                             </Box>

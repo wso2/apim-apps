@@ -25,6 +25,7 @@ interface AttachedPolicyListProps {
     currentPolicyList: Policy[];
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
     policyDisplayStartDirection: string;
+    currentFlow: string;
 }
 
 /**
@@ -33,18 +34,18 @@ interface AttachedPolicyListProps {
  * @returns {TSX} Radio group for the API Gateway.
  */
 const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
-    currentPolicyList, setCurrentPolicyList, policyDisplayStartDirection
+    currentPolicyList, setCurrentPolicyList, policyDisplayStartDirection, currentFlow
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
 
     const movePolicyCard = (dragIndex: number, hoverIndex: number) => {
-        const dragCard = currentPolicyList[dragIndex]
+        const dragItem = currentPolicyList[dragIndex];
         setCurrentPolicyList(
             update(currentPolicyList, {
                 $splice: [
                     [dragIndex, 1],
-                    [hoverIndex, 0, dragCard],
+                    [hoverIndex, 0, dragItem],
                 ],
             }),
         )
@@ -52,13 +53,15 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
 
     return (
         <>
-            {policyListToDisplay.map((policy: Policy) => (
+            {policyListToDisplay.map((policy: Policy, index: number) => (
                 <AttachedPolicyCard
                     key={policy.id}
+                    index={index}
                     policyObj={policy}
                     movePolicyCard={movePolicyCard}
                     currentPolicyList={currentPolicyList}
                     setCurrentPolicyList={setCurrentPolicyList}
+                    currentFlow={currentFlow}
                 />
             ))}
         </>
