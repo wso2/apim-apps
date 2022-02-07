@@ -2947,16 +2947,14 @@ class API extends Resource {
 
     /**
      * Get all common operation policies to all the APIs
-     * @param {String} limit limit of the common operation policies which needs to be retrieved
-     * @param {String} offset offset of the common operation policies which needs to be retrieved
      * @returns {Promise} Promise containing a list of all common operation policies that can be used by any API
      */
-    static getCommonOperationPolicies(limit = null, offset = null) {
+    static getCommonOperationPolicies() {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        // const limit = Configurations.app.operationPolicyCount;
+        const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
             return client.apis['Operation Policies'].getAllCommonOperationPolicies(
-                {limit, offset},
+                {limit},
                 this._requestMetaData(),
             );
         });
@@ -3046,19 +3044,16 @@ class API extends Resource {
     /**
      * Get API specific operation policies
      * @param {String} apiId UUID of the API
-     * @param {String} limit limit of the operation policies which needs to be retrieved
-     * @param {String} offset offset of the operation policies which needs to be retrieved
      * @returns {Promise} Promise with list of operation policies
      */
-    static getOperationPolicies(apiId, limit = null, offset = null) {
+    static getOperationPolicies(apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        // const limit = Configurations.app.operationPolicyCount;
+        const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
             return client.apis['Operation Policies'].getAllAPISpecificOperationPolicies(
                 {
                     apiId: apiId,
                     limit: limit,
-                    offset: offset,
                 },
                 this._requestMetaData(),
             );
