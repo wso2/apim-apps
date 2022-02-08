@@ -37,6 +37,8 @@ import API from 'AppData/api.js';
 import ApiContext from '../components/ApiContext';
 import Utils from 'AppData/Utils';
 import type { AttachedPolicy } from './Types';
+import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
+import type { Policy } from './Types';
 import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -183,30 +185,11 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     </IconButton>
                 </Box>
             </div>
-            <Drawer
-                anchor={'right'}
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-                classes={{ paper: classes.drawerPaper }}
-                key={policyObj.id}
-            >
-                <Box role='presentation'>
-                    <List>
-                        <ListItem key={'policy-config'}>
-                        <ListItemIcon>
-                            <Settings />
-                        </ListItemIcon>
-                        <ListItemText primary={'Configure'} />
-                        <ListItemIcon>
-                            <IconButton onClick={toggleDrawer(false)}>
-                                <Close />
-                            </IconButton>
-                        </ListItemIcon>
-                        </ListItem>
-                    </List>
-                    <Divider />
-                </Box>
-            </Drawer>
+            <PolicyConfiguringDrawer 
+                policyObj={policyObj} 
+                drawerOpen={drawerOpen} 
+                toggleDrawer={toggleDrawer} 
+                />
         </>
     );
 };

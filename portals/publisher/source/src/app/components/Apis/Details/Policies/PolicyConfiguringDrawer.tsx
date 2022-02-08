@@ -17,14 +17,33 @@
  */
 
 import React, { FC } from 'react';
-import { Grid, makeStyles, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { Drawer, makeStyles, ListItemIcon } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import { Settings, Close } from '@material-ui/icons';
+import Divider from '@material-ui/core/Divider';
+import General from './PolicyForm/General';
+import { Policy } from './Types';
 
-const useStyles = makeStyles((theme: any) => ({
-
+const useStyles = makeStyles(() => ({
+    drawerPaper: {
+        backgroundColor: 'white',
+    },
+    actionsBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: '1em',
+    },
 }));
 
 interface PolicyConfiguringDrawerProps {
-    droppedPolicyId: number;
+    policyObj: Policy;
+    drawerOpen: boolean;
+    toggleDrawer: Function;
+
 }
 
 /**
@@ -33,12 +52,36 @@ interface PolicyConfiguringDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
-    droppedPolicyId
+    policyObj, drawerOpen, toggleDrawer
 }) => {
     const classes = useStyles();
-
+    // eslint-disable-next-line no-console
+    console.log(policyObj);
     return (
-        <h1>Hello</h1>
+        <Drawer
+            anchor='right'
+            open={drawerOpen}
+            onClose={toggleDrawer(false)}
+            classes={{ paper: classes.drawerPaper }}
+        >
+            <Box role='presentation'>
+                <List>
+                    <ListItem key='policy-config'>
+                        <ListItemIcon>
+                            <Settings />
+                        </ListItemIcon>
+                        <ListItemText primary='Configure' />
+                        <ListItemIcon>
+                            <IconButton onClick={toggleDrawer(false)}>
+                                <Close />
+                            </IconButton>
+                        </ListItemIcon>
+                    </ListItem>
+                </List>
+                <Divider />
+                <General />
+            </Box>
+        </Drawer>
     );
 }
 
