@@ -27,6 +27,7 @@ import AuthManager from 'AppData/AuthManager';
 import Icon from '@material-ui/core/Icon';
 import fileDownload from 'js-file-download';
 import converter from 'graphql-to-postman';
+import Box from '@material-ui/core/Box';
 import GraphQLUI from './GraphQLUI';
 import TryOutController from '../ApiConsole/TryOutController';
 import { ApiContext } from '../ApiContext';
@@ -250,6 +251,22 @@ export default function GraphQLConsole() {
                     api={api}
                     URLs={URLs}
                 />
+                <Box display='flex' justifyContent='center'>
+                    <Box
+                        width='50%'
+                        display='flex'
+                        flexDirection='column'
+                    >
+                        <Box ml={-5} display='flex'>
+                            <Typography variant='h5' component='h3' color='textPrimary'>
+                                <FormattedMessage
+                                    id='api.console.gql.additional.headers'
+                                    defaultMessage='Additional Headers'
+                                />
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Box>
                 <Grid container className={classes.grid}>
                     <Grid item md={6}>
                         <AdditionalHeaders

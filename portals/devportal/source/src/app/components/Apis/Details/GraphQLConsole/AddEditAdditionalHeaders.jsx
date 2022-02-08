@@ -24,6 +24,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import FormDialogBase from 'AppComponents/Apis/Details/GraphQLConsole/FormDialogBase';
 import TextField from '@material-ui/core/TextField';
 import CreateIcon from '@material-ui/icons/Create';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     error: {
@@ -128,7 +129,12 @@ function AddEditAdditionalHeaders(props) {
             formSaveCallback={formSaveCallback}
         >
             <DialogContentText>
-                Description
+                <Typography variant='caption'>
+                    <FormattedMessage
+                        id='GraphQL.Devportal.Tryout.Addtional.headers.help'
+                        defaultMessage='This configuration is used to add additional Headers.'
+                    />
+                </Typography>
             </DialogContentText>
             <TextField
                 margin='dense'
@@ -137,11 +143,9 @@ function AddEditAdditionalHeaders(props) {
                 onChange={onChange}
                 label={(
                     <span>
-                        Header
-                        {' '}
                         <FormattedMessage
                             id='GraphQL.Devportal.Tryout.Additional.header.form.name'
-                            defaultMessage='Name'
+                            defaultMessage='Header Name'
                         />
                         <span className={classes.error}>*</span>
                     </span>
@@ -162,11 +166,9 @@ function AddEditAdditionalHeaders(props) {
                 onChange={onChange}
                 label={(
                     <span>
-                        Header
-                        {' '}
                         <FormattedMessage
                             id='GraphQL.Devportal.Tryout.Additional.header.form.value'
-                            defaultMessage='Value'
+                            defaultMessage='Header Value'
                         />
 
                         <span className={classes.error}>*</span>
