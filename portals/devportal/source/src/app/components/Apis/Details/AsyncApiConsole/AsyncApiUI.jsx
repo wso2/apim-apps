@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => (
             fontSize: '14px',
             fontWeight: 700,
             padding: '2px 2px 2px 10px',
-            border: '2px solid #41444e',
             borderRadius: '4px',
             color: '#3b4151',
         }
@@ -61,8 +60,10 @@ export default function AsyncApiUI(props) {
         accessTokenProvider,
     } = props;
     const { api } = useContext(ApiContext);
+    const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
-    let initialEndpoint = URLs && URLs.http;
+    let initialEndpoint;
+    initialEndpoint = URLs && URLs.http;
     if (api.type === CONSTANTS.API_TYPES.WS) {
         initialEndpoint = URLs && URLs.ws;
     }
@@ -95,6 +96,8 @@ export default function AsyncApiUI(props) {
             token = accessTokenProvider();
         } else if (securitySchemeType === 'BASIC') {
             token = 'Basic ' + accessTokenProvider();
+        } else if (isAdvertised) {
+            token = accessTokenProvider();
         } else {
             token = 'Bearer ' + accessTokenProvider();
         }
@@ -114,10 +117,18 @@ export default function AsyncApiUI(props) {
             if (lease) {
                 curl += `&hub.lease_seconds=${lease}`;
             }
-            curl += `' -H 'Authorization: ${token}'`;
+            if (api.advertiseInfo && api.advertiseInfo.adveritsed && authorizationHeader !== '') {
+                curl += `' -H '${authorizationHeader}: ${token}'`;
+            } else {
+                curl += `' -H 'Authorization: ${token}'`;
+            }
             return curl;
         } else {
-            return `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}' -H 'Authorization: ${token}'`;
+            if (isAdvertised && authorizationHeader !== '') {
+                curl = `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}' -H '${authorizationHeader}: ${token}'`;
+            }
+            return curl;
         }
     }
 
@@ -133,18 +144,51 @@ export default function AsyncApiUI(props) {
     function generateWSSubscriptionCommand(topic) {
         const token = generateAccessToken();
         if (topic.name.includes('*')) {
-            return `wscat -c '${endPoint}' -H 'Authorization: ${token}'`;
+            let wscat = `wscat -c '${endPoint}' -H 'Authorization: ${token}'`;
+            if (isAdvertised && authorizationHeader !== '') {
+                wscat = `wscat -c '${endPoint}' -H '${authorizationHeader}: ${token}'`;
+            }
+            return wscat;
         } else {
-            return `wscat -c '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            let wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            if (isAdvertised && authorizationHeader !== '') {
+                wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
+            }
+            return wscat;
         }
     }
 
     function generateSSESubscriptionCommand(topic) {
         const token = generateAccessToken();
         if (topic.name.includes('*')) {
-            return `curl -X GET '${endPoint}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X GET '${endPoint}' -H 'Authorization: ${token}'`;
+            if (isAdvertised && authorizationHeader !== '') {
+                curl = `curl -X GET '${endPoint}' -H '${authorizationHeader}: ${token}'`;
+            }
+            return curl;
         } else {
-            return `curl -X GET '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            if (isAdvertised && authorizationHeader !== '') {
+                curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
+            }
+            return curl;
+        }
+    }
+
+    function generateASYNCSubscriptionCommand(topic) {
+        const token = generateAccessToken();
+        if (topic.name.includes('*')) {
+            let curl = `curl -X GET '${endPoint}' -H 'Authorization: ${token}'`;
+            if (authorizationHeader !== '') {
+                curl = `curl -X GET '${endPoint}' -H '${authorizationHeader}: ${token}'`;
+            }
+            return curl;
+        } else {
+            let curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            if (authorizationHeader !== '') {
+                curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
+            }
+            return curl;
         }
     }
 
@@ -184,6 +228,11 @@ export default function AsyncApiUI(props) {
                 {api.type === CONSTANTS.API_TYPES.WS && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
                         generateGenericSubscriptionCommand={generateWSSubscriptionCommand}
+                        topic={topic}/>
+                ))}
+                {api.type === CONSTANTS.API_TYPES.ASYNC && allTopics.list.map((topic, index) => (
+                    <GenericSubscriptionUI
+                        generateGenericSubscriptionCommand={generateASYNCSubscriptionCommand}
                         topic={topic}/>
                 ))}
             </>

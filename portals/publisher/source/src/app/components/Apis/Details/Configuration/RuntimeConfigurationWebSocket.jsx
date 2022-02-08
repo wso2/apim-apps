@@ -289,6 +289,7 @@ export default function RuntimeConfiguration() {
                                     </Button>
                                 ) : (
                                     <CustomSplitButton
+                                        advertiseInfo={api.advertiseInfo}
                                         handleSave={handleSave}
                                         handleSaveAndDeploy={handleSaveAndDeploy}
                                         isUpdating={isUpdating}

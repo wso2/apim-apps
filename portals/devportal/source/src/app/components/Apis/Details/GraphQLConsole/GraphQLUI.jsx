@@ -87,7 +87,9 @@ export default function GraphQLUI(props) {
      */
     function graphiQLFetcher(graphQLParams) {
         let token;
-        if (authorizationHeader === 'apikey') {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            token = accessTokenProvider();
+        } else if (authorizationHeader === 'apikey') {
             token = accessTokenProvider();
         } else if (securitySchemeType === 'BASIC') {
             token = 'Basic ' + accessTokenProvider();

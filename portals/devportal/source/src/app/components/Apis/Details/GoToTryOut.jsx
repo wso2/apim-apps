@@ -99,7 +99,8 @@ export default function GoToTryOut() {
     const isAsyncAPI = (api
         && (api.type === CONSTANTS.API_TYPES.WS
             || api.type === CONSTANTS.API_TYPES.WEBSUB
-            || api.type === CONSTANTS.API_TYPES.SSE));
+            || api.type === CONSTANTS.API_TYPES.SSE
+            || api.type === CONSTANTS.API_TYPES.ASYNC));
     const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
     const getKeyRequest = async () => {
         const promisedKeyManagers = restApi.getKeyManagers();

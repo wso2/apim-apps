@@ -44,8 +44,20 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": {
     "defaultMessage": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
   },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": {
+    "defaultMessage": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title": {
+    "defaultMessage": "\"Other\" type streaming APIs will be created as third party APIs."
+  },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": {
     "defaultMessage": "Cancel"
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint": {
+    "defaultMessage": "External Endpoint"
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.heading": {
     "defaultMessage": "Create an API using an AsyncAPI definition."
@@ -510,6 +522,15 @@
   "Apis.Details.ApiConsole.ApiConsole.title": {
     "defaultMessage": "Try Out"
   },
+  "Apis.Details.ApiConsole.adv.auth.header": {
+    "defaultMessage": "Authorization Header"
+  },
+  "Apis.Details.ApiConsole.adv.auth.header.value": {
+    "defaultMessage": "Authorization Header Value"
+  },
+  "Apis.Details.ApiConsole.authentication.heading": {
+    "defaultMessage": "Authentication"
+  },
   "Apis.Details.ApiConsole.deployments.api.gateways": {
     "defaultMessage": "API Gateways"
   },
@@ -518,6 +539,15 @@
   },
   "Apis.Details.ApiConsole.deployments.no": {
     "defaultMessage": "{artifactType} is not deployed yet! Please deploy the {artifactType} before trying out"
+  },
+  "Apis.Details.ApiConsole.endpoint": {
+    "defaultMessage": "Endpoint type"
+  },
+  "Apis.Details.ApiConsole.endpoint.help": {
+    "defaultMessage": "Please select an endpoint type"
+  },
+  "Apis.Details.ApiConsole.enpoint.heading": {
+    "defaultMessage": "API Endpoint"
   },
   "Apis.Details.ApiConsole.environment": {
     "defaultMessage": "Environment"
@@ -696,7 +726,7 @@
   "Apis.Details.Configuration.Resources.save": {
     "defaultMessage": "Save"
   },
-  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.\n                                                    product.endpoint": {
+  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.product.endpoint": {
     "defaultMessage": "Please refer respective APIs for endpoint information"
   },
   "Apis.Details.Configuration.RuntimeConfiguration.no.km.error": {
@@ -716,6 +746,27 @@
   },
   "Apis.Details.Configuration.RuntimeConfigurationWebSocket.topic.header": {
     "defaultMessage": "Runtime Configurations"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message": {
+    "defaultMessage": "This API is currently published and by changing to a regular API, it will not be available for consumption since it has no active deployments."
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.continue": {
+    "defaultMessage": "Continue"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.dialog.title": {
+    "defaultMessage": "Restore to a Regular API"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint": {
+    "defaultMessage": "Endpoint"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.tier.message": {
+    "defaultMessage": "Business Plans:"
   },
   "Apis.Details.Configuration.components.APILevelRateLimitingPolicies.configuration": {
     "defaultMessage": "Rate Limiting Configuration"
@@ -776,6 +827,54 @@
   },
   "Apis.Details.Configuration.components.AccessControl.tooltip.restrict.\n                                    desc": {
     "defaultMessage": "The API can be viewed and modified only by specific publishers and creators with the roles that you specify"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.label": {
+    "defaultMessage": "Mark the API as third party"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.no": {
+    "defaultMessage": "No"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.yes": {
+    "defaultMessage": "Yes"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint": {
+    "defaultMessage": "API External Production Endpoint"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint.help": {
+    "defaultMessage": "This is the external production endpoint of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint": {
+    "defaultMessage": "API External Sandbox Endpoint"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint.help": {
+    "defaultMessage": "This is the external sandbox endpoint of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning": {
+    "defaultMessage": "If you want to deploy and API in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title": {
+    "defaultMessage": "The \"Other\" type streaming APIs will serve as third party APIs."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning": {
+    "defaultMessage": "Please undeploy the revision before changing the API to a third party API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title": {
+    "defaultMessage": "There are active deployments in the API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": {
+    "defaultMessage": "Original Developer URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.error": {
+    "defaultMessage": "Invalid Original Developer Portal URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help": {
+    "defaultMessage": "This is the original developer portal of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.tooltip": {
+    "defaultMessage": "Indicates if an API is a third party API. You can use third party APIs to expose an externally published API through API Manager."
   },
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": {
     "defaultMessage": "Access Control Allow Headers"
@@ -1764,6 +1863,9 @@
   "Apis.Details.Environments.Environments.Deployments": {
     "defaultMessage": "Revisions"
   },
+  "Apis.Details.Environments.Environments.advertise.only.warning": {
+    "defaultMessage": "This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required."
+  },
   "Apis.Details.Environments.Environments.api.gateways.heading": {
     "defaultMessage": "API Gateways"
   },
@@ -1998,11 +2100,29 @@
   "Apis.Details.LifeCycle.Policies.select.plan.api.product": {
     "defaultMessage": "Select a plan for the API product."
   },
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.advertise": {
+    "defaultMessage": "Publish"
+  },
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.see.less": {
+    "defaultMessage": "See less"
+  },
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.see.more": {
+    "defaultMessage": "See more"
+  },
   "Apis.Details.LifeCycle.components.confirm.publish.message": {
     "defaultMessage": "The API will not be available for consumption unless it is deployed."
   },
+  "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": {
+    "defaultMessage": "If you want to publish as a third party API, please provide the external endpoint and press \"Publish\"."
+  },
   "Apis.Details.LifeCycle.components.confirm.publish.title": {
     "defaultMessage": "Publish API without deployments"
+  },
+  "Apis.Details.LifeCycle.components.externalEndpoint": {
+    "defaultMessage": "External Endpoint"
+  },
+  "Apis.Details.LifeCycle.externalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
   },
   "Apis.Details.LifeCycle.publish.content.info.deployments": {
     "defaultMessage": "Deployments"
@@ -2109,6 +2229,12 @@
   "Apis.Details.NewOverview.Endpoints.endpoints": {
     "defaultMessage": "Endpoints"
   },
+  "Apis.Details.NewOverview.Endpoints.external.production.endpoint": {
+    "defaultMessage": "External Production Endpoint"
+  },
+  "Apis.Details.NewOverview.Endpoints.external.sandbox.endpoint": {
+    "defaultMessage": "External Sandbox Endpoint"
+  },
   "Apis.Details.NewOverview.Endpoints.not.set": {
     "defaultMessage": "-"
   },
@@ -2162,6 +2288,12 @@
   },
   "Apis.Details.NewOverview.MetaData.metadata": {
     "defaultMessage": "Metadata"
+  },
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl": {
+    "defaultMessage": "Original Developer Portal URL"
+  },
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl.not.set": {
+    "defaultMessage": "-"
   },
   "Apis.Details.NewOverview.MetaData.provider": {
     "defaultMessage": "Provider"
@@ -3086,6 +3218,9 @@
   },
   "Apis.Details.TryOutConsole.token.label": {
     "defaultMessage": "Internal API Key"
+  },
+  "Apis.Details.components.APIDetailsTopMenu.advertise.only.label": {
+    "defaultMessage": "Third Party"
   },
   "Apis.Details.components.APIDetailsTopMenu.created.by": {
     "defaultMessage": "Created by:"

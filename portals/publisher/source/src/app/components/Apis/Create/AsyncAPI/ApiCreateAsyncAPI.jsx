@@ -38,7 +38,9 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Chip from '@material-ui/core/Chip';
+import Joi from '@hapi/joi';
 import { upperCaseString } from 'AppData/stringFormatter';
+import ExternalEndpoint from 'AppComponents/Apis/Create/AsyncAPI/ExternalEndpoint';
 import ProvideAsyncAPI from './Steps/ProvideAsyncAPI';
 
 /**
@@ -54,6 +56,8 @@ export default function ApiCreateAsyncAPI(props) {
     // eslint-disable-next-line no-use-before-define
     const classes = useStyles();
     const [hideEndpoint, setHideEndpoint] = useState(true);
+    const [hideExternalEndpoint, setHideExternalEndpoint] = useState(true);
+    const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(true);
 
     /**
      *
@@ -89,6 +93,8 @@ export default function ApiCreateAsyncAPI(props) {
                     gatewayVendor: value.gatewayVendor,
                     asyncTransportProtocols: value.asyncTransportProtocols,
                 };
+            case 'externalEndpoint':
+                return { ...currentState, [action]: value };
             default:
                 return currentState;
         }
@@ -117,12 +123,18 @@ export default function ApiCreateAsyncAPI(props) {
             displayName: 'SSE',
             description: 'Server-Sent Events',
         },
+        {
+            name: 'other',
+            displayName: 'Other',
+            description: 'Other Async APIs such as AMQP, MQTT etc.',
+        },
     ];
 
     const protocolKeys = {
         WebSocket: 'WS',
         SSE: 'SSE',
         WebSub: 'WEBSUB',
+        Other: 'ASYNC',
     };
 
     /**
@@ -136,6 +148,19 @@ export default function ApiCreateAsyncAPI(props) {
     }
 
     /**
+     * Validate the external endpoint URL
+     * @param value endpoint URL
+     * @returns {boolean} validity of the URL
+     */
+    function validateEndpoint(value) {
+        if (value) {
+            const urlSchema = Joi.string().uri().empty();
+            return !urlSchema.validate(value).error;
+        }
+        return false;
+    }
+
+    /**
      *
      *
      * @param {*} event
@@ -144,8 +169,16 @@ export default function ApiCreateAsyncAPI(props) {
         const { name: action, value } = event.target;
         if (value === 'WebSub') {
             setHideEndpoint(true);
+            setHideExternalEndpoint(true);
+            setValidExternalEndpoint(true);
+        } else if (value === 'Other') {
+            setHideEndpoint(true);
+            setHideExternalEndpoint(false);
+            setValidExternalEndpoint(validateEndpoint(apiInputs.externalEndpoint));
         } else {
             setHideEndpoint(false);
+            setHideExternalEndpoint(true);
+            setValidExternalEndpoint(true);
         }
         inputsDispatcher({ action, value });
     }
@@ -174,6 +207,7 @@ export default function ApiCreateAsyncAPI(props) {
         setCreating(true);
         const {
             name, version, context, endpoint, policies, inputValue, inputType, protocol, gatewayVendor,
+            externalEndpoint,
         } = apiInputs;
         const additionalProperties = {
             name,
@@ -195,6 +229,16 @@ export default function ApiCreateAsyncAPI(props) {
                 production_endpoints: {
                     url: endpoint,
                 },
+            };
+        }
+        if (protocolKeys[protocol] === 'ASYNC') {
+            additionalProperties.advertiseInfo = {
+                advertised: true,
+                apiExternalProductionEndpoint: externalEndpoint,
+                apiExternalSandboxEndpoint: externalEndpoint,
+                originalDevPortalUrl: '',
+                apiOwner: 'admin',
+                vendor: 'WSO2',
             };
         }
         const newAPI = new API(additionalProperties);
@@ -349,6 +393,16 @@ export default function ApiCreateAsyncAPI(props) {
                                     ))}
                                 </TextField>
                             )}
+                            {!hideExternalEndpoint && (
+                                <ExternalEndpoint
+                                    classes={classes}
+                                    apiInputs={apiInputs}
+                                    inputsDispatcher={inputsDispatcher}
+                                    isValidExternalEndpoint={isValidExternalEndpoint}
+                                    setValidExternalEndpoint={setValidExternalEndpoint}
+                                    validateEndpoint={validateEndpoint}
+                                />
+                            )}
                         </DefaultAPIForm>
                     )}
                 </Grid>
@@ -387,7 +441,7 @@ export default function ApiCreateAsyncAPI(props) {
                                 <Button
                                     variant='contained'
                                     color='primary'
-                                    disabled={!apiInputs.isFormValid || isCreating}
+                                    disabled={!apiInputs.isFormValid || isCreating || !isValidExternalEndpoint}
                                     onClick={createAPI}
                                 >
                                     Create
@@ -411,5 +465,13 @@ const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
+    },
+    externalEndpointWarning: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+    },
+    alertTitle: {
+        fontWeight: theme.typography.fontWeightMedium,
+        marginTop: -2,
     },
 }));

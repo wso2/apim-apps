@@ -60,6 +60,10 @@ const styles = (theme) => ({
         display: 'inline-flex',
         lineHeight: '38px',
     },
+    mandatoryStar: {
+        color: theme.palette.error.main,
+        marginLeft: theme.spacing(0.1),
+    },
 });
 
 /**
@@ -196,9 +200,9 @@ class LifeCycleUpdate extends Component {
             action = 'Deploy as a Prototype';
         }
         const {
-            api: { id: apiUUID },
+            api: { id: apiUUID, advertiseInfo },
         } = this.props;
-        if (action === 'Publish' && !deploymentsAvailable) {
+        if (action === 'Publish' && !deploymentsAvailable && !advertiseInfo.advertised) {
             this.setIsOpen(true);
         } else {
             this.updateLCStateOfAPI(apiUUID, action);
@@ -246,11 +250,10 @@ class LifeCycleUpdate extends Component {
                 return {
                     ...state,
                     disabled:
-                        (api.type !== 'WEBSUB' && api.endpointConfig === null && !isAPIProduct)
-                        || (isMutualSSLEnabled && !isCertAvailable)
-                        || (isAppLayerSecurityMandatory && !isBusinessPlanAvailable)
+                        ((isMutualSSLEnabled && !isCertAvailable)
                         || (api.type !== 'WEBSUB' && api.endpointConfig != null
-                            && api.endpointConfig.implementation_status === 'prototyped'),
+                            && api.endpointConfig.implementation_status === 'prototyped'))
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised),
                 };
             }
             return {
@@ -277,8 +280,8 @@ class LifeCycleUpdate extends Component {
                                 <Grid item xs={8}>
                                     <LifeCycleImage lifeCycleStatus={newState || lifeCycleStatus} />
                                 </Grid>
-                                {(lifeCycleStatus === 'CREATED'
-                                    || lifeCycleStatus === 'PROTOTYPED') && (
+                                {(lifeCycleStatus === 'CREATED' || lifeCycleStatus === 'PROTOTYPED')
+                                    && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                                     <Grid item xs={3}>
                                         <CheckboxLabels
                                             api={api}
@@ -316,27 +319,27 @@ class LifeCycleUpdate extends Component {
                     <ScopeValidation resourcePath={resourcePath.API_CHANGE_LC} resourceMethod={resourceMethod.POST}>
                         <div className={classes.buttonsWrapper}>
                             {!isWorkflowPending
-                                && lifecycleButtons.map((transitionState) => {
-                                    /* Skip when transitions available for current state ,
-                            this occurs in states where have allowed re-publishing in prototype and published sates */
-                                    return (
-                                        <Button
-                                            disabled={transitionState.disabled
-                                                || this.state.isUpdating || api.isRevision}
-                                            variant='contained'
-                                            color='primary'
-                                            className={classes.stateButton}
-                                            key={transitionState.event}
-                                            data-value={transitionState.event}
-                                            onClick={this.updateLifeCycleState}
-                                        >
-                                            {transitionState.displayName}
-                                            {this.state.isUpdating === transitionState.event && (
-                                                <CircularProgress size={18} />
-                                            )}
-                                        </Button>
-                                    );
-                                })}
+                            && lifecycleButtons.map((transitionState) => {
+                                /* Skip when transitions available for current state, this occurs in states
+                                where have allowed re-publishing in prototype and published sates */
+                                return (
+                                    <Button
+                                        disabled={transitionState.disabled
+                                        || this.state.isUpdating || api.isRevision}
+                                        variant='contained'
+                                        color='primary'
+                                        className={classes.stateButton}
+                                        key={transitionState.event}
+                                        data-value={transitionState.event}
+                                        onClick={this.updateLifeCycleState}
+                                    >
+                                        {transitionState.displayName}
+                                        {this.state.isUpdating === transitionState.event && (
+                                            <CircularProgress size={18} />
+                                        )}
+                                    </Button>
+                                );
+                            })}
                         </div>
                     </ScopeValidation>
                 </Grid>
@@ -355,7 +358,8 @@ class LifeCycleUpdate extends Component {
                 )}
                 {/* end of Page error banner */}
                 <PublishWithoutDeploy
-                    apiID={api.id}
+                    classes={classes}
+                    api={api}
                     handleClick={this.handleClick}
                     handleClose={() => this.setIsOpen(false)}
                     open={isOpen}

@@ -26,7 +26,6 @@ import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
-import LaunchIcon from '@material-ui/icons/Launch';
 import Card from '@material-ui/core/Card';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -35,6 +34,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CardContent from '@material-ui/core/CardContent';
+import LaunchIcon from '@material-ui/icons/Launch';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
@@ -111,6 +111,12 @@ const useStyles = makeStyles((theme) => ({
     requestUnit: {
         fontSize: 13,
     },
+    launchIcon: {
+        paddingLeft: theme.spacing(1),
+    },
+    originalDevportalUrl: {
+        marginTop: theme.spacing(4),
+    },
 }));
 /**
  * @returns {JSX} overview section
@@ -131,7 +137,11 @@ function Overview() {
         },
     } = theme;
     const intl = useIntl();
-    const { api, subscribedApplications } = useContext(ApiContext);
+    const {
+        api,
+        api: { advertiseInfo },
+        subscribedApplications,
+    } = useContext(ApiContext);
     const [descriptionHidden, setDescriptionHidden] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [notFound, setNotFound] = useState(false);
@@ -423,7 +433,24 @@ function Overview() {
                                 )
                             }
                         </Box>
-                        {(api.gatewayVendor === 'wso2') && (
+                        <Box display='flex' flexDirection='row' alignItems='center' className={classes.originalDevportalUrl} mt={2} pr={6}>
+                            {advertiseInfo && advertiseInfo.advertised && advertiseInfo.originalDevPortalUrl && (
+                                <MUILink
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    href={advertiseInfo.originalDevPortalUrl}
+                                    variant='body3'
+                                >
+                                    <FormattedMessage
+                                        id={'Apis.Details.Credentials.Credentials.visit.original.'
+                                        + 'developer.portal'}
+                                        defaultMessage='Visit Original Developer Portal'
+                                    />
+                                    <LaunchIcon className={classes.launchIcon} />
+                                </MUILink>
+                            )}
+                        </Box>
+                        {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && (
                             <>
                                 <Box mt={6}>
                                     <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
@@ -522,7 +549,7 @@ function Overview() {
                             </>
                         )}
                         <Box mt={6}>
-                            {(!api.advertiseInfo.advertised && showComments) && (
+                            {showComments && (
                                 <>
                                     <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                                         <FormattedMessage
@@ -541,7 +568,7 @@ function Overview() {
                     </Box>
                 </Grid>
                 <Grid item xs={4} xl={3}>
-                    {!api.advertiseInfo.advertised && user && showRating && (
+                    {user && showRating && (
                         <Box display='flex' flexDirection='row' alignItems='center'>
                             <StarRatingSummary avgRating={rating.avgRating} reviewCount={rating.total} returnCount={rating.count} />
                             <VerticalDivider height={30} />
@@ -556,27 +583,6 @@ function Overview() {
                     <Box mt={6}>
                         <Social />
                     </Box>
-                    {api.advertiseInfo.advertised && (
-                        <>
-                            <a
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                href={api.advertiseInfo.originalStoreUrl}
-                                className={classes.viewInPubStoreLauncher}
-                            >
-                                <div>
-                                    <LaunchIcon />
-                                </div>
-                                <div className={classes.linkText}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Overview.visit.publisher.portal'
-                                        defaultMessage='Visit Publisher Portal'
-                                    />
-                                </div>
-                            </a>
-                            <VerticalDivider height={70} />
-                        </>
-                    )}
                     <Box mt={6} mb={1}>
                         <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                             <FormattedMessage

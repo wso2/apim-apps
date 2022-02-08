@@ -515,6 +515,7 @@ function Endpoints(props) {
                                             </Button>
                                         ) : (
                                             <CustomSplitButton
+                                                advertiseInfo={api.advertiseInfo}
                                                 handleSave={handleSave}
                                                 handleSaveAndDeploy={handleSaveAndDeploy}
                                                 isUpdating={isUpdating}

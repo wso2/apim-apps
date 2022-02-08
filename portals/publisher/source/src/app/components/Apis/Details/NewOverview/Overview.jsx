@@ -170,6 +170,7 @@ function Overview(props) {
                 return <ProductResources parentClasses={classes} api={api} />;
             case 'WS':
             case 'WEBSUB':
+            case 'ASYNC':
             case 'SSE':
                 return <Topics parentClasses={classes} api={api} />;
             default:
@@ -188,11 +189,13 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            <Grid container spacing={12}>
-                <Grid item xs={12} s={12} md={12} lg={12}>
-                    <CustomizedStepper />
+            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
+                <Grid container spacing={12}>
+                    <Grid item xs={12} s={12} md={12} lg={12}>
+                        <CustomizedStepper />
+                    </Grid>
                 </Grid>
-            </Grid>
+            )}
             <div className={classes.contentWrapper}>
                 <Paper className={classes.root}>
                     <Grid container spacing={4}>

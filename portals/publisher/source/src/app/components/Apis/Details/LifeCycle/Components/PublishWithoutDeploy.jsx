@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -29,10 +29,15 @@ import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import LinkIcon from '@material-ui/icons/Link';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import Box from '@material-ui/core/Box';
 // import Link from '@material-ui/core/Link';
 import Divider from '@material-ui/core/Divider';
 import { Link as RouterLink } from 'react-router-dom';
+import TextField from '@material-ui/core/TextField';
+import Alert from 'AppComponents/Shared/Alert';
+import Joi from '@hapi/joi';
 
 const styles = (theme) => ({
     root: {
@@ -82,8 +87,96 @@ const DialogActions = withStyles((theme) => ({
  */
 export default function PublishWithoutDeploy(props) {
     const {
-        apiID, handleClick, open, handleClose,
+        classes, api, handleClick, open, handleClose,
     } = props;
+
+    let isExternalEndpointAvailable = false;
+    let availableExternalEndpoint = '';
+    if (api.advertiseInfo && api.advertiseInfo.apiExternalProductionEndpoint
+        && api.advertiseInfo.apiExternalProductionEndpoint.length > 0) {
+        isExternalEndpointAvailable = true;
+        availableExternalEndpoint = api.advertiseInfo.apiExternalProductionEndpoint;
+    } else if (api.advertiseInfo && api.advertiseInfo.apiExternalSandboxEndpoint
+        && api.advertiseInfo.apiExternalSandboxEndpoint.length > 0) {
+        isExternalEndpointAvailable = true;
+        availableExternalEndpoint = api.advertiseInfo.apiExternalSandboxEndpoint;
+    }
+
+    const [externalEndpoint, setExternalEndpoint] = useState(availableExternalEndpoint);
+    const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(isExternalEndpointAvailable);
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    /**
+     * Validate external endpoint
+     *
+     * @param event
+     */
+    const handleOnChangeExternalEndpoint = (event) => {
+        const { value } = event.target;
+        setExternalEndpoint(value);
+        const urlSchema = Joi.string().uri().empty();
+        setValidExternalEndpoint(!urlSchema.validate(value).error);
+    };
+
+    const handlePublishClick = () => {
+        if (externalEndpoint && externalEndpoint.length > 0) {
+            const updatedAPI = {
+                id: api.id,
+                name: api.name,
+                description: api.description,
+                lifeCycleStatus: api.lifeCycleStatus,
+                accessControl: api.accessControl,
+                authorizationHeader: api.authorizationHeader,
+                responseCachingEnabled: api.responseCachingEnabled,
+                cacheTimeout: api.cacheTimeout,
+                visibility: api.visibility,
+                isDefaultVersion: api.isDefaultVersion,
+                enableSchemaValidation: api.enableSchemaValidation,
+                accessControlRoles: [...api.accessControlRoles],
+                visibleRoles: [...api.visibleRoles],
+                tags: [...api.tags],
+                maxTps: api.maxTps,
+                transport: [...api.transport],
+                wsdlUrl: api.wsdlUrl,
+                securityScheme: [...api.securityScheme],
+                categories: [...api.categories],
+                corsConfiguration: {
+                    corsConfigurationEnabled: api.corsConfiguration.corsConfigurationEnabled,
+                    accessControlAllowCredentials: api.corsConfiguration.accessControlAllowCredentials,
+                    accessControlAllowOrigins: [...api.corsConfiguration.accessControlAllowOrigins],
+                    accessControlAllowHeaders: [...api.corsConfiguration.accessControlAllowHeaders],
+                    accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
+                },
+                additionalProperties: [...api.additionalProperties],
+                type: api.type,
+                advertiseInfo: {
+                    advertised: true,
+                    apiExternalProductionEndpoint: externalEndpoint,
+                    apiExternalSandboxEndpoint: externalEndpoint,
+                    originalDevPortalUrl: api.advertiseInfo.originalDevPortalUrl,
+                    apiOwner: api.advertiseInfo.apiOwner,
+                    vendor: api.advertiseInfo.vendor,
+                },
+            };
+            const promisedUpdate = api.update(updatedAPI);
+            promisedUpdate
+                .then(() => {
+                    Alert.info('API updated successfully');
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        const message = 'Something went wrong while updating the API';
+                        Alert.error(message);
+                    }
+                    console.error(error);
+                })
+                .finally(() => {
+                    handleClick();
+                });
+        }
+    };
 
     return (
         <Dialog onClose={handleClose} aria-labelledby='publish-api-confirmation' open={open}>
@@ -100,26 +193,97 @@ export default function PublishWithoutDeploy(props) {
                         <Typography variant='subtitle1' display='block' gutterBottom>
                             <FormattedMessage
                                 id='Apis.Details.LifeCycle.components.confirm.publish.message'
-                                defaultMessage={'The API will not be available for '
-                                        + 'consumption unless it is deployed.'}
+                                defaultMessage='The API will not be available for consumption unless it is deployed.'
                             />
                         </Typography>
                     </DialogContentText>
                 </Box>
-
+                {isExpanded && (
+                    <>
+                        <Box my={1}>
+                            <DialogContentText id='itest-confirm-publish-text'>
+                                <Typography variant='subtitle1' display='block' gutterBottom>
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only'
+                                        defaultMessage={'If you want to publish as a third party API, please provide '
+                                        + 'the external endpoint and press "Publish".'}
+                                    />
+                                </Typography>
+                            </DialogContentText>
+                        </Box>
+                        <Box my={1}>
+                            <TextField
+                                fullWidth
+                                id='itest-id-api-external-endpoint-input'
+                                label={(
+                                    <>
+                                        <FormattedMessage
+                                            id='Apis.Details.LifeCycle.components.externalEndpoint'
+                                            defaultMessage='External Endpoint'
+                                        />
+                                        <sup className={classes.mandatoryStar}>*</sup>
+                                    </>
+                                )}
+                                name='externalEndpoint'
+                                value={externalEndpoint}
+                                onChange={handleOnChangeExternalEndpoint}
+                                helperText={!isValidExternalEndpoint && (
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.externalEndpoint.error'
+                                        defaultMessage='Invalid Endpoint URL'
+                                    />
+                                )}
+                                error={!isValidExternalEndpoint}
+                                margin='normal'
+                                variant='outlined'
+                            />
+                        </Box>
+                    </>
+                )}
             </DialogContent>
             <DialogActions>
-                <Button
-                    color='primary'
-                    onClick={handleClick}
-                >
-                    Publish
-                </Button>
+                {!isExpanded && (
+                    <Button
+                        color='primary'
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        endIcon={<ArrowDropDownIcon />}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.LifeCycle.PublishWithoutDeploy.see.more'
+                            defaultMessage='See more'
+                        />
+                    </Button>
+                )}
+                {isExpanded && (
+                    <>
+                        <Button
+                            color='primary'
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            endIcon={<ArrowDropUpIcon />}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.LifeCycle.PublishWithoutDeploy.see.less'
+                                defaultMessage='See less'
+                            />
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            disabled={!isValidExternalEndpoint}
+                            onClick={handlePublishClick}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.LifeCycle.PublishWithoutDeploy.advertise'
+                                defaultMessage='Publish'
+                            />
+                        </Button>
+                    </>
+                )}
                 <Button
                     variant='contained'
                     color='primary'
                     component={RouterLink}
-                    to={'/apis/' + apiID + '/deployments'}
+                    to={'/apis/' + api.id + '/deployments'}
                 >
                     <Box fontSize='button.fontSize' alignItems='center' display='flex' fontFamily='fontFamily'>
                         <FormattedMessage
