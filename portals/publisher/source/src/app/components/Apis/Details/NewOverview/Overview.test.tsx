@@ -1,12 +1,9 @@
 import React from 'react';
 import {
-    fireEvent,
     render,
     screen,
-    waitFor,
-    history,
 } from 'AppTests/Utils/TestingLibrary';
-import getMockServer, { resetMockHandler } from 'AppTests/Utils/restAPI.mock';
+import getMockServer, { onResponse, resetMockHandler} from 'AppTests/Utils/restAPI.mock';
 
 import { APIName } from 'AppTests/Utils/constants';
 import API from 'AppData/api';
@@ -23,6 +20,9 @@ afterAll(() => server.close());
 
 describe('API Details overview page', () => {
     test('Should render overview page', async () => {
+        onResponse((context, mock) => {
+            return { ...mock, advertiseInfo: { advertised: false }};
+        });
         const api = await API.get('mocked-api');
         render(
             <APIProvider value={{ api, tenantList: [] }}>
