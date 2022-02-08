@@ -32,6 +32,7 @@ import TryOutController from '../ApiConsole/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
+import AdditionalHeaders from './AdditionalHeaders';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -76,6 +77,7 @@ export default function GraphQLConsole() {
     const [sandboxApiKey, setSandboxApiKey] = useState('');
     const [productionApiKey, setProductionApiKey] = useState('');
     const [keys, setKeys] = useState([]);
+    const [additionalHeaders, setAdditionalHeaders] = useState([]);
     const user = AuthManager.getUser();
 
     useEffect(() => {
@@ -248,6 +250,14 @@ export default function GraphQLConsole() {
                     api={api}
                     URLs={URLs}
                 />
+                <Grid container className={classes.grid}>
+                    <Grid item md={6}>
+                        <AdditionalHeaders
+                            setAdditionalHeaders={setAdditionalHeaders}
+                            additionalHeaders={additionalHeaders}
+                        />
+                    </Grid>
+                </Grid>
             </Paper>
             <Paper className={classes.paper}>
                 <GraphQLUI
@@ -255,6 +265,7 @@ export default function GraphQLConsole() {
                     URLs={URLs}
                     securitySchemeType={securitySchemeType}
                     accessTokenProvider={accessTokenProvider}
+                    additionalHeaders={additionalHeaders}
                 />
             </Paper>
         </>
