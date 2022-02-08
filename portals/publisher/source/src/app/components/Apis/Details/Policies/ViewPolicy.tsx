@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect, useState }  from 'react';
+import React, { useContext, useEffect, useState }  from 'react';
 import {
     Typography,
 } from '@material-ui/core';
@@ -26,26 +26,18 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
+import Alert from 'AppComponents/Shared/Alert';
+import { Progress } from 'AppComponents/Shared';
+import API from 'AppData/api';
 import PolicyStepper from './PolicyStepper';
 import type { Policy, PolicySpec } from './Types';
+import ApiContext from '../components/ApiContext';
 
 interface ViewPolicyProps {
     handleDialogClose: () => void;
     dialogOpen: boolean;
     policyObj: Policy;
 }
-
-const DummyDefaultPolicySpec = {
-    category: 'Mediation',
-    name: 'Add Header',
-    displayName: 'Add Header',
-    description: '',
-    multipleAllowed: false,
-    applicableFlows: ['request', 'response', 'fault'],
-    supportedGateways: ['Synapse'],
-    supportedApiTypes: ['REST'],
-    policyAttributes: [],
-};
 
 /**
  * Renders the UI to view a policy selected from the policy list.
@@ -55,12 +47,22 @@ const DummyDefaultPolicySpec = {
 const ViewPolicy: React.FC<ViewPolicyProps> = ({
     handleDialogClose, dialogOpen, policyObj
 }) => {
+    const { api } = useContext<any>(ApiContext);
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<PolicySpec>(DummyDefaultPolicySpec);
+    const [policySpec, setPolicySpec] = useState<PolicySpec|null>(null);
 
     useEffect(() => {
-        setPolicySpec(DummyDefaultPolicySpec);
-    }, [])
+        if (dialogOpen) {
+            const promisedPolicyGet = API.getOperationPolicy(policyObj.id, api.id);
+            promisedPolicyGet
+                .then((response) => {
+                    setPolicySpec(response.body);
+                })
+                .catch((errorMessage) => {
+                    Alert.error(JSON.stringify(errorMessage));
+                });
+        }
+    }, [dialogOpen])
     
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
@@ -68,6 +70,10 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
 
     const toggleOpen = () => {
         handleDialogClose();
+    }
+
+    if (!policySpec) {
+        return <Progress />
     }
 
     return (
@@ -90,7 +96,7 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                 >
                     <Box display='flex'>
                         <Typography variant='h4' component='h2'>
-                            View {policyObj.name} Policy
+                            View {policyObj.displayName} Policy
                         </Typography>
                     </Box>
                     <Box display='flex'>

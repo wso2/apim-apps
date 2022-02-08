@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState }  from 'react';
+import React, { useContext, useState }  from 'react';
 import {
     Typography, makeStyles, Theme
 } from '@material-ui/core';
@@ -29,6 +29,10 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage} from 'react-intl';
+import { Progress } from 'AppComponents/Shared';
+import API from 'AppData/api.js';
+import Alert from 'AppComponents/Shared/Alert';
+import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import PolicyStepper from './PolicyStepper';
 import type { PolicySpec } from './Types';
 
@@ -55,6 +59,7 @@ const DefaultPolicySpec = {
 interface CreatePolicyProps {
     handleDialogClose: () => void;
     dialogOpen: boolean;
+    fetchPolicies: () => void;
 }
 
 /**
@@ -63,17 +68,45 @@ interface CreatePolicyProps {
  * @returns {TSX} Policy create UI.
  */
 const CreatePolicy: React.FC<CreatePolicyProps> = ({
-    handleDialogClose, dialogOpen
+    handleDialogClose, dialogOpen, fetchPolicies
 }) => {
     const classes = useStyles();
+    const { api } = useContext<any>(ApiContext);
+
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<PolicySpec>(DefaultPolicySpec);
+    const [policySpec, setPolicySpec] = useState<PolicySpec | null>(DefaultPolicySpec);
+
+    const savePolicy = (policySpecContent: PolicySpec, policyDefinition: any) => {
+        const promisedCommonPolicyAdd = API.addOperationPolicy(policySpecContent, policyDefinition, api.id);   
+        promisedCommonPolicyAdd
+            .then(() => {
+                Alert.info('Policy created successfully!');
+                setPolicyDefinitionFile([]);
+                setPolicySpec(DefaultPolicySpec);
+                handleDialogClose();
+                fetchPolicies();
+            })
+            .catch((error) => {
+                handleDialogClose();
+                const { response } = error;
+                if (response.body) {
+                    const { description } = response.body;
+                    console.log(description);
+                    Alert.error('Something went wrong while creating policy');
+                }
+            });
+    }
 
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
     }
 
-    const toggleOpen = () => {
+    if (!policySpec) {
+        return <Progress />
+    }
+
+    const onPolicyCreateSave = () => {
+        savePolicy(policySpec, policyDefinitionFile);
         handleDialogClose();
     }
 
@@ -104,7 +137,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                         </Typography>
                     </Box>
                     <Box display='flex'>
-                        <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                        <IconButton color='inherit' onClick={handleDialogClose} aria-label='Close'>
                             <Icon>close</Icon>
                         </IconButton>
                     </Box>
@@ -113,7 +146,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     <DialogContentText>
                         <PolicyStepper
                             isAPI
-                            onSave={toggleOpen}
+                            onSave={onPolicyCreateSave}
                             isReadOnly={false}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}

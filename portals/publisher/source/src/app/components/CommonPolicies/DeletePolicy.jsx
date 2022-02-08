@@ -24,55 +24,7 @@ import Icon from '@material-ui/core/Icon';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import { isRestricted } from 'AppData/AuthManager';
-// import API from 'AppData/api';
-
-// const styles = {
-//     appBar: {
-//         position: 'relative',
-//     },
-//     flex: {
-//         flex: 1,
-//     },
-//     popupHeader: {
-//         display: 'flex',
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//     },
-//     splitWrapper: {
-//         padding: 0,
-//     },
-//     docName: {
-//         alignItems: 'center',
-//         display: 'flex',
-//     },
-//     button: {
-//         height: 30,
-//         marginLeft: 30,
-//     },
-// };
-
-// interface Policy {
-//     id: number,
-//     name: string,
-//     description: string,
-//     flows: string[],
-//     usageCount: number,
-// }
-
-// interface IProps {
-//     policyId: number,
-//     policyName: string,
-//     policies: Policy[],
-//     setPolicies: React.Dispatch<SetStateAction<{
-//         id: number;
-//         name: string;
-//         description: string;
-//         flows: string[];
-//         usageCount: number;
-//     }[]>>,
-//     usageCount: number,
-//     //  (updatedPolicyList: ) => void,
-// }
+import API from 'AppData/api';
 
 /**
  * Renders the policy management page.
@@ -80,35 +32,33 @@ import { isRestricted } from 'AppData/AuthManager';
  * @returns {JSX} Returns the rendered UI for common policy delete.
  */
 const DeletePolicy = ({
-    policyId, policyName, policies, setPolicies,
+    policyId, policyName, fetchCommonPolicies
 }) => {
     const [open, setOpen] = useState(false);
+    const api = new API();
+    const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
     const toggleOpen = () => {
         setOpen(!open);
     };
-    const deletePolicy = () => {
-        // const restApi = new API();
-        // const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
-        // const deleteResponse = restApi.deletePolicyTemplate(policyId);
-        // deleteResponse
-        //     .then(() => {
-        //         Alert.info('Policy Template deleted successfully!');
-        //         setOpenLocal(!open);
-        //         fetchScopeData();
-        //     })
-        //     .catch((errorResponse: any) => {
-        //         console.error(errorResponse);
-        //         Alert.error('Error occurred while deleting the policy template');
-        //         setOpenLocal(!open);
-        //     });
-        setPolicies(policies.filter((policy) => policy.id !== policyId));
-        const alertMessage = policyName + ' policy deleted successfully!';
-        Alert.info(alertMessage);
+
+    const deleteCommonPolicy = () => {
+        const promisedCommonPolicyDelete = api.deleteCommonOperationPolicy(policyId);
+        promisedCommonPolicyDelete
+            .then(() => {
+                Alert.info(`${policyName} policy deleted successfully!`);
+                setOpenLocal(!open);
+                fetchCommonPolicies();
+            })
+            .catch((errorResponse) => {
+                console.error(errorResponse);
+                Alert.error('Error occurred while deleteting policy');
+                setOpenLocal(!open);
+            });
     };
 
     const runAction = (confirm) => {
         if (confirm) {
-            deletePolicy();
+            deleteCommonPolicy();
         } else {
             setOpen(!open);
         }
@@ -164,8 +114,7 @@ const DeletePolicy = ({
 DeletePolicy.propTypes = {
     policyId: PropTypes.number.isRequired,
     policyName: PropTypes.string.isRequired,
-    policies: PropTypes.shape({}).isRequired,
-    setPolicies: PropTypes.func.isRequired,
+    fetchCommonPolicies: PropTypes.func.isRequired,
 };
 
 export default DeletePolicy;

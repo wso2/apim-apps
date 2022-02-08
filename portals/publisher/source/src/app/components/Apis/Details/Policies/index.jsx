@@ -39,14 +39,8 @@ const Policy = () => {
             <Route
                 exact
                 path='/apis/:api_uuid/policies/create'
-                component={() => <CreatePolicy api={api} />}
-                // component={(props) => <CreatePolicy api={api} {...props} updateAPI={updateAPI} />}
+                component={() => <CreatePolicy api={api} updateAPI={updateAPI} />}
             />
-            {/* <Route
-                exact
-                path={'/' + urlPrefix + '/:api_uuid/scopes/edit'}
-                component={(props) => <EditScope api={api} {...props} updateAPI={updateAPI} />}
-            /> */}
             <Route component={ResourceNotFound} />
         </Switch>
     );

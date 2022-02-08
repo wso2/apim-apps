@@ -81,7 +81,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null)
-    const policyColor = Utils.stringToColor(policyObj.name);
+    const policyColor = Utils.stringToColor(policyObj.displayName);
     const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
 
     const [, drop] = useDrop({
@@ -191,13 +191,13 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 }}
                 onClick={toggleDrawer(true)}
             >
-                <Tooltip key={policyObj.id} title={policyObj.name} placement='top'>
+                <Tooltip key={policyObj.id} title={policyObj.displayName} placement='top'>
                     <Avatar
                         style={{
                             margin: '0.2em',
                             backgroundColor: policyColor,
                         }}
-                        { ...Utils.stringAvatar(policyObj.name.toUpperCase())}
+                        { ...Utils.stringAvatar(policyObj.displayName.toUpperCase())}
                     />
                 </Tooltip>
                 <Box className={classes.actionsBox}>

@@ -2961,6 +2961,24 @@ class API extends Resource {
     }
 
     /**
+     * Get the details of a common operation policy by providing policy ID
+     * @param {String} policyId UUID of the common operation policy to retrieve
+     * @returns {Promise} Promise containing the requested common operation policy
+     */
+    getCommonOperationPolicy(policyId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const limit = Configurations.app.operationPolicyCount;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].getCommonOperationPolicyByPolicyId(
+                {
+                    operationPolicyId: policyId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+    
+    /**
      * Add a common operation policy
      * @param {Object} policySpec policy specification of the common operation policy to upload
      * @param {any} policyDefinition policy definition of the common operation policy to upload
@@ -2974,7 +2992,7 @@ class API extends Resource {
             const requestBody = {
                 requestBody: {
                     policySpecFile: JSON.stringify(policySpec),
-                    policyDefinitionFile: policyDefinition,
+                    synapsePolicyDefinitionFile: policyDefinition,
                 }
             }
             return client.apis['Operation Policies'].addCommonOperationPolicy(
@@ -2993,7 +3011,7 @@ class API extends Resource {
      * @param {String} policyId UUID of the common operation policy
      * @returns {Promise}
      */
-    static deleteCommonOperationPolicy(policyId) {
+    deleteCommonOperationPolicy(policyId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['Operation Policies'].deleteCommonOperationPolicyByPolicyId(
@@ -3031,7 +3049,7 @@ class API extends Resource {
     static getOperationPolicyContent(policyId, apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['Operation Policies'].getAPISpecificOperationPolicyContentByPolicyId(
+            return client.apis['API specific Operation Policies'].getAPISpecificOperationPolicyContentByPolicyId(
                 {
                     operationPolicyId: policyId,
                     apiId: apiId,
@@ -3050,10 +3068,29 @@ class API extends Resource {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
-            return client.apis['Operation Policies'].getAllAPISpecificOperationPolicies(
+            return client.apis['API specific Operation Policies'].getAllAPISpecificOperationPolicies(
                 {
                     apiId: apiId,
                     limit: limit,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get policy details of an API specific policy
+     * @param {String} policyId UUID of the operation policy to retrieve
+     * @param {String} apiId UUID of the API
+     * @returns {Promise} Promise containing the requested operation policy
+     */
+    static getOperationPolicy(policyId, apiId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API specific Operation Policies'].getOperationPolicyForAPIByPolicyId(
+                {
+                    apiId: apiId,
+                    operationPolicyId: policyId,
                 },
                 this._requestMetaData(),
             );
@@ -3070,7 +3107,7 @@ class API extends Resource {
     static addOperationPolicy(policySpec, policyDefinition, apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['Operation Policies'].addAPISpecificOperationPolicy(
+            return client.apis['API specific Operation Policies'].addAPISpecificOperationPolicy(
                 {
                     apiId: apiId,
                 },
@@ -3089,20 +3126,31 @@ class API extends Resource {
 
     /**
      * Delete an API specific operation policy by the API uuid and policy uuid
-     * @param {*} apiId UUID of the API
-     * @param {*} policyId UUID of the operation policy to delete
+     * @param {String} apiId UUID of the API
+     * @param {String} policyId UUID of the operation policy to delete
      * @returns {Promise}
      */
     static deleteOperationPolicy(apiId, policyId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['API Mediation Policy'].deleteAPISpecificOperationPolicyByPolicyId(
+            return client.apis['API specific Operation Policies'].deleteAPISpecificOperationPolicyByPolicyId(
                 {
                     apiId: apiId,
                     operationPolicyId: policyId,
                 },
                 this._requestMetaData(),
             );
+        });
+    }
+
+    /**
+     * Retrieve the operation policy specification related JSON schema
+     * @returns {Promise}
+     */
+    static getOperationPolicySpecSchema() {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Operation Policies'].exportOperationPolicySpecificationSchema();
         });
     }
 

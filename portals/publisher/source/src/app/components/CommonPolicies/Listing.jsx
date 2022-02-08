@@ -41,7 +41,6 @@ import ArrowBack from '@material-ui/icons/ArrowBack';
 import TrendingDown from '@material-ui/icons/TrendingDown';
 import Alert from 'AppComponents/Shared/Alert';
 import Delete from './DeletePolicy';
-import type { CommonPolicy } from './Types';
 
 const styles = (theme) => ({
     contentInside: {
@@ -111,48 +110,39 @@ const Listing = (props) => {
     const { intl, classes, theme } = props;
     const { commonPolicyAddIcon } = theme.custom.landingPage.icons;
     const createUrl = '/policies/create';
-    const viewUrl = '/policies/view';
-    const [policies, setPolicies] = useState<Array<CommonPolicy>>(null);
-    // const [policies, setPolicies] = useState([
-    //     {
-    //         id: 1,
-    //         name: 'Add Header',
-    //         description: 'With this policy, user can add a new header to the request',
-    //         flows: ['Request', 'Response', 'Fault'],
-    //     },
-    //     {
-    //         id: 2,
-    //         name: 'Rewrite HTTP Method',
-    //         description: 'User should be able to change the HTTP method of a resource',
-    //         flows: ['Request'],
-    //     },
-    // ]);
+    const [policies, setPolicies] = useState(null);
 
-    useEffect(() => {
+    const fetchCommonPolicies = () => {
         const promisedPolicies = API.getCommonOperationPolicies();
         promisedPolicies
             .then((response) => {
-                console.log(response.body.list);
                 setPolicies(response.body.list);
             })
             .catch((errorMessage) => {
-                console.error(errorMessage);
                 Alert.error(JSON.stringify(errorMessage));
             });
-    }, [policies])
+    }
+
+    useEffect(() => {
+        fetchCommonPolicies();
+    }, [])
+
+    const getViewUrl = (policyId) => {
+        return `/policies/${policyId}/view`;
+    }
 
     const policiesList = policies?.map((policyObj) => {
         const policy = [];
         policy.push(policyObj.id);
-        policy.push(policyObj.name);
+        policy.push(policyObj.displayName);
         policy.push(policyObj.description);
-        policy.push(policyObj.flows);
+        policy.push(policyObj.applicableFlows);
         return policy;
     });
 
     const columns = [
         {
-            name: 'policyId',
+            name: 'id',
             options: {
                 display: 'excluded',
                 filter: false,
@@ -187,11 +177,11 @@ const Listing = (props) => {
                                         );
                                     }
                                     let flowIcon = null;
-                                    if (flow === 'Request') {
+                                    if (flow === 'request') {
                                         flowIcon = <ArrowForward />;
-                                    } else if (flow === 'Response') {
+                                    } else if (flow === 'response') {
                                         flowIcon = <ArrowBack />;
-                                    } else if (flow === 'Fault') {
+                                    } else if (flow === 'fault') {
                                         flowIcon = <TrendingDown />;
                                     }
                                     return (
@@ -239,7 +229,7 @@ const Listing = (props) => {
                                     component={Link}
                                     to={!isRestricted(['apim:shared_scope_manage'])
                                     && {
-                                        pathname: viewUrl,
+                                        pathname: getViewUrl(policyId),
                                         state: {
                                             policyName,
                                             policyId,
@@ -255,8 +245,7 @@ const Listing = (props) => {
                                 <Delete
                                     policyId={policyId}
                                     policyName={policyName}
-                                    policies={policies}
-                                    setPolicies={setPolicies}
+                                    fetchCommonPolicies={fetchCommonPolicies}
                                 />
                             </Box>
                         );
@@ -288,11 +277,7 @@ const Listing = (props) => {
         rowsPerPageOptions: [5, 10, 25, 50, 100],
     };
 
-    if (!policies) {
-        return <Progress />;
-    }
-
-    if (policies.length === 0) {
+    if (policies && policies.length === 0) {
         return (
             <Onboarding
                 title={(
@@ -320,75 +305,72 @@ const Listing = (props) => {
             </Onboarding>
         );
     }
+    if (!policies) {
+        return <Progress />
+    }
 
     return (
-        <>
-            {!policies
-                ? <Progress />
-                : (
-                    <div className={classes.heading}>
-                        <Grid className={classes.titleWrapper} xs={12} sm={12} md={11} lg={11} item>
-                            <Typography variant='h4' align='left' component='h1' className={classes.mainTitle}>
-                                <FormattedMessage
-                                    id='Policies.Listing.Listing.heading.CommonPolicies.heading'
-                                    defaultMessage='Policies'
-                                />
-                            </Typography>
-                            <Tooltip
-                                title={(
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.CommonPolicies.heading.tooltip'
-                                        defaultMessage={'You can utilize these policies at the operation level'
-                                        + ' by navigating to the Policies tab under any desired API'}
-                                    />
-                                )}
-                                placement='bottom-start'
-                            >
-                                <IconButton size='small' aria-label='Policy-helper-text'>
-                                    <HelpOutlineIcon fontSize='small' />
-                                </IconButton>
-                            </Tooltip>
-                            <Box pl={1}>
-                                <Button
-                                    color='primary'
-                                    variant='outlined'
-                                    size='small'
-                                    disabled={isRestricted(['apim:shared_scope_manage'])}
-                                    component={Link}
-                                    to={!isRestricted(['apim:shared_scope_manage']) && createUrl}
-                                >
-                                    <AddCircle className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Policies.Listing.Listing.heading.CommonPolicy.new'
-                                        defaultMessage='Add New Policy'
-                                    />
-                                </Button>
-                            </Box>
-                            {isRestricted(['apim:shared_scope_manage']) && (
-                                <Grid item>
-                                    <Typography variant='body2' color='primary'>
-                                        <FormattedMessage
-                                            id='Policies.Listing.Listing.update.not.allowed'
-                                            defaultMessage={
-                                                '*You are not authorized to manage policies'
-                                            + ' due to insufficient permissions'
-                                            }
-                                        />
-                                    </Typography>
-                                </Grid>
-                            )}
-                        </Grid>
-                        <Grid className={classes.table} xs={12} sm={12} md={11} lg={11} item>
-                            <MUIDataTable
-                                title={false}
-                                data={policiesList}
-                                columns={columns}
-                                options={options}
+        <div className={classes.heading}>
+            <Grid className={classes.titleWrapper} xs={12} sm={12} md={11} lg={11} item>
+                <Typography variant='h4' align='left' component='h1' className={classes.mainTitle}>
+                    <FormattedMessage
+                        id='Policies.Listing.Listing.heading.CommonPolicies.heading'
+                        defaultMessage='Policies'
+                    />
+                </Typography>
+                <Tooltip
+                    title={(
+                        <FormattedMessage
+                            id='Apis.Details.Policies.CommonPolicies.heading.tooltip'
+                            defaultMessage={'You can utilize these policies at the operation level'
+                            + ' by navigating to the Policies tab under any desired API'}
+                        />
+                    )}
+                    placement='bottom-start'
+                >
+                    <IconButton size='small' aria-label='Policy-helper-text'>
+                        <HelpOutlineIcon fontSize='small' />
+                    </IconButton>
+                </Tooltip>
+                <Box pl={1}>
+                    <Button
+                        color='primary'
+                        variant='outlined'
+                        size='small'
+                        disabled={isRestricted(['apim:shared_scope_manage'])}
+                        component={Link}
+                        to={!isRestricted(['apim:shared_scope_manage']) && createUrl}
+                    >
+                        <AddCircle className={classes.buttonIcon} />
+                        <FormattedMessage
+                            id='Policies.Listing.Listing.heading.CommonPolicy.new'
+                            defaultMessage='Add New Policy'
+                        />
+                    </Button>
+                </Box>
+                {isRestricted(['apim:shared_scope_manage']) && (
+                    <Grid item>
+                        <Typography variant='body2' color='primary'>
+                            <FormattedMessage
+                                id='Policies.Listing.Listing.update.not.allowed'
+                                defaultMessage={
+                                    '*You are not authorized to manage policies'
+                                + ' due to insufficient permissions'
+                                }
                             />
-                        </Grid>
-                    </div>
+                        </Typography>
+                    </Grid>
                 )}
-        </>
+            </Grid>
+            <Grid className={classes.table} xs={12} sm={12} md={11} lg={11} item>
+                <MUIDataTable
+                    title={false}
+                    data={policiesList}
+                    columns={columns}
+                    options={options}
+                />
+            </Grid>
+        </div>
     );
 };
 

@@ -17,13 +17,23 @@
  */
 
 export type Policy = {
-    id: number;
-    name: string;
-    flows: string[];
+    id: string;
+    displayName: string;
+    applicableFlows: string[];
     timestamp?: number;
-};
+}
+
+export type PolicySpecAttribute = {
+    name: string;
+    displayName: string;
+    description: string;
+    required: boolean;
+    type: string;
+    validationRegex: string;
+}
 
 export type PolicySpec = {
+    id?: string;
     category: string;
     name: string;
     displayName: string;
@@ -32,5 +42,7 @@ export type PolicySpec = {
     supportedGateways: string[];
     supportedApiTypes: string[];
     multipleAllowed: boolean;
-    policyAttributes: any;
+    policyAttributes: PolicySpecAttribute[];
+    isAPISpecific?: boolean;
+    md5?: string;
 }

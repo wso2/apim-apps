@@ -59,6 +59,8 @@ const useStyles = makeStyles((theme: any) => ({
 
 interface PolicyListPorps {
     policyList: Policy[];
+    commonPolicyIdList: string[];
+    fetchPolicies: () => void;
 }
 
 /**
@@ -67,7 +69,7 @@ interface PolicyListPorps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const PolicyList: FC<PolicyListPorps> = ({
-    policyList
+    policyList, commonPolicyIdList, fetchPolicies
 }) => {
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
@@ -135,17 +137,20 @@ const PolicyList: FC<PolicyListPorps> = ({
                         </Tabs>
                         <Box className={classes.tabContentBox} height='50vh' pt={1} overflow='scroll'>
                             <TabPanel
-                                policyList={policyList.filter((policy) => policy.flows.includes('Request'))}
+                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('request'))}
+                                commonPolicyIdList={commonPolicyIdList}
                                 index={0}
                                 selectedTab={selectedTab}
                             />
                             <TabPanel
-                                policyList={policyList.filter((policy) => policy.flows.includes('Response'))}
+                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('response'))}
+                                commonPolicyIdList={commonPolicyIdList}
                                 index={1} 
                                 selectedTab={selectedTab}
                             />
                             <TabPanel
-                                policyList={policyList.filter((policy) => policy.flows.includes('Fault'))}
+                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('fault'))}
+                                commonPolicyIdList={commonPolicyIdList}
                                 index={2}
                                 selectedTab={selectedTab}
                             />
@@ -161,6 +166,7 @@ const PolicyList: FC<PolicyListPorps> = ({
                 <CreatePolicy
                     dialogOpen={dialogOpen}
                     handleDialogClose={handleAddPolicyClose}
+                    fetchPolicies={fetchPolicies}
                 />
             </Backdrop>
         </Paper>

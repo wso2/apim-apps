@@ -101,7 +101,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
             ...style,
             opacity: (isDragging || forbidDrag) ? 0.4 : 1,
             cursor: forbidDrag ? 'default' : 'move',
-            borderColor: Utils.stringToColor(policyObj.name),
+            borderColor: Utils.stringToColor(policyObj.displayName),
             width: '70%',
         }),
         [isDragging, forbidDrag],
@@ -132,15 +132,15 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                         <ListItemAvatar>
                             <Avatar
                                 style={{
-                                    backgroundColor: Utils.stringToColor(policyObj.name),
+                                    backgroundColor: Utils.stringToColor(policyObj.displayName),
                                 }}
                                 // eslint-disable-next-line react/jsx-props-no-spreading
-                                { ...Utils.stringAvatar(policyObj.name.toUpperCase())}
+                                { ...Utils.stringAvatar(policyObj.displayName.toUpperCase())}
                             />
                         </ListItemAvatar>
                         <ListItemText
-                            id={policyObj.name}
-                            primary={policyObj.name}
+                            id={policyObj.displayName}
+                            primary={policyObj.displayName}
                             classes={{
                                 primary: classes.policyCardText
                             }} 

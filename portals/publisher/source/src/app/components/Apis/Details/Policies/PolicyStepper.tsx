@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import React, { FC, useState } from 'react';
-import { Box, List, makeStyles, IconButton, Typography, Icon } from '@material-ui/core';
+import React, { FC, useContext, useState } from 'react';
+import { Box, List, makeStyles, IconButton, Typography, Icon, Tooltip } from '@material-ui/core';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -36,7 +36,11 @@ import classNames from 'classnames';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import { FormattedMessage } from 'react-intl';
+import API from 'AppData/api.js';
+import Utils from 'AppData/Utils';
+import { Alert } from 'AppComponents/Shared';
 import PolicyDefinitionEditor from './PolicySpecificationEditor';
+import ApiContext from '../components/ApiContext';
 import type { PolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -88,7 +92,7 @@ interface PolicyStepperProps {
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
     policySpec: PolicySpec;
-    setPolicySpec: React.Dispatch<React.SetStateAction<PolicySpec>>;
+    setPolicySpec: React.Dispatch<React.SetStateAction<PolicySpec | null>>;
 }
 
 /**
@@ -100,6 +104,7 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
     onSave, isReadOnly, policyDefinitionFile, setPolicyDefinitionFile, policySpec, setPolicySpec
 }) => {
     const classes = useStyles();
+    const { api } = useContext<any>(ApiContext);
     const [activeStep, setActiveStep] = useState(0);
 
     const steps = [
@@ -131,7 +136,60 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
     };
 
     const handlePolicyTemplateDownload = () => {
-
+        if (policySpec.id) {
+            const policyId = policySpec.id;
+            const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyId);
+            const apiPolicyContentPromise = API.getOperationPolicyContent(policyId, api.id);
+            // Promise.all([commonPolicyContentPromise, apiPolicyContentPromise]).then((response) => {
+            //     const [apiPolicyResponse, commonPolicyResponse] = response;
+            //     console.log('apiPolicyResponse ')
+            //     console.log(apiPolicyResponse)
+            //     console.log(commonPolicyResponse)
+            // }).catch((error) => {
+            //     if (process.env.NODE_ENV !== 'production') {
+            //         console.log(error);
+            //         Alert.error(
+            //             <FormattedMessage
+            //                 id='Policies.ViewPolicy.download.error'
+            //                 defaultMessage='Something went wrong while downloading the policy'
+            //             />
+            //         );
+            //     }
+            // })
+            // promisedCommonOperationPolicyContentGet
+            //     .then((response) => {
+            //         Utils.forceDownload(response);
+            //     })
+            //     .catch((error) => {
+            // if (error.includes('Not Found')) {
+            //     const promisedOpertaionPolicyContentGet = API.getOperationPolicyContent(policyId, apiId);
+            //     promisedOpertaionPolicyContentGet
+            //         .then((response) => {
+            //             Utils.forceDownload(response);
+            //         })
+            //         .catch((errorResponse) => {
+            //             if (process.env.NODE_ENV !== 'production') {
+            //                 console.log(errorResponse);
+            //                 Alert.error(
+            //                     <FormattedMessage
+            //                         id='Policies.ViewPolicy.download.error'
+            //                         defaultMessage='Something went wrong while downloading the policy'
+            //                     />
+            //                 );
+            //             }
+            //         })
+            
+            // } else if (process.env.NODE_ENV !== 'production') {
+            //     console.log(error);
+            //     Alert.error(
+            //         <FormattedMessage
+            //             id='Policies.ViewPolicy.download.error'
+            //             defaultMessage='Something went wrong while downloading the policy'
+            //         />
+            //     );
+            // }
+            // })
+        }
     }
 
     const renderPolicyFileDropzone = () => {
@@ -218,16 +276,25 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                                 </Avatar>
                                             </ListItemAvatar>
                                             <ListItemText
-                                                primary='AddHeader.j2'
+                                                primary={`${policySpec.displayName} Policy`}
                                             />
                                             <ListItemSecondaryAction>
-                                                <IconButton
-                                                    // edge='end'
-                                                    aria-label='Download policy template'
-                                                    onClick={() => handlePolicyTemplateDownload()}
+                                                <Tooltip
+                                                    placement='top'
+                                                    title={
+                                                        <FormattedMessage
+                                                            id='Policies.ViewPolicy.download.tooltip'
+                                                            defaultMessage='Download Policy'
+                                                        />
+                                                    }
                                                 >
-                                                    <Icon>vertical_align_bottom</Icon>
-                                                </IconButton>
+                                                    <IconButton
+                                                        aria-label='Download policy template'
+                                                        onClick={() => handlePolicyTemplateDownload()}
+                                                    >
+                                                        <Icon>vertical_align_bottom</Icon>
+                                                    </IconButton>
+                                                </Tooltip>
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                     </List>

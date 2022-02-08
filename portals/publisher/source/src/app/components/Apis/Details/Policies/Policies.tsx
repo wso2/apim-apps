@@ -40,6 +40,8 @@ import {
 } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/OperationsSelector';
 import SaveOperations from 'AppComponents/Apis/Details/Resources/components/SaveOperations';
+import API from 'AppData/api';
+import { Progress } from 'AppComponents/Shared';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
@@ -102,46 +104,38 @@ interface IProps {
 const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const classes = useStyles();
     const [api, updateAPI] = useAPI();
-    const createUrl = `/apis/${api.id}/policies/create`;
-    const viewUrl = `/apis/${api.id}/policies/view`;
-    // const { policies } = api;
-    const [policies, setPolicies] = useState <Policy[]>([
-        {
-            id: 1,
-            name: 'Add Header',
-            flows: ['Request', 'Response', 'Fault']
-        },
-        {
-            id: 2,
-            name: 'Rename Header',
-            flows: ['Request']
-        },
-        {
-            id: 3,
-            name: 'Rewrite HTTP Method',
-            flows: ['Request']
-        },
-        {
-            id: 4,
-            name: 'Disable Chunking',
-            flows: ['Request', 'Response']
-        },
-        {
-            id: 5,
-            name: 'JSON Fault',
-            flows: ['Fault']
-        },
-        {
-            id: 6,
-            name: 'OPA',
-            flows: ['Request']
-        },
-    ]);
-
+    const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [pageError, setPageError] = useState(false);
     const [resolvedSpec, setResolvedSpec] = useState({});
     const [markedOperations, setSelectedOperation] = useState({});
     const [expandedResource, setExpandedResource] = useState(false);
+    const [commonPolicyIdList, setCommonPolicyIdList] = useState<string[] | undefined>([]);
+
+    const fetchPolicies = () => {
+        const apiPoliciesPromise = API.getOperationPolicies(api.id);
+        const commonPoliciesPromise = API.getCommonOperationPolicies();
+        Promise.all([apiPoliciesPromise, commonPoliciesPromise]).then((response) => {
+            const [apiPoliciesResponse, commonPoliciesResponse] = response;
+            const apiSpecificPolicies = apiPoliciesResponse.body.list;
+            const commonPolicies = commonPoliciesResponse.body.list;
+
+            // Returns the union of policies depending on the policy display name
+            const mergedList = [...apiSpecificPolicies, ...commonPolicies];
+            const unionByPolicyDisplayName = [...mergedList
+                .reduce((map, obj) => map.set(obj.displayName, obj), new Map()).values()];
+            setPolicies(unionByPolicyDisplayName);
+
+            // Maintain the common policy ID list to identify which policies are not API specific
+            setCommonPolicyIdList(commonPolicies.map((policy: Policy) => policy.id));
+        }).catch((error) => {
+            console.log(error);
+            Alert.error('Error occurred while retrieving the policy list');
+        });
+    }
+
+    useEffect(() => {
+        fetchPolicies();
+    }, [])
 
     /**
      *
@@ -317,6 +311,10 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         }),
         [api],
     );
+
+    if (!policies) {
+        return <Progress />
+    }
     
     return (
         <>
@@ -387,9 +385,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Paper>
                 </Box>
                 <Box width='35%' pl={1}>
-                    <PolicyList
-                        policyList={policies}
-                    />
+                    {commonPolicyIdList && (
+                        <PolicyList
+                            policyList={policies}
+                            commonPolicyIdList={commonPolicyIdList}
+                            fetchPolicies={fetchPolicies}
+                        />
+                    )}
                 </Box>
             </Box>
         </>

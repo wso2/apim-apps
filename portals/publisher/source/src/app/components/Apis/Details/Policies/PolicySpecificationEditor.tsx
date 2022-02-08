@@ -17,7 +17,7 @@
  */
 
 import React, {
-    useState, Suspense, Dispatch, SetStateAction, useEffect,
+    useState, useEffect,
 } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -26,15 +26,13 @@ import {
 import { Progress } from 'AppComponents/Shared';
 import { ControlledEditor, monaco } from "@monaco-editor/react";
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
-import policyDefJsonSchema from './components/JsonSchema.json';
+import API from 'AppData/api.js';
+import Alert from 'AppComponents/Shared/Alert';
 import type { PolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
         marginBottom: theme.spacing(5),
-    },
-    error: {
-        color: theme.palette.error.dark,
     },
 }));
 
@@ -42,7 +40,7 @@ const useStyles = makeStyles((theme: any) => ({
 interface PolicySpecificationEditorProps {
     isReadOnly: boolean;
     policySpec: PolicySpec;
-    setPolicySpec: Dispatch<SetStateAction<PolicySpec>>;
+    setPolicySpec: React.Dispatch<React.SetStateAction<PolicySpec | null>>;
 }
 
 /**
@@ -57,16 +55,21 @@ const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
     const [policyDefinitionSchema, setPolicyDefinitionSchema] = useState<any>();
     
     useEffect(() => {
-        // const policyDefSchemaVal;
-        // restApi.tenantConfSchemaGet().then((result) => {
-        //     tenantConfSchemaVal = result.body;
-        //     dispatch({ field: 'tenantConfSchema', value: tenantConfSchemaVal });
-        // });
-        const policyDefSchemaVal = policyDefJsonSchema;
-        setPolicyDefinitionSchema(policyDefSchemaVal);
+        const promisedPolicySpecSchemaGet =  API.getOperationPolicySpecSchema();
+        promisedPolicySpecSchemaGet
+            .then((response) => {
+                const policySpecSchemaVal = response.body;
+                setPolicyDefinitionSchema(policySpecSchemaVal);
+            })
+            .catch((errorMessage) => {
+                Alert.error(JSON.stringify(errorMessage));
+            });
     }, []);
 
-    
+    if (!policyDefinitionSchema) {
+        return <Progress />
+    }
+
     monaco
         .init()
         .then((monacol) => {
@@ -97,16 +100,14 @@ const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
             <Box component='div' m={2} className={classes.root}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={12} lg={12}>
-                        <Suspense fallback={<Progress />}>
-                            <ControlledEditor
-                                height='350px'
-                                language='json'
-                                theme='vs-dark'
-                                options={monacoEditorOptions}
-                                value={JSON.stringify(policySpec, null, 2)}
-                                onChange={handleEditorChange}
-                            />
-                        </Suspense>
+                        <ControlledEditor
+                            height='350px'
+                            language='json'
+                            theme='vs-dark'
+                            options={monacoEditorOptions}
+                            value={JSON.stringify(policySpec, null, 2)}
+                            onChange={handleEditorChange}
+                        />
                     </Grid>
                 </Grid>
             </Box>

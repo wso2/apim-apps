@@ -28,6 +28,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
 import type { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
+import { Progress } from 'AppComponents/Shared';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -71,13 +72,13 @@ const CreatePolicy: React.FC = () => {
     const redirectUrl = '/policies';
     const api = new API();
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<PolicySpec>(DefaultPolicySpec);
+    const [policySpec, setPolicySpec] = useState<PolicySpec | null>(DefaultPolicySpec);
 
     const addCommonPolicy = (policySpecContent: PolicySpec, policyDefinition: any) => {
         const promisedCommonPolicyAdd = api.addCommonOperationPolicy(policySpecContent, policyDefinition);
         promisedCommonPolicyAdd
             .then(() => {
-                Alert.info('Policy created successfully');
+                Alert.info('Policy created successfully!');
                 setPolicyDefinitionFile([]);
                 setPolicySpec(DefaultPolicySpec);
                 history.push(redirectUrl);
@@ -91,6 +92,10 @@ const CreatePolicy: React.FC = () => {
                     Alert.error('Something went wrong while creating policy');
                 }
             });
+    }
+
+    if (!policySpec) {
+        return <Progress />
     }
 
     const onPolicyCreateSave = () => {

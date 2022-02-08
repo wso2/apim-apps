@@ -36,7 +36,7 @@ const CommonPolicies = () => {
                 component={Listing}
             />
             <Route exact path='/policies/create' component={CreatePolicy} />
-            <Route exact path='/policies/view' component={ViewPolicy} />
+            <Route exact path='/policies/:policyId/view' component={ViewPolicy} />
         </Switch>
     );
 };

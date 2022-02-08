@@ -18,7 +18,7 @@
 
 export type CommonPolicy = {
     id: string;
-    name: string;
+    displayName: string;
     description: string;
     applicableFlows: string[];
-};
+}

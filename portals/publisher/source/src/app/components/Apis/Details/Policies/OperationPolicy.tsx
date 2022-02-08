@@ -136,13 +136,13 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
         const responseList = [];
         const faultList = [];
         for (const policy of policyList) {
-            if (policy.flows.includes('Request')) {
+            if (policy.applicableFlows.includes('request')) {
                 requestList.push(`policyCard-${policy.id}`);
             }
-            if (policy.flows.includes('Response')) {
+            if (policy.applicableFlows.includes('response')) {
                 responseList.push(`policyCard-${policy.id}`);
             }
-            if (policy.flows.includes('Fault')) {
+            if (policy.applicableFlows.includes('fault')) {
                 faultList.push(`policyCard-${policy.id}`);
             }
         }

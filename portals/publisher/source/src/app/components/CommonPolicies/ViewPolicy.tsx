@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,11 +21,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Grid, Icon } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
+import API from 'AppData/api';
 import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
-import type { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
+import Alert from 'AppComponents/Shared/Alert';
+import { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
+import { Progress } from 'AppComponents/Shared';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -84,18 +87,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-const DummyDefaultPolicySpec = {
-    category: 'Mediation',
-    name: 'Add Header',
-    displayName: 'Add Header',
-    description: '',
-    multipleAllowed: false,
-    applicableFlows: ['request', 'response', 'fault'],
-    supportedGateways: ['Synapse'],
-    supportedApiTypes: ['REST'],
-    policyAttributes: [],
-};
-
 /**
  * Renders the view policy UI
  * @param {JSON} props Input props from parent components.
@@ -104,16 +95,31 @@ const DummyDefaultPolicySpec = {
 const ViewPolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
+    const api = new API();
     const redirectUrl = '/policies';
+    const { policyId } = useParams<{policyId?: string}>();
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<PolicySpec>(DummyDefaultPolicySpec);
+    const [policySpec, setPolicySpec] = useState<PolicySpec|null>(null);
 
     useEffect(() => {
-        setPolicySpec(DummyDefaultPolicySpec);
-    }, [])
+        if (policyId) {
+            const promisedCommonPolicyGet = api.getCommonOperationPolicy(policyId);
+            promisedCommonPolicyGet
+                .then((response) => {
+                    setPolicySpec(response.body);
+                })
+                .catch((errorMessage) => {
+                    Alert.error(JSON.stringify(errorMessage.body));
+                });
+        }
+    }, [policyId])
 
     const redirectToPolicies = () => {
         history.push(redirectUrl);
+    }
+
+    if (!policySpec) {
+        return <Progress />
     }
 
     return (
@@ -134,7 +140,7 @@ const ViewPolicy: React.FC = () => {
                             </Link>
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h3'>
-                                {`View ${policySpec.name}`}
+                                {`View ${policySpec.displayName}`}
                             </Typography>
                         </div>
                     </Grid>
