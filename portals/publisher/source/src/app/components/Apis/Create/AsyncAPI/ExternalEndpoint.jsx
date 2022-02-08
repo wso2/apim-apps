@@ -18,9 +18,9 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import MuiAlert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import TextField from '@material-ui/core/TextField';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
+import Typography from '@material-ui/core/Typography';
 
 const ExternalEndpoint = (props) => {
     const {
@@ -64,12 +64,12 @@ const ExternalEndpoint = (props) => {
                 variant='outlined'
             />
             <MuiAlert severity='warning' className={classes.externalEndpointWarning}>
-                <AlertTitle>
+                <Typography gutterBottom component='div' className={classes.alertTitle}>
                     <FormattedMessage
                         id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title'
                         defaultMessage='"Other" type streaming APIs will be created as third party APIs.'
                     />
-                </AlertTitle>
+                </Typography>
                 <FormattedMessage
                     id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning'
                     defaultMessage={'API Manager only supports the streaming APIs of types'

@@ -35,7 +35,7 @@ import Radio from '@material-ui/core/Radio';
 import FormControl from '@material-ui/core/FormControl';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import Tooltip from '@material-ui/core/Tooltip';
-import { AlertTitle } from '@material-ui/lab';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     expansionPanel: {
@@ -62,6 +62,10 @@ const useStyles = makeStyles((theme) => ({
     },
     alertGrid: {
         width: '100%',
+    },
+    alertTitle: {
+        fontWeight: theme.typography.fontWeightMedium,
+        marginTop: -2,
     },
 }));
 
@@ -214,12 +218,12 @@ const AdvertiseInfo = (props) => {
             <Grid className={classes.alertGrid}>
                 {type === 'ASYNC' && (
                     <MuiAlert severity='info'>
-                        <AlertTitle>
+                        <Typography gutterBottom component='div' className={classes.alertTitle}>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title'
                                 defaultMessage='The "Other" type streaming APIs will serve as third party APIs.'
                             />
-                        </AlertTitle>
+                        </Typography>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning'
                             defaultMessage={'If you want to deploy and API in the gateway, please create a WebSocket,'
@@ -229,12 +233,12 @@ const AdvertiseInfo = (props) => {
                 )}
                 {isDeployed && (
                     <MuiAlert severity='info' className={classes.alert}>
-                        <AlertTitle>
+                        <Typography gutterBottom component='div' className={classes.alertTitle}>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title'
                                 defaultMessage='There are active deployments in the API.'
                             />
-                        </AlertTitle>
+                        </Typography>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning'
                             defaultMessage={'Please undeploy the revision before changing the API to a third party'
