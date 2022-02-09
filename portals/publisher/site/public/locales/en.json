@@ -5357,10 +5357,10 @@
       "value": "Resources"
     }
   ],
-  "Apis.Details.Policies.PolicyTemplates.heading.tooltip": [
+  "Apis.Details.Policies.CommonPolicies.heading.tooltip": [
     {
       "type": 0,
-      "value": "You can use these policy templates at the resource level of a desired API by navigating to the Policies tab under that API"
+      "value": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
     }
   ],
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": [
@@ -7845,10 +7845,10 @@
       "value": "APIs"
     }
   ],
-  "Base.Header.navbar.GlobalNavBar.policyTemplates": [
+  "Base.Header.navbar.GlobalNavBar.common.policies": [
     {
       "type": 0,
-      "value": "Policies Templates"
+      "value": "Policies"
     }
   ],
   "Base.Header.navbar.GlobalNavBar.scopes": [
@@ -7893,7 +7893,13 @@
       "value": "Error 403 : Forbidden"
     }
   ],
-  "Policies.Delete.Delete.document.policy.label.ok.confirm": [
+  "Policies.Delete.Delete.policy.delete": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "Policies.Delete.Delete.policy.label.ok.confirm": [
     {
       "type": 0,
       "value": "Are you sure you want to delete "
@@ -7907,10 +7913,10 @@
       "value": " policy ?"
     }
   ],
-  "Policies.Delete.Delete.policy.delete": [
+  "Policies.Delete.Delete.policy.listing.delete.confirm": [
     {
       "type": 0,
-      "value": "Delete"
+      "value": "Confirm Delete"
     }
   ],
   "Policies.Delete.Delete.policy.listing.label.cancel": [
@@ -7925,40 +7931,34 @@
       "value": "Yes"
     }
   ],
-  "Policies.Delete.Delete.scope.listing.delete.confirm": [
-    {
-      "type": 0,
-      "value": "Confirm Delete"
-    }
-  ],
   "Policies.Listing.Listing.create.new": [
     {
       "type": 0,
       "value": "Let’s get started !"
     }
   ],
-  "Policies.Listing.Listing.heading.policyTemplate.new": [
+  "Policies.Listing.Listing.heading.CommonPolicies.heading": [
     {
       "type": 0,
-      "value": "Add Policy Template"
+      "value": "Policies"
     }
   ],
-  "Policies.Listing.Listing.heading.policyTemplates.heading": [
+  "Policies.Listing.Listing.heading.CommonPolicy.new": [
     {
       "type": 0,
-      "value": "Policy Templates"
-    }
-  ],
-  "Policies.Listing.Listing.policies.template.view": [
-    {
-      "type": 0,
-      "value": "View"
+      "value": "Add New Policy"
     }
   ],
   "Policies.Listing.Listing.policies.tooltip": [
     {
       "type": 0,
       "value": "Policies provide the capability to alter the behavior of API resources"
+    }
+  ],
+  "Policies.Listing.Listing.policies.view": [
+    {
+      "type": 0,
+      "value": "View"
     }
   ],
   "Policies.Listing.Listing.table.header.actions": [
@@ -7988,7 +7988,7 @@
   "Policies.Listing.Listing.update.not.allowed": [
     {
       "type": 0,
-      "value": "*You are not authorized to update policy templates of due to insufficient permissions"
+      "value": "*You are not authorized to manage policies due to insufficient permissions"
     }
   ],
   "Scopes.Create.CreateScope.cancel": [

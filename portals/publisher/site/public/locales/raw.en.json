@@ -2547,8 +2547,8 @@
   "Apis.Details.Overview.ProductResources.resources": {
     "defaultMessage": "Resources"
   },
-  "Apis.Details.Policies.PolicyTemplates.heading.tooltip": {
-    "defaultMessage": "You can use these policy templates at the resource level of a desired API by navigating to the Policies tab under that API"
+  "Apis.Details.Policies.CommonPolicies.heading.tooltip": {
+    "defaultMessage": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
   },
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": {
     "defaultMessage": "Select API Resources"
@@ -3750,8 +3750,8 @@
   "Base.Header.navbar.GlobalNavBar.apis": {
     "defaultMessage": "APIs"
   },
-  "Base.Header.navbar.GlobalNavBar.policyTemplates": {
-    "defaultMessage": "Policies Templates"
+  "Base.Header.navbar.GlobalNavBar.common.policies": {
+    "defaultMessage": "Policies"
   },
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
@@ -3774,11 +3774,14 @@
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
   },
-  "Policies.Delete.Delete.document.policy.label.ok.confirm": {
-    "defaultMessage": "Are you sure you want to delete {policy} policy ?"
-  },
   "Policies.Delete.Delete.policy.delete": {
     "defaultMessage": "Delete"
+  },
+  "Policies.Delete.Delete.policy.label.ok.confirm": {
+    "defaultMessage": "Are you sure you want to delete {policy} policy ?"
+  },
+  "Policies.Delete.Delete.policy.listing.delete.confirm": {
+    "defaultMessage": "Confirm Delete"
   },
   "Policies.Delete.Delete.policy.listing.label.cancel": {
     "defaultMessage": "Cancel"
@@ -3786,23 +3789,20 @@
   "Policies.Delete.Delete.policy.listing.label.ok.yes": {
     "defaultMessage": "Yes"
   },
-  "Policies.Delete.Delete.scope.listing.delete.confirm": {
-    "defaultMessage": "Confirm Delete"
-  },
   "Policies.Listing.Listing.create.new": {
     "defaultMessage": "Let’s get started !"
   },
-  "Policies.Listing.Listing.heading.policyTemplate.new": {
-    "defaultMessage": "Add Policy Template"
+  "Policies.Listing.Listing.heading.CommonPolicies.heading": {
+    "defaultMessage": "Policies"
   },
-  "Policies.Listing.Listing.heading.policyTemplates.heading": {
-    "defaultMessage": "Policy Templates"
-  },
-  "Policies.Listing.Listing.policies.template.view": {
-    "defaultMessage": "View"
+  "Policies.Listing.Listing.heading.CommonPolicy.new": {
+    "defaultMessage": "Add New Policy"
   },
   "Policies.Listing.Listing.policies.tooltip": {
     "defaultMessage": "Policies provide the capability to alter the behavior of API resources"
+  },
+  "Policies.Listing.Listing.policies.view": {
+    "defaultMessage": "View"
   },
   "Policies.Listing.Listing.table.header.actions": {
     "defaultMessage": "Actions"
@@ -3817,7 +3817,7 @@
     "defaultMessage": "Policy Name"
   },
   "Policies.Listing.Listing.update.not.allowed": {
-    "defaultMessage": "*You are not authorized to update policy templates of due to insufficient permissions"
+    "defaultMessage": "*You are not authorized to manage policies due to insufficient permissions"
   },
   "Scopes.Create.CreateScope.cancel": {
     "defaultMessage": "Cancel"
