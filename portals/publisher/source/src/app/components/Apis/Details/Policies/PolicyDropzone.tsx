@@ -89,6 +89,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     const addDroppedPolicyToList = (policy: Policy) => {
         setCurrentPolicyList(prevPolicyList => [...prevPolicyList, {
             id: policy.id,
+            name: policy.name,
             displayName: policy.displayName,
             applicableFlows: policy.applicableFlows,
             timestamp: Date.now(),

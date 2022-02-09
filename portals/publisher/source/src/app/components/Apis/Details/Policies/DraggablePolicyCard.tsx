@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { CSSProperties, useCallback, useMemo, useState } from 'react';
+import React, { CSSProperties, useMemo } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { useDrag } from 'react-dnd';
 import ListItem from '@material-ui/core/ListItem';
@@ -24,13 +24,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import { Box, makeStyles, Theme, Tooltip } from '@material-ui/core';
 import Utils from 'AppData/Utils';
-import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import IconButton from '@material-ui/core/IconButton';
 import { FormattedMessage } from 'react-intl';
 import Backdrop from '@material-ui/core/Backdrop';
 import type { Policy } from './Types';
 import ViewPolicy from './ViewPolicy';
+import DeletePolicy from './DeletePolicy';
 
 const useStyles = makeStyles((theme: Theme) => ({
     policyCardText: {
@@ -65,6 +65,7 @@ interface DraggablePolicyCardProps {
     policyObj: Policy;
     showCopyIcon?: boolean;
     isLocalToAPI: boolean;
+    fetchPolicies: () => void;
 }
 
 /**
@@ -76,15 +77,14 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     policyObj,
     showCopyIcon,
     isLocalToAPI,
+    fetchPolicies
 }) => {
     const classes = useStyles();
     const [dialogOpen, setDialogOpen] = React.useState(false);
-    const [forbidDrag, setForbidDrag] = useState(false);
 
     const [{ isDragging }, drag] = useDrag(
         () => ({
             type: `policyCard-${policyObj.id}`,
-            // canDrag: !forbidDrag,
             item: {droppedPolicy: policyObj},
             options: {
                 dropEffect: showCopyIcon ? 'copy' : 'move',
@@ -99,19 +99,12 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     const containerStyle = useMemo(
         () => ({
             ...style,
-            opacity: (isDragging || forbidDrag) ? 0.4 : 1,
-            cursor: forbidDrag ? 'default' : 'move',
+            opacity: (isDragging) ? 0.4 : 1,
             borderColor: Utils.stringToColor(policyObj.displayName),
             width: '70%',
         }),
-        [isDragging, forbidDrag],
+        [isDragging],
     )
-
-    const toggleDelete = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        setForbidDrag(!forbidDrag);
-        event.stopPropagation();
-        event.preventDefault();
-    }, [forbidDrag, setForbidDrag]);
 
     const handleViewPolicy = () => {
         setDialogOpen(true);
@@ -160,28 +153,17 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                         <IconButton
                             disabled={!isLocalToAPI}
                             onClick={handleViewPolicy}
-                            aria-label='view operation'
+                            aria-label={'view ' + policyObj.name}
                         >
                             <VisibilityIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip
-                        placement='top'
-                        title={
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyList.Policy.Delete'
-                                defaultMessage='Delete'
-                            />
-                        }
-                    >
-                        <IconButton
-                            disabled={!isLocalToAPI}
-                            onClick={toggleDelete}
-                            aria-label='delete operation'
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
+                    <DeletePolicy
+                        policyId={policyObj.id}
+                        policyName={policyObj.displayName}
+                        fetchPolicies={fetchPolicies}
+                        isLocalToAPI={isLocalToAPI}
+                    />
                 </Box>
             </div>
             <Backdrop

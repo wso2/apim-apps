@@ -87,13 +87,13 @@ const DeletePolicy = ({
                 )}
                 title={(
                     <FormattedMessage
-                        id='Policies.Delete.Delete.scope.listing.delete.confirm'
+                        id='Policies.Delete.Delete.policy.listing.delete.confirm'
                         defaultMessage='Confirm Delete'
                     />
                 )}
                 message={(
                     <FormattedMessage
-                        id='Policies.Delete.Delete.document.policy.label.ok.confirm'
+                        id='Policies.Delete.Delete.policy.label.ok.confirm'
                         defaultMessage='Are you sure you want to delete {policy} policy ?'
                         values={{ policy: policyName }}
                     />

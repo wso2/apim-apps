@@ -139,56 +139,28 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
         if (policySpec.id) {
             const policyId = policySpec.id;
             const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyId);
-            const apiPolicyContentPromise = API.getOperationPolicyContent(policyId, api.id);
-            // Promise.all([commonPolicyContentPromise, apiPolicyContentPromise]).then((response) => {
-            //     const [apiPolicyResponse, commonPolicyResponse] = response;
-            //     console.log('apiPolicyResponse ')
-            //     console.log(apiPolicyResponse)
-            //     console.log(commonPolicyResponse)
-            // }).catch((error) => {
-            //     if (process.env.NODE_ENV !== 'production') {
-            //         console.log(error);
-            //         Alert.error(
-            //             <FormattedMessage
-            //                 id='Policies.ViewPolicy.download.error'
-            //                 defaultMessage='Something went wrong while downloading the policy'
-            //             />
-            //         );
-            //     }
-            // })
-            // promisedCommonOperationPolicyContentGet
-            //     .then((response) => {
-            //         Utils.forceDownload(response);
-            //     })
-            //     .catch((error) => {
-            // if (error.includes('Not Found')) {
-            //     const promisedOpertaionPolicyContentGet = API.getOperationPolicyContent(policyId, apiId);
-            //     promisedOpertaionPolicyContentGet
-            //         .then((response) => {
-            //             Utils.forceDownload(response);
-            //         })
-            //         .catch((errorResponse) => {
-            //             if (process.env.NODE_ENV !== 'production') {
-            //                 console.log(errorResponse);
-            //                 Alert.error(
-            //                     <FormattedMessage
-            //                         id='Policies.ViewPolicy.download.error'
-            //                         defaultMessage='Something went wrong while downloading the policy'
-            //                     />
-            //                 );
-            //             }
-            //         })
-            
-            // } else if (process.env.NODE_ENV !== 'production') {
-            //     console.log(error);
-            //     Alert.error(
-            //         <FormattedMessage
-            //             id='Policies.ViewPolicy.download.error'
-            //             defaultMessage='Something went wrong while downloading the policy'
-            //         />
-            //     );
-            // }
-            // })
+            commonPolicyContentPromise
+                .then((commonPolicyResponse) => {
+                    Utils.forceDownload(commonPolicyResponse);
+                })
+                .catch(() => {
+                    const apiPolicyContentPromise = API.getOperationPolicyContent(policyId, api.id);
+                    apiPolicyContentPromise
+                        .then((apiPolicyResponse) => {
+                            Utils.forceDownload(apiPolicyResponse);
+                        })
+                        .catch((error) => {
+                            if (process.env.NODE_ENV !== 'production') {
+                                console.log(error);
+                                Alert.error(
+                                    <FormattedMessage
+                                        id='Policies.ViewPolicy.download.error'
+                                        defaultMessage='Something went wrong while downloading the policy'
+                                    />
+                                );
+                            }
+                        });
+                });
         }
     }
 

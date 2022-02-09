@@ -18,6 +18,7 @@
 
 export type Policy = {
     id: string;
+    name: string;
     displayName: string;
     applicableFlows: string[];
     timestamp?: number;

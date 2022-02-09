@@ -141,18 +141,21 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 commonPolicyIdList={commonPolicyIdList}
                                 index={0}
                                 selectedTab={selectedTab}
+                                fetchPolicies={fetchPolicies}
                             />
                             <TabPanel
                                 policyList={policyList.filter((policy) => policy.applicableFlows.includes('response'))}
                                 commonPolicyIdList={commonPolicyIdList}
                                 index={1} 
                                 selectedTab={selectedTab}
+                                fetchPolicies={fetchPolicies}
                             />
                             <TabPanel
                                 policyList={policyList.filter((policy) => policy.applicableFlows.includes('fault'))}
                                 commonPolicyIdList={commonPolicyIdList}
                                 index={2}
                                 selectedTab={selectedTab}
+                                fetchPolicies={fetchPolicies}
                             />
                         </Box>
                     </Box>

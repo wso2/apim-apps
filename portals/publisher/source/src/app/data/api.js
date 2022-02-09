@@ -3114,7 +3114,7 @@ class API extends Resource {
                 {
                     requestBody: {
                         policySpecFile: JSON.stringify(policySpec),
-                        policyDefinitionFile: policyDefinition,
+                        synapsePolicyDefinitionFile: policyDefinition,
                     },
                 },
                 this._requestMetaData({

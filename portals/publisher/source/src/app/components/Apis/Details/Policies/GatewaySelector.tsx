@@ -49,56 +49,57 @@ const GatewaySelector: FC<GatewaySelectorProps> = () => {
 
     return (
         <Paper>
-            <Grid container direction='row' spacing={3} justify='flex-start' alignItems='flex-start'>
+            <Grid container direction='row' spacing={3}>
                 <Grid item md={12} xs={12}>
-                    <Box ml={1}>
-                        <Typography variant='subtitle1' component='h3' gutterBottom>
-                            API Gateway
-                            <Tooltip
-                                title='Policy list is dependant on the selected Gateway'
-                                placement='right-start'
-                                interactive
-                            >
-                                <IconButton aria-label='API Gateway selector help text'>
-                                    <HelpOutline />
-                                </IconButton>
-                            </Tooltip>
-                        </Typography>
-                    </Box>
-                    <Divider light variant='middle' />
-                    <Box display='flex' flexDirection='row' justifyContent='center' pt={1} pb={1}>
-                        <FormControl component='fieldset'>
-                            <RadioGroup
-                                aria-label='gateway'
-                                name='gateway-selector-radio-buttons-group'
-                                row
-                            >
-                                <FormControlLabel
-                                    // value={SupportedGatewayTypes.REGULAR}
-                                    defaultChecked
-                                    control={(
-                                        <Radio
-                                            color='primary'
-                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                        />
-                                    )}
-                                    label='Regular Gateway'
-                                    labelPlacement='end'
-                                />
-                                <FormControlLabel
-                                    value={SupportedGatewayTypes.CC}
-                                    disabled
-                                    control={(
-                                        <Radio
-                                            color='primary'
-                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                        />
-                                    )}
-                                    label='Choreo Connect'
-                                    labelPlacement='end'
-                                />
-                            </RadioGroup>
-                        </FormControl>
+                    <Box ml={3} mr={5} display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
+                        <Box>
+                            <Typography variant='subtitle1' component='h3' gutterBottom>
+                                API Gateway
+                                <Tooltip
+                                    title='Policy list is dependant on the selected Gateway'
+                                    placement='right-start'
+                                    interactive
+                                >
+                                    <IconButton aria-label='API Gateway selector help text'>
+                                        <HelpOutline />
+                                    </IconButton>
+                                </Tooltip>
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <FormControl component='fieldset'>
+                                <RadioGroup
+                                    aria-label='gateway'
+                                    name='gateway-selector-radio-buttons-group'
+                                    row
+                                >
+                                    <FormControlLabel
+                                        // value={SupportedGatewayTypes.REGULAR}
+                                        defaultChecked
+                                        control={(
+                                            <Radio
+                                                color='primary'
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                            />
+                                        )}
+                                        label='Regular Gateway'
+                                        labelPlacement='end'
+                                    />
+                                    <FormControlLabel
+                                        value={SupportedGatewayTypes.CC}
+                                        disabled
+                                        control={(
+                                            <Radio
+                                                color='primary'
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                            />
+                                        )}
+                                        label='Choreo Connect'
+                                        labelPlacement='end'
+                                    />
+                                </RadioGroup>
+                            </FormControl>
+                        </Box>
                     </Box>
                 </Grid>
             </Grid>

@@ -110,6 +110,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [markedOperations, setSelectedOperation] = useState({});
     const [expandedResource, setExpandedResource] = useState(false);
     const [commonPolicyIdList, setCommonPolicyIdList] = useState<string[] | undefined>([]);
+    const [openAPISpec, setOpenAPISpec] = useState<any>({});
 
     const fetchPolicies = () => {
         const apiPoliciesPromise = API.getOperationPolicies(api.id);
@@ -147,16 +148,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      * @param {Object} operationAction action and payload
      * @return {Object} next next state
      */
-    function operationsReducer(currentOperations: any, operationAction: any) {
+    const operationsReducer = (currentOperations: any, operationAction: any) => {
         // Please read the note above before updating the reducer
         const { action, data } = operationAction;
         const { target, verb, value } = data || {};
         let updatedOperation;
-        let addedOperations;
         if (target && verb) {
             updatedOperation = cloneDeep(currentOperations[target][verb]);
-        } else {
-            addedOperations = cloneDeep(currentOperations);
         }
         let newData = {};
         if (action === 'removeAllSecurity') {
@@ -210,9 +208,8 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         return { ...currentOperations, [target]: { ...currentOperations[target], [verb]: updatedOperation } };
     }
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
-    const [openAPISpec, setOpenAPISpec] = useState<any>({});
 
-    function resolveAndUpdateSpec(rawSpec: any) {
+    const resolveAndUpdateSpec = (rawSpec: any) => {
         /*
          * Deep copying the spec.
          * Otherwise it will resolved to the original parameter passed (rawSpec) to the validate method.
@@ -223,13 +220,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         * Used SwaggerParser.validate() because we can get the errors as well.
         */
         SwaggerParser.validate(specCopy, (err, result: any) => {
-            // setResolvedSpec(() => {
-            //     const errors = err ? [err] : [];
-            //     return {
-            //         spec: result,
-            //         errors,
-            //     };
-            // });
+            setResolvedSpec(() => {
+                const errors = err ? [err] : [];
+                return {
+                    spec: result,
+                    errors,
+                };
+            });
             setResolvedSpec(result);
         });
         operationsDispatcher({ action: 'init', data: rawSpec.paths });

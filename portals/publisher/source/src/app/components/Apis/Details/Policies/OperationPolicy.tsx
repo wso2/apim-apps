@@ -48,9 +48,10 @@ interface OPProps {
   policyList: Policy[];
 }
 
-const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlight, api, disableUpdate,
-    spec, target, verb, expandedResource, setExpandedResource, policyList }) => {
-
+const OperationPolicy: FC<OPProps> = ({
+    operation, operationsDispatcher, highlight, api, disableUpdate, spec, target, verb,
+    expandedResource, setExpandedResource, policyList
+}) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
         return {
@@ -114,6 +115,7 @@ const OperationPolicy: FC<OPProps> = ({ operation, operationsDispatcher, highlig
             }
         };
     });
+    
     const classes = useStyles();
 
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
