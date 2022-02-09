@@ -751,6 +751,12 @@
       "value": "Schema Definition"
     }
   ],
+  "Apis.Details.APIDefinition.Addservice.service.retrieve.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the services"
+    }
+  ],
   "Apis.Details.APIDefinition.AuditApi\n                                                                    .OverallScoreProgress": [
     {
       "type": 1,
@@ -2727,6 +2733,18 @@
       "value": "Role is invalid"
     }
   ],
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.config.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint configurations"
+    }
+  ],
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.security.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint security"
+    }
+  ],
   "Apis.Details.Endpoints..EndpointOverview.change.type.proceed": [
     {
       "type": 0,
@@ -3655,6 +3673,18 @@
     {
       "type": 0,
       "value": "Use the inbuilt JavaScript engine to prototype the API The inbuilt JavaScript engine does support prototype SOAP APIs"
+    }
+  ],
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint": [
+    {
+      "type": 0,
+      "value": "Service Endpoint"
+    }
+  ],
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint.description": [
+    {
+      "type": 0,
+      "value": "A REST API endpoint based on a Service in the service catalog."
     }
   ],
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint": [

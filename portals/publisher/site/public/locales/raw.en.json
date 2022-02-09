@@ -335,6 +335,9 @@
   "Apis.Details.APIDefinition.APIDefinition.schema.definition": {
     "defaultMessage": "Schema Definition"
   },
+  "Apis.Details.APIDefinition.Addservice.service.retrieve.error": {
+    "defaultMessage": "Something went wrong while retrieving the services"
+  },
   "Apis.Details.APIDefinition.AuditApi\n                                                                    .OverallScoreProgress": {
     "defaultMessage": "{overallScore}"
   },
@@ -1260,6 +1263,12 @@
   "Apis.Details.EditScopes.Roles.Invalid": {
     "defaultMessage": "Role is invalid"
   },
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.config.endpoint": {
+    "defaultMessage": "Endpoint configurations"
+  },
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.security.endpoint": {
+    "defaultMessage": "Endpoint security"
+  },
   "Apis.Details.Endpoints..EndpointOverview.change.type.proceed": {
     "defaultMessage": "Proceed"
   },
@@ -1724,6 +1733,12 @@
   },
   "Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint.description": {
     "defaultMessage": "Use the inbuilt JavaScript engine to prototype the API The inbuilt JavaScript engine does support prototype SOAP APIs"
+  },
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint": {
+    "defaultMessage": "Service Endpoint"
+  },
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint.description": {
+    "defaultMessage": "A REST API endpoint based on a Service in the service catalog."
   },
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint": {
     "defaultMessage": "HTTP/ SOAP Endpoint"
