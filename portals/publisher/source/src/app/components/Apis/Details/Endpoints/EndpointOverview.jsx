@@ -272,7 +272,6 @@ function EndpointOverview(props) {
                 );
             }
             console.error(error);
-        }).finally(() => {
         });
     }
 
