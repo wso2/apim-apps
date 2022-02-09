@@ -140,7 +140,7 @@ const ViewPolicy: React.FC = () => {
                             </Link>
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h3'>
-                                {`View ${policySpec.displayName}`}
+                                {policySpec.displayName}
                             </Typography>
                         </div>
                     </Grid>

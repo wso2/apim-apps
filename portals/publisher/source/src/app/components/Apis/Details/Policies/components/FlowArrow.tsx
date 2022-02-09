@@ -29,6 +29,7 @@ const useStyles = makeStyles(() => ({
     },
     iconSize: {
         fontSize: '3em',
+        color: 'black',
         opacity: 0.4,
     }
 }));
