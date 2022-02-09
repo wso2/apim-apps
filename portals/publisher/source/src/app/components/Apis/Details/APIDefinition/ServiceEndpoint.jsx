@@ -27,7 +27,7 @@ import {
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from 'AppComponents/Shared/Autocomplete';
 import { isRestricted } from 'AppData/AuthManager';
 
 
