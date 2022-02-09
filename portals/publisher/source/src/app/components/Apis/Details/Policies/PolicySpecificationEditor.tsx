@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: any) => ({
 interface PolicySpecificationEditorProps {
     isReadOnly: boolean;
     policySpec: PolicySpec;
-    setPolicySpec: React.Dispatch<React.SetStateAction<PolicySpec | null>>;
+    setPolicySpec?: React.Dispatch<React.SetStateAction<PolicySpec | null>>;
 }
 
 /**
@@ -92,7 +92,9 @@ const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
     };
 
     const handleEditorChange = (ev: monacoEditor.editor.IModelContentChangedEvent, value: string | undefined) => {
-        setPolicySpec(JSON.parse(value || ''));
+        if (setPolicySpec) {
+            setPolicySpec(JSON.parse(value || ''));
+        }
     }
 
     return (
@@ -101,7 +103,7 @@ const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={12} lg={12}>
                         <ControlledEditor
-                            height='350px'
+                            height='320px'
                             language='json'
                             theme='vs-dark'
                             options={monacoEditorOptions}

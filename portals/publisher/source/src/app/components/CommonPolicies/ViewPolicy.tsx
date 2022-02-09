@@ -18,17 +18,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
-import { Grid, Icon } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import API from 'AppData/api';
-import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
 import Alert from 'AppComponents/Shared/Alert';
 import { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import { Progress } from 'AppComponents/Shared';
+import ViewAndDownloadPolicy from 'AppComponents/Apis/Details/Policies/ViewAndDownloadPolicy';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -98,8 +100,7 @@ const ViewPolicy: React.FC = () => {
     const api = new API();
     const redirectUrl = '/policies';
     const { policyId } = useParams<{policyId?: string}>();
-    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<PolicySpec|null>(null);
+    const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
 
     useEffect(() => {
         if (policyId) {
@@ -145,15 +146,12 @@ const ViewPolicy: React.FC = () => {
                         </div>
                     </Grid>
                     <Grid item md={12}>
-                        <PolicyStepper
-                            isAPI={false}
-                            onSave={redirectToPolicies}
-                            isReadOnly
-                            policyDefinitionFile={policyDefinitionFile}
-                            setPolicyDefinitionFile={setPolicyDefinitionFile}
-                            policySpec={policySpec}
-                            setPolicySpec={setPolicySpec}
-                        />
+                        <Paper>
+                            <ViewAndDownloadPolicy
+                                policySpec={policySpec}
+                                onDone={redirectToPolicies}
+                            />
+                        </Paper>
                     </Grid>
                 </Grid>
             </Grid>

@@ -29,9 +29,9 @@ import IconButton from '@material-ui/core/IconButton';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
-import PolicyStepper from './PolicyStepper';
 import type { Policy, PolicySpec } from './Types';
 import ApiContext from '../components/ApiContext';
+import ViewAndDownloadPolicy from './ViewAndDownloadPolicy';
 
 interface ViewPolicyProps {
     handleDialogClose: () => void;
@@ -48,7 +48,6 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
     handleDialogClose, dialogOpen, policyObj
 }) => {
     const { api } = useContext<any>(ApiContext);
-    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
     const [policySpec, setPolicySpec] = useState<PolicySpec|null>(null);
 
     useEffect(() => {
@@ -107,14 +106,9 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                 </Box>
                 <DialogContent>
                     <DialogContentText>
-                        <PolicyStepper
-                            isAPI
-                            onSave={toggleOpen}
-                            isReadOnly
-                            policyDefinitionFile={policyDefinitionFile}
-                            setPolicyDefinitionFile={setPolicyDefinitionFile}
+                        <ViewAndDownloadPolicy
                             policySpec={policySpec}
-                            setPolicySpec={setPolicySpec}
+                            onDone={toggleOpen}
                         />
                     </DialogContentText>
                 </DialogContent>

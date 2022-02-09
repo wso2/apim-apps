@@ -128,10 +128,8 @@ const CreatePolicy: React.FC = () => {
                         </div>
                     </Grid>
                     <Grid item md={12}>
-                        <PolicyStepper 
-                            isAPI={false}
+                        <PolicyStepper
                             onSave={onPolicyCreateSave}
-                            isReadOnly={false}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}
                             policySpec={policySpec}

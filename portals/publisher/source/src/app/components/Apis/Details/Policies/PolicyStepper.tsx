@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import React, { FC, useContext, useState } from 'react';
-import { Box, List, makeStyles, IconButton, Typography, Icon, Tooltip } from '@material-ui/core';
+import React, { FC, useState } from 'react';
+import { Box, List, makeStyles, IconButton, Typography, Icon } from '@material-ui/core';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -36,11 +36,8 @@ import classNames from 'classnames';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import { FormattedMessage } from 'react-intl';
-import API from 'AppData/api.js';
-import Utils from 'AppData/Utils';
-import { Alert } from 'AppComponents/Shared';
-import PolicyDefinitionEditor from './PolicySpecificationEditor';
-import ApiContext from '../components/ApiContext';
+
+import PolicySpecificationEditor from './PolicySpecificationEditor';
 import type { PolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -86,9 +83,7 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 interface PolicyStepperProps {
-    isAPI: boolean;
     onSave: () => void;
-    isReadOnly: boolean;
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
     policySpec: PolicySpec;
@@ -101,21 +96,18 @@ interface PolicyStepperProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyStepper: FC<PolicyStepperProps> = ({
-    onSave, isReadOnly, policyDefinitionFile, setPolicyDefinitionFile, policySpec, setPolicySpec
+    onSave, policyDefinitionFile, setPolicyDefinitionFile, policySpec, setPolicySpec
 }) => {
     const classes = useStyles();
-    const { api } = useContext<any>(ApiContext);
     const [activeStep, setActiveStep] = useState(0);
 
     const steps = [
         {
-            label: isReadOnly ? 'Policy Definition' : 'Upload Policy Definition',
-            description: isReadOnly 
-                ? (`Policy logic inclusive file`) 
-                : (`Upload the policy logic inclusive file`),
+            label: 'Upload Policy Definition',
+            description: 'Upload the policy logic inclusive file',
         },
         {
-            label: isReadOnly ? 'Policy Specification' : 'Add Policy Specification',
+            label: 'Add Policy Specification',
         },
     ];
 
@@ -134,35 +126,6 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
     const handleDrop = (policyDefinition: any) => {
         setPolicyDefinitionFile(policyDefinition);
     };
-
-    const handlePolicyDefinitionDownload = () => {
-        if (policySpec.id) {
-            const policyId = policySpec.id;
-            const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyId);
-            commonPolicyContentPromise
-                .then((commonPolicyResponse) => {
-                    Utils.forceDownload(commonPolicyResponse);
-                })
-                .catch(() => {
-                    const apiPolicyContentPromise = API.getOperationPolicyContent(policyId, api.id);
-                    apiPolicyContentPromise
-                        .then((apiPolicyResponse) => {
-                            Utils.forceDownload(apiPolicyResponse);
-                        })
-                        .catch((error) => {
-                            if (process.env.NODE_ENV !== 'production') {
-                                console.log(error);
-                                Alert.error(
-                                    <FormattedMessage
-                                        id='Policies.ViewPolicy.download.error'
-                                        defaultMessage='Something went wrong while downloading the policy'
-                                    />
-                                );
-                            }
-                        });
-                });
-        }
-    }
 
     const renderPolicyFileDropzone = () => {
         return (
@@ -212,7 +175,7 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                 {step.description && (
                                     <Typography variant='overline'>{step.description}</Typography>
                                 )}
-                                {(index === 0 && !isReadOnly) && (
+                                {index === 0 && (
                                     (policyDefinitionFile.length === 0) ? (
                                         renderPolicyFileDropzone()
                                     ) : (
@@ -239,82 +202,30 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                         </List>
                                     )
                                 )}
-                                {(index === 0 && isReadOnly) && (
-                                    <List className={classes.uploadedFileDetails}>
-                                        <ListItem key='policy-template-file-info,'>
-                                            <ListItemAvatar>
-                                                <Avatar>
-                                                    <InsertDriveFile />
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={`${policySpec.displayName} Policy`}
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <Tooltip
-                                                    placement='top'
-                                                    title={
-                                                        <FormattedMessage
-                                                            id='Policies.ViewPolicy.download.tooltip'
-                                                            defaultMessage='Download Policy'
-                                                        />
-                                                    }
-                                                >
-                                                    <IconButton
-                                                        aria-label='Download policy definition'
-                                                        onClick={() => handlePolicyDefinitionDownload()}
-                                                    >
-                                                        <Icon>vertical_align_bottom</Icon>
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    </List>
-                                )}
                                 {(index === 1) && (
-                                    <PolicyDefinitionEditor
-                                        isReadOnly={isReadOnly}
+                                    <PolicySpecificationEditor
+                                        isReadOnly={false}
                                         policySpec={policySpec}
                                         setPolicySpec={setPolicySpec}
                                     />
                                 )}
                                 <Box mt={2}>
-                                    {!isReadOnly ? (
-                                        <Button
-                                            variant='contained'
-                                            color='primary'
-                                            onClick={handleNext}
-                                            disabled={
-                                                (index === 0 && policyDefinitionFile.length === 0)
-                                            }
-                                        >
-                                            {index === steps.length - 1 ? 'Save' : 'Continue'}
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            variant='contained'
-                                            color='primary'
-                                            onClick={handleNext}
-                                        >
-                                            {index === steps.length - 1 ? 'Done' : 'Continue'}
-                                        </Button>
-                                    )}
-                                    {!isReadOnly ? (
-                                        <Button
-                                            color='primary'
-                                            onClick={(index === 0 ? handleNext : handleBack)}
-                                        >
-                                            {(index === 0 ? 'Skip' : 'Back')}
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            color='primary'
-                                            disabled={index === 0}
-                                            onClick={handleBack}
-                                        >
-                                            Back
-                                        </Button>
-                                    )}
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={handleNext}
+                                        disabled={
+                                            (index === 0 && policyDefinitionFile.length === 0)
+                                        }
+                                    >
+                                        {index === steps.length - 1 ? 'Save' : 'Continue'}
+                                    </Button>
+                                    <Button
+                                        color='primary'
+                                        onClick={(index === 0 ? handleNext : handleBack)}
+                                    >
+                                        {(index === 0 ? 'Skip' : 'Back')}
+                                    </Button>
                                 </Box>
                             </StepContent>
                         </Step>

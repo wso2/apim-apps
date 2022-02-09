@@ -145,9 +145,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                 <DialogContent>
                     <DialogContentText>
                         <PolicyStepper
-                            isAPI
                             onSave={onPolicyCreateSave}
-                            isReadOnly={false}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}
                             policySpec={policySpec}
