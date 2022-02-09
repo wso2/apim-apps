@@ -135,7 +135,7 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
         setPolicyDefinitionFile(policyDefinition);
     };
 
-    const handlePolicyTemplateDownload = () => {
+    const handlePolicyDefinitionDownload = () => {
         if (policySpec.id) {
             const policyId = policySpec.id;
             const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyId);
@@ -261,8 +261,8 @@ const PolicyStepper: FC<PolicyStepperProps> = ({
                                                     }
                                                 >
                                                     <IconButton
-                                                        aria-label='Download policy template'
-                                                        onClick={() => handlePolicyTemplateDownload()}
+                                                        aria-label='Download policy definition'
+                                                        onClick={() => handlePolicyDefinitionDownload()}
                                                     >
                                                         <Icon>vertical_align_bottom</Icon>
                                                     </IconButton>

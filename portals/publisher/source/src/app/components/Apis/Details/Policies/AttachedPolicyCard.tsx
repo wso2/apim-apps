@@ -16,15 +16,15 @@
  * under the License.
  */
 
-import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useRef, useState } from 'react';
+import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useContext, useRef, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from 'react-dnd';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { Icon, ListItemIcon } from '@material-ui/core';
+import { ListItemIcon } from '@material-ui/core';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import { Alert } from 'AppComponents/Shared';
 import { Drawer, makeStyles } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -33,8 +33,11 @@ import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { XYCoord } from 'dnd-core'
+import API from 'AppData/api.js';
+import ApiContext from '../components/ApiContext';
 import Utils from 'AppData/Utils';
 import type { Policy } from './Types';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme: any) => ({
     drawerPaper: {
@@ -81,6 +84,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null)
+    const { api } = useContext<any>(ApiContext);
     const policyColor = Utils.stringToColor(policyObj.displayName);
     const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
 
@@ -158,8 +162,32 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         event.preventDefault();
     };
 
-    const handlePolicyDownload = () => {
-
+    const handlePolicyDownload = (event: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyObj.id);
+        commonPolicyContentPromise
+            .then((commonPolicyResponse) => {
+                Utils.forceDownload(commonPolicyResponse);
+            })
+            .catch(() => {
+                const apiPolicyContentPromise = API.getOperationPolicyContent(policyObj.id, api.id);
+                apiPolicyContentPromise
+                    .then((apiPolicyResponse) => {
+                        Utils.forceDownload(apiPolicyResponse);
+                    })
+                    .catch((error) => {
+                        if (process.env.NODE_ENV !== 'production') {
+                            console.log(error);
+                            Alert.error(
+                                <FormattedMessage
+                                    id='Policies.ViewPolicy.download.error'
+                                    defaultMessage='Something went wrong while downloading the policy'
+                                />
+                            );
+                        }
+                    });
+            });
     }
 
     const toggleDrawer =
@@ -210,7 +238,6 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                         disableRipple
                     >
                         <CloudDownloadIcon />
-                        {/* <Icon onClick={handlePolicyDownload}>vertical_align_bottom</Icon> */}
                     </IconButton>
                     <IconButton
                         key={`${policyObj.id}-delete`}

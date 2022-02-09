@@ -3049,7 +3049,7 @@ class API extends Resource {
     static getOperationPolicyContent(policyId, apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['API specific Operation Policies'].getAPISpecificOperationPolicyContentByPolicyId(
+            return client.apis['API Operation Policies'].getAPISpecificOperationPolicyContentByPolicyId(
                 {
                     operationPolicyId: policyId,
                     apiId: apiId,
@@ -3060,7 +3060,7 @@ class API extends Resource {
     }
     
     /**
-     * Get API specific operation policies
+     * Get API Operation Policies
      * @param {String} apiId UUID of the API
      * @returns {Promise} Promise with list of operation policies
      */
@@ -3068,7 +3068,7 @@ class API extends Resource {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
-            return client.apis['API specific Operation Policies'].getAllAPISpecificOperationPolicies(
+            return client.apis['API Operation Policies'].getAllAPISpecificOperationPolicies(
                 {
                     apiId: apiId,
                     limit: limit,
@@ -3087,7 +3087,7 @@ class API extends Resource {
     static getOperationPolicy(policyId, apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['API specific Operation Policies'].getOperationPolicyForAPIByPolicyId(
+            return client.apis['API Operation Policies'].getOperationPolicyForAPIByPolicyId(
                 {
                     apiId: apiId,
                     operationPolicyId: policyId,
@@ -3107,7 +3107,7 @@ class API extends Resource {
     static addOperationPolicy(policySpec, policyDefinition, apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['API specific Operation Policies'].addAPISpecificOperationPolicy(
+            return client.apis['API Operation Policies'].addAPISpecificOperationPolicy(
                 {
                     apiId: apiId,
                 },
@@ -3133,7 +3133,7 @@ class API extends Resource {
     static deleteOperationPolicy(apiId, policyId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['API specific Operation Policies'].deleteAPISpecificOperationPolicyByPolicyId(
+            return client.apis['API Operation Policies'].deleteAPISpecificOperationPolicyByPolicyId(
                 {
                     apiId: apiId,
                     operationPolicyId: policyId,
