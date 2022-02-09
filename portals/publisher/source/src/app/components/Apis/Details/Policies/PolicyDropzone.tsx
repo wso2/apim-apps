@@ -21,9 +21,6 @@ import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
 import { useDrop } from 'react-dnd'
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import Box from '@material-ui/core/Box';
 import classNames from 'classnames';
 import type { Policy } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
@@ -60,12 +57,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignCenter: {
         justifyContent: 'center',
     },
-    arrowColor: {
-        backgroundColor: 'black',
-    },
-    iconSize: {
-        fontSize: '3em',
-    }
 }));
 
 interface PolicyDropzoneProps {
@@ -109,23 +100,6 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     
     return (
         <>
-            {policyDisplayStartDirection === 'left'
-                ?  (
-                    <Box display='flex' flexDirection='row' alignItems='center' pl={2}>
-                        <Box width='90%' mb={0.5} height={5} className={classes.arrowColor} />
-                        <Box width='10%'>
-                            <ArrowForwardIosIcon className={classes.iconSize} />
-                        </Box>
-                    </Box>
-                ) : (
-                    <Box display='flex' flexDirection='row' alignItems='center' pr={2} pl={3}>
-                        <Box width='5%'>
-                            <ArrowBackIosIcon className={classes.iconSize} />
-                        </Box>
-                        <Box width='90%' mb={0.5} height={5} className={classes.arrowColor} />
-                    </Box>
-                )
-            }
             <Grid container>
                 <div ref={drop} className={classNames({
                     [classes.dropzoneDiv]: true,

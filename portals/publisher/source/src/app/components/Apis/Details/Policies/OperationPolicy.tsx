@@ -33,6 +33,7 @@ import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined'
 import { FormattedMessage } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
 import type { Policy } from './Types';
+import FlowArrow from './components/FlowArrow';
 
 interface OPProps {
   operation : any;
@@ -242,6 +243,7 @@ const OperationPolicy: FC<OPProps> = ({
                                         defaultMessage='Request Flow'
                                     />
                                 </Typography>
+                                <FlowArrow arrowDirection='left' />
                                 {requestFlowDroppablePolicyList.length !==0 && (
                                     <PolicyDropzone
                                         policyDisplayStartDirection='left'
@@ -259,6 +261,7 @@ const OperationPolicy: FC<OPProps> = ({
                                         defaultMessage='Response Flow'
                                     />
                                 </Typography>
+                                <FlowArrow arrowDirection='right' />
                                 {responseFlowDroppablePolicyList.length !==0 && (
                                     <PolicyDropzone
                                         policyDisplayStartDirection='right'
@@ -276,6 +279,7 @@ const OperationPolicy: FC<OPProps> = ({
                                         defaultMessage='Fault Flow'
                                     />
                                 </Typography>
+                                <FlowArrow arrowDirection='right' />
                                 {faultFlowDroppablePolicyList.length !== 0 && (
                                     <PolicyDropzone
                                         policyDisplayStartDirection='right'

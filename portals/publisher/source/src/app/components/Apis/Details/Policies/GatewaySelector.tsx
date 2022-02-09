@@ -22,7 +22,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
@@ -51,7 +50,14 @@ const GatewaySelector: FC<GatewaySelectorProps> = () => {
         <Paper>
             <Grid container direction='row' spacing={3}>
                 <Grid item md={12} xs={12}>
-                    <Box ml={3} mr={5} display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
+                    <Box
+                        display='flex'
+                        flexDirection='row'
+                        justifyContent='space-between'
+                        alignItems='center'
+                        ml={3}
+                        mr={5}
+                    >
                         <Box>
                             <Typography variant='subtitle1' component='h3' gutterBottom>
                                 API Gateway
