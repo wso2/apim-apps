@@ -1814,7 +1814,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
+            {allRevisions && allRevisions.length !== 0 && (
                 <>
                     <Grid
                         container
