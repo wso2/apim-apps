@@ -130,11 +130,13 @@ function Endpoints(props) {
                 );
                 return { ...initState, endpointConfig: { ...config } };
             }
-            case 'set_inline': {
+            case 'set_inline_or_mocked_oas': {
                 const { endpointImplementationType, endpointConfig } = value;
-                api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
-                    setSwagger(res.obj);
-                });
+                if (endpointImplementationType === 'INLINE') {
+                    api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
+                        setSwagger(res.obj);
+                    });
+                }
                 return { ...initState, endpointConfig, endpointImplementationType };
             }
             case 'set_prototyped': {
@@ -177,7 +179,7 @@ function Endpoints(props) {
     const handleSave = (isRedirect) => {
         const { endpointConfig, endpointImplementationType, serviceInfo } = apiObject;
         setUpdating(true);
-        if (endpointImplementationType === 'INLINE') {
+        if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
@@ -201,7 +203,7 @@ function Endpoints(props) {
     const handleSaveAndDeploy = () => {
         const { endpointConfig, endpointImplementationType, endpointSecurity } = apiObject;
         setUpdating(true);
-        if (endpointImplementationType === 'INLINE') {
+        if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
@@ -224,7 +226,7 @@ function Endpoints(props) {
      * Validate the provided endpoint config object.
      *
      * @param {any} endpointConfig The provided endpoint config for validation.
-     * @param {string} implementationType The api implementation type (INLINE/ ENDPOINT)
+     * @param {string} implementationType The api implementation type (INLINE/ENDPOINT/MOCKED_OAS)
      * @return {{isValid: boolean, message: string}} The endpoint validity information.
      * */
     const validate = (implementationType) => {

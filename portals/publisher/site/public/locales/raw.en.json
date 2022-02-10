@@ -1368,6 +1368,9 @@
   "Apis.Details.Endpoints.\n                                                                GenericEndpoint.security.endpoint": {
     "defaultMessage": "Endpoint security"
   },
+  "Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed": {
+    "defaultMessage": "Proceed"
+  },
   "Apis.Details.Endpoints..EndpointOverview.change.type.proceed": {
     "defaultMessage": "Proceed"
   },
@@ -1463,6 +1466,27 @@
   },
   "Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.tpp.protocol.violation": {
     "defaultMessage": "TTP Protocol Violation"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline": {
+    "defaultMessage": "Regular gateway (Synapse gateway)"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS": {
+    "defaultMessage": "Choreo Connect"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS.description": {
+    "defaultMessage": "If you want to add/update examples, update the API Definition"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Options": {
+    "defaultMessage": "Select the gateway type"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation": {
+    "defaultMessage": "Change Mock implementation"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message": {
+    "defaultMessage": "Your current mock endpoint implementation scripts will be lost."
   },
   "Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration": {
     "defaultMessage": "Advanced Configurations"
@@ -1845,8 +1869,26 @@
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint.description": {
     "defaultMessage": "The direct URI of the web service."
   },
-  "Apis.Details.Endpoints.Prototype.InlineEndpoints.script": {
+  "Apis.Details.Endpoints.Prototype.MockImplEndpoints.script": {
     "defaultMessage": "Script"
+  },
+  "Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset": {
+    "defaultMessage": "Reset"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.Example": {
+    "defaultMessage": "Example Value"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.Example.NotProvided": {
+    "defaultMessage": "Response Examples are not provided in the API definition"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided": {
+    "defaultMessage": "Responses are not provided in the API definition"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.subTitle": {
+    "defaultMessage": "Mocked examples generated from OAS"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.title": {
+    "defaultMessage": "Responses"
   },
   "Apis.Details.Environments\n                                                                                    .deploy.vhost": {
     "defaultMessage": "VHost"

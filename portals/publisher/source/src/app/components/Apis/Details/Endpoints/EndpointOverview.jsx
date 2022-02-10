@@ -37,9 +37,9 @@ import CONSTS from 'AppData/Constants';
 
 import cloneDeep from 'lodash.clonedeep';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import InlineEndpoints from 'AppComponents/Apis/Details/Endpoints/Prototype/InlineEndpoints';
 import ServiceCatalog from 'AppData/ServiceCatalog';
 import Alert from 'AppComponents/Shared/Alert';
+import MockImplEndpoints from 'AppComponents/Apis/Details/Endpoints/Prototype/MockImplEndpoints';
 import {
     getEndpointTypeProperty,
     createEndpointConfig,
@@ -126,6 +126,7 @@ const endpointTypes = [
     { key: 'INLINE', value: 'Mock Implementation' },
     { key: 'awslambda', value: 'AWS Lambda' },
     { key: 'service', value: 'Service Endpoint' },
+    { key: 'MOCKED_OAS', value: 'Mock Implementation' },
 ];
 
 /**
@@ -185,6 +186,8 @@ function EndpointOverview(props) {
         const type = apiObject.endpointConfig && apiObject.endpointConfig.endpoint_type;
         if (apiObject.endpointImplementationType === 'INLINE') {
             return endpointTypes[4];
+        } else if (apiObject.endpointImplementationType === 'MOCKED_OAS') {
+            return endpointTypes[7];
         } else if (apiObject.endpointImplementationType === 'ENDPOINT'
             && apiObject.endpointConfig.implementation_status === 'prototyped') {
             return endpointTypes[3];
@@ -281,7 +284,7 @@ function EndpointOverview(props) {
         if (epType.key === 'service') {
             getServices();
         }
-        if (epType.key !== 'INLINE') {
+        if (epType.key !== 'INLINE' || epType.key !== 'MOCKED_OAS') {
             setEndpointCategory({
                 prod: !!endpointConfig.production_endpoints,
                 sandbox: !!endpointConfig.sandbox_endpoints,
@@ -461,13 +464,13 @@ function EndpointOverview(props) {
     const changeEndpointType = (value) => {
         setTypeChangeConfirmation({ openDialog: false });
         const selectedKey = typeChangeConfirmation.type || value;
-        if (selectedKey === 'INLINE') {
+        if (selectedKey === 'INLINE' || selectedKey === 'MOCKED_OAS') {
             const tmpConfig = createEndpointConfig('prototyped');
             endpointsDispatcher({
-                action: 'set_inline',
+                action: 'set_inline_or_mocked_oas',
                 value: {
                     endpointConfig: tmpConfig,
-                    endpointImplementationType: 'INLINE',
+                    endpointImplementationType: selectedKey,
                 },
             });
         } else if (selectedKey === 'prototyped') {
@@ -673,7 +676,7 @@ function EndpointOverview(props) {
                                 aria-label='EndpointType'
                                 name='endpointType'
                                 className={classes.radioGroup}
-                                value={endpointType.key}
+                                value={endpointType.key === 'MOCKED_OAS' ? 'INLINE' : endpointType.key}
                                 onChange={handleEndpointTypeSelect}
                             >
                                 {supportedEnpointTypes.map((endpoint) => {
@@ -695,8 +698,18 @@ function EndpointOverview(props) {
                     )}
                 </Grid>
                 <Grid item xs={12}>
-                    {endpointType.key === 'INLINE' ? iff(Object.keys(swaggerDef.paths).length !== 0,
-                        <InlineEndpoints paths={swaggerDef.paths} updatePaths={updatePaths} />, <Progress />)
+                    {(endpointType.key === 'INLINE' || endpointType.key === 'MOCKED_OAS') ? 
+                        iff(Object.keys(swaggerDef.paths).length !== 0, 
+                            <MockImplEndpoints 
+                                key={endpointType.key}
+                                paths={swaggerDef.paths} 
+                                swagger={swaggerDef} 
+                                updatePaths={updatePaths} 
+                                endpointType={endpointType.key} 
+                                endpointConfig={endpointConfig}
+                                endpointsDispatcher={endpointsDispatcher}
+                            />, 
+                            <Progress />)
                         : (
                             <Paper className={classes.endpointContainer}>
 
@@ -1120,8 +1133,8 @@ function EndpointOverview(props) {
                             </Paper>
                         )}
                 </Grid>
-                {endpointType.key === 'INLINE' || endpointType.key === 'prototyped' || endpointType.key === 'awslambda'
-                    || api.type === 'WS'
+                {endpointType.key === 'INLINE' || endpointType.key === 'MOCKED_OAS' || 
+                    endpointType.key === 'prototyped' || endpointType.key === 'awslambda' || api.type === 'WS'
                     ? <div />
                     : (
                         <Grid item xs={12}>
@@ -1140,6 +1153,7 @@ function EndpointOverview(props) {
                     )}
                 {
                     endpointType.key === 'INLINE'
+                        || endpointType.key === 'MOCKED_OAS'
                         || endpointType.key === 'default'
                         || endpointType.key === 'prototyped'
                         || api.type === 'WS'
