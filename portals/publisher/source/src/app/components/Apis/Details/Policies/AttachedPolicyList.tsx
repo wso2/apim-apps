@@ -31,11 +31,11 @@ import {
     SortableContext,
 } from '@dnd-kit/sortable';
 import AttachedPolicyCard from './AttachedPolicyCard';
-import type { Policy } from './Types';
+import type { AttachedPolicy } from './Types';
 
 interface AttachedPolicyListProps {
-    currentPolicyList: Policy[];
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
+    currentPolicyList: AttachedPolicy[];
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     policyDisplayStartDirection: string;
     currentFlow: string;
 }
@@ -63,8 +63,8 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
         
         if (active.id !== over?.id) {
             setCurrentPolicyList((items) => {
-                const oldIndex = items.findIndex(item => item.id === active.id);
-                const newIndex = items.findIndex(item => item.id === over?.id);
+                const oldIndex = items.findIndex(item => item.timestamp.toString() === active.id);
+                const newIndex = items.findIndex(item => item.timestamp.toString() === over?.id);
 
                 return arrayMove(items, oldIndex, newIndex);
             });
@@ -79,12 +79,12 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                 onDragEnd={handleDragEnd}
             >
                 <SortableContext 
-                    items={currentPolicyList.map(item => item.id)}
+                    items={currentPolicyList.map(item => item.timestamp.toString())}
                     strategy={horizontalListSortingStrategy}
                 >
-                    {policyListToDisplay.map((policy: Policy) => (
+                    {policyListToDisplay.map((policy: AttachedPolicy) => (
                         <AttachedPolicyCard
-                            key={policy.id}
+                            key={policy.timestamp}
                             policyObj={policy}
                             currentPolicyList={currentPolicyList}
                             setCurrentPolicyList={setCurrentPolicyList}

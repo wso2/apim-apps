@@ -36,7 +36,7 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import API from 'AppData/api.js';
 import ApiContext from '../components/ApiContext';
 import Utils from 'AppData/Utils';
-import type { Policy } from './Types';
+import type { AttachedPolicy } from './Types';
 import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -57,9 +57,9 @@ interface DragItem {
 }
 
 interface AttachedPolicyCardProps {
-    policyObj: Policy;
-    currentPolicyList: Policy[];
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
+    policyObj: AttachedPolicy;
+    currentPolicyList: AttachedPolicy[];
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     currentFlow: string;
 }
 
@@ -83,7 +83,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         transform,
         transition,
         isDragging,
-    } = useSortable({id: policyObj.id});
+    } = useSortable({id: policyObj.timestamp.toString()});
     const style: CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,

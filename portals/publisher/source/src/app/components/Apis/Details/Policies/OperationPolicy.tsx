@@ -32,7 +32,7 @@ import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
-import type { Policy } from './Types';
+import type { AttachedPolicy, Policy } from './Types';
 import FlowArrow from './components/FlowArrow';
 
 interface OPProps {
@@ -125,9 +125,9 @@ const OperationPolicy: FC<OPProps> = ({
     ) && apiOperation.usedProductIds.length;
 
     // Policies attached for each request, response and fault flow
-    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<Policy[]>([]);
-    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<Policy[]>([]);
-    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<Policy[]>([]);
+    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);
+    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<AttachedPolicy[]>([]);
+    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<AttachedPolicy[]>([]);
 
     // Droppable policy identifier list for each request, response and fault flow
     const [requestFlowDroppablePolicyList, setRequestFlowDroppablePolicyList] = useState<string[]>([]);

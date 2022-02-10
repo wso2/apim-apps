@@ -22,7 +22,7 @@ import { useDrop } from 'react-dnd'
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import classNames from 'classnames';
-import type { Policy } from './Types';
+import type { AttachedPolicy, Policy } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface PolicyDropzoneProps {
     policyDisplayStartDirection: string;
-    currentPolicyList: Policy[];
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<Policy[]>>;
+    currentPolicyList: AttachedPolicy[];
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     droppablePolicyList: string[];
     currentFlow: string;
 }
