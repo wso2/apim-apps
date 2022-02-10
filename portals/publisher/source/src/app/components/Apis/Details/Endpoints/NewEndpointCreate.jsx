@@ -94,6 +94,19 @@ function NewEndpointCreate(props) {
             disabled: ['SOAPTOREST'],
         },
         {
+            type: 'service',
+            name: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint',
+                defaultMessage: 'Service Endpoint',
+            }),
+            description: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint.description',
+                defaultMessage: 'A REST API endpoint based on a Service in the service catalog.',
+            }),
+            options: null,
+            disabled: ['SOAPTOREST'],
+        },
+        {
             type: 'address',
             name: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint',
