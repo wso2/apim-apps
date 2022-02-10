@@ -1457,7 +1457,7 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2'
+            {!api.isRevision && allRevisions && allRevisions.length !== 0
             && (
                 <Grid container>
                     <Button
@@ -1854,7 +1854,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
+            {allRevisions && allRevisions.length !== 0 && (
                 <>
                     <Grid
                         container
