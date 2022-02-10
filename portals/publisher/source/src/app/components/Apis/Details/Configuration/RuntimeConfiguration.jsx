@@ -30,17 +30,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import isEmpty from 'lodash/isEmpty';
-import cloneDeep from 'lodash.clonedeep';
 import Api from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import ResponseCaching from './components/ResponseCaching';
 import CORSConfiguration from './components/CORSConfiguration';
-import SchemaValidation from './components/SchemaValidation';
 import MaxBackendTps from './components/MaxBackendTps';
-import Flow from './components/Flow';
 import Endpoints from './components/Endpoints';
 import APISecurity from './components/APISecurity/APISecurity';
 import QueryAnalysis from './components/QueryAnalysis';
@@ -309,10 +305,6 @@ export default function RuntimeConfiguration() {
     const [updateComplexityList, setUpdateComplexityList] = useState(null);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
     const classes = useStyles();
-    const mediationPolicies = cloneDeep(api.mediationPolicies || []);
-    const [inPolicy, setInPolicy] = useState(mediationPolicies.filter((seq) => seq.type === 'IN')[0]);
-    const [outPolicy, setOutPolicy] = useState(mediationPolicies.filter((seq) => seq.type === 'OUT')[0]);
-    const [faultPolicy, setFaultPolicy] = useState(mediationPolicies.filter((seq) => seq.type === 'FAULT')[0]);
     const intl = useIntl();
     useEffect(() => {
         if (!isRestricted(['apim:api_create'], api)) {
@@ -332,30 +324,6 @@ export default function RuntimeConfiguration() {
                 });
         }
     }, []);
-
-    const getMediationPoliciesToSave = () => {
-        const NONE = 'none';
-        const newMediationPolicies = [];
-        if (!(isEmpty(inPolicy) || inPolicy.name === NONE)) {
-            newMediationPolicies.push(inPolicy);
-        }
-        if (!(isEmpty(outPolicy) || outPolicy.name === NONE)) {
-            newMediationPolicies.push(outPolicy);
-        }
-        if (!(isEmpty(faultPolicy) || faultPolicy.name === NONE)) {
-            newMediationPolicies.push(faultPolicy);
-        }
-        return newMediationPolicies;
-    };
-    const updateInMediationPolicy = (policy) => {
-        setInPolicy({ id: policy.id, name: policy.name, type: policy.type });
-    };
-    const updateOutMediationPolicy = (policy) => {
-        setOutPolicy({ id: policy.id, name: policy.name, type: policy.type });
-    };
-    const updateFaultMediationPolicy = (policy) => {
-        setFaultPolicy({ id: policy.id, name: policy.name, type: policy.type });
-    };
 
     /**
      * Update the GraphQL Query Complexity Values
@@ -383,11 +351,8 @@ export default function RuntimeConfiguration() {
      * Handle the configuration view save button action
      */
     function handleSave() {
-        const newMediationPolicies = getMediationPoliciesToSave();
         if (api.isAPIProduct()) {
             delete apiConfig.keyManagers; // remove keyManagers property if API type is API Product
-        } else {
-            apiConfig.mediationPolicies = newMediationPolicies;
         }
         if (updateComplexityList !== null) {
             updateComplexity();
@@ -424,11 +389,8 @@ export default function RuntimeConfiguration() {
      * Handle the configuration view save button action
      */
     function handleSaveAndDeploy() {
-        const newMediationPolicies = getMediationPoliciesToSave();
         if (api.isAPIProduct()) {
             delete apiConfig.keyManagers; // remove keyManagers property if API type is API Product
-        } else {
-            apiConfig.mediationPolicies = newMediationPolicies;
         }
         if (updateComplexityList !== null) {
             updateComplexity();
@@ -508,20 +470,6 @@ export default function RuntimeConfiguration() {
                                         { api.type !== 'WS' && (
                                             <CORSConfiguration api={apiConfig} configDispatcher={configDispatcher} />
                                         )}
-
-                                        {(api.type !== 'GRAPHQL' && !isAsyncAPI)
-                                            && <SchemaValidation api={apiConfig} configDispatcher={configDispatcher} />}
-                                        {!api.isAPIProduct() && !isAsyncAPI &&
-                                            !(api.type === 'HTTP' || api.type === 'SOAPTOREST' || api.type === 'SOAP')
-                                            && (
-                                                <Flow
-                                                    api={apiConfig}
-                                                    type='IN'
-                                                    updateMediationPolicy={updateInMediationPolicy}
-                                                    selectedMediationPolicy={inPolicy}
-                                                    isRestricted={isRestricted(['apim:api_create'], api)}
-                                                />
-                                            )}
                                         {api.type === 'GRAPHQL' && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
@@ -555,32 +503,6 @@ export default function RuntimeConfiguration() {
                                         <Grid item xs={12} style={{ position: 'relative' }}>
                                             <Box mb={3}>
                                                 <Paper className={classes.paper} elevation={0}>
-                                                    {!api.isAPIProduct() && !(api.type === 'HTTP'
-                                                        || api.type === 'SOAPTOREST' || api.type === 'SOAP') && (
-                                                        <Box mb={3}>
-                                                            {isWebSub ? (
-                                                                <Flow
-                                                                    api={apiConfig}
-                                                                    type='IN'
-                                                                    updateMediationPolicy={updateInMediationPolicy}
-                                                                    selectedMediationPolicy={inPolicy}
-                                                                    isRestricted={isRestricted(
-                                                                        ['apim:api_create'], api
-                                                                    )}
-                                                                />
-                                                            ) : (
-                                                                <Flow
-                                                                    api={apiConfig}
-                                                                    type='OUT'
-                                                                    updateMediationPolicy={updateOutMediationPolicy}
-                                                                    selectedMediationPolicy={outPolicy}
-                                                                    isRestricted={isRestricted(
-                                                                        ['apim:api_create'], api
-                                                                    )}
-                                                                />
-                                                            )}
-                                                        </Box>
-                                                    )}
                                                     {!isAsyncAPI && (
                                                         <ResponseCaching
                                                             api={apiConfig}
@@ -592,30 +514,6 @@ export default function RuntimeConfiguration() {
                                                     <ArrowBackIcon className={classes.arrowBackIcon} />
                                                 )}
                                             </Box>
-                                        </Grid>
-                                    </>
-                                )}
-                                {!api.isAPIProduct()
-                                    && !(api.type === 'HTTP' || api.type === 'SOAPTOREST' || api.type === 'SOAP') && (
-                                    <>
-                                        <Typography className={classes.heading} variant='h6' component='h3'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Configuration.RuntimeConfiguration.section.fault'
-                                                defaultMessage='Fault'
-                                            />
-                                        </Typography>
-                                        <Grid item xs={12} style={{ position: 'relative' }}>
-                                            <Paper className={classes.paper} elevation={0}>
-                                                <Flow
-                                                    api={apiConfig}
-                                                    type='FAULT'
-                                                    updateMediationPolicy={updateFaultMediationPolicy}
-                                                    selectedMediationPolicy={faultPolicy}
-                                                    isRestricted={isRestricted(
-                                                        ['apim:api_create'], api
-                                                    )}
-                                                />
-                                            </Paper>
                                         </Grid>
                                     </>
                                 )}
