@@ -17,7 +17,19 @@
  */
 
 import React, { FC } from 'react';
-import update from 'immutability-helper';
+import {
+    DndContext, 
+    closestCenter,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    horizontalListSortingStrategy,
+    SortableContext,
+} from '@dnd-kit/sortable';
 import AttachedPolicyCard from './AttachedPolicyCard';
 import type { Policy } from './Types';
 
@@ -38,32 +50,46 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+    );
 
-    const movePolicyCard = (dragIndex: number, hoverIndex: number) => {
-        const dragItem = currentPolicyList[dragIndex];
-        setCurrentPolicyList(
-            update(currentPolicyList, {
-                $splice: [
-                    [dragIndex, 1],
-                    [hoverIndex, 0, dragItem],
-                ],
-            }),
-        )
+    const handleDragEnd = (event: DragEndEvent) => {
+        const {active, over} = event;
+        
+        if (active.id !== over?.id) {
+            setCurrentPolicyList((items) => {
+                const oldIndex = items.findIndex(item => item.id === active.id);
+                const newIndex = items.findIndex(item => item.id === over?.id);
+
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
     }
 
     return (
         <>
-            {policyListToDisplay.map((policy: Policy, index: number) => (
-                <AttachedPolicyCard
-                    key={policy.id}
-                    index={index}
-                    policyObj={policy}
-                    movePolicyCard={movePolicyCard}
-                    currentPolicyList={currentPolicyList}
-                    setCurrentPolicyList={setCurrentPolicyList}
-                    currentFlow={currentFlow}
-                />
-            ))}
+            <DndContext 
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+            >
+                <SortableContext 
+                    items={currentPolicyList.map(item => item.id)}
+                    strategy={horizontalListSortingStrategy}
+                >
+                    {policyListToDisplay.map((policy: Policy, index: number) => (
+                        <AttachedPolicyCard
+                            key={policy.id}
+                            index={index}
+                            policyObj={policy}
+                            currentPolicyList={currentPolicyList}
+                            setCurrentPolicyList={setCurrentPolicyList}
+                            currentFlow={currentFlow}
+                        />
+                    ))}
+                </SortableContext>
+            </DndContext>
         </>
     );
 }

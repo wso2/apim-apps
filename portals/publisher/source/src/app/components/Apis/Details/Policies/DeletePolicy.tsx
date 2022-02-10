@@ -53,7 +53,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
         setOpen(!open);
     };
 
-    const deleteCommonPolicy = () => {
+    const deleteOperationPolicy = () => {
         const promisedCommonPolicyDelete = API.deleteOperationPolicy(api.id, policyId);
         promisedCommonPolicyDelete
             .then(() => {
@@ -69,7 +69,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
     };
     
     const handleDelete = () => {
-        deleteCommonPolicy();
+        deleteOperationPolicy();
     }
 
     const handleClose = () => {
