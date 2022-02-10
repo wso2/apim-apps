@@ -33,6 +33,7 @@ import TableRow from '@material-ui/core/TableRow';
 import cloneDeep from 'lodash.clonedeep';
 import AddEditAdditionalHeaders from 'AppComponents/Apis/Details/GraphQLConsole/AddEditAdditionalHeaders';
 import DeleteHeader from 'AppComponents/Apis/Details/GraphQLConsole/DeleteHeader';
+import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -166,20 +167,9 @@ function AdditionalHeaders(props) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails classes={{ root: classes.expandContentRoot }}>
                     <>
-                        <hr className={classes.hr} />
+                        <Divider light className={classes.customDivider} />
                         <Box component='div' marginLeft={1} display='flex' alignItems='center'>
                             <Box flex={1}>
-                                <Typography
-                                    color='inherit'
-                                    variant='subtitle2'
-                                    component='div'
-                                    className={classes.subsubTitle}
-                                >
-                                    <FormattedMessage
-                                        id='GraphQL.Devportal.Tryout.Addtional.headers'
-                                        defaultMessage='Additional Headers'
-                                    />
-                                </Typography>
                                 <Typography variant='caption'>
                                     <FormattedMessage
                                         id='GraphQL.Devportal.Tryout.Addtional.headers.help'
@@ -247,7 +237,7 @@ function AdditionalHeaders(props) {
                             </Box>
                         )}
                     </>
-                    <hr className={classes.hr} />
+                    <Divider />
                 </ExpansionPanelDetails>
             </ExpansionPanel>
 
