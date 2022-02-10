@@ -51,7 +51,11 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5,
+            }
+        }),
     );
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -78,10 +82,9 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                     items={currentPolicyList.map(item => item.id)}
                     strategy={horizontalListSortingStrategy}
                 >
-                    {policyListToDisplay.map((policy: Policy, index: number) => (
+                    {policyListToDisplay.map((policy: Policy) => (
                         <AttachedPolicyCard
                             key={policy.id}
-                            index={index}
                             policyObj={policy}
                             currentPolicyList={currentPolicyList}
                             setCurrentPolicyList={setCurrentPolicyList}
