@@ -18,12 +18,12 @@
  */
 
 import React, { FC, useEffect, useContext, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Drawer, makeStyles, ListItemIcon } from '@material-ui/core';
+import { Drawer, makeStyles, ListItemIcon, Theme, Typography } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
@@ -33,26 +33,31 @@ import { Alert } from 'AppComponents/Shared';
 import General from './PolicyForm/General';
 import { Policy, PolicySpec, ApiPolicy } from './Types';
 import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
-import { Progress } from 'AppComponents/Shared';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
         backgroundColor: 'white',
+        width: '60vh',
     },
     actionsBox: {
         display: 'flex',
         flexDirection: 'column',
         marginTop: '1em',
     },
+    iconSize: {
+        height: '1.2em',
+        width: '1.2em',
+        color: theme.palette.grey[700],
+    },
 }));
 
 interface PolicyConfiguringDrawerProps {
     policyObj: Policy;
     drawerOpen: boolean;
-    toggleDrawer: Function;
     currentFlow: string;
     target: string;
     verb: string;
+    handleDrawerClose: () => void;
 }
 
 /**
@@ -61,13 +66,12 @@ interface PolicyConfiguringDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
-    policyObj, drawerOpen, toggleDrawer, currentFlow, target, verb
+    policyObj, drawerOpen, currentFlow, target, verb, handleDrawerClose
 }) => {
     const classes = useStyles();
     const { apiOperations } = useContext<any>(ApiOperationContext);
     const [policySpec, setPolcySpec] = useState<PolicySpec>();
     const [errorCount, setErrorCount] = useState<number>(0);
-    const restApi = new API();
     const { api } = useContext<any>(ApiContext);
     const intl = useIntl();
 
@@ -156,9 +160,11 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
             });
 
     }, [policyObj]);
+
     if (!policySpec) {
-        return (<Progress />);
+        return <></>;
     }
+
     const operationInAction = apiOperations.find((op: any) =>
         op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
     const operationFlowPolicy =
@@ -179,30 +185,37 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     // apiPolicy.parameters['fooHeaderName'] = '';
     // apiPolicy.parameters['fooheaderValue'] = '';
 
-
-    // eslint-disable-next-line no-console
     return (
         <Drawer
             anchor='right'
             open={drawerOpen}
-            onClose={() => toggleDrawer(false)}
+            onClose={handleDrawerClose} // Need to use handleDrawerClose only on onDrop. When in editing mode use handleDrawerCloseOnEditMode
             classes={{ paper: classes.drawerPaper }}
         >
             <Box role='presentation'>
                 <List>
                     <ListItem key='policy-config'>
                         <ListItemIcon>
-                            <Settings />
+                            <Settings className={classes.iconSize} />
                         </ListItemIcon>
-                        <ListItemText primary='Configure' />
+                        <ListItemText primary={(
+                            <Typography variant='subtitle2'>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PolicyConfiguringDrawer.title'
+                                    defaultMessage='Configure {policy} Policy'
+                                    values={{ policy: policyObj.displayName }}
+                                />
+                            </Typography>
+                        )}
+                        />
                         <ListItemIcon>
-                            <IconButton onClick={() => toggleDrawer(false)}>
-                                <Close />
+                            <IconButton onClick={handleDrawerClose}>
+                                <Close className={classes.iconSize} />
                             </IconButton>
                         </ListItemIcon>
                     </ListItem>
                 </List>
-                <Divider />
+                <Divider light />
                 <General
                     policyObj={policyObj}
                     currentFlow={currentFlow}
@@ -210,6 +223,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     verb={verb}
                     policySpec={policySpec}
                     apiPolicy={apiPolicy}
+                    handleDrawerClose={handleDrawerClose}
                 />
             </Box>
         </Drawer>

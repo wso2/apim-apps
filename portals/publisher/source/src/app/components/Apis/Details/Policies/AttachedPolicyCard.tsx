@@ -16,29 +16,22 @@
  * under the License.
  */
 
-import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useContext, useState } from 'react';
+import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ListItemIcon } from '@material-ui/core';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Alert } from 'AppComponents/Shared';
-import { Drawer, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Settings, Close } from '@material-ui/icons';
-import Divider from '@material-ui/core/Divider';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import API from 'AppData/api.js';
 import ApiContext from '../components/ApiContext';
 import Utils from 'AppData/Utils';
 import type { AttachedPolicy } from './Types';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
-import type { Policy } from './Types';
 import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -52,12 +45,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-interface DragItem {
-    index: number;
-    id: string;
-    type: string;
-}
-
 interface AttachedPolicyCardProps {
     policyObj: AttachedPolicy;
     currentPolicyList: AttachedPolicy[];
@@ -65,6 +52,8 @@ interface AttachedPolicyCardProps {
     currentFlow: string;
     verb: string;
     target: string;
+    drawerOpen: boolean;
+    setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -74,10 +63,9 @@ interface AttachedPolicyCardProps {
  */
 const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     policyObj, currentPolicyList, setCurrentPolicyList, currentFlow,
-    target, verb
+    target, verb, drawerOpen, setDrawerOpen
 }) => {
     const classes = useStyles();
-    const [drawerOpen, setDrawerOpen] = useState(false);
     const { api } = useContext<any>(ApiContext);
     const policyColor = Utils.stringToColor(policyObj.displayName);
     const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
@@ -139,7 +127,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             });
     }
 
-    const toggleDrawer =
+    const handleDrawerOpen =
         (open: boolean) =>
         (event: KeyboardEvent | MouseEvent) => {
             if (
@@ -150,12 +138,30 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 return;
             }
 
-            setDrawerOpen(open);
+            setDrawerOpen(true);
         };
+
+    // Need to call this function only on initial policy drop
+    const handleDrawerClose = () => {
+        const filteredList = currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp);
+        setCurrentPolicyList(filteredList);
+        setDrawerOpen(false);
+    }
+
+    // Need to call this function only when on edit mode of an already dropped policy
+    const handleDrawerCloseOnEditMode = () => {
+        setDrawerOpen(false);
+    }
 
     return (
         <>
-            <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={toggleDrawer(true)}>
+            <div
+                ref={setNodeRef}
+                style={style}
+                {...attributes}
+                {...listeners}
+                onClick={() => handleDrawerOpen}
+            >
                 <Tooltip key={policyObj.id} title={policyObj.displayName} placement='top'>
                     <Avatar
                         style={{
@@ -190,12 +196,12 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             </div>
             <PolicyConfiguringDrawer 
                 policyObj={policyObj} 
-                drawerOpen={drawerOpen} 
-                toggleDrawer={toggleDrawer} 
+                drawerOpen={drawerOpen}
                 currentFlow={currentFlow}
                 target={target}
                 verb={verb}
-                />
+                handleDrawerClose={handleDrawerClose}
+            />
         </>
     );
 };

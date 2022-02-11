@@ -97,14 +97,13 @@ const useStyles = makeStyles((theme: any) => ({
 const ViewPolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const api = new API();
     const redirectUrl = '/policies';
     const { policyId } = useParams<{policyId?: string}>();
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
 
     useEffect(() => {
         if (policyId) {
-            const promisedCommonPolicyGet = api.getCommonOperationPolicy(policyId);
+            const promisedCommonPolicyGet = API.getCommonOperationPolicy(policyId);
             promisedCommonPolicyGet
                 .then((response) => {
                     setPolicySpec(response.body);

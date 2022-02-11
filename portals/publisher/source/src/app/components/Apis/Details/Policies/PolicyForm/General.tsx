@@ -4,7 +4,6 @@ import {
     Grid,
     Typography,
     Button,
-    Divider,
     TextField,
     CircularProgress,
     Box,
@@ -17,13 +16,16 @@ import ApiOperationContext from "../ApiOperationContext";
 const useStyles = makeStyles(theme => ({
     titleCta: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'right',
         alignItems: 'center',
     },
     avatar: {
         width: theme.spacing(14),
         height: theme.spacing(15),
     },
+    btn: {
+        marginRight: '1em',
+    }
 }));
 interface GeneralProps {
     policyObj: Policy;
@@ -32,8 +34,12 @@ interface GeneralProps {
     verb: string;
     apiPolicy: ApiPolicy;
     policySpec: PolicySpec;
+    handleDrawerClose: () => void;
 }
-const General: FC<GeneralProps> = ({ currentFlow, target, verb, apiPolicy, policySpec }) => {
+
+const General: FC<GeneralProps> = ({
+    currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose
+}) => {
     const intl = useIntl();
     const classes = useStyles();
     const [saving, setSaving] = useState(false);
@@ -124,24 +130,18 @@ const General: FC<GeneralProps> = ({ currentFlow, target, verb, apiPolicy, polic
         return <CircularProgress />
     }
     return (
-        <Box px={2}>
+        <Box p={2}>
             <form onSubmit={submitForm}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <div className={classes.titleCta}>
-                            <Typography variant='h6' color='textPrimary'>
-                                {policySpec.displayName}
-                            </Typography>
                             <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.PolicyForm.General.reset'
-                                    defaultMessage='Reset all'
+                                    defaultMessage='Reset'
                                 />
                             </Button>
                         </div>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Divider />
                     </Grid>
                     {policySpec.policyAttributes && policySpec.policyAttributes.map((spec) => (<Grid item xs={12}>
                         {(spec.type === 'String' || spec.type === 'Enum') && (<Typography
@@ -193,12 +193,22 @@ const General: FC<GeneralProps> = ({ currentFlow, target, verb, apiPolicy, polic
                             id='Apis.Details.Policies.PolicyForm.General.supported.in.all.gw'
                             defaultMessage='Supported in all Gateways'
                         /></Alert>)} */}
-                    <Grid item container justify='flex-start' xs={12}>
+                    <Grid item container justify='flex-end' xs={12}>
+                        <Button
+                            variant='outlined'
+                            color='primary'
+                            onClick={handleDrawerClose}
+                            className={classes.btn}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.General.cancel'
+                                defaultMessage='Cancel'
+                            />
+                        </Button>
                         <Button
                             variant='contained'
                             type='submit'
                             color='primary'
-                            size='large'
                             disabled={resetDisabled || formHasErrors() || saving}
                         >
                             {saving ? <><CircularProgress size='small' /><FormattedMessage

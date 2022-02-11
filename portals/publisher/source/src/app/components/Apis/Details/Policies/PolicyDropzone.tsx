@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
 import { useDrop } from 'react-dnd'
 import green from '@material-ui/core/colors/green';
@@ -79,6 +79,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     target, verb
 }) => {
     const classes = useStyles();
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const addDroppedPolicyToList = (policy: Policy) => {
         setCurrentPolicyList(prevPolicyList => [...prevPolicyList, {
@@ -88,6 +89,9 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
             applicableFlows: policy.applicableFlows,
             timestamp: Date.now(),
         }]);
+        
+        // Policy configuring drawer will appear on drop
+        setDrawerOpen(true);
     }
 
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
@@ -121,6 +125,8 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                                 currentFlow={currentFlow}
                                 target={target}
                                 verb={verb}
+                                drawerOpen={drawerOpen}
+                                setDrawerOpen={setDrawerOpen}
                             />
                         )
                     }
