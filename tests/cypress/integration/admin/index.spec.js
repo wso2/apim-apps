@@ -24,7 +24,7 @@ describe("Basic login to carbon console", () => {
         cy.get('#token-audience').type('https://default.com');
         cy.get('#wellKnownUrl').click();
         cy.get('#wellKnownUrl').type('https://localhost:9444/.well-known-url');
-        cy.intercept('POST','https://localhost:9443/api/am/admin/v2/key-managers/discover', {fixture: 'welknownURLData.json'});
+        cy.intercept('POST','https://localhost:9443/api/am/admin/v3/key-managers/discover', {fixture: 'welknownURLData.json'});
         cy.get('#import-button').click();
         cy.get('#issuer').should('have.value','https://localhost:9090/oauth2/default');
         cy.get('#clientRegistrationEndpoint').should('have.value','https://localhost:9090/oauth2/v1/clients');

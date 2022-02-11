@@ -83,11 +83,11 @@ module.exports = (env, argv) => {
                     target: 'https://localhost:9443/publisher',
                     secure: false,
                 },
-                '/api/am/publisher/v2/swagger.yaml': {
-                    target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml' : 'https://localhost:9443/api/am/publisher/v2/swagger.yaml',
+                '/api/am/publisher/v3/swagger.yaml': {
+                    target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml' : 'https://localhost:9443/api/am/publisher/v3/swagger.yaml',
                     secure: false,
                     changeOrigin: true,
-                    pathRewrite: { '^/api/am/publisher/v2/swagger.yaml': '' },
+                    pathRewrite: { '^/api/am/publisher/v3/swagger.yaml': '' },
                 },
                 '/api/am/service-catalog/v0/oas.yaml': {
                     target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml' : 'https://localhost:8081/api/am/service-catalog/v0/oas.yaml',
@@ -97,7 +97,7 @@ module.exports = (env, argv) => {
                 },
                 '/api/am': {
                     target: isTestBuild ? 'http://localhost:4010' : 'https://localhost:9443',
-                    // pathRewrite: { '^/api/am/publisher/v2/': '' },
+                    // pathRewrite: { '^/api/am/publisher/v3/': '' },
                     secure: false,
                 },
                 '/publisher/services': {
