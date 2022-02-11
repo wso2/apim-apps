@@ -17,6 +17,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link as RouterLink } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -429,7 +430,7 @@ class Credentials extends React.Component {
                                                 to={(isOnlyMutualSSL || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers) ? null
                                                     : `/apis/${api.id}/credentials/wizard`}
-                                                component={Link}
+                                                component={RouterLink}
                                                 disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
                                                     || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
                                             >
@@ -582,6 +583,7 @@ class Credentials extends React.Component {
                                                 style={!api.isSubscriptionAvailable
                                                     ? { pointerEvents: 'none' } : null}
                                                 className={classes.addLinkWrapper}
+                                                component={RouterLink}
                                             >
                                                 <Button
                                                     color='secondary'
