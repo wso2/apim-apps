@@ -470,9 +470,9 @@ class API extends Resource {
     /**
      * Add a Gateway Environment
      */
-    addGatewayEnvironment(name, displayName, description, vhosts,  callback = null) {
+    addGatewayEnvironment(name, displayName, description, vhosts, provider="wso2",  callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, description, vhosts };
+            const data = { name, displayName, description, vhosts, provider };
             const payload = {
                 'Content-Type': 'application/json',
             };
