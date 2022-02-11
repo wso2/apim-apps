@@ -38,6 +38,8 @@ interface AttachedPolicyListProps {
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     policyDisplayStartDirection: string;
     currentFlow: string;
+    target: string;
+    verb: string;
 }
 
 /**
@@ -46,7 +48,7 @@ interface AttachedPolicyListProps {
  * @returns {TSX} Radio group for the API Gateway.
  */
 const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
-    currentPolicyList, setCurrentPolicyList, policyDisplayStartDirection, currentFlow
+    currentPolicyList, setCurrentPolicyList, policyDisplayStartDirection, currentFlow, target, verb
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
@@ -89,6 +91,8 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                             currentPolicyList={currentPolicyList}
                             setCurrentPolicyList={setCurrentPolicyList}
                             currentFlow={currentFlow}
+                            target={target}
+                            verb={verb}
                         />
                     ))}
                 </SortableContext>

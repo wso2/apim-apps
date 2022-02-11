@@ -65,6 +65,8 @@ interface PolicyDropzoneProps {
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     droppablePolicyList: string[];
     currentFlow: string;
+    target: string;
+    verb: string;
 }
 
 /**
@@ -73,7 +75,8 @@ interface PolicyDropzoneProps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const PolicyDropzone: FC<PolicyDropzoneProps> = ({
-    policyDisplayStartDirection, currentPolicyList, setCurrentPolicyList, droppablePolicyList, currentFlow
+    policyDisplayStartDirection, currentPolicyList, setCurrentPolicyList, droppablePolicyList, currentFlow,
+    target, verb
 }) => {
     const classes = useStyles();
 
@@ -116,6 +119,8 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                                 setCurrentPolicyList={setCurrentPolicyList}
                                 policyDisplayStartDirection={policyDisplayStartDirection}
                                 currentFlow={currentFlow}
+                                target={target}
+                                verb={verb}
                             />
                         )
                     }

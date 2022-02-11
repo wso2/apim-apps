@@ -2834,7 +2834,7 @@ class API extends Resource {
      * @param {String} policyId UUID of the common operation policy to retrieve
      * @returns {Promise} Promise containing the requested common operation policy
      */
-    getCommonOperationPolicy(policyId) {
+    static getCommonOperationPolicy(policyId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {

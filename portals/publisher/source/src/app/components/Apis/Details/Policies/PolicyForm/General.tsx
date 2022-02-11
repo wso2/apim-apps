@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FC, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Grid,
@@ -8,14 +8,11 @@ import {
     TextField,
     CircularProgress,
     Box,
-    FormControlLabel,
-    Checkbox,
-    MenuItem,
-    Select,
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Alert from 'AppComponents/Shared/MuiAlert';
 import Policies from '../../LifeCycle/Policies';
+import { Policy, PolicySpec, ApiPolicy } from '../Types';
+import ApiOperationContext from "../ApiOperationContext";
 
 const useStyles = makeStyles(theme => ({
     titleCta: {
@@ -28,98 +25,24 @@ const useStyles = makeStyles(theme => ({
         height: theme.spacing(15),
     },
 }));
-
-const General = () => {
+interface GeneralProps {
+    policyObj: Policy;
+    currentFlow: string;
+    target: string;
+    verb: string;
+    apiPolicy: ApiPolicy;
+    policySpec: PolicySpec;
+}
+const General: FC<GeneralProps> = ({ currentFlow, target, verb, apiPolicy, policySpec }) => {
     const intl = useIntl();
     const classes = useStyles();
     const [saving, setSaving] = useState(false);
-    const policySpec = {
-        "category": "Mediation",
-        "name": "add-request-header",
-        "displayName": "Add Header",
-        "description": "With this policy, user can add a new header to the request",
-        "attributes": [
-            {
-                "name": "headerName",
-                "displayName": "Header Name",
-                "description": "Name of the header to be added",
-                "validationRegex": "^([a-zA-Z_$][a-zA-Z\\d_$]*)$",
-                "type": "String",
-                "required": true
-            },
-            {
-                "name": "headerValue",
-                "displayName": "Header Value",
-                "description": "Value of the header",
-                "validationRegex": "^([a-zA-Z_$][a-zA-Z\\d_$]*)$",
-                "type": "String",
-                "required": true
-            },
-            {
-                "name": "includeQueryParameters",
-                "displayName": "Include Query Parameters?",
-                "type": "Boolean",
-            },
-            {
-                "name": "httpMethod",
-                "displayName": "HTTP Method",
-                "values": ["GET", "POST"],
-                "type": "Enum",
-                "required": true
-            },
-            {
-                "name": "callInterceptService",
-                "displayName": "Call Intercept Service",
-                "type": "Map",
-                "required": true
-            }
-        ],
-        "applicableFlows": [
-            "request",
-            "response",
-            "fault"
-        ],
-        "supportedGateways": [
-            "Synapse",
-            "CC"
-        ],
-        "supportedApiTypes": [
-            "REST",
-            "GRAPHQL",
-            "Streaming"
-        ],
-        "multipleAllowed": true
-    };
-    // const policies =  [
-    //     {
-    //         "policyName": "addQueryParams",
-    //         "parameters": {
-    //             "paramKey": "cheese",
-    //             "paramValue": "mozeralla"
-    //         }
-    //     },
-    //     {
-    //         "policyName": "setHeader",
-    //         "parameters": {
-    //             "headerName": "Pizza Header",
-    //             "headerValue": "Double chicken;afsafa;asf-asasf"
-    //         }
-    //     }
-    // ];
-    const policy = {
-        "policyName": "setHeader",
-        "parameters": {
-            "headerName": "Pizza Header",
-            "headerValue": "Double chicken;afsafa;asf-asasf",
-            "includeQueryParameters": true,
-            "httpMethod": "GET",
-        }
-    };
-    const initState = {};
-    policySpec.attributes.forEach(attr => { initState[attr.name] = null });
+    const initState: any = {};
+    const { updateApiOperations } = useContext<any>(ApiOperationContext);
+    policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
 
-    const onInputChange = (event, specType) => {
+    const onInputChange = (event: any, specType: any) => {
         if (specType === 'Boolean') {
             setState({ ...state, [event.target.name]: event.target.checked });
         } else if (specType === 'String' || specType === 'Enum') {
@@ -127,14 +50,14 @@ const General = () => {
         }
     }
 
-    const getValueOfPolicyParam = (policyParamName) => {
-        return policy.parameters[policyParamName];
+    const getValueOfPolicyParam = (policyParamName: any) => {
+        return apiPolicy.parameters[policyParamName];
     }
 
-    const submitForm = async (event) => {
+    const submitForm = async (event: any) => {
         event.preventDefault();
         setSaving(true);
-        const updateCandidates = {};
+        const updateCandidates: any = {};
         Object.keys(state).forEach((key) => {
             const value = state[key];
             if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
@@ -145,9 +68,11 @@ const General = () => {
         });
         // Saving field changes to backend
         // eslint-disable-next-line no-alert
-        alert(`saving ${JSON.stringify(updateCandidates)}`);
+        const apiPolicyToSave = {...apiPolicy};
+        apiPolicyToSave.parameters = updateCandidates;
+        updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
     };
-    const getError = (specInCheck) => {
+    const getError = (specInCheck: any) => {
         let error = '';
         const value = state[specInCheck.name];
         if (specInCheck.required && value === '') {
@@ -163,11 +88,11 @@ const General = () => {
         }
         return error;
     }
-    const supportAllGateways = () => {
-        return policySpec.supportedGateways && policySpec.supportedGateways.length === 2;
-    }
+    // const supportAllGateways = () => {
+    //     return policySpec.supportedGateways && policySpec.supportedGateways.length === 2;
+    // }
 
-    const getValue = (specName) => {
+    const getValue = (specName: any) => {
         const prviousVal = getValueOfPolicyParam(specName);
         if (state[specName] !== null) {
             return state[specName];
@@ -182,7 +107,18 @@ const General = () => {
         setState(initState);
     }
 
+    const formHasErrors = () => {
+        let formHasAnError = false;
+        policySpec.policyAttributes.forEach((spec) => {
+            if(getError(spec) !== '') {
+                formHasAnError = true
+            }
+        })
+        return formHasAnError;
+    }
+
     const resetDisabled = Object.keys(state).filter(k => !!state[k]).length === 0;
+    
 
     if (!policySpec || !Policies) {
         return <CircularProgress />
@@ -207,11 +143,10 @@ const General = () => {
                     <Grid item xs={12}>
                         <Divider />
                     </Grid>
-                    {policySpec.attributes && policySpec.attributes.map((spec) => (<Grid item xs={12}>
+                    {policySpec.policyAttributes && policySpec.policyAttributes.map((spec) => (<Grid item xs={12}>
                         {(spec.type === 'String' || spec.type === 'Enum') && (<Typography
                             variant='subtitle1'
                             color='textPrimary'
-                            className={classes.inputTitle}
                         >
                             {spec.displayName}
                         </Typography>)}
@@ -225,7 +160,7 @@ const General = () => {
                             onChange={(e) => onInputChange(e, spec.type)}
                             fullWidth
                         />)}
-                        {spec.type === 'Boolean' && (
+                        {/* {spec.type === 'Boolean' && (
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -251,20 +186,20 @@ const General = () => {
                                 {spec.values && spec.values.map((enumVal) => (<MenuItem 
                                     value={enumVal}>{enumVal}</MenuItem>))}
                             </Select>
-                        )}
+                        )} */}
                     </Grid>))}
-                    {supportAllGateways() && (<Alert severity='info' variant='outlined'>
+                    {/* {supportAllGateways() && (<Alert severity='info' variant='outlined'>
                         <FormattedMessage
                             id='Apis.Details.Policies.PolicyForm.General.supported.in.all.gw'
                             defaultMessage='Supported in all Gateways'
-                        /></Alert>)}
+                        /></Alert>)} */}
                     <Grid item container justify='flex-start' xs={12}>
                         <Button
                             variant='contained'
                             type='submit'
                             color='primary'
                             size='large'
-                            disabled={resetDisabled || saving}
+                            disabled={resetDisabled || formHasErrors() || saving}
                         >
                             {saving ? <><CircularProgress size='small' /><FormattedMessage
                                 id='Apis.Details.Policies.PolicyForm.General.saving'
@@ -281,10 +216,5 @@ const General = () => {
     );
 };
 
-General.propTypes = {
-    /**
-   * External classes
-   */
-};
 
 export default General;

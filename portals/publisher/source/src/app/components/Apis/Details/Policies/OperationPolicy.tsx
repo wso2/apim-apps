@@ -37,11 +37,9 @@ import FlowArrow from './components/FlowArrow';
 
 interface OPProps {
   operation : any;
-  operationsDispatcher : any;
   highlight : any;
   api: any;
   disableUpdate: any;
-  spec: any;
   target: any;
   verb: any;
   expandedResource: any;
@@ -50,7 +48,7 @@ interface OPProps {
 }
 
 const OperationPolicy: FC<OPProps> = ({
-    operation, operationsDispatcher, highlight, api, disableUpdate, spec, target, verb,
+    operation, highlight, api, disableUpdate, target, verb,
     expandedResource, setExpandedResource, policyList
 }) => {
     const useStyles = makeStyles((theme: any) => {
@@ -251,6 +249,8 @@ const OperationPolicy: FC<OPProps> = ({
                                         setCurrentPolicyList={setRequestFlowPolicyList}
                                         droppablePolicyList={requestFlowDroppablePolicyList}
                                         currentFlow='request'
+                                        target={target}
+                                        verb={verb}
                                     />
                                 )}
                             </Box>
@@ -269,6 +269,8 @@ const OperationPolicy: FC<OPProps> = ({
                                         setCurrentPolicyList={setResponseFlowPolicyList}
                                         droppablePolicyList={responseFlowDroppablePolicyList}
                                         currentFlow='response'
+                                        target={target}
+                                        verb={verb}
                                     />
                                 )}
                             </Box>
@@ -287,6 +289,8 @@ const OperationPolicy: FC<OPProps> = ({
                                         setCurrentPolicyList={setFaultFlowPolicyList}
                                         droppablePolicyList={faultFlowDroppablePolicyList}
                                         currentFlow='fault'
+                                        target={target}
+                                        verb={verb}
                                     />
                                 )}
                             </Box>

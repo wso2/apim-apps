@@ -54,3 +54,9 @@ export type PolicySpec = {
     isAPISpecific?: boolean;
     md5?: string;
 }
+
+export type ApiPolicy = {
+    policyName: string,
+    policyId: string,
+    parameters: any;
+}

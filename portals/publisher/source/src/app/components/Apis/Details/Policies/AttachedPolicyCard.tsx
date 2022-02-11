@@ -63,6 +63,8 @@ interface AttachedPolicyCardProps {
     currentPolicyList: AttachedPolicy[];
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     currentFlow: string;
+    verb: string;
+    target: string;
 }
 
 /**
@@ -71,7 +73,8 @@ interface AttachedPolicyCardProps {
  * @returns {TSX} Sortable attached policy card UI.
  */
 const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
-    policyObj, currentPolicyList, setCurrentPolicyList, currentFlow
+    policyObj, currentPolicyList, setCurrentPolicyList, currentFlow,
+    target, verb
 }) => {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -189,6 +192,9 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 policyObj={policyObj} 
                 drawerOpen={drawerOpen} 
                 toggleDrawer={toggleDrawer} 
+                currentFlow={currentFlow}
+                target={target}
+                verb={verb}
                 />
         </>
     );
