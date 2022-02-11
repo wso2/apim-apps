@@ -27,11 +27,13 @@ import AuthManager from 'AppData/AuthManager';
 import Icon from '@material-ui/core/Icon';
 import fileDownload from 'js-file-download';
 import converter from 'graphql-to-postman';
+import Box from '@material-ui/core/Box';
 import GraphQLUI from './GraphQLUI';
 import TryOutController from '../ApiConsole/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
+import AdditionalHeaders from './AdditionalHeaders';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -79,6 +81,7 @@ export default function GraphQLConsole() {
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
     const [keys, setKeys] = useState([]);
+    const [additionalHeaders, setAdditionalHeaders] = useState([]);
     const user = AuthManager.getUser();
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
@@ -299,6 +302,30 @@ export default function GraphQLConsole() {
                     api={api}
                     URLs={URLs}
                 />
+                <Box display='flex' justifyContent='center'>
+                    <Box
+                        width='50%'
+                        display='flex'
+                        flexDirection='column'
+                    >
+                        <Box ml={-5} display='flex'>
+                            <Typography variant='h5' component='h3' color='textPrimary'>
+                                <FormattedMessage
+                                    id='api.console.gql.additional.headers'
+                                    defaultMessage='Additional Headers'
+                                />
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Box>
+                <Grid container className={classes.grid}>
+                    <Grid item md={6}>
+                        <AdditionalHeaders
+                            setAdditionalHeaders={setAdditionalHeaders}
+                            additionalHeaders={additionalHeaders}
+                        />
+                    </Grid>
+                </Grid>
             </Paper>
             <Paper className={classes.paper}>
                 <GraphQLUI
@@ -306,6 +333,7 @@ export default function GraphQLConsole() {
                     URLs={getURLs()}
                     securitySchemeType={securitySchemeType}
                     accessTokenProvider={accessTokenProvider}
+                    additionalHeaders={additionalHeaders}
                 />
             </Paper>
         </>
