@@ -30,6 +30,7 @@ export type AttachedPolicy = {
     displayName: string;
     applicableFlows: string[];
     timestamp: number;
+    attributes?: any;
 }
 
 export type PolicySpecAttribute = {

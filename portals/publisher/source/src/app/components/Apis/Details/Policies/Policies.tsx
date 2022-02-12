@@ -17,7 +17,7 @@
  */
 
 import {
-    Grid, makeStyles, Typography,
+    Grid, makeStyles, Typography, Button,
 } from '@material-ui/core';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo, } from 'react';
@@ -122,7 +122,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
 
     const updateApiOperations = (updatedOperation: any, target: string, verb: string,
         currentFlow: string) => {
-        setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
         const operationInAction = newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
@@ -136,13 +135,16 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         } else {
             operationInAction.operationPolicies[currentFlow].push(updatedOperation);
         }
-        const updatePromise = updateAPI({ operations: newApiOperations});
+        // Finally update the state
+        setApiOperations(newApiOperations);
+    }
+    const saveApi = () => {
+        setUpdating(true);
+        const updatePromise = updateAPI({ operations: apiOperations });
         updatePromise
             .finally(() => {
                 setUpdating(false);
             });
-        // Finally update the state
-        setApiOperations(newApiOperations);
     }
 
     if (!policies || !openAPISpec || updating) {
@@ -196,25 +198,18 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                 ) : null;
                                             })}
                                         </Grid>
-                                        {/* <Grid
-                                        style={{ marginTop: '25px' }}
-                                        container
-                                        direction='row'
-                                        justify='space-between'
-                                        alignItems='center'
-                                    >
-                                        <Grid item>
-                                            <SaveOperations
-                                                operationsDispatcher={operationsDispatcher}
-                                                updateOpenAPI={updateOpenAPI}
-                                                // api={api}
-                                            />
-                                        </Grid>
-                                    </Grid> */}
                                     </OperationsGroup>
                                 </Grid>
                             ))}
                         </Paper>
+                        <Box pt={2}>
+                            <Button variant="contained" color="primary" onClick={saveApi}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.Policies.save.btn'
+                                    defaultMessage='Save'
+                                />
+                            </Button>
+                        </Box>
                     </Box>
                     <Box width='35%' pl={1}>
                         <PolicyList

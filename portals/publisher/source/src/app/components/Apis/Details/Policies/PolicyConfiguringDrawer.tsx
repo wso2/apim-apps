@@ -80,30 +80,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
         const commonPolicyContentPromise = API.getCommonOperationPolicy(policyObj.id);
         commonPolicyContentPromise
             .then((commonPolicyResponse) => {
-                // need to remove it when be is fixed
-                const tmp = {...commonPolicyResponse.body};
-                tmp.policyAttributes = [
-                    {
-                        name: 'fooheaderName',
-                        displayName: 'Header Name',
-                        description : 'Name of the header to be added',
-                        validationRegex: '/^\S+$/',
-                        type : 'String',
-                        required: true
-                   
-                    }, 
-                    {
-                        name: 'fooheaderValue',
-                        displayName: 'Header Value',
-                        description : 'Value of the header to be added',
-                        validationRegex: '/^\S+$/',
-                        type : 'String',
-                        required: true
-                   
-                    }, 
-                ]
-                setPolcySpec(tmp);
-                // setPolcySpec(commonPolicyResponse.body);
+                setPolcySpec(commonPolicyResponse.body);
             })
             .catch((error) => {
                 if (errorCount === 1) {
@@ -121,30 +98,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
         const apiPolicyContentPromise = API.getOperationPolicy(policyObj.id, api.id);
         apiPolicyContentPromise
             .then((apiPolicyResponse) => {
-                // need to remove it when the BE is fixed
-                const tmp = {...apiPolicyResponse.body};
-                tmp.policyAttributes = [
-                    {
-                        name: 'fooheaderName',
-                        displayName: 'Header Name',
-                        description : 'Name of the header to be added',
-                        validationRegex: '^([a-zA-Z_$][a-zA-Z\\d_$]*)$',
-                        type : 'String',
-                        required: true
-                   
-                    }, 
-                    {
-                        name: 'fooheaderValue',
-                        displayName: 'Header Value',
-                        description : 'Value of the header to be added',
-                        validationRegex: '^([a-zA-Z_$][a-zA-Z\\d_$]*)$',
-                        type : 'String',
-                        required: true
-                   
-                    }, 
-                ]
-                setPolcySpec(tmp);
-                // setPolcySpec(apiPolicyResponse.body);
+                setPolcySpec(apiPolicyResponse.body);
             })
             .catch((error) => {
                 if (errorCount === 1) {
