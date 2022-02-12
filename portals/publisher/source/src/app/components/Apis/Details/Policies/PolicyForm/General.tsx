@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Policies from '../../LifeCycle/Policies';
-import { Policy, PolicySpec, ApiPolicy } from '../Types';
+import { PolicySpec, ApiPolicy, AttachedPolicy } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
 const useStyles = makeStyles(theme => ({
@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 interface GeneralProps {
-    policyObj: Policy;
+    policyObj: AttachedPolicy;
     currentFlow: string;
     target: string;
     verb: string;

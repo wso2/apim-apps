@@ -68,7 +68,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [expandedResource, setExpandedResource] = useState(false);
-    const [commonPolicyIdList, setCommonPolicyIdList] = useState<string[] | undefined>([]);
+
     // This is what we use to set to the api object ()
     const [apiOperations, setApiOperations] = useState<any>(cloneDeep(api.operations));
     const [openAPISpec, setOpenAPISpec] = useState<any>(null);
@@ -82,13 +82,12 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             const commonPolicies = commonPoliciesResponse.body.list;
 
             // Returns the union of policies depending on the policy display name
-            const mergedList = [...apiSpecificPolicies, ...commonPolicies];
+            const mergedList = [...commonPolicies, ...apiSpecificPolicies];
             const unionByPolicyDisplayName = [...mergedList
                 .reduce((map, obj) => map.set(obj.displayName, obj), new Map()).values()];
+            unionByPolicyDisplayName.sort(
+                (a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName))
             setPolicies(unionByPolicyDisplayName);
-
-            // Maintain the common policy ID list to identify which policies are not API specific
-            setCommonPolicyIdList(commonPolicies.map((policy: Policy) => policy.id));
         }).catch((error) => {
             console.log(error);
             Alert.error('Error occurred while retrieving the policy list');
@@ -218,13 +217,10 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                         </Paper>
                     </Box>
                     <Box width='35%' pl={1}>
-                        {commonPolicyIdList && (
-                            <PolicyList
-                                policyList={policies}
-                                commonPolicyIdList={commonPolicyIdList}
-                                fetchPolicies={fetchPolicies}
-                            />
-                        )}
+                        <PolicyList
+                            policyList={policies}
+                            fetchPolicies={fetchPolicies}
+                        />
                     </Box>
                 </Box>
             </DndProvider>

@@ -31,7 +31,7 @@ import API from 'AppData/api';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { Alert } from 'AppComponents/Shared';
 import General from './PolicyForm/General';
-import { Policy, PolicySpec, ApiPolicy } from './Types';
+import { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';
 import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface PolicyConfiguringDrawerProps {
-    policyObj: Policy;
+    policyObj: AttachedPolicy;
     drawerOpen: boolean;
     currentFlow: string;
     target: string;

@@ -21,6 +21,7 @@ export type Policy = {
     name: string;
     displayName: string;
     applicableFlows: string[];
+    isAPISpecific: boolean;
 }
 
 export type AttachedPolicy = {

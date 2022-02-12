@@ -48,8 +48,7 @@ interface OPProps {
 }
 
 const OperationPolicy: FC<OPProps> = ({
-    operation, highlight, api, disableUpdate, target, verb,
-    expandedResource, setExpandedResource, policyList
+    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList
 }) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -242,17 +241,15 @@ const OperationPolicy: FC<OPProps> = ({
                                     />
                                 </Typography>
                                 <FlowArrow arrowDirection='left' />
-                                {requestFlowDroppablePolicyList.length !==0 && (
-                                    <PolicyDropzone
-                                        policyDisplayStartDirection='left'
-                                        currentPolicyList={requestFlowPolicyList}
-                                        setCurrentPolicyList={setRequestFlowPolicyList}
-                                        droppablePolicyList={requestFlowDroppablePolicyList}
-                                        currentFlow='request'
-                                        target={target}
-                                        verb={verb}
-                                    />
-                                )}
+                                <PolicyDropzone
+                                    policyDisplayStartDirection='left'
+                                    currentPolicyList={requestFlowPolicyList}
+                                    setCurrentPolicyList={setRequestFlowPolicyList}
+                                    droppablePolicyList={requestFlowDroppablePolicyList}
+                                    currentFlow='request'
+                                    target={target}
+                                    verb={verb}
+                                />
                             </Box>
                             <Box  className={classes.flowSpecificPolicyAttachGrid}>
                                 <Typography variant='subtitle2' align='left'>
@@ -262,17 +259,15 @@ const OperationPolicy: FC<OPProps> = ({
                                     />
                                 </Typography>
                                 <FlowArrow arrowDirection='right' />
-                                {responseFlowDroppablePolicyList.length !==0 && (
-                                    <PolicyDropzone
-                                        policyDisplayStartDirection='right'
-                                        currentPolicyList={responseFlowPolicyList}
-                                        setCurrentPolicyList={setResponseFlowPolicyList}
-                                        droppablePolicyList={responseFlowDroppablePolicyList}
-                                        currentFlow='response'
-                                        target={target}
-                                        verb={verb}
-                                    />
-                                )}
+                                <PolicyDropzone
+                                    policyDisplayStartDirection='right'
+                                    currentPolicyList={responseFlowPolicyList}
+                                    setCurrentPolicyList={setResponseFlowPolicyList}
+                                    droppablePolicyList={responseFlowDroppablePolicyList}
+                                    currentFlow='response'
+                                    target={target}
+                                    verb={verb}
+                                />
                             </Box>
                             <Box className={classes.flowSpecificPolicyAttachGrid}>
                                 <Typography variant='subtitle2' align='left'>
@@ -282,17 +277,15 @@ const OperationPolicy: FC<OPProps> = ({
                                     />
                                 </Typography>
                                 <FlowArrow arrowDirection='right' />
-                                {faultFlowDroppablePolicyList.length !== 0 && (
-                                    <PolicyDropzone
-                                        policyDisplayStartDirection='right'
-                                        currentPolicyList={faultFlowPolicyList}
-                                        setCurrentPolicyList={setFaultFlowPolicyList}
-                                        droppablePolicyList={faultFlowDroppablePolicyList}
-                                        currentFlow='fault'
-                                        target={target}
-                                        verb={verb}
-                                    />
-                                )}
+                                <PolicyDropzone
+                                    policyDisplayStartDirection='right'
+                                    currentPolicyList={faultFlowPolicyList}
+                                    setCurrentPolicyList={setFaultFlowPolicyList}
+                                    droppablePolicyList={faultFlowDroppablePolicyList}
+                                    currentFlow='fault'
+                                    target={target}
+                                    verb={verb}
+                                />
                             </Box>
                         </Grid>
                     </Grid>

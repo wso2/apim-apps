@@ -94,14 +94,14 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
         setDrawerOpen(true);
     }
 
-    const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    const [{ canDrop, isOver }, drop] = useDrop({
         accept: droppablePolicyList,
         drop: (item: any) => addDroppedPolicyToList(item.droppedPolicy),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
         }),
-    }))
+    })
 
     const isActive = canDrop && isOver;
     

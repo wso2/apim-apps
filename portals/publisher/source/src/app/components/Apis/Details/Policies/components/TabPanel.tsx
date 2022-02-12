@@ -24,7 +24,6 @@ interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
     policyList: Policy[];
-    commonPolicyIdList: string[];
     selectedTab: number;
     fetchPolicies: () => void;
 }
@@ -36,7 +35,7 @@ interface TabPanelProps {
  * @returns {TSX} Tab panel.
  */
 const TabPanel: FC<TabPanelProps> = ({
-    index, policyList, selectedTab, commonPolicyIdList, fetchPolicies
+    index, policyList, selectedTab, fetchPolicies
 }) => {
     const flowNames = ['request', 'response', 'fault'];
     const currentFlow = flowNames[index];
@@ -55,9 +54,7 @@ const TabPanel: FC<TabPanelProps> = ({
                             key={singlePolicy.id}
                             policyObj={singlePolicy}
                             showCopyIcon
-                            // TODO: Need to fix with 'isAPISpecific' value when backend codebase is fixed
-                            // isLocalToAPI={singlePolicy.isAPISpecific}
-                            isLocalToAPI={!commonPolicyIdList.includes(singlePolicy.id)}
+                            isLocalToAPI={singlePolicy.isAPISpecific}
                             fetchPolicies={fetchPolicies}
                         />
                     );
