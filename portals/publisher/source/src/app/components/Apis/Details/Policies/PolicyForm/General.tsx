@@ -14,7 +14,7 @@ import { PolicySpec, ApiPolicy, AttachedPolicy } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
 const useStyles = makeStyles(theme => ({
-    titleCta: {
+    resetBtn: {
         display: 'flex',
         justifyContent: 'right',
         alignItems: 'center',
@@ -134,13 +134,35 @@ const General: FC<GeneralProps> = ({
             <form onSubmit={submitForm}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <div className={classes.titleCta}>
+                        <div className={classes.resetBtn}>
                             <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.PolicyForm.General.reset'
                                     defaultMessage='Reset'
                                 />
                             </Button>
+                        </div>
+                        <div>
+                            <Typography variant='subtitle2' color='textPrimary'>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PolicyForm.General.description.title'
+                                    defaultMessage='Description'
+                                />
+                            </Typography>
+                            <Typography variant='caption' color='textPrimary'>
+                                {policySpec.description ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.General.description.value.provided'
+                                        defaultMessage='{description}'
+                                        values={{ description: policySpec.description }}
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.General.description.value.not.provided'
+                                        defaultMessage='Oops! Looks like this policy does not have a description'
+                                    />
+                                )}                            
+                            </Typography>
                         </div>
                     </Grid>
                     {policySpec.policyAttributes && policySpec.policyAttributes.map((spec) => (<Grid item xs={12}>
