@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { CSSProperties, FC, KeyboardEvent, MouseEvent, useContext } from 'react';
+import React, { CSSProperties, FC, useContext, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import { useSortable } from '@dnd-kit/sortable';
@@ -28,13 +28,13 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import API from 'AppData/api.js';
-import ApiContext from '../components/ApiContext';
 import Utils from 'AppData/Utils';
+import { FormattedMessage } from 'react-intl';
+import ApiContext from '../components/ApiContext';
 import type { AttachedPolicy } from './Types';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
-import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles(() => ({
     drawerPaper: {
         backgroundColor: 'white',
     },
@@ -67,6 +67,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
+    const [editMode, setEditMode] = useState(false);
     const policyColor = Utils.stringToColor(policyObj.displayName);
     const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
     const {
@@ -127,20 +128,6 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             });
     }
 
-    const handleDrawerOpen =
-        (open: boolean) =>
-        (event: KeyboardEvent | MouseEvent) => {
-            if (
-                event.type === 'keydown' &&
-                ((event as KeyboardEvent).key === 'Tab' ||
-                    (event as KeyboardEvent).key === 'Shift')
-            ) {
-                return;
-            }
-
-            setDrawerOpen(true);
-        };
-
     // Need to call this function only on initial policy drop
     const handleDrawerClose = () => {
         const filteredList = currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp);
@@ -151,6 +138,12 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     // Need to call this function only when on edit mode of an already dropped policy
     const handleDrawerCloseOnEditMode = () => {
         setDrawerOpen(false);
+        setEditMode(false);
+    }
+
+    const handleDrawerOpen = () => {
+        setDrawerOpen(true);
+        setEditMode(true);
     }
 
     return (
@@ -160,7 +153,8 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 style={style}
                 {...attributes}
                 {...listeners}
-                onClick={() => handleDrawerOpen}
+                onClick={handleDrawerOpen}
+                onKeyDown={handleDrawerOpen}
             >
                 <Tooltip key={policyObj.id} title={policyObj.displayName} placement='top'>
                     <Avatar
@@ -194,13 +188,15 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     </IconButton>
                 </Box>
             </div>
-            <PolicyConfiguringDrawer 
+            <PolicyConfiguringDrawer
                 policyObj={policyObj} 
                 drawerOpen={drawerOpen}
                 currentFlow={currentFlow}
                 target={target}
                 verb={verb}
+                editMode={editMode}
                 handleDrawerClose={handleDrawerClose}
+                handleDrawerCloseOnEditMode={handleDrawerCloseOnEditMode}
             />
         </>
     );

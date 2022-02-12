@@ -67,12 +67,18 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
+    const [allPolicies, setAllPolicies] = useState<Policy[] | null>(null);
     const [expandedResource, setExpandedResource] = useState(false);
 
     // This is what we use to set to the api object ()
     const [apiOperations, setApiOperations] = useState<any>(cloneDeep(api.operations));
     const [openAPISpec, setOpenAPISpec] = useState<any>(null);
 
+    /**
+     * Fetches all common policies & API specific policies.
+     * Sets the allPolicies state: this allPolicies state is used to get policies from any given policy ID.
+     * Sets the policies state: policy state is used to display the available policies that are draggable.
+     */
     const fetchPolicies = () => {
         const apiPoliciesPromise = API.getOperationPolicies(api.id);
         const commonPoliciesPromise = API.getCommonOperationPolicies();
@@ -80,14 +86,18 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             const [apiPoliciesResponse, commonPoliciesResponse] = response;
             const apiSpecificPolicies = apiPoliciesResponse.body.list;
             const commonPolicies = commonPoliciesResponse.body.list;
-
-            // Returns the union of policies depending on the policy display name
             const mergedList = [...commonPolicies, ...apiSpecificPolicies];
+            
+            // Get all common policies and API specific policies
+            setAllPolicies(mergedList);
+
+            // Get the union of policies depending on the policy display name
             const unionByPolicyDisplayName = [...mergedList
                 .reduce((map, obj) => map.set(obj.displayName, obj), new Map()).values()];
             unionByPolicyDisplayName.sort(
                 (a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName))
             setPolicies(unionByPolicyDisplayName);
+
         }).catch((error) => {
             console.log(error);
             Alert.error('Error occurred while retrieving the policy list');
@@ -120,8 +130,15 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         [api],
     );
 
-    const updateApiOperations = (updatedOperation: any, target: string, verb: string,
-        currentFlow: string) => {
+    /**
+     * To update the API Operations object and maintain the current state of attached policies.
+     * Note that this function does not perform an API object update, rather, just a state update.
+     * @param {any} updatedOperation updated operation of API object
+     * @param {string} target target that needs to be updated
+     * @param {string} verb verb of the operation that neeeds to be updated
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     */
+    const updateApiOperations = (updatedOperation: any, target: string, verb: string, currentFlow: string) => {
         const newApiOperations: any = cloneDeep(apiOperations);
         const operationInAction = newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
@@ -135,9 +152,14 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         } else {
             operationInAction.operationPolicies[currentFlow].push(updatedOperation);
         }
+
         // Finally update the state
         setApiOperations(newApiOperations);
     }
+
+    /**
+     * To update the API object with the attached policies on Save click event
+     */
     const saveApi = () => {
         setUpdating(true);
         const updatePromise = updateAPI({ operations: apiOperations });
@@ -193,6 +215,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                             expandedResource={expandedResource}
                                                             setExpandedResource={setExpandedResource}
                                                             policyList={policies}
+                                                            allPolicies={allPolicies}
                                                         />
                                                     </Grid>
                                                 ) : null;
@@ -203,7 +226,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                             ))}
                         </Paper>
                         <Box pt={2}>
-                            <Button variant="contained" color="primary" onClick={saveApi}>
+                            <Button variant='contained' color='primary' onClick={saveApi}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.Policies.save.btn'
                                     defaultMessage='Save'

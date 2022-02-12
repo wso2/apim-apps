@@ -735,9 +735,6 @@
   "Apis.Details.Configuration.RuntimeConfiguration.no.km.error": {
     "defaultMessage": "Select one or more Key Managers"
   },
-  "Apis.Details.Configuration.RuntimeConfiguration.section.fault": {
-    "defaultMessage": "Fault"
-  },
   "Apis.Details.Configuration.RuntimeConfiguration.topic.header": {
     "defaultMessage": "Runtime Configurations"
   },
@@ -1355,9 +1352,6 @@
   },
   "Apis.Details.Documents.View.meta.summary": {
     "defaultMessage": "Summary"
-  },
-  "Apis.Details.Edit.MediationPolicies.EditMediationPolicies.custom.mediation.policies": {
-    "defaultMessage": "Custom Mediation Policies"
   },
   "Apis.Details.EditScopes.Roles.Invalid": {
     "defaultMessage": "Role is invalid"
@@ -2183,54 +2177,6 @@
   },
   "Apis.Details.LifeCycle.publish.content.info.deployments": {
     "defaultMessage": "Deployments"
-  },
-  "Apis.Details.MediationPolicies.Edit.AddMediationPolicy.error": {
-    "defaultMessage": "Error while adding mediation policy"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.cancel.btn": {
-    "defaultMessage": "Cancel"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.click.or.drop.to.upload.file": {
-    "defaultMessage": "Click or drag the mediation file to upload."
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.common.policies": {
-    "defaultMessage": "Common Policies"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.custom.policies": {
-    "defaultMessage": "Custom Policies"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.error": {
-    "defaultMessage": "Error deleting the file"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.success": {
-    "defaultMessage": "Mediation policy deleted successfully."
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.download.error": {
-    "defaultMessage": "Error downloading the file"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.error": {
-    "defaultMessage": "Error retrieving mediation policies"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.global.delete": {
-    "defaultMessage": "Cannot delete Global mediation policies."
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.none": {
-    "defaultMessage": "None"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.btn": {
-    "defaultMessage": "Select"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.policy": {
-    "defaultMessage": "Select a Mediation Policy"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.success": {
-    "defaultMessage": "Mediation policy added successfully"
-  },
-  "Apis.Details.MediationPolicies.EditMediationPolicy.download": {
-    "defaultMessage": "Download"
-  },
-  "Apis.Details.MediationPolicies.Mediation": {
-    "defaultMessage": "Message Mediation"
   },
   "Apis.Details.Monetization.BusinessPlans.commercial.policies": {
     "defaultMessage": "Commercial Policies"

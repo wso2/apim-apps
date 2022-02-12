@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -32,7 +32,8 @@ import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
-import type { AttachedPolicy, Policy } from './Types';
+import type { AttachedPolicy, Policy } from './Types'
+import ApiOperationContext from './ApiOperationContext';
 import FlowArrow from './components/FlowArrow';
 
 interface OPProps {
@@ -45,10 +46,11 @@ interface OPProps {
   expandedResource: any;
   setExpandedResource: any;
   policyList: Policy[];
+  allPolicies: Policy[] | null;
 }
 
 const OperationPolicy: FC<OPProps> = ({
-    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList
+    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies
 }) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -115,6 +117,7 @@ const OperationPolicy: FC<OPProps> = ({
     });
     
     const classes = useStyles();
+    const { apiOperations } = useContext<any>(ApiOperationContext);
 
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
@@ -150,6 +153,51 @@ const OperationPolicy: FC<OPProps> = ({
         setResponseFlowDroppablePolicyList(responseList);
         setFaultFlowDroppablePolicyList(faultList);
     }, [policyList])
+
+    useEffect(() => {
+        const operationInAction = apiOperations.find((op: any) =>
+            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+
+        // Populate request flow attached policy list
+        const requestFlowPolicyListCopy = [...requestFlowPolicyList];
+        const requestFlow = operationInAction.operationPolicies.request;
+        requestFlow.map((requestFlowAttachedPolicy: any) => {
+            const { policyId, policyName } = requestFlowAttachedPolicy;
+            const policyObj = allPolicies?.find((policy: Policy) => policy.id === policyId)
+                || allPolicies?.find((policy1: Policy) => policy1.name === policyName);
+            if (policyObj) {
+                requestFlowPolicyListCopy.push({ ...policyObj, timestamp: Date.now() });
+            }
+        })
+        setRequestFlowPolicyList(requestFlowPolicyListCopy);
+
+        // Populate response flow attached policy list
+        const responseFlowPolicyListCopy = [...responseFlowPolicyList];
+        const responseFlow = operationInAction.operationPolicies.response;
+        responseFlow.map((responseFlowAttachedPolicy: any) => {
+            const { policyId, policyName } = responseFlowAttachedPolicy;
+            const policyObj = allPolicies?.find((policy: Policy) => policy.id === policyId)
+                || allPolicies?.find((policy1: Policy) => policy1.name === policyName);
+            if (policyObj) {
+                responseFlowPolicyListCopy.push({ ...policyObj, timestamp: Date.now() });
+            }
+        })
+        setResponseFlowPolicyList(responseFlowPolicyListCopy);
+        
+        // Populate fault flow attached policy list
+        const faultFlowPolicyListCopy = [...faultFlowPolicyList];
+        const faultFlow = operationInAction.operationPolicies.fault;
+        faultFlow.map((faultFlowAttachedPolicy: any) => {
+            const { policyId, policyName } = faultFlowAttachedPolicy;
+            const policyObj = allPolicies?.find((policy: Policy) => policy.id === policyId)
+                || allPolicies?.find((policy1: Policy) => policy1.name === policyName);
+            if (policyObj) {
+                faultFlowPolicyListCopy.push({ ...policyObj, timestamp: Date.now() });
+            }
+        })
+        setResponseFlowPolicyList(faultFlowPolicyListCopy);
+
+    }, [apiOperations, api])
 
     const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {
         setExpandedResource(isExpanded ? panel : false);

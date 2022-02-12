@@ -37,7 +37,7 @@ import ApiOperationContext, { useApiOperationContext } from "./ApiOperationConte
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
         backgroundColor: 'white',
-        width: '60vh',
+        width: '30%',
     },
     actionsBox: {
         display: 'flex',
@@ -58,6 +58,8 @@ interface PolicyConfiguringDrawerProps {
     target: string;
     verb: string;
     handleDrawerClose: () => void;
+    handleDrawerCloseOnEditMode: () => void;
+    editMode: boolean;
 }
 
 /**
@@ -66,7 +68,7 @@ interface PolicyConfiguringDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
-    policyObj, drawerOpen, currentFlow, target, verb, handleDrawerClose
+    policyObj, drawerOpen, currentFlow, target, verb, handleDrawerClose, handleDrawerCloseOnEditMode, editMode
 }) => {
     const classes = useStyles();
     const { apiOperations } = useContext<any>(ApiOperationContext);
@@ -123,27 +125,20 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
         op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
     const operationFlowPolicy =
         operationInAction.operationPolicies[currentFlow].find((p: any) => p.policyId === policyObj.id);
-    // const policy = 
+
     const apiPolicy: ApiPolicy = operationFlowPolicy || {
         policyName: policyObj.name,
         policyId: policyObj.id,
         parameters: {}
     };
 
-    // Fill parameters from policySpec
-    // policySpec.policyAttributes.forEach((attr) => {
-    //     apiPolicy.parameters[attr.name] = null;
-    // });
-
-    // // Need to remove this
-    // apiPolicy.parameters['fooHeaderName'] = '';
-    // apiPolicy.parameters['fooheaderValue'] = '';
-
     return (
         <Drawer
             anchor='right'
             open={drawerOpen}
-            onClose={handleDrawerClose} // Need to use handleDrawerClose only on onDrop. When in editing mode use handleDrawerCloseOnEditMode
+            onClose={
+                editMode ? handleDrawerCloseOnEditMode : handleDrawerClose
+            }
             classes={{ paper: classes.drawerPaper }}
         >
             <Box role='presentation'>
@@ -163,7 +158,9 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                         )}
                         />
                         <ListItemIcon>
-                            <IconButton onClick={handleDrawerClose}>
+                            <IconButton
+                                onClick={editMode ? handleDrawerCloseOnEditMode : handleDrawerClose}
+                            >
                                 <Close className={classes.iconSize} />
                             </IconButton>
                         </ListItemIcon>
@@ -177,7 +174,9 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     verb={verb}
                     policySpec={policySpec}
                     apiPolicy={apiPolicy}
+                    editMode={editMode}
                     handleDrawerClose={handleDrawerClose}
+                    handleDrawerCloseOnEditMode={handleDrawerCloseOnEditMode}
                 />
             </Box>
         </Drawer>

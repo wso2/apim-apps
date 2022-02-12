@@ -25,7 +25,10 @@ const useStyles = makeStyles(theme => ({
     },
     btn: {
         marginRight: '1em',
-    }
+    },
+    drawerInfo: {
+        marginBottom: '1em',
+    },
 }));
 interface GeneralProps {
     policyObj: AttachedPolicy;
@@ -35,10 +38,12 @@ interface GeneralProps {
     apiPolicy: ApiPolicy;
     policySpec: PolicySpec;
     handleDrawerClose: () => void;
+    handleDrawerCloseOnEditMode: () => void;
+    editMode: boolean;
 }
 
 const General: FC<GeneralProps> = ({
-    currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose
+    currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose, handleDrawerCloseOnEditMode, editMode
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -48,10 +53,10 @@ const General: FC<GeneralProps> = ({
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
 
-    const onInputChange = (event: any, specType: any) => {
-        if (specType === 'Boolean') {
+    const onInputChange = (event: any, specType: string) => {
+        if (specType.toLocaleLowerCase() === 'boolean') {
             setState({ ...state, [event.target.name]: event.target.checked });
-        } else if (specType === 'String' || specType === 'Enum') {
+        } else if (specType.toLowerCase() === 'string' || specType.toLocaleLowerCase() === 'enum') {
             setState({ ...state, [event.target.name]: event.target.value });
         }
     }
@@ -77,7 +82,10 @@ const General: FC<GeneralProps> = ({
         const apiPolicyToSave = {...apiPolicy};
         apiPolicyToSave.parameters = updateCandidates;
         updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
+        setSaving(false);
+        handleDrawerClose();
     };
+
     const getError = (specInCheck: any) => {
         let error = '';
         const value = state[specInCheck.name];
@@ -89,26 +97,26 @@ const General: FC<GeneralProps> = ({
         } else if (specInCheck.validationRegex && !(new RegExp(specInCheck.validationRegex)).test(value)) {
             error = intl.formatMessage({
                 id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
-                defaultMessage: 'Not a valid input',
+                defaultMessage: 'Please enter a valid input',
             });
         }
         return error;
     }
-    // const supportAllGateways = () => {
-    //     return policySpec.supportedGateways && policySpec.supportedGateways.length === 2;
-    // }
 
-    const getValue = (specName: any) => {
-        const prviousVal = getValueOfPolicyParam(specName);
+    const getValue = (specName: string) => {
+        const previousVal = getValueOfPolicyParam(specName);
         if (state[specName] !== null) {
             return state[specName];
-        } else if (prviousVal) {
-            return prviousVal;
+        } else if (previousVal) {
+            return previousVal;
         } else {
             return '';
         }
     }
-    // Reset the content
+
+    /**
+     * Reset the input fields
+     */
     const resetAll = () => {
         setState(initState);
     }
@@ -124,7 +132,7 @@ const General: FC<GeneralProps> = ({
     }
 
     const resetDisabled = Object.keys(state).filter(k => !!state[k]).length === 0;
-    
+    const hasAttributes = policySpec.policyAttributes.length !== 0
 
     if (!policySpec || !Policies) {
         return <CircularProgress />
@@ -133,15 +141,17 @@ const General: FC<GeneralProps> = ({
         <Box p={2}>
             <form onSubmit={submitForm}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <div className={classes.resetBtn}>
-                            <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.General.reset'
-                                    defaultMessage='Reset'
-                                />
-                            </Button>
-                        </div>
+                    <Grid item xs={12} className={classes.drawerInfo}>
+                        {hasAttributes && (
+                            <div className={classes.resetBtn}>
+                                <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.General.reset'
+                                        defaultMessage='Reset'
+                                    />
+                                </Button>
+                            </div>
+                        )}
                         <div>
                             <Typography variant='subtitle2' color='textPrimary'>
                                 <FormattedMessage
@@ -166,22 +176,25 @@ const General: FC<GeneralProps> = ({
                         </div>
                     </Grid>
                     {policySpec.policyAttributes && policySpec.policyAttributes.map((spec) => (<Grid item xs={12}>
-                        {(spec.type === 'String' || spec.type === 'Enum') && (<Typography
-                            variant='subtitle1'
-                            color='textPrimary'
-                        >
-                            {spec.displayName}
-                        </Typography>)}
-                        {spec.type === 'String' && (<TextField
-                            placeholder={spec.displayName}
-                            helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                            error={getError(spec) !== ''}
-                            variant='outlined'
-                            name={spec.name}
-                            value={getValue(spec.name)}
-                            onChange={(e) => onInputChange(e, spec.type)}
-                            fullWidth
-                        />)}
+                        {(spec.type.toLowerCase() === 'string' || spec.type.toLocaleLowerCase() === 'enum') 
+                            && (<Typography
+                                variant='subtitle1'
+                                color='textPrimary'
+                            >
+                                {spec.displayName}
+                            </Typography>)}
+                        {spec.type.toLocaleLowerCase() === 'string' && (
+                            <TextField
+                                placeholder={spec.displayName}
+                                helperText={getError(spec) === '' ? spec.description : getError(spec)}
+                                error={getError(spec) !== ''}
+                                variant='outlined'
+                                name={spec.name}
+                                value={getValue(spec.name)}
+                                onChange={(e) => onInputChange(e, spec.type)}
+                                fullWidth
+                            />
+                        )}
                         {/* {spec.type === 'Boolean' && (
                             <FormControlLabel
                                 control={
@@ -219,7 +232,9 @@ const General: FC<GeneralProps> = ({
                         <Button
                             variant='outlined'
                             color='primary'
-                            onClick={handleDrawerClose}
+                            onClick={
+                                editMode ? handleDrawerCloseOnEditMode : handleDrawerClose
+                            }
                             className={classes.btn}
                         >
                             <FormattedMessage
@@ -231,7 +246,7 @@ const General: FC<GeneralProps> = ({
                             variant='contained'
                             type='submit'
                             color='primary'
-                            disabled={resetDisabled || formHasErrors() || saving}
+                            disabled={(resetDisabled && hasAttributes) || formHasErrors() || saving}
                         >
                             {saving ? <><CircularProgress size='small' /><FormattedMessage
                                 id='Apis.Details.Policies.PolicyForm.General.saving'
