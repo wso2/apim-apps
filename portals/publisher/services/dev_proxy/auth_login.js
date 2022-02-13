@@ -126,7 +126,7 @@ const setResponseSessionCookies = (res, accessToken, refreshToken, idToken, sess
     });
 
     res.cookie('AM_ACC_TOKEN_DEFAULT_P2', accessTokenPart2, {
-        path: '/api/am/service-catalog/v0/',
+        path: '/api/am/service-catalog/v1/',
         httpOnly: true,
         secure: true,
         maxAge,

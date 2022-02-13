@@ -507,7 +507,7 @@ Utils.CONST = {
 
     LOGOUT_CALLBACK: '/services/auth/callback/logout',
     INTROSPECT: '/services/auth/introspect',
-    SERVICE_CATALOG_SWAGGER_YAML: '/api/am/service-catalog/v0/oas.yaml',
+    SERVICE_CATALOG_SWAGGER_YAML: '/api/am/service-catalog/v1/oas.yaml',
     SWAGGER_YAML: '/api/am/publisher/v3/swagger.yaml',
     PROTOCOL: 'https://',
     API_CLIENT: 'apiClient',

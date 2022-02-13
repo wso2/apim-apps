@@ -47,7 +47,7 @@ describe("Service catalog create flow", () => {
                     formData.append('definitionFile', definitionFile);
 
                     const tokenP1 = cookies.find(c => c.name === "WSO2_AM_TOKEN_1_Default");
-                    fetch(CARBON_ORIGIN + '/api/am/service-catalog/v0/services', {
+                    fetch(CARBON_ORIGIN + '/api/am/service-catalog/v1/services', {
                         method: 'POST',
                         body: formData,
                         headers: {

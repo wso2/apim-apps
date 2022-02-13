@@ -89,11 +89,11 @@ module.exports = (env, argv) => {
                     changeOrigin: true,
                     pathRewrite: { '^/api/am/publisher/v3/swagger.yaml': '' },
                 },
-                '/api/am/service-catalog/v0/oas.yaml': {
-                    target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml' : 'https://localhost:8081/api/am/service-catalog/v0/oas.yaml',
+                '/api/am/service-catalog/v1/oas.yaml': {
+                    target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml' : 'https://localhost:8081/api/am/service-catalog/v1/oas.yaml',
                     secure: false,
                     changeOrigin: true,
-                    pathRewrite: { '^/api/am/service-catalog/v0/oas.yaml': '' },
+                    pathRewrite: { '^/api/am/service-catalog/v1/oas.yaml': '' },
                 },
                 '/api/am': {
                     target: isTestBuild ? 'http://localhost:4010' : 'https://localhost:9443',
