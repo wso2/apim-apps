@@ -32,7 +32,7 @@ import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
-import type { AttachedPolicy, Policy } from './Types'
+import type { AttachedPolicy, Policy, PolicySpec } from './Types'
 import ApiOperationContext from './ApiOperationContext';
 import FlowArrow from './components/FlowArrow';
 
@@ -46,7 +46,7 @@ interface OPProps {
   expandedResource: any;
   setExpandedResource: any;
   policyList: Policy[];
-  allPolicies: Policy[] | null;
+  allPolicies: PolicySpec[] | null
 }
 
 const OperationPolicy: FC<OPProps> = ({
@@ -159,43 +159,43 @@ const OperationPolicy: FC<OPProps> = ({
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
 
         // Populate request flow attached policy list
-        const requestFlowPolicyListCopy = [...requestFlowPolicyList];
+        const requestFlowList:AttachedPolicy[] = [];
         const requestFlow = operationInAction.operationPolicies.request;
         requestFlow.map((requestFlowAttachedPolicy: any) => {
             const { policyId, policyName } = requestFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: Policy) => policy.id === policyId)
-                || allPolicies?.find((policy1: Policy) => policy1.name === policyName);
+            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
+                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
-                requestFlowPolicyListCopy.push({ ...policyObj, timestamp: Date.now() });
+                requestFlowList.push({ ...policyObj, uniqueKey: Math.random() });
             }
         })
-        setRequestFlowPolicyList(requestFlowPolicyListCopy);
+        setRequestFlowPolicyList(requestFlowList);
 
         // Populate response flow attached policy list
-        const responseFlowPolicyListCopy = [...responseFlowPolicyList];
+        const responseFlowList:AttachedPolicy[] = [];
         const responseFlow = operationInAction.operationPolicies.response;
         responseFlow.map((responseFlowAttachedPolicy: any) => {
             const { policyId, policyName } = responseFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: Policy) => policy.id === policyId)
-                || allPolicies?.find((policy1: Policy) => policy1.name === policyName);
+            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
+                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
-                responseFlowPolicyListCopy.push({ ...policyObj, timestamp: Date.now() });
+                responseFlowList.push({ ...policyObj, uniqueKey: Math.random() });
             }
         })
-        setResponseFlowPolicyList(responseFlowPolicyListCopy);
+        setResponseFlowPolicyList(responseFlowList);
         
         // Populate fault flow attached policy list
-        const faultFlowPolicyListCopy = [...faultFlowPolicyList];
+        const faultFlowList:AttachedPolicy[] = [];
         const faultFlow = operationInAction.operationPolicies.fault;
         faultFlow.map((faultFlowAttachedPolicy: any) => {
             const { policyId, policyName } = faultFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: Policy) => policy.id === policyId)
-                || allPolicies?.find((policy1: Policy) => policy1.name === policyName);
+            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
+                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
-                faultFlowPolicyListCopy.push({ ...policyObj, timestamp: Date.now() });
+                faultFlowList.push({ ...policyObj, uniqueKey: Math.random() });
             }
         })
-        setResponseFlowPolicyList(faultFlowPolicyListCopy);
+        setFaultFlowPolicyList(faultFlowList);
 
     }, [apiOperations, api])
 
@@ -297,6 +297,7 @@ const OperationPolicy: FC<OPProps> = ({
                                     currentFlow='request'
                                     target={target}
                                     verb={verb}
+                                    allPolicies={allPolicies}
                                 />
                             </Box>
                             <Box  className={classes.flowSpecificPolicyAttachGrid}>
@@ -315,6 +316,7 @@ const OperationPolicy: FC<OPProps> = ({
                                     currentFlow='response'
                                     target={target}
                                     verb={verb}
+                                    allPolicies={allPolicies}
                                 />
                             </Box>
                             <Box className={classes.flowSpecificPolicyAttachGrid}>
@@ -333,6 +335,7 @@ const OperationPolicy: FC<OPProps> = ({
                                     currentFlow='fault'
                                     target={target}
                                     verb={verb}
+                                    allPolicies={allPolicies}
                                 />
                             </Box>
                         </Grid>

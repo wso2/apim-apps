@@ -34,7 +34,7 @@ import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import PolicyStepper from './PolicyStepper';
-import type { PolicySpec } from './Types';
+import type { CreatePolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: Theme) => ({
     link: {
@@ -74,9 +74,9 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     const { api } = useContext<any>(ApiContext);
 
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<PolicySpec | null>(DefaultPolicySpec);
+    const [policySpec, setPolicySpec] = useState<CreatePolicySpec | null>(DefaultPolicySpec);
 
-    const savePolicy = (policySpecContent: PolicySpec, policyDefinition: any) => {
+    const savePolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
         const promisedCommonPolicyAdd = API.addOperationPolicy(policySpecContent, policyDefinition, api.id);   
         promisedCommonPolicyAdd
             .then(() => {

@@ -36,7 +36,7 @@ import { Progress } from 'AppComponents/Shared';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
-import type { Policy } from './Types';
+import type { Policy, PolicySpec } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 
@@ -67,7 +67,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
-    const [allPolicies, setAllPolicies] = useState<Policy[] | null>(null);
+    const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState(false);
 
     // This is what we use to set to the api object ()

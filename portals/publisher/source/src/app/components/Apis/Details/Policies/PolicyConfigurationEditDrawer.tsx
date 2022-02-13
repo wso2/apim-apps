@@ -27,7 +27,7 @@ import { Drawer, makeStyles, ListItemIcon, Theme, Typography } from '@material-u
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
-import { Progress } from 'AppComponents/Shared';
+import { Alert, Progress } from 'AppComponents/Shared';
 import General from './PolicyForm/General';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
 import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
@@ -49,26 +49,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-interface PolicyConfiguringDrawerProps {
-    policyObj: Policy | null;
-    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy | null>>;
+interface PolicyConfigurationEditDrawerProps {
+    policyObj: AttachedPolicy | null;
     currentFlow: string;
     target: string;
     verb: string;
+    drawerOpen: boolean;
+    setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     allPolicies: PolicySpec[] | null;
 }
 
 /**
- * Renders the policy configuring drawer.
+ * Renders the policy configuration edit drawer.
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Right drawer for policy configuration.
  */
-const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
-    policyObj, setDroppedPolicy, currentFlow, target, verb, setCurrentPolicyList, allPolicies
+const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
+    policyObj, currentFlow, target, verb, setCurrentPolicyList, allPolicies, drawerOpen, setDrawerOpen
 }) => {
     const classes = useStyles();
-    const [drawerOpen, setDrawerOpen] = useState(!!policyObj);
     const { apiOperations } = useContext<any>(ApiOperationContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
@@ -78,10 +78,6 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
             setDrawerOpen(true);
         }
     }, [policyObj]);
-
-    if (!policySpec) {
-        return <Progress />
-    }
 
     const operationInAction = apiOperations.find((op: any) =>
         op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
@@ -96,7 +92,6 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
 
     const handleDrawerClose = () => {
         setDrawerOpen(false);
-        setDroppedPolicy(null);
     }
 
     return (
@@ -115,7 +110,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                         <ListItemText primary={(
                             <Typography variant='subtitle2'>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyConfiguringDrawer.title'
+                                    id='Apis.Details.Policies.PolicyConfigurationEditDrawer.title'
                                     defaultMessage='Configure {policy} Policy'
                                     values={{ policy: policyObj?.displayName }}
                                 />
@@ -130,7 +125,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     </ListItem>
                 </List>
                 <Divider light />
-                <General
+                {/* <General
                     policyObj={policyObj}
                     setDroppedPolicy={setDroppedPolicy}
                     currentFlow={currentFlow}
@@ -140,10 +135,10 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     apiPolicy={apiPolicy}
                     setCurrentPolicyList={setCurrentPolicyList}
                     handleDrawerClose={handleDrawerClose}
-                />
+                /> */}
             </Box>
         </Drawer>
     );
 }
 
-export default PolicyConfiguringDrawer;
+export default PolicyConfigurationEditDrawer;

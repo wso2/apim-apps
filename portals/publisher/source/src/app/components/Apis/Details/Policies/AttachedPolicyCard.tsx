@@ -31,8 +31,8 @@ import API from 'AppData/api.js';
 import Utils from 'AppData/Utils';
 import { FormattedMessage } from 'react-intl';
 import ApiContext from '../components/ApiContext';
-import type { AttachedPolicy } from './Types';
-import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
+import type { AttachedPolicy, PolicySpec } from './Types';
+import PolicyConfigurationEditDrawer from './PolicyConfigurationEditDrawer';
 
 const useStyles = makeStyles(() => ({
     drawerPaper: {
@@ -52,8 +52,7 @@ interface AttachedPolicyCardProps {
     currentFlow: string;
     verb: string;
     target: string;
-    drawerOpen: boolean;
-    setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    allPolicies: PolicySpec[] | null;
 }
 
 /**
@@ -62,12 +61,12 @@ interface AttachedPolicyCardProps {
  * @returns {TSX} Sortable attached policy card UI.
  */
 const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
-    policyObj, currentPolicyList, setCurrentPolicyList, currentFlow,
-    target, verb, drawerOpen, setDrawerOpen
+    policyObj, currentPolicyList, setCurrentPolicyList, currentFlow, verb, target,
+    allPolicies
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
-    const [editMode, setEditMode] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const policyColor = Utils.stringToColor(policyObj.displayName);
     const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
     const {
@@ -77,7 +76,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         transform,
         transition,
         isDragging,
-    } = useSortable({id: policyObj.timestamp.toString()});
+    } = useSortable({id: policyObj.uniqueKey.toString()});
     const style: CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -93,14 +92,14 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         opacity: isDragging ? 0.5 : 1,
     };
 
-    const handleDelete = (event: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-        const filteredList = currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp);
+    const handleDelete = (event: any) => {
+        const filteredList = currentPolicyList.filter((policy) => policy.uniqueKey !== policyObj.uniqueKey);
         setCurrentPolicyList(filteredList);
         event.stopPropagation();
         event.preventDefault();
     };
 
-    const handlePolicyDownload = (event: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+    const handlePolicyDownload = (event: any) => {
         event.stopPropagation();
         event.preventDefault();
         const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyObj.id);
@@ -128,22 +127,8 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             });
     }
 
-    // Need to call this function only on initial policy drop
-    const handleDrawerClose = () => {
-        const filteredList = currentPolicyList.filter((policy) => policy.timestamp !== policyObj.timestamp);
-        setCurrentPolicyList(filteredList);
-        setDrawerOpen(false);
-    }
-
-    // Need to call this function only when on edit mode of an already dropped policy
-    const handleDrawerCloseOnEditMode = () => {
-        setDrawerOpen(false);
-        setEditMode(false);
-    }
-
     const handleDrawerOpen = () => {
         setDrawerOpen(true);
-        setEditMode(true);
     }
 
     return (
@@ -188,16 +173,18 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     </IconButton>
                 </Box>
             </div>
-            <PolicyConfiguringDrawer
-                policyObj={policyObj} 
-                drawerOpen={drawerOpen}
-                currentFlow={currentFlow}
-                target={target}
-                verb={verb}
-                editMode={editMode}
-                handleDrawerClose={handleDrawerClose}
-                handleDrawerCloseOnEditMode={handleDrawerCloseOnEditMode}
-            />
+            {drawerOpen && (
+                <PolicyConfigurationEditDrawer
+                    policyObj={policyObj}
+                    drawerOpen={drawerOpen}
+                    setDrawerOpen={setDrawerOpen}
+                    currentFlow={currentFlow}
+                    target={target}
+                    verb={verb}
+                    setCurrentPolicyList={setCurrentPolicyList}
+                    allPolicies={allPolicies}
+                />
+            )}
         </>
     );
 };

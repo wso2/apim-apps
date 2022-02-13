@@ -22,8 +22,9 @@ import { useDrop } from 'react-dnd'
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import classNames from 'classnames';
-import type { AttachedPolicy, Policy } from './Types';
+import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
+import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
 
 const useStyles = makeStyles((theme: Theme) => ({
     dropzoneDiv: {
@@ -67,6 +68,7 @@ interface PolicyDropzoneProps {
     currentFlow: string;
     target: string;
     verb: string;
+    allPolicies: PolicySpec[] | null;
 }
 
 /**
@@ -76,27 +78,14 @@ interface PolicyDropzoneProps {
  */
 const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     policyDisplayStartDirection, currentPolicyList, setCurrentPolicyList, droppablePolicyList, currentFlow,
-    target, verb
+    target, verb, allPolicies
 }) => {
     const classes = useStyles();
-    const [drawerOpen, setDrawerOpen] = useState(false);
-
-    const addDroppedPolicyToList = (policy: Policy) => {
-        setCurrentPolicyList(prevPolicyList => [...prevPolicyList, {
-            id: policy.id,
-            name: policy.name,
-            displayName: policy.displayName,
-            applicableFlows: policy.applicableFlows,
-            timestamp: Date.now(),
-        }]);
-        
-        // Policy configuring drawer will appear on drop
-        setDrawerOpen(true);
-    }
+    const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
 
     const [{ canDrop, isOver }, drop] = useDrop({
         accept: droppablePolicyList,
-        drop: (item: any) => addDroppedPolicyToList(item.droppedPolicy),
+        drop: (item: any) => setDroppedPolicy(item.droppedPolicy),
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
@@ -125,13 +114,23 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                                 currentFlow={currentFlow}
                                 target={target}
                                 verb={verb}
-                                drawerOpen={drawerOpen}
-                                setDrawerOpen={setDrawerOpen}
+                                allPolicies={allPolicies}
                             />
                         )
                     }
                 </div>
             </Grid>
+            {droppedPolicy && (
+                <PolicyConfiguringDrawer
+                    policyObj={droppedPolicy}
+                    setDroppedPolicy={setDroppedPolicy}
+                    currentFlow={currentFlow}
+                    target={target}
+                    verb={verb}
+                    setCurrentPolicyList={setCurrentPolicyList}
+                    allPolicies={allPolicies}
+                />
+            )}
         </>
     );
 }

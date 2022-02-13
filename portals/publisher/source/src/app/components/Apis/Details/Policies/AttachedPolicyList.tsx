@@ -31,7 +31,7 @@ import {
     SortableContext,
 } from '@dnd-kit/sortable';
 import AttachedPolicyCard from './AttachedPolicyCard';
-import type { AttachedPolicy } from './Types';
+import type { AttachedPolicy, PolicySpec } from './Types';
 
 interface AttachedPolicyListProps {
     currentPolicyList: AttachedPolicy[];
@@ -40,8 +40,7 @@ interface AttachedPolicyListProps {
     currentFlow: string;
     target: string;
     verb: string;
-    drawerOpen: boolean;
-    setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    allPolicies: PolicySpec[] | null;
 }
 
 /**
@@ -51,7 +50,7 @@ interface AttachedPolicyListProps {
  */
 const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
     currentPolicyList, setCurrentPolicyList, policyDisplayStartDirection, currentFlow, target, verb,
-    drawerOpen, setDrawerOpen
+    allPolicies
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
@@ -68,8 +67,8 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
         
         if (active.id !== over?.id) {
             setCurrentPolicyList((items) => {
-                const oldIndex = items.findIndex(item => item.timestamp.toString() === active.id);
-                const newIndex = items.findIndex(item => item.timestamp.toString() === over?.id);
+                const oldIndex = items.findIndex(item => item.uniqueKey.toString() === active.id);
+                const newIndex = items.findIndex(item => item.uniqueKey.toString() === over?.id);
 
                 return arrayMove(items, oldIndex, newIndex);
             });
@@ -84,20 +83,19 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                 onDragEnd={handleDragEnd}
             >
                 <SortableContext 
-                    items={currentPolicyList.map(item => item.timestamp.toString())}
+                    items={currentPolicyList.map(item => item.uniqueKey.toString())}
                     strategy={horizontalListSortingStrategy}
                 >
                     {policyListToDisplay.map((policy: AttachedPolicy) => (
                         <AttachedPolicyCard
-                            key={policy.timestamp}
+                            key={policy.uniqueKey}
                             policyObj={policy}
                             currentPolicyList={currentPolicyList}
                             setCurrentPolicyList={setCurrentPolicyList}
                             currentFlow={currentFlow}
                             target={target}
                             verb={verb}
-                            drawerOpen={drawerOpen}
-                            setDrawerOpen={setDrawerOpen}
+                            allPolicies={allPolicies}
                         />
                     ))}
                 </SortableContext>

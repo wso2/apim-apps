@@ -28,7 +28,7 @@ import { ControlledEditor, monaco } from "@monaco-editor/react";
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
-import type { PolicySpec } from './Types';
+import type { CreatePolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -39,8 +39,8 @@ const useStyles = makeStyles((theme: any) => ({
 
 interface PolicySpecificationEditorProps {
     isReadOnly: boolean;
-    policySpec: PolicySpec;
-    setPolicySpec?: React.Dispatch<React.SetStateAction<PolicySpec | null>>;
+    policySpec: CreatePolicySpec;
+    setPolicySpec?: React.Dispatch<React.SetStateAction<CreatePolicySpec | null>>;
 }
 
 /**

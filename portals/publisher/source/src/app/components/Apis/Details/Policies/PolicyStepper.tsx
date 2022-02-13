@@ -38,7 +38,7 @@ import red from '@material-ui/core/colors/red';
 import { FormattedMessage } from 'react-intl';
 
 import PolicySpecificationEditor from './PolicySpecificationEditor';
-import type { PolicySpec } from './Types';
+import type { CreatePolicySpec } from './Types';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -86,8 +86,8 @@ interface PolicyStepperProps {
     onSave: () => void;
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
-    policySpec: PolicySpec;
-    setPolicySpec: React.Dispatch<React.SetStateAction<PolicySpec | null>>;
+    policySpec: CreatePolicySpec;
+    setPolicySpec: React.Dispatch<React.SetStateAction<CreatePolicySpec | null>>;
 }
 
 /**

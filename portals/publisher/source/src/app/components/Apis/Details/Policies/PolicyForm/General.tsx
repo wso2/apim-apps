@@ -9,8 +9,9 @@ import {
     Box,
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Progress } from 'AppComponents/Shared';
 import Policies from '../../LifeCycle/Policies';
-import { PolicySpec, ApiPolicy, AttachedPolicy } from '../Types';
+import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
 const useStyles = makeStyles(theme => ({
@@ -31,19 +32,20 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 interface GeneralProps {
-    policyObj: AttachedPolicy;
+    policyObj: Policy | null;
+    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy | null>>;
     currentFlow: string;
     target: string;
     verb: string;
     apiPolicy: ApiPolicy;
     policySpec: PolicySpec;
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     handleDrawerClose: () => void;
-    handleDrawerCloseOnEditMode: () => void;
-    editMode: boolean;
 }
 
 const General: FC<GeneralProps> = ({
-    currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose, handleDrawerCloseOnEditMode, editMode
+    policyObj, setDroppedPolicy, currentFlow, target, verb, apiPolicy, policySpec,
+    setCurrentPolicyList, handleDrawerClose
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -52,6 +54,10 @@ const General: FC<GeneralProps> = ({
     const { updateApiOperations } = useContext<any>(ApiOperationContext);
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
+
+    if (!policyObj) {
+        return <Progress />
+    }
 
     const onInputChange = (event: any, specType: string) => {
         if (specType.toLocaleLowerCase() === 'boolean') {
@@ -82,6 +88,7 @@ const General: FC<GeneralProps> = ({
         const apiPolicyToSave = {...apiPolicy};
         apiPolicyToSave.parameters = updateCandidates;
         updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
+        setDroppedPolicy(null);
         setSaving(false);
         handleDrawerClose();
     };
@@ -232,9 +239,7 @@ const General: FC<GeneralProps> = ({
                         <Button
                             variant='outlined'
                             color='primary'
-                            onClick={
-                                editMode ? handleDrawerCloseOnEditMode : handleDrawerClose
-                            }
+                            onClick={handleDrawerClose}
                             className={classes.btn}
                         >
                             <FormattedMessage
