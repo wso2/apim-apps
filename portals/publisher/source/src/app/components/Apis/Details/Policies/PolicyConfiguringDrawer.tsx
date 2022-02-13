@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -18,7 +17,7 @@
  */
 
 import React, { FC, useEffect, useContext, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -28,7 +27,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import { Progress } from 'AppComponents/Shared';
-import General from './PolicyForm/General';
+import GeneralAdd from './PolicyForm/GeneralAdd';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
 import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
 
@@ -130,7 +129,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     </ListItem>
                 </List>
                 <Divider light />
-                <General
+                <GeneralAdd
                     policyObj={policyObj}
                     setDroppedPolicy={setDroppedPolicy}
                     currentFlow={currentFlow}
@@ -138,7 +137,6 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     verb={verb}
                     policySpec={policySpec}
                     apiPolicy={apiPolicy}
-                    setCurrentPolicyList={setCurrentPolicyList}
                     handleDrawerClose={handleDrawerClose}
                 />
             </Box>

@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import React, { useState, FC, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -31,21 +49,18 @@ const useStyles = makeStyles(theme => ({
         marginBottom: '1em',
     },
 }));
-interface GeneralProps {
-    policyObj: Policy | null;
-    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy | null>>;
+interface GeneralEditProps {
+    policyObj: AttachedPolicy | null;
     currentFlow: string;
     target: string;
     verb: string;
     apiPolicy: ApiPolicy;
     policySpec: PolicySpec;
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     handleDrawerClose: () => void;
 }
 
-const General: FC<GeneralProps> = ({
-    policyObj, setDroppedPolicy, currentFlow, target, verb, apiPolicy, policySpec,
-    setCurrentPolicyList, handleDrawerClose
+const GeneralEdit: FC<GeneralEditProps> = ({
+    policyObj, currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -88,7 +103,6 @@ const General: FC<GeneralProps> = ({
         const apiPolicyToSave = {...apiPolicy};
         apiPolicyToSave.parameters = updateCandidates;
         updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
-        setDroppedPolicy(null);
         setSaving(false);
         handleDrawerClose();
     };
@@ -98,12 +112,12 @@ const General: FC<GeneralProps> = ({
         const value = state[specInCheck.name];
         if (specInCheck.required && value === '') {
             error = intl.formatMessage({
-                id: 'Apis.Details.Policies.PolicyForm.General.required.error',
+                id: 'Apis.Details.Policies.PolicyForm.GeneralEdit.required.error',
                 defaultMessage: 'Required field is empty',
             });
         } else if (specInCheck.validationRegex && !(new RegExp(specInCheck.validationRegex)).test(value)) {
             error = intl.formatMessage({
-                id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
+                id: 'Apis.Details.Policies.PolicyForm.GeneralEdit.regex.error',
                 defaultMessage: 'Please enter a valid input',
             });
         }
@@ -153,7 +167,7 @@ const General: FC<GeneralProps> = ({
                             <div className={classes.resetBtn}>
                                 <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.reset'
+                                        id='Apis.Details.Policies.PolicyForm.GeneralEdit.reset'
                                         defaultMessage='Reset'
                                     />
                                 </Button>
@@ -162,20 +176,20 @@ const General: FC<GeneralProps> = ({
                         <div>
                             <Typography variant='subtitle2' color='textPrimary'>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.General.description.title'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralEdit.description.title'
                                     defaultMessage='Description'
                                 />
                             </Typography>
                             <Typography variant='caption' color='textPrimary'>
                                 {policySpec.description ? (
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.description.value.provided'
+                                        id='Apis.Details.Policies.PolicyForm.GeneralEdit.description.value.provided'
                                         defaultMessage='{description}'
                                         values={{ description: policySpec.description }}
                                     />
                                 ) : (
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.description.value.not.provided'
+                                        id='Apis.Details.Policies.PolicyForm.GeneralEdit.description.value.not.provided'
                                         defaultMessage='Oops! Looks like this policy does not have a description'
                                     />
                                 )}                            
@@ -232,7 +246,7 @@ const General: FC<GeneralProps> = ({
                     </Grid>))}
                     {/* {supportAllGateways() && (<Alert severity='info' variant='outlined'>
                         <FormattedMessage
-                            id='Apis.Details.Policies.PolicyForm.General.supported.in.all.gw'
+                            id='Apis.Details.Policies.PolicyForm.GeneralEdit.supported.in.all.gw'
                             defaultMessage='Supported in all Gateways'
                         /></Alert>)} */}
                     <Grid item container justify='flex-end' xs={12}>
@@ -243,7 +257,7 @@ const General: FC<GeneralProps> = ({
                             className={classes.btn}
                         >
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.General.cancel'
+                                id='Apis.Details.Policies.PolicyForm.GeneralEdit.cancel'
                                 defaultMessage='Cancel'
                             />
                         </Button>
@@ -254,10 +268,10 @@ const General: FC<GeneralProps> = ({
                             disabled={(resetDisabled && hasAttributes) || formHasErrors() || saving}
                         >
                             {saving ? <><CircularProgress size='small' /><FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.General.saving'
+                                id='Apis.Details.Policies.PolicyForm.GeneralEdit.saving'
                                 defaultMessage='Saving'
                             /></> : <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.General.save'
+                                id='Apis.Details.Policies.PolicyForm.GeneralEdit.save'
                                 defaultMessage='Save'
                             />}
                         </Button>
@@ -269,4 +283,4 @@ const General: FC<GeneralProps> = ({
 };
 
 
-export default General;
+export default GeneralEdit;

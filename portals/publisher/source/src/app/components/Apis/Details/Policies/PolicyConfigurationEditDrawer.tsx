@@ -28,7 +28,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import { Alert, Progress } from 'AppComponents/Shared';
-import General from './PolicyForm/General';
+import GeneralEdit from './PolicyForm/GeneralEdit';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
 import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
 
@@ -125,17 +125,17 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                     </ListItem>
                 </List>
                 <Divider light />
-                {/* <General
-                    policyObj={policyObj}
-                    setDroppedPolicy={setDroppedPolicy}
-                    currentFlow={currentFlow}
-                    target={target}
-                    verb={verb}
-                    policySpec={policySpec}
-                    apiPolicy={apiPolicy}
-                    setCurrentPolicyList={setCurrentPolicyList}
-                    handleDrawerClose={handleDrawerClose}
-                /> */}
+                {policySpec && (
+                    <GeneralEdit
+                        policyObj={policyObj}
+                        currentFlow={currentFlow}
+                        target={target}
+                        verb={verb}
+                        policySpec={policySpec}
+                        apiPolicy={apiPolicy}
+                        handleDrawerClose={handleDrawerClose}
+                    />
+                )}
             </Box>
         </Drawer>
     );
