@@ -131,6 +131,7 @@ const Listing = (props) => {
         return `/policies/${policyId}/view`;
     }
 
+    policies?.sort((a, b) => a.displayName.localeCompare(b.displayName));
     const policiesList = policies?.map((policyObj) => {
         const policy = [];
         policy.push(policyObj.id);

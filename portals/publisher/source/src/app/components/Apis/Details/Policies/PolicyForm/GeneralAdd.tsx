@@ -25,11 +25,13 @@ import {
     TextField,
     CircularProgress,
     Box,
+    FormControlLabel,
+    Checkbox,
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import Policies from '../../LifeCycle/Policies';
-import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from '../Types';
+import { PolicySpec, ApiPolicy, Policy } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
 const useStyles = makeStyles(theme => ({
@@ -66,8 +68,9 @@ const GeneralAdd: FC<GeneralAddProps> = ({
     const intl = useIntl();
     const classes = useStyles();
     const [saving, setSaving] = useState(false);
+    const [applyToAll, setApplyToAll] = useState(false);
     const initState: any = {};
-    const { updateApiOperations } = useContext<any>(ApiOperationContext);
+    const { updateApiOperations, updateAllApiOperations } = useContext<any>(ApiOperationContext);
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
 
@@ -99,11 +102,18 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                 updateCandidates[key] = value;
             }
         });
+
         // Saving field changes to backend
-        // eslint-disable-next-line no-alert
         const apiPolicyToSave = {...apiPolicy};
         apiPolicyToSave.parameters = updateCandidates;
-        updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
+        if (!applyToAll) {
+            updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
+        } else {
+            // Apply the same attached policy to all the resources
+            updateAllApiOperations(apiPolicyToSave, currentFlow);
+            setApplyToAll(false);
+        }
+
         setDroppedPolicy(null);
         setSaving(false);
         handleDrawerClose();
@@ -152,6 +162,10 @@ const GeneralAdd: FC<GeneralAddProps> = ({
             }
         })
         return formHasAnError;
+    }
+
+    const toggleApplyToAll = () => {
+        setApplyToAll(!applyToAll);
     }
 
     const resetDisabled = Object.keys(state).filter(k => !!state[k]).length === 0;
@@ -252,6 +266,25 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                             id='Apis.Details.Policies.PolicyForm.GeneralAdd.supported.in.all.gw'
                             defaultMessage='Supported in all Gateways'
                         /></Alert>)} */}
+                    <Grid item container justify='flex-start' xs={12}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={applyToAll}
+                                    onChange={toggleApplyToAll}
+                                    color='primary'
+                                />
+                            }
+                            label={(
+                                <Typography variant='subtitle1' color='textPrimary'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.GeneralAdd.apply.to.all.resources'
+                                        defaultMessage='Apply to all resources'
+                                    />
+                                </Typography>
+                            )}
+                        />
+                    </Grid>
                     <Grid item container justify='flex-end' xs={12}>
                         <Button
                             variant='outlined'

@@ -167,6 +167,15 @@ const OperationPolicy: FC<OPProps> = ({
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
                 requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+            // } else {
+            //     ;(async () => {
+            //         try {
+            //             const policyResponse = await API.getOperationPolicy(policyId, apiId);
+            //             requestFlowList.push({ ...policyResponse.body, uniqueKey: Math.random() });
+            //         } catch(error) {
+            //             console.error(error);
+            //         }
+            //     })();
             }
         })
         setRequestFlowPolicyList(requestFlowList);
@@ -197,7 +206,7 @@ const OperationPolicy: FC<OPProps> = ({
         })
         setFaultFlowPolicyList(faultFlowList);
 
-    }, [apiOperations, api])
+    }, [apiOperations])
 
     const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {
         setExpandedResource(isExpanded ? panel : false);

@@ -29,7 +29,7 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import Policies from '../../LifeCycle/Policies';
-import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from '../Types';
+import { PolicySpec, ApiPolicy, AttachedPolicy } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
 const useStyles = makeStyles(theme => ({

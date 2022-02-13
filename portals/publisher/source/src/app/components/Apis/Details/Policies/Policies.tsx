@@ -157,7 +157,9 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      * @param {string} verb verb of the operation that neeeds to be updated
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
-    const updateApiOperations = (updatedOperation: any, target: string, verb: string, currentFlow: string, action?: string) => {
+    const updateApiOperations = (
+        updatedOperation: any, target: string, verb: string, currentFlow: string,
+    ) => {
         const newApiOperations: any = cloneDeep(apiOperations);
         const operationInAction = newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
@@ -172,12 +174,35 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             operationInAction.operationPolicies[currentFlow].push(updatedOperation);
         }
 
+        // Finally update the state
+        setApiOperations(newApiOperations);
+    }
+
+    /**
+     * To update all API Operations with the provided policy.
+     * Note that this function does not perform an API object update, rather, just a state update.
+     * @param {any} updatedOperation updated operation of API object
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     */
+    const updateAllApiOperations = (updatedOperation: any, currentFlow: string) => {
+        const newApiOperations: any = cloneDeep(apiOperations);
+        newApiOperations.map((operation: any) => {
+            const operationFlowPolicy =  operation.operationPolicies[currentFlow].find((
+                p: any) => (p.policyId === updatedOperation.policyId && p.uuid === updatedOperation.uuid));
+            
+            if (operationFlowPolicy) {
+                operationFlowPolicy.parameters = { ...updatedOperation.parameters };
+            } else {
+                updatedOperation.uuid = uuidv4();
+                operation.operationPolicies[currentFlow].push(updatedOperation);
+            }
+        })
 
         // Finally update the state
         setApiOperations(newApiOperations);
     }
 
-      /**
+    /**
      * To delete one API Operation from the apiOperations object
      * Note that this function does not perform an API object update, rather, just a state update.
      * @param {string} uuid operation uuid
@@ -234,7 +259,9 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     }
 
     return (
-        <ApiOperationContextProvider value={{ apiOperations, updateApiOperations, deleteApiOperation }}>
+        <ApiOperationContextProvider
+            value={{ apiOperations, updateApiOperations, updateAllApiOperations, deleteApiOperation }}
+        >
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
