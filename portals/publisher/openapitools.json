@@ -25,7 +25,7 @@
       "ServiceCatalog": {
         "generatorName": "typescript-axios",
         "glob": "",
-        "context": "/api/am/service-catalog/v0",
+        "context": "/api/am/service-catalog/v1",
         "inputSpec": "https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml",
         "output": "#{cwd}../../src/types/generated/Publisher",
         "additionalProperties": {
