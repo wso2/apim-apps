@@ -39,6 +39,7 @@ import PolicyList from './PolicyList';
 import type { Policy, PolicySpec } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
+import { uuidv4 } from './PolicyForm/util/MapUtils';
 
 const useStyles = makeStyles(() => ({
     head: {
@@ -70,8 +71,26 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState(false);
 
-    // This is what we use to set to the api object ()
-    const [apiOperations, setApiOperations] = useState<any>(cloneDeep(api.operations));
+    // We are setting a unique id for all the mediators for UI operations.
+    // We use this uuid to delete them edit them.
+    // Before saving to backend we are removing them.
+    const getInitState = () => {
+        const newOperations = cloneDeep(api.operations);
+        newOperations.forEach((op: any) => {
+            if (op.operationPolicies) {
+                // iterating request, response and faults
+                const { operationPolicies } = op;
+                for (let key in operationPolicies) {
+                    const policyArray = operationPolicies[key];
+                    policyArray.forEach((item: any) => {
+                        item.uuid = uuidv4()
+                    });
+                }
+            }
+        });
+        return newOperations;
+    }
+    const [apiOperations, setApiOperations] = useState<any>(getInitState());
     const [openAPISpec, setOpenAPISpec] = useState<any>(null);
 
     /**
@@ -87,7 +106,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             const apiSpecificPolicies = apiPoliciesResponse.body.list;
             const commonPolicies = commonPoliciesResponse.body.list;
             const mergedList = [...commonPolicies, ...apiSpecificPolicies];
-            
+
             // Get all common policies and API specific policies
             setAllPolicies(mergedList);
 
@@ -138,20 +157,46 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      * @param {string} verb verb of the operation that neeeds to be updated
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
-    const updateApiOperations = (updatedOperation: any, target: string, verb: string, currentFlow: string) => {
+    const updateApiOperations = (updatedOperation: any, target: string, verb: string, currentFlow: string, action?: string) => {
         const newApiOperations: any = cloneDeep(apiOperations);
         const operationInAction = newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
         const operationFlowPolicy =
-            operationInAction.operationPolicies[currentFlow].find((p: any) => p.policyId === updatedOperation.policyId);
+            operationInAction.operationPolicies[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
+                && p.uuid === updatedOperation.uuid));
 
-        // If operationFlowPolicy is not found. We can add it.
-        // or else we can update the parameters.
-        if (operationFlowPolicy) {
+        if (operationFlowPolicy) { // we are editing the operation item
             operationFlowPolicy.parameters = { ...updatedOperation.parameters };
         } else {
+            updatedOperation.uuid = uuidv4();
             operationInAction.operationPolicies[currentFlow].push(updatedOperation);
         }
+
+
+        // Finally update the state
+        setApiOperations(newApiOperations);
+    }
+
+      /**
+     * To delete one API Operation from the apiOperations object
+     * Note that this function does not perform an API object update, rather, just a state update.
+     * @param {string} uuid operation uuid
+     * @param {string} target target that needs to be updated
+     * @param {string} verb verb of the operation that neeeds to be updated
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     */
+    const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
+        const newApiOperations: any = cloneDeep(apiOperations);
+        const operationInAction = newApiOperations.find((op: any) =>
+            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        // Find the location of the element using the following logic
+        /*
+        [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a) will output ['1', '2', '1']
+        [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a).indexOf('2') will output the location of '2'
+        */
+        const index = operationInAction.operationPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
+        // delete the element
+        operationInAction.operationPolicies[currentFlow].splice(index, 1);
 
         // Finally update the state
         setApiOperations(newApiOperations);
@@ -162,6 +207,21 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      */
     const saveApi = () => {
         setUpdating(true);
+        // This is what we use to set to the api object ()
+        apiOperations.forEach((op: any) => {
+            if (op.operationPolicies) {
+                // iterating request, response and faults
+                const { operationPolicies } = op;
+                for (let key in operationPolicies) {
+                    const policyArray = operationPolicies[key];
+                    policyArray.forEach((item: any) => {
+                        if (item.uuid) {
+                            delete item.uuid;
+                        }
+                    });
+                }
+            }
+        });
         const updatePromise = updateAPI({ operations: apiOperations });
         updatePromise
             .finally(() => {
@@ -174,7 +234,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     }
 
     return (
-        <ApiOperationContextProvider value={{ apiOperations, updateApiOperations }}>
+        <ApiOperationContextProvider value={{ apiOperations, updateApiOperations, deleteApiOperation }}>
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>

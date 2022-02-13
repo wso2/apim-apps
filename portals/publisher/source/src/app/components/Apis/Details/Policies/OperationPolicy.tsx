@@ -162,11 +162,11 @@ const OperationPolicy: FC<OPProps> = ({
         const requestFlowList:AttachedPolicy[] = [];
         const requestFlow = operationInAction.operationPolicies.request;
         requestFlow.map((requestFlowAttachedPolicy: any) => {
-            const { policyId, policyName } = requestFlowAttachedPolicy;
+            const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
             const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
-                requestFlowList.push({ ...policyObj, uniqueKey: Math.random() });
+                requestFlowList.push({ ...policyObj, uniqueKey: uuid });
             }
         })
         setRequestFlowPolicyList(requestFlowList);
@@ -175,11 +175,11 @@ const OperationPolicy: FC<OPProps> = ({
         const responseFlowList:AttachedPolicy[] = [];
         const responseFlow = operationInAction.operationPolicies.response;
         responseFlow.map((responseFlowAttachedPolicy: any) => {
-            const { policyId, policyName } = responseFlowAttachedPolicy;
+            const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
             const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
-                responseFlowList.push({ ...policyObj, uniqueKey: Math.random() });
+                responseFlowList.push({ ...policyObj, uniqueKey: uuid });
             }
         })
         setResponseFlowPolicyList(responseFlowList);
@@ -188,11 +188,11 @@ const OperationPolicy: FC<OPProps> = ({
         const faultFlowList:AttachedPolicy[] = [];
         const faultFlow = operationInAction.operationPolicies.fault;
         faultFlow.map((faultFlowAttachedPolicy: any) => {
-            const { policyId, policyName } = faultFlowAttachedPolicy;
+            const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
             const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
-                faultFlowList.push({ ...policyObj, uniqueKey: Math.random() });
+                faultFlowList.push({ ...policyObj, uniqueKey: uuid });
             }
         })
         setFaultFlowPolicyList(faultFlowList);

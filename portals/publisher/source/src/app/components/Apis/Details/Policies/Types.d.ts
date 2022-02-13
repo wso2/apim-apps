@@ -71,7 +71,7 @@ export type CreatePolicySpec = {
 }
 
 export type ApiPolicy = {
-    policyName: string,
-    policyId: string,
+    policyName?: string,
+    policyId?: string,
     parameters: any;
 }

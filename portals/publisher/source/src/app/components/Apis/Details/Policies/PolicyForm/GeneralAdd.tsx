@@ -268,7 +268,7 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                             variant='contained'
                             type='submit'
                             color='primary'
-                            disabled={(resetDisabled && hasAttributes) || formHasErrors() || saving}
+                            disabled={(resetDisabled && hasAttributes) || saving}
                         >
                             {saving ? <><CircularProgress size='small' /><FormattedMessage
                                 id='Apis.Details.Policies.PolicyForm.GeneralAdd.saving'

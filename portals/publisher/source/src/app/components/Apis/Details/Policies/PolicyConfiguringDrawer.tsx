@@ -82,12 +82,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
         return <Progress />
     }
 
-    const operationInAction = apiOperations.find((op: any) =>
-        op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-    const operationFlowPolicy =
-        operationInAction.operationPolicies[currentFlow].find((p: any) => p.policyId === policyObj?.id);
-
-    const apiPolicy: ApiPolicy = operationFlowPolicy || {
+    const apiPolicy: ApiPolicy = {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
         parameters: {}

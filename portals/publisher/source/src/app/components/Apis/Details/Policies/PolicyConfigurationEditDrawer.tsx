@@ -82,7 +82,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     const operationInAction = apiOperations.find((op: any) =>
         op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
     const operationFlowPolicy =
-        operationInAction.operationPolicies[currentFlow].find((p: any) => p.policyId === policyObj?.id);
+        operationInAction.operationPolicies[currentFlow].find((p: any) => p.uuid === policyObj?.uniqueKey);
 
     const apiPolicy: ApiPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,

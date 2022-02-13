@@ -33,6 +33,7 @@ import { FormattedMessage } from 'react-intl';
 import ApiContext from '../components/ApiContext';
 import type { AttachedPolicy, PolicySpec } from './Types';
 import PolicyConfigurationEditDrawer from './PolicyConfigurationEditDrawer';
+import ApiOperationContext from "./ApiOperationContext";
 
 const useStyles = makeStyles(() => ({
     drawerPaper: {
@@ -66,6 +67,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
+    const { deleteApiOperation } = useContext<any>(ApiOperationContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const policyColor = Utils.stringToColor(policyObj.displayName);
     const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
@@ -94,7 +96,9 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 
     const handleDelete = (event: any) => {
         const filteredList = currentPolicyList.filter((policy) => policy.uniqueKey !== policyObj.uniqueKey);
+        const policyToDelete = currentPolicyList.find((policy) => policy.uniqueKey === policyObj.uniqueKey);
         setCurrentPolicyList(filteredList);
+        deleteApiOperation(policyToDelete?.uniqueKey, target, verb, currentFlow);
         event.stopPropagation();
         event.preventDefault();
     };
