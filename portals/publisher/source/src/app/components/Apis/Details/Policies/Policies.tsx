@@ -40,6 +40,7 @@ import type { Policy, PolicySpec } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './PolicyForm/util/MapUtils';
+import SaveOperationPolicies from './SaveOperationPolicies';
 
 const useStyles = makeStyles(() => ({
     head: {
@@ -78,9 +79,9 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         const newOperations = cloneDeep(api.operations);
         newOperations.forEach((op: any) => {
             if (op.operationPolicies) {
-                // iterating request, response and faults
+                // iterating request, response and fault flows
                 const { operationPolicies } = op;
-                for (let key in operationPolicies) {
+                for (const key in operationPolicies) {
                     const policyArray = operationPolicies[key];
                     policyArray.forEach((item: any) => {
                         item.uuid = uuidv4()
@@ -237,7 +238,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             if (op.operationPolicies) {
                 // iterating request, response and faults
                 const { operationPolicies } = op;
-                for (let key in operationPolicies) {
+                for (const key in operationPolicies) {
                     const policyArray = operationPolicies[key];
                     policyArray.forEach((item: any) => {
                         if (item.uuid) {
@@ -312,14 +313,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                 </Grid>
                             ))}
                         </Paper>
-                        <Box pt={2}>
-                            <Button variant='contained' color='primary' onClick={saveApi}>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.Policies.save.btn'
-                                    defaultMessage='Save'
-                                />
-                            </Button>
-                        </Box>
                     </Box>
                     <Box width='35%' pl={1}>
                         <PolicyList
@@ -329,6 +322,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Box>
                 </Box>
             </DndProvider>
+            <SaveOperationPolicies saveApi={saveApi} />
         </ApiOperationContextProvider>
     );
 };
