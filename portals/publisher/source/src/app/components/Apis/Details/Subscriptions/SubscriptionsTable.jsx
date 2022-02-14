@@ -932,7 +932,7 @@ class SubscriptionsTable extends Component {
             }
             return email;
         }).reduce((a, b) => {
-            return b !== null ? `${a || ''},${b}` : a;
+            return b !== null ? `${a || ''};${b}` : a;
         });
         let names = null;
         if (subMails) {
@@ -963,7 +963,7 @@ class SubscriptionsTable extends Component {
                                     <Button
                                         target='_blank'
                                         rel='noopener'
-                                        href={`mailto:?subject=Message from the API Publisher&cc=${emails}`
+                                        href={`mailto:?subject=Message from the API Publisher&to=${emails}`
                                             + `&body=Hi ${names},`}
                                         size='small'
                                         disabled={!names}
