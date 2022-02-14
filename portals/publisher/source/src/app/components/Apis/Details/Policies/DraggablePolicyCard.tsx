@@ -151,7 +151,6 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                         }
                     >
                         <IconButton
-                            disabled={!isLocalToAPI}
                             onClick={handleViewPolicy}
                             aria-label={'view ' + policyObj.name}
                         >
@@ -175,6 +174,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                     dialogOpen={dialogOpen}
                     handleDialogClose={handleViewPolicyClose}
                     policyObj={policyObj}
+                    isLocalToAPI={isLocalToAPI}
                 />
             </Backdrop>
         </>

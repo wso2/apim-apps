@@ -37,6 +37,7 @@ interface ViewPolicyProps {
     handleDialogClose: () => void;
     dialogOpen: boolean;
     policyObj: Policy;
+    isLocalToAPI: boolean;
 }
 
 /**
@@ -45,13 +46,13 @@ interface ViewPolicyProps {
  * @returns {TSX} Policy view UI.
  */
 const ViewPolicy: React.FC<ViewPolicyProps> = ({
-    handleDialogClose, dialogOpen, policyObj
+    handleDialogClose, dialogOpen, policyObj, isLocalToAPI
 }) => {
     const { api } = useContext<any>(ApiContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec|null>(null);
 
     useEffect(() => {
-        if (dialogOpen) {
+        if (dialogOpen && isLocalToAPI) {
             const promisedPolicyGet = API.getOperationPolicy(policyObj.id, api.id);
             promisedPolicyGet
                 .then((response) => {
@@ -60,6 +61,15 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                 .catch((errorMessage) => {
                     Alert.error(JSON.stringify(errorMessage));
                 });
+        } else if (dialogOpen && !isLocalToAPI) {
+            const promisedCommonPolicyGet = API.getCommonOperationPolicy(policyObj.id);
+            promisedCommonPolicyGet
+                .then((response) => {
+                    setPolicySpec(response.body);
+                })
+                .catch((errorMessage) => {
+                    Alert.error(JSON.stringify(errorMessage));
+                });         
         }
     }, [dialogOpen])
     
