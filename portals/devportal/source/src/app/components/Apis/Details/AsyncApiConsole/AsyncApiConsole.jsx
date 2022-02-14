@@ -205,9 +205,7 @@ export default function AsyncApiConsole() {
             wss: null,
         };
         const [protocol] = url.split('://');
-        if (protocol === 'http' || protocol === 'https' || protocol === 'ws' || protocol === 'wss') {
-            urlJson[protocol] = url;
-        }
+        urlJson[protocol] = url;
         return urlJson;
     };
 

@@ -82,7 +82,7 @@ export default function GenericSubscriptionUI(props) {
             },
         };
     });
-    const { generateGenericSubscriptionCommand, topic } = props;
+    const { generateGenericSubscriptionCommand, topic, expandable } = props;
     const [command, setCommand] = useState(generateGenericSubscriptionCommand(topic));
 
     const handleClick = () => {
@@ -92,9 +92,9 @@ export default function GenericSubscriptionUI(props) {
     const classes = useStyles();
 
     return (
-        <Accordion className={classes.subscription}>
+        <Accordion className={classes.subscription} style={{ pointerEvents: expandable ? 'auto' : 'none' }}>
             <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={expandable && (<ExpandMoreIcon />)}
                 aria-controls='generic-subscription-content'
                 id='generic-subscription-header'
                 className={classes.subscriptionSummary}

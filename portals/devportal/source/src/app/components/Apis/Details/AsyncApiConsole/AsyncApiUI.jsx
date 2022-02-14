@@ -63,9 +63,14 @@ export default function AsyncApiUI(props) {
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
     let initialEndpoint;
-    initialEndpoint = URLs && URLs.http;
+    initialEndpoint = URLs && (URLs.http || URLs.https);
     if (api.type === CONSTANTS.API_TYPES.WS) {
-        initialEndpoint = URLs && URLs.ws;
+        initialEndpoint = URLs && (URLs.ws || URLs.wss);
+    }
+
+    let expandable = true;
+    if (!URLs || (!URLs.http && !URLs.https)) {
+        expandable = false;
     }
 
     const [allTopics, setAllTopics] = useState('');
@@ -218,22 +223,29 @@ export default function AsyncApiUI(props) {
                     <WebhookSubscriptionUI
                         topic={topic}
                         generateGenericWHSubscriptionCurl={generateGenericWHSubscriptionCurl}
+                        expandable
                     />
                 ))}
                 {api.type === CONSTANTS.API_TYPES.SSE && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
                         generateGenericSubscriptionCommand={generateSSESubscriptionCommand}
-                        topic={topic}/>
+                        topic={topic}
+                        expandable
+                    />
                 ))}
                 {api.type === CONSTANTS.API_TYPES.WS && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
                         generateGenericSubscriptionCommand={generateWSSubscriptionCommand}
-                        topic={topic}/>
+                        topic={topic}
+                        expandable
+                    />
                 ))}
                 {api.type === CONSTANTS.API_TYPES.ASYNC && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
                         generateGenericSubscriptionCommand={generateASYNCSubscriptionCommand}
-                        topic={topic}/>
+                        topic={topic}
+                        expandable={expandable}
+                    />
                 ))}
             </>
         );
