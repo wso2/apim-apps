@@ -81,7 +81,8 @@ class Publisher extends React.Component {
         this.loadLocale(locale);
         const user = AuthManager.getUser();
         if (user) {
-            const hasViewScope = user.scopes.includes('apim:api_view');
+            const hasViewScope = user.scopes.includes('apim:api_view')
+                && user.scopes.includes('apim:publisher_settings');
             if (hasViewScope) {
                 this.setState({ user, userResolved: true });
             } else {
