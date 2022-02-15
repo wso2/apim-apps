@@ -248,7 +248,7 @@ function TransportLevel(props) {
                                 </FormHelperText>
                             </FormControl>
                         )}
-                        {isMutualSSLEnabled && (
+                        {(isMutualSSLEnabled && (!api.advertiseInfo || !api.advertiseInfo.advertised)) && (
                             // TODO:
                             // This is half baked!!!
                             // Refactor the Certificate component to share its capabilities in here and

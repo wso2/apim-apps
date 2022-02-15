@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.apimgt.ui</groupId>
         <artifactId>apim.ui.apps</artifactId>
-        <version>9.0.229-SNAPSHOT</version>
+        <version>9.0.240-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -81,22 +81,22 @@
                             </arguments>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>npm run test:ci</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>test</phase>
-                        <configuration>
-                            <skip>${maven.test.skip}</skip>
-                            <workingDirectory>./</workingDirectory>
-                            <executable>${npm.executable}</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>${npm.test.command}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
+                   <execution>
+                       <id>npm run test:ci</id>
+                       <goals>
+                           <goal>exec</goal>
+                       </goals>
+                       <phase>test</phase>
+                       <configuration>
+                           <skip>${maven.test.skip}</skip>
+                           <workingDirectory>./</workingDirectory>
+                           <executable>${npm.executable}</executable>
+                           <arguments>
+                               <argument>run</argument>
+                               <argument>${npm.test.command}</argument>
+                           </arguments>
+                       </configuration>
+                   </execution>
                 </executions>
                 <configuration>
                     <workingDirectory>${npm.working.dir}</workingDirectory>

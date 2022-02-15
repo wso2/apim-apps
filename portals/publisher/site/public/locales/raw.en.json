@@ -44,8 +44,20 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": {
     "defaultMessage": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
   },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": {
+    "defaultMessage": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title": {
+    "defaultMessage": "\"Other\" type streaming APIs will be created as third party APIs."
+  },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": {
     "defaultMessage": "Cancel"
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint": {
+    "defaultMessage": "External Endpoint"
+  },
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.heading": {
     "defaultMessage": "Create an API using an AsyncAPI definition."
@@ -335,6 +347,9 @@
   "Apis.Details.APIDefinition.APIDefinition.schema.definition": {
     "defaultMessage": "Schema Definition"
   },
+  "Apis.Details.APIDefinition.Addservice.service.retrieve.error": {
+    "defaultMessage": "Something went wrong while retrieving the services"
+  },
   "Apis.Details.APIDefinition.AuditApi\n                                                                    .OverallScoreProgress": {
     "defaultMessage": "{overallScore}"
   },
@@ -510,6 +525,15 @@
   "Apis.Details.ApiConsole.ApiConsole.title": {
     "defaultMessage": "Try Out"
   },
+  "Apis.Details.ApiConsole.adv.auth.header": {
+    "defaultMessage": "Authorization Header"
+  },
+  "Apis.Details.ApiConsole.adv.auth.header.value": {
+    "defaultMessage": "Authorization Header Value"
+  },
+  "Apis.Details.ApiConsole.authentication.heading": {
+    "defaultMessage": "Authentication"
+  },
   "Apis.Details.ApiConsole.deployments.api.gateways": {
     "defaultMessage": "API Gateways"
   },
@@ -518,6 +542,15 @@
   },
   "Apis.Details.ApiConsole.deployments.no": {
     "defaultMessage": "{artifactType} is not deployed yet! Please deploy the {artifactType} before trying out"
+  },
+  "Apis.Details.ApiConsole.endpoint": {
+    "defaultMessage": "Endpoint type"
+  },
+  "Apis.Details.ApiConsole.endpoint.help": {
+    "defaultMessage": "Please select an endpoint type"
+  },
+  "Apis.Details.ApiConsole.enpoint.heading": {
+    "defaultMessage": "API Endpoint"
   },
   "Apis.Details.ApiConsole.environment": {
     "defaultMessage": "Environment"
@@ -696,14 +729,11 @@
   "Apis.Details.Configuration.Resources.save": {
     "defaultMessage": "Save"
   },
-  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.\n                                                    product.endpoint": {
+  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.product.endpoint": {
     "defaultMessage": "Please refer respective APIs for endpoint information"
   },
   "Apis.Details.Configuration.RuntimeConfiguration.no.km.error": {
     "defaultMessage": "Select one or more Key Managers"
-  },
-  "Apis.Details.Configuration.RuntimeConfiguration.section.fault": {
-    "defaultMessage": "Fault"
   },
   "Apis.Details.Configuration.RuntimeConfiguration.topic.header": {
     "defaultMessage": "Runtime Configurations"
@@ -716,6 +746,27 @@
   },
   "Apis.Details.Configuration.RuntimeConfigurationWebSocket.topic.header": {
     "defaultMessage": "Runtime Configurations"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message": {
+    "defaultMessage": "This API is currently published and by changing to a regular API, it will not be available for consumption since it has no active deployments."
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.continue": {
+    "defaultMessage": "Continue"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.dialog.title": {
+    "defaultMessage": "Restore to a Regular API"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint": {
+    "defaultMessage": "Endpoint"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
+  },
+  "Apis.Details.Configuration.UpdateWithoutDetails.tier.message": {
+    "defaultMessage": "Business Plans:"
   },
   "Apis.Details.Configuration.components.APILevelRateLimitingPolicies.configuration": {
     "defaultMessage": "Rate Limiting Configuration"
@@ -776,6 +827,54 @@
   },
   "Apis.Details.Configuration.components.AccessControl.tooltip.restrict.\n                                    desc": {
     "defaultMessage": "The API can be viewed and modified only by specific publishers and creators with the roles that you specify"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.label": {
+    "defaultMessage": "Mark the API as third party"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.no": {
+    "defaultMessage": "No"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.yes": {
+    "defaultMessage": "Yes"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint": {
+    "defaultMessage": "API External Production Endpoint"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint.help": {
+    "defaultMessage": "This is the external production endpoint of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint": {
+    "defaultMessage": "API External Sandbox Endpoint"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint.help": {
+    "defaultMessage": "This is the external sandbox endpoint of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning": {
+    "defaultMessage": "If you want to deploy and API in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title": {
+    "defaultMessage": "The \"Other\" type streaming APIs will serve as third party APIs."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning": {
+    "defaultMessage": "Please undeploy the revision before changing the API to a third party API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title": {
+    "defaultMessage": "There are active deployments in the API."
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": {
+    "defaultMessage": "Original Developer URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.error": {
+    "defaultMessage": "Invalid Original Developer Portal URL"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help": {
+    "defaultMessage": "This is the original developer portal of the advertised API"
+  },
+  "Apis.Details.Configuration.components.AdvertiseInfo.tooltip": {
+    "defaultMessage": "Indicates if an API is a third party API. You can use third party APIs to expose an externally published API through API Manager."
   },
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": {
     "defaultMessage": "Access Control Allow Headers"
@@ -1254,11 +1353,17 @@
   "Apis.Details.Documents.View.meta.summary": {
     "defaultMessage": "Summary"
   },
-  "Apis.Details.Edit.MediationPolicies.EditMediationPolicies.custom.mediation.policies": {
-    "defaultMessage": "Custom Mediation Policies"
-  },
   "Apis.Details.EditScopes.Roles.Invalid": {
     "defaultMessage": "Role is invalid"
+  },
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.config.endpoint": {
+    "defaultMessage": "Endpoint configurations"
+  },
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.security.endpoint": {
+    "defaultMessage": "Endpoint security"
+  },
+  "Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed": {
+    "defaultMessage": "Proceed"
   },
   "Apis.Details.Endpoints..EndpointOverview.change.type.proceed": {
     "defaultMessage": "Proceed"
@@ -1355,6 +1460,27 @@
   },
   "Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.tpp.protocol.violation": {
     "defaultMessage": "TTP Protocol Violation"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline": {
+    "defaultMessage": "Regular gateway (Synapse gateway)"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS": {
+    "defaultMessage": "Choreo Connect"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS.description": {
+    "defaultMessage": "If you want to add/update examples, update the API Definition"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Options": {
+    "defaultMessage": "Select the gateway type"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation": {
+    "defaultMessage": "Change Mock implementation"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message": {
+    "defaultMessage": "Your current mock endpoint implementation scripts will be lost."
   },
   "Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration": {
     "defaultMessage": "Advanced Configurations"
@@ -1725,14 +1851,38 @@
   "Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint.description": {
     "defaultMessage": "Use the inbuilt JavaScript engine to prototype the API The inbuilt JavaScript engine does support prototype SOAP APIs"
   },
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint": {
+    "defaultMessage": "Service Endpoint"
+  },
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint.description": {
+    "defaultMessage": "A REST API endpoint based on a Service in the service catalog."
+  },
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint": {
     "defaultMessage": "HTTP/ SOAP Endpoint"
   },
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint.description": {
     "defaultMessage": "The direct URI of the web service."
   },
-  "Apis.Details.Endpoints.Prototype.InlineEndpoints.script": {
+  "Apis.Details.Endpoints.Prototype.MockImplEndpoints.script": {
     "defaultMessage": "Script"
+  },
+  "Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset": {
+    "defaultMessage": "Reset"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.Example": {
+    "defaultMessage": "Example Value"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.Example.NotProvided": {
+    "defaultMessage": "Response Examples are not provided in the API definition"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided": {
+    "defaultMessage": "Responses are not provided in the API definition"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.subTitle": {
+    "defaultMessage": "Mocked examples generated from OAS"
+  },
+  "Apis.Details.Endpoints.Prototype.MockedOAS.title": {
+    "defaultMessage": "Responses"
   },
   "Apis.Details.Environments\n                                                                                    .deploy.vhost": {
     "defaultMessage": "VHost"
@@ -1763,6 +1913,9 @@
   },
   "Apis.Details.Environments.Environments.Deployments": {
     "defaultMessage": "Revisions"
+  },
+  "Apis.Details.Environments.Environments.advertise.only.warning": {
+    "defaultMessage": "This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required."
   },
   "Apis.Details.Environments.Environments.api.gateways.heading": {
     "defaultMessage": "API Gateways"
@@ -1998,62 +2151,32 @@
   "Apis.Details.LifeCycle.Policies.select.plan.api.product": {
     "defaultMessage": "Select a plan for the API product."
   },
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.advertise": {
+    "defaultMessage": "Publish"
+  },
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.see.less": {
+    "defaultMessage": "See less"
+  },
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.see.more": {
+    "defaultMessage": "See more"
+  },
   "Apis.Details.LifeCycle.components.confirm.publish.message": {
     "defaultMessage": "The API will not be available for consumption unless it is deployed."
+  },
+  "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": {
+    "defaultMessage": "If you want to publish as a third party API, please provide the external endpoint and press \"Publish\"."
   },
   "Apis.Details.LifeCycle.components.confirm.publish.title": {
     "defaultMessage": "Publish API without deployments"
   },
+  "Apis.Details.LifeCycle.components.externalEndpoint": {
+    "defaultMessage": "External Endpoint"
+  },
+  "Apis.Details.LifeCycle.externalEndpoint.error": {
+    "defaultMessage": "Invalid Endpoint URL"
+  },
   "Apis.Details.LifeCycle.publish.content.info.deployments": {
     "defaultMessage": "Deployments"
-  },
-  "Apis.Details.MediationPolicies.Edit.AddMediationPolicy.error": {
-    "defaultMessage": "Error while adding mediation policy"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.cancel.btn": {
-    "defaultMessage": "Cancel"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.click.or.drop.to.upload.file": {
-    "defaultMessage": "Click or drag the mediation file to upload."
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.common.policies": {
-    "defaultMessage": "Common Policies"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.custom.policies": {
-    "defaultMessage": "Custom Policies"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.error": {
-    "defaultMessage": "Error deleting the file"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.success": {
-    "defaultMessage": "Mediation policy deleted successfully."
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.download.error": {
-    "defaultMessage": "Error downloading the file"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.error": {
-    "defaultMessage": "Error retrieving mediation policies"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.global.delete": {
-    "defaultMessage": "Cannot delete Global mediation policies."
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.none": {
-    "defaultMessage": "None"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.btn": {
-    "defaultMessage": "Select"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.policy": {
-    "defaultMessage": "Select a Mediation Policy"
-  },
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.success": {
-    "defaultMessage": "Mediation policy added successfully"
-  },
-  "Apis.Details.MediationPolicies.EditMediationPolicy.download": {
-    "defaultMessage": "Download"
-  },
-  "Apis.Details.MediationPolicies.Mediation": {
-    "defaultMessage": "Message Mediation"
   },
   "Apis.Details.Monetization.BusinessPlans.commercial.policies": {
     "defaultMessage": "Commercial Policies"
@@ -2109,6 +2232,12 @@
   "Apis.Details.NewOverview.Endpoints.endpoints": {
     "defaultMessage": "Endpoints"
   },
+  "Apis.Details.NewOverview.Endpoints.external.production.endpoint": {
+    "defaultMessage": "External Production Endpoint"
+  },
+  "Apis.Details.NewOverview.Endpoints.external.sandbox.endpoint": {
+    "defaultMessage": "External Sandbox Endpoint"
+  },
   "Apis.Details.NewOverview.Endpoints.not.set": {
     "defaultMessage": "-"
   },
@@ -2162,6 +2291,12 @@
   },
   "Apis.Details.NewOverview.MetaData.metadata": {
     "defaultMessage": "Metadata"
+  },
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl": {
+    "defaultMessage": "Original Developer Portal URL"
+  },
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl.not.set": {
+    "defaultMessage": "-"
   },
   "Apis.Details.NewOverview.MetaData.provider": {
     "defaultMessage": "Provider"
@@ -2357,6 +2492,9 @@
   },
   "Apis.Details.Overview.ProductResources.resources": {
     "defaultMessage": "Resources"
+  },
+  "Apis.Details.Policies.CommonPolicies.heading.tooltip": {
+    "defaultMessage": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
   },
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": {
     "defaultMessage": "Select API Resources"
@@ -3087,6 +3225,9 @@
   "Apis.Details.TryOutConsole.token.label": {
     "defaultMessage": "Internal API Key"
   },
+  "Apis.Details.components.APIDetailsTopMenu.advertise.only.label": {
+    "defaultMessage": "Third Party"
+  },
   "Apis.Details.components.APIDetailsTopMenu.created.by": {
     "defaultMessage": "Created by:"
   },
@@ -3176,6 +3317,9 @@
   },
   "Apis.Details.index.overview": {
     "defaultMessage": "overview"
+  },
+  "Apis.Details.index.policies": {
+    "defaultMessage": "Policies"
   },
   "Apis.Details.index.properties": {
     "defaultMessage": "properties"
@@ -3552,6 +3696,9 @@
   "Base.Header.navbar.GlobalNavBar.apis": {
     "defaultMessage": "APIs"
   },
+  "Base.Header.navbar.GlobalNavBar.common.policies": {
+    "defaultMessage": "Policies"
+  },
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
   },
@@ -3572,6 +3719,51 @@
   },
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
+  },
+  "Policies.Delete.Delete.policy.delete": {
+    "defaultMessage": "Delete"
+  },
+  "Policies.Delete.Delete.policy.label.ok.confirm": {
+    "defaultMessage": "Are you sure you want to delete {policy} policy ?"
+  },
+  "Policies.Delete.Delete.policy.listing.delete.confirm": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "Policies.Delete.Delete.policy.listing.label.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Policies.Delete.Delete.policy.listing.label.ok.yes": {
+    "defaultMessage": "Yes"
+  },
+  "Policies.Listing.Listing.create.new": {
+    "defaultMessage": "Let’s get started !"
+  },
+  "Policies.Listing.Listing.heading.CommonPolicies.heading": {
+    "defaultMessage": "Policies"
+  },
+  "Policies.Listing.Listing.heading.CommonPolicy.new": {
+    "defaultMessage": "Add New Policy"
+  },
+  "Policies.Listing.Listing.policies.tooltip": {
+    "defaultMessage": "Policies provide the capability to alter the behavior of API resources"
+  },
+  "Policies.Listing.Listing.policies.view": {
+    "defaultMessage": "View"
+  },
+  "Policies.Listing.Listing.table.header.actions": {
+    "defaultMessage": "Actions"
+  },
+  "Policies.Listing.Listing.table.header.applicable.flows": {
+    "defaultMessage": "Applicable Flows"
+  },
+  "Policies.Listing.Listing.table.header.description": {
+    "defaultMessage": "Description"
+  },
+  "Policies.Listing.Listing.table.header.name": {
+    "defaultMessage": "Policy Name"
+  },
+  "Policies.Listing.Listing.update.not.allowed": {
+    "defaultMessage": "*You are not authorized to manage policies due to insufficient permissions"
   },
   "Scopes.Create.CreateScope.cancel": {
     "defaultMessage": "Cancel"

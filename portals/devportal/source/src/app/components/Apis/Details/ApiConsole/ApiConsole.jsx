@@ -100,6 +100,9 @@ class ApiConsole extends React.Component {
             productionApiKey: '',
             sandboxApiKey: '',
             selectedKeyManager: 'Resident Key Manager',
+            advAuthHeader: 'Authorization',
+            advAuthHeaderValue: '',
+            selectedEndpoint: 'PRODUCTION',
         };
         this.accessTokenProvider = this.accessTokenProvider.bind(this);
         this.updateSwagger = this.updateSwagger.bind(this);
@@ -116,6 +119,9 @@ class ApiConsole extends React.Component {
         this.setProductionApiKey = this.setProductionApiKey.bind(this);
         this.setSandboxApiKey = this.setSandboxApiKey.bind(this);
         this.converttopostman = this.convertToPostman.bind(this);
+        this.setAdvAuthHeader = this.setAdvAuthHeader.bind(this);
+        this.setAdvAuthHeaderValue = this.setAdvAuthHeaderValue.bind(this);
+        this.setSelectedEndpoint = this.setSelectedEndpoint.bind(this);
     }
 
     /**
@@ -279,11 +285,56 @@ class ApiConsole extends React.Component {
     setKeys(keys) {
         this.setState({ keys });
     }
+
+    /**
+     * Set authorization header of third party APIs
+     * @param advAuthHeader authorization header
+     */
+    setAdvAuthHeader(advAuthHeader) {
+        this.setState({ advAuthHeader });
+    }
+
+    /**
+     * Set authorization header value of third party APIs
+     * @param advAuthHeaderValue authorization header value
+     */
+    setAdvAuthHeaderValue(advAuthHeaderValue) {
+        this.setState({ advAuthHeaderValue });
+    }
+
+    /**
+     * Set selected endpoint type of third party APIs
+     * @param selectedEndpoint selected endpoint type
+     */
+    setSelectedEndpoint(selectedEndpoint) {
+        this.setState({ selectedEndpoint });
+    }
+
+    /**
+     * Update swagger for properties for Swagger 2.0 third party APIs
+     * @param spec api definition
+     * @param serverUrl server url
+     * @returns {*}
+     */
+    setServersSpec(spec, serverUrl) {
+        let schemes;
+        const [protocol, host] = serverUrl.split('://');
+        if (protocol === 'http') {
+            schemes = ['http'];
+        } else if (protocol === 'https') {
+            schemes = ['https'];
+        }
+        return {
+            ...spec,
+            schemes,
+            host,
+        };
+    }
+
     /**
      * Converting an OpenAPI file to a postman collection
      * @memberof ApiConsole
    */
-
     convertToPostman(fr) {
         openapiToPostman.convert({ type: 'string', data: fr },
             {}, (err, conversionResult) => {
@@ -350,9 +401,12 @@ class ApiConsole extends React.Component {
      */
     accessTokenProvider() {
         const {
-            securitySchemeType, username, password, productionAccessToken,
-            sandboxAccessToken, selectedKeyType, productionApiKey, sandboxApiKey,
+            securitySchemeType, username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
+            productionApiKey, sandboxApiKey, api, advAuthHeaderValue,
         } = this.state;
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
         if (securitySchemeType === 'BASIC') {
             const credentials = username + ':' + password;
             return btoa(credentials);
@@ -399,7 +453,7 @@ class ApiConsole extends React.Component {
         const {
             api, notFound, swagger, securitySchemeType, selectedEnvironment, environments, scopes,
             username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
-            sandboxApiKey, productionApiKey, selectedKeyManager,
+            sandboxApiKey, productionApiKey, selectedKeyManager, advAuthHeader, advAuthHeaderValue, selectedEndpoint,
         } = this.state;
         const user = AuthManager.getUser();
         const downloadSwagger = JSON.stringify({ ...swagger });
@@ -420,11 +474,36 @@ class ApiConsole extends React.Component {
                 authorizationHeader = 'apikey';
             }
         }
+        let swaggerSpec = swagger;
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            authorizationHeader = advAuthHeader;
+            if (swaggerSpec.openapi) {
+                if (selectedEndpoint === 'PRODUCTION') {
+                    swaggerSpec = {
+                        ...swagger,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                        ],
+                    };
+                } else {
+                    swaggerSpec = {
+                        ...swagger,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                        ],
+                    };
+                }
+            } else if (selectedEndpoint === 'PRODUCTION') {
+                swaggerSpec = this.setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalProductionEndpoint);
+            } else {
+                swaggerSpec = this.setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalSandboxEndpoint);
+            }
+        }
         return (
             <>
                 <Paper className={classes.paper}>
                     <Grid container className={classes.grid}>
-                        {!user && (
+                        {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                             <Grid item md={6}>
                                 <Paper className={classes.userNotificationPaper}>
                                     <Typography variant='h5' component='h3'>
@@ -454,7 +533,7 @@ class ApiConsole extends React.Component {
                         setProductionAccessToken={this.setProductionAccessToken}
                         sandboxAccessToken={sandboxAccessToken}
                         setSandboxAccessToken={this.setSandboxAccessToken}
-                        swagger={swagger}
+                        swagger={swaggerSpec}
                         environments={environments}
                         scopes={scopes}
                         setUsername={this.setUsername}
@@ -471,6 +550,12 @@ class ApiConsole extends React.Component {
                         setSandboxApiKey={this.setSandboxApiKey}
                         productionApiKey={productionApiKey}
                         sandboxApiKey={sandboxApiKey}
+                        setAdvAuthHeader={this.setAdvAuthHeader}
+                        setAdvAuthHeaderValue={this.setAdvAuthHeaderValue}
+                        advAuthHeader={advAuthHeader}
+                        advAuthHeaderValue={advAuthHeaderValue}
+                        setSelectedEndpoint={this.setSelectedEndpoint}
+                        selectedEndpoint={selectedEndpoint}
                         api={this.state.api}
                         URLs={null}
                     />
@@ -506,7 +591,7 @@ class ApiConsole extends React.Component {
                     <SwaggerUI
                         api={this.state.api}
                         accessTokenProvider={this.accessTokenProvider}
-                        spec={swagger}
+                        spec={swaggerSpec}
                         authorizationHeader={authorizationHeader}
                         securitySchemeType={securitySchemeType}
                     />

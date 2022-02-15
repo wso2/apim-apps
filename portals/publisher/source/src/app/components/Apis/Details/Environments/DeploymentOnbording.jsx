@@ -81,6 +81,7 @@ export default function DeploymentOnboarding(props) {
         description,
         setDescription,
         gatewayVendor,
+        advertiseInfo,
     } = props;
     const classes1 = useStyles();
     const theme = useTheme();
@@ -355,7 +356,8 @@ export default function DeploymentOnboarding(props) {
                                             () => createDeployRevision(selectedEnvironment, selectedVhostDeploy)
                                         }
                                         color='primary'
-                                        disabled={selectedEnvironment.length === 0}
+                                        disabled={selectedEnvironment.length === 0
+                                            || (advertiseInfo && advertiseInfo.advertised)}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.deploy.deploy'
@@ -390,7 +392,7 @@ export default function DeploymentOnboarding(props) {
                                                             <Checkbox
                                                                 id={row.name.split(' ').join('')}
                                                                 value={row.name}
-                                                                checked={selectedEnvironment.includes(row.name)}
+                                                                checked={selectedSolaceEnvironment.includes(row.name)}
                                                                 disabled={isRestricted(['apim:api_publish',
                                                                     'apim:api_create'])}
                                                                 onChange={handleChange}

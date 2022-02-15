@@ -59,7 +59,7 @@ class SubscriptionPoliciesManage extends Component {
 
     componentDidMount() {
         const { api } = this.props;
-        const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE');
+        const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC');
         const policyPromise = isAsyncAPI ? API.asyncAPIPolicies() : API.policies('subscription');
         policyPromise
             .then((res) => {

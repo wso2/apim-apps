@@ -17,9 +17,9 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link as RouterLink } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Subscription from 'AppData/Subscription';
 import GenericDisplayDialog from 'AppComponents/Shared/GenericDisplayDialog';
@@ -29,12 +29,14 @@ import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import Link from '@material-ui/core/Link';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Application from 'AppData/Application';
 import AuthManager from 'AppData/AuthManager';
 import SubscribeToApi from 'AppComponents/Shared/AppsAndKeys/SubscribeToApi';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
+import OriginalDevportalDetails from './OriginalDevportalDetails';
 import { ApiContext } from '../ApiContext';
 import SubscriptionTableRow from './SubscriptionTableRow';
 
@@ -155,6 +157,12 @@ const styles = (theme) => ({
         '& span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
+    },
+    launchIcon: {
+        paddingLeft: theme.spacing(1),
+    },
+    originalDevPortalLink: {
+        marginTop: theme.spacing(2),
     },
 });
 
@@ -422,7 +430,7 @@ class Credentials extends React.Component {
                                                 to={(isOnlyMutualSSL || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers) ? null
                                                     : `/apis/${api.id}/credentials/wizard`}
-                                                component={Link}
+                                                component={RouterLink}
                                                 disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
                                                     || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
                                             >
@@ -552,45 +560,73 @@ class Credentials extends React.Component {
                 <Grid item md={12} lg={11}>
                     <Grid container spacing={2}>
                         <Grid item md={12}>
-                            <Typography onClick={this.handleExpandClick} variant='h4' component='div' className={classes.titleSub}>
-                                {applicationsAvailable.length > 0 && (
-                                    <Link
-                                        to={(isOnlyMutualSSL || isOnlyBasicAuth
-                                            || !isSetAllorResidentKeyManagers) ? null
-                                            : `/apis/${api.id}/credentials/wizard`}
-                                        style={!api.isSubscriptionAvailable
-                                            ? { pointerEvents: 'none' } : null}
-                                        className={classes.addLinkWrapper}
+                            {api.advertiseInfo && api.advertiseInfo.advertised
+                                && api.advertiseInfo.originalDevPortalUrl && (
+                                <OriginalDevportalDetails
+                                    classes={classes}
+                                    originalDevportalUrl={api.advertiseInfo.originalDevPortalUrl}
+                                />
+                            )}
+                            {api.tiers.length > 0 ? (
+                                <>
+                                    <Typography
+                                        onClick={this.handleExpandClick}
+                                        variant='h4'
+                                        component='div'
+                                        className={classes.titleSub}
                                     >
-                                        <Button
-                                            color='secondary'
-                                            disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
-                                                 || isOnlyBasicAuth
-                                                 || !isSetAllorResidentKeyManagers}
-                                            size='small'
-                                        >
-                                            <Icon>add_circle_outline</Icon>
+                                        {applicationsAvailable.length > 0 && (
+                                            <Link
+                                                to={(isOnlyMutualSSL || isOnlyBasicAuth
+                                                    || !isSetAllorResidentKeyManagers) ? null
+                                                    : `/apis/${api.id}/credentials/wizard`}
+                                                style={!api.isSubscriptionAvailable
+                                                    ? { pointerEvents: 'none' } : null}
+                                                className={classes.addLinkWrapper}
+                                                component={RouterLink}
+                                            >
+                                                <Button
+                                                    color='secondary'
+                                                    disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
+                                                    || isOnlyBasicAuth
+                                                    || !isSetAllorResidentKeyManagers}
+                                                    size='small'
+                                                >
+                                                    <Icon>add_circle_outline</Icon>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Credentials.'
+                                                        + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
+                                                        defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                    />
+                                                </Button>
+                                            </Link>
+                                        )}
+                                    </Typography>
+                                    <Paper elevation={0} className={classes.paper}>
+                                        <Typography variant='body2' className={classes.descWrapper}>
                                             <FormattedMessage
-                                                id={'Apis.Details.Credentials.'
-                                                + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
-                                                defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                id='Apis.Details.Credentials.Credentials.'
+                                                defaultMessage={`An application is primarily used to decouple the 
+                                                consumer from the APIs. It allows you to generate and use a single 
+                                                key for multiple APIs and subscribe multiple times to a single API 
+                                                with different SLA levels.`}
                                             />
-                                        </Button>
-                                    </Link>
-                                )}
-                            </Typography>
-                            <Paper elevation={0} className={classes.paper}>
-                                <Typography variant='body2' className={classes.descWrapper}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Credentials.Credentials.'
-                                        defaultMessage={`An application 
-                                        is primarily used to decouple the consumer from the APIs. It allows you to 
-                                        generate and use a single key for multiple APIs and subscribe multiple times to 
-                                        a single API with different SLA levels.`}
-                                    />
-                                </Typography>
-                                {renderCredentialInfo()}
-                            </Paper>
+                                        </Typography>
+                                        {renderCredentialInfo()}
+                                    </Paper>
+                                </>
+                            ) : (
+                                <Paper elevation={0} className={classes.paper}>
+                                    <InlineMessage type='info' className={classes.dialogContainer}>
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Creadentials.credetials.no.tiers'
+                                                defaultMessage='No tiers are available for the API.'
+                                            />
+                                        </Typography>
+                                    </InlineMessage>
+                                </Paper>
+                            )}
                         </Grid>
                     </Grid>
                 </Grid>

@@ -89,10 +89,34 @@
       "value": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
     }
   ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": [
+    {
+      "type": 0,
+      "value": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning.title": [
+    {
+      "type": 0,
+      "value": "\"Other\" type streaming APIs will be created as third party APIs."
+    }
+  ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.cancel": [
     {
       "type": 0,
       "value": "Cancel"
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint": [
+    {
+      "type": 0,
+      "value": "External Endpoint"
+    }
+  ],
+  "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.externalEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
     }
   ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.heading": [
@@ -751,6 +775,12 @@
       "value": "Schema Definition"
     }
   ],
+  "Apis.Details.APIDefinition.Addservice.service.retrieve.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while retrieving the services"
+    }
+  ],
   "Apis.Details.APIDefinition.AuditApi\n                                                                    .OverallScoreProgress": [
     {
       "type": 1,
@@ -1207,6 +1237,24 @@
       "value": "Try Out"
     }
   ],
+  "Apis.Details.ApiConsole.adv.auth.header": [
+    {
+      "type": 0,
+      "value": "Authorization Header"
+    }
+  ],
+  "Apis.Details.ApiConsole.adv.auth.header.value": [
+    {
+      "type": 0,
+      "value": "Authorization Header Value"
+    }
+  ],
+  "Apis.Details.ApiConsole.authentication.heading": [
+    {
+      "type": 0,
+      "value": "Authentication"
+    }
+  ],
   "Apis.Details.ApiConsole.deployments.api.gateways": [
     {
       "type": 0,
@@ -1235,6 +1283,24 @@
     {
       "type": 0,
       "value": " before trying out"
+    }
+  ],
+  "Apis.Details.ApiConsole.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint type"
+    }
+  ],
+  "Apis.Details.ApiConsole.endpoint.help": [
+    {
+      "type": 0,
+      "value": "Please select an endpoint type"
+    }
+  ],
+  "Apis.Details.ApiConsole.enpoint.heading": [
+    {
+      "type": 0,
+      "value": "API Endpoint"
     }
   ],
   "Apis.Details.ApiConsole.environment": [
@@ -1591,7 +1657,7 @@
       "value": "Save"
     }
   ],
-  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.\n                                                    product.endpoint": [
+  "Apis.Details.Configuration.RuntimeConfiguration.backend.api.product.endpoint": [
     {
       "type": 0,
       "value": "Please refer respective APIs for endpoint information"
@@ -1601,12 +1667,6 @@
     {
       "type": 0,
       "value": "Select one or more Key Managers"
-    }
-  ],
-  "Apis.Details.Configuration.RuntimeConfiguration.section.fault": [
-    {
-      "type": 0,
-      "value": "Fault"
     }
   ],
   "Apis.Details.Configuration.RuntimeConfiguration.topic.header": [
@@ -1631,6 +1691,48 @@
     {
       "type": 0,
       "value": "Runtime Configurations"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.confirm.update.message": [
+    {
+      "type": 0,
+      "value": "This API is currently published and by changing to a regular API, it will not be available for consumption since it has no active deployments."
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.continue": [
+    {
+      "type": 0,
+      "value": "Continue"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.dialog.title": [
+    {
+      "type": 0,
+      "value": "Restore to a Regular API"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.endpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
+    }
+  ],
+  "Apis.Details.Configuration.UpdateWithoutDetails.tier.message": [
+    {
+      "type": 0,
+      "value": "Business Plans:"
     }
   ],
   "Apis.Details.Configuration.components.APILevelRateLimitingPolicies.configuration": [
@@ -1751,6 +1853,102 @@
     {
       "type": 0,
       "value": "The API can be viewed and modified only by specific publishers and creators with the roles that you specify"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.label": [
+    {
+      "type": 0,
+      "value": "Mark the API as third party"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.no": [
+    {
+      "type": 0,
+      "value": "No"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.advertised.yes": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint": [
+    {
+      "type": 0,
+      "value": "API External Production Endpoint"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalProductionEndpoint.help": [
+    {
+      "type": 0,
+      "value": "This is the external production endpoint of the advertised API"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint": [
+    {
+      "type": 0,
+      "value": "API External Sandbox Endpoint"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.apiExternalSandboxEndpoint.help": [
+    {
+      "type": 0,
+      "value": "This is the external sandbox endpoint of the advertised API"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning": [
+    {
+      "type": 0,
+      "value": "If you want to deploy and API in the gateway, please create a WebSocket, SSE or WebSub type of a streaming API."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.async.api.warning.title": [
+    {
+      "type": 0,
+      "value": "The \"Other\" type streaming APIs will serve as third party APIs."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning": [
+    {
+      "type": 0,
+      "value": "Please undeploy the revision before changing the API to a third party API."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.deployed.api.warning.title": [
+    {
+      "type": 0,
+      "value": "There are active deployments in the API."
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl": [
+    {
+      "type": 0,
+      "value": "Original Developer URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.error": [
+    {
+      "type": 0,
+      "value": "Invalid Original Developer Portal URL"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.originalDevPortalUrl.help": [
+    {
+      "type": 0,
+      "value": "This is the original developer portal of the advertised API"
+    }
+  ],
+  "Apis.Details.Configuration.components.AdvertiseInfo.tooltip": [
+    {
+      "type": 0,
+      "value": "Indicates if an API is a third party API. You can use third party APIs to expose an externally published API through API Manager."
     }
   ],
   "Apis.Details.Configuration.components.CORSConfiguration.allow.\n                                                    headers": [
@@ -2715,16 +2913,28 @@
       "value": "Summary"
     }
   ],
-  "Apis.Details.Edit.MediationPolicies.EditMediationPolicies.custom.mediation.policies": [
-    {
-      "type": 0,
-      "value": "Custom Mediation Policies"
-    }
-  ],
   "Apis.Details.EditScopes.Roles.Invalid": [
     {
       "type": 0,
       "value": "Role is invalid"
+    }
+  ],
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.config.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint configurations"
+    }
+  ],
+  "Apis.Details.Endpoints.\n                                                                GenericEndpoint.security.endpoint": [
+    {
+      "type": 0,
+      "value": "Endpoint security"
+    }
+  ],
+  "Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed": [
+    {
+      "type": 0,
+      "value": "Proceed"
     }
   ],
   "Apis.Details.Endpoints..EndpointOverview.change.type.proceed": [
@@ -2917,6 +3127,48 @@
     {
       "type": 0,
       "value": "TTP Protocol Violation"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline": [
+    {
+      "type": 0,
+      "value": "Regular gateway (Synapse gateway)"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS": [
+    {
+      "type": 0,
+      "value": "Choreo Connect"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS.description": [
+    {
+      "type": 0,
+      "value": "If you want to add/update examples, update the API Definition"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Options": [
+    {
+      "type": 0,
+      "value": "Select the gateway type"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation": [
+    {
+      "type": 0,
+      "value": "Change Mock implementation"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message": [
+    {
+      "type": 0,
+      "value": "Your current mock endpoint implementation scripts will be lost."
     }
   ],
   "Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration": [
@@ -3657,6 +3909,18 @@
       "value": "Use the inbuilt JavaScript engine to prototype the API The inbuilt JavaScript engine does support prototype SOAP APIs"
     }
   ],
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint": [
+    {
+      "type": 0,
+      "value": "Service Endpoint"
+    }
+  ],
+  "Apis.Details.Endpoints.NewEndpointCreate.create.service.endpoint.description": [
+    {
+      "type": 0,
+      "value": "A REST API endpoint based on a Service in the service catalog."
+    }
+  ],
   "Apis.Details.Endpoints.NewEndpointCreate.create.soap.endpoint": [
     {
       "type": 0,
@@ -3669,10 +3933,46 @@
       "value": "The direct URI of the web service."
     }
   ],
-  "Apis.Details.Endpoints.Prototype.InlineEndpoints.script": [
+  "Apis.Details.Endpoints.Prototype.MockImplEndpoints.script": [
     {
       "type": 0,
       "value": "Script"
+    }
+  ],
+  "Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset": [
+    {
+      "type": 0,
+      "value": "Reset"
+    }
+  ],
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.Example": [
+    {
+      "type": 0,
+      "value": "Example Value"
+    }
+  ],
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.Example.NotProvided": [
+    {
+      "type": 0,
+      "value": "Response Examples are not provided in the API definition"
+    }
+  ],
+  "Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided": [
+    {
+      "type": 0,
+      "value": "Responses are not provided in the API definition"
+    }
+  ],
+  "Apis.Details.Endpoints.Prototype.MockedOAS.subTitle": [
+    {
+      "type": 0,
+      "value": "Mocked examples generated from OAS"
+    }
+  ],
+  "Apis.Details.Endpoints.Prototype.MockedOAS.title": [
+    {
+      "type": 0,
+      "value": "Responses"
     }
   ],
   "Apis.Details.Environments\n                                                                                    .deploy.vhost": [
@@ -3733,6 +4033,12 @@
     {
       "type": 0,
       "value": "Revisions"
+    }
+  ],
+  "Apis.Details.Environments.Environments.advertise.only.warning": [
+    {
+      "type": 0,
+      "value": "This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required."
     }
   ],
   "Apis.Details.Environments.Environments.api.gateways.heading": [
@@ -4259,10 +4565,34 @@
       "value": "Select a plan for the API product."
     }
   ],
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.advertise": [
+    {
+      "type": 0,
+      "value": "Publish"
+    }
+  ],
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.see.less": [
+    {
+      "type": 0,
+      "value": "See less"
+    }
+  ],
+  "Apis.Details.LifeCycle.PublishWithoutDeploy.see.more": [
+    {
+      "type": 0,
+      "value": "See more"
+    }
+  ],
   "Apis.Details.LifeCycle.components.confirm.publish.message": [
     {
       "type": 0,
       "value": "The API will not be available for consumption unless it is deployed."
+    }
+  ],
+  "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": [
+    {
+      "type": 0,
+      "value": "If you want to publish as a third party API, please provide the external endpoint and press \"Publish\"."
     }
   ],
   "Apis.Details.LifeCycle.components.confirm.publish.title": [
@@ -4271,106 +4601,22 @@
       "value": "Publish API without deployments"
     }
   ],
+  "Apis.Details.LifeCycle.components.externalEndpoint": [
+    {
+      "type": 0,
+      "value": "External Endpoint"
+    }
+  ],
+  "Apis.Details.LifeCycle.externalEndpoint.error": [
+    {
+      "type": 0,
+      "value": "Invalid Endpoint URL"
+    }
+  ],
   "Apis.Details.LifeCycle.publish.content.info.deployments": [
     {
       "type": 0,
       "value": "Deployments"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.AddMediationPolicy.error": [
-    {
-      "type": 0,
-      "value": "Error while adding mediation policy"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.cancel.btn": [
-    {
-      "type": 0,
-      "value": "Cancel"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.click.or.drop.to.upload.file": [
-    {
-      "type": 0,
-      "value": "Click or drag the mediation file to upload."
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.common.policies": [
-    {
-      "type": 0,
-      "value": "Common Policies"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.custom.policies": [
-    {
-      "type": 0,
-      "value": "Custom Policies"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.error": [
-    {
-      "type": 0,
-      "value": "Error deleting the file"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.success": [
-    {
-      "type": 0,
-      "value": "Mediation policy deleted successfully."
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.download.error": [
-    {
-      "type": 0,
-      "value": "Error downloading the file"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.error": [
-    {
-      "type": 0,
-      "value": "Error retrieving mediation policies"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.global.delete": [
-    {
-      "type": 0,
-      "value": "Cannot delete Global mediation policies."
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.none": [
-    {
-      "type": 0,
-      "value": "None"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.btn": [
-    {
-      "type": 0,
-      "value": "Select"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.policy": [
-    {
-      "type": 0,
-      "value": "Select a Mediation Policy"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.success": [
-    {
-      "type": 0,
-      "value": "Mediation policy added successfully"
-    }
-  ],
-  "Apis.Details.MediationPolicies.EditMediationPolicy.download": [
-    {
-      "type": 0,
-      "value": "Download"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Mediation": [
-    {
-      "type": 0,
-      "value": "Message Mediation"
     }
   ],
   "Apis.Details.Monetization.BusinessPlans.commercial.policies": [
@@ -4481,6 +4727,18 @@
       "value": "Endpoints"
     }
   ],
+  "Apis.Details.NewOverview.Endpoints.external.production.endpoint": [
+    {
+      "type": 0,
+      "value": "External Production Endpoint"
+    }
+  ],
+  "Apis.Details.NewOverview.Endpoints.external.sandbox.endpoint": [
+    {
+      "type": 0,
+      "value": "External Sandbox Endpoint"
+    }
+  ],
   "Apis.Details.NewOverview.Endpoints.not.set": [
     {
       "type": 0,
@@ -4587,6 +4845,18 @@
     {
       "type": 0,
       "value": "Metadata"
+    }
+  ],
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl": [
+    {
+      "type": 0,
+      "value": "Original Developer Portal URL"
+    }
+  ],
+  "Apis.Details.NewOverview.MetaData.originalDevPortalUrl.not.set": [
+    {
+      "type": 0,
+      "value": "-"
     }
   ],
   "Apis.Details.NewOverview.MetaData.provider": [
@@ -4977,6 +5247,12 @@
     {
       "type": 0,
       "value": "Resources"
+    }
+  ],
+  "Apis.Details.Policies.CommonPolicies.heading.tooltip": [
+    {
+      "type": 0,
+      "value": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
     }
   ],
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": [
@@ -6469,6 +6745,12 @@
       "value": "Internal API Key"
     }
   ],
+  "Apis.Details.components.APIDetailsTopMenu.advertise.only.label": [
+    {
+      "type": 0,
+      "value": "Third Party"
+    }
+  ],
   "Apis.Details.components.APIDetailsTopMenu.created.by": [
     {
       "type": 0,
@@ -6693,6 +6975,12 @@
     {
       "type": 0,
       "value": "overview"
+    }
+  ],
+  "Apis.Details.index.policies": [
+    {
+      "type": 0,
+      "value": "Policies"
     }
   ],
   "Apis.Details.index.properties": [
@@ -7449,6 +7737,12 @@
       "value": "APIs"
     }
   ],
+  "Base.Header.navbar.GlobalNavBar.common.policies": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
   "Base.Header.navbar.GlobalNavBar.scopes": [
     {
       "type": 0,
@@ -7489,6 +7783,104 @@
     {
       "type": 0,
       "value": "Error 403 : Forbidden"
+    }
+  ],
+  "Policies.Delete.Delete.policy.delete": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "Policies.Delete.Delete.policy.label.ok.confirm": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    },
+    {
+      "type": 0,
+      "value": " policy ?"
+    }
+  ],
+  "Policies.Delete.Delete.policy.listing.delete.confirm": [
+    {
+      "type": 0,
+      "value": "Confirm Delete"
+    }
+  ],
+  "Policies.Delete.Delete.policy.listing.label.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Policies.Delete.Delete.policy.listing.label.ok.yes": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "Policies.Listing.Listing.create.new": [
+    {
+      "type": 0,
+      "value": "Let’s get started !"
+    }
+  ],
+  "Policies.Listing.Listing.heading.CommonPolicies.heading": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
+  "Policies.Listing.Listing.heading.CommonPolicy.new": [
+    {
+      "type": 0,
+      "value": "Add New Policy"
+    }
+  ],
+  "Policies.Listing.Listing.policies.tooltip": [
+    {
+      "type": 0,
+      "value": "Policies provide the capability to alter the behavior of API resources"
+    }
+  ],
+  "Policies.Listing.Listing.policies.view": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.actions": [
+    {
+      "type": 0,
+      "value": "Actions"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.applicable.flows": [
+    {
+      "type": 0,
+      "value": "Applicable Flows"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.name": [
+    {
+      "type": 0,
+      "value": "Policy Name"
+    }
+  ],
+  "Policies.Listing.Listing.update.not.allowed": [
+    {
+      "type": 0,
+      "value": "*You are not authorized to manage policies due to insufficient permissions"
     }
   ],
   "Scopes.Create.CreateScope.cancel": [

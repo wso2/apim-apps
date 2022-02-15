@@ -19,6 +19,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
 import 'react-tagsinput/react-tagsinput.css';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -127,6 +128,7 @@ const useStyles = makeStyles((theme) => ({
     plusIconStyle: {
         marginTop: 8,
         marginLeft: 8,
+        fontSize: 30,
     },
     shapeDottedStart1: {
         backgroundColor: '#1CB1BF',
@@ -304,6 +306,11 @@ const useStyles = makeStyles((theme) => ({
         gridAutoColumns: 'minmax(160px,1fr)',
         overflowX: 'auto',
     },
+    infoAlert: {
+        clear: 'both',
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(2),
+    },
 }));
 
 /**
@@ -413,7 +420,7 @@ export default function Environments() {
             });
             setExternalEnvEndpoints(externalEnvWithEndpoints);
         });
-    }, [triggerEffect]);
+    }, [triggerEffect, externalGateways]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
         setRevisionToDelete([revisionName, revisionId]);
@@ -865,7 +872,6 @@ export default function Environments() {
      * @param {Object} length the length of the list
      */
     function handleCreateAndDeployRevision(envList, vhostList) {
-        console.log('envList', envList);
         if (extraRevisionToDelete) {
             deleteRevision(extraRevisionToDelete[0])
                 .then(() => {
@@ -1055,13 +1061,23 @@ export default function Environments() {
         >
             <Grid item className={classes.shapeRec} />
             <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
-                <Grid
-                    onClick={handleClickOpen}
-                    className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
-                    style={{ cursor: 'pointer' }}
-                >
-                    <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
-                </Grid>
+                {api.advertiseInfo && api.advertiseInfo.advertised ? (
+                    <Grid
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <AddIcon color='disabled' className={classes.plusIconStyle} />
+                    </Grid>
+                ) : (
+                    <Grid
+                        onClick={handleClickOpen}
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <AddIcon className={classes.plusIconStyle} />
+                    </Grid>
+                )}
+
             </Grid>
             <Grid item className={classes.shapeRecBack} />
         </Grid>
@@ -1072,13 +1088,22 @@ export default function Environments() {
         >
             <Grid item className={classes.shapeRec} />
             <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
-                <Grid
-                    onClick={handleClickOpen}
-                    className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
-                    style={{ cursor: 'pointer' }}
-                >
-                    <AddIcon style={{ fontSize: 30 }} className={classes.plusIconStyle} />
-                </Grid>
+                {api.advertiseInfo && api.advertiseInfo.advertised ? (
+                    <Grid
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <AddIcon color='disabled' className={classes.plusIconStyle} />
+                    </Grid>
+                ) : (
+                    <Grid
+                        onClick={handleClickOpen}
+                        className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <AddIcon className={classes.plusIconStyle} />
+                    </Grid>
+                )}
             </Grid>
         </Grid>
     );
@@ -1394,6 +1419,17 @@ export default function Environments() {
 
     return (
         <>
+            {api.advertiseInfo && api.advertiseInfo.advertised && (
+                <MuiAlert severity='info' className={classes.infoAlert}>
+                    <Typography variant='body' align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.advertise.only.warning'
+                            defaultMessage={'This API is marked as a third party API. The requests are not proxied'
+                            + ' through the gateway. Hence, deployments are not required.'}
+                        />
+                    </Typography>
+                </MuiAlert>
+            )}
             {allRevisions && allRevisions.length === 0 && (
                 <DeploymentOnbording
                     classes={classes}
@@ -1402,6 +1438,7 @@ export default function Environments() {
                     description
                     setDescription={setDescription}
                     gatewayVendor={api.gatewayVendor}
+                    advertiseInfo={api.advertiseInfo}
                 />
             )}
             {allRevisions && allRevisions.length !== 0 && (
@@ -1420,12 +1457,13 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2'
+            {!api.isRevision && allRevisions && allRevisions.length !== 0
             && (
                 <Grid container>
                     <Button
                         onClick={toggleDeployRevisionPopup}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                    || (api.advertiseInfo && api.advertiseInfo.advertised)}
                         variant='contained'
                         color='primary'
                         size='large'
@@ -1805,7 +1843,8 @@ export default function Environments() {
                             color='primary'
                             disabled={SelectedEnvironment.length === 0
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                || (api.advertiseInfo && api.advertiseInfo.advertised)}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Environments.Environments.deploy.deploy'
@@ -1815,7 +1854,7 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
+            {allRevisions && allRevisions.length !== 0 && (
                 <>
                     <Grid
                         container
@@ -2227,7 +2266,7 @@ export default function Environments() {
                                                                 (r) => r.env === row.name && r.revision,
                                                             ) || !selectedVhosts.some(
                                                                 (v) => v.env === row.name && v.vhost,
-                                                            )}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,
@@ -2339,30 +2378,32 @@ export default function Environments() {
                                         </TableCell>
                                         {externalEnvEndpoints && (
                                             <TableCell align='left'>
-                                                {externalEnvEndpoints[row.name].map((e) => {
-                                                    return (
-                                                        <Grid container spacing={2}>
-                                                            <Grid item>
-                                                                <Chip
-                                                                    label={upperCaseString(e.protocol)}
-                                                                    size='small'
-                                                                    color='primary'
-                                                                    variant='outlined'
-                                                                />
+                                                {externalEnvEndpoints[row.name] &&
+                                                    externalEnvEndpoints[row.name].map((e) => {
+                                                        return (
+                                                            <Grid container spacing={2}>
+                                                                <Grid item>
+                                                                    <Chip
+                                                                        label={upperCaseString(e.protocol)}
+                                                                        size='small'
+                                                                        color='primary'
+                                                                        variant='outlined'
+                                                                    />
+                                                                </Grid>
+                                                                <Grid
+                                                                    item
+                                                                    style={{
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                    }}
+                                                                >
+                                                                    {e.uri}
+                                                                </Grid>
                                                             </Grid>
-                                                            <Grid
-                                                                item
-                                                                style={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
-                                                                }}
-                                                            >
-                                                                {e.uri}
-                                                            </Grid>
-                                                        </Grid>
-                                                    );
-                                                })}
+                                                        );
+                                                    })
+                                                }
                                             </TableCell>
                                         )}
                                         <TableCell align='left'>
@@ -2441,7 +2482,7 @@ export default function Environments() {
                                                             className={classes.button2}
                                                             disabled={api.isRevision || !selectedRevision.some(
                                                                 (r) => r.env === row.name && r.revision,
-                                                            )}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,

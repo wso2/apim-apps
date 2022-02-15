@@ -20,7 +20,9 @@ const options = ['Save and deploy', 'Save'];
  */
 export default function CustomSplitButton(props) {
     const [open, setOpen] = React.useState(false);
-    const { handleSave, handleSaveAndDeploy, isUpdating } = props;
+    const {
+        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating,
+    } = props;
     const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = React.useState(1);
 
@@ -48,62 +50,74 @@ export default function CustomSplitButton(props) {
 
     return (
         <Grid container direction='column' alignItems='center'>
-            <Grid item xs={12}>
-                <ButtonGroup
-                    variant='contained'
-                    color='primary'
-                    ref={anchorRef}
-                    aria-label='split button'
-                    disabled={isUpdating}
-                    style={{ width: '200px' }}
-                >
+            {(advertiseInfo && advertiseInfo.advertised) ? (
+                <Grid item xs={12}>
                     <Button
-                        onClick={(event) => handleClick(event, selectedIndex)}
+                        onClick={handleSave}
+                        variant='contained'
+                        color='primary'
+                    >
+                        {options[1]}
+                    </Button>
+                </Grid>
+            ) : (
+                <Grid item xs={12}>
+                    <ButtonGroup
+                        variant='contained'
+                        color='primary'
+                        ref={anchorRef}
+                        aria-label='split button'
                         disabled={isUpdating}
                         style={{ width: '200px' }}
                     >
-                        {options[selectedIndex]}
-                        {isUpdating && <CircularProgress size={24} />}
-                    </Button>
-                    <Button
-                        color='primary'
-                        size='small'
-                        aria-controls={open ? 'split-button-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-label='select merge strategy'
-                        aria-haspopup='menu'
-                        onClick={handleToggle}
-                    >
-                        <ArrowDropDownIcon />
-                    </Button>
-                </ButtonGroup>
-                <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                    {({ TransitionProps, placement }) => (
-                        <Grow
-                            {...TransitionProps}
-                            style={{
-                                transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                            }}
+                        <Button
+                            onClick={(event) => handleClick(event, selectedIndex)}
+                            disabled={isUpdating}
+                            style={{ width: '200px' }}
                         >
-                            <Paper>
-                                <ClickAwayListener onClickAway={handleClose}>
-                                    <MenuList id='split-button-menu'>
-                                        {options.map((option, index) => (
-                                            <MenuItem
-                                                key={option}
-                                                selected={index === selectedIndex}
-                                                onClick={(event) => handleClick(event, index)}
-                                            >
-                                                {option}
-                                            </MenuItem>
-                                        ))}
-                                    </MenuList>
-                                </ClickAwayListener>
-                            </Paper>
-                        </Grow>
-                    )}
-                </Popper>
-            </Grid>
+                            {options[selectedIndex]}
+                            {isUpdating && <CircularProgress size={24} />}
+                        </Button>
+                        <Button
+                            color='primary'
+                            size='small'
+                            aria-controls={open ? 'split-button-menu' : undefined}
+                            aria-expanded={open ? 'true' : undefined}
+                            aria-label='select merge strategy'
+                            aria-haspopup='menu'
+                            onClick={handleToggle}
+                        >
+                            <ArrowDropDownIcon />
+                        </Button>
+                    </ButtonGroup>
+                    <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                        {({ TransitionProps, placement }) => (
+                            <Grow
+                                {...TransitionProps}
+                                style={{
+                                    transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                                }}
+                            >
+                                <Paper>
+                                    <ClickAwayListener onClickAway={handleClose}>
+                                        <MenuList id='split-button-menu'>
+                                            {options.map((option, index) => (
+                                                <MenuItem
+                                                    key={option}
+                                                    selected={index === selectedIndex}
+                                                    onClick={(event) => handleClick(event, index)}
+                                                >
+                                                    {option}
+                                                </MenuItem>
+                                            ))}
+                                        </MenuList>
+                                    </ClickAwayListener>
+                                </Paper>
+                            </Grow>
+                        )}
+                    </Popper>
+                </Grid>
+            )}
         </Grid>
     );
 }

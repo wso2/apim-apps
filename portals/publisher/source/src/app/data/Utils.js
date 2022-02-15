@@ -356,6 +356,64 @@ class Utils {
     }
 
     /**
+     * Return HEX hashed color code for any given string
+     * @param {String} string String that is used to derive a unique color
+     * @returns {String} Hex code
+     */
+    static stringToColor(string) {
+        let hash = 0;
+        let i;
+
+        /* eslint-disable no-bitwise */
+        for (i = 0; i < string.length; i += 1) {
+            hash = string.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        let color = '#';
+
+        for (i = 0; i < 3; i += 1) {
+            const value = (hash >> (i * 8)) & 0xaa;
+            color += `00${value.toString(16)}`.substr(-2);
+        }
+        /* eslint-enable no-bitwise */
+
+        return color;
+    };
+
+    /**
+     * Return letter(s) for Letter Avatars given any string
+     * @param {String} name String that is used to derive letters required for a Letter Avatar
+     * @returns {String} Letter(s) for avatar
+     */
+    static stringAvatar(name) {
+        return {
+            sx: {
+                bgcolor: this.stringToColor(name),
+            },
+            children: name.split(' ').length > 1 
+                ? `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
+                : `${name.split(' ')[0][0]}`,
+        };
+    };
+
+    /**
+     * Return R, G & B color components given the HEX hashed color code
+     * @param {String} hex Color value in hex 
+     * @returns {String} Comma separated R, G & B values
+     * @memberof Utils
+     */
+    static hexToRGB(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if(result){
+            const r= parseInt(result[1], 16);
+            const g= parseInt(result[2], 16);
+            const b= parseInt(result[3], 16);
+            return r + ', ' + g + ', ' + b;
+        } 
+        return null;
+    }
+
+    /**
      * Force file download in browser
      *
      * @static
@@ -507,8 +565,8 @@ Utils.CONST = {
 
     LOGOUT_CALLBACK: '/services/auth/callback/logout',
     INTROSPECT: '/services/auth/introspect',
-    SERVICE_CATALOG_SWAGGER_YAML: '/api/am/service-catalog/v0/oas.yaml',
-    SWAGGER_YAML: '/api/am/publisher/v2/swagger.yaml',
+    SERVICE_CATALOG_SWAGGER_YAML: '/api/am/service-catalog/v1/oas.yaml',
+    SWAGGER_YAML: '/api/am/publisher/v3/swagger.yaml',
     PROTOCOL: 'https://',
     API_CLIENT: 'apiClient',
     SERVICE_CATALOG_CLIENT: 'serviceCatalogClient',

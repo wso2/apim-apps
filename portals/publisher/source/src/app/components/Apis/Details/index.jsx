@@ -73,6 +73,7 @@ import APIDetailsTopMenu from './components/APIDetailsTopMenu';
 import BusinessInformation from './BusinessInformation/BusinessInformation';
 import Properties from './Properties/Properties';
 import Monetization from './Monetization';
+import Policies from './Policies/Policies';
 import ExternalStores from './ExternalStores/ExternalStores';
 import { APIProvider } from './components/ApiContext';
 import CreateNewVersion from './NewVersion/NewVersion';
@@ -398,6 +399,7 @@ class Details extends Component {
             case 'WS':
             case 'WEBSUB':
             case 'SSE':
+            case 'ASYNC':
                 return (
                     <>
                         <LeftMenuItem
@@ -458,6 +460,7 @@ class Details extends Component {
             case 'WS':
             case 'WEBSUB':
             case 'SSE':
+            case 'ASYNC':
                 return (
                     <>
                         <LeftMenuItem
@@ -644,7 +647,8 @@ class Details extends Component {
         const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
         const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
         const redirectUrl = pathPrefix;
-        const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE');
+        const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE'
+            || api.type === 'ASYNC');
         if (apiNotFound) {
             const { apiUUID } = match.params;
             const resourceNotFoundMessageText = defineMessages({
@@ -724,7 +728,7 @@ class Details extends Component {
                                 getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
                             />
                             <Divider />
-                            {!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised && (
+                            {!isAPIProduct && (
                                 <>
                                     <Typography className={classes.headingText}>Deploy</Typography>
                                     <LeftMenuItem
@@ -752,8 +756,8 @@ class Details extends Component {
                                     />
                                 </>
                             )}
-                            {(isAPIProduct || (!isAPIProduct && api.advertiseInfo && !api.advertiseInfo.advertised
-                                && !api.isWebSocket() && !api.isGraphql() && !isAsyncAPI)) && (
+                            {(isAPIProduct || (!isAPIProduct && !api.isWebSocket() && !api.isGraphql()
+                                && !isAsyncAPI)) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>Test</Typography>
@@ -979,6 +983,10 @@ class Details extends Component {
                                         path={Details.subPaths.COMMENTS}
                                         component={() => <Comments apiObj={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.POLICIES}
+                                        component={() => <Policies api={api} />}
+                                    />
                                 </Switch>
                             </div>
                         </RevisionContextProvider>
@@ -1036,6 +1044,7 @@ Details.subPaths = {
     QUERYANALYSIS: '/apis/:api_uuid/queryanalysis',
     TOPICS: '/apis/:api_uuid/topics',
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi definition',
+    POLICIES: '/apis/:api_uuid/policies',
 };
 
 // To make sure that paths will not change by outsiders, Basically an enum

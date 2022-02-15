@@ -27,11 +27,13 @@ import AuthManager from 'AppData/AuthManager';
 import Icon from '@material-ui/core/Icon';
 import fileDownload from 'js-file-download';
 import converter from 'graphql-to-postman';
+import Box from '@material-ui/core/Box';
 import GraphQLUI from './GraphQLUI';
 import TryOutController from '../ApiConsole/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
+import AdditionalHeaders from './AdditionalHeaders';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -75,8 +77,13 @@ export default function GraphQLConsole() {
     const [selectedKeyType, setSelectedKey] = useState('PRODUCTION');
     const [sandboxApiKey, setSandboxApiKey] = useState('');
     const [productionApiKey, setProductionApiKey] = useState('');
+    const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
+    const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
+    const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
     const [keys, setKeys] = useState([]);
+    const [additionalHeaders, setAdditionalHeaders] = useState([]);
     const user = AuthManager.getUser();
+    const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
     useEffect(() => {
         const apiID = api.id;
@@ -125,12 +132,46 @@ export default function GraphQLConsole() {
     }
 
     /**
+     * Generate the URLs object for third party APIs
+     * @param url endpoint URL
+     * @returns {{wss: null, http: null, https: null, ws: null}}
+     */
+    function generateUrls(url) {
+        const urlJson = {
+            http: null,
+            https: null,
+            ws: null,
+            wss: null,
+        };
+        const [protocol] = url.split('://');
+        if (protocol === 'http' || protocol === 'https' || protocol === 'ws' || protocol === 'wss') {
+            urlJson[protocol] = url;
+        }
+        return urlJson;
+    }
+
+    /**
+     * get the URLs object for GraphQL APIs
+     * @returns {*}
+     */
+    function getURLs() {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            if (selectedEndpoint === 'PRODUCTION') {
+                return generateUrls(api.advertiseInfo.apiExternalProductionEndpoint);
+            } else if (selectedEndpoint === 'SANDBOX') {
+                return generateUrls(api.advertiseInfo.apiExternalSandboxEndpoint);
+            }
+        }
+        return URLs;
+    }
+
+    /**
      * set Password
      * @param {*} selectedKey
      * @param {*} isUpdateToken
      */
     function setSelectedKeyType(selectedKey, isUpdateToken) {
-        if (isUpdateToken) {
+        if (isUpdateToken && !isAdvertised) {
             setSelectedKey(selectedKey, updateAccessToken);
         } else {
             setSelectedKey(selectedKey);
@@ -138,6 +179,9 @@ export default function GraphQLConsole() {
     }
 
     function accessTokenProvider() {
+        if (isAdvertised) {
+            return advAuthHeaderValue;
+        }
         if (securitySchemeType === 'BASIC') {
             const credentials = username + ':' + password;
             return btoa(credentials);
@@ -193,6 +237,10 @@ export default function GraphQLConsole() {
         }
     }
 
+    if (isAdvertised) {
+        authorizationHeader = advAuthHeader;
+    }
+
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -200,7 +248,7 @@ export default function GraphQLConsole() {
             </Typography>
             <Paper className={classes.paper}>
                 <Grid container className={classes.grid}>
-                    {!user && (
+                    {!user && !isAdvertised && (
                         <Grid item md={6}>
                             <Paper className={classes.userNotificationPaper}>
                                 <Typography variant='h5' component='h3'>
@@ -245,16 +293,47 @@ export default function GraphQLConsole() {
                     productionApiKey={productionApiKey}
                     sandboxApiKey={sandboxApiKey}
                     environmentObject={environmentObject}
+                    setAdvAuthHeader={setAdvAuthHeader}
+                    setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                    advAuthHeader={advAuthHeader}
+                    advAuthHeaderValue={advAuthHeaderValue}
+                    setSelectedEndpoint={setSelectedEndpoint}
+                    selectedEndpoint={selectedEndpoint}
                     api={api}
                     URLs={URLs}
                 />
+                <Box display='flex' justifyContent='center'>
+                    <Box
+                        width='50%'
+                        display='flex'
+                        flexDirection='column'
+                    >
+                        <Box ml={-5} display='flex'>
+                            <Typography variant='h5' component='h3' color='textPrimary'>
+                                <FormattedMessage
+                                    id='api.console.gql.additional.headers'
+                                    defaultMessage='Additional Headers'
+                                />
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Box>
+                <Grid container className={classes.grid}>
+                    <Grid item md={6}>
+                        <AdditionalHeaders
+                            setAdditionalHeaders={setAdditionalHeaders}
+                            additionalHeaders={additionalHeaders}
+                        />
+                    </Grid>
+                </Grid>
             </Paper>
             <Paper className={classes.paper}>
                 <GraphQLUI
                     authorizationHeader={authorizationHeader}
-                    URLs={URLs}
+                    URLs={getURLs()}
                     securitySchemeType={securitySchemeType}
                     accessTokenProvider={accessTokenProvider}
+                    additionalHeaders={additionalHeaders}
                 />
             </Paper>
         </>

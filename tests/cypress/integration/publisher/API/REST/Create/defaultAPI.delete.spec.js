@@ -10,7 +10,7 @@ describe("API Delete flow", () => {
 
     it("Delete all APIs", () => {
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        cy.intercept('DELETE', '/api/am/publisher/v2/apis/*').as('deleteAPI');
+        cy.intercept('DELETE', '/api/am/publisher/v3/apis/*').as('deleteAPI');
         cy.get('#itest-apis-listing-total')
             .then(
                 (countElement) => {
@@ -27,7 +27,7 @@ describe("API Delete flow", () => {
             )
     });
 })
- // cy.intercept('/api/am/publisher/v2/apis', (req) => {
+ // cy.intercept('/api/am/publisher/v3/apis', (req) => {
         //     req.reply((res) => {
         //         const { total: totalAPIs } = res.body.pagination;
         //     })

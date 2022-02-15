@@ -47,6 +47,7 @@ export default function GraphQLUI(props) {
         URLs,
         securitySchemeType,
         accessTokenProvider,
+        additionalHeaders,
 
     } = props;
     const { api } = useContext(ApiContext);
@@ -87,20 +88,28 @@ export default function GraphQLUI(props) {
      */
     function graphiQLFetcher(graphQLParams) {
         let token;
-        if (authorizationHeader === 'apikey') {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            token = accessTokenProvider();
+        } else if (authorizationHeader === 'apikey') {
             token = accessTokenProvider();
         } else if (securitySchemeType === 'BASIC') {
             token = 'Basic ' + accessTokenProvider();
         } else {
             token = 'Bearer ' + accessTokenProvider();
         }
+        const headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            [authorizationHeader]: token,
+        };
+
+        additionalHeaders.forEach((header) => {
+            headers[header.name] = header.value;
+        });
+
         return fetch((URLs && URLs.https), {
             method: 'post',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                [authorizationHeader]: token,
-            },
+            headers,
             body: JSON.stringify(graphQLParams),
         }).then((response) => response.json());
     }
@@ -151,7 +160,7 @@ export default function GraphQLUI(props) {
                             <Box display='flex' height='800px' flexGrow={1}>
                                 <GraphiQL
                                     ref={graphiqlEl}
-                                    fetcher={(queryFetcher(URLs.wss))}
+                                    fetcher={(queryFetcher(URLs && URLs.wss))}
                                     schema={schema}
                                     query={query}
                                     onEditQuery={setQuery}
@@ -192,5 +201,8 @@ export default function GraphQLUI(props) {
 GraphQLUI.propTypes = {
     classes: PropTypes.shape({
         paper: PropTypes.string.isRequired,
+    }).isRequired,
+    additionalHeaders: PropTypes.shape({
+        array: PropTypes.arrayOf(PropTypes.element).isRequired,
     }).isRequired,
 };

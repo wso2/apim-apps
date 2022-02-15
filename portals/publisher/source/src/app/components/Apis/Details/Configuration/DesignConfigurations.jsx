@@ -37,6 +37,7 @@ import CONSTS from 'AppData/Constants';
 import Alert from 'AppComponents/Shared/Alert';
 
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
+import UpdateWithoutDetails from 'AppComponents/Apis/Details/Configuration/components/UpdateWithoutDetails';
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api.js';
@@ -44,6 +45,7 @@ import APIProduct from 'AppData/APIProduct';
 import DefaultVersion from './components/DefaultVersion';
 import DescriptionEditor from './components/DescriptionEditor';
 import AccessControl from './components/AccessControl';
+import AdvertiseInfo from './components/AdvertiseInfo';
 import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
@@ -109,6 +111,20 @@ const useStyles = makeStyles((theme) => ({
     btnSpacing: {
         marginRight: theme.spacing(1),
     },
+    tierList: {
+        marginLeft: theme.spacing(1),
+        fontFamily: theme.typography.fontFamily,
+    },
+    dialogTitle: {
+        margin: 0,
+        padding: theme.spacing(2),
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
 }));
 
 /**
@@ -120,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {Object} Deep copy of an object
  */
 function copyAPIConfig(api) {
-    return {
+    const copiedConfig = {
         id: api.id,
         name: api.name,
         description: api.description,
@@ -148,7 +164,21 @@ function copyAPIConfig(api) {
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
         additionalProperties: [...api.additionalProperties],
+        type: api.type,
+        policies: [...api.policies],
+        endpointConfig: api.endpointConfig,
     };
+    if (api.advertiseInfo) {
+        copiedConfig.advertiseInfo = {
+            advertised: api.advertiseInfo.advertised,
+            apiExternalProductionEndpoint: api.advertiseInfo.apiExternalProductionEndpoint,
+            apiExternalSandboxEndpoint: api.advertiseInfo.apiExternalSandboxEndpoint,
+            originalDevPortalUrl: api.advertiseInfo.originalDevPortalUrl,
+            apiOwner: api.advertiseInfo.apiOwner,
+            vendor: api.advertiseInfo.vendor,
+        }
+    }
+    return copiedConfig;
 }
 
 /**
@@ -200,6 +230,18 @@ function configReducer(state, configAction) {
             }
             return nextState;
         }
+        case 'advertised':
+        case 'apiExternalProductionEndpoint':
+        case 'apiExternalSandboxEndpoint':
+        case 'originalDevPortalUrl':
+            if (nextState.advertiseInfo) {
+                nextState.advertiseInfo[action] = value;
+            }
+            return nextState;
+        case 'endpointConfig':
+            return { ...state, [action]: value };
+        case 'policies':
+            return { ...state, [action]: value };
         default:
             return state;
     }
@@ -219,6 +261,7 @@ export default function DesignConfigurations() {
     const [descriptionType, setDescriptionType] = useState('');
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
     const [slackURLProperty, githubURLProperty] = useMemo(() => [
         apiConfig.additionalProperties.find((prop) => prop.name === 'slack_url'),
         apiConfig.additionalProperties.find((prop) => prop.name === 'github_repo'),
@@ -366,10 +409,58 @@ export default function DesignConfigurations() {
         }
         setIsUpdating(false);
     }
+
+    const handleClick = (availableTiers, endpointUrl, endpointType) => {
+        configDispatcher({ action: 'policies', value: availableTiers });
+        // create endpoint config
+        let updatedEndpointConfig;
+        if (apiConfig.endpointConfig) {
+            updatedEndpointConfig = { ...apiConfig.endpointConfig };
+            if (endpointType === 'PRODUCTION') {
+                updatedEndpointConfig = {
+                    ...apiConfig.endpointConfig,
+                    production_endpoints: { url: endpointUrl, ...apiConfig.endpointConfig.production_endpoints },
+                };
+            } else {
+                updatedEndpointConfig = {
+                    ...apiConfig.endpointConfig,
+                    sandbox_endpoints: { url: endpointUrl, ...apiConfig.endpointConfig.sandbox_endpoints },
+                };
+            }
+        } else {
+            let endpointTypeForApi = 'http';
+            if (apiConfig.type === 'WS') {
+                endpointTypeForApi = 'ws';
+            }
+            updatedEndpointConfig = {
+                endpoint_type: endpointTypeForApi,
+            };
+            if (endpointType === 'PRODUCTION') {
+                updatedEndpointConfig.production_endpoints = {
+                    url: endpointUrl,
+                };
+            } else {
+                updatedEndpointConfig.sandbox_endpoints = {
+                    url: endpointUrl,
+                };
+            }
+        }
+        if (api.type !== 'WEBSUB') {
+            configDispatcher({ action: 'endpointConfig', value: updatedEndpointConfig });
+        }
+        setIsOpen(false);
+    };
+
+    const handleClose = () => {
+        configDispatcher({ action: 'advertised', value: api.advertiseInfo.advertised });
+        setIsOpen(false);
+    };
+
     const isDisabled = isRestricted(['apim:api_publish', 'apim:api_create'], api
                     || isUpdating || api.isRevision || invalidTagsExist
                     || (apiConfig.visibility === 'RESTRICTED'
                     && apiConfig.visibleRoles.length === 0));
+
     return (
         <>
             <Container maxWidth='md'>
@@ -453,6 +544,16 @@ export default function DesignConfigurations() {
                                     </Box>
                                     <Box py={1}>
                                         {api.apiType !== API.CONSTS.APIProduct && (
+                                            <AdvertiseInfo
+                                                oldApi={api}
+                                                api={apiConfig}
+                                                setIsOpen={setIsOpen}
+                                                configDispatcher={configDispatcher}
+                                            />
+                                        )}
+                                    </Box>
+                                    <Box py={1}>
+                                        {api.apiType !== API.CONSTS.APIProduct && (
                                             <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
                                         )}
                                     </Box>
@@ -487,6 +588,14 @@ export default function DesignConfigurations() {
                         </Paper>
                     </Grid>
                 </Grid>
+                <UpdateWithoutDetails
+                    classes={classes}
+                    api={api}
+                    apiConfig={apiConfig}
+                    handleClick={handleClick}
+                    handleClose={handleClose}
+                    open={isOpen}
+                />
             </Container>
         </>
     );

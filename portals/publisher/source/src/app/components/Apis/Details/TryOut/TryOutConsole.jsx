@@ -30,6 +30,8 @@ import React, {
 
 import Alert from 'AppComponents/Shared/MuiAlert';
 import Api from 'AppData/api';
+import withStyles from '@material-ui/core/styles/withStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CONSTS from 'AppData/Constants';
@@ -50,10 +52,36 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
+import AdvertiseDetailsPanel from "AppComponents/Apis/Details/TryOut/AdvertiseDetailsPanel";
 
 // disabled because webpack magic comment for chunk name require to be in the same line
 // eslint-disable-next-line max-len
 const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/TryOut/SwaggerUI' /* webpackChunkName: "TryoutConsoleSwaggerUI" */));
+
+/**
+ * @inheritdoc
+ * @param {*} theme theme
+ */
+const useStyles = makeStyles((theme) => ({
+    centerItems: {
+        margin: 'auto',
+    },
+    tryoutHeading: {
+        paddingTop: '20px',
+        fontWeight: 400,
+        display: 'block',
+    },
+    menuItem: {
+        color: theme.palette.getContrastText(theme.palette.background.paper),
+    },
+    tokenType: {
+        margin: 'auto',
+        display: 'flex',
+        '& .MuiButton-contained.Mui-disabled span.MuiButton-label': {
+            color: '#6d6d6d',
+        },
+    },
+}));
 
 dayjs.extend(relativeTime);
 
@@ -68,11 +96,15 @@ const tasksReducer = (state, action) => {
  * @extends {React.Component}
  */
 const TryOutConsole = () => {
+    const classes = useStyles();
     const [api] = useAPI();
     const [apiKey, setAPIKey] = useState('');
     const [deployments, setDeployments] = useState([]);
     const [selectedDeployment, setSelectedDeployment] = useState();
     const [oasDefinition, setOasDefinition] = useState();
+    const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
+    const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
+    const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
     const { data: publisherSettings } = usePublisherSettings();
 
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, {
@@ -114,6 +146,21 @@ const TryOutConsole = () => {
     }, [publisherSettings]);
 
     const isAPIProduct = api.type === 'APIPRODUCT';
+    const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
+    const setServersSpec = (spec, serverUrl) => {
+        let schemes;
+        const [protocol, host] = serverUrl.split('://');
+        if (protocol === 'http') {
+            schemes = ['http'];
+        } else if (protocol === 'https') {
+            schemes = ['https'];
+        }
+        return {
+            ...spec,
+            schemes,
+            host,
+        };
+    };
     const updatedOasDefinition = useMemo(() => {
         let oasCopy;
         if (selectedDeployment && oasDefinition) {
@@ -174,8 +221,33 @@ const TryOutConsole = () => {
             // If no deployment just show the OAS definition
             oasCopy = oasDefinition;
         }
+        if (oasCopy && isAdvertised) {
+            if (oasCopy.openapi) {
+                // Assume the API definition is an OAS 3.x definition
+                if (selectedEndpoint === 'PRODUCTION') {
+                    oasCopy = {
+                        ...oasCopy,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                        ]
+                    };
+                } else {
+                    oasCopy = {
+                        ...oasCopy,
+                        servers: [
+                            { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                        ]
+                    };
+                }
+            } else if (selectedEndpoint === 'PRODUCTION') {
+                // Assume the API definition is Swagger 2
+                oasCopy = setServersSpec(oasCopy, api.advertiseInfo.apiExternalProductionEndpoint);
+            } else {
+                oasCopy = setServersSpec(oasCopy, api.advertiseInfo.apiExternalSandboxEndpoint);
+            }
+        }
         return oasCopy;
-    }, [selectedDeployment, oasDefinition, publisherSettings]);
+    }, [selectedEndpoint, selectedDeployment, oasDefinition, publisherSettings]);
 
     /**
      *
@@ -188,144 +260,174 @@ const TryOutConsole = () => {
     };
     const decodedJWT = useMemo(() => Utils.decodeJWT(apiKey), [apiKey]);
     const isAPIRetired = api.lifeCycleStatus === 'RETIRED';
+
+    const accessTokenProvider = () => {
+        if (isAdvertised) {
+            return advAuthHeaderValue;
+        }
+        return apiKey;
+    };
+
+    const getAuthorizationHeader = () => {
+        if (isAdvertised) {
+            return advAuthHeader;
+        }
+        return 'Internal-Key';
+    };
+
     return (
         <>
             <Typography id='itest-api-details-try-out-head' variant='h4' component='h2'>
                 <FormattedMessage id='Apis.Details.ApiConsole.ApiConsole.title' defaultMessage='Try Out' />
             </Typography>
             <Paper elevation={0}>
-                <Box display='flex' justifyContent='center'>
-                    <Grid xs={11} md={6} item>
-                        <Typography variant='h5' component='h3' color='textPrimary'>
-                            <FormattedMessage
-                                id='api.console.security.heading'
-                                defaultMessage='Security'
-                            />
-                        </Typography>
-                        <TextField
-                            fullWidth
-                            label={(
-                                <FormattedMessage
-                                    id='Apis.Details.TryOutConsole.token.label'
-                                    defaultMessage='Internal API Key'
-                                />
-                            )}
-                            type='password'
-                            value={apiKey}
-                            helperText={decodedJWT ? (
-                                <Box color='success.main'>
-                                    {`Expires ${dayjs.unix(decodedJWT.payload.exp).fromNow()}`}
-                                </Box>
-                            ) : 'Generate or provide an internal API Key'}
-                            margin='normal'
-                            variant='outlined'
-                            name='internal'
-                            multiline
-                            rows={4}
-                            onChange={(e) => setAPIKey(e.target.value)}
-                            disabled={isAPIRetired}
-                        />
-                        <Button
-                            onClick={generateInternalKey}
-                            variant='contained'
-                            color='primary'
-                            disabled={tasksStatus.generateKey.inProgress || isAPIRetired
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.ApiConsole.generate.test.key'
-                                defaultMessage='Generate Key'
-                            />
-                        </Button>
-                        {tasksStatus.generateKey.inProgress
-                            && (
-                                <Box
-                                    display='inline'
-                                    position='absolute'
-                                    mt={1}
-                                    ml={-8}
-                                >
-                                    <CircularProgress size={24} />
-                                </Box>
-                            )}
-                    </Grid>
-                </Box>
-                <Box my={3} display='flex' justifyContent='center'>
-                    <Grid xs={11} md={6} item>
-                        {(tasksStatus.getDeployments.completed && !deployments.length && !isAPIRetired) && (
-                            <Alert variant='outlined' severity='error'>
-                                <FormattedMessage
-                                    id='Apis.Details.ApiConsole.deployments.no'
-                                    defaultMessage={'{artifactType} is not deployed yet! Please deploy '
-                                        + 'the {artifactType} before trying out'}
-                                    values={{ artifactType: api.isRevision ? 'Revision' : 'API' }}
-                                />
-                                <Link to={'/apis/' + api.id + '/deployments'}>
-                                    <LaunchIcon
-                                        color='primary'
-                                        fontSize='small'
+                {(!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
+                    <>
+                        <Box display='flex' justifyContent='center'>
+                            <Grid xs={11} md={6} item>
+                                <Typography variant='h5' component='h3' color='textPrimary'>
+                                    <FormattedMessage
+                                        id='api.console.security.heading'
+                                        defaultMessage='Security'
                                     />
-                                </Link>
-                            </Alert>
-                        )}
-                        {isAPIRetired && (
-                            <Alert variant='outlined' severity='error'>
-                                <FormattedMessage
-                                    id='Apis.Details.ApiConsole.deployments.isAPIRetired'
-                                    defaultMessage='Can not Try Out retired APIs!'
-                                />
-                            </Alert>
-                        )}
-                        {((deployments && deployments.length > 0))
-                            && (
-                                <>
-                                    <Typography
-                                        variant='h5'
-                                        component='h3'
-                                        color='textPrimary'
-                                    >
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    label={(
                                         <FormattedMessage
-                                            id='Apis.Details.ApiConsole.deployments.api.gateways'
-                                            defaultMessage='API Gateways'
+                                            id='Apis.Details.TryOutConsole.token.label'
+                                            defaultMessage='Internal API Key'
                                         />
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        select
-                                        label={(
-                                            <FormattedMessage
-                                                defaultMessage='Environment'
-                                                id='Apis.Details.ApiConsole.environment'
-                                            />
-                                        )}
-                                        value={(selectedDeployment && selectedDeployment.name) || ''}
-                                        name='selectedEnvironment'
-                                        onChange={deploymentSelectionHandler}
-                                        margin='normal'
-                                        variant='outlined'
-                                        SelectProps={{
-                                            MenuProps: {
-                                                anchorOrigin: {
-                                                    vertical: 'bottom',
-                                                    horizontal: 'left',
-                                                },
-                                                getContentAnchorEl: null,
-                                            },
-                                        }}
+                                    )}
+                                    type='password'
+                                    value={apiKey}
+                                    helperText={decodedJWT ? (
+                                        <Box color='success.main'>
+                                            {`Expires ${dayjs.unix(decodedJWT.payload.exp).fromNow()}`}
+                                        </Box>
+                                    ) : 'Generate or provide an internal API Key'}
+                                    margin='normal'
+                                    variant='outlined'
+                                    name='internal'
+                                    multiline
+                                    rows={4}
+                                    onChange={(e) => setAPIKey(e.target.value)}
+                                    disabled={isAPIRetired}
+                                />
+                                <Button
+                                    onClick={generateInternalKey}
+                                    variant='contained'
+                                    color='primary'
+                                    disabled={tasksStatus.generateKey.inProgress || isAPIRetired
+                                    || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.generate.test.key'
+                                        defaultMessage='Generate Key'
+                                    />
+                                </Button>
+                                {tasksStatus.generateKey.inProgress
+                                && (
+                                    <Box
+                                        display='inline'
+                                        position='absolute'
+                                        mt={1}
+                                        ml={-8}
                                     >
-                                        {deployments.map((deployment) => (
-                                            <MenuItem
-                                                value={deployment.name}
-                                                key={deployment.name}
-                                            >
-                                                {deployment.displayName}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                </>
-                            )}
-                    </Grid>
-                </Box>
+                                        <CircularProgress size={24} />
+                                    </Box>
+                                )}
+                            </Grid>
+                        </Box>
+                        <Box my={3} display='flex' justifyContent='center'>
+                            <Grid xs={11} md={6} item>
+                                {(tasksStatus.getDeployments.completed && !deployments.length && !isAPIRetired) && (
+                                    <Alert variant='outlined' severity='error'>
+                                        <FormattedMessage
+                                            id='Apis.Details.ApiConsole.deployments.no'
+                                            defaultMessage={'{artifactType} is not deployed yet! Please deploy '
+                                            + 'the {artifactType} before trying out'}
+                                            values={{ artifactType: api.isRevision ? 'Revision' : 'API' }}
+                                        />
+                                        <Link to={'/apis/' + api.id + '/deployments'}>
+                                            <LaunchIcon
+                                                color='primary'
+                                                fontSize='small'
+                                            />
+                                        </Link>
+                                    </Alert>
+                                )}
+                                {isAPIRetired && (
+                                    <Alert variant='outlined' severity='error'>
+                                        <FormattedMessage
+                                            id='Apis.Details.ApiConsole.deployments.isAPIRetired'
+                                            defaultMessage='Can not Try Out retired APIs!'
+                                        />
+                                    </Alert>
+                                )}
+                                {((deployments && deployments.length > 0))
+                                && (
+                                    <>
+                                        <Typography
+                                            variant='h5'
+                                            component='h3'
+                                            color='textPrimary'
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.ApiConsole.deployments.api.gateways'
+                                                defaultMessage='API Gateways'
+                                            />
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            select
+                                            label={(
+                                                <FormattedMessage
+                                                    defaultMessage='Environment'
+                                                    id='Apis.Details.ApiConsole.environment'
+                                                />
+                                            )}
+                                            value={(selectedDeployment && selectedDeployment.name) || ''}
+                                            name='selectedEnvironment'
+                                            onChange={deploymentSelectionHandler}
+                                            margin='normal'
+                                            variant='outlined'
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    anchorOrigin: {
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    },
+                                                    getContentAnchorEl: null,
+                                                },
+                                            }}
+                                        >
+                                            {deployments.map((deployment) => (
+                                                <MenuItem
+                                                    value={deployment.name}
+                                                    key={deployment.name}
+                                                >
+                                                    {deployment.displayName}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </>
+                                )}
+                            </Grid>
+                        </Box>
+                    </>
+                ) : (
+                    <AdvertiseDetailsPanel
+                        classes={classes}
+                        advAuthHeader={advAuthHeader}
+                        setAdvAuthHeader={setAdvAuthHeader}
+                        advAuthHeaderValue={advAuthHeaderValue}
+                        setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                        selectedEndpoint={selectedEndpoint}
+                        setSelectedEndpoint={setSelectedEndpoint}
+                        advertiseInfo={api.advertiseInfo}
+                    />
+                )}
                 {updatedOasDefinition ? (
                     <Suspense
                         fallback={(
@@ -334,9 +436,9 @@ const TryOutConsole = () => {
                     >
                         <SwaggerUI
                             api={api}
-                            accessTokenProvider={() => apiKey}
+                            accessTokenProvider={accessTokenProvider}
                             spec={updatedOasDefinition}
-                            authorizationHeader='Internal-Key'
+                            authorizationHeader={getAuthorizationHeader()}
                         />
                     </Suspense>
                 ) : <CircularProgress />}
@@ -359,4 +461,4 @@ TryOutConsole.propTypes = {
     }).isRequired,
 };
 
-export default TryOutConsole;
+export default withStyles(makeStyles)(TryOutConsole);

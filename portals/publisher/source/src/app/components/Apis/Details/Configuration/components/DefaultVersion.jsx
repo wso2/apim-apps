@@ -44,7 +44,7 @@ export default function DefaultVersion(props) {
     return (
         <Grid container spacing={1} alignItems='flex-start' xs={11}>
             <Grid item>
-                <Box mt={4}>
+                <Box>
                     <FormControl component='fieldset' style={{ display: 'flex' }}>
                         <FormLabel component='legend'>
                             <FormattedMessage
@@ -90,7 +90,7 @@ export default function DefaultVersion(props) {
                 </Box>
             </Grid>
             <Grid item xs={1}>
-                <Box mt={3}>
+                <Box>
                     <Tooltip
                         title={(
                             <FormattedMessage

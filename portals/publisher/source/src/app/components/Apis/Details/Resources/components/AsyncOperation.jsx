@@ -220,7 +220,6 @@ function AsyncOperation(props) {
                             disableUpdate={disableUpdate}
                             target={target}
                             verb={verb}
-                            disableForSolace={api.gatewayVendor === 'solace'}
                         />
                         {operation.parameters && (
                             <Parameters
@@ -231,7 +230,6 @@ function AsyncOperation(props) {
                                 spec={spec}
                                 target={target}
                                 verb={verb}
-                                disableForSolace={api.gatewayVendor === 'solace'}
                             />
                         )}
                         <PayloadProperties
@@ -240,7 +238,6 @@ function AsyncOperation(props) {
                             disableUpdate={disableUpdate}
                             target={target}
                             verb={verb}
-                            disableForSolace={api.gatewayVendor === 'solace'}
                         />
                         {(api.gatewayVendor === 'wso2') && (
                             <>

@@ -219,8 +219,14 @@ class AuthManager {
         return true;
     }
 
+    /**
+     * Check user has sufficiant permissions to access the portal.
+     * @param {Array} scopes - List of scopes of the authendicated user
+     * @returns {Boolean} Permission validity
+     */
     static hasBasicLoginPermission(scopes) {
-        return scopes.includes('apim:api_view');
+        return scopes.includes('apim:api_view') &&
+            scopes.includes('apim:publisher_settings');
     }
 
     /**

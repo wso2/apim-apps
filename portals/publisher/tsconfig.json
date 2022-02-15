@@ -1,6 +1,6 @@
 {
   "compilerOptions": { // For more info on these configs https://www.typescriptlang.org/tsconfig
-    "target": "es5",
+    "target": "es2015",
     "declaration": false,
     "noImplicitAny": true,
     "noImplicitThis": true,

@@ -74,6 +74,7 @@ export default function Resources(props) {
     const [arns, setArns] = useState([]);
     const [resolvedSpec, setResolvedSpec] = useState({ spec: {}, errors: [] });
     const [focusOperationLevel, setFocusOperationLevel] = useState(false);
+    const [expandedResource, setExpandedResource] = useState(false);
 
     /**
      *
@@ -665,6 +666,8 @@ export default function Resources(props) {
                                                     resolvedSpec={resolvedSpec.spec}
                                                     sharedScopes={sharedScopes}
                                                     setFocusOperationLevel={setFocusOperationLevel}
+                                                    expandedResource={expandedResource}
+                                                    setExpandedResource={setExpandedResource}
                                                 />
                                             </Grid>
                                         ) : null;

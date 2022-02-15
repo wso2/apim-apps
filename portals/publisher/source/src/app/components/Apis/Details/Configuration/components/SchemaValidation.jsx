@@ -48,8 +48,7 @@ const styles = (theme) => ({
         marginLeft: theme.spacing(0.5),
     },
     actionSpace: {
-        margin: theme.spacing(0, -1),
-        float: 'right',
+        marginLeft: theme.spacing(20),
     },
     paper: {
         padding: theme.spacing(0, 3),

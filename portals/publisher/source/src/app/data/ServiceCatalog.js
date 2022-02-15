@@ -236,6 +236,23 @@ class ServiceCatalog {
         });
         return promisedServices.then((response) => response.body);
     }
+
+    /**
+     * Get the service list
+     * @returns {promise} Service Entry promise.
+     */
+    static getServiceList() {
+        const serviceCatalog = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.SERVICE_CATALOG_CLIENT)
+            .client;
+        const promisedServices = serviceCatalog.then((client) => {
+            return client.apis.Services.searchServices(
+                this._requestMetaData(),
+            );
+        });
+        return promisedServices.then((response) => response.body);
+    }
+
 }
 
 export default ServiceCatalog;

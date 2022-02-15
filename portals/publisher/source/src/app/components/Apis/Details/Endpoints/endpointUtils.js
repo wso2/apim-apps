@@ -160,6 +160,7 @@ function getEndpointConfigByImpl(implementationType) {
  * 3. prototyped
  * 4. awslambda
  * 5. default (Dynamic)
+ * 6. service
  *
  * @param {string} endpointType The selected endpoint type.
  * @return {endpointConfig} Endpoint config object.
@@ -169,6 +170,10 @@ function createEndpointConfig(endpointType) {
     switch (endpointType) {
         case 'http':
             tmpEndpointConfig.endpoint_type = 'http';
+            tmpEndpointConfig.failOver = false;
+            break;
+        case 'service':
+            tmpEndpointConfig.endpoint_type = 'service';
             tmpEndpointConfig.failOver = false;
             break;
         case 'address':
