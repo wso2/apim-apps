@@ -78,7 +78,6 @@
         "react-router-dom": "^5.0.1",
         "react-safe-html": "^0.6.1",
         "react-tagcloud": "^1.4.0",
-        "react-tap-event-plugin": "^2.0.1",
         "remark-gfm": "^1.0.0",
         "sanitize-html": "^2.5.1",
         "subscriptions-transport-ws": "^0.8.3",
