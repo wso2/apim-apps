@@ -35,7 +35,6 @@ import Loading from 'AppComponents/Base/Loading/Loading';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import solaceTopicStyles from './SolaceTopicStyles';
 
-
 function VerbElement(props) {
     const {
         verb,

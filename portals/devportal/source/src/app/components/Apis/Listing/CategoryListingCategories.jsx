@@ -70,7 +70,6 @@ function CategoryListingCategories(props) {
         },
     } = theme;
 
-
     const tagWiseURL = '/apis?offset=0&query=api-category';
     const { allCategories } = props;
 

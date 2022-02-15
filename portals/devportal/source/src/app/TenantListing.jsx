@@ -65,7 +65,6 @@ const styles = (theme) => ({
     },
 });
 
-
 const tenantListing = (props) => {
     const settingContext = useContext(Settings);
     const { tenantList, classes, theme } = props;

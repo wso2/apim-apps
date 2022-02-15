@@ -32,7 +32,6 @@ import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import QueryComplexityView from './QueryComplexityView';
 
-
 import Progress from '../../../Shared/Progress';
 
 const { buildSchema } = require('graphql');
@@ -73,7 +72,6 @@ export default function GraphQLUI(props) {
     const handleClick = () => {
         setOpen(!open);
     };
-
 
     const handleToggleExplorer = () => {
         const newExplorerIsOpen = !isExplorerOpen;

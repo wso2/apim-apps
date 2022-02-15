@@ -105,7 +105,6 @@ class StarRatingBar extends React.Component {
         this.toggleEditRating = this.toggleEditRating.bind(this);
     }
 
-
     /**
      * Component did mount callback.
      * @memberof StarRatingBar

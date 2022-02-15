@@ -85,7 +85,6 @@ function TagCloudListingTags(props) {
         },
     } = theme;
 
-
     const tagWiseURL = '/apis?offset=0&query=tag';
     const { allTags, mainPage } = props;
     let apisTagCloudGroup = null;

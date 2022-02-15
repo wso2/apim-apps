@@ -170,7 +170,6 @@ class HeaderSearch extends React.Component {
          this.suggestionSelected = false;
      }
 
-
      /**
      * Fetch suggestions list for the user entered input value
      *
@@ -184,7 +183,6 @@ class HeaderSearch extends React.Component {
              this.setState({ isLoading: false, suggestions: body.obj.list });
          });
      }
-
 
      /**
      * Handle the suggestions clear Synthetic event
