@@ -17,7 +17,7 @@
  * under the License.
  */
 import React from 'react';
-import { StackFrame } from 'error-stack-parser';
+import StackFrame from 'stackframe';
 
 import { isFilenameAbsolute, makeUrl, makeLinkText } from './utils';
 import useStyles from './styles';
