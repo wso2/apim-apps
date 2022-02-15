@@ -39,11 +39,6 @@ import AuthManager from 'AppData/AuthManager';
 
 const getPolicies = async () => {
     const promisedPolicies = API.policies('subscription');
-    Alert.loading(promisedPolicies, {
-        loading: 'Loading policies',
-        success: 'Policies loaded successfully',
-        error: 'Error in loading policies',
-    });
     const policies = await promisedPolicies;
     return policies.body.list;
 };

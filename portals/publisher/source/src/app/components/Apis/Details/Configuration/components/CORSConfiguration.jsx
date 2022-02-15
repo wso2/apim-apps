@@ -46,7 +46,9 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(0.5),
     },
     actionSpace: {
-        margin: '-7px auto',
+        marginLeft: theme.spacing(20),
+        marginTop: '-7px',
+        marginBottom: '-7px',
     },
     subHeading: {
         fontSize: '1rem',

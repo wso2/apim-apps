@@ -1669,12 +1669,6 @@
       "value": "Select one or more Key Managers"
     }
   ],
-  "Apis.Details.Configuration.RuntimeConfiguration.section.fault": [
-    {
-      "type": 0,
-      "value": "Fault"
-    }
-  ],
   "Apis.Details.Configuration.RuntimeConfiguration.topic.header": [
     {
       "type": 0,
@@ -2917,12 +2911,6 @@
     {
       "type": 0,
       "value": "Summary"
-    }
-  ],
-  "Apis.Details.Edit.MediationPolicies.EditMediationPolicies.custom.mediation.policies": [
-    {
-      "type": 0,
-      "value": "Custom Mediation Policies"
     }
   ],
   "Apis.Details.EditScopes.Roles.Invalid": [
@@ -4631,102 +4619,6 @@
       "value": "Deployments"
     }
   ],
-  "Apis.Details.MediationPolicies.Edit.AddMediationPolicy.error": [
-    {
-      "type": 0,
-      "value": "Error while adding mediation policy"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.cancel.btn": [
-    {
-      "type": 0,
-      "value": "Cancel"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.click.or.drop.to.upload.file": [
-    {
-      "type": 0,
-      "value": "Click or drag the mediation file to upload."
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.common.policies": [
-    {
-      "type": 0,
-      "value": "Common Policies"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.custom.policies": [
-    {
-      "type": 0,
-      "value": "Custom Policies"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.error": [
-    {
-      "type": 0,
-      "value": "Error deleting the file"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.delete.success": [
-    {
-      "type": 0,
-      "value": "Mediation policy deleted successfully."
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.download.error": [
-    {
-      "type": 0,
-      "value": "Error downloading the file"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.error": [
-    {
-      "type": 0,
-      "value": "Error retrieving mediation policies"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.global.delete": [
-    {
-      "type": 0,
-      "value": "Cannot delete Global mediation policies."
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.none": [
-    {
-      "type": 0,
-      "value": "None"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.btn": [
-    {
-      "type": 0,
-      "value": "Select"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.select.policy": [
-    {
-      "type": 0,
-      "value": "Select a Mediation Policy"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Edit.EditMediationPolicy.success": [
-    {
-      "type": 0,
-      "value": "Mediation policy added successfully"
-    }
-  ],
-  "Apis.Details.MediationPolicies.EditMediationPolicy.download": [
-    {
-      "type": 0,
-      "value": "Download"
-    }
-  ],
-  "Apis.Details.MediationPolicies.Mediation": [
-    {
-      "type": 0,
-      "value": "Message Mediation"
-    }
-  ],
   "Apis.Details.Monetization.BusinessPlans.commercial.policies": [
     {
       "type": 0,
@@ -5355,6 +5247,12 @@
     {
       "type": 0,
       "value": "Resources"
+    }
+  ],
+  "Apis.Details.Policies.CommonPolicies.heading.tooltip": [
+    {
+      "type": 0,
+      "value": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
     }
   ],
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": [
@@ -7079,6 +6977,12 @@
       "value": "overview"
     }
   ],
+  "Apis.Details.index.policies": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
   "Apis.Details.index.properties": [
     {
       "type": 0,
@@ -7833,6 +7737,12 @@
       "value": "APIs"
     }
   ],
+  "Base.Header.navbar.GlobalNavBar.common.policies": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
   "Base.Header.navbar.GlobalNavBar.scopes": [
     {
       "type": 0,
@@ -7873,6 +7783,104 @@
     {
       "type": 0,
       "value": "Error 403 : Forbidden"
+    }
+  ],
+  "Policies.Delete.Delete.policy.delete": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "Policies.Delete.Delete.policy.label.ok.confirm": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    },
+    {
+      "type": 0,
+      "value": " policy ?"
+    }
+  ],
+  "Policies.Delete.Delete.policy.listing.delete.confirm": [
+    {
+      "type": 0,
+      "value": "Confirm Delete"
+    }
+  ],
+  "Policies.Delete.Delete.policy.listing.label.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Policies.Delete.Delete.policy.listing.label.ok.yes": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "Policies.Listing.Listing.create.new": [
+    {
+      "type": 0,
+      "value": "Let’s get started !"
+    }
+  ],
+  "Policies.Listing.Listing.heading.CommonPolicies.heading": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
+  "Policies.Listing.Listing.heading.CommonPolicy.new": [
+    {
+      "type": 0,
+      "value": "Add New Policy"
+    }
+  ],
+  "Policies.Listing.Listing.policies.tooltip": [
+    {
+      "type": 0,
+      "value": "Policies provide the capability to alter the behavior of API resources"
+    }
+  ],
+  "Policies.Listing.Listing.policies.view": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.actions": [
+    {
+      "type": 0,
+      "value": "Actions"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.applicable.flows": [
+    {
+      "type": 0,
+      "value": "Applicable Flows"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Policies.Listing.Listing.table.header.name": [
+    {
+      "type": 0,
+      "value": "Policy Name"
+    }
+  ],
+  "Policies.Listing.Listing.update.not.allowed": [
+    {
+      "type": 0,
+      "value": "*You are not authorized to manage policies due to insufficient permissions"
     }
   ],
   "Scopes.Create.CreateScope.cancel": [

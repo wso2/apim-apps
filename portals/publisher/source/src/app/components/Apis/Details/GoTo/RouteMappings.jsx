@@ -395,6 +395,10 @@ const suggestions = {
             label: 'Properties',
             route: 'properties',
         },
+        {
+            label: 'Policies',
+            route: 'policies'
+        }
     ],
     productOnly: [
         {

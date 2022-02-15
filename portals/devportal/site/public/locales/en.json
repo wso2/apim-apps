@@ -422,7 +422,6 @@
   "GraphQL.Devportal.Tryout.Additional.header.form.value.help": "Provide Value",
   "GraphQL.Devportal.Tryout.Additional.headers.header.name": "Header Name",
   "GraphQL.Devportal.Tryout.Additional.headers.header.value": "Header Value",
-  "GraphQL.Devportal.Tryout.Addtional.headers": "Additional Headers",
   "GraphQL.Devportal.Tryout.Addtional.headers.help": "This configuration is used to add additional Headers.",
   "LandingPage.ApisWithTag.invalid.tenant.domain": "Invalid tenant domain",
   "Login.RedirectToLogin.you.will.be.redirected.to": "You will be redirected to {page}",

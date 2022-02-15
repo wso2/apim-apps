@@ -130,5 +130,11 @@ module.exports = {
             ],
             extends: ['plugin:testing-library/react'],
         },
+        {
+            files: ['**/*.tsx'],
+            rules: {
+                'react/prop-types': 'off'
+            }
+        }
     ],
 };
