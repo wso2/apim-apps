@@ -7,6 +7,7 @@ import { OpenAPIV3 } from 'openapi-types';
 
 export type APIConfig = { inputSpec: any; context: string };
 const MAX_DOWNLOAD_RETRY = 3;
+const RE_TRY_WAIT_TIME = 2000;
 
 /**
  * Download the OAS definition to a temporary location given the URL
@@ -30,9 +31,11 @@ export function getTempPath(_url: string, isFileName: boolean = false) {
 export function removeXExamples(
     oasDefinition: OpenAPIV3.Document,
 ): OpenAPIV3.Document {
-    Object.keys(oasDefinition.paths).forEach((path) => Object.keys(oasDefinition.paths[path]).forEach((verb) => {
-        delete oasDefinition.paths[path][verb]['x-examples'];
-    }));
+    Object.keys(oasDefinition.paths).forEach((path) =>
+        Object.keys(oasDefinition.paths[path]).forEach((verb) => {
+            delete oasDefinition.paths[path][verb]['x-examples'];
+        }),
+    );
     return oasDefinition;
 }
 
@@ -65,12 +68,20 @@ export const downloadOASDefinition = async function bundle(
             break;
         } catch (error) {
             retries += 1;
-            console.warn(`Tries: ${retries} : Error while downloading ${apiURL}`);
+            const retryWaitTime = retries * RE_TRY_WAIT_TIME;
+            console.warn(
+                `Attempt: ${retries} : Error while downloading ${filePath} \nRe-try in ${
+                    retryWaitTime / 1000
+                } Seconds . . .`,
+            );
+            // eslint-disable-next-line no-await-in-loop
+            await new Promise((resolve) => setTimeout(resolve, retryWaitTime));
         }
     }
     if (!bundled) {
-        const downloadError = `Could not download the ${apiURL} after`
-      + ` ${MAX_DOWNLOAD_RETRY} attempts your internet connection!!!`;
+        const downloadError =
+            `Could not download the ${filePath} after` +
+            ` ${MAX_DOWNLOAD_RETRY} attempts, Check your internet connection !!!`;
         console.error(downloadError);
         throw new Error(downloadError);
     }

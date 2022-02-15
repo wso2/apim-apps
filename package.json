@@ -6,7 +6,8 @@
   "workspaces": [
     "portals/publisher",
     "portals/devportal",
-    "portals/admin"
+    "portals/admin",
+    "packages/apim-ui-commons"
   ],
   "directories": {
     "test": "tests"
