@@ -50,7 +50,6 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>ci</argument>
-                                <argument>--force</argument>
                             </arguments>
                         </configuration>
                     </execution>
