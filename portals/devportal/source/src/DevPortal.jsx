@@ -127,7 +127,6 @@ class DevPortal extends React.Component {
         }
     }
 
-
     /**
      * Set the tenant domain to state
      * @param {String} tenantDomain tenant domain
@@ -298,7 +297,6 @@ class DevPortal extends React.Component {
             return '';
         }
     }
-
 
     /**
      * If the passive mode is enabled then this method will check whether
