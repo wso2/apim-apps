@@ -24,11 +24,11 @@ import DefaultConfigurations from 'AppData/defaultTheme';
 // import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import {
     ThemeProvider as MuiThemeProvider,
-    createTheme,
+    createMuiTheme,
 } from '@material-ui/core/styles';
 import Message from './Message';
 
-const theme = createTheme(merge(DefaultConfigurations, Configurations));
+const theme = createMuiTheme(merge(DefaultConfigurations, Configurations));
 
 /**
  * Common alerting/message displaying component for Developer Portal application, Pre-set vertical: 'top',
