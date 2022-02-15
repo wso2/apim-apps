@@ -16,7 +16,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-//DatePicker
+// DatePicker
 
 const useStyles = makeStyles(theme => ({
     titleCta: {
@@ -45,7 +45,7 @@ const LanguageAdd = props => {
     const editMode = !!props.languageItem;
     const classes = useStyles();
     const [showForm, setShowForm] = useState(false);
-    let initState = editMode ? { ...languageItem } : {
+    const initState = editMode ? { ...languageItem } : {
         language: 'en',
         proficiency: 'intermediate'
     };
@@ -87,7 +87,7 @@ const LanguageAdd = props => {
     // Generate an array of years to select range between this year an 60 years back.
     const thisYear = (new Date()).getFullYear();
     const years = [];
-    for (var i = 0; i < 60; i++) {
+    for (let i = 0; i < 60; i++) {
         years.push(thisYear - i);
     }
 
@@ -96,17 +96,17 @@ const LanguageAdd = props => {
     const resetDisabled = Object.keys(state).filter(k => !!state[k]).length === 0;
     return (
         <>
-            {editMode && (<IconButton aria-label="edit" onClick={toggleForm}>
+            {editMode && (<IconButton aria-label='edit' onClick={toggleForm}>
                 <EditIcon />
             </IconButton>)}
             {!editMode && (<Grid item xs={12}>
-                <Button variant="outlined" color="primary" onClick={toggleForm}>
+                <Button variant='outlined' color='primary' onClick={toggleForm}>
                     Add Language
                 </Button>
             </Grid>)}
-            <Dialog disableBackdropClick open={showForm} onClose={toggleForm} aria-labelledby="form-dialog-title" maxWidth='md' fullWidth>
+            <Dialog disableBackdropClick open={showForm} onClose={toggleForm} aria-labelledby='form-dialog-title' maxWidth='md' fullWidth>
                 <form onSubmit={submitForm}>
-                    <DialogTitle id="form-dialog-title">{editMode ? `Edit ${languageItem.institute}` : `Add Language`}</DialogTitle>
+                    <DialogTitle id='form-dialog-title'>{editMode ? `Edit ${languageItem.institute}` : `Add Language`}</DialogTitle>
                     <DialogContent classes={{ root: classes.dialogContentRoot }}>
                         <DialogContentText>
                             Select the language and proficiency
@@ -114,11 +114,11 @@ const LanguageAdd = props => {
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={6}>
                                 <Typography
-                                    variant="subtitle1"
-                                    color="textPrimary"
+                                    variant='subtitle1'
+                                    color='textPrimary'
                                     className={classes.inputTitle} >
                                     Language
-                                    </Typography>
+                                </Typography>
                                 <Autocomplete
                                     value={getLanguage(language || languageItem.language)}
                                     onChange={(event, newValue) => {
@@ -126,26 +126,26 @@ const LanguageAdd = props => {
                                             setState({ ...state, language: newValue.value });
                                         }
                                     }}
-                                    name="language"
-                                    margin="dense"
+                                    name='language'
+                                    margin='dense'
                                     fullWidth
                                     options={worldLanguages}
                                     getOptionLabel={(option) => `(${option.value}) -  ${option.label}`}
-                                    renderInput={(params) => <TextField margin="dense" fullWidth {...params} variant="outlined" />}
+                                    renderInput={(params) => <TextField margin='dense' fullWidth {...params} variant='outlined' />}
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Typography
-                                    variant="subtitle1"
-                                    color="textPrimary"
+                                    variant='subtitle1'
+                                    color='textPrimary'
                                     className={classes.inputTitle} >
                                     Proficiency
                                 </Typography>
                                 <Select
                                     native
                                     fullWidth
-                                    variant="outlined"
-                                    margin="dense"
+                                    variant='outlined'
+                                    margin='dense'
                                     value={proficiency || languageItem.proficiency}
                                     onChange={onInputChange}
                                     inputProps={{
@@ -158,12 +158,12 @@ const LanguageAdd = props => {
                                     <option value='Proficient'>Proficient</option>
                                 </Select>
                             </Grid>
-                            <Grid item container justify="flex-start" xs={12}>
+                            <Grid item container justify='flex-start' xs={12}>
                                 <Box textAlign='right' width='100%'>
-                                    <Button onClick={cancel} color="primary">
+                                    <Button onClick={cancel} color='primary'>
                                         Cancel
                                     </Button>
-                                    <Button variant="contained" onClick={resetDisabled} color="primary" type="submit" disabled={resetDisabled}>
+                                    <Button variant='contained' onClick={resetDisabled} color='primary' type='submit' disabled={resetDisabled}>
                                         {editMode ? 'Update' : `Add Language`}
                                     </Button>
                                 </Box>
@@ -177,10 +177,10 @@ const LanguageAdd = props => {
 };
 
 LanguageAdd.propTypes = {
-                /**
+    /**
                  * External classes
                  */
-                className: PropTypes.string,
+    className: PropTypes.string,
 };
 
 export default LanguageAdd;

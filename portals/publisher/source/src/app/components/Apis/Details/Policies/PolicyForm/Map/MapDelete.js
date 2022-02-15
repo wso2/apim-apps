@@ -29,19 +29,19 @@ export default function LanguageDelete(props) {
 
     return (
         <>
-            <IconButton aria-label="delete" onClick={handleClickOpen}>
+            <IconButton aria-label='delete' onClick={handleClickOpen}>
                 <DeleteIcon />
             </IconButton>
 
             <Dialog
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+                aria-labelledby='alert-dialog-title'
+                aria-describedby='alert-dialog-description'
             >
-                <DialogTitle id="alert-dialog-title">{`Delete - ${languageItem.institute} ?`}</DialogTitle>
+                <DialogTitle id='alert-dialog-title'>{`Delete - ${languageItem.institute} ?`}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
+                    <DialogContentText id='alert-dialog-description'>
                         Confirm to remove the record from the list.
                     </DialogContentText>
                 </DialogContent>
@@ -49,7 +49,7 @@ export default function LanguageDelete(props) {
                     <Button onClick={handleClose}>
                         Disagree
                     </Button>
-                    <Button onClick={handleDelete} color="primary" autoFocus>
+                    <Button onClick={handleDelete} color='primary' autoFocus>
                         Delete
                     </Button>
                 </DialogActions>
