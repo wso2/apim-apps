@@ -72,7 +72,7 @@ const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
 
     monaco
         .init()
-        .then((monacol) => {
+        .then((monacol: any) => {
             monacol.languages.json.jsonDefaults.setDiagnosticsOptions({
                 validate: true,
                 schemaValidation: 'error',
@@ -83,7 +83,7 @@ const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
                 }],
             });
         })
-        .catch((error) => {
+        .catch((error: any) => {
             console.error('An error occurred during initialization of Monaco editor: ', error);
         })
 
