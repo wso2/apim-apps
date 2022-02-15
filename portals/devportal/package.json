@@ -7,7 +7,7 @@
         "node": "16.*"
     },
     "scripts": {
-        "test:ci": "echo \"jest --silent\"",
+        "test:ci": "jest --silent",
         "test:integration": "jest -c source/Tests/Integration/jest.config.js",
         "test:coverage": "jest --coverage",
         "build:prod": "rimraf site/public/dist/ && npm rum i18n && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
@@ -27,7 +27,7 @@
     "dependencies": {
         "@asyncapi/react-component": "^0.17.11",
         "@hapi/joi": "^16.1.7",
-        "@material-ui/core": "^4.11.3",
+        "@material-ui/core": "^4.12.3",
         "@material-ui/icons": "^4.9.1",
         "@material-ui/lab": "^4.0.0-alpha.29",
         "@mdi/js": "^5.9.55",
