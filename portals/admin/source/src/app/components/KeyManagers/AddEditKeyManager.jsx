@@ -1210,7 +1210,6 @@ function AddEditKeyManager(props) {
                                                         defaultMessage='Scopes Claim URI'
                                                     />
                                                 )}
-
                                                 fullWidth
                                                 variant='outlined'
                                                 value={scopesClaim}
@@ -1700,7 +1699,6 @@ function AddEditKeyManager(props) {
                                                     defaultMessage='Oauth App Creation'
                                                 />
                                             )}
-
                                             labelPlacement='end'
                                         />
                                     </Grid>

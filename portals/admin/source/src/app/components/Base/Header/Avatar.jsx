@@ -47,15 +47,6 @@ class Avatar extends Component {
     }
 
     /**
-     * Do OIDC logout redirection
-     * @param {React.SyntheticEvent} e Click event of the submit button
-     */
-    doOIDCLogout = (e) => {
-        e.preventDefault();
-        window.location = `${Configurations.app.context}/services/logout`;
-    };
-
-    /**
      *
      * Open Avatar dropdown menu
      * @param {React.SyntheticEvent} event `click` event on Avatar
@@ -75,65 +66,74 @@ class Avatar extends Component {
     }
 
     /**
+     * Do OIDC logout redirection
+     * @param {React.SyntheticEvent} e Click event of the submit button
+     */
+     doOIDCLogout = (e) => {
+         e.preventDefault();
+         window.location = `${Configurations.app.context}/services/logout`;
+     };
+
+     /**
      *
      * @inheritdoc
      * @returns {React.Component} @inheritdoc
      * @memberof Avatar
      */
-    render() {
-        const { classes, user } = this.props;
-        let username = user.name;
-        const count = (username.match(/@/g) || []).length;
-        if (user.name.endsWith('@carbon.super') && count <= 1) {
-            username = user.name.replace('@carbon.super', '');
-        }
-        const { anchorEl } = this.state;
-        return (
-            <>
-                <IconButton
-                    id='profile-menu-btn'
-                    aria-owns='profile-menu-appbar'
-                    aria-haspopup='true'
-                    color='inherit'
-                    onClick={this.handleClick}
-                    className={classes.userLink}
-                >
-                    <AccountCircle className={classes.accountIcon} />
-                    {' '}
-                    {username}
-                    <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
-                        keyboard_arrow_down
-                    </Icon>
-                </IconButton>
-                <Menu
-                    id='logout-menu'
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={this.handleClose}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                    className={classes.profileMenu}
-                >
-                    <Link to={{ pathname: '/services/logout' }}>
-                        <MenuItem onClick={this.doOIDCLogout} id='logout'>
-                            <FormattedMessage
-                                id='Base.Header.avatar.Avatar.logout'
-                                defaultMessage='Logout'
-                            />
-                        </MenuItem>
-                    </Link>
-                </Menu>
-            </>
-        );
-    }
+     render() {
+         const { classes, user } = this.props;
+         let username = user.name;
+         const count = (username.match(/@/g) || []).length;
+         if (user.name.endsWith('@carbon.super') && count <= 1) {
+             username = user.name.replace('@carbon.super', '');
+         }
+         const { anchorEl } = this.state;
+         return (
+             <>
+                 <IconButton
+                     id='profile-menu-btn'
+                     aria-owns='profile-menu-appbar'
+                     aria-haspopup='true'
+                     color='inherit'
+                     onClick={this.handleClick}
+                     className={classes.userLink}
+                 >
+                     <AccountCircle className={classes.accountIcon} />
+                     {' '}
+                     {username}
+                     <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
+                         keyboard_arrow_down
+                     </Icon>
+                 </IconButton>
+                 <Menu
+                     id='logout-menu'
+                     anchorEl={anchorEl}
+                     keepMounted
+                     open={Boolean(anchorEl)}
+                     onClose={this.handleClose}
+                     getContentAnchorEl={null}
+                     anchorOrigin={{
+                         vertical: 'bottom',
+                         horizontal: 'center',
+                     }}
+                     transformOrigin={{
+                         vertical: 'top',
+                         horizontal: 'center',
+                     }}
+                     className={classes.profileMenu}
+                 >
+                     <Link to={{ pathname: '/services/logout' }}>
+                         <MenuItem onClick={this.doOIDCLogout} id='logout'>
+                             <FormattedMessage
+                                 id='Base.Header.avatar.Avatar.logout'
+                                 defaultMessage='Logout'
+                             />
+                         </MenuItem>
+                     </Link>
+                 </Menu>
+             </>
+         );
+     }
 }
 Avatar.propTypes = {
     classes: PropTypes.shape({
