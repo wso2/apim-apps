@@ -179,7 +179,6 @@ class ProtectedApp extends Component {
         }
     }
 
-
     /**
      * Change the environment with "environment" query parameter
      * @return {String} environment name in the query param

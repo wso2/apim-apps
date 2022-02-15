@@ -195,7 +195,6 @@ class Credentials extends React.Component {
         this.api = new Api();
     }
 
-
     /**
      *  Set the initial values for subscription request
      */

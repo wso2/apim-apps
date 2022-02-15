@@ -13,7 +13,7 @@
         "build:prod": "rimraf site/public/dist/ && npm rum i18n && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
         "build:dev": "rimraf site/public/dist/ && cross-env NODE_ENV=development webpack --mode development --watch",
         "analysis": "cross-env NODE_ENV=development webpack --env.analysis -p --progress",
-        "lint": "eslint source/**/*.js source/**/*.jsx source/src/app/**/*.jsx",
+        "lint": "eslint --ignore-pattern '*.test.js' --ignore-pattern '*.test.jsx' --quiet -c .eslintrc.js --ext .jsx,.js source",
         "i18n": "extract-messages -l=en -o site//public//locales// -d en --extractFromFormatMessageCall --flat 'source//src//app//**//*.jsx'",
         "check-unused": "webpack --mode production --env.unused true --display errors-only",
         "start": "webpack serve --compress --https --port 8084 --mode development "
@@ -78,7 +78,6 @@
         "react-router-dom": "^5.0.1",
         "react-safe-html": "^0.6.1",
         "react-tagcloud": "^1.4.0",
-        "react-tap-event-plugin": "^2.0.1",
         "remark-gfm": "^1.0.0",
         "sanitize-html": "^2.5.1",
         "subscriptions-transport-ws": "^0.8.3",

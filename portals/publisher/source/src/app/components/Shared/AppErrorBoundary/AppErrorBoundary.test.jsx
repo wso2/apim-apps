@@ -17,7 +17,7 @@
  */
 import React from 'react';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import { createTheme } from '@material-ui/core/styles';
 
 import Themes from 'AppData/defaultTheme';
 import AppErrorBoundary from './AppErrorBoundary';
@@ -38,7 +38,7 @@ describe.skip('AppErrorBoundary test', () => {
             throw new Error(message);
         };
         const TestComponent = (
-            <MuiThemeProvider theme={createMuiTheme(light)}>
+            <MuiThemeProvider theme={createTheme(light)}>
                 <AppErrorBoundary>
                     <TestError />
                 </AppErrorBoundary>

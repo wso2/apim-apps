@@ -45,7 +45,6 @@ import Progress from '../../Shared/Progress';
 import Wizard from './Credentials/Wizard/Wizard';
 import User from '../../../data/User';
 
-
 const ApiConsole = lazy(() => import('./ApiConsole/ApiConsole' /* webpackChunkName: "APIConsole" */));
 const GraphQLConsole = lazy(() => import('./GraphQLConsole/GraphQLConsole' /* webpackChunkName: "GraphQLConsole" */));
 const AsyncApiConsole = lazy(() => import('./AsyncApiConsole/AsyncApiConsole'));
@@ -309,7 +308,6 @@ class Details extends React.Component {
             }
         };
 
-
         this.state = {
             active: 'overview',
             overviewHiden: false,
@@ -346,7 +344,6 @@ class Details extends React.Component {
             this.updateSubscriptionData();
         }
     }
-
 
     /**
      * @param {JSON} api api object

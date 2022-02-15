@@ -173,7 +173,6 @@ class Recommendations extends React.Component {
         return createMuiTheme(muiTheme);
     };
 
-
     // get data
     getData = () => {
         const { intl } = this.props;

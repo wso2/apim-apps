@@ -22,7 +22,7 @@ import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import Themes from 'AppData/defaultTheme';
 import { MemoryRouter, Redirect } from 'react-router-dom';
 import { resourceMethod, resourcePath } from 'AppData/ScopeValidation';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import { createTheme } from '@material-ui/core/styles';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import { APIProvider } from 'AppComponents/Apis/Details/components/ApiContext';
 import NewVersion from './NewVersion';
@@ -42,7 +42,7 @@ describe.skip('Unit test for CreateNewVersion component', () => {
         const newVersion = (
             <APIProvider value={{ api }}>
                 <MemoryRouter>
-                    <NewVersion classes={{}} theme={createMuiTheme(light)} />
+                    <NewVersion classes={{}} theme={createTheme(light)} />
                 </MemoryRouter>
             </APIProvider>
         );

@@ -128,7 +128,6 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
                         { suggestion.type === 'API' ? <APIsIcon /> : <DocumentsIcon /> }
                     </ListItemIcon>
 
-
                     <ListItemText
                         primary={parts.map((part, index) => {
                             return part.highlight ? (
@@ -188,7 +187,6 @@ function getSuggestions(searchText, lcstate) {
         return api.search({ query: searchQuery, limit: 8 });
     }
 }
-
 
 export {
     renderInput, renderSuggestion, getSuggestions, getSuggestionValue, buildSearchQuery,

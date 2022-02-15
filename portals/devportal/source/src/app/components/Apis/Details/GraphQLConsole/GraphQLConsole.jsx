@@ -35,7 +35,6 @@ import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
 import AdditionalHeaders from './AdditionalHeaders';
 
-
 const useStyles = makeStyles((theme) => ({
     buttonIcon: {
         marginRight: 10,
@@ -114,7 +113,6 @@ export default function GraphQLConsole() {
                 }
             });
     }, []);
-
 
     /**
      * Load the access token for given key type

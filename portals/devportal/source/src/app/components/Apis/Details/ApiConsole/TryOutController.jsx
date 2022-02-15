@@ -48,7 +48,6 @@ import Api from '../../../../data/api';
 import Application from '../../../../data/Application';
 import SelectAppPanel from './SelectAppPanel';
 
-
 /**
  * @inheritdoc
  * @param {*} theme theme
@@ -248,7 +247,6 @@ function TryOutController(props) {
                 });
         }
     }, []);
-
 
     /**
      * Generate access token

@@ -84,7 +84,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 function SolaceEndpoints() {
     const { api } = useContext(ApiContext);
     const [urlCopied, setUrlCopied] = useState(false);

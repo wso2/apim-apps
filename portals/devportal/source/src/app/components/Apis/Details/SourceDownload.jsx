@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unreachable */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -28,7 +27,6 @@ import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ApiContext } from './ApiContext';
-
 
 const useStyles = makeStyles((theme) => ({
     iconStyle: {

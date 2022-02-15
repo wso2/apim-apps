@@ -75,7 +75,6 @@ const PolicySpecificationEditor: React.FC<PolicySpecificationEditorProps> = ({
         .then((monacol) => {
             monacol.languages.json.jsonDefaults.setDiagnosticsOptions({
                 validate: true,
-                schemaValidation: 'error',
                 schemas: [{
                     uri: 'http://myserver/foo-schema.json',
                     fileMatch: ['*'],

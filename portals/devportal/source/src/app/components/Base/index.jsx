@@ -256,7 +256,6 @@ class Layout extends React.Component {
         }
     };
 
-
     handleRequestCloseUserMenu = () => {
         this.setState({ openUserMenu: false });
     };
@@ -281,7 +280,6 @@ class Layout extends React.Component {
             [key]: false,
         });
     };
-
 
     handleToggleUserMenu = () => {
         this.setState((state) => ({ openUserMenu: !state.openUserMenu }));

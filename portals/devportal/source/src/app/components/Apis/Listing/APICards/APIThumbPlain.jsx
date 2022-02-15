@@ -14,7 +14,6 @@ import { app } from 'Settings';
 import Api from 'AppData/api';
 import classNames from 'classnames';
 
-
 import getIcon from './ImageUtils';
 
 const useStyles = makeStyles((theme) => ({
@@ -238,7 +237,6 @@ function APIThumbPlain(props) {
         </Card>
     );
 }
-
 
 APIThumbPlain.defaultProps = {
     showInfo: true,

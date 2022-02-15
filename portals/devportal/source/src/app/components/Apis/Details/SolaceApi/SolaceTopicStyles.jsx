@@ -12,7 +12,6 @@
  */
 import { makeStyles } from '@material-ui/core/styles';
 
-
 const solaceTopicStyles = makeStyles((theme) => ({
     root: {
         padding: theme.spacing(3, 2),

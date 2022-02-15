@@ -19,8 +19,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import Hidden from '@material-ui/core/Hidden';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import User from 'AppData/User';
@@ -42,7 +41,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
 import Alert from 'AppComponents/Shared/Alert';
 
-const theme = createMuiTheme(Themes.light);
+const theme = createTheme(Themes.light);
 const { drawerWidth } = Themes.light.custom;
 /**
  * Language.

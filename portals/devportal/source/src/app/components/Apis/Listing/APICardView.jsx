@@ -27,7 +27,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import ResourceNotFound from '../../Base/Errors/ResourceNotFound';
 import SubscriptionPolicySelect from './SubscriptionPolicySelect';
 
-
 const styles = () => ({
     root: {
         display: 'flex',

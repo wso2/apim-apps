@@ -153,7 +153,6 @@ export default function AsyncApiConsole() {
         }
     }
 
-
     function accessTokenProvider() {
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             return advAuthHeaderValue;

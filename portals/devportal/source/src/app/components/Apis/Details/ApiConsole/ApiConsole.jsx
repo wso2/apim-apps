@@ -39,7 +39,6 @@ import SwaggerUI from './SwaggerUI';
 import TryOutController from './TryOutController';
 import Application from '../../../../data/Application';
 
-
 /**
  * @inheritdoc
  * @param {*} theme theme
