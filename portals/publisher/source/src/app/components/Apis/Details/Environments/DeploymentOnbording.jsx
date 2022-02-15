@@ -104,14 +104,15 @@ export default function DeploymentOnboarding(props) {
      * @return String Solace gateway environment name
      */
     function getSolaceEnvironment(envs) {
-        let solaceEnv = '';
+        const solaceEnv= []
         envs.forEach((env) => {
             if (env.provider === 'solace') {
-                solaceEnv = env.name;
+                solaceEnv.push(env.name);
             }
         });
         return solaceEnv;
     }
+
     /**
      * Get Organization value of external gateways
      * @param {Object} additionalProperties the additionalProperties list
