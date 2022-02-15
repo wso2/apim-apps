@@ -18,7 +18,7 @@
 import React from 'react';
 // import { unwrap } from '@material-ui/core/test-utils';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import { createTheme } from '@material-ui/core/styles';
 
 import Themes from 'AppData/defaultTheme';
 import LeftMenuItem from './LeftMenuItem';
@@ -30,7 +30,7 @@ describe.skip('<LeftMenuItem/> tests', () => {
     test('should render the <LeftMenuItem/> component with light theme styles', () => {
         const { light } = Themes;
         const TestComponent = (
-            <MuiThemeProvider theme={createMuiTheme(light)}>
+            <MuiThemeProvider theme={createTheme(light)}>
                 <LeftMenuItem />
             </MuiThemeProvider>
         );

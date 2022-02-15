@@ -19,9 +19,8 @@
 import React, { Component, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { ThemeProvider as CoreThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider as CoreThemeProvider, createTheme } from '@material-ui/core/styles';
 import { ThemeProvider as NormalThemeProvider } from '@material-ui/styles';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 // import MaterialDesignCustomTheme from 'AppComponents/Shared/CustomTheme';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Base from 'AppComponents/Base';
@@ -108,6 +107,16 @@ export default class Protected extends Component {
     }
 
     /**
+     * Handle iframe message
+     * @param {event} e Event
+     */
+    handleMessage(e) {
+        if (e.data === 'changed') {
+            window.location = Configurations.app.context + '/services/auth/login?not-Login';
+        }
+    }
+
+    /**
      * Load Theme file.
      *
      * @param {string} tenant tenant name
@@ -163,16 +172,6 @@ export default class Protected extends Component {
     }
 
     /**
-     * Handle iframe message
-     * @param {event} e Event
-     */
-    handleMessage(e) {
-        if (e.data === 'changed') {
-            window.location = Configurations.app.context + '/services/auth/login?not-Login';
-        }
-    }
-
-    /**
      * Invoke check session OIDC endpoint.
      */
     checkSession() {
@@ -208,8 +207,8 @@ export default class Protected extends Component {
             return (<Progress />);
         }
         return (
-            <ThemeProvider theme={createMuiTheme(defaultTheme)}>
-                <ThemeProvider theme={(currentTheme) => createMuiTheme(
+            <ThemeProvider theme={createTheme(defaultTheme)}>
+                <ThemeProvider theme={(currentTheme) => createTheme(
                     merge(currentTheme, (typeof theme === 'function' ? theme(currentTheme) : theme)),
                 )}
                 >

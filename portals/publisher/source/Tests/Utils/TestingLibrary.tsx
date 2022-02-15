@@ -20,7 +20,7 @@ import {
 } from "@testing-library/react";
 import { IntlProvider } from "react-intl";
 import { ThemeProvider } from "@material-ui/core/styles";
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import { createTheme } from '@material-ui/core/styles';
 import defaultTheme from "AppData/defaultTheme";
 import Api from "AppData/api";
 import { Router } from "react-router-dom";
@@ -47,7 +47,7 @@ const GlobalProviders: FC<{ user: any }> = ({
   children,
   user = MockedUsers.Admin,
 }) => {
-  const theme = createMuiTheme(defaultTheme as any); // We really don't care about the styling in this tests, Need to handle Visual Regression
+  const theme = createTheme(defaultTheme as any); // We really don't care about the styling in this tests, Need to handle Visual Regression
   const testUser = User.fromJson(user, Utils.getDefaultEnvironment().label);
   testUser.setPartialToken("AM_ACC_TOKEN_DEFAULT_P1", -1);
   testUser.setExpiryTime(9999999);

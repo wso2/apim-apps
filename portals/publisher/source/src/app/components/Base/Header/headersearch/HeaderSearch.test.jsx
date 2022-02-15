@@ -20,7 +20,7 @@ import React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { MemoryRouter } from 'react-router-dom';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import { createTheme } from '@material-ui/core/styles';
 import Themes from 'AppData/defaultTheme';
 import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import API from 'AppData/api.js';
@@ -57,7 +57,7 @@ describe.skip('Publisher <HeaderSearch> component tests', () => {
     async function mountHeaderSearchComponent() {
         const { light } = Themes;
         const headerSearchComponent = (
-            <MuiThemeProvider theme={createMuiTheme(light)}>
+            <MuiThemeProvider theme={createTheme(light)}>
                 <MemoryRouter>
                     <HeaderSearch classes={{}} />
                 </MemoryRouter>

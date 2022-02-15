@@ -21,12 +21,14 @@ import Notification from 'rc-notification';
 import Configurations from 'Config';
 import merge from 'lodash.merge';
 import DefaultConfigurations from 'AppData/defaultTheme';
-//import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+// import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import {
+    ThemeProvider as MuiThemeProvider,
+    createTheme,
+} from '@material-ui/core/styles';
 import Message from './Message';
 
-const theme = createMuiTheme(merge(DefaultConfigurations, Configurations));
+const theme = createTheme(merge(DefaultConfigurations, Configurations));
 
 /**
  * Common alerting/message displaying component for Developer Portal application, Pre-set vertical: 'top',
@@ -35,13 +37,13 @@ const theme = createMuiTheme(merge(DefaultConfigurations, Configurations));
  */
 class Alert {
     /**
-     * Creates an instance of Alert.
-     * @param {String} message Message which needs to be displayed
-     * @param {any} type Message category, i:e Alert, Info, Error ect
-     * @param {any} duration Duration of the massage needs to be visible on the page
-     * @param {any} onClose Callback function to trigger when message get closed
-     * @memberof Alert
-     */
+   * Creates an instance of Alert.
+   * @param {String} message Message which needs to be displayed
+   * @param {any} type Message category, i:e Alert, Info, Error ect
+   * @param {any} duration Duration of the massage needs to be visible on the page
+   * @param {any} onClose Callback function to trigger when message get closed
+   * @memberof Alert
+   */
     constructor(message, type, duration, onClose) {
         this.defaultTop = Alert.defaultTop;
         this.key = Alert.count++;
@@ -57,8 +59,8 @@ class Alert {
     }
 
     /**
-     * Show the alert message according to the parameters given in the constructor, Using the Alert.messageInstance
-     */
+   * Show the alert message according to the parameters given in the constructor, Using the Alert.messageInstance
+   */
     show() {
         const promisedInstance = this._getMessageInstance();
         const { onClose } = this;
@@ -71,18 +73,22 @@ class Alert {
                     duration: this.duration,
                     content: (
                         <MuiThemeProvider theme={theme}>
-                            <Message handleClose={this.remove} message={this.message} type={this.type} />
+                            <Message
+                                handleClose={this.remove}
+                                message={this.message}
+                                type={this.type}
+                            />
                         </MuiThemeProvider>
                     ),
                 });
             })
-            .catch(error => console.error('Error while showing alert' + error));
-        /* TODO: Remove above console error with logging library error method */
+            .catch((error) => console.error('Error while showing alert' + error));
+    /* TODO: Remove above console error with logging library error method */
     }
 
     /**
-     * Remove current message from view
-     */
+   * Remove current message from view
+   */
     remove() {
         const promisedInstance = this._getMessageInstance();
         promisedInstance.then((instance) => {
@@ -91,10 +97,10 @@ class Alert {
     }
 
     /**
-     * Return a promise resolving to an instance of RC-Notification which can be use to display a notification on screen
-     * @returns {Promise} Promise object with new React component for alert
-     * @private
-     */
+   * Return a promise resolving to an instance of RC-Notification which can be use to display a notification on screen
+   * @returns {Promise} Promise object with new React component for alert
+   * @private
+   */
     _getMessageInstance() {
         return new Promise((resolve) => {
             if (Alert.messageInstance) {
@@ -121,11 +127,11 @@ class Alert {
     }
 
     /**
-     * Can be used to configure the global Alert configurations, Currently support position top alignment and
-     * message display duration in seconds
-     * If set here , will use in all the places where Alert has been used
-     * @param {Object} options i:e {top: '10px', duration: 30}
-     */
+   * Can be used to configure the global Alert configurations, Currently support position top alignment and
+   * message display duration in seconds
+   * If set here , will use in all the places where Alert has been used
+   * @param {Object} options i:e {top: '10px', duration: 30}
+   */
     static config(options) {
         const { top, duration } = options;
         if (top !== undefined) {
