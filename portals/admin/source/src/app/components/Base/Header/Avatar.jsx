@@ -49,6 +49,16 @@ class Avatar extends Component {
 
     /**
      *
+     * Open Avatar dropdown menu
+     * @param {React.SyntheticEvent} event `click` event on Avatar
+     * @memberof Avatar
+     */
+    handleClick(event) {
+        this.setState({ anchorEl: event.currentTarget });
+    }
+
+    /**
+     *
      * Close Avatar dropdown menu
      * @memberof Avatar
      */
@@ -64,16 +74,6 @@ class Avatar extends Component {
          e.preventDefault();
          window.location = `${Configurations.app.context}/services/logout`;
      };
-
-     /**
-     *
-     * Open Avatar dropdown menu
-     * @param {React.SyntheticEvent} event `click` event on Avatar
-     * @memberof Avatar
-     */
-     handleClick(event) {
-         this.setState({ anchorEl: event.currentTarget });
-     }
 
      /**
      *
