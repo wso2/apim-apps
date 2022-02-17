@@ -440,7 +440,7 @@ class Listing extends React.Component {
                             variant='outlined'
                             size='small'
                             disabled={isRestricted(['apim:shared_scope_manage'])}
-                            component='Link'
+                            component={Link}
                             to={!isRestricted(['apim:shared_scope_manage']) && url}
                         >
                             <AddCircle className={classes.buttonIcon} />
