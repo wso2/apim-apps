@@ -99,7 +99,6 @@ const GeneralEdit: FC<GeneralEditProps> = ({
             }
         });
         // Saving field changes to backend
-        // eslint-disable-next-line no-alert
         const apiPolicyToSave = {...apiPolicy};
         apiPolicyToSave.parameters = updateCandidates;
         updateApiOperations(apiPolicyToSave, target, verb, currentFlow);

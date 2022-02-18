@@ -161,7 +161,7 @@ const OperationPolicy: FC<OPProps> = ({
         // Populate request flow attached policy list
         const requestFlowList:AttachedPolicy[] = [];
         const requestFlow = operationInAction.operationPolicies.request;
-        requestFlow.map((requestFlowAttachedPolicy: any) => {
+        requestFlow.forEach((requestFlowAttachedPolicy: any) => {
             const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
             const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
@@ -183,7 +183,7 @@ const OperationPolicy: FC<OPProps> = ({
         // Populate response flow attached policy list
         const responseFlowList:AttachedPolicy[] = [];
         const responseFlow = operationInAction.operationPolicies.response;
-        responseFlow.map((responseFlowAttachedPolicy: any) => {
+        responseFlow.forEach((responseFlowAttachedPolicy: any) => {
             const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
             const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
@@ -196,7 +196,7 @@ const OperationPolicy: FC<OPProps> = ({
         // Populate fault flow attached policy list
         const faultFlowList:AttachedPolicy[] = [];
         const faultFlow = operationInAction.operationPolicies.fault;
-        faultFlow.map((faultFlowAttachedPolicy: any) => {
+        faultFlow.forEach((faultFlowAttachedPolicy: any) => {
             const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
             const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);

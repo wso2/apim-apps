@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC, useEffect, useContext, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
@@ -29,7 +29,6 @@ import Divider from '@material-ui/core/Divider';
 import { Progress } from 'AppComponents/Shared';
 import GeneralAdd from './PolicyForm/GeneralAdd';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
-import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
@@ -64,11 +63,10 @@ interface PolicyConfiguringDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
-    policyObj, setDroppedPolicy, currentFlow, target, verb, setCurrentPolicyList, allPolicies
+    policyObj, setDroppedPolicy, currentFlow, target, verb, allPolicies
 }) => {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(!!policyObj);
-    const { apiOperations } = useContext<any>(ApiOperationContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {
@@ -85,7 +83,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     const apiPolicy: ApiPolicy = {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
-        parameters: {}
+        parameters: {},
     };
 
     const handleDrawerClose = () => {

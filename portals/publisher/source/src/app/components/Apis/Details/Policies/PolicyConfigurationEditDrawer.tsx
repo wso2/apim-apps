@@ -27,10 +27,9 @@ import { Drawer, makeStyles, ListItemIcon, Theme, Typography } from '@material-u
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
-import { Alert, Progress } from 'AppComponents/Shared';
 import GeneralEdit from './PolicyForm/GeneralEdit';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
-import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
+import ApiOperationContext from "./ApiOperationContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
@@ -82,12 +81,12 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     const operationInAction = apiOperations.find((op: any) =>
         op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
     const operationFlowPolicy =
-        operationInAction.operationPolicies[currentFlow].find((p: any) => p.uuid === policyObj?.uniqueKey);
+        operationInAction.operationPolicies[currentFlow].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 
     const apiPolicy: ApiPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
-        parameters: {}
+        parameters: {},
     };
 
     const handleDrawerClose = () => {

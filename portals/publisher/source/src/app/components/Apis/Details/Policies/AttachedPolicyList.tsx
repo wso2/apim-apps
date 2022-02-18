@@ -67,8 +67,8 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
         
         if (active.id !== over?.id) {
             setCurrentPolicyList((items) => {
-                const oldIndex = items.findIndex(item => item.uniqueKey.toString() === active.id);
-                const newIndex = items.findIndex(item => item.uniqueKey.toString() === over?.id);
+                const oldIndex = items.findIndex(item => item.uniqueKey === active.id);
+                const newIndex = items.findIndex(item => item.uniqueKey === over?.id);
 
                 return arrayMove(items, oldIndex, newIndex);
             });
@@ -83,7 +83,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                 onDragEnd={handleDragEnd}
             >
                 <SortableContext 
-                    items={currentPolicyList.map(item => item.uniqueKey.toString())}
+                    items={currentPolicyList.map(item => item.uniqueKey)}
                     strategy={horizontalListSortingStrategy}
                 >
                     {policyListToDisplay.map((policy: AttachedPolicy) => (

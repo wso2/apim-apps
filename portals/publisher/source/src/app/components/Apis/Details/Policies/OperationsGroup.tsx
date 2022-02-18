@@ -37,13 +37,13 @@ const useStyles = makeStyles((theme) => ({
 }
 ));
 
-interface OPGroupProps {
+interface OperationsGroupProps {
   openAPI: any;
   children: any;
   tag: any;
 }
 
-const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag }) => {
+const OperationGroup: FC<OperationsGroupProps> = ({ openAPI, children, tag }) => {
     const classes = useStyles();
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo:any) => tagInfo.name === tag);
     return (

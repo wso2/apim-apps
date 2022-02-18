@@ -30,7 +30,6 @@ import {
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
-import Policies from '../../LifeCycle/Policies';
 import { PolicySpec, ApiPolicy, Policy } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
@@ -53,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 }));
 interface GeneralAddProps {
     policyObj: Policy | null;
-    setDroppedPolicy: React.Dispatch<React.SetStateAction<Policy | null>>;
+    setDroppedPolicy?: React.Dispatch<React.SetStateAction<Policy | null>>;
     currentFlow: string;
     target: string;
     verb: string;
@@ -114,7 +113,7 @@ const GeneralAdd: FC<GeneralAddProps> = ({
             setApplyToAll(false);
         }
 
-        setDroppedPolicy(null);
+        if (setDroppedPolicy) setDroppedPolicy(null);
         setSaving(false);
         handleDrawerClose();
     };
@@ -154,16 +153,6 @@ const GeneralAdd: FC<GeneralAddProps> = ({
         setState(initState);
     }
 
-    const formHasErrors = () => {
-        let formHasAnError = false;
-        policySpec.policyAttributes.forEach((spec) => {
-            if(getError(spec) !== '') {
-                formHasAnError = true
-            }
-        })
-        return formHasAnError;
-    }
-
     const toggleApplyToAll = () => {
         setApplyToAll(!applyToAll);
     }
@@ -171,7 +160,7 @@ const GeneralAdd: FC<GeneralAddProps> = ({
     const resetDisabled = Object.keys(state).filter(k => !!state[k]).length === 0;
     const hasAttributes = policySpec.policyAttributes.length !== 0
 
-    if (!policySpec || !Policies) {
+    if (!policySpec) {
         return <CircularProgress />
     }
     return (
@@ -228,7 +217,6 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                                 variant='outlined'
                                 name={spec.name}
                                 value={getValue(spec.name)}
-                                // value=''
                                 onChange={(e) => onInputChange(e, spec.type)}
                                 fullWidth
                             />
@@ -270,9 +258,11 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                         <FormControlLabel
                             control={
                                 <Checkbox
+                                    id='checkbox-apply-dropped-policy-to-all'
                                     checked={applyToAll}
-                                    onChange={toggleApplyToAll}
                                     color='primary'
+                                    name='applyPolicyToAll'
+                                    onChange={toggleApplyToAll}
                                 />
                             }
                             label={(
