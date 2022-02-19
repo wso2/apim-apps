@@ -23,10 +23,13 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Box } from '@material-ui/core';
+import OperationButton from './OperationButton';
+import CONSTS from 'AppData/Constants';
 
 const useStyles = makeStyles((theme) => ({
     tagClass: {
-        maxWidth : 1000,
+        maxWidth: 1000,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
@@ -38,14 +41,16 @@ const useStyles = makeStyles((theme) => ({
 ));
 
 interface OPGroupProps {
-  openAPI: any;
-  children: any;
-  tag: any;
+    openAPI: any;
+    children: any;
+    tag: any;
+    isChoreoConnectEnabled: boolean;
+    verbObject: any;
 }
 
-const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag }) => {
+const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag, isChoreoConnectEnabled, verbObject }) => {
     const classes = useStyles();
-    const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo:any) => tagInfo.name === tag);
+    const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo: any) => tagInfo.name === tag);
     return (
         <ExpansionPanel defaultExpanded>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
@@ -56,6 +61,24 @@ const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag }) => {
                 >
                     {tag}
                 </Typography>
+                <Typography style={{ margin: '0px 10px' }} variant='caption'>
+                    {''}
+                </Typography>
+                {isChoreoConnectEnabled ?
+                    <Box display="flex" flexDirection="column wrap" gridRowGap={10} gridColumnGap={5}>
+
+                        {Object.entries(verbObject).map(([verb, operation]) => {
+                            return CONSTS.HTTP_METHODS.includes(verb) ? (
+                                <>
+                                    <OperationButton
+                                        operation={operation}
+                                        verb={verb}
+                                    />
+                                </>
+                            ) : null;
+                        })}
+                    </Box>
+                    : null}
                 {currentTagInfo && (
                     <Typography style={{ margin: '0px 30px' }} variant='caption'>
                         {currentTagInfo.description}

@@ -41,6 +41,7 @@ import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './PolicyForm/util/MapUtils';
 import SaveOperationPolicies from './SaveOperationPolicies';
+import PoliciesExpansion from './PoliciesExpansion';
 
 const useStyles = makeStyles(() => ({
     head: {
@@ -71,6 +72,12 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState(false);
+    const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
+
+    const getGatewayType = (isCCEnabled: boolean) => {
+        console.log("Received the value :" + isCCEnabled);
+        getChoreoConnectEnabled(isCCEnabled)
+    }
 
     // We are setting a unique id for all the mediators for UI operations.
     // We use this uuid to delete them edit them.
@@ -188,9 +195,9 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const updateAllApiOperations = (updatedOperation: any, currentFlow: string) => {
         const newApiOperations: any = cloneDeep(apiOperations);
         newApiOperations.map((operation: any) => {
-            const operationFlowPolicy =  operation.operationPolicies[currentFlow].find((
+            const operationFlowPolicy = operation.operationPolicies[currentFlow].find((
                 p: any) => (p.policyId === updatedOperation.policyId && p.uuid === updatedOperation.uuid));
-            
+
             if (operationFlowPolicy) {
                 operationFlowPolicy.parameters = { ...updatedOperation.parameters };
             } else {
@@ -273,54 +280,103 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <GatewaySelector />
+                    <GatewaySelector getGatewayType={getGatewayType} />
                 </Box>
-                <Box display='flex' flexDirection='row'>
-                    <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox}>
-                        <Paper>
-                            {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
-                                <Grid key={target} item xs={12}>
-                                    <OperationsGroup openAPI={openAPISpec} tag={target}>
-                                        <Grid
-                                            container
-                                            direction='column'
-                                            justify='flex-start'
-                                            spacing={1}
-                                            alignItems='stretch'
-                                        >
-                                            {Object.entries(verbObject).map(([verb, operation]) => {
-                                                return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                                    <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
-                                                        <OperationPolicy
-                                                            target={target}
-                                                            verb={verb}
-                                                            highlight
-                                                            operation={operation}
-                                                            api={localAPI}
-                                                            disableUpdate={
-                                                                disableUpdate || isRestricted(['apim:api_create'], api)
-                                                            }
-                                                            expandedResource={expandedResource}
-                                                            setExpandedResource={setExpandedResource}
-                                                            policyList={policies}
-                                                            allPolicies={allPolicies}
-                                                        />
-                                                    </Grid>
-                                                ) : null;
-                                            })}
-                                        </Grid>
-                                    </OperationsGroup>
-                                </Grid>
-                            ))}
-                        </Paper>
+                {isChoreoConnectEnabled ?
+                    <Box display='flex' flexDirection='row'>
+                        <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox} sx={{ border: 1 }}>
+                            <Paper>
+                                <Typography id='cc-specific-message' variant='h6' component='h2' gutterBottom>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.ccMessage'
+                                        defaultMessage='Choreo connect supports resource level request flow policies only.'
+
+                                    />
+                                </Typography>
+                                {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
+
+                                    <Grid key={target} item xs={12}>
+                                        <OperationsGroup openAPI={openAPISpec} tag={target} isChoreoConnectEnabled={isChoreoConnectEnabled} verbObject={verbObject}>
+                                            <Grid
+                                                container
+                                                direction='column'
+                                                justify='flex-start'
+                                                spacing={1}
+                                                alignItems='stretch'
+                                            >
+                                                {console.log("Target >> " + target)}
+                                                <PoliciesExpansion
+                                                    target={target}
+                                                    verb={"get"}
+                                                    allPolicies={allPolicies}
+                                                    isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                ></PoliciesExpansion>
+                                            </Grid>
+                                        </OperationsGroup>
+                                    </Grid>
+                                ))}
+                            </Paper>
+                        </Box>
+                        <Box width='35%' pl={1}>
+                            <PolicyList
+                                policyList={policies}
+                                fetchPolicies={fetchPolicies}
+                                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            />
+                        </Box>
                     </Box>
-                    <Box width='35%' pl={1}>
-                        <PolicyList
-                            policyList={policies}
-                            fetchPolicies={fetchPolicies}
-                        />
+                    :
+                    <Box display='flex' flexDirection='row'>
+                        <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox}>
+                            <Paper>
+                                {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
+
+                                    <Grid key={target} item xs={12}>
+                                        <OperationsGroup openAPI={openAPISpec} tag={target} isChoreoConnectEnabled={isChoreoConnectEnabled} verbObject={null}>
+                                            <Grid
+                                                container
+                                                direction='column'
+                                                justify='flex-start'
+                                                spacing={1}
+                                                alignItems='stretch'
+                                            >
+                                                {console.log("Target >> " + target)}
+                                                {Object.entries(verbObject).map(([verb, operation]) => {
+                                                    return CONSTS.HTTP_METHODS.includes(verb) ? (
+                                                        <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
+                                                            <OperationPolicy
+                                                                target={target}
+                                                                verb={verb}
+                                                                highlight
+                                                                operation={operation}
+                                                                api={localAPI}
+                                                                disableUpdate={
+                                                                    disableUpdate || isRestricted(['apim:api_create'], api)
+                                                                }
+                                                                expandedResource={expandedResource}
+                                                                setExpandedResource={setExpandedResource}
+                                                                policyList={policies}
+                                                                allPolicies={allPolicies}
+                                                                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                            />
+                                                        </Grid>
+                                                    ) : null;
+                                                })}
+                                            </Grid>
+                                        </OperationsGroup>
+                                    </Grid>
+                                ))}
+                            </Paper>
+                        </Box>
+                        <Box width='35%' pl={1}>
+                            <PolicyList
+                                policyList={policies}
+                                fetchPolicies={fetchPolicies}
+                                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            />
+                        </Box>
                     </Box>
-                </Box>
+                }
             </DndProvider>
             <SaveOperationPolicies saveApi={saveApi} />
         </ApiOperationContextProvider>

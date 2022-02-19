@@ -29,13 +29,14 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { Radio } from '@material-ui/core';
+import { Switch } from '@material-ui/core';
 
 const SupportedGatewayTypes = {
     REGULAR: 'Regular Gateway',
     CC: 'Choreo Connect',
 };
 interface GatewaySelectorProps {
+    getGatewayType: any;
 }
 
 /**
@@ -43,7 +44,7 @@ interface GatewaySelectorProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Radio group for the API Gateway.
  */
-const GatewaySelector: FC<GatewaySelectorProps> = () => {
+const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType }) => {
     const [apiFromContext] = useAPI();
 
     return (
@@ -74,36 +75,16 @@ const GatewaySelector: FC<GatewaySelectorProps> = () => {
                         </Box>
                         <Box>
                             <FormControl component='fieldset'>
-                                <RadioGroup
-                                    aria-label='gateway'
-                                    name='gateway-selector-radio-buttons-group'
-                                    row
-                                >
-                                    <FormControlLabel
-                                        // value={SupportedGatewayTypes.REGULAR}
-                                        defaultChecked
-                                        control={(
-                                            <Radio
-                                                color='primary'
-                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                            />
-                                        )}
-                                        label='Regular Gateway'
-                                        labelPlacement='end'
-                                    />
                                     <FormControlLabel
                                         value={SupportedGatewayTypes.CC}
-                                        disabled
-                                        control={(
-                                            <Radio
-                                                color='primary'
+                                        control={
+                                            <Switch {...length} color='secondary'
+                                                onChange={(event) => getGatewayType(event.target.checked)}
                                                 disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                            />
-                                        )}
-                                        label='Choreo Connect'
+                                            />}
+                                        label="Choreo Connect"
                                         labelPlacement='end'
                                     />
-                                </RadioGroup>
                             </FormControl>
                         </Box>
                     </Box>
