@@ -27,7 +27,7 @@ import { Drawer, makeStyles, ListItemIcon, Theme, Typography } from '@material-u
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
-import GeneralEdit from './PolicyForm/GeneralEdit';
+import General from './PolicyForm/General';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
 import ApiOperationContext from "./ApiOperationContext";
 
@@ -125,7 +125,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                 </List>
                 <Divider light />
                 {policySpec && (
-                    <GeneralEdit
+                    <General
                         policyObj={policyObj}
                         currentFlow={currentFlow}
                         target={target}

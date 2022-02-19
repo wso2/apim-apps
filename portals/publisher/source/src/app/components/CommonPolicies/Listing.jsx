@@ -376,15 +376,8 @@ const Listing = (props) => {
 };
 
 Listing.propTypes = {
-    match: PropTypes.shape({
-        params: PropTypes.shape({}),
-    }),
     classes: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
-};
-
-Listing.defaultProps = {
-    match: { params: {} },
 };
 
 export default injectIntl(withAPI(withStyles(styles, { withTheme: true })(Listing)));

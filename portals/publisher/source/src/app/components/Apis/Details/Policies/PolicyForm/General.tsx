@@ -30,7 +30,7 @@ import {
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
-import { PolicySpec, ApiPolicy, Policy } from '../Types';
+import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
 const useStyles = makeStyles(theme => ({
@@ -50,8 +50,9 @@ const useStyles = makeStyles(theme => ({
         marginBottom: '1em',
     },
 }));
-interface GeneralAddProps {
-    policyObj: Policy | null;
+
+interface GeneralProps {
+    policyObj: AttachedPolicy | null;
     setDroppedPolicy?: React.Dispatch<React.SetStateAction<Policy | null>>;
     currentFlow: string;
     target: string;
@@ -61,7 +62,7 @@ interface GeneralAddProps {
     handleDrawerClose: () => void;
 }
 
-const GeneralAdd: FC<GeneralAddProps> = ({
+const General: FC<GeneralProps> = ({
     policyObj, setDroppedPolicy, currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose
 }) => {
     const intl = useIntl();
@@ -89,7 +90,11 @@ const GeneralAdd: FC<GeneralAddProps> = ({
         return apiPolicy.parameters[policyParamName];
     }
 
-    const submitForm = async (event: any) => {
+    /**
+     * This function is triggered when the form is submitted for save
+     * @param {React.FormEvent<HTMLFormElement>} event Form submit event
+     */
+    const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setSaving(true);
         const updateCandidates: any = {};
@@ -118,17 +123,22 @@ const GeneralAdd: FC<GeneralAddProps> = ({
         handleDrawerClose();
     };
 
-    const getError = (specInCheck: any) => {
+    /**
+     * Function to get the error string, if there are any errors. Empty string to indicate the absence of errors.
+     * @param {PolicySpecAttribute} specInCheck The policy attribute that needs to be checked for any errors.
+     * @returns {string} String with the error message, where empty string indicates that there are no errors. 
+     */
+    const getError = (specInCheck: PolicySpecAttribute) => {
         let error = '';
         const value = state[specInCheck.name];
         if (specInCheck.required && value === '') {
             error = intl.formatMessage({
-                id: 'Apis.Details.Policies.PolicyForm.GeneralAdd.required.error',
+                id: 'Apis.Details.Policies.PolicyForm.General.required.error',
                 defaultMessage: 'Required field is empty',
             });
         } else if (specInCheck.validationRegex && !(new RegExp(specInCheck.validationRegex)).test(value)) {
             error = intl.formatMessage({
-                id: 'Apis.Details.Policies.PolicyForm.GeneralAdd.regex.error',
+                id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
                 defaultMessage: 'Please enter a valid input',
             });
         }
@@ -153,16 +163,36 @@ const GeneralAdd: FC<GeneralAddProps> = ({
         setState(initState);
     }
 
+    /**
+     * Function to check whether there are any errors in the form.
+     * If there are errors, we disable the save button.
+     * @returns {boolean} Boolean value indicating whether or not the forma has any errors.
+     */
+    const formHasErrors = () => {
+        let formHasAnError = false;
+        policySpec.policyAttributes.forEach((spec) => {
+            if(getError(spec) !== '') {
+                formHasAnError = true
+            }
+        })
+        return formHasAnError;
+    }
+
+    /**
+     * Toggle the apply to all option on initial policy drop.
+     */
     const toggleApplyToAll = () => {
         setApplyToAll(!applyToAll);
     }
 
-    const resetDisabled = Object.keys(state).filter(k => !!state[k]).length === 0;
-    const hasAttributes = policySpec.policyAttributes.length !== 0
+    const hasAttributes = policySpec.policyAttributes.length !== 0;
+    const resetDisabled = Object.values(state).filter(value => !!value).length === 0;
+    const isSaveDisabled = Object.values(state).filter(value => value === null).length !== 0;
 
     if (!policySpec) {
         return <CircularProgress />
     }
+
     return (
         <Box p={2}>
             <form onSubmit={submitForm}>
@@ -172,7 +202,7 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                             <div className={classes.resetBtn}>
                                 <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.GeneralAdd.reset'
+                                        id='Apis.Details.Policies.PolicyForm.General.reset'
                                         defaultMessage='Reset'
                                     />
                                 </Button>
@@ -181,100 +211,99 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                         <div>
                             <Typography variant='subtitle2' color='textPrimary'>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.GeneralAdd.description.title'
+                                    id='Apis.Details.Policies.PolicyForm.General.description.title'
                                     defaultMessage='Description'
                                 />
                             </Typography>
                             <Typography variant='caption' color='textPrimary'>
                                 {policySpec.description ? (
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.GeneralAdd.description.value.provided'
+                                        id='Apis.Details.Policies.PolicyForm.General.description.value.provided'
                                         defaultMessage='{description}'
                                         values={{ description: policySpec.description }}
                                     />
                                 ) : (
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.GeneralAdd.description.value.not.provided'
+                                        id='Apis.Details.Policies.PolicyForm.General.description.value.not.provided'
                                         defaultMessage='Oops! Looks like this policy does not have a description'
                                     />
                                 )}                            
                             </Typography>
                         </div>
                     </Grid>
-                    {policySpec.policyAttributes && policySpec.policyAttributes.map((spec) => (<Grid item xs={12}>
-                        {(spec.type.toLowerCase() === 'string' || spec.type.toLocaleLowerCase() === 'enum') 
-                            && (<Typography
-                                variant='subtitle1'
-                                color='textPrimary'
-                            >
-                                {spec.displayName}
-                            </Typography>)}
-                        {spec.type.toLocaleLowerCase() === 'string' && (
-                            <TextField
-                                placeholder={spec.displayName}
-                                helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                                error={getError(spec) !== ''}
-                                variant='outlined'
-                                name={spec.name}
-                                value={getValue(spec.name)}
-                                onChange={(e) => onInputChange(e, spec.type)}
-                                fullWidth
-                            />
-                        )}
-                        {/* {spec.type === 'Boolean' && (
+                    {policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
+                        <Grid item xs={12}>
+                            {(spec.type.toLowerCase() === 'string' || spec.type.toLocaleLowerCase() === 'enum') 
+                                && (<Typography
+                                    variant='subtitle1'
+                                    color='textPrimary'
+                                >
+                                    {spec.displayName}
+                                </Typography>)}
+                            {spec.type.toLocaleLowerCase() === 'string' && (
+                                <TextField
+                                    placeholder={spec.displayName}
+                                    helperText={getError(spec) === '' ? spec.description : getError(spec)}
+                                    error={getError(spec) !== ''}
+                                    variant='outlined'
+                                    name={spec.name}
+                                    value={getValue(spec.name)}
+                                    onChange={(e) => onInputChange(e, spec.type)}
+                                    fullWidth
+                                />
+                            )}
+                            {/* {spec.type === 'Boolean' && (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={getValue(spec.name)}
+                                            onChange={(e) => onInputChange(e, spec.type)}
+                                            name={spec.name}
+                                            color='primary'
+                                        />
+                                    }
+                                    label={spec.displayName}
+                                />
+                            )}
+                            {spec.type === 'Enum' && (
+                                <Select
+                                    placeholder={spec.displayName}
+                                    helperText={spec.description}
+                                    variant='outlined'
+                                    name={spec.name}
+                                    value={getValue(spec.name)}
+                                    onChange={(e) => onInputChange(e, spec.type)}
+                                    fullWidth
+                                >
+                                    {spec.values && spec.values.map((enumVal) => (<MenuItem 
+                                        value={enumVal}>{enumVal}</MenuItem>))}
+                                </Select>
+                            )} */}
+                        </Grid>
+                    ))}
+                    {setDroppedPolicy && (
+                        <Grid item container justify='flex-start' xs={12}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        checked={getValue(spec.name)}
-                                        onChange={(e) => onInputChange(e, spec.type)}
-                                        name={spec.name}
+                                        id='checkbox-apply-dropped-policy-to-all'
+                                        checked={applyToAll}
                                         color='primary'
+                                        name='applyPolicyToAll'
+                                        onChange={toggleApplyToAll}
                                     />
                                 }
-                                label={spec.displayName}
+                                label={(
+                                    <Typography variant='subtitle1' color='textPrimary'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.PolicyForm.General.apply.to.all.resources'
+                                            defaultMessage='Apply to all resources'
+                                        />
+                                    </Typography>
+                                )}
                             />
-                        )}
-                        {spec.type === 'Enum' && (
-                            <Select
-                                placeholder={spec.displayName}
-                                helperText={spec.description}
-                                variant='outlined'
-                                name={spec.name}
-                                value={getValue(spec.name)}
-                                onChange={(e) => onInputChange(e, spec.type)}
-                                fullWidth
-                            >
-                                {spec.values && spec.values.map((enumVal) => (<MenuItem 
-                                    value={enumVal}>{enumVal}</MenuItem>))}
-                            </Select>
-                        )} */}
-                    </Grid>))}
-                    {/* {supportAllGateways() && (<Alert severity='info' variant='outlined'>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.PolicyForm.GeneralAdd.supported.in.all.gw'
-                            defaultMessage='Supported in all Gateways'
-                        /></Alert>)} */}
-                    <Grid item container justify='flex-start' xs={12}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    id='checkbox-apply-dropped-policy-to-all'
-                                    checked={applyToAll}
-                                    color='primary'
-                                    name='applyPolicyToAll'
-                                    onChange={toggleApplyToAll}
-                                />
-                            }
-                            label={(
-                                <Typography variant='subtitle1' color='textPrimary'>
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.GeneralAdd.apply.to.all.resources'
-                                        defaultMessage='Apply to all resources'
-                                    />
-                                </Typography>
-                            )}
-                        />
-                    </Grid>
+                        </Grid>
+                    )}
                     <Grid item container justify='flex-end' xs={12}>
                         <Button
                             variant='outlined'
@@ -283,7 +312,7 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                             className={classes.btn}
                         >
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.GeneralAdd.cancel'
+                                id='Apis.Details.Policies.PolicyForm.General.cancel'
                                 defaultMessage='Cancel'
                             />
                         </Button>
@@ -291,15 +320,23 @@ const GeneralAdd: FC<GeneralAddProps> = ({
                             variant='contained'
                             type='submit'
                             color='primary'
-                            disabled={(resetDisabled && hasAttributes) || saving}
+                            disabled={( isSaveDisabled && hasAttributes) || formHasErrors() || saving}
                         >
-                            {saving ? <><CircularProgress size='small' /><FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.GeneralAdd.saving'
-                                defaultMessage='Saving'
-                            /></> : <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.GeneralAdd.save'
-                                defaultMessage='Save'
-                            />}
+                            {saving
+                                ? <>
+                                    <CircularProgress size='small' />
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.General.saving'
+                                        defaultMessage='Saving'
+                                    />
+                                </>
+                                : <>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.General.save'
+                                        defaultMessage='Save'
+                                    />
+                                </>
+                            }
                         </Button>
                     </Grid>
                 </Grid>
@@ -309,4 +346,4 @@ const GeneralAdd: FC<GeneralAddProps> = ({
 };
 
 
-export default GeneralAdd;
+export default General;

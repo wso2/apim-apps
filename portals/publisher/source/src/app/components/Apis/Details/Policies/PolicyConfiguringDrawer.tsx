@@ -27,7 +27,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import { Progress } from 'AppComponents/Shared';
-import GeneralAdd from './PolicyForm/GeneralAdd';
+import General from './PolicyForm/General';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -91,6 +91,24 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
         setDroppedPolicy(null);
     }
 
+    /**
+     * Converts the PolicyObj prop of type Policy to AttachedPolicy
+     * @returns {AttachedPolicy} Returns a policy object of type AttachedPolicy
+     */
+    const getPolicyOfTypeAttachedPolicy = () => {
+        if (policyObj) {
+            return {
+                id: policyObj?.id,
+                name: policyObj?.name,
+                displayName: policyObj?.displayName,
+                applicableFlows: policyObj?.applicableFlows,
+                uniqueKey: '',
+            };
+        } else {
+            return null;
+        }
+    }
+
     return (
         <Drawer
             anchor='right'
@@ -122,8 +140,8 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     </ListItem>
                 </List>
                 <Divider light />
-                <GeneralAdd
-                    policyObj={policyObj}
+                <General
+                    policyObj={getPolicyOfTypeAttachedPolicy()}
                     setDroppedPolicy={setDroppedPolicy}
                     currentFlow={currentFlow}
                     target={target}

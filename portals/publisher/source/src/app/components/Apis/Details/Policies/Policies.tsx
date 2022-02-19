@@ -39,7 +39,7 @@ import PolicyList from './PolicyList';
 import type { ApiPolicy, Policy, PolicySpec } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
-import { uuidv4 } from './PolicyForm/util/MapUtils';
+import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
 
 const useStyles = makeStyles(() => ({
