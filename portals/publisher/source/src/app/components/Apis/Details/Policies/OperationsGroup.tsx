@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 interface OperationsGroupProps {
   openAPI: any;
   children: any;
-  tag: any;
+  tag: string;
 }
 
 const OperationGroup: FC<OperationsGroupProps> = ({ openAPI, children, tag }) => {

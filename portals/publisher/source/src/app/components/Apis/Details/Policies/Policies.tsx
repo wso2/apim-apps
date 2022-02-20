@@ -36,7 +36,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
-import type { ApiPolicy, Policy, PolicySpec } from './Types';
+import type { ApiPolicy, AttachedPolicy, Policy, PolicySpec } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
@@ -70,7 +70,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
-    const [expandedResource, setExpandedResource] = useState(false);
+    const [expandedResource, setExpandedResource] = useState<string | null>(null);
 
     /**
      * Function to get the initial state of all the operation policies from the API object.
@@ -141,7 +141,13 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         // Update the Swagger spec object when API object gets changed
         api.getSwagger()
             .then((response: any) => {
-                setOpenAPISpec(response.body);
+                const retrievedSpec = response.body;
+                setOpenAPISpec(retrievedSpec);
+
+                // To expand the first operation by default on page render
+                const [target, verbObject]: [string, any] = Object.entries(retrievedSpec.paths)[0];
+                const verb = Object.keys(verbObject)[0]
+                setExpandedResource(verb + target)
             })
             .catch((error: any) => {
                 if (error.response) {
@@ -234,6 +240,33 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         setApiOperations(newApiOperations);
     }
 
+    const sortApiOperations = (
+        currentPolicyList: AttachedPolicy[], target: string, verb: string, currentFlow: string,
+    ) => {
+        const newApiOperations: any = cloneDeep(apiOperations);
+        const operationInAction = newApiOperations.find((op: any) =>
+            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        const operations = operationInAction.operationPolicies[currentFlow];
+        console.log('operations ', operations)
+        console.log('currentPolicyList ', currentPolicyList)
+        // arrayMove(operations, oldIndex, newIndex);
+        // [operations[oldIndex], operations[newIndex]] = [operations[newIndex], operations[oldIndex]]
+
+        // Finally update the state
+        // setApiOperations(newApiOperations);
+
+        // .find((p: any) => (p.policyId === updatedOperation.policyId && p.uuid === updatedOperation.uuid));
+
+        // if (operationFlowPolicy) {
+        //     // Edit operation policy
+        //     operationFlowPolicy.parameters = { ...updatedOperation.parameters };
+        // } else {
+        //     // Add new operation policy
+        //     const uuid = uuidv4();
+        //     operationInAction.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
+        // }
+    }
+
     /**
      * To update the API object with the attached policies on Save
      */
@@ -272,7 +305,13 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     return (
         <ApiOperationContextProvider
-            value={{ apiOperations, updateApiOperations, updateAllApiOperations, deleteApiOperation }}
+            value={{
+                apiOperations,
+                updateApiOperations,
+                updateAllApiOperations,
+                deleteApiOperation,
+                sortApiOperations,
+            }}
         >
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>

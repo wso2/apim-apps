@@ -36,20 +36,20 @@ import type { AttachedPolicy, Policy, PolicySpec } from './Types'
 import ApiOperationContext from './ApiOperationContext';
 import FlowArrow from './components/FlowArrow';
 
-interface OPProps {
-  operation : any;
-  highlight : any;
-  api: any;
-  disableUpdate: any;
-  target: any;
-  verb: any;
-  expandedResource: any;
-  setExpandedResource: any;
-  policyList: Policy[];
-  allPolicies: PolicySpec[] | null
+interface OperationPolicyProps {
+    target: string;
+    verb: string;
+    operation: any;
+    highlight: any;
+    api: any;
+    disableUpdate: any;
+    expandedResource: string | null;
+    setExpandedResource: React.Dispatch<React.SetStateAction<string | null>>;
+    policyList: Policy[];
+    allPolicies: PolicySpec[] | null;
 }
 
-const OperationPolicy: FC<OPProps> = ({
+const OperationPolicy: FC<OperationPolicyProps> = ({
     operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies
 }) => {
     const useStyles = makeStyles((theme: any) => {
