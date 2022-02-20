@@ -442,6 +442,12 @@ class ApiThumbClassic extends React.Component {
                                             color='primary'
                                         />
                                     )}
+                                    {(api.gatewayVendor === 'solace') && (
+                                        <Chip
+                                            label='SOLACE'
+                                            color='primary'
+                                        />
+                                    )}
                                     {(api.lifeCycleStatus === 'PROTOTYPED') && (
                                         <Chip
                                             label='PRE-RELEASED'
