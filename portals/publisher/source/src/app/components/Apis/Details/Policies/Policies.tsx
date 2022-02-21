@@ -33,10 +33,11 @@ import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operation
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import Alert from 'AppComponents/Shared/Alert';
+import { arrayMove } from '@dnd-kit/sortable';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
-import type { ApiPolicy, AttachedPolicy, Policy, PolicySpec } from './Types';
+import type { ApiPolicy, Policy, PolicySpec } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
@@ -240,31 +241,25 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         setApiOperations(newApiOperations);
     }
 
-    const sortApiOperations = (
-        currentPolicyList: AttachedPolicy[], target: string, verb: string, currentFlow: string,
+    /**
+     * Function to rearrange the API Operation ordering
+     * @param {string} oldIndex original index of the policy
+     * @param {string} newIndex new index of the policy
+     * @param {string} target target that needs to be updated
+     * @param {string} verb verb of the operation that neeeds to be updated
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     */
+    const rearrangeApiOperations = (
+        oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
     ) => {
         const newApiOperations: any = cloneDeep(apiOperations);
         const operationInAction = newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-        const operations = operationInAction.operationPolicies[currentFlow];
-        console.log('operations ', operations)
-        console.log('currentPolicyList ', currentPolicyList)
-        // arrayMove(operations, oldIndex, newIndex);
-        // [operations[oldIndex], operations[newIndex]] = [operations[newIndex], operations[oldIndex]]
-
+        const policyArray = operationInAction.operationPolicies[currentFlow];
+        operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+        
         // Finally update the state
-        // setApiOperations(newApiOperations);
-
-        // .find((p: any) => (p.policyId === updatedOperation.policyId && p.uuid === updatedOperation.uuid));
-
-        // if (operationFlowPolicy) {
-        //     // Edit operation policy
-        //     operationFlowPolicy.parameters = { ...updatedOperation.parameters };
-        // } else {
-        //     // Add new operation policy
-        //     const uuid = uuidv4();
-        //     operationInAction.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
-        // }
+        setApiOperations(newApiOperations);
     }
 
     /**
@@ -310,7 +305,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 updateApiOperations,
                 updateAllApiOperations,
                 deleteApiOperation,
-                sortApiOperations,
+                rearrangeApiOperations,
             }}
         >
             <DndProvider backend={HTML5Backend}>
@@ -326,7 +321,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                     <GatewaySelector />
                 </Box>
                 <Box display='flex' flexDirection='row'>
-                    <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox}>
+                    <Box width='60%' pr={1} height='85vh' className={classes.operationListingBox}>
                         <Paper>
                             {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
                                 <Grid key={target} item xs={12}>
@@ -364,7 +359,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                             ))}
                         </Paper>
                     </Box>
-                    <Box width='35%' pl={1}>
+                    <Box width='40%' pl={1}>
                         <PolicyList
                             policyList={policies}
                             fetchPolicies={fetchPolicies}

@@ -27,8 +27,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import { Progress } from 'AppComponents/Shared';
-import General from './PolicyForm/General';
-import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
+import General from './AttachedPolicyForm/General';
+import { PolicySpec, ApiPolicy, Policy } from './Types';
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
@@ -53,7 +53,6 @@ interface PolicyConfiguringDrawerProps {
     currentFlow: string;
     target: string;
     verb: string;
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     allPolicies: PolicySpec[] | null;
 }
 

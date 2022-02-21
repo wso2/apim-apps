@@ -27,7 +27,7 @@ import { Drawer, makeStyles, ListItemIcon, Theme, Typography } from '@material-u
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
-import General from './PolicyForm/General';
+import General from './AttachedPolicyForm/General';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
 import ApiOperationContext from "./ApiOperationContext";
 
@@ -55,7 +55,6 @@ interface PolicyConfigurationEditDrawerProps {
     verb: string;
     drawerOpen: boolean;
     setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     allPolicies: PolicySpec[] | null;
 }
 
@@ -65,7 +64,7 @@ interface PolicyConfigurationEditDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
-    policyObj, currentFlow, target, verb, setCurrentPolicyList, allPolicies, drawerOpen, setDrawerOpen
+    policyObj, currentFlow, target, verb, allPolicies, drawerOpen, setDrawerOpen
 }) => {
     const classes = useStyles();
     const { apiOperations } = useContext<any>(ApiOperationContext);

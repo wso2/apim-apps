@@ -187,7 +187,19 @@ const General: FC<GeneralProps> = ({
 
     const hasAttributes = policySpec.policyAttributes.length !== 0;
     const resetDisabled = Object.values(state).filter(value => !!value).length === 0;
-    const isSaveDisabled = Object.values(state).filter(value => value === null).length !== 0;
+    // const isSaveDisabled = Object.values(state).filter(value => value === null).length !== 0;
+
+    const isSaveDisabled = () => {
+        let isDisabled = false;
+        policySpec.policyAttributes.forEach((spec) => {
+            if (spec.required && !state[spec.name]) {
+                isDisabled = true;
+            } else {
+                isDisabled = false;
+            }
+        })
+        return isDisabled;
+    }
 
     if (!policySpec) {
         return <CircularProgress />
@@ -233,16 +245,14 @@ const General: FC<GeneralProps> = ({
                     </Grid>
                     {policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
                         <Grid item xs={12}>
-                            {(spec.type.toLowerCase() === 'string' || spec.type.toLocaleLowerCase() === 'enum') 
-                                && (<Typography
-                                    variant='subtitle1'
-                                    color='textPrimary'
-                                >
-                                    {spec.displayName}
-                                </Typography>)}
-                            {spec.type.toLocaleLowerCase() === 'string' && (
+
+                            {/* When the attribute type is string or integer */}
+                            {(spec.type.toLocaleLowerCase() === 'string'
+                            || spec.type.toLocaleLowerCase() === 'integer') && (
                                 <TextField
-                                    placeholder={spec.displayName}
+                                    required={spec.required}
+                                    id={'textfield-' + spec.name}
+                                    label={spec.displayName}
                                     helperText={getError(spec) === '' ? spec.description : getError(spec)}
                                     error={getError(spec) !== ''}
                                     variant='outlined'
@@ -252,6 +262,30 @@ const General: FC<GeneralProps> = ({
                                     fullWidth
                                 />
                             )}
+
+                            {/* When the attribute type is enum  */}
+                            {(spec.type.toLocaleLowerCase() === 'enum') && (
+                                <Typography
+                                    variant='subtitle1'
+                                    color='textPrimary'
+                                >
+                                    {spec.displayName}
+                                </Typography>
+                                // <Select
+                                //     placeholder={spec.displayName}
+                                //     helperText={spec.description}
+                                //     variant='outlined'
+                                //     name={spec.name}
+                                //     value={getValue(spec.name)}
+                                //     onChange={(e) => onInputChange(e, spec.type)}
+                                //     fullWidth
+                                // >
+                                //     {spec.values && spec.values.map((enumVal) => (<MenuItem 
+                                //         value={enumVal}>{enumVal}</MenuItem>))}
+                                // </Select>
+                            )}
+
+                            {/* When attribute type is boolean */}
                             {/* {spec.type === 'Boolean' && (
                                 <FormControlLabel
                                     control={
@@ -264,21 +298,9 @@ const General: FC<GeneralProps> = ({
                                     }
                                     label={spec.displayName}
                                 />
-                            )}
-                            {spec.type === 'Enum' && (
-                                <Select
-                                    placeholder={spec.displayName}
-                                    helperText={spec.description}
-                                    variant='outlined'
-                                    name={spec.name}
-                                    value={getValue(spec.name)}
-                                    onChange={(e) => onInputChange(e, spec.type)}
-                                    fullWidth
-                                >
-                                    {spec.values && spec.values.map((enumVal) => (<MenuItem 
-                                        value={enumVal}>{enumVal}</MenuItem>))}
-                                </Select>
                             )} */}
+
+                            {/* When attribute type is map */}
                         </Grid>
                     ))}
                     {setDroppedPolicy && (
@@ -320,7 +342,7 @@ const General: FC<GeneralProps> = ({
                             variant='contained'
                             type='submit'
                             color='primary'
-                            disabled={( isSaveDisabled && hasAttributes) || formHasErrors() || saving}
+                            disabled={ isSaveDisabled() || formHasErrors() || saving}
                         >
                             {saving
                                 ? <>
