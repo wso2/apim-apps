@@ -224,12 +224,6 @@ function APIThumbPlain(props) {
                                     color='primary'
                                 />
                             )}
-                            {(api.gatewayVendor === 'solace') && (
-                                <Chip
-                                    label='SOLACE'
-                                    color='primary'
-                                />
-                            )}
                             {(api.lifeCycleStatus === 'PROTOTYPED') && (
                                 <Chip
                                     label={api.apiType === 'APIProduct' ? api.state : 'PROTOTYPE'}
