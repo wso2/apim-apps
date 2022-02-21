@@ -149,6 +149,12 @@ const styles = (theme) => ({
     chipWrapper: {
         marginTop: '15px',
     },
+    chipWrapper2: {
+        marginBottom: '10px',
+    },
+    chipWrapper3: {
+        marginTop: '12px',
+    },
     ratingWrapper: {
         marginTop: '20px',
     },
@@ -294,6 +300,103 @@ class ApiThumbClassic extends React.Component {
         const imageHeight = customHeight || 140;
         const defaultImage = thumbnail.defaultApiImage;
 
+        const showChips = () => {
+            if (api.lifeCycleStatus === 'PROTOTYPED') {
+                if ((api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL')) {
+                    // GraphQL APIs in prototyped status.
+                    return (
+                        <div>
+                            <Typography
+                                variant='subtitle1'
+                                gutterBottom
+                                align='right'
+                                className={classes.chipWrapper2}
+                            >
+                                <Chip
+                                    label={api.transportType === undefined ? api.type : api.transportType}
+                                    color='primary'
+                                />
+                            </Typography>
+                            <Typography
+                                variant='subtitle1'
+                                gutterBottom
+                                align='right'
+                                className={classes.chipWrapper3}
+                            >
+                                <Chip
+                                    label='PRE-RELEASED'
+                                    color='default'
+                                />
+                            </Typography>
+                        </div>
+                    );
+                } else if ((api.gatewayVendor === 'solace')) {
+                    // Solace APIs in prototyped status.
+                    return (
+                        <div>
+                            <Typography
+                                variant='subtitle1'
+                                gutterBottom
+                                align='right'
+                                className={classes.chipWrapper2}
+                            >
+                                <Chip
+                                    label='SOLACE'
+                                    color='primary'
+                                />
+                            </Typography>
+                            <Typography
+                                variant='subtitle1'
+                                gutterBottom
+                                align='right'
+                                className={classes.chipWrapper3}
+                            >
+                                <Chip
+                                    label='PRE-RELEASED'
+                                    color='default'
+                                />
+                            </Typography>
+                        </div>
+                    );
+                } else {
+                    // APIs in prototyped status.
+                    return (
+                        <div>
+                            <Chip
+                                label='PRE-RELEASED'
+                                color='default'
+                            />
+                        </div>
+                    );
+                }
+            } else {
+                // GraphQL APIs which are not in prototyped status.
+                if ((api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL')) {
+                    return (
+                        <div>
+                            <Chip
+                                label={api.transportType === undefined ? api.type : api.transportType}
+                                color='primary'
+                            />
+                        </div>
+                    );
+                }
+
+                // Solace APIs which are not in prototyped status.
+                if ((api.gatewayVendor === 'solace')) {
+                    return (
+                        <div>
+                            <Chip
+                                label='SOLACE'
+                                color='primary'
+                            />
+                        </div>
+                    );
+                }
+            }
+            return null;
+        };
+
         let ImageView;
         if (!imageLoaded) {
             ImageView = (
@@ -436,24 +539,7 @@ class ApiThumbClassic extends React.Component {
                                     align='right'
                                     className={classes.chipWrapper}
                                 >
-                                    {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
-                                        <Chip
-                                            label={api.transportType === undefined ? api.type : api.transportType}
-                                            color='primary'
-                                        />
-                                    )}
-                                    {(api.gatewayVendor === 'solace') && (
-                                        <Chip
-                                            label='SOLACE'
-                                            color='primary'
-                                        />
-                                    )}
-                                    {(api.lifeCycleStatus === 'PROTOTYPED') && (
-                                        <Chip
-                                            label='PRE-RELEASED'
-                                            color='default'
-                                        />
-                                    )}
+                                    {showChips()}
                                 </Typography>
                             </div>
                         </div>
