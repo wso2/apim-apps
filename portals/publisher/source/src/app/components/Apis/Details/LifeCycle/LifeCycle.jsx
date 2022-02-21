@@ -136,14 +136,14 @@ class LifeCycle extends Component {
                 const lcHistory = response[2].body.list;
 
                 // Bug fix for issue #12363
-                // Changing internal state PROTOTYPE to PRE-RELEASED to display in LC History table
+                // Changing internal state PROTOTYPE -> PRE-RELEASED to display in LC History table
                 lcHistory.forEach(element => {
                     const temp = element;
-                    if(element.previousState === "PROTOTYPED"){
-                        temp.previousState = "PRE-RELEASED"
+                    if (element.previousState === 'PROTOTYPED') {
+                        temp.previousState = 'PRE-RELEASED';
                     }
-                    if(element.postState === "PROTOTYPED"){
-                        temp.postState = "PRE-RELEASED"
+                    if (element.postState === 'PROTOTYPED') {
+                        temp.postState = 'PRE-RELEASED';
                     }
                 });
 
