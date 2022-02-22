@@ -40,6 +40,8 @@ export type PolicySpecAttribute = {
     required: boolean;
     type: string;
     validationRegex: string;
+    defaultValue: any;
+    allowedValues: string[];
 }
 
 export type PolicySpec = {

@@ -27,6 +27,10 @@ import {
     Box,
     FormControlLabel,
     Checkbox,
+    Select,
+    InputLabel,
+    FormControl,
+    FormHelperText,
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
@@ -52,6 +56,9 @@ const useStyles = makeStyles(theme => ({
     mandatoryStar: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
+    },
+    formControl: {
+        width: '80%',
     },
 }));
 
@@ -84,12 +91,12 @@ const General: FC<GeneralProps> = ({
     }
 
     const onInputChange = (event: any, specType: string) => {
-        if (specType.toLocaleLowerCase() === 'boolean') {
+        if (specType.toLowerCase() === 'boolean') {
             setState({ ...state, [event.target.name]: event.target.checked });
         } else if (
             specType.toLowerCase() === 'string'
-            || specType.toLocaleLowerCase() === 'integer'
-            || specType.toLocaleLowerCase() === 'enum'
+            || specType.toLowerCase() === 'integer'
+            || specType.toLowerCase() === 'enum'
         ) {
             setState({ ...state, [event.target.name]: event.target.value });
         }
@@ -291,26 +298,43 @@ const General: FC<GeneralProps> = ({
                                 />
                             )}
 
-                            {/* When the attribute type is enum  */}
+                            {/* When the attribute type is enum */}
                             {spec.type.toLocaleLowerCase() === 'enum' && (
-                                <Typography
-                                    variant='subtitle1'
-                                    color='textPrimary'
-                                >
-                                    {spec.displayName}
-                                </Typography>
-                                // <Select
-                                //     placeholder={spec.displayName}
-                                //     helperText={spec.description}
-                                //     variant='outlined'
-                                //     name={spec.name}
-                                //     value={getValue(spec.name)}
-                                //     onChange={(e) => onInputChange(e, spec.type)}
-                                //     fullWidth
-                                // >
-                                //     {spec.values && spec.values.map((enumVal) => (<MenuItem 
-                                //         value={enumVal}>{enumVal}</MenuItem>))}
-                                // </Select>
+                                <>
+                                    <FormControl variant='outlined' className={classes.formControl} error>
+                                        <InputLabel htmlFor={'enum-label-' + spec.name}>
+                                            <>
+                                                {spec.displayName}
+                                                {spec.required && (
+                                                    <sup className={classes.mandatoryStar}>*</sup>
+                                                )}
+                                            </>
+                                        </InputLabel>
+                                        <Select 
+                                            native
+                                            value={getValue(spec.name)}
+                                            onChange={(e) => onInputChange(e, spec.type)}
+                                            label={(
+                                                <>
+                                                    {spec.displayName}
+                                                    {spec.required && (
+                                                        <sup className={classes.mandatoryStar}>*</sup>
+                                                    )}
+                                                </>
+                                            )}
+                                            inputProps={{
+                                                name: spec.name,
+                                                id: `enum-label-${spec.name}`
+                                            }}
+                                        >
+                                            <option aria-label='None' value='' />
+                                            {spec.allowedValues && spec.allowedValues.map((enumVal) => (
+                                                <option value={enumVal}>{enumVal}</option>
+                                            ))}                                           
+                                        </Select>
+                                        <FormHelperText>{spec.description}</FormHelperText>
+                                    </FormControl>
+                                </>
                             )}
 
                             {/* When attribute type is boolean */}
