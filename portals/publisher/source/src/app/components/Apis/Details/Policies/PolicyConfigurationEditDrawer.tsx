@@ -18,7 +18,7 @@
  */
 
 import React, { FC, useEffect, useContext, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -28,8 +28,10 @@ import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import General from './AttachedPolicyForm/General';
-import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
+import type { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';
+import ApiContext from '../components/ApiContext';
 import ApiOperationContext from "./ApiOperationContext";
+import API from 'AppData/api';
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
@@ -67,14 +69,25 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     policyObj, currentFlow, target, verb, allPolicies, drawerOpen, setDrawerOpen
 }) => {
     const classes = useStyles();
+    const { api } = useContext<any>(ApiContext);
     const { apiOperations } = useContext<any>(ApiOperationContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {
-        if (policyObj) {
-            setPolicySpec(allPolicies?.find((policy: PolicySpec) => policy.id === policyObj.id));
-            setDrawerOpen(true);
-        }
+        (async () => {
+            if (policyObj) {
+                let policySpecVal =  allPolicies?.find((policy: PolicySpec) => policy.name === policyObj.name);
+
+                // If this policy is a deleted common policy we need to do an API call to get the policy specification
+                if (!policySpecVal) {
+                    const policyResponse = await API.getOperationPolicy(policyObj.id, api.id);
+                    policySpecVal = policyResponse.body;
+                }
+
+                setPolicySpec(policySpecVal);
+                setDrawerOpen(true);
+            }
+        })();
     }, [policyObj]);
 
     const operationInAction = apiOperations.find((op: any) =>
@@ -132,6 +145,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                         policySpec={policySpec}
                         apiPolicy={apiPolicy}
                         handleDrawerClose={handleDrawerClose}
+                        isEditMode
                     />
                 )}
             </Box>

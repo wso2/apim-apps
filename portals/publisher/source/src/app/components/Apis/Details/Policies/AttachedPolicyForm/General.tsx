@@ -49,6 +49,10 @@ const useStyles = makeStyles(theme => ({
     drawerInfo: {
         marginBottom: '1em',
     },
+    mandatoryStar: {
+        color: theme.palette.error.main,
+        marginLeft: theme.spacing(0.1),
+    },
 }));
 
 interface GeneralProps {
@@ -60,10 +64,11 @@ interface GeneralProps {
     apiPolicy: ApiPolicy;
     policySpec: PolicySpec;
     handleDrawerClose: () => void;
+    isEditMode: boolean;
 }
 
 const General: FC<GeneralProps> = ({
-    policyObj, setDroppedPolicy, currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose
+    policyObj, setDroppedPolicy, currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose, isEditMode
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -81,7 +86,11 @@ const General: FC<GeneralProps> = ({
     const onInputChange = (event: any, specType: string) => {
         if (specType.toLocaleLowerCase() === 'boolean') {
             setState({ ...state, [event.target.name]: event.target.checked });
-        } else if (specType.toLowerCase() === 'string' || specType.toLocaleLowerCase() === 'enum') {
+        } else if (
+            specType.toLowerCase() === 'string'
+            || specType.toLocaleLowerCase() === 'integer'
+            || specType.toLocaleLowerCase() === 'enum'
+        ) {
             setState({ ...state, [event.target.name]: event.target.value });
         }
     }
@@ -179,6 +188,32 @@ const General: FC<GeneralProps> = ({
     }
 
     /**
+     * Function to check if the form content is in state that needs to be saved.
+     * @returns {boolean} Whether or not the save button should be disabled.
+     */
+    const isSaveDisabled = () => {
+        if (!isEditMode) {
+            let isDisabled = false;
+            policySpec.policyAttributes.forEach((spec) => {
+                const currentState = state[spec.name];
+                if (spec.required && !currentState) {
+                    isDisabled =  true;
+                }
+            });
+            return isDisabled;
+        } else {
+            let isDisabled = true;
+            policySpec.policyAttributes.forEach((spec) => {
+                const currentState = state[spec.name];
+                if (currentState !== null) {
+                    isDisabled = false;
+                }
+            });
+            return isDisabled;
+        }
+    }
+
+    /**
      * Toggle the apply to all option on initial policy drop.
      */
     const toggleApplyToAll = () => {
@@ -187,19 +222,6 @@ const General: FC<GeneralProps> = ({
 
     const hasAttributes = policySpec.policyAttributes.length !== 0;
     const resetDisabled = Object.values(state).filter(value => !!value).length === 0;
-    // const isSaveDisabled = Object.values(state).filter(value => value === null).length !== 0;
-
-    const isSaveDisabled = () => {
-        let isDisabled = false;
-        policySpec.policyAttributes.forEach((spec) => {
-            if (spec.required && !state[spec.name]) {
-                isDisabled = true;
-            } else {
-                isDisabled = false;
-            }
-        })
-        return isDisabled;
-    }
 
     if (!policySpec) {
         return <CircularProgress />
@@ -250,9 +272,15 @@ const General: FC<GeneralProps> = ({
                             {(spec.type.toLocaleLowerCase() === 'string'
                             || spec.type.toLocaleLowerCase() === 'integer') && (
                                 <TextField
-                                    required={spec.required}
-                                    id={'textfield-' + spec.name}
-                                    label={spec.displayName}
+                                    id={spec.name}
+                                    label={(
+                                        <>
+                                            {spec.displayName}
+                                            {spec.required && (
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            )}
+                                        </>
+                                    )}
                                     helperText={getError(spec) === '' ? spec.description : getError(spec)}
                                     error={getError(spec) !== ''}
                                     variant='outlined'
@@ -264,7 +292,7 @@ const General: FC<GeneralProps> = ({
                             )}
 
                             {/* When the attribute type is enum  */}
-                            {(spec.type.toLocaleLowerCase() === 'enum') && (
+                            {spec.type.toLocaleLowerCase() === 'enum' && (
                                 <Typography
                                     variant='subtitle1'
                                     color='textPrimary'
@@ -286,7 +314,7 @@ const General: FC<GeneralProps> = ({
                             )}
 
                             {/* When attribute type is boolean */}
-                            {/* {spec.type === 'Boolean' && (
+                            {spec.type.toLowerCase() === 'boolean' && (
                                 <FormControlLabel
                                     control={
                                         <Checkbox
@@ -296,9 +324,16 @@ const General: FC<GeneralProps> = ({
                                             color='primary'
                                         />
                                     }
-                                    label={spec.displayName}
+                                    label={(
+                                        <>
+                                            {spec.displayName}
+                                            {spec.required && (
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            )}
+                                        </>
+                                    )}
                                 />
-                            )} */}
+                            )}
 
                             {/* When attribute type is map */}
                         </Grid>

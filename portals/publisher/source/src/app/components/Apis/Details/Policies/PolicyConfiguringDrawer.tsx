@@ -148,6 +148,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     policySpec={policySpec}
                     apiPolicy={apiPolicy}
                     handleDrawerClose={handleDrawerClose}
+                    isEditMode={false}
                 />
             </Box>
         </Drawer>

@@ -47,9 +47,6 @@ const useStyles = makeStyles((theme: any) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
-    tabContentBox: {
-        // overflowY: 'scroll',
-    },
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
@@ -134,7 +131,7 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 aria-controls='fault-tabpanel'
                             />
                         </Tabs>
-                        <Box className={classes.tabContentBox} height='50vh' pt={1} overflow='scroll'>
+                        <Box height='60vh' pt={1} overflow='scroll'>
                             <TabPanel
                                 policyList={policyList.filter((policy) => policy.applicableFlows.includes('request'))}
                                 index={0}

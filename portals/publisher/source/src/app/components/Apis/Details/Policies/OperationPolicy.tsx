@@ -31,6 +31,7 @@ import Utils from 'AppData/Utils';
 import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
+import API from 'AppData/api';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types'
 import ApiOperationContext from './ApiOperationContext';
@@ -155,57 +156,71 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
     }, [policyList])
 
     useEffect(() => {
-        const operationInAction = apiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        (async () => {
+            const operationInAction = apiOperations.find((op: any) =>
+                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
 
-        // Populate request flow attached policy list
-        const requestFlowList:AttachedPolicy[] = [];
-        const requestFlow = operationInAction.operationPolicies.request;
-        requestFlow.forEach((requestFlowAttachedPolicy: any) => {
-            const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
-                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
-            if (policyObj) {
-                requestFlowList.push({ ...policyObj, uniqueKey: uuid });
-            // } else {
-            //     ;(async () => {
-            //         try {
-            //             const policyResponse = await API.getOperationPolicy(policyId, apiId);
-            //             requestFlowList.push({ ...policyResponse.body, uniqueKey: Math.random() });
-            //         } catch(error) {
-            //             console.error(error);
-            //         }
-            //     })();
+            // Populate request flow attached policy list
+            const requestFlowList:AttachedPolicy[] = [];
+            const requestFlow = operationInAction.operationPolicies.request;
+            for (const requestFlowAttachedPolicy of requestFlow) {
+                const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
+                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
+                if (policyObj) {
+                    requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+                } else {
+                    try {
+                        // eslint-disable-next-line no-await-in-loop
+                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
+                        requestFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
+                    } catch(error) {
+                        console.error(error);
+                    }
+                }
             }
-        })
-        setRequestFlowPolicyList(requestFlowList);
+            setRequestFlowPolicyList(requestFlowList);
 
-        // Populate response flow attached policy list
-        const responseFlowList:AttachedPolicy[] = [];
-        const responseFlow = operationInAction.operationPolicies.response;
-        responseFlow.forEach((responseFlowAttachedPolicy: any) => {
-            const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
-                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
-            if (policyObj) {
-                responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+            // Populate response flow attached policy list
+            const responseFlowList:AttachedPolicy[] = [];
+            const responseFlow = operationInAction.operationPolicies.response;
+            for (const responseFlowAttachedPolicy of responseFlow) {
+                const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
+                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
+                if (policyObj) {
+                    responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+                } else {
+                    try {
+                        // eslint-disable-next-line no-await-in-loop
+                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
+                        responseFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
+                    } catch(error) {
+                        console.error(error);
+                    }
+                }
             }
-        })
-        setResponseFlowPolicyList(responseFlowList);
-        
-        // Populate fault flow attached policy list
-        const faultFlowList:AttachedPolicy[] = [];
-        const faultFlow = operationInAction.operationPolicies.fault;
-        faultFlow.forEach((faultFlowAttachedPolicy: any) => {
-            const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
-                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
-            if (policyObj) {
-                faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+            setResponseFlowPolicyList(responseFlowList);
+            
+            // Populate fault flow attached policy list
+            const faultFlowList:AttachedPolicy[] = [];
+            const faultFlow = operationInAction.operationPolicies.fault;
+            for (const faultFlowAttachedPolicy of faultFlow) {
+                const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
+                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
+                if (policyObj) {
+                    faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                } else {
+                    try {
+                        // eslint-disable-next-line no-await-in-loop
+                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
+                        faultFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
+                    } catch(error) {
+                        console.error(error);
+                    }
+                }
             }
-        })
-        setFaultFlowPolicyList(faultFlowList);
+            setFaultFlowPolicyList(faultFlowList);
 
+        })();
     }, [apiOperations])
 
     const handleExpansion = (panel: any) => (event:any, isExpanded:any) => {

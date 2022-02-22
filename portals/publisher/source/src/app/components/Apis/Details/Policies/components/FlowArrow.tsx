@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
         opacity: 0.4,
     },
     iconSize: {
-        fontSize: '3em',
+        fontSize: '2em',
         color: 'black',
         opacity: 0.4,
     }
@@ -51,18 +51,18 @@ const FlowArrow: FC<FlowArrowProps> = ({ arrowDirection }) => {
         <>
             {arrowDirection === 'left'
                 ?  (
-                    <Box display='flex' flexDirection='row' alignItems='center' pl={2}>
-                        <Box width='90%' mb={0.5} height={5} className={classes.arrowColor} />
+                    <Box display='flex' flexDirection='row' alignItems='center' pl={2} pt={1}>
+                        <Box width='90%' mb={0.5} height={4} className={classes.arrowColor} />
                         <Box width='10%'>
                             <ArrowForwardIosIcon className={classes.iconSize} />
                         </Box>
                     </Box>
                 ) : (
-                    <Box display='flex' flexDirection='row' alignItems='center' pr={2} pl={3}>
+                    <Box display='flex' flexDirection='row' alignItems='center' pr={2} pl={3} pt={1}>
                         <Box width='5%'>
                             <ArrowBackIosIcon className={classes.iconSize} />
                         </Box>
-                        <Box width='90%' mb={0.5} height={5} className={classes.arrowColor} />
+                        <Box width='90%' mb={0.5} height={4} className={classes.arrowColor} />
                     </Box>
                 )
             }

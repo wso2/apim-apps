@@ -321,7 +321,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                     <GatewaySelector />
                 </Box>
                 <Box display='flex' flexDirection='row'>
-                    <Box width='60%' pr={1} height='85vh' className={classes.operationListingBox}>
+                    <Box width='60%' pr={1} height='85vh' py={1} className={classes.operationListingBox}>
                         <Paper>
                             {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
                                 <Grid key={target} item xs={12}>
@@ -359,7 +359,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                             ))}
                         </Paper>
                     </Box>
-                    <Box width='40%' pl={1}>
+                    <Box width='40%' pl={1} pt={1}>
                         <PolicyList
                             policyList={policies}
                             fetchPolicies={fetchPolicies}
