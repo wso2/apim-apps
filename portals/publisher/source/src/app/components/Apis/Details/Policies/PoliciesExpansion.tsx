@@ -27,15 +27,17 @@ import { FormattedMessage } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types'
 import FlowArrow from './components/FlowArrow';
+import ApiOperationContext from './ApiOperationContext';
 
 interface OPProps {
     target: any;
     verb: any;
     allPolicies: PolicySpec[] | null;
     isChoreoConnectEnabled: boolean;
+    policyList: Policy[];
 }
 
-const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoConnectEnabled}) => {
+const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoConnectEnabled, policyList }) => {
 
     // Policies attached for each request, response and fault flow
     const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);
@@ -113,7 +115,92 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
     });
 
     const classes = useStyles();
+    const { apiOperations } = useContext<any>(ApiOperationContext);
     console.log(isChoreoConnectEnabled + ">>>>>");
+    console.log("apiOperations:" + JSON.stringify(apiOperations));
+
+    useEffect(() => {
+        const requestList = [];
+        const responseList = [];
+        const faultList = [];
+        for (const policy of policyList) {
+            if (policy.applicableFlows.includes('request')) {
+                requestList.push(`policyCard-${policy.id}`);
+            }
+            if (policy.applicableFlows.includes('response')) {
+                responseList.push(`policyCard-${policy.id}`);
+            }
+            if (policy.applicableFlows.includes('fault')) {
+                faultList.push(`policyCard-${policy.id}`);
+            }
+        }
+        setRequestFlowDroppablePolicyList(requestList);
+        setResponseFlowDroppablePolicyList(responseList);
+        setFaultFlowDroppablePolicyList(faultList);
+    }, [policyList])
+
+    useEffect(() => {
+
+        let operationInAction = null;
+        if(!isChoreoConnectEnabled) {
+            operationInAction = apiOperations.find((op: any) =>
+            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        } else {
+            operationInAction = apiOperations.find((op: any) =>
+            op.target === target);
+        }
+
+        // Populate request flow attached policy list
+        const requestFlowList: AttachedPolicy[] = [];
+        const requestFlow = operationInAction.operationPolicies.request;
+        requestFlow.map((requestFlowAttachedPolicy: any) => {
+            const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
+            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
+                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
+            if (policyObj) {
+                requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+                // } else {
+                //     ;(async () => {
+                //         try {
+                //             const policyResponse = await API.getOperationPolicy(policyId, apiId);
+                //             requestFlowList.push({ ...policyResponse.body, uniqueKey: Math.random() });
+                //         } catch(error) {
+                //             console.error(error);
+                //         }
+                //     })();
+            }
+        })
+        setRequestFlowPolicyList(requestFlowList);
+
+        if (!isChoreoConnectEnabled) {
+            // Populate response flow attached policy list
+            const responseFlowList: AttachedPolicy[] = [];
+            const responseFlow = operationInAction.operationPolicies.response;
+            responseFlow.map((responseFlowAttachedPolicy: any) => {
+                const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
+                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
+                    || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
+                if (policyObj) {
+                    responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+                }
+            })
+            setResponseFlowPolicyList(responseFlowList);
+
+            // Populate fault flow attached policy list
+            const faultFlowList: AttachedPolicy[] = [];
+            const faultFlow = operationInAction.operationPolicies.fault;
+            faultFlow.map((faultFlowAttachedPolicy: any) => {
+                const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
+                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
+                    || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
+                if (policyObj) {
+                    faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                }
+            })
+            setFaultFlowPolicyList(faultFlowList);
+        }
+
+    }, [apiOperations])
 
 
     return (
@@ -148,43 +235,43 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
                             return (
                                 <>
                                     <Box className={classes.flowSpecificPolicyAttachGrid}>
-                        <Typography variant='subtitle2' align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Operation.response.flow.title'
-                                defaultMessage='Response Flow'
-                            />
-                        </Typography>
-                        <FlowArrow arrowDirection='right' />
-                        <PolicyDropzone
-                            policyDisplayStartDirection='right'
-                            currentPolicyList={responseFlowPolicyList}
-                            setCurrentPolicyList={setResponseFlowPolicyList}
-                            droppablePolicyList={responseFlowDroppablePolicyList}
-                            currentFlow='response'
-                            target={target}
-                            verb={verb}
-                            allPolicies={allPolicies}
-                        />
-                    </Box>
-                    <Box className={classes.flowSpecificPolicyAttachGrid}>
-                        <Typography variant='subtitle2' align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Operation.fault.flow.title'
-                                defaultMessage='Fault Flow'
-                            />
-                        </Typography>
-                        <FlowArrow arrowDirection='right' />
-                        <PolicyDropzone
-                            policyDisplayStartDirection='right'
-                            currentPolicyList={faultFlowPolicyList}
-                            setCurrentPolicyList={setFaultFlowPolicyList}
-                            droppablePolicyList={faultFlowDroppablePolicyList}
-                            currentFlow='fault'
-                            target={target}
-                            verb={verb}
-                            allPolicies={allPolicies}
-                        />
-                    </Box>
+                                        <Typography variant='subtitle2' align='left'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Policies.Operation.response.flow.title'
+                                                defaultMessage='Response Flow'
+                                            />
+                                        </Typography>
+                                        <FlowArrow arrowDirection='right' />
+                                        <PolicyDropzone
+                                            policyDisplayStartDirection='right'
+                                            currentPolicyList={responseFlowPolicyList}
+                                            setCurrentPolicyList={setResponseFlowPolicyList}
+                                            droppablePolicyList={responseFlowDroppablePolicyList}
+                                            currentFlow='response'
+                                            target={target}
+                                            verb={verb}
+                                            allPolicies={allPolicies}
+                                        />
+                                    </Box>
+                                    <Box className={classes.flowSpecificPolicyAttachGrid}>
+                                        <Typography variant='subtitle2' align='left'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Policies.Operation.fault.flow.title'
+                                                defaultMessage='Fault Flow'
+                                            />
+                                        </Typography>
+                                        <FlowArrow arrowDirection='right' />
+                                        <PolicyDropzone
+                                            policyDisplayStartDirection='right'
+                                            currentPolicyList={faultFlowPolicyList}
+                                            setCurrentPolicyList={setFaultFlowPolicyList}
+                                            droppablePolicyList={faultFlowDroppablePolicyList}
+                                            currentFlow='fault'
+                                            target={target}
+                                            verb={verb}
+                                            allPolicies={allPolicies}
+                                        />
+                                    </Box>
                                 </>
                             )
                         }

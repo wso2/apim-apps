@@ -362,6 +362,7 @@ const OperationPolicy: FC<OPProps> = ({
                         verb={verb}
                         allPolicies={allPolicies}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
+                        policyList={policyList}
                     />) : <></>}
             </ExpansionPanel>
         </>

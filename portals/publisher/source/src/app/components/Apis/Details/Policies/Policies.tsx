@@ -168,9 +168,14 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const updateApiOperations = (
         updatedOperation: any, target: string, verb: string, currentFlow: string,
     ) => {
+        let operationInAction = null;
         const newApiOperations: any = cloneDeep(apiOperations);
-        const operationInAction = newApiOperations.find((op: any) =>
+        if (isChoreoConnectEnabled) {
+            operationInAction = newApiOperations.find((op: any) => op.target === target);
+        } else {
+            operationInAction = newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        }
         const operationFlowPolicy =
             operationInAction.operationPolicies[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
                 && p.uuid === updatedOperation.uuid));
@@ -310,6 +315,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                     verb={"get"}
                                                     allPolicies={allPolicies}
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                    policyList={policies}
                                                 ></PoliciesExpansion>
                                             </Grid>
                                         </OperationsGroup>
