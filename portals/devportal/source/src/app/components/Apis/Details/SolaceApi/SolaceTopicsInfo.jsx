@@ -143,22 +143,24 @@ function SolaceTopicsInfo() {
                 setApplicationList(response.body.list);
                 // Get application
                 const appInner = response.body.list[0];
-                setApplication(appInner.applicationName);
-                if (appInner.solaceDeployedEnvironments !== null) {
-                    // Set default deployed environments of application
-                    setEnvsListOfApplication(appInner.solaceDeployedEnvironments);
-                    setEnvironment(appInner.solaceDeployedEnvironments[0]);
-                    // Set default protocols of deployed environment
-                    setProtocolsListOfEnvironments(appInner.solaceDeployedEnvironments[0].solaceURLs);
-                    setSelectedProtocol(appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol);
-                    setSelectedEndpoint(appInner.solaceDeployedEnvironments[0].solaceURLs[0].endpointURL);
-                    // Set default topics of deployed solace environment
-                    if (appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol === 'mqtt') {
-                        setTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.mqttSyntax);
-                        setPubAndSubTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.mqttSyntax, apiTopicList);
-                    } else {
-                        setTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.defaultSyntax);
-                        setPubAndSubTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.defaultSyntax, apiTopicList);
+                if (appInner != null) {
+                    setApplication(appInner.applicationName);
+                    if (appInner.solaceDeployedEnvironments !== null) {
+                        // Set default deployed environments of application
+                        setEnvsListOfApplication(appInner.solaceDeployedEnvironments);
+                        setEnvironment(appInner.solaceDeployedEnvironments[0]);
+                        // Set default protocols of deployed environment
+                        setProtocolsListOfEnvironments(appInner.solaceDeployedEnvironments[0].solaceURLs);
+                        setSelectedProtocol(appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol);
+                        setSelectedEndpoint(appInner.solaceDeployedEnvironments[0].solaceURLs[0].endpointURL);
+                        // Set default topics of deployed solace environment
+                        if (appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol === 'mqtt') {
+                            setTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.mqttSyntax);
+                            setPubAndSubTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.mqttSyntax, apiTopicList);
+                        } else {
+                            setTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.defaultSyntax);
+                            setPubAndSubTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.defaultSyntax, apiTopicList);
+                        }
                     }
                 }
             }).catch((error) => {
