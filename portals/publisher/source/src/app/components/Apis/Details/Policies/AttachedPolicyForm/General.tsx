@@ -153,7 +153,11 @@ const General: FC<GeneralProps> = ({
                     id: 'Apis.Details.Policies.PolicyForm.General.required.error',
                     defaultMessage: 'Required field is empty',
                 });
-            } else if (specInCheck.validationRegex && !(new RegExp(specInCheck.validationRegex)).test(value)) {
+            } else if (
+                value !== '' &&
+                specInCheck.validationRegex &&
+                !new RegExp(specInCheck.validationRegex).test(value)
+            ) {
                 error = intl.formatMessage({
                     id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
                     defaultMessage: 'Please enter a valid input',
@@ -163,12 +167,17 @@ const General: FC<GeneralProps> = ({
         return error;
     }
 
-    const getValue = (specName: string) => {
+    const getValue = (spec: PolicySpecAttribute) => {
+        const specName = spec.name;
         const previousVal = getValueOfPolicyParam(specName);
         if (state[specName] !== null) {
             return state[specName];
         } else if (previousVal) {
             return previousVal;
+        } else if (spec.defaultValue) {
+            if (spec.type.toLowerCase() === 'integer') return parseInt(spec.defaultValue, 10);
+            else if (spec.type.toLowerCase() === 'boolean') return (spec.defaultValue.toString() === 'true');
+            else return spec.defaultValue;
         } else {
             return '';
         }
@@ -205,7 +214,8 @@ const General: FC<GeneralProps> = ({
             let isDisabled = false;
             policySpec.policyAttributes.forEach((spec) => {
                 const currentState = state[spec.name];
-                if (spec.required && !currentState) {
+                const currentVal = getValue(spec);
+                if (spec.required && !(currentState || currentVal)) {
                     isDisabled =  true;
                 }
             });
@@ -294,7 +304,8 @@ const General: FC<GeneralProps> = ({
                                     error={getError(spec) !== ''}
                                     variant='outlined'
                                     name={spec.name}
-                                    value={getValue(spec.name)}
+                                    type={spec.type.toLowerCase() === 'integer' ? 'number' : 'text'}
+                                    value={getValue(spec)}
                                     onChange={(e) => onInputChange(e, spec.type)}
                                     fullWidth
                                 />
@@ -318,7 +329,7 @@ const General: FC<GeneralProps> = ({
                                         </InputLabel>
                                         <Select 
                                             native
-                                            value={getValue(spec.name)}
+                                            value={getValue(spec)}
                                             onChange={(e) => onInputChange(e, spec.type)}
                                             label={(
                                                 <>
@@ -350,7 +361,7 @@ const General: FC<GeneralProps> = ({
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            checked={getValue(spec.name)}
+                                            checked={getValue(spec)}
                                             onChange={(e) => onInputChange(e, spec.type)}
                                             name={spec.name}
                                             color='primary'
