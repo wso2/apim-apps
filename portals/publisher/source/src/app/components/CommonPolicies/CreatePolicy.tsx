@@ -19,16 +19,15 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import {
-    Grid, Icon,
-} from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
-import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import { Progress } from 'AppComponents/Shared';
+import CreateForm from 'AppComponents/Apis/Details/Policies/PolicyCreateForm/CreateForm';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -57,7 +56,7 @@ const DefaultPolicySpec = {
     multipleAllowed: true,
     applicableFlows: ['request', 'response', 'fault'],
     supportedGateways: ['Synapse'],
-    supportedApiTypes: ['REST'],
+    supportedApiTypes: ['HTTP'],
     policyAttributes: [],
 };
 
@@ -128,7 +127,7 @@ const CreatePolicy: React.FC = () => {
                         </div>
                     </Grid>
                     <Grid item md={12}>
-                        <PolicyStepper
+                        <CreateForm
                             onSave={onPolicyCreateSave}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}
