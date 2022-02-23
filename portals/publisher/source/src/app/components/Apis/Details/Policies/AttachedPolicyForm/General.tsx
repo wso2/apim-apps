@@ -147,16 +147,18 @@ const General: FC<GeneralProps> = ({
     const getError = (specInCheck: PolicySpecAttribute) => {
         let error = '';
         const value = state[specInCheck.name];
-        if (specInCheck.required && value === '') {
-            error = intl.formatMessage({
-                id: 'Apis.Details.Policies.PolicyForm.General.required.error',
-                defaultMessage: 'Required field is empty',
-            });
-        } else if (specInCheck.validationRegex && !(new RegExp(specInCheck.validationRegex)).test(value)) {
-            error = intl.formatMessage({
-                id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
-                defaultMessage: 'Please enter a valid input',
-            });
+        if (value !== null) {
+            if (specInCheck.required && value === '') {
+                error = intl.formatMessage({
+                    id: 'Apis.Details.Policies.PolicyForm.General.required.error',
+                    defaultMessage: 'Required field is empty',
+                });
+            } else if (specInCheck.validationRegex && !(new RegExp(specInCheck.validationRegex)).test(value)) {
+                error = intl.formatMessage({
+                    id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
+                    defaultMessage: 'Please enter a valid input',
+                });
+            }
         }
         return error;
     }
@@ -276,8 +278,8 @@ const General: FC<GeneralProps> = ({
                         <Grid item xs={12}>
 
                             {/* When the attribute type is string or integer */}
-                            {(spec.type.toLocaleLowerCase() === 'string'
-                            || spec.type.toLocaleLowerCase() === 'integer') && (
+                            {(spec.type.toLowerCase() === 'string'
+                            || spec.type.toLowerCase() === 'integer') && (
                                 <TextField
                                     id={spec.name}
                                     label={(
@@ -299,9 +301,13 @@ const General: FC<GeneralProps> = ({
                             )}
 
                             {/* When the attribute type is enum */}
-                            {spec.type.toLocaleLowerCase() === 'enum' && (
+                            {spec.type.toLowerCase() === 'enum' && (
                                 <>
-                                    <FormControl variant='outlined' className={classes.formControl} error>
+                                    <FormControl
+                                        variant='outlined'
+                                        className={classes.formControl}
+                                        error={getError(spec) !== ''}
+                                    >
                                         <InputLabel htmlFor={'enum-label-' + spec.name}>
                                             <>
                                                 {spec.displayName}
@@ -332,7 +338,9 @@ const General: FC<GeneralProps> = ({
                                                 <option value={enumVal}>{enumVal}</option>
                                             ))}                                           
                                         </Select>
-                                        <FormHelperText>{spec.description}</FormHelperText>
+                                        <FormHelperText>
+                                            {getError(spec) === '' ? spec.description : getError(spec)}
+                                        </FormHelperText>
                                     </FormControl>
                                 </>
                             )}
