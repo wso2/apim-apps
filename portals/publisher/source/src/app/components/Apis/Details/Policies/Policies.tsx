@@ -74,8 +74,9 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [expandedResource, setExpandedResource] = useState(false);
     const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
 
+    // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
+    // value as true to render other UI changes specific to the Choreo Connect.
     const getGatewayType = (isCCEnabled: boolean) => {
-        console.log("Received the value :" + isCCEnabled);
         getChoreoConnectEnabled(isCCEnabled)
     }
 
@@ -309,7 +310,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                 spacing={1}
                                                 alignItems='stretch'
                                             >
-                                                {console.log("Target >> " + target)}
                                                 <PoliciesExpansion
                                                     target={target}
                                                     verb={"get"}
@@ -346,7 +346,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                 spacing={1}
                                                 alignItems='stretch'
                                             >
-                                                {console.log("Target >> " + target)}
                                                 {Object.entries(verbObject).map(([verb, operation]) => {
                                                     return CONSTS.HTTP_METHODS.includes(verb) ? (
                                                         <Grid key={`${target}/${verb}`} item className={classes.gridItem}>

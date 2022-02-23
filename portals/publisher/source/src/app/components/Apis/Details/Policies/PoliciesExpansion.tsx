@@ -116,8 +116,6 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
 
     const classes = useStyles();
     const { apiOperations } = useContext<any>(ApiOperationContext);
-    console.log(isChoreoConnectEnabled + ">>>>>");
-    console.log("apiOperations:" + JSON.stringify(apiOperations));
 
     useEffect(() => {
         const requestList = [];
@@ -228,10 +226,8 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
                     </Box>
                     {(() => {
                         if (isChoreoConnectEnabled) {
-                            console.log("CC enabled");
                             return;
                         } else {
-                            console.log("CC not enabled");
                             return (
                                 <>
                                     <Box className={classes.flowSpecificPolicyAttachGrid}>
