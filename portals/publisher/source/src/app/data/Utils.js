@@ -475,7 +475,7 @@ class Utils {
                 type: 'text/xml',
             });
         } else {
-            blob = new Blob([response], {
+            blob = new Blob([JSON.stringify(response)], {
                 type: 'application/yaml',
             });
         }
