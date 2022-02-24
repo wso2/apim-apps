@@ -16,52 +16,31 @@
  * under the License.
  */
 
-import React, { FC, useState } from 'react';
-import { Box, List, makeStyles, IconButton, Theme, RadioGroup, FormControlLabel, FormGroup, FormLabel, Checkbox } from '@material-ui/core';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import StepContent from '@material-ui/core/StepContent';
+import React, { FC, useReducer } from 'react';
+import { makeStyles, Theme } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
+import { FormattedMessage,  } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Dropzone from 'react-dropzone';
-import classNames from 'classnames';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
-import Error from '@material-ui/icons/Error';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Chip from '@material-ui/core/Chip';
-import Icon from '@material-ui/core/Icon';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Alert from 'AppComponents/Shared/Alert';
-import Api from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
+import { AddCircle } from '@material-ui/icons';
 import type { CreatePolicySpec } from '../Types';
+import type { NewPolicyState, PolicyAttribute } from './Types';
+import UploadPolicyDropzone from './UploadPolicyDropzone';
+import PolicyAttributes from './PolicyAttributes';
+import uuidv4 from '../Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
-    // root: {
-    //     flexGrow: 1,
-    //     marginTop: 10,
-    //     display: 'flex',
-    //     flexDirection: 'column',
-    //     paddingLeft: 20,
-    //     paddingRight: 20,
-    // },
     root: {
         flexGrow: 1,
         marginTop: 10,
@@ -73,61 +52,14 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    dropZoneWrapper: {
-        border: '1px dashed ' + theme.palette.primary.main,
-        borderRadius: '5px',
-        cursor: 'pointer',
-        padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
-        position: 'relative',
-        textAlign: 'center',
-        width: '75%',
-        margin: '10px 0',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        '& span': {
-            fontSize: 64,
-            color: theme.palette.primary.main,
-        },
-    },
-    acceptDrop: {
-        backgroundColor: green[50],
-        borderColor: 'green',
-    },
-    rejectDrop: {
-        backgroundColor: red[50],
-        borderColor: 'red',
-    },
-    uploadedFileDetails: {
-        marginTop: '2em',
-        width: '50%',
-    },
     formGroup: {
         display: 'flex',
         flexDirection: 'row',
     },
+    buttonIcon: {
+        marginRight: theme.spacing(1),
+    },
 }));
-
-// /**
-//  * 
-//  * @param state 
-//  * @param newValue 
-//  */
-// const reducer = (state, action) => {
-//     const {field, value} = newValue;
-//     switch (field) {
-//         case 'name':
-//         case 'displayName':
-//         case 'description':
-//         case 'applicableFlows':
-//         case 'supportedGateways':
-//         case 'policyAttributes':
-//         default:
-//             return state;
-//     }
-// }
 
 interface CreateFormProps {
     onSave: () => void;
@@ -135,6 +67,60 @@ interface CreateFormProps {
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
     policySpec: CreatePolicySpec;
     setPolicySpec: React.Dispatch<React.SetStateAction<CreatePolicySpec | null>>;
+}    
+
+export const ACTIONS = {
+    DISPLAY_NAME: 'displayName',
+    DESCRIPTION: 'description',
+    APPLICABLE_FLOWS: 'applicableFlows',
+    SUPPORTED_GATEWAYS: 'supportedGateways',
+    ADD_POLICY_ATTRIBUTE: 'addPolicyAttribute',
+    SAVE_POLICY_ATTRIBUTE: 'savePolicyAttribute',
+    DELETE_POLICY_ATTRIBUTE: 'deletePolicyAttribute'
+}
+
+/**
+ * 
+ * @param state 
+ * @param action 
+ * @returns 
+ */
+function policyReducer(state: NewPolicyState, action: any) {
+    switch(action.type) {
+        case ACTIONS.DISPLAY_NAME: {
+            return {
+                ...state,
+                [action.field]: action.payload
+            }
+        }
+        case ACTIONS.ADD_POLICY_ATTRIBUTE: {
+            return {
+                ...state,
+                policyAttributes: [...state.policyAttributes, {
+                    id: uuidv4(),
+                    name: '',
+                    displayName: '',
+                    description: '',
+                    required: false,
+                    type: 'String',
+                    validationRegex: '',
+                    defaultValue: '',
+                    allowedValues: [],
+                }]
+            };
+        }
+        case ACTIONS.DELETE_POLICY_ATTRIBUTE: {
+            return {
+                ...state,
+                policyAttributes: state.policyAttributes.filter(
+                    (policyAttribute: PolicyAttribute) =>
+                        policyAttribute.id !== action.payload.id,
+                )
+            };
+        }
+        default:
+            return state;
+    }
 }
 
 /**
@@ -145,235 +131,286 @@ interface CreateFormProps {
 const CreateForm: FC<CreateFormProps> = ({
     onSave, policyDefinitionFile, setPolicyDefinitionFile, policySpec, setPolicySpec
 }) => {
-    const intl = useIntl();
     const classes = useStyles();
-    const [saving, setSaving] = useState(false);
-    const initState: any = {
-        name: null,
-        displayName: null,
-        description: null,
-        applicableFlows: null,
-        supportedGateways: null,
-        policyAttributes: null,       
+    const url = '/policies';
+    // const [saving, setSaving] = useState(false);
+    const initialState: NewPolicyState = {
+        name: '',
+        displayName: '',
+        description: '',
+        applicableFlows: ['request', 'response', 'fault'],
+        supportedGateways: ['Synapse'],
+        policyAttributes: [],
     };
-    const [state, setState] = useState(initState);
-
-    const handleDrop = (policyDefinition: any) => {
-        setPolicyDefinitionFile(policyDefinition);
-    };
+    const [state, dispatch] = useReducer(policyReducer, initialState);
 
     const onInputChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        // setPolicySpec({ ...policySpec, [event.target.name]: event.target.value });
+        setPolicySpec({ ...policySpec, [event.target.name]: event.target.value });
     }
 
-    const renderPolicyFileDropzone = () => {
-        return (
-            <Dropzone
-                multiple={false}
-                // accept='.j2' 
-                onDrop={handleDrop}
-            >
-                {({
-                    getRootProps,
-                    getInputProps,
-                    isDragAccept,
-                    isDragReject,
-                }) => {
-                    return (
-                        <div {...getRootProps({})}>
-                            <div className={classNames(
-                                classes.dropZoneWrapper,
-                                isDragAccept ? classes.acceptDrop : null,
-                                isDragReject ? classes.rejectDrop : null,
-                            )}
-                            >
-                                <input {...getInputProps()} />
-                                <Icon>cloud_upload</Icon>
-                                <Typography>
-                                    <FormattedMessage
-                                        id='Policies.CreatePolicy.upload.policy.definition'
-                                        defaultMessage='Click or drag the policy definition file to upload'
-                                    />
-                                </Typography>
-                            </div>
-                        </div>
-                    );
-                }}
-            </Dropzone>
-        );
-    };
+    const isSaveDisabled = () => {
+        return false;
+    }
+
+    // Validates whether atleast one flow (i.e. request, response or fault) is selected
+    // True if none of the flows are selected.
+    const applicableFlowsError = policySpec.applicableFlows.length === 0;
+
+    // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
+    // True if none of the available gateways are selected.
+    const supportedGatewaysError = policySpec.supportedGateways.length === 0;
 
     return (
         <>
             <Paper elevation={0} className={classes.root}>
-                <FormControl margin='normal'>
-                    <TextField
-                        id='name'
-                        name='displayName'
-                        label={(
-                            <>
+                <Box display='flex' flexDirection='row' mt={1}>
+                    <Box width='40%'>
+                        <Typography color='inherit' variant='subtitle2' component='div'>
+                            <FormattedMessage
+                                id='Policies.PolicyCreateForm.add.policy.general.details.title'
+                                defaultMessage='General Details'
+                            />
+                        </Typography>
+                        <Typography color='inherit' variant='caption' component='p'>
+                            <FormattedMessage
+                                id='Policies.PolicyCreateForm.add.policy.general.details.description'
+                                defaultMessage='Provide the name, description and applicable flows of the policy.'
+                            />
+                        </Typography>
+                    </Box>
+                    <Box width='60%'>
+                        <Box component='div'>
+                            <TextField
+                                fullWidth
+                                id='name'
+                                name='displayName'
+                                required
+                                label={(
+                                    <>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.PolicyCreateForm.field.name'
+                                            defaultMessage='Name'
+                                        />
+                                        {/* <sup className={classes.mandatoryStar}>*</sup> */}
+                                    </>
+                                )}
+                                // error={this.state.valid.name.invalid}
+                                helperText={
+                                    // this.state.valid.name.invalid ? (
+                                    //     this.state.valid.name.error
+                                    // ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyCreateForm.short.description.name'
+                                        defaultMessage='Enter Policy Name ( E.g.: Add Header )'
+                                    />
+                                    // )
+                                }
+                                margin='dense'
+                                variant='outlined'
+                                value={policySpec.displayName}
+                                onChange={onInputChange}
+                            />
+                            <TextField
+                                id='name'
+                                name='description'
+                                label={(
+                                    <>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.PolicyCreateForm.field.description'
+                                            defaultMessage='Description'
+                                        />
+                                    </>
+                                )}
+                                // error={this.state.valid.name.invalid}
+                                helperText={
+                                    // this.state.valid.name.invalid ? (
+                                    //     this.state.valid.name.error
+                                    // ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyCreateForm.short.description.description'
+                                        defaultMessage='Short description about the policy'
+                                    />
+                                    // )
+                                }
+                                fullWidth
+                                margin='dense'
+                                variant='outlined'
+                                value={policySpec.displayName}
+                                onChange={onInputChange}
+                            />
+                            <Box display='flex' flexDirection='row' alignItems='center'>
+                                <Typography color='inherit' variant='body1' component='div'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyCreateForm.field.applicable.flows'
+                                        defaultMessage='Applicable Flows'
+                                    />
+                                    <sup className={classes.mandatoryStar}>*</sup>
+                                </Typography>
+                                <Box flex='1' ml={5}>
+                                    <FormControl
+                                        required
+                                        component='fieldset'
+                                        variant='standard'
+                                        margin='normal'
+                                        error={applicableFlowsError}
+                                    >
+                                        <FormGroup className={classes.formGroup}>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox name='request' color='primary' />
+                                                }
+                                                label='Request'
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox name='response' color='primary' />
+                                                }
+                                                label='Response'
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox name='fault' color='primary' />
+                                                }
+                                                label='Fault'
+                                            />
+                                        </FormGroup>
+                                        <FormHelperText>
+                                            {applicableFlowsError ? 'Please select one or more flows' : ''}
+                                        </FormHelperText>
+                                    </FormControl>
+                                </Box>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
+                <Divider light />
+                <Box display='flex' flexDirection='row' mt={1}>
+                    <Box width='40%' pt={3} mb={2}>
+                        <Box width='90%'>
+                            <Typography color='inherit' variant='subtitle2' component='div'>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.field.name'
-                                    defaultMessage='Name'
+                                    id='Policies.PolicyCreateForm.add.policy.gateway.specific.details.title'
+                                    defaultMessage='Gateway Specific Details'
+                                />
+                            </Typography>
+                            <Typography color='inherit' variant='caption' component='p'>
+                                <FormattedMessage
+                                    id='Policies.PolicyCreateForm.add.policy.gateway.specific.details.description'
+                                    defaultMessage={'Define the Gateway (s) that will be supporting this policy. '
+                                        + 'Based off of this selection, you can upload the relevant business '
+                                        + 'logic inclusive policy file.'}
+                                />
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Box width='60%'>
+                        <Box display='flex' flexDirection='row' alignItems='center'>
+                            <Typography color='inherit' variant='body1' component='div'>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PolicyCreateForm.field.supported.gateways'
+                                    defaultMessage='Supported Gateways'
                                 />
                                 <sup className={classes.mandatoryStar}>*</sup>
-                            </>
-                        )}
-                        placeholder='Policy Name'
-                        // error={this.state.valid.name.invalid}
-                        helperText={
-                            // this.state.valid.name.invalid ? (
-                            //     this.state.valid.name.error
-                            // ) : (
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyCreateForm.short.description.name'
-                                defaultMessage='Enter Policy Name ( E.g.,: Add Header )'
+                            </Typography>
+                            <Box flex='1' ml={5}>
+                                <FormControl
+                                    required
+                                    component='fieldset'
+                                    variant='standard'
+                                    margin='normal'
+                                    error={supportedGatewaysError}
+                                >
+                                    <FormGroup className={classes.formGroup}>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox name='regularGateway' color='primary' />
+                                            }
+                                            label='Regular Gateway'
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox disabled name='choreoConnect' color='primary' />
+                                            }
+                                            label='Choreo Connect'
+                                        />
+                                    </FormGroup>
+                                    <FormHelperText>
+                                        {supportedGatewaysError ? 'Please select one or more Gateways' : ''}
+                                    </FormHelperText>
+                                </FormControl>
+                            </Box>
+                        </Box>
+                        {policySpec.supportedGateways.includes('Synapse') && (
+                            <UploadPolicyDropzone
+                                policyDefinitionFile={policyDefinitionFile}
+                                setPolicyDefinitionFile={setPolicyDefinitionFile}
                             />
-                            // )
-                        }
-                        fullWidth
-                        margin='normal'
-                        variant='outlined'
-                        value={policySpec.displayName || ''}
-                        onChange={onInputChange}
-                    />
-                    <TextField
-                        id='name'
-                        name='description'
-                        label={(
-                            <>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.field.description'
-                                    defaultMessage='Description'
-                                />
-                            </>
                         )}
-                        placeholder='Description'
-                        // error={this.state.valid.name.invalid}
-                        helperText={
-                            // this.state.valid.name.invalid ? (
-                            //     this.state.valid.name.error
-                            // ) : (
+                    </Box>
+                </Box>
+                <Divider light />
+                <Box display='flex' flexDirection='row' mt={1} pt={3}>
+                    <Box width='40%'>
+                        <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyCreateForm.short.description.description'
-                                defaultMessage='Description of the policy'
+                                id='Policies.PolicyCreateForm.add.policy.attributes.title'
+                                defaultMessage='Policy Attributes'
                             />
-                            // )
-                        }
-                        fullWidth
-                        margin='normal'
-                        variant='outlined'
-                        value={policySpec.displayName || ''}
-                        onChange={onInputChange}
-                    />
-                </FormControl>
-                <FormControl required component='fieldset' variant='standard' margin='normal'>
-                    <FormLabel component='legend'>Applicable Flows</FormLabel>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox name='request' />
-                            }
-                            label='Request'
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox name='response' />
-                            }
-                            label='Response'
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox name='fault' />
-                            }
-                            label='Fault'
-                        />
-                    </FormGroup>
-                </FormControl>
-                <FormControl required component='fieldset' variant='standard' margin='normal'>
-                    <FormLabel component='legend'>Supported Gateways</FormLabel>
-                    <FormGroup className={classes.formGroup}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox name='regularGateway' />
-                            }
-                            label='Regular Gateway'
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox disabled name='choreoConnect' />
-                            }
-                            label='Choreo Connect'
-                        />
-                    </FormGroup>
-                </FormControl>
-            </Paper>
-            {/* <Paper elevation={0} className={classes.root}>
-                <Stepper activeStep={activeStep} orientation='vertical'>
-                    {steps.map((step, index) => (
-                        <Step key={step.label}>
-                            <StepLabel>{step.label}</StepLabel>
-                            <StepContent>
-                                {step.description && (
-                                    <Typography variant='overline'>{step.description}</Typography>
-                                )}
-                                {index === 0 && (
-                                    (policyDefinitionFile.length === 0) ? (
-                                        renderPolicyFileDropzone()
-                                    ) : (
-                                        <List className={classes.uploadedFileDetails}>
-                                            <ListItem key={policyDefinitionFile[0].path}>
-                                                <ListItemAvatar>
-                                                    <Avatar>
-                                                        <InsertDriveFile />
-                                                    </Avatar>
-                                                </ListItemAvatar>
-                                                <ListItemText
-                                                    primary={`${policyDefinitionFile[0].path}`}
-                                                />
-                                                <ListItemSecondaryAction>
-                                                    <IconButton
-                                                        edge='end'
-                                                        aria-label='delete'
-                                                        onClick={() => setPolicyDefinitionFile([])}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        </List>
-                                    )
-                                )}
-                                {(index === 1) && (
-                                    <PolicySpecificationEditor
-                                        isReadOnly={false}
-                                        policySpec={policySpec}
-                                        setPolicySpec={setPolicySpec}
-                                    />
-                                )}
-                                <Box mt={2}>
-                                    <Button
-                                        variant='contained'
-                                        color='primary'
-                                        onClick={handleNext}
-                                        disabled={
-                                            (index === 0 && policyDefinitionFile.length === 0)
-                                        }
-                                    >
-                                        {index === steps.length - 1 ? 'Save' : 'Continue'}
-                                    </Button>
+                        </Typography>
+                        <Typography color='inherit' variant='caption' component='p'>
+                            <FormattedMessage
+                                id='Policies.PolicyCreateForm.add.policy.attributes.description'
+                                defaultMessage='Define attributes of the policy.'
+                            />
+                        </Typography>
+                    </Box>
+                    <Box width='60%'>
+                        <Box component='div'>
+                            <Grid item xs={12}>
+                                <Box flex='1'>
                                     <Button
                                         color='primary'
-                                        onClick={(index === 0 ? handleNext : handleBack)}
+                                        variant='outlined'
+                                        onClick={() => dispatch({ type: ACTIONS.ADD_POLICY_ATTRIBUTE })}
                                     >
-                                        {(index === 0 ? 'Skip' : 'Back')}
+                                        <AddCircle className={classes.buttonIcon} />
+                                        <FormattedMessage
+                                            id='Policies.PolicyCreateForm.add.policy.attributes.add'
+                                            defaultMessage='Add Policy Attribute'
+                                        />
                                     </Button>
                                 </Box>
-                            </StepContent>
-                        </Step>
-                    ))}
-                </Stepper>
-            </Paper> */}
+                            </Grid>    
+                        </Box>                           
+                    </Box>
+                </Box>
+                <PolicyAttributes
+                    policyAttributes={state.policyAttributes}
+                    dispatch={dispatch}
+                />
+                <Box>
+                    <Button 
+                        variant='contained'
+                        color='primary'
+                        onClick={onSave}
+                        disabled={isRestricted(['apim:shared_scope_manage']) || isSaveDisabled()}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyCreateForm.policy.save'
+                            defaultMessage='Save'
+                        />                    
+                    </Button>
+                    <Button
+                        component={Link}
+                        to={url}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyCreateForm.policy.cancel'
+                            defaultMessage='Cancel'
+                        />    
+                    </Button>
+                </Box>
+            </Paper>
         </>
     );
 }

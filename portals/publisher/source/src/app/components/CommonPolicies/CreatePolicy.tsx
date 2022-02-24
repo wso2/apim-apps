@@ -28,6 +28,7 @@ import API from 'AppData/api.js';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import { Progress } from 'AppComponents/Shared';
 import CreateForm from 'AppComponents/Apis/Details/Policies/PolicyCreateForm/CreateForm';
+import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -136,6 +137,9 @@ const CreatePolicy: React.FC = () => {
                         />
                     </Grid>
                 </Grid>
+            </Grid>
+            <Grid item sm={12} md={12}>
+                <Box mb={5}/>
             </Grid>
         </Grid>
     );

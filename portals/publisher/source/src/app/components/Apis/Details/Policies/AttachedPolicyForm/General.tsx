@@ -156,6 +156,7 @@ const General: FC<GeneralProps> = ({
             } else if (
                 value !== '' &&
                 specInCheck.validationRegex &&
+                !(!specInCheck.validationRegex || specInCheck.validationRegex === '') &&
                 !new RegExp(specInCheck.validationRegex).test(value)
             ) {
                 error = intl.formatMessage({
