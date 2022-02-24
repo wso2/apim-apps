@@ -206,7 +206,6 @@ function Overview(props) {
      */
     function downloadServiceDefinition(serviceKey, serviceDefinitionType) {
         return ServiceCatalog.getServiceDefinition(serviceKey).then((file) => {
-            
             let currentServiceDefinition = null;
             if (service.definitionType === 'WSDL1' || service.definitionType === 'WSDL2') {
                 currentServiceDefinition = beautify(file);
@@ -215,11 +214,8 @@ function Overview(props) {
             } else {
                 currentServiceDefinition = file.obj.schemaDefinition;
             }
-            
             return Utils.downloadServiceDefinition(currentServiceDefinition, serviceDefinitionType);
         }).catch((error) => {
-        
-            
             if (error.response) {
                 Alert.error(error.response.body.description);
             } else {
