@@ -127,7 +127,6 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                     currentFlow={currentFlow}
                     target={target}
                     verb={verb}
-                    setCurrentPolicyList={setCurrentPolicyList}
                     allPolicies={allPolicies}
                 />
             )}

@@ -29,7 +29,7 @@ export type AttachedPolicy = {
     name: string;
     displayName: string;
     applicableFlows: string[];
-    uniqueKey: number;
+    uniqueKey: string;
     attributes?: any;
 }
 
@@ -40,6 +40,8 @@ export type PolicySpecAttribute = {
     required: boolean;
     type: string;
     validationRegex: string;
+    defaultValue: any;
+    allowedValues: string[];
 }
 
 export type PolicySpec = {
@@ -74,4 +76,5 @@ export type ApiPolicy = {
     policyName?: string,
     policyId?: string,
     parameters: any;
+    uuid?: string;
 }

@@ -35,7 +35,6 @@ interface DeletePolicyProps {
     policyId: string;
     policyName: string;
     fetchPolicies: () => void;
-    isLocalToAPI: boolean;
 }
 
 /**
@@ -44,7 +43,7 @@ interface DeletePolicyProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const DeletePolicy: FC<DeletePolicyProps> = ({
-    policyId, policyName, fetchPolicies, isLocalToAPI
+    policyId, policyName, fetchPolicies
 }) => {
     const { api } = useContext<any>(ApiContext);
     const [open, setOpen] = useState(false);
@@ -88,7 +87,6 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 }
             >
                 <IconButton
-                    disabled={!isLocalToAPI}
                     onClick={toggleOpen}
                     aria-label={'delete ' + policyName}
                 >

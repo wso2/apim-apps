@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import {
     DndContext, 
     closestCenter,
@@ -26,12 +26,13 @@ import {
     DragEndEvent,
 } from '@dnd-kit/core';
 import {
-    arrayMove,
     horizontalListSortingStrategy,
     SortableContext,
 } from '@dnd-kit/sortable';
+
 import AttachedPolicyCard from './AttachedPolicyCard';
 import type { AttachedPolicy, PolicySpec } from './Types';
+import ApiOperationContext from './ApiOperationContext';
 
 interface AttachedPolicyListProps {
     currentPolicyList: AttachedPolicy[];
@@ -54,6 +55,8 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
+    const { rearrangeApiOperations } = useContext<any>(ApiOperationContext);
+
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -66,12 +69,11 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
         const {active, over} = event;
         
         if (active.id !== over?.id) {
-            setCurrentPolicyList((items) => {
-                const oldIndex = items.findIndex(item => item.uniqueKey.toString() === active.id);
-                const newIndex = items.findIndex(item => item.uniqueKey.toString() === over?.id);
+            const policyListCopy = [...currentPolicyList];
+            const oldIndex = policyListCopy.findIndex(item => item.uniqueKey === active.id);
+            const newIndex = policyListCopy.findIndex(item => item.uniqueKey === over?.id);
 
-                return arrayMove(items, oldIndex, newIndex);
-            });
+            rearrangeApiOperations(oldIndex, newIndex, target, verb, currentFlow);
         }
     }
 
@@ -83,7 +85,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                 onDragEnd={handleDragEnd}
             >
                 <SortableContext 
-                    items={currentPolicyList.map(item => item.uniqueKey.toString())}
+                    items={currentPolicyList.map(item => item.uniqueKey)}
                     strategy={horizontalListSortingStrategy}
                 >
                     {policyListToDisplay.map((policy: AttachedPolicy) => (
