@@ -187,6 +187,7 @@ class Scopes extends React.Component {
                                                         },
                                                     }
                                                 }
+                                                component={Link}
                                                 aria-label={'Edit ' + scopeName}
                                             >
                                                 <Icon>edit</Icon>
