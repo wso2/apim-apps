@@ -52,6 +52,7 @@ const useStyles = makeStyles(() => ({
         width: '100%',
     },
     operationListingBox: {
+        // height: 'auto',
         overflowY: 'scroll',
     },
 }));

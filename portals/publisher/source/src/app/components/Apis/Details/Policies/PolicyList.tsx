@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme: any) => ({
         color: '#fff',
         backdropFilter: 'blur(1px)',
     },
+    paperPosition: {
+        // position: 'fixed',
+    }
 }));
 
 interface PolicyListPorps {
@@ -80,7 +83,7 @@ const PolicyList: FC<PolicyListPorps> = ({
     }
 
     return (
-        <Paper>
+        <Paper className={classes.paperPosition}>
             <Card variant='outlined'>
                 <CardContent>
                     <Box display='flex'>

@@ -61,15 +61,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-interface CreateFormProps {
-    onSave: () => void;
-    policyDefinitionFile: any[];
-    setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
-    policySpec: CreatePolicySpec;
-    setPolicySpec: React.Dispatch<React.SetStateAction<CreatePolicySpec | null>>;
-}    
-
 export const ACTIONS = {
+    UPDATE_POLICY_METADATA: 'updatePolicyMetadata',
     DISPLAY_NAME: 'displayName',
     DESCRIPTION: 'description',
     APPLICABLE_FLOWS: 'applicableFlows',
@@ -78,20 +71,19 @@ export const ACTIONS = {
     SAVE_POLICY_ATTRIBUTE: 'savePolicyAttribute',
     DELETE_POLICY_ATTRIBUTE: 'deletePolicyAttribute'
 }
-
 /**
- * 
- * @param state 
- * @param action 
- * @returns 
+ * Reducer to manage policy creation related logic
+ * @param {NewPolicyState} state State
+ * @param {any} action Action
+ * @returns {Promise} Promised state
  */
 function policyReducer(state: NewPolicyState, action: any) {
     switch(action.type) {
-        case ACTIONS.DISPLAY_NAME: {
+        case ACTIONS.UPDATE_POLICY_METADATA: {
             return {
                 ...state,
-                [action.field]: action.payload
-            }
+                [action.field]: action.value
+            };
         }
         case ACTIONS.ADD_POLICY_ATTRIBUTE: {
             return {
@@ -123,6 +115,14 @@ function policyReducer(state: NewPolicyState, action: any) {
     }
 }
 
+interface CreateFormProps {
+    onSave: () => void;
+    policyDefinitionFile: any[];
+    setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
+    policySpec: CreatePolicySpec;
+    setPolicySpec: React.Dispatch<React.SetStateAction<CreatePolicySpec | null>>;
+}    
+
 /**
  * Renders the policy configuring drawer.
  * @param {JSON} props Input props from parent components.
@@ -135,7 +135,6 @@ const CreateForm: FC<CreateFormProps> = ({
     const url = '/policies';
     // const [saving, setSaving] = useState(false);
     const initialState: NewPolicyState = {
-        name: '',
         displayName: '',
         description: '',
         applicableFlows: ['request', 'response', 'fault'],
@@ -144,12 +143,44 @@ const CreateForm: FC<CreateFormProps> = ({
     };
     const [state, dispatch] = useReducer(policyReducer, initialState);
 
-    const onInputChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setPolicySpec({ ...policySpec, [event.target.name]: event.target.value });
-    }
+    // const onInputChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    //     setPolicySpec({ ...policySpec, [event.target.name]: event.target.value });
+    // }
 
     const isSaveDisabled = () => {
         return false;
+    }
+
+    const onPolicySave = () => {
+        console.log(state)
+        setPolicySpec({
+            // ...policySpec,
+            category: policySpec.category,
+            name: state.displayName.replace(/[^A-Za-z0-9]+/ig, ''),
+            displayName: state.displayName,
+            description: state.description,
+            applicableFlows: state.applicableFlows,
+            supportedGateways: state.supportedGateways,
+            policyAttributes: state.policyAttributes,
+            multipleAllowed: policySpec.multipleAllowed,
+            supportedApiTypes: policySpec.supportedApiTypes
+        });
+        console.log(state.displayName.replace(/[^A-Za-z0-9]+/ig, ''))
+        console.log(policySpec)
+        // onSave();
+    }
+
+    const addNewPolicyAttribute = () => {
+        dispatch({ type: ACTIONS.ADD_POLICY_ATTRIBUTE });
+    }
+
+    const onInputChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        console.log(event.target.value)
+        dispatch({
+            type: ACTIONS.UPDATE_POLICY_METADATA,
+            field: event.target.name,
+            value: event.target.value
+        });
     }
 
     // Validates whether atleast one flow (i.e. request, response or fault) is selected
@@ -191,7 +222,6 @@ const CreateForm: FC<CreateFormProps> = ({
                                             id='Apis.Details.Policies.PolicyCreateForm.field.name'
                                             defaultMessage='Name'
                                         />
-                                        {/* <sup className={classes.mandatoryStar}>*</sup> */}
                                     </>
                                 )}
                                 // error={this.state.valid.name.invalid}
@@ -207,7 +237,7 @@ const CreateForm: FC<CreateFormProps> = ({
                                 }
                                 margin='dense'
                                 variant='outlined'
-                                value={policySpec.displayName}
+                                value={state.displayName}
                                 onChange={onInputChange}
                             />
                             <TextField
@@ -235,7 +265,7 @@ const CreateForm: FC<CreateFormProps> = ({
                                 fullWidth
                                 margin='dense'
                                 variant='outlined'
-                                value={policySpec.displayName}
+                                value={state.description}
                                 onChange={onInputChange}
                             />
                             <Box display='flex' flexDirection='row' alignItems='center'>
@@ -246,7 +276,7 @@ const CreateForm: FC<CreateFormProps> = ({
                                     />
                                     <sup className={classes.mandatoryStar}>*</sup>
                                 </Typography>
-                                <Box flex='1' ml={5}>
+                                <Box flex='1' display='flex' flexDirection='row-reverse' justifyContent='space-around'>
                                     <FormControl
                                         required
                                         component='fieldset'
@@ -312,7 +342,7 @@ const CreateForm: FC<CreateFormProps> = ({
                                 />
                                 <sup className={classes.mandatoryStar}>*</sup>
                             </Typography>
-                            <Box flex='1' ml={5}>
+                            <Box flex='1'  display='flex' flexDirection='row-reverse' justifyContent='space-around'>
                                 <FormControl
                                     required
                                     component='fieldset'
@@ -371,7 +401,7 @@ const CreateForm: FC<CreateFormProps> = ({
                                     <Button
                                         color='primary'
                                         variant='outlined'
-                                        onClick={() => dispatch({ type: ACTIONS.ADD_POLICY_ATTRIBUTE })}
+                                        onClick={addNewPolicyAttribute}
                                     >
                                         <AddCircle className={classes.buttonIcon} />
                                         <FormattedMessage
@@ -392,7 +422,7 @@ const CreateForm: FC<CreateFormProps> = ({
                     <Button 
                         variant='contained'
                         color='primary'
-                        onClick={onSave}
+                        onClick={onPolicySave}
                         disabled={isRestricted(['apim:shared_scope_manage']) || isSaveDisabled()}
                     >
                         <FormattedMessage

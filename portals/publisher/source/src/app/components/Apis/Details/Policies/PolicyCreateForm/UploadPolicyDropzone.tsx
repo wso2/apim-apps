@@ -129,7 +129,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     return (
         <>
             <Box display='flex' flexDirection='row' alignItems='center'>
-                <Box>
+                <Box mt={2}>
                     <Typography color='inherit' variant='subtitle2' component='div'>
                         <FormattedMessage
                             id='Policies.PolicyCreateForm.UploadPolicyDropzone.title'

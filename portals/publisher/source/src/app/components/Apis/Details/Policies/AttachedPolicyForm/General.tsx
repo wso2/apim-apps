@@ -378,8 +378,6 @@ const General: FC<GeneralProps> = ({
                                     )}
                                 />
                             )}
-
-                            {/* When attribute type is map */}
                         </Grid>
                     ))}
                     {setDroppedPolicy && (

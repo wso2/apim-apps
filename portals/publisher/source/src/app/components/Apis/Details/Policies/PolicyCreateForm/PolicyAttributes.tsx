@@ -67,14 +67,6 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     policyAttributes, dispatch
 }) => {
     const classes = useStyles();
-    console.log(policyAttributes)
-
-    // const handleAttributeDelete = (event: any) => {
-    //     const policyAttributesCopy = [...policyAttributes]; // Local copy of current attribute list
-    //     const { id } = event.currentTarget;
-    //     policyAttributesCopy.splice(id, 1);
-    //     setPolicyAttributes(policyAttributesCopy);
-    // };
 
     return (
         <Box component='div' m={3}>
@@ -237,7 +229,6 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             <option value='Integer'>Integer</option>
                                             <option value='Boolean'>Boolean</option>
                                             <option value='Enum'>Enum</option>
-                                            <option value='Map'>Map</option>
                                         </Select>
                                         <FormHelperText>Attribute Type</FormHelperText>
                                     </FormControl>
