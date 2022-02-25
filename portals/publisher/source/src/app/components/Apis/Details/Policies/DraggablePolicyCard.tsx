@@ -28,7 +28,6 @@ import Utils from 'AppData/Utils';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import IconButton from '@material-ui/core/IconButton';
 import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
 import { useDrag } from 'react-dnd';
 import type { Policy } from './Types';
 import ViewPolicy from './ViewPolicy';
@@ -146,10 +145,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                         <Box
                             display='flex'
                             justifyContent='flex-end'
-                            height='35px'
-                            className={classNames({
-                                [classes.policyActions]: !hovered,
-                            })}
+                            className={!hovered ? classes.policyActions : ''}
                         >
                             <Tooltip
                                 placement='top'
