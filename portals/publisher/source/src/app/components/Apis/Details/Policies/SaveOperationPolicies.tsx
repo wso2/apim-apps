@@ -18,6 +18,7 @@
 
 import React, { useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { isRestricted } from 'AppData/AuthManager';
@@ -63,27 +64,29 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
 
     return (
         <>
-            <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
+            <Grid container direction='row' spacing={1}>
                 <Grid item>
-                    {api.isRevision || isRestricted(['apim:api_create'], api) ? (
-                        <Button
-                            disabled
-                            type='submit'
-                            variant='contained'
-                            color='primary'
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Policies.SaveOperationPolicies.save'
-                                defaultMessage='Save'
+                    <Box p={1} mt={3}>
+                        {api.isRevision || isRestricted(['apim:api_create'], api) ? (
+                            <Button
+                                disabled
+                                type='submit'
+                                variant='contained'
+                                color='primary'
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.SaveOperationPolicies.save'
+                                    defaultMessage='Save'
+                                />
+                            </Button>
+                        ) : (
+                            <CustomSplitButton
+                                handleSave={handleSave}
+                                handleSaveAndDeploy={handleSaveAndDeploy}
+                                isUpdating={updating}
                             />
-                        </Button>
-                    ) : (
-                        <CustomSplitButton
-                            handleSave={handleSave}
-                            handleSaveAndDeploy={handleSaveAndDeploy}
-                            isUpdating={updating}
-                        />
-                    )}
+                        )}
+                    </Box>
                 </Grid>
             </Grid>
         </>

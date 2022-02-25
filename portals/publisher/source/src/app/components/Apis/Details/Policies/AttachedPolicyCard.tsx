@@ -98,7 +98,11 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         opacity: isDragging ? 0.5 : 1,
     };
 
-    const handleDelete = (event: any) => {
+    /**
+     * Handle policy delete
+     * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event event
+     */
+    const handleDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const filteredList = currentPolicyList.filter(
             (policy) => policy.uniqueKey !== policyObj.uniqueKey,
         );
@@ -116,37 +120,53 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         event.preventDefault();
     };
 
-    const handlePolicyDownload = (event: any) => {
+    /**
+     * Handle policy download
+     * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event event
+     */
+    const handlePolicyDownload = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
         event.preventDefault();
-        const commonPolicyContentPromise = API.getCommonOperationPolicyContent(
-            policyObj.id,
-        );
-        commonPolicyContentPromise
-            .then((commonPolicyResponse) => {
-                Utils.forceDownload(commonPolicyResponse);
-            })
-            .catch(() => {
-                const apiPolicyContentPromise = API.getOperationPolicyContent(
-                    policyObj.id,
-                    api.id,
-                );
-                apiPolicyContentPromise
-                    .then((apiPolicyResponse) => {
-                        Utils.forceDownload(apiPolicyResponse);
-                    })
-                    .catch((error) => {
-                        if (process.env.NODE_ENV !== 'production') {
-                            console.error(error);
-                            Alert.error(
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.AttachedPolicyCard.download.error'
-                                    defaultMessage='Something went wrong while downloading the policy'
-                                />,
-                            );
-                        }
-                    });
-            });
+        if (policyObj.isAPISpecific) {
+            const apiPolicyContentPromise = API.getOperationPolicyContent(
+                policyObj.id,
+                api.id,
+            );
+            apiPolicyContentPromise
+                .then((apiPolicyResponse) => {
+                    Utils.forceDownload(apiPolicyResponse);
+                })
+                .catch((error) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
+                    }
+                });
+        } else {
+            const commonPolicyContentPromise = API.getCommonOperationPolicyContent(
+                policyObj.id,
+            );
+            commonPolicyContentPromise
+                .then((commonPolicyResponse) => {
+                    Utils.forceDownload(commonPolicyResponse);
+                })
+                .catch((error) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
+                    }
+                });
+        }
     };
 
     const handleDrawerOpen = () => {
