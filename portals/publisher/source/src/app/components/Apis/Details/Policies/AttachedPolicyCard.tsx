@@ -170,7 +170,11 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     };
 
     const handleDrawerOpen = () => {
-        setDrawerOpen(true);
+        if (policyObj.id !== '') {
+            // Drawer will only appear for policies that have an ID
+            // Note that a migrated policy will have an empty string as the ID at the initial stage
+            setDrawerOpen(true);
+        }
     };
 
     return (
@@ -207,6 +211,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                         onClick={handlePolicyDownload}
                         disableFocusRipple
                         disableRipple
+                        disabled={policyObj.id === ''} // Disabling policy download for migrated policy
                     >
                         <CloudDownloadIcon />
                     </IconButton>
