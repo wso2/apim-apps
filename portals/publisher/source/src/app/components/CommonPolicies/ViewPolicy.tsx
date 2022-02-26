@@ -27,10 +27,10 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import API from 'AppData/api';
-import Alert from 'AppComponents/Shared/Alert';
 import { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import { Progress } from 'AppComponents/Shared';
 import ViewAndDownloadPolicy from 'AppComponents/Apis/Details/Policies/ViewAndDownloadPolicy';
+import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -100,16 +100,30 @@ const ViewPolicy: React.FC = () => {
     const redirectUrl = '/policies';
     const { policyId } = useParams<{policyId?: string}>();
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
+    const [notFound, setNotFound] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         if (policyId) {
             const promisedCommonPolicyGet = API.getCommonOperationPolicy(policyId);
             promisedCommonPolicyGet
                 .then((response) => {
                     setPolicySpec(response.body);
                 })
-                .catch((errorMessage) => {
-                    Alert.error(JSON.stringify(errorMessage.body));
+                .catch((error) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        console.error(error);
+                    }
+                    const { status } = error;
+                    if (status === 404) {
+                        setNotFound(true);
+                    } else {
+                        setNotFound(false);
+                    }
+                })
+                .finally(() => {
+                    setLoading(false);
                 });
         }
     }, [policyId])
@@ -118,8 +132,17 @@ const ViewPolicy: React.FC = () => {
         history.push(redirectUrl);
     }
 
-    if (!policySpec) {
-        return <Progress />
+    const resourceNotFountMessage = {
+        title: 'Policy Not Found',
+        body: 'The policy you are looking for is not available',
+    };
+
+    if (notFound) {
+        return <ResourceNotFoundError message={resourceNotFountMessage} />
+    }
+
+    if (loading || !policySpec) {
+        return <Progress per={90} message='Loading Policy ...'  />;
     }
 
     return (

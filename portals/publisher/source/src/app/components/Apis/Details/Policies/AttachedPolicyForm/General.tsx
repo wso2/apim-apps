@@ -156,13 +156,19 @@ const General: FC<GeneralProps> = ({
             } else if (
                 value !== '' &&
                 specInCheck.validationRegex &&
-                !(!specInCheck.validationRegex || specInCheck.validationRegex === '') &&
-                !new RegExp(specInCheck.validationRegex).test(value)
+                !(!specInCheck.validationRegex || specInCheck.validationRegex === '')
             ) {
-                error = intl.formatMessage({
-                    id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
-                    defaultMessage: 'Please enter a valid input',
-                });
+                // To check if the regex is a valid regex
+                try {
+                    if (!new RegExp(specInCheck.validationRegex).test(value)) {
+                        error = intl.formatMessage({
+                            id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
+                            defaultMessage: 'Please enter a valid input',
+                        });
+                    }
+                } catch(e) {
+                    console.error(e);
+                }
             }
         }
         return error;

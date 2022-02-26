@@ -52,8 +52,8 @@ const useStyles = makeStyles(() => ({
         width: '100%',
     },
     operationListingBox: {
-        // height: 'auto',
         overflowY: 'scroll',
+        // height: 'auto',
     },
 }));
 
@@ -127,10 +127,14 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 .reduce((map, obj) => map.set(obj.displayName, obj), new Map()).values()];
             unionByPolicyDisplayName.sort(
                 (a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName))
-            setPolicies(unionByPolicyDisplayName);
+            
+            // Get synpase/regular gateway supported policies
+            const filteredList = unionByPolicyDisplayName.filter(
+                (policy: Policy) => policy.supportedGateways.includes('Synapse'))
+            setPolicies(filteredList);
 
         }).catch((error) => {
-            console.log(error);
+            console.error(error);
             Alert.error('Error occurred while retrieving the policy list');
         });
     }
@@ -296,7 +300,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     }
 
     if (!policies || !openAPISpec || updating) {
-        return <Progress />
+        return <Progress per={90} message='Loading Policies ...' />
     }
 
     return (

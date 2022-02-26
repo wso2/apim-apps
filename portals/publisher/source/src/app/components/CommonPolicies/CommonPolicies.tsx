@@ -18,12 +18,13 @@
 
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Listing from './Listing';
 import CreatePolicy from './CreatePolicy';
 import ViewPolicy from './ViewPolicy';
 
 /**
- * Have used key={Date.now()} for `Route` element in `/policies`
+ * `Route` elements for policies UI.
  * @returns {TSX} Route components related to globally maintained policy template list.
  */
 const CommonPolicies = () => {
@@ -32,11 +33,11 @@ const CommonPolicies = () => {
             <Route
                 exact
                 path='/policies'
-                key={Date.now()}
                 component={Listing}
             />
             <Route exact path='/policies/create' component={CreatePolicy} />
             <Route exact path='/policies/:policyId/view' component={ViewPolicy} />
+            <Route component={ResourceNotFound} />
         </Switch>
     );
 };
