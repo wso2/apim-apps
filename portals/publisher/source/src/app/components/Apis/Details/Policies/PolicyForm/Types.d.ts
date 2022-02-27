@@ -29,7 +29,7 @@ export type PolicyAttribute = {
 }
 
 export type NewPolicyState = {
-    displayName: string,
+    displayName: string | null,
     description: string,
     applicableFlows: string[],
     supportedGateways: string[],

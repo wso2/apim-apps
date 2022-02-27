@@ -118,6 +118,7 @@ const General: FC<GeneralProps> = ({
             const value = state[key];
             if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
                 updateCandidates[key] = getValueOfPolicyParam(key);
+            // TODO: handle get default 
             } else {
                 updateCandidates[key] = value;
             }
@@ -200,7 +201,7 @@ const General: FC<GeneralProps> = ({
     /**
      * Function to check whether there are any errors in the form.
      * If there are errors, we disable the save button.
-     * @returns {boolean} Boolean value indicating whether or not the forma has any errors.
+     * @returns {boolean} Boolean value indicating whether or not the form has any errors.
      */
     const formHasErrors = () => {
         let formHasAnError = false;

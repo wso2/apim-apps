@@ -26,8 +26,7 @@ import { Link, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
-import { Progress } from 'AppComponents/Shared';
-import CreateForm from 'AppComponents/Apis/Details/Policies/PolicyCreateForm/CreateForm';
+import PolicyForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyForm';
 import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -49,18 +48,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-const DefaultPolicySpec = {
-    category: 'Mediation',
-    name: '',
-    displayName: '',
-    description: '',
-    multipleAllowed: true,
-    applicableFlows: ['request', 'response', 'fault'],
-    supportedGateways: ['Synapse'],
-    supportedApiTypes: ['HTTP'],
-    policyAttributes: [],
-};
-
 /**
  * Create a new common policy
  * @param {JSON} props Input props from parent components.
@@ -72,7 +59,6 @@ const CreatePolicy: React.FC = () => {
     const redirectUrl = '/policies';
     const api = new API();
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<CreatePolicySpec | null>(DefaultPolicySpec);
 
     const addCommonPolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
         const promisedCommonPolicyAdd = api.addCommonOperationPolicy(policySpecContent, policyDefinition);
@@ -80,7 +66,6 @@ const CreatePolicy: React.FC = () => {
             .then(() => {
                 Alert.info('Policy created successfully!');
                 setPolicyDefinitionFile([]);
-                setPolicySpec(DefaultPolicySpec);
                 history.push(redirectUrl);
             })
             .catch((error) => {
@@ -94,12 +79,8 @@ const CreatePolicy: React.FC = () => {
             });
     }
 
-    if (!policySpec) {
-        return <Progress />
-    }
-
-    const onPolicyCreateSave = () => {
-        addCommonPolicy(policySpec, policyDefinitionFile);
+    const onSave = (policySpecification: CreatePolicySpec) => {
+        addCommonPolicy(policySpecification, policyDefinitionFile);
     }
 
     return (
@@ -128,12 +109,10 @@ const CreatePolicy: React.FC = () => {
                         </div>
                     </Grid>
                     <Grid item md={12}>
-                        <CreateForm
-                            onSave={onPolicyCreateSave}
+                        <PolicyForm
+                            onSave={onSave}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}
-                            policySpec={policySpec}
-                            setPolicySpec={setPolicySpec}
                         />
                     </Grid>
                 </Grid>

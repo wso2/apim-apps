@@ -29,12 +29,11 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage} from 'react-intl';
-import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import PolicyStepper from './PolicyStepper';
 import type { CreatePolicySpec } from './Types';
+import PolicyForm from './PolicyForm/PolicyForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
     link: {
@@ -43,18 +42,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'inline',
     }
 }));
-
-const DefaultPolicySpec = {
-    category: 'Mediation',
-    name: '',
-    displayName: '',
-    description: '',
-    multipleAllowed: false,
-    applicableFlows: ['request', 'response', 'fault'],
-    supportedGateways: ['Synapse'],
-    supportedApiTypes: ['REST'],
-    policyAttributes: [],
-};
 
 interface CreatePolicyProps {
     handleDialogClose: () => void;
@@ -74,7 +61,6 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     const { api } = useContext<any>(ApiContext);
 
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<CreatePolicySpec | null>(DefaultPolicySpec);
 
     const savePolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
         const promisedCommonPolicyAdd = API.addOperationPolicy(policySpecContent, policyDefinition, api.id);   
@@ -82,7 +68,6 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
             .then(() => {
                 Alert.info('Policy created successfully!');
                 setPolicyDefinitionFile([]);
-                setPolicySpec(DefaultPolicySpec);
                 handleDialogClose();
                 fetchPolicies();
             })
@@ -91,7 +76,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                 const { response } = error;
                 if (response.body) {
                     const { description } = response.body;
-                    console.log(description);
+                    console.error(description);
                     Alert.error('Something went wrong while creating policy');
                 }
             });
@@ -100,13 +85,8 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
     }
-
-    if (!policySpec) {
-        return <Progress />
-    }
-
-    const onPolicyCreateSave = () => {
-        savePolicy(policySpec, policyDefinitionFile);
+    const onSave = (policySpecification: CreatePolicySpec) => {
+        savePolicy(policySpecification, policyDefinitionFile);
         handleDialogClose();
     }
 
@@ -143,15 +123,15 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     </Box>
                 </Box>
                 <DialogContent>
-                    <DialogContentText>
-                        <PolicyStepper
-                            onSave={onPolicyCreateSave}
-                            policyDefinitionFile={policyDefinitionFile}
-                            setPolicyDefinitionFile={setPolicyDefinitionFile}
-                            policySpec={policySpec}
-                            setPolicySpec={setPolicySpec}
-                        />
-                    </DialogContentText>
+                    <Box my={2}>
+                        <DialogContentText>
+                            <PolicyForm
+                                onSave={onSave}
+                                policyDefinitionFile={policyDefinitionFile}
+                                setPolicyDefinitionFile={setPolicyDefinitionFile}
+                            />
+                        </DialogContentText>
+                    </Box>
                 </DialogContent>
                 <Box display='flex' flexDirection='row' justifyContent='right' px={3} pb={3}>
                     <Link to='/policies'>
