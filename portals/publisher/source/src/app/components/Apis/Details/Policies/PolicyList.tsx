@@ -27,7 +27,6 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { AddCircle } from '@material-ui/icons';
 import { Button, makeStyles } from '@material-ui/core';
-import Backdrop from '@material-ui/core/Backdrop';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
@@ -157,17 +156,11 @@ const PolicyList: FC<PolicyListPorps> = ({
                     </Box>
                 </CardContent>
             </Card>
-            <Backdrop
-                className={classes.backdrop}
-                open={dialogOpen}
-                onClick={handleAddPolicyClose}    
-            >
-                <CreatePolicy
-                    dialogOpen={dialogOpen}
-                    handleDialogClose={handleAddPolicyClose}
-                    fetchPolicies={fetchPolicies}
-                />
-            </Backdrop>
+            <CreatePolicy
+                dialogOpen={dialogOpen}
+                handleDialogClose={handleAddPolicyClose}
+                fetchPolicies={fetchPolicies}
+            />
         </Paper>
     );
 }

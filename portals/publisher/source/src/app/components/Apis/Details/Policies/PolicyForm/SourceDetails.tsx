@@ -149,7 +149,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                             defaultMessage='Policy file contains the business logic of the policy'
                         />
                     </Typography>
-                    <Box flex='1'  display='flex' flexDirection='row' justifyContent='left' m={3}>
+                    <Box flex='1' display='flex' flexDirection='row' justifyContent='left' mt={3} mb={3}>
                         <Button
                             aria-label='download-policy'
                             variant='contained'
@@ -158,7 +158,10 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                             onClick={handlePolicyDownload}
                             endIcon={<CloudDownloadIcon />}
                         >
-                            Download Policy
+                            <FormattedMessage
+                                id='Policies.PolicyForm.SourceDetails.download.button'
+                                defaultMessage='Download Policy'
+                            />
                         </Button>
                     </Box>
                 </>

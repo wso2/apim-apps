@@ -28,6 +28,7 @@ import API from 'AppData/api.js';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import PolicyCreateForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyCreateForm';
 import { Box } from '@material-ui/core';
+import CONST from 'AppData/Constants';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -56,31 +57,35 @@ const useStyles = makeStyles((theme: any) => ({
 const CreatePolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const redirectUrl = '/policies';
     const api = new API();
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [saving, setSaving] = useState(false);
 
     const addCommonPolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
+        setSaving(true);
         const promisedCommonPolicyAdd = api.addCommonOperationPolicy(policySpecContent, policyDefinition);
         promisedCommonPolicyAdd
             .then(() => {
                 Alert.info('Policy created successfully!');
                 setPolicyDefinitionFile([]);
-                history.push(redirectUrl);
+                history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
             })
             .catch((error) => {
-                history.push(redirectUrl);
-                const { response } = error;
-                if (response.body) {
-                    const { description } = response.body;
-                    console.log(description);
-                    Alert.error('Something went wrong while creating policy');
-                }
+                console.error(error);
+                history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
+                Alert.error('Something went wrong while creating policy');
+            })
+            .finally(() => {
+                setSaving(false);
             });
     }
 
     const onSave = (policySpecification: CreatePolicySpec) => {
         addCommonPolicy(policySpecification, policyDefinitionFile);
+    }
+
+    const onCancel = () => {
+        history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
     }
 
     return (
@@ -91,7 +96,7 @@ const CreatePolicy: React.FC = () => {
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
-                            <Link to={redirectUrl} className={classes.titleLink}>
+                            <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY} className={classes.titleLink}>
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
                                         id='CommonPolicies.CreatePolicy.CommonPolicy.listing.heading'
@@ -113,6 +118,8 @@ const CreatePolicy: React.FC = () => {
                             onSave={onSave}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}
+                            onCancel={onCancel}
+                            saving={saving}
                         />
                     </Grid>
                 </Grid>

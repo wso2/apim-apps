@@ -141,7 +141,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                         />
                         <sup className={classes.mandatoryStar}>*</sup>
                         <Tooltip
-                            title='Regular gateway supports only .j2 file uploads'
+                            title='Regular gateway supports only .j2 and .xml file uploads'
                             placement='right'
                             interactive
                         >

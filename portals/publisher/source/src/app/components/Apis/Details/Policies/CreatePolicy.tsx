@@ -32,6 +32,7 @@ import { FormattedMessage} from 'react-intl';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
+import CONST from 'AppData/Constants';
 import type { CreatePolicySpec } from './Types';
 import PolicyCreateForm from './PolicyForm/PolicyCreateForm';
 
@@ -59,10 +60,11 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
-
+    const [saving, setSaving] = useState(false);
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
 
     const savePolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
+        setSaving(true);
         const promisedCommonPolicyAdd = API.addOperationPolicy(policySpecContent, policyDefinition, api.id);   
         promisedCommonPolicyAdd
             .then(() => {
@@ -79,6 +81,9 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     console.error(description);
                     Alert.error('Something went wrong while creating policy');
                 }
+            })
+            .finally(() => {
+                setSaving(false);
             });
     }
 
@@ -129,12 +134,14 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                                 onSave={onSave}
                                 policyDefinitionFile={policyDefinitionFile}
                                 setPolicyDefinitionFile={setPolicyDefinitionFile}
+                                onCancel={handleDialogClose}
+                                saving={saving}
                             />
                         </DialogContentText>
                     </Box>
                 </DialogContent>
                 <Box display='flex' flexDirection='row' justifyContent='right' px={3} pb={3}>
-                    <Link to='/policies'>
+                    <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY}>
                         <Typography className={classes.link} variant='caption'>
                             Want to create a common policy that will be visible to all APIs instead?
                             <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />

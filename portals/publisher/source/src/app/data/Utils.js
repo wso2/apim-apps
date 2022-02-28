@@ -386,15 +386,10 @@ class Utils {
      * @returns {String} Letter(s) for avatar
      */
     static stringAvatar(name) {
-        return {
-            sx: {
-                bgcolor: this.stringToColor(name),
-            },
-            children: name.split(' ').length > 1 
-                ? `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
-                : `${name.split(' ')[0][0]}`,
-        };
-    };
+        return name.split(' ').length > 1
+            ? `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
+            : `${name.split(' ')[0][0]}`;
+    }
 
     /**
      * Return R, G & B color components given the HEX hashed color code

@@ -66,40 +66,40 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({
     }
 
     return (
-        <>
-            <Paper elevation={0} className={classes.root}>
-                {/* General details of policy */}
-                <GeneralDetails
-                    displayName={policySpec.displayName}
-                    description={policySpec.description}
-                    applicableFlows={policySpec.applicableFlows}
-                />
-                <Divider light />
-                {/* Gateway specific details of policy */}
-                <SourceDetails
-                    supportedGateways={policySpec.supportedGateways}
-                    isViewMode
-                    policyId={policySpec.id}
-                />
-                <Divider light />
-                {/* Attributes of policy */}
-                <PolicyAttributes
-                    policyAttributes={getPolicyAttributes()}
-                />
-                <Box>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={onDone}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.PolicyPolicyViewForm.policy.done'
-                            defaultMessage='Done'
-                        />    
-                    </Button>
-                </Box>
-            </Paper>
-        </>
+        <Paper elevation={0} className={classes.root}>
+            {/* General details of policy */}
+            <GeneralDetails
+                displayName={policySpec.displayName}
+                description={policySpec.description}
+                applicableFlows={policySpec.applicableFlows}
+                isViewMode
+            />
+            <Divider light />
+            {/* Gateway specific details of policy */}
+            <SourceDetails
+                supportedGateways={policySpec.supportedGateways}
+                isViewMode
+                policyId={policySpec.id}
+            />
+            <Divider light />
+            {/* Attributes of policy */}
+            <PolicyAttributes
+                policyAttributes={getPolicyAttributes()}
+                isViewMode
+            />
+            <Box>
+                <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={onDone}
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Policies.PolicyPolicyViewForm.policy.done'
+                        defaultMessage='Done'
+                    />    
+                </Button>
+            </Box>
+        </Paper>
     );
 }
 

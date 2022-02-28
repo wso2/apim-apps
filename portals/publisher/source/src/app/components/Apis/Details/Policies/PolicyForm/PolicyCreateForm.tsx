@@ -16,14 +16,13 @@
  * under the License.
  */
 
-import React, { FC, useReducer, useState } from 'react';
-import { CircularProgress, makeStyles } from '@material-ui/core';
+import React, { FC, useEffect, useReducer, useState } from 'react';
+import { CircularProgress, makeStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage,  } from 'react-intl';
-import { Link } from 'react-router-dom';
 import { isRestricted } from 'AppData/AuthManager';
 import type { CreatePolicySpec } from '../Types';
 import type { NewPolicyState, PolicyAttribute } from './Types';
@@ -32,7 +31,7 @@ import uuidv4 from '../Utils';
 import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
     root: {
         flexGrow: 1,
         marginTop: 10,
@@ -43,6 +42,9 @@ const useStyles = makeStyles(() => ({
     formGroup: {
         display: 'flex',
         flexDirection: 'row',
+    },
+    cancelBtn: {
+        marginLeft: theme.spacing(1),
     },
 }));
 
@@ -131,6 +133,8 @@ interface PolicyCreateFormProps {
     onSave: (policySpecification: CreatePolicySpec) => void;
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
+    onCancel: () => void;
+    saving: boolean;
 }    
 
 /**
@@ -139,11 +143,9 @@ interface PolicyCreateFormProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
-    onSave, policyDefinitionFile, setPolicyDefinitionFile
+    onSave, policyDefinitionFile, setPolicyDefinitionFile, onCancel, saving
 }) => {
     const classes = useStyles();
-    const url = '/policies';
-    const [saving, setSaving] = useState(false);
     const initialState: NewPolicyState = {
         displayName: null,
         description: '',
@@ -152,37 +154,44 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         policyAttributes: [],
     };
     const [state, dispatch] = useReducer(policyReducer, initialState);
+    const [isFormDisabled, setIsFormDisabled] = useState(false);
 
-    /**
-     * Function to check whether there are any errors in the form.
-     * If there are errors, we disable the save button.
-     * @returns {boolean} Boolean indicating whether or not the form has any errors.
-     */
-    const isSaveDisabled = () => {
-        let hasErrors = false;
+    useEffect(() => {
+        let hasError = false;
 
         // Display name current state validation
-        if (state.displayName === '') hasErrors = true;
+        if (!state.displayName || state.displayName === '') hasError = true;
 
         // Applicable flows current state validation
-        if (state.applicableFlows.length === 0) hasErrors = true;
+        if (state.applicableFlows.length === 0) hasError = true;
 
         // Supported gateways current state validation
-        if (state.supportedGateways.length === 0) hasErrors = true;
+        if (state.supportedGateways.length === 0) hasError = true;
 
         // Policy file upload current state validation
-        if (policyDefinitionFile.length === 0) hasErrors = true;
+        if (policyDefinitionFile.length === 0) hasError = true;
 
         // Policy attributes current state validation
         state.policyAttributes.forEach((attribute: PolicyAttribute) => {
-            if (attribute.name === '' || attribute.displayName === '') hasErrors = true;
+            if (
+                !attribute.name ||
+                !attribute.displayName ||
+                attribute.name === '' ||
+                attribute.displayName === ''
+            )
+                hasError = true;
         });
-
-        return hasErrors;
-    }
+        
+        setIsFormDisabled(hasError);
+    }, [
+        state.displayName,
+        state.applicableFlows,
+        state.supportedGateways,
+        state.policyAttributes,
+        policyDefinitionFile,
+    ]);
 
     const onPolicySave = () => {
-        setSaving(true);
         if (state.displayName) {
             const policySpec = {
                 category: 'Mediation',
@@ -197,7 +206,6 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
             };
             onSave(policySpec);
         }
-        setSaving(false);
     }
 
     return (
@@ -209,6 +217,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                     description={state.description}
                     applicableFlows={state.applicableFlows}
                     dispatch={dispatch}
+                    isViewMode={false}
                 />
                 <Divider light />
                 {/* Gateway specific details of policy */}
@@ -223,29 +232,30 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 <PolicyAttributes
                     policyAttributes={state.policyAttributes}
                     dispatch={dispatch}
+                    isViewMode={false}
                 />
                 <Box>
                     <Button 
                         variant='contained'
                         color='primary'
                         onClick={onPolicySave}
-                        disabled={ isRestricted(['apim:shared_scope_manage']) || isSaveDisabled() }
+                        disabled={ isRestricted(['apim:shared_scope_manage']) || isFormDisabled }
                     >
                         {saving ? (<CircularProgress size={16} />) : (
                             <FormattedMessage
                                 id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.save'
                                 defaultMessage='Save'
-                            />     
+                            />
                         )}               
                     </Button>
                     <Button
-                        component={Link}
-                        to={url}
+                        className={classes.cancelBtn}
+                        onClick={onCancel}
                     >
                         <FormattedMessage
                             id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.cancel'
                             defaultMessage='Cancel'
-                        />    
+                        />
                     </Button>
                 </Box>
             </Paper>

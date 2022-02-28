@@ -17,29 +17,21 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
+import CONST from 'AppData/Constants';
 import API from 'AppData/api';
 import { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import { Progress } from 'AppComponents/Shared';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import PolicyViewForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyViewForm';
 
-const useStyles = makeStyles((theme: any) => ({
-    root: {
-        flexGrow: 1,
-        marginTop: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 20,
-    },
+const useStyles = makeStyles((theme: Theme) => ({
     titleWrapper: {
         display: 'flex',
         flexDirection: 'row',
@@ -56,37 +48,6 @@ const useStyles = makeStyles((theme: any) => ({
             margin: 0,
         },
     },
-    dropZoneWrapper: {
-        border: '1px dashed ' + theme.palette.primary.main,
-        borderRadius: '5px',
-        cursor: 'pointer',
-        padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
-        position: 'relative',
-        textAlign: 'center',
-        width: '75%',
-        margin: '10px 0',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        '& span': {
-            fontSize: 64,
-            color: theme.palette.primary.main,
-        },
-    },
-    acceptDrop: {
-        backgroundColor: green[50],
-        borderColor: 'green',
-    },
-    rejectDrop: {
-        backgroundColor: red[50],
-        borderColor: 'red',
-    },
-    uploadedFileDetails: {
-        marginTop: '2em',
-        width: '75%',
-    },
 }));
 
 /**
@@ -97,7 +58,6 @@ const useStyles = makeStyles((theme: any) => ({
 const ViewPolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const redirectUrl = '/policies';
     const { policyId } = useParams<{policyId?: string}>();
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
     const [notFound, setNotFound] = useState(false);
@@ -129,7 +89,7 @@ const ViewPolicy: React.FC = () => {
     }, [policyId])
 
     const redirectToPolicies = () => {
-        history.push(redirectUrl);
+        history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
     }
 
     const resourceNotFountMessage = {
@@ -153,7 +113,7 @@ const ViewPolicy: React.FC = () => {
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
-                            <Link to={redirectUrl} className={classes.titleLink}>
+                            <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY} className={classes.titleLink}>
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
                                         id='CommonPolicies.CreatePolicy.listing.heading'

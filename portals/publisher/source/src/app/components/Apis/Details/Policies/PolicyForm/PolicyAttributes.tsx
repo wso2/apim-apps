@@ -59,7 +59,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface PolicyAttributesProps {
     policyAttributes: PolicyAttribute[];
-    dispatch?: React.Dispatch<any>
+    dispatch?: React.Dispatch<any>;
+    isViewMode: boolean;
 }
 
 /**
@@ -68,7 +69,7 @@ interface PolicyAttributesProps {
  * @returns {TSX} Policy attributes UI.
  */
 const PolicyAttributes: FC<PolicyAttributesProps> = ({
-    policyAttributes, dispatch
+    policyAttributes, dispatch, isViewMode
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -233,9 +234,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             autoFocus
                                             fullWidth
                                             required
-                                            id={'name-' + attribute.name}
                                             name='name'
-                                            key='name'
                                             label={
                                                 <FormattedMessage
                                                     id={'Policies.PolicyForm.add.policy.attributes.add.'
@@ -260,15 +259,14 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }
                                             onChange={(e) => handleAttributeChange(e, attribute.id)}
                                             variant='outlined'
+                                            InputProps={{ readOnly: isViewMode }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={3} className={classes.attributeProperty}>
                                         <TextField
                                             fullWidth
                                             required
-                                            id={'displayName-' + attribute.name}
                                             name='displayName'
-                                            key='displayName'
                                             label={
                                                 <FormattedMessage
                                                     id={'Policies.PolicyForm.add.policy.attributes.add.'
@@ -293,14 +291,13 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }
                                             onChange={(e) => handleAttributeChange(e, attribute.id)}
                                             variant='outlined'
+                                            InputProps={{ readOnly: isViewMode }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={6} className={classes.attributeProperty}>
                                         <TextField
                                             fullWidth
-                                            id={'description-' + attribute.name}
                                             name='description'
-                                            key='description'
                                             label={
                                                 <FormattedMessage
                                                     id={'Policies.PolicyForm.add.policy.attributes.add.'
@@ -325,6 +322,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }
                                             onChange={(e) => handleAttributeChange(e, attribute.id)}
                                             variant='outlined'
+                                            InputProps={{ readOnly: isViewMode }}
                                         />
                                     </Grid>
                                 </Box>
@@ -332,9 +330,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                     <Grid xs={12} md={12} lg={4} className={classes.attributeProperty}>
                                         <TextField
                                             fullWidth
-                                            id={'validationRegex-' + attribute.name}
                                             name='validationRegex'
-                                            key='validationRegex'
                                             label={
                                                 <FormattedMessage
                                                     id={'Policies.PolicyForm.add.policy.attributes.add.'
@@ -360,14 +356,13 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }
                                             onChange={(e) => handleAttributeChange(e, attribute.id)}
                                             variant='outlined'
+                                            InputProps={{ readOnly: isViewMode }}
                                         />
                                     </Grid>
                                     <Grid xs={12} md={12} lg={4} className={classes.attributeProperty}>
                                         <TextField
                                             fullWidth
-                                            id={'defaultValue-' + attribute.name}
                                             name='defaultValue'
-                                            key='defaultValue'
                                             label={
                                                 <FormattedMessage
                                                     id={'Policies.PolicyForm.add.policy.attributes.add.'
@@ -392,6 +387,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }
                                             onChange={(e) => handleAttributeChange(e, attribute.id)}
                                             variant='outlined'
+                                            InputProps={{ readOnly: isViewMode }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={4} className={classes.attributeProperty}>
@@ -443,6 +439,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                 }
                                                 onChange={(e) => handleAttributeChange(e, attribute.id)}
                                                 classes={{ root: classes.selectRoot }}
+                                                inputProps={{ readOnly: isViewMode }}
                                             >
                                                 <option value='String'>String</option>
                                                 <option value='Integer'>Integer</option>
@@ -486,6 +483,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                     />
                                                 }
                                                 onChange={(e) => handleAllowedValues(e, attribute.id)}
+                                                InputProps={{ readOnly: isViewMode }}
                                             />
                                         </Grid>
                                     )}

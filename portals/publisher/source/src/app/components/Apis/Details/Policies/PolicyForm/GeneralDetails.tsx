@@ -45,6 +45,7 @@ interface GeneralDetailsProps {
     description: string;
     applicableFlows: string[];
     dispatch?: React.Dispatch<any>;
+    isViewMode: boolean;
 }
 
 /**
@@ -53,7 +54,7 @@ interface GeneralDetailsProps {
  * @returns {TSX} General details of the policy.
  */
 const GeneralDetails: FC<GeneralDetailsProps> = ({
-    displayName, description, applicableFlows, dispatch
+    displayName, description, applicableFlows, dispatch, isViewMode
 }) => {
     const classes = useStyles();
 
@@ -138,6 +139,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         variant='outlined'
                         value={displayName}
                         onChange={handleInputChange}
+                        InputProps={{ readOnly: isViewMode }}
                     />
                     <TextField
                         id='name'
@@ -161,6 +163,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         variant='outlined'
                         value={description}
                         onChange={handleInputChange}
+                        InputProps={{ readOnly: isViewMode }}
                     />
                     <Box display='flex' flexDirection='row' alignItems='center'>
                         <Typography color='inherit' variant='body1' component='div'>
