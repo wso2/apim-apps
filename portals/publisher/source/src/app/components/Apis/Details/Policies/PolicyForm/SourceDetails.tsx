@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -26,8 +26,14 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage,  } from 'react-intl';
 import FormControl from '@material-ui/core/FormControl';
-import { ACTIONS } from './PolicyForm';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Button from '@material-ui/core/Button';
+import Utils from 'AppData/Utils';
+import API from 'AppData/api.js';
+import { Alert } from 'AppComponents/Shared';
+import { ACTIONS } from './PolicyCreateForm';
 import UploadPolicyDropzone from './UploadPolicyDropzone';
+import ApiContext from '../../components/ApiContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
     mandatoryStar: {
@@ -38,6 +44,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'row',
     },
+    downloadPolicyLabel: {
+        marginTop: theme.spacing(1),
+    },
 }));
 
 const SUPPORTED_GATEWAYS = {
@@ -47,9 +56,11 @@ const SUPPORTED_GATEWAYS = {
 
 interface SourceDetailsProps {
     supportedGateways: string[];
-    policyDefinitionFile: any[];
-    setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
-    dispatch: React.Dispatch<any>;
+    policyDefinitionFile?: any[];
+    setPolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
+    dispatch?: React.Dispatch<any>;
+    isViewMode?: boolean;
+    policyId?: string;
 }
 
 /**
@@ -58,9 +69,10 @@ interface SourceDetailsProps {
  * @returns {TSX} General details of the policy.
  */
 const SourceDetails: FC<SourceDetailsProps> = ({
-    supportedGateways, policyDefinitionFile, setPolicyDefinitionFile, dispatch
+    supportedGateways, policyDefinitionFile, setPolicyDefinitionFile, dispatch, isViewMode, policyId
 }) => {
     const classes = useStyles();
+    const { api } = useContext<any>(ApiContext);
 
     // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
     // True if none of the available gateways are selected.
@@ -71,11 +83,87 @@ const SourceDetails: FC<SourceDetailsProps> = ({
      * @param {React.ChangeEvent<HTMLInputElement>} event event
      */
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>)  => {
-        dispatch({
-            type: ACTIONS.UPDATE_SUPPORTED_GATEWAYS,
-            name: (event.target.name === 'regularGateway' ? SUPPORTED_GATEWAYS.SYNAPSE : SUPPORTED_GATEWAYS.CC) ,
-            checked: event.target.checked,
-        })
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_SUPPORTED_GATEWAYS,
+                name: (event.target.name === 'regularGateway' ? SUPPORTED_GATEWAYS.SYNAPSE : SUPPORTED_GATEWAYS.CC) ,
+                checked: event.target.checked,
+            })
+        }
+    }
+
+    /**
+     * Hanlde policy download
+     */
+    const handlePolicyDownload = () => {
+        if (policyId) {
+            const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyId);
+            commonPolicyContentPromise
+                .then((commonPolicyResponse) => {
+                    Utils.forceDownload(commonPolicyResponse);
+                })
+                .catch(() => {
+                    const apiPolicyContentPromise = API.getOperationPolicyContent(policyId, api.id);
+                    apiPolicyContentPromise
+                        .then((apiPolicyResponse) => {
+                            Utils.forceDownload(apiPolicyResponse);
+                        })
+                        .catch((error) => {
+                            if (process.env.NODE_ENV !== 'production') {
+                                console.log(error);
+                                Alert.error(
+                                    <FormattedMessage
+                                        id='Policies.ViewPolicy.download.error'
+                                        defaultMessage='Something went wrong while downloading the policy'
+                                    />
+                                );
+                            }
+                        });
+                });
+        }
+    }
+
+    const renderPolicyFileDetails = () => {
+        if (!isViewMode && policyDefinitionFile && setPolicyDefinitionFile) {
+            return (
+                <UploadPolicyDropzone
+                    policyDefinitionFile={policyDefinitionFile}
+                    setPolicyDefinitionFile={setPolicyDefinitionFile}
+                />
+            );
+        } else {
+            return (
+                <>
+                    <Box display='flex' flexDirection='row' alignItems='center'>
+                        <Typography color='inherit' variant='subtitle2' component='div'>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.download.policy'
+                                defaultMessage='Policy File'
+                            />
+                            <sup className={classes.mandatoryStar}>*</sup>
+                        </Typography>
+                    </Box>
+                    <Typography color='inherit' variant='caption' component='p'>
+                        <FormattedMessage
+                            id='Policies.PolicyCreateForm.UploadPolicyDropzone.description'
+                            defaultMessage='Policy file contains the business logic of the policy'
+                        />
+                    </Typography>
+                    <Box flex='1'  display='flex' flexDirection='row' justifyContent='left' m={3}>
+                        <Button
+                            aria-label='download-policy'
+                            variant='contained'
+                            size='large'
+                            color='primary'
+                            onClick={handlePolicyDownload}
+                            endIcon={<CloudDownloadIcon />}
+                        >
+                            Download Policy
+                        </Button>
+                    </Box>
+                </>
+            )
+        }
     }
 
     return (
@@ -147,10 +235,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                     </Box>
                 </Box>
                 {supportedGateways.includes(SUPPORTED_GATEWAYS.SYNAPSE) && (
-                    <UploadPolicyDropzone
-                        policyDefinitionFile={policyDefinitionFile}
-                        setPolicyDefinitionFile={setPolicyDefinitionFile}
-                    />
+                    renderPolicyFileDetails()
                 )}
             </Box>
         </Box>

@@ -29,8 +29,8 @@ import red from '@material-ui/core/colors/red';
 import API from 'AppData/api';
 import { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import { Progress } from 'AppComponents/Shared';
-import ViewAndDownloadPolicy from 'AppComponents/Apis/Details/Policies/ViewAndDownloadPolicy';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
+import PolicyViewForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyViewForm';
 
 const useStyles = makeStyles((theme: any) => ({
     root: {
@@ -169,7 +169,7 @@ const ViewPolicy: React.FC = () => {
                     </Grid>
                     <Grid item md={12}>
                         <Paper>
-                            <ViewAndDownloadPolicy
+                            <PolicyViewForm
                                 policySpec={policySpec}
                                 onDone={redirectToPolicies}
                             />

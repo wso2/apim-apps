@@ -66,6 +66,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     uploadedFileDetails: {
         width: '75%',
     },
+    mandatoryStar: {
+        color: theme.palette.error.main,
+        marginLeft: theme.spacing(0.1),
+    },
 }));
 
 interface UploadPolicyDropzoneProps {
@@ -135,6 +139,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                             id='Policies.PolicyCreateForm.UploadPolicyDropzone.title'
                             defaultMessage='Upload Policy File'
                         />
+                        <sup className={classes.mandatoryStar}>*</sup>
                         <Tooltip
                             title='Regular gateway supports only .j2 file uploads'
                             placement='right'

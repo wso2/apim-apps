@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import React, { FC, useReducer } from 'react';
-import { makeStyles } from '@material-ui/core';
+import React, { FC, useReducer, useState } from 'react';
+import { CircularProgress, makeStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
@@ -54,6 +54,7 @@ export const ACTIONS = {
     UPDATE_POLICY_ATTRIBUTE: 'updatePolicyAttribute',
     DELETE_POLICY_ATTRIBUTE: 'deletePolicyAttribute'
 }
+
 /**
  * Reducer to manage policy creation related logic
  * @param {NewPolicyState} state State
@@ -117,7 +118,7 @@ function policyReducer(state: NewPolicyState, action: any) {
                 ...state,
                 policyAttributes: state.policyAttributes.filter(
                     (policyAttribute: PolicyAttribute) =>
-                        policyAttribute.id !== action.payload.id,
+                        policyAttribute.id !== action.id,
                 )
             };
         }
@@ -126,23 +127,23 @@ function policyReducer(state: NewPolicyState, action: any) {
     }
 }
 
-interface PolicyFormProps {
+interface PolicyCreateFormProps {
     onSave: (policySpecification: CreatePolicySpec) => void;
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
 }    
 
 /**
- * Renders the policy configuring drawer.
+ * Renders the policy create form.
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Right drawer for policy configuration.
  */
-const PolicyForm: FC<PolicyFormProps> = ({
+const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     onSave, policyDefinitionFile, setPolicyDefinitionFile
 }) => {
     const classes = useStyles();
     const url = '/policies';
-    // const [saving, setSaving] = useState(false);
+    const [saving, setSaving] = useState(false);
     const initialState: NewPolicyState = {
         displayName: null,
         description: '',
@@ -159,22 +160,29 @@ const PolicyForm: FC<PolicyFormProps> = ({
      */
     const isSaveDisabled = () => {
         let hasErrors = false;
+
         // Display name current state validation
         if (state.displayName === '') hasErrors = true;
+
         // Applicable flows current state validation
         if (state.applicableFlows.length === 0) hasErrors = true;
+
         // Supported gateways current state validation
         if (state.supportedGateways.length === 0) hasErrors = true;
+
         // Policy file upload current state validation
         if (policyDefinitionFile.length === 0) hasErrors = true;
+
         // Policy attributes current state validation
         state.policyAttributes.forEach((attribute: PolicyAttribute) => {
             if (attribute.name === '' || attribute.displayName === '') hasErrors = true;
         });
+
         return hasErrors;
     }
 
     const onPolicySave = () => {
+        setSaving(true);
         if (state.displayName) {
             const policySpec = {
                 category: 'Mediation',
@@ -189,6 +197,7 @@ const PolicyForm: FC<PolicyFormProps> = ({
             };
             onSave(policySpec);
         }
+        setSaving(false);
     }
 
     return (
@@ -222,17 +231,19 @@ const PolicyForm: FC<PolicyFormProps> = ({
                         onClick={onPolicySave}
                         disabled={ isRestricted(['apim:shared_scope_manage']) || isSaveDisabled() }
                     >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.PolicyPolicyForm.policy.save'
-                            defaultMessage='Save'
-                        />                    
+                        {saving ? (<CircularProgress size={16} />) : (
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.save'
+                                defaultMessage='Save'
+                            />     
+                        )}               
                     </Button>
                     <Button
                         component={Link}
                         to={url}
                     >
                         <FormattedMessage
-                            id='Apis.Details.Policies.PolicyPolicyForm.policy.cancel'
+                            id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.cancel'
                             defaultMessage='Cancel'
                         />    
                     </Button>
@@ -242,4 +253,4 @@ const PolicyForm: FC<PolicyFormProps> = ({
     );
 }
 
-export default PolicyForm;
+export default PolicyCreateForm;

@@ -33,7 +33,7 @@ import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import type { CreatePolicySpec } from './Types';
-import PolicyForm from './PolicyForm/PolicyForm';
+import PolicyCreateForm from './PolicyForm/PolicyCreateForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
     link: {
@@ -125,7 +125,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                 <DialogContent>
                     <Box my={2}>
                         <DialogContentText>
-                            <PolicyForm
+                            <PolicyCreateForm
                                 onSave={onSave}
                                 policyDefinitionFile={policyDefinitionFile}
                                 setPolicyDefinitionFile={setPolicyDefinitionFile}

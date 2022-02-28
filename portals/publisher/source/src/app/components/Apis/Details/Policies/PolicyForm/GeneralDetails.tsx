@@ -27,7 +27,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage,  } from 'react-intl';
 import FormControl from '@material-ui/core/FormControl';
-import { ACTIONS } from './PolicyForm';
+import { ACTIONS } from './PolicyCreateForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
     mandatoryStar: {
@@ -44,7 +44,7 @@ interface GeneralDetailsProps {
     displayName: string | null;
     description: string;
     applicableFlows: string[];
-    dispatch: React.Dispatch<any>;
+    dispatch?: React.Dispatch<any>;
 }
 
 /**
@@ -69,11 +69,13 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
      * @param {React.ChangeEvent<HTMLInputElement>} event event
      */
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch({
-            type: ACTIONS.UPDATE_POLICY_METADATA,
-            field: event.target.name,
-            value: event.target.value
-        });   
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_POLICY_METADATA,
+                field: event.target.name,
+                value: event.target.value
+            });
+        }
     }
 
     /**
@@ -81,11 +83,13 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
      * @param {React.ChangeEvent<HTMLInputElement>} event event
      */
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>)  => {
-        dispatch({
-            type: ACTIONS.UPDATE_APPLICALBLE_FLOWS,
-            name: event.target.name,
-            checked: event.target.checked,
-        })
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_APPLICALBLE_FLOWS,
+                name: event.target.name,
+                checked: event.target.checked,
+            });
+        }
     }
 
     return (

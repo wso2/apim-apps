@@ -127,7 +127,7 @@ module.exports = (env, argv) => {
                     use: { loader: 'worker-loader' },
                 },
                 {
-                    test: /\.(js|jsx|ts|tsx)$/,
+                    test: /\.(js|jsx)$/,
                     exclude: [/node_modules\/(?!(@hapi)\/).*/, /coverage/],
                     use: [
                         {

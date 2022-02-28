@@ -26,7 +26,7 @@ import { Link, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
-import PolicyForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyForm';
+import PolicyCreateForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyCreateForm';
 import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: any) => ({
@@ -109,7 +109,7 @@ const CreatePolicy: React.FC = () => {
                         </div>
                     </Grid>
                     <Grid item md={12}>
-                        <PolicyForm
+                        <PolicyCreateForm
                             onSave={onSave}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}

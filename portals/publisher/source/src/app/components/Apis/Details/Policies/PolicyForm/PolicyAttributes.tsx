@@ -35,7 +35,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import classNames from 'classnames';
 import { AddCircle } from '@material-ui/icons';
 import { PolicyAttribute } from './Types';
-import { ACTIONS } from './PolicyForm';
+import { ACTIONS } from './PolicyCreateForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
     attributeProperty: {
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface PolicyAttributesProps {
     policyAttributes: PolicyAttribute[];
-    dispatch: React.Dispatch<any>
+    dispatch?: React.Dispatch<any>
 }
 
 /**
@@ -74,7 +74,9 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     const intl = useIntl();
 
     const addNewPolicyAttribute = () => {
-        dispatch({ type: ACTIONS.ADD_POLICY_ATTRIBUTE });
+        if (dispatch) {
+            dispatch({ type: ACTIONS.ADD_POLICY_ATTRIBUTE });
+        }
     }
 
     const getAttributeFormError = (attribute: PolicyAttribute, fieldName: string) => {
@@ -137,16 +139,18 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
 
     /**
      * Function to handle form inputs
-     * @param {React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>} event Event
+     * @param {any} event Event
      * @param {string} id Policy Attribute ID
      */
     const handleAttributeChange = (event: any, id: string) => {
-        dispatch({
-            type: ACTIONS.UPDATE_POLICY_ATTRIBUTE,
-            id,
-            field: event.target.name,
-            value: event.target.value
-        });
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_POLICY_ATTRIBUTE,
+                id,
+                field: event.target.name,
+                value: event.target.value
+            });
+        }
     }
 
     /**
@@ -155,12 +159,30 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
      * @param {string} id Policy Attribute ID
      */
     const handleToggle = (event: React.ChangeEvent<HTMLInputElement>, id: string) => {
-        dispatch({
-            type: ACTIONS.UPDATE_POLICY_ATTRIBUTE,
-            id,
-            field: event.target.name,
-            value: event.target.checked
-        });
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_POLICY_ATTRIBUTE,
+                id,
+                field: event.target.name,
+                value: event.target.checked
+            });
+        }
+    }
+
+    /**
+     * Function to handle allowed values attribute
+     * @param {React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>} event Event
+     * @param {string} id Policy Attribute ID
+     */
+    const handleAllowedValues = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>, id: string) => {
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_POLICY_ATTRIBUTE,
+                id,
+                field: event.target.name,
+                value: event.target.value.split(/[,][\s]*/)
+            });
+        }
     }
 
     return (
@@ -463,7 +485,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                             + 'values for the Enum attribute'}
                                                     />
                                                 }
-                                            // onChange={handleAttributeChange}
+                                                onChange={(e) => handleAllowedValues(e, attribute.id)}
                                             />
                                         </Grid>
                                     )}
@@ -483,9 +505,9 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             <IconButton
                                                 key={'delete' + attribute.name}
                                                 onClick={() =>
-                                                    dispatch({
+                                                    dispatch && dispatch({
                                                         type: ACTIONS.DELETE_POLICY_ATTRIBUTE,
-                                                        payload: { id: attribute.id },
+                                                        id: attribute.id,
                                                     })
                                                 }
                                             >
