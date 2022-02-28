@@ -29,7 +29,6 @@ import {
 import { green } from '@material-ui/core/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import { format } from 'sql-formatter';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Link as RouterLink } from 'react-router-dom';
@@ -73,12 +72,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@carbon.super' ) "
-+ "AS isEligible , str:concat('admin@carbon.super','') as throttleKey "
-+ 'INSERT INTO EligibilityStream; FROM EligibilityStream[isEligible==true]#throttler:timeBatch(1 min) '
-+ 'SELECT throttleKey, (count(userId) >= 5) as isThrottled, expiryTimeStamp group by throttleKey '
-+ 'INSERT ALL EVENTS into ResultStream;';
-const formattedSampleSiddhiQuery = format(sampleSiddhiQuery);
+const formattedSampleSiddhiQuery = 'FROM\n\tRequestStream\nSELECT\n\tuserId,\n'
++ "\t(userId == 'admin@carbon.super') AS isEligible,\n"
++ "\tstr: concat('admin@carbon.super', '') as throttleKey\n"
++ 'INSERT INTO\n\tEligibilityStream;\nFROM\n'
++ '\tEligibilityStream [ isEligible == true ] # throttler: timeBatch(1 min)\n'
++ 'SELECT\n\tthrottleKey,\n\t(count(userId) >= 5) as isThrottled,\n'
++ '\texpiryTimeStamp\ngroup by\n'
++ '\tthrottleKey INSERT ALL EVENTS into ResultStream;';
 
 /**
  * Reducer
