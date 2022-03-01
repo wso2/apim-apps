@@ -178,7 +178,8 @@ class CommentAdd extends React.Component {
                             id='standard-multiline-flexible'
                             autoFocus
                             multiline
-                            disabled={api.isRevision || isRestricted(['apim:api_create'], api)}
+                            disabled={api.isRevision 
+                            || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                             className={classes.textField}
                             margin='normal'
                             placeholder={intl.formatMessage({
@@ -199,7 +200,8 @@ class CommentAdd extends React.Component {
                             <Button
                                 variant='contained'
                                 color='primary'
-                                disabled={api.isRevision || isRestricted(['apim:api_create'], api)
+                                disabled={api.isRevision ||
+                                isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                 || currentLength === 0}
                                 onClick={() => this.handleClickAddComment()}
                                 className={classes.commentAddButton}
