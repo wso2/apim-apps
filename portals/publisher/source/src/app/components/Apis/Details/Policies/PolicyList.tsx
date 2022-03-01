@@ -128,19 +128,19 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 id='request-tab'
                                 aria-controls='request-tabpanel'
                             />
-                            {!isChoreoConnectEnabled ? (
+                            {!isChoreoConnectEnabled && (
                                 <Tab
                                     label={<span className={classes.flowTab}>Response</span>}
                                     id='response-tab'
                                     aria-controls='response-tabpanel'
-                                />) : <></>
+                                />)
                             }
-                            {!isChoreoConnectEnabled ? (
+                            {!isChoreoConnectEnabled && (
                                 <Tab
                                     label={<span className={classes.flowTab}>Fault</span>}
                                     id='fault-tab'
                                     aria-controls='fault-tabpanel'
-                                />) : <></>
+                                />)
                             }
                         </Tabs>
                         <Box className={classes.tabContentBox} height='50vh' pt={1} overflow='scroll'>

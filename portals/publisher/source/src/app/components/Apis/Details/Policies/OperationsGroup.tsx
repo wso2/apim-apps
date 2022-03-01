@@ -52,41 +52,42 @@ const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag, isChoreoConn
     const classes = useStyles();
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo: any) => tagInfo.name === tag);
     return (
-        <ExpansionPanel defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
-                <Typography
-                    variant='h4'
-                    className={classes.tagClass}
-                    title={tag}
-                >
-                    {tag}
-                </Typography>
-                <Typography style={{ margin: '0px 10px' }} variant='caption'>
-                    {''}
-                </Typography>
-                {isChoreoConnectEnabled ?
-                    <Box display="flex" flexDirection="column wrap" gridRowGap={10} gridColumnGap={5}>
-
-                        {Object.entries(verbObject).map(([verb, operation]) => {
-                            return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                <>
-                                    <OperationButton
-                                        operation={operation}
-                                        verb={verb}
-                                    />
-                                </>
-                            ) : null;
-                        })}
-                    </Box>
-                    : null}
-                {currentTagInfo && (
-                    <Typography style={{ margin: '0px 30px' }} variant='caption'>
-                        {currentTagInfo.description}
+        <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: '#AAAAAA', borderRadius: 1 }}>
+            <ExpansionPanel defaultExpanded>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
+                    <Typography
+                        variant='h4'
+                        className={classes.tagClass}
+                        title={tag}
+                    >
+                        {tag}
                     </Typography>
-                )}
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
-        </ExpansionPanel>
+                    <Typography style={{ margin: '0px 10px' }} variant='caption'>
+                        {''}
+                    </Typography>
+                    {isChoreoConnectEnabled ?
+                        <Box display="flex" flexDirection="column wrap" gridRowGap={10} gridColumnGap={5}>
+
+                            {Object.entries(verbObject).map(([verb, operation]) => {
+                                return CONSTS.HTTP_METHODS.includes(verb) ? (
+                                    <>
+                                        <OperationButton
+                                            verb={verb}
+                                        />
+                                    </>
+                                ) : null;
+                            })}
+                        </Box>
+                        : null}
+                    {currentTagInfo && (
+                        <Typography style={{ margin: '0px 30px' }} variant='caption'>
+                            {currentTagInfo.description}
+                        </Typography>
+                    )}
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
+            </ExpansionPanel>
+        </Box>
     );
 };
 

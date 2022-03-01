@@ -47,12 +47,13 @@ interface OPProps {
     expandedResource: any;
     setExpandedResource: any;
     policyList: Policy[];
-    allPolicies: PolicySpec[] | null
-    isChoreoConnectEnabled: boolean
+    allPolicies: PolicySpec[] | null;
+    isChoreoConnectEnabled: boolean;
+    isGatewayChanged: boolean;
 }
 
 const OperationPolicy: FC<OPProps> = ({
-    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies, isChoreoConnectEnabled
+    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies, isChoreoConnectEnabled, isGatewayChanged
 }) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -169,15 +170,6 @@ const OperationPolicy: FC<OPProps> = ({
                 || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
             if (policyObj) {
                 requestFlowList.push({ ...policyObj, uniqueKey: uuid });
-                // } else {
-                //     ;(async () => {
-                //         try {
-                //             const policyResponse = await API.getOperationPolicy(policyId, apiId);
-                //             requestFlowList.push({ ...policyResponse.body, uniqueKey: Math.random() });
-                //         } catch(error) {
-                //             console.error(error);
-                //         }
-                //     })();
             }
         })
         setRequestFlowPolicyList(requestFlowList);
@@ -210,7 +202,7 @@ const OperationPolicy: FC<OPProps> = ({
 
     }, [apiOperations])
 
-    const handleExpansion = (panel: any) => (event: any, isExpanded: any) => {
+    const handleExpansion = (panel: string) => (event: object, isExpanded: boolean) => {
         setExpandedResource(isExpanded ? panel : false);
     };
 
@@ -363,6 +355,7 @@ const OperationPolicy: FC<OPProps> = ({
                         allPolicies={allPolicies}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
                         policyList={policyList}
+                        isGatewayChanged={isGatewayChanged}
                     />) : <></>}
             </ExpansionPanel>
         </>

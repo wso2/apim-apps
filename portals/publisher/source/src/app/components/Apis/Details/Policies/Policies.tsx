@@ -20,7 +20,7 @@ import {
     Grid, makeStyles, Typography, Button,
 } from '@material-ui/core';
 import Alert from 'AppComponents/Shared/Alert';
-import React, { useState, useEffect, useMemo, } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
 import Paper from '@material-ui/core/Paper';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -54,6 +54,13 @@ const useStyles = makeStyles(() => ({
     operationListingBox: {
         overflowY: 'scroll',
     },
+    paper: {
+        padding:'2px'
+    },
+    ccTyPhography: {
+      paddingLeft:'10px', 
+      marginTop:'20px'
+    }
 }));
 
 interface IProps {
@@ -73,6 +80,12 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState(false);
     const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
+    const [isGatewayChanged, getGatewayChange] = useState(false);
+
+    const setGatewayChange = (isGatewayChanged: boolean) => {
+        getGatewayChange(isGatewayChanged);
+        saveApi(isGatewayChanged);
+    }
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -133,6 +146,15 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     }
 
     useEffect(() => {
+        getChoreoConnectEnabled(JSON.parse(window.localStorage.getItem('isChoreoConnectEnabled')!));
+        getGatewayChange(false);
+    }, []);
+
+    useEffect(() => {
+        window.localStorage.setItem('isChoreoConnectEnabled', String(isChoreoConnectEnabled));
+    }, [isChoreoConnectEnabled]);
+
+    useEffect(() => {
         fetchPolicies();
     }, [])
 
@@ -175,7 +197,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             operationInAction = newApiOperations.find((op: any) => op.target === target);
         } else {
             operationInAction = newApiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
         }
         const operationFlowPolicy =
             operationInAction.operationPolicies[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
@@ -244,24 +266,27 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     /**
      * To update the API object with the attached policies on Save click event
      */
-    const saveApi = () => {
+    const saveApi = (isGatewayChanged: boolean) => {
         setUpdating(true);
+        const newApiOperations: any = cloneDeep(apiOperations);
         // This is what we use to set to the api object ()
-        apiOperations.forEach((op: any) => {
+        newApiOperations.forEach((op: any) => {
             if (op.operationPolicies) {
                 // iterating request, response and faults
                 const { operationPolicies } = op;
                 for (const key in operationPolicies) {
-                    const policyArray = operationPolicies[key];
+                    let policyArray = operationPolicies[key];
                     policyArray.forEach((item: any) => {
-                        if (item.uuid) {
+                        if (isGatewayChanged) {
+                            operationPolicies[key] = [];
+                        } else if (item.uuid) {
                             delete item.uuid;
                         }
                     });
                 }
             }
         });
-        const updatePromise = updateAPI({ operations: apiOperations });
+        const updatePromise = updateAPI({ operations: newApiOperations });
         updatePromise
             .finally(() => {
                 setUpdating(false);
@@ -286,21 +311,20 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <GatewaySelector getGatewayType={getGatewayType} />
+                    <GatewaySelector getGatewayType={getGatewayType} isChoreoConnectEnabled={isChoreoConnectEnabled} setGatewayChange={setGatewayChange} />
                 </Box>
                 {isChoreoConnectEnabled ?
                     <Box display='flex' flexDirection='row'>
                         <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox} sx={{ border: 1 }}>
-                            <Paper>
-                                <Typography id='cc-specific-message' variant='h6' component='h2' gutterBottom>
+                            <Paper className={classes.paper}>
+                                <Typography id='cc-specific-message' variant='h6' component='h2' gutterBottom className={classes.ccTyPhography}>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.ccMessage'
-                                        defaultMessage='Choreo connect supports resource level request flow policies only.'
+                                        defaultMessage='Choreo connect supports resource level request and response flow policies only.'
 
                                     />
                                 </Typography>
                                 {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
-
                                     <Grid key={target} item xs={12}>
                                         <OperationsGroup openAPI={openAPISpec} tag={target} isChoreoConnectEnabled={isChoreoConnectEnabled} verbObject={verbObject}>
                                             <Grid
@@ -316,12 +340,14 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                     allPolicies={allPolicies}
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                                                     policyList={policies}
+                                                    isGatewayChanged={isGatewayChanged}
                                                 ></PoliciesExpansion>
                                             </Grid>
                                         </OperationsGroup>
                                     </Grid>
                                 ))}
                             </Paper>
+                            <SaveOperationPolicies saveApi={() => { saveApi(false) }} />
                         </Box>
                         <Box width='35%' pl={1}>
                             <PolicyList
@@ -333,8 +359,8 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Box>
                     :
                     <Box display='flex' flexDirection='row'>
-                        <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox}>
-                            <Paper>
+                        <Box width='65%' p={1} height='115vh' className={classes.operationListingBox}>
+                            <Paper className={classes.paper}>
                                 {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
 
                                     <Grid key={target} item xs={12}>
@@ -363,6 +389,7 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                                                 policyList={policies}
                                                                 allPolicies={allPolicies}
                                                                 isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                                isGatewayChanged={isGatewayChanged}
                                                             />
                                                         </Grid>
                                                     ) : null;
@@ -372,8 +399,9 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                                     </Grid>
                                 ))}
                             </Paper>
+                            <SaveOperationPolicies saveApi={() => { saveApi(false) }} />
                         </Box>
-                        <Box width='35%' pl={1}>
+                        <Box width='35%' p={1}>
                             <PolicyList
                                 policyList={policies}
                                 fetchPolicies={fetchPolicies}
@@ -383,7 +411,6 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
                     </Box>
                 }
             </DndProvider>
-            <SaveOperationPolicies saveApi={saveApi} />
         </ApiOperationContextProvider>
     );
 };

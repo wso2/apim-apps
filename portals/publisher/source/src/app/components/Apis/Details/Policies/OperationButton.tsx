@@ -19,14 +19,12 @@
 import { FC } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import Utils from 'AppData/Utils';
 
 interface OPProps {
-    operation: any;
-    verb: any;
+    verb: string;
 }
 
-const OperationButton: FC<OPProps> = ({ operation, verb }) => {
+const getStyles = (verb: string) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
         return {
@@ -35,63 +33,15 @@ const OperationButton: FC<OPProps> = ({ operation, verb }) => {
                 backgroundColor,
                 width: theme.spacing(12),
                 color: theme.palette.getContrastText(backgroundColor),
-            },
-            paperStyles: {
-                border: `1px solid ${backgroundColor}`,
-                borderBottom: '',
-                width: '100%',
-            },
-            customDivider: {
-                backgroundColor,
-            },
-            linearProgress: {
-                height: '2px',
-            },
-            highlightSelected: {
-                backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
-            },
-            contentNoMargin: {
-                margin: theme.spacing(0),
-            },
-            overlayUnmarkDelete: {
-                position: 'absolute',
-                zIndex: theme.zIndex.operationDeleteUndo,
-                right: '10%',
-            },
-            targetText: {
-                maxWidth: 300,
-                margin: '0px 20px',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                display: 'inline-block',
-            },
-            title: {
-                display: 'inline',
-                margin: `0 ${theme.spacing(5)}px`,
-            },
-            dialogPaper: {
-                width: '800px',
-                maxHeight: '800px',
-            },
-            dialogContent: {
-                overflow: 'auto',
-                height: '90%',
-            },
-            flowSpecificPolicyAttachGrid: {
-                marginTop: theme.spacing(1),
-                overflowX: 'scroll'
-            },
-            operationSummaryGrid: {
-                display: 'flex',
-                alignItems: 'center',
-                flexBasis: '100%',
-                maxWidth: '100%',
             }
         };
-    });
+    })();
+    return useStyles;
+}
 
-    const classes = useStyles();
+const OperationButton: FC<OPProps> = ({ verb }) => {
+
+    const classes = getStyles(verb);
     return (
         <>
             <Button
