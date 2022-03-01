@@ -53,7 +53,6 @@ const useStyles = makeStyles(() => ({
     },
     operationListingBox: {
         overflowY: 'scroll',
-        // height: 'auto',
     },
 }));
 
@@ -102,8 +101,13 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         return clonedOperations;
     }
 
-    const [apiOperations, setApiOperations] = useState<any>(getInitState());
+    const [apiOperations, setApiOperations] = useState<any>(getInitState);
     const [openAPISpec, setOpenAPISpec] = useState<any>(null);
+
+    useEffect(() => {
+        const currentOperations = getInitState();
+        setApiOperations(currentOperations);
+    }, [api]);
 
     /**
      * Fetches all common policies & API specific policies.

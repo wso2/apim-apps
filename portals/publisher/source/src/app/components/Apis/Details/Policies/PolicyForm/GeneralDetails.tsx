@@ -139,7 +139,10 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         variant='outlined'
                         value={displayName}
                         onChange={handleInputChange}
-                        InputProps={{ readOnly: isViewMode }}
+                        inputProps={{
+                            readOnly: isViewMode,
+                            style: isViewMode ? {cursor: 'auto'} : {},
+                        }}
                     />
                     <TextField
                         id='name'
@@ -163,7 +166,10 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         variant='outlined'
                         value={description}
                         onChange={handleInputChange}
-                        InputProps={{ readOnly: isViewMode }}
+                        inputProps={{
+                            readOnly: isViewMode,
+                            style: isViewMode ? {cursor: 'auto'} : {},
+                        }}
                     />
                     <Box display='flex' flexDirection='row' alignItems='center'>
                         <Typography color='inherit' variant='body1' component='div'>

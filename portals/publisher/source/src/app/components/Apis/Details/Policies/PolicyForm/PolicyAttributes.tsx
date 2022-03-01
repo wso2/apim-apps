@@ -16,23 +16,25 @@
  * under the License.
  */
 
-import React, { FC, } from 'react';
+import React, { FC, useState, } from 'react';
 import { Button, makeStyles, Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
-import Switch from '@material-ui/core/Switch';
+import Popover from '@material-ui/core/Popover';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import PriorityHighOutlined from '@material-ui/icons/PriorityHighOutlined';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@material-ui/core/Tooltip';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import SubjectOutlinedIcon from '@material-ui/icons/SubjectOutlined';
+import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
-import classNames from 'classnames';
 import { AddCircle } from '@material-ui/icons';
 import { PolicyAttribute } from './Types';
 import { ACTIONS } from './PolicyCreateForm';
@@ -55,6 +57,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
+    requiredToggleButton: {
+        height: '37.28px',
+        width: '37.28px',
+        '&.Mui-selected, &.Mui-selected:hover': {
+            color: 'white',
+            backgroundColor: theme.palette.primary.main,
+        }
+    },
+    toggleButton: {
+        height: '37.28px',
+        width: '37.28px',
+    },
 }));
 
 interface PolicyAttributesProps {
@@ -73,6 +87,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
+    const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [openedDescriptionPopoverId, setOpenedDescriptionPopoverId] = useState<string | null>(null);
+    const [openedValuesPopoverId, setOpenedValuesPopoverId] = useState<string | null>(null);
 
     const addNewPolicyAttribute = () => {
         if (dispatch) {
@@ -155,17 +173,17 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     }
 
     /**
-     * Function to handle switch toggle
-     * @param {React.ChangeEvent<HTMLInputElement>} event Event
+     * Function to handle toggle of required attribute
+     * @param {boolean} currentState Current state of the required attrbute before toggle
      * @param {string} id Policy Attribute ID
      */
-    const handleToggle = (event: React.ChangeEvent<HTMLInputElement>, id: string) => {
+    const handleToggle = (currentState: boolean, id: string) => {
         if (dispatch) {
             dispatch({
                 type: ACTIONS.UPDATE_POLICY_ATTRIBUTE,
                 id,
-                field: event.target.name,
-                value: event.target.checked
+                field: 'required',
+                value: !currentState,
             });
         }
     }
@@ -186,6 +204,26 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
         }
     }
 
+    // Description toggle button related actions
+    const handleDescriptionToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+        setOpenedDescriptionPopoverId(id);
+        setDescriptionAnchorEl(event.currentTarget);
+    }
+    const handleDescriptionClose = () => {
+        setOpenedDescriptionPopoverId(null);
+        setDescriptionAnchorEl(null);
+    };
+
+    // Value properties toggle button related actions
+    const handleValuePropertiesToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+        setOpenedValuesPopoverId(id);
+        setValuePropertiesAnchorEl(event.currentTarget);
+    }
+    const handleValuePropertiesClose = () => {
+        setOpenedValuesPopoverId(null);
+        setValuePropertiesAnchorEl(null);
+    };
+
     return (
         <>
             <Box display='flex' flexDirection='row' mt={1} pt={3}>
@@ -204,31 +242,33 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                     </Typography>
                 </Box>
                 <Box width='60%'>
-                    <Box component='div'>
-                        <Grid item xs={12}>
-                            <Box flex='1'>
-                                <Button
-                                    color='primary'
-                                    variant='outlined'
-                                    onClick={addNewPolicyAttribute}
-                                >
-                                    <AddCircle className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Policies.PolicyPolicyForm.add.policy.attributes.add'
-                                        defaultMessage='Add Policy Attribute'
-                                    />
-                                </Button>
-                            </Box>
-                        </Grid>    
-                    </Box>                           
+                    {!isViewMode && (
+                        <Box component='div'>
+                            <Grid item xs={12}>
+                                <Box flex='1'>
+                                    <Button
+                                        color='primary'
+                                        variant='outlined'
+                                        onClick={addNewPolicyAttribute}
+                                    >
+                                        <AddCircle className={classes.buttonIcon} />
+                                        <FormattedMessage
+                                            id='Policies.PolicyPolicyForm.add.policy.attributes.add'
+                                            defaultMessage='Add Policy Attribute'
+                                        />
+                                    </Button>
+                                </Box>
+                            </Grid>    
+                        </Box>
+                    )}                           
                 </Box>
             </Box>
             <Box component='div' m={3}>
                 <Grid container spacing={2}>
                     {policyAttributes.map((attribute: PolicyAttribute) => (
                         <Grid item xs={12} key={attribute.name}>
-                            <Box component='div' m={1}>
-                                <Box display='flex' flexDirection='row'>
+                            <Box component='div' mt={1} mb={1}>
+                                <Box display='flex' flexDirection='row' justifyContent='center' mb={1}>
                                     <Grid item xs={12} md={12} lg={3} className={classes.attributeProperty}>
                                         <TextField
                                             autoFocus
@@ -259,7 +299,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }
                                             onChange={(e) => handleAttributeChange(e, attribute.id)}
                                             variant='outlined'
-                                            InputProps={{ readOnly: isViewMode }}
+                                            inputProps={{
+                                                readOnly: isViewMode,
+                                                style: isViewMode ? {cursor: 'auto'} : {},
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={3} className={classes.attributeProperty}>
@@ -291,230 +334,335 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }
                                             onChange={(e) => handleAttributeChange(e, attribute.id)}
                                             variant='outlined'
-                                            InputProps={{ readOnly: isViewMode }}
+                                            inputProps={{
+                                                readOnly: isViewMode,
+                                                style: isViewMode ? {cursor: 'auto'} : {},
+                                            }}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={12} lg={6} className={classes.attributeProperty}>
-                                        <TextField
-                                            fullWidth
-                                            name='description'
-                                            label={
-                                                <FormattedMessage
-                                                    id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                        + 'property.description'}
-                                                    defaultMessage='Description'
-                                                />                                        
-                                            }
-                                            error={getAttributeFormError(attribute, 'description') !== ''}
-                                            margin='dense'
-                                            value={attribute.description}
-                                            helperText={
-                                                getAttributeFormError(
-                                                    attribute,
-                                                    'description',
-                                                ) || (
+                                    <Box m={1}>
+                                        <ToggleButtonGroup>
+                                            {/* Attribute required or not */}
+                                            <Tooltip
+                                                placement='top'
+                                                title={
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.'
-                                                            + 'PolicyAttributes.description'}
-                                                        defaultMessage='Short description about the policy attribute'
-                                                    />
-                                                )
-                                            }
-                                            onChange={(e) => handleAttributeChange(e, attribute.id)}
-                                            variant='outlined'
-                                            InputProps={{ readOnly: isViewMode }}
-                                        />
-                                    </Grid>
-                                </Box>
-                                <Box display='flex' flexDirection='row'>
-                                    <Grid xs={12} md={12} lg={4} className={classes.attributeProperty}>
-                                        <TextField
-                                            fullWidth
-                                            name='validationRegex'
-                                            label={
-                                                <FormattedMessage
-                                                    id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                        + 'property.validationRegex'}
-                                                    defaultMessage='Validation Regex'
-                                                />                                        
-                                            }
-                                            error={getAttributeFormError(attribute, 'validationRegex') !== ''}
-                                            margin='dense'
-                                            value={attribute.validationRegex}
-                                            helperText={
-                                                getAttributeFormError(
-                                                    attribute,
-                                                    'validationRegex',
-                                                ) || (
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.'
-                                                            + 'PolicyAttributes.validationRegex'}
-                                                        defaultMessage={'Regex for attribute validation '
-                                                            + '( E.g.: ^([a-zA-Z]+)$ )'}
-                                                    />
-                                                )
-                                            }
-                                            onChange={(e) => handleAttributeChange(e, attribute.id)}
-                                            variant='outlined'
-                                            InputProps={{ readOnly: isViewMode }}
-                                        />
-                                    </Grid>
-                                    <Grid xs={12} md={12} lg={4} className={classes.attributeProperty}>
-                                        <TextField
-                                            fullWidth
-                                            name='defaultValue'
-                                            label={
-                                                <FormattedMessage
-                                                    id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                        + 'property.defaultValue'}
-                                                    defaultMessage='Default Value'
-                                                />                                        
-                                            }
-                                            error={getAttributeFormError(attribute, 'defaultValue') !== ''}
-                                            margin='dense'
-                                            value={attribute.defaultValue}
-                                            helperText={
-                                                getAttributeFormError(
-                                                    attribute,
-                                                    'defaultValue',
-                                                ) || (
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.'
-                                                            + 'PolicyAttributes.defaultValue'}
-                                                        defaultMessage='Default value for the attribute (if any)'
-                                                    />
-                                                )
-                                            }
-                                            onChange={(e) => handleAttributeChange(e, attribute.id)}
-                                            variant='outlined'
-                                            InputProps={{ readOnly: isViewMode }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={12} lg={4} className={classes.attributeProperty}>
-                                        <Box
-                                            display='flex'
-                                            flexDirection='row'
-                                            alignItems='center'
-                                        >
-                                            <Box flex='0.65' pl={2} pt={1}>
-                                                <Typography color='inherit' variant='body1' component='div'>
-                                                    <FormattedMessage
-                                                        id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                            + 'property.required'}
+                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
+                                                            + 'required.tooltip'}
                                                         defaultMessage='Required'
                                                     />
-                                                </Typography>
-                                            </Box>
-                                            <Box flex='1'>
-                                                <Switch
-                                                    checked={attribute.required}
-                                                    onChange={(e) => handleToggle(e, attribute.id)}
-                                                    size='medium'
-                                                    color='primary'
+                                                }
+                                                arrow
+                                            >
+                                                <ToggleButton
                                                     name='required'
-                                                />
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-                                </Box>
-                                <Box display='flex' flexDirection='row'>
-                                    <Grid xs={12} md={12} lg={4} className={classes.attributeProperty}>
-                                        <FormControl
-                                            variant='outlined'
-                                            className={classes.formControlSelect}
-                                            fullWidth
-                                        >
-                                            <InputLabel id='type-dropdown-label'>Type</InputLabel>
-                                            <Select
-                                                native
-                                                name='type'
-                                                fullWidth
-                                                value={attribute.type}
-                                                label={
+                                                    value='required'
+                                                    selected={attribute.required}
+                                                    className={classes.requiredToggleButton}
+                                                    onChange={() => handleToggle(attribute.required, attribute.id)}
+                                                    style={ isViewMode ? {cursor: 'auto'} : {}}
+                                                >
+                                                    <PriorityHighOutlined />
+                                                </ToggleButton>
+                                            </Tooltip>
+
+                                            {/* Attribute description */}
+                                            <Tooltip
+                                                placement='top'
+                                                title={
                                                     <FormattedMessage
-                                                        id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                            + 'property.type'}
-                                                        defaultMessage='Type'
+                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
+                                                            + 'description.tooltip'}
+                                                        defaultMessage='Description'
                                                     />
                                                 }
-                                                onChange={(e) => handleAttributeChange(e, attribute.id)}
-                                                classes={{ root: classes.selectRoot }}
-                                                inputProps={{ readOnly: isViewMode }}
+                                                arrow
                                             >
-                                                <option value='String'>String</option>
-                                                <option value='Integer'>Integer</option>
-                                                <option value='Boolean'>Boolean</option>
-                                                <option value='Enum'>Enum</option>
-                                            </Select>
-                                            <FormHelperText>Attribute Type</FormHelperText>
-                                        </FormControl>
-                                    </Grid>
-                                    {attribute.type.toLowerCase() === 'enum' && (
-                                        <Grid
-                                            item xs={12}
-                                            md={12}
-                                            lg={8}
-                                            className={classNames({
-                                                [classes.attributeProperty]: true,
-                                                [classes.allowedValuesPropery]: true
-                                            })}
-                                        >
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                id={attribute.name}
-                                                name='allowedValues'
-                                                label={
-                                                    <FormattedMessage
-                                                        id={'Policies.PolicyForm.PolicyAttributes.property.'
-                                                            + 'allowedValues'}
-                                                        defaultMessage='Allowed Values'
-                                                    />
-                                                }
-                                                margin='dense'
-                                                variant='outlined'
-                                                value={attribute.allowedValues}
-                                                helperText={
-                                                    <FormattedMessage
-                                                        id={'Policies.PolicyForm.PolicyAttributes.helperText.'
-                                                            + 'allowedValues'}
-                                                        defaultMessage={'Comma separated list of allowed '
-                                                            + 'values for the Enum attribute'}
-                                                    />
-                                                }
-                                                onChange={(e) => handleAllowedValues(e, attribute.id)}
-                                                InputProps={{ readOnly: isViewMode }}
-                                            />
-                                        </Grid>
-                                    )}
-                                </Box>
-                                <Box display='flex' flexDirection='row'>
-                                    <Grid xs={12} md={12} lg={4}>
-                                        <Tooltip
-                                            title={(
-                                                <FormattedMessage
-                                                    id='Policies.PolicyForm.attribute.delete.tooltip'
-                                                    defaultMessage='Delete Attribute'
-                                                />
-                                            )}
-                                            placement='right'
-                                            interactive
-                                        >
-                                            <IconButton
-                                                key={'delete' + attribute.name}
-                                                onClick={() =>
-                                                    dispatch && dispatch({
-                                                        type: ACTIONS.DELETE_POLICY_ATTRIBUTE,
-                                                        id: attribute.id,
-                                                    })
-                                                }
+                                                <ToggleButton
+                                                    value='description'
+                                                    className={classes.toggleButton}
+                                                    onChange={(e) => handleDescriptionToggle(e, attribute.id)}
+                                                >
+                                                    <SubjectOutlinedIcon />
+                                                </ToggleButton>
+                                            </Tooltip>
+                                            <Popover
+                                                id={attribute.id}
+                                                open={openedDescriptionPopoverId === attribute.id}
+                                                anchorEl={descriptionAnchorEl}
+                                                onClose={handleDescriptionClose}
+                                                anchorOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'left',
+                                                }}
                                             >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Grid>
+                                                <Box m={2}>
+                                                    <TextField
+                                                        fullWidth
+                                                        name='description'
+                                                        multiline
+                                                        maxRows={4}
+                                                        rows={4}
+                                                        label={
+                                                            <FormattedMessage
+                                                                id={'Policies.PolicyForm.add.policy.attributes.add.'
+                                                                    + 'property.description'}
+                                                                defaultMessage='Description'
+                                                            />                                        
+                                                        }
+                                                        error={getAttributeFormError(attribute, 'description') !== ''}
+                                                        margin='dense'
+                                                        value={attribute.description}
+                                                        helperText={
+                                                            getAttributeFormError(
+                                                                attribute,
+                                                                'description',
+                                                            ) || (
+                                                                <FormattedMessage
+                                                                    id={'Apis.Details.Policies.PolicyForm.'
+                                                                        + 'PolicyAttributes.description'}
+                                                                    defaultMessage={'Short description about '
+                                                                        + 'the policy attribute'}
+                                                                />
+                                                            )
+                                                        }
+                                                        onChange={(e) => handleAttributeChange(e, attribute.id)}
+                                                        variant='outlined'
+                                                        inputProps={{
+                                                            readOnly: isViewMode,
+                                                            style: isViewMode ? {cursor: 'auto'} : {},
+                                                        }}
+                                                    />
+                                                </Box>
+                                            </Popover>
+
+                                            {/* Attribute values */}
+                                            <Tooltip
+                                                placement='top'
+                                                title={
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
+                                                            + 'attribute.value.properties.tooltip'}
+                                                        defaultMessage='Value Properties'
+                                                    />
+                                                }
+                                                arrow
+                                            >
+                                                <ToggleButton
+                                                    value='attribute-values'
+                                                    className={classes.toggleButton}
+                                                    onChange={(e) => handleValuePropertiesToggle(e, attribute.id)}
+                                                >
+                                                    <FormatListBulletedOutlinedIcon />
+                                                </ToggleButton>
+                                            </Tooltip>
+                                            <Popover
+                                                id={attribute.id}
+                                                open={openedValuesPopoverId === attribute.id}
+                                                anchorEl={valuePropertiesAnchorEl}
+                                                onClose={handleValuePropertiesClose}
+                                                anchorOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'left',
+                                                }}
+                                            >
+                                                <Box m={2}>
+                                                    <Box m={2}>
+                                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                                            <FormattedMessage
+                                                                id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
+                                                                    + 'attribute.value.properties.popover.title'}
+                                                                defaultMessage='Value Properties'
+                                                            />
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box width={280} m={2}>
+
+                                                        {/* Type */}
+                                                        <FormControl
+                                                            variant='outlined'
+                                                            className={classes.formControlSelect}
+                                                        >
+                                                            <InputLabel id='type-dropdown-label'>Type</InputLabel>
+                                                            <Select
+                                                                native
+                                                                name='type'
+                                                                value={attribute.type}
+                                                                label={
+                                                                    <FormattedMessage
+                                                                        id={'Policies.PolicyForm.add.policy.attributes.'
+                                                                            + 'add.property.type'}
+                                                                        defaultMessage='Type'
+                                                                    />
+                                                                }
+                                                                onChange={(e) => handleAttributeChange(e, attribute.id)}
+                                                                classes={{ root: classes.selectRoot }}
+                                                                inputProps={{
+                                                                    readOnly: isViewMode,
+                                                                    style: isViewMode ? {cursor: 'auto'} : {},
+                                                                }}
+                                                            >
+                                                                <option value='String'>String</option>
+                                                                <option value='Integer'>Integer</option>
+                                                                <option value='Boolean'>Boolean</option>
+                                                                <option value='Enum'>Enum</option>
+                                                            </Select>
+                                                            <FormHelperText>Attribute Type</FormHelperText>
+                                                        </FormControl>
+
+                                                        {/* Allowed Values */}
+                                                        {attribute.type.toLowerCase() === 'enum' && (
+                                                            <Box mt={1}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    required
+                                                                    id={attribute.name}
+                                                                    name='allowedValues'
+                                                                    label={
+                                                                        <FormattedMessage
+                                                                            id={'Policies.PolicyForm.PolicyAttributes.'
+                                                                                + 'property.allowedValues'}
+                                                                            defaultMessage='Allowed Values'
+                                                                        />
+                                                                    }
+                                                                    margin='dense'
+                                                                    variant='outlined'
+                                                                    value={attribute.allowedValues}
+                                                                    helperText={
+                                                                        <FormattedMessage
+                                                                            id={'Policies.PolicyForm.PolicyAttributes.'
+                                                                                + 'helperText.allowedValues'}
+                                                                            defaultMessage={'Comma separated list of '
+                                                                                + 'allowed values for Enum attribute'}
+                                                                        />
+                                                                    }
+                                                                    onChange={
+                                                                        (e) => handleAllowedValues(e, attribute.id)
+                                                                    }
+                                                                    inputProps={{
+                                                                        readOnly: isViewMode,
+                                                                        style: isViewMode ? {cursor: 'auto'} : {},
+                                                                    }}
+                                                                />
+                                                            </Box>
+                                                        )}
+
+                                                        {/* Validation Regex */}
+                                                        <Box mt={1}>
+                                                            <TextField
+                                                                fullWidth
+                                                                name='validationRegex'
+                                                                label={
+                                                                    <FormattedMessage
+                                                                        id={'Policies.PolicyForm.add.policy.attributes.'
+                                                                            + 'add.property.validationRegex'}
+                                                                        defaultMessage='Validation Regex'
+                                                                    />                                        
+                                                                }
+                                                                error={
+                                                                    getAttributeFormError(
+                                                                        attribute,
+                                                                        'validationRegex',
+                                                                    ) !== ''
+                                                                }
+                                                                margin='dense'
+                                                                value={attribute.validationRegex}
+                                                                helperText={
+                                                                    getAttributeFormError(
+                                                                        attribute,
+                                                                        'validationRegex',
+                                                                    ) || (
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Policies.PolicyForm.'
+                                                                                + 'PolicyAttributes.validationRegex'}
+                                                                            defaultMessage={'Regex for attribute '
+                                                                                + 'validation ( E.g.: ^([a-zA-Z]+)$ )'}
+                                                                        />
+                                                                    )
+                                                                }
+                                                                onChange={(e) => handleAttributeChange(e, attribute.id)}
+                                                                variant='outlined'
+                                                                inputProps={{
+                                                                    readOnly: isViewMode,
+                                                                    style: isViewMode ? {cursor: 'auto'} : {},
+                                                                }}
+                                                            />
+                                                        </Box>
+
+                                                        {/* Default Value */}
+                                                        <Box mt={1}>
+                                                            <TextField
+                                                                fullWidth
+                                                                name='defaultValue'
+                                                                label={
+                                                                    <FormattedMessage
+                                                                        id={'Policies.PolicyForm.add.policy.attributes.'
+                                                                            + 'add.property.defaultValue'}
+                                                                        defaultMessage='Default Value'
+                                                                    />                                        
+                                                                }
+                                                                error={
+                                                                    getAttributeFormError(
+                                                                        attribute,
+                                                                        'defaultValue'
+                                                                    ) !== ''
+                                                                }
+                                                                margin='dense'
+                                                                value={attribute.defaultValue}
+                                                                helperText={
+                                                                    getAttributeFormError(
+                                                                        attribute,
+                                                                        'defaultValue',
+                                                                    ) || (
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Policies.PolicyForm.'
+                                                                                + 'PolicyAttributes.defaultValue'}
+                                                                            defaultMessage={'Default value for '
+                                                                                + 'the attribute (if any)'}
+                                                                        />
+                                                                    )
+                                                                }
+                                                                onChange={(e) => handleAttributeChange(e, attribute.id)}
+                                                                variant='outlined'
+                                                                inputProps={{
+                                                                    readOnly: isViewMode,
+                                                                    style: isViewMode ? {cursor: 'auto'} : {},
+                                                                }}
+                                                            />
+                                                        </Box>
+                                                    </Box>
+                                                </Box>
+                                            </Popover>
+
+                                            {/* Attribute delete */}
+                                            <Tooltip
+                                                placement='top'
+                                                title={
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
+                                                            + 'delete.tooltip'}
+                                                        defaultMessage='Delete'
+                                                    />
+                                                }
+                                                arrow
+                                            >
+                                                <ToggleButton
+                                                    value='delete'
+                                                    className={classes.toggleButton}
+                                                    onClick={() =>
+                                                        dispatch && dispatch({
+                                                            type: ACTIONS.DELETE_POLICY_ATTRIBUTE,
+                                                            id: attribute.id,
+                                                        })
+                                                    }
+                                                    style={ isViewMode ? {cursor: 'auto'} : {}}
+                                                >
+                                                    <DeleteIcon />
+                                                </ToggleButton>
+                                            </Tooltip>
+                                        </ToggleButtonGroup>
+                                    </Box>
                                 </Box>
-                                <Divider light />
                             </Box>
                         </Grid>
                     ))}

@@ -37,6 +37,7 @@
         "@hapi/hapi": "^18.4.1",
         "@material-ui/core": "^4.11.3",
         "@material-ui/icons": "^4.9.1",
+        "@material-ui/lab": "^4.0.0-alpha.60",
         "@types/mui-datatables": "^3.7.7",
         "@types/react": "^17.0.37",
         "async-mutex": "^0.1.3",
