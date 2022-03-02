@@ -199,7 +199,7 @@ TopMenu.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     setListType: PropTypes.func.isRequired,
     listType: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(PropTypes.object).isRequired,
+    data: PropTypes.arrayOf(PropTypes.shape(PropTypes.object)).isRequired,
     count: PropTypes.number.isRequired,
     theme: PropTypes.shape({
         custom: PropTypes.shape({}),

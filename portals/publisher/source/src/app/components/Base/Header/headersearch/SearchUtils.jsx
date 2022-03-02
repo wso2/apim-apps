@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
