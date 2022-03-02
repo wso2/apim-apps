@@ -102,7 +102,7 @@ const General: FC<GeneralProps> = ({
         }
     }
 
-    const getValueOfPolicyParam = (policyParamName: any) => {
+    const getValueOfPolicyParam = (policyParamName: string) => {
         return apiPolicy.parameters[policyParamName];
     }
 
@@ -116,9 +116,13 @@ const General: FC<GeneralProps> = ({
         const updateCandidates: any = {};
         Object.keys(state).forEach((key) => {
             const value = state[key];
+            const attributeSpec = policySpec.policyAttributes.find(
+                (attribute: PolicySpecAttribute) => attribute.name === key,
+            );
             if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
                 updateCandidates[key] = getValueOfPolicyParam(key);
-            // TODO: handle get default 
+            } else if (value === null && attributeSpec?.defaultValue && attributeSpec?.defaultValue !==  null) {
+                updateCandidates[key] = attributeSpec.defaultValue;
             } else {
                 updateCandidates[key] = value;
             }
@@ -180,9 +184,11 @@ const General: FC<GeneralProps> = ({
         const previousVal = getValueOfPolicyParam(specName);
         if (state[specName] !== null) {
             return state[specName];
-        } else if (previousVal) {
-            return previousVal;
-        } else if (spec.defaultValue) {
+        } else if (previousVal !== null && previousVal !== undefined) {
+            if (spec.type.toLowerCase() === 'integer') return parseInt(previousVal, 10);
+            else if (spec.type.toLowerCase() === 'boolean') return (previousVal.toString() === 'true');
+            else return previousVal;
+        } else if (spec.defaultValue !== null && spec.defaultValue !== undefined) {
             if (spec.type.toLowerCase() === 'integer') return parseInt(spec.defaultValue, 10);
             else if (spec.type.toLowerCase() === 'boolean') return (spec.defaultValue.toString() === 'true');
             else return spec.defaultValue;
