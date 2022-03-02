@@ -329,7 +329,7 @@ class Comments extends Component {
                             </div>
                         )}
 
-                        {!isCrossTenantUser && (
+                        {!isCrossTenantUser && AuthManager.getUser() &&(
                             <Box mt={2} ml={1}>
                                 {!showCommentAdd && (
                                     <Button
