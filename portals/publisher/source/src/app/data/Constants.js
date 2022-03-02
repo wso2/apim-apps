@@ -50,6 +50,10 @@ const CONSTS = {
         clientSecret: null, // same as above password case
         customParameters: {},
     },
+    GATEWAY_TYPE: {
+        synapse: 'Synapse',
+        choreoConnect: 'ChoreoConnect',
+    },
     PATH_TEMPLATES: {
         COMMON_POLICY: '/policies',
     }

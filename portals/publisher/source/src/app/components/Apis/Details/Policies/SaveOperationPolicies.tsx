@@ -26,7 +26,7 @@ import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import ApiContext from '../components/ApiContext';
 
 interface SaveOperationPoliciesProps {
-    saveApi: () => void;
+    saveApi: (isGatewayChanged:boolean) => void;
 }
 
 /**
@@ -43,7 +43,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }
      *
      */
     const handleSave = () => {
-        saveApi();
+        saveApi(false);
     }
 
     /**
@@ -51,7 +51,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }
      * 
      */
     const handleSaveAndDeploy = () => {
-        saveApi();
+        saveApi(false);
         history.push({
             pathname: `/apis/${api.id}/deployments`,
             state: 'deploy',

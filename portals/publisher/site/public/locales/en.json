@@ -5249,6 +5249,36 @@
       "value": "Resources"
     }
   ],
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.message": [
+    {
+      "type": 0,
+      "value": "Changing the gateway type will remove all existing policies added to the API."
+    }
+  ],
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.proceed": [
+    {
+      "type": 0,
+      "value": "Proceed"
+    }
+  ],
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.title": [
+    {
+      "type": 0,
+      "value": "Change Gateway Type"
+    }
+  ],
+  "Apis.Details.Policies.ApiPolicies.Gateway.ChoreoConnect.support.message": [
+    {
+      "type": 0,
+      "value": "Choreo connect supports resource level request flow policies only."
+    }
+  ],
   "Apis.Details.Policies.CommonPolicies.heading.tooltip": [
     {
       "type": 0,

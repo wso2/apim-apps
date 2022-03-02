@@ -2496,6 +2496,21 @@
   "Apis.Details.Policies.CommonPolicies.heading.tooltip": {
     "defaultMessage": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
   },
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.message": {
+    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API."
+  },
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.proceed": {
+    "defaultMessage": "Proceed"
+  },
+  "Apis.Details.Policies.ApiPolicies.Gateway.change.title": {
+    "defaultMessage": "Change Gateway Type"
+  },
+  "Apis.Details.Policies.ApiPolicies.Gateway.ChoreoConnect.support.message": {
+    "defaultMessage": "Choreo connect supports resource level request flow policies only."
+  },
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": {
     "defaultMessage": "Select API Resources"
   },

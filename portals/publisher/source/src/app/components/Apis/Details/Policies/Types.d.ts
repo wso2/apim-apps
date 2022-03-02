@@ -23,6 +23,7 @@ export type Policy = {
     applicableFlows: string[];
     supportedGateways: string[];
     isAPISpecific: boolean;
+    supportedGateways: string[];
 }
 
 export type AttachedPolicy = {
