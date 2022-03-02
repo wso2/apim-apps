@@ -23,8 +23,8 @@ import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
 import Paper from '@material-ui/core/Paper';
-import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Box from '@material-ui/core/Box';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
@@ -33,13 +33,14 @@ import { isRestricted } from 'AppData/AuthManager';
 import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
+import { arrayMove } from '@dnd-kit/sortable';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
-import type { Policy, PolicySpec } from './Types';
+import type { ApiPolicy, Policy, PolicySpec } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
-import { uuidv4 } from './PolicyForm/util/MapUtils';
+import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
 import PoliciesExpansion from './PoliciesExpansion';
 
@@ -63,7 +64,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-interface IProps {
+interface PoliciesProps {
     disableUpdate: any;
 }
 
@@ -72,13 +73,13 @@ interface IProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policy management page to render.
  */
-const Policies: React.FC<IProps> = ({ disableUpdate }) => {
+const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const classes = useStyles();
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
-    const [expandedResource, setExpandedResource] = useState(false);
+    const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
     const [isGatewayChanged, getGatewayChange] = useState(false);
 
@@ -93,25 +94,34 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         getChoreoConnectEnabled(isCCEnabled)
     }
 
-    // We are setting a unique id for all the mediators for UI operations.
-    // We use this uuid to delete them edit them.
-    // Before saving to backend we are removing them.
+    /**
+     * Function to get the initial state of all the operation policies from the API object.
+     * We are setting a unique ID for all the operation policies solely for UI specific operations.
+     * We use this UUID for edit and delete operations.
+     * Before saving to backend, we are removing this UUID.
+     * @returns {Object} The operations object which is cloned from the API object with an additional UUID.
+     */
     const getInitState = () => {
-        const newOperations = cloneDeep(api.operations);
-        newOperations.forEach((op: any) => {
-            if (op.operationPolicies) {
-                // iterating request, response and fault flows
-                const { operationPolicies } = op;
-                for (const key in operationPolicies) {
-                    const policyArray = operationPolicies[key];
-                    policyArray.forEach((item: any) => {
-                        item.uuid = uuidv4()
-                    });
+        const clonedOperations = cloneDeep(api.operations);
+        clonedOperations.forEach((operation: any) => {
+            if (operation.operationPolicies) {
+                const { operationPolicies } = operation;
+
+                // Iterating through the policy list of request flow, response flow and fault flow
+                for (const flow in operationPolicies) {
+                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+                        const policyArray = operationPolicies[flow];
+                        policyArray.forEach((policyItem: ApiPolicy) => {
+                            // eslint-disable-next-line no-param-reassign
+                            policyItem.uuid = uuidv4();
+                        });
+                    }
                 }
             }
         });
-        return newOperations;
+        return clonedOperations;
     }
+
     const [apiOperations, setApiOperations] = useState<any>(getInitState());
     const [openAPISpec, setOpenAPISpec] = useState<any>(null);
 
@@ -162,7 +172,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
         // Update the Swagger spec object when API object gets changed
         api.getSwagger()
             .then((response: any) => {
-                setOpenAPISpec(response.body);
+                const retrievedSpec = response.body;
+                setOpenAPISpec(retrievedSpec);
+
+                // To expand the first operation by default on page render
+                const [target, verbObject]: [string, any] = Object.entries(retrievedSpec.paths)[0];
+                const verb = Object.keys(verbObject)[0]
+                setExpandedResource(verb + target)
             })
             .catch((error: any) => {
                 if (error.response) {
@@ -203,11 +219,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
             operationInAction.operationPolicies[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
                 && p.uuid === updatedOperation.uuid));
 
-        if (operationFlowPolicy) { // we are editing the operation item
+        if (operationFlowPolicy) {
+            // Edit operation policy
             operationFlowPolicy.parameters = { ...updatedOperation.parameters };
         } else {
-            updatedOperation.uuid = uuidv4();
-            operationInAction.operationPolicies[currentFlow].push(updatedOperation);
+            // Add new operation policy
+            const uuid = uuidv4();
+            operationInAction.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
         }
 
         // Finally update the state
@@ -222,17 +240,12 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
      */
     const updateAllApiOperations = (updatedOperation: any, currentFlow: string) => {
         const newApiOperations: any = cloneDeep(apiOperations);
-        newApiOperations.map((operation: any) => {
-            const operationFlowPolicy = operation.operationPolicies[currentFlow].find((
-                p: any) => (p.policyId === updatedOperation.policyId && p.uuid === updatedOperation.uuid));
 
-            if (operationFlowPolicy) {
-                operationFlowPolicy.parameters = { ...updatedOperation.parameters };
-            } else {
-                updatedOperation.uuid = uuidv4();
-                operation.operationPolicies[currentFlow].push(updatedOperation);
-            }
-        })
+        // Add attached policy to the same flow of all the operations
+        newApiOperations.forEach((operation: any) => {
+            const uuid = uuidv4();
+            operation.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
+        });
 
         // Finally update the state
         setApiOperations(newApiOperations);
@@ -264,29 +277,56 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
     }
 
     /**
-     * To update the API object with the attached policies on Save click event
+     * Function to rearrange the API Operation ordering
+     * @param {string} oldIndex original index of the policy
+     * @param {string} newIndex new index of the policy
+     * @param {string} target target that needs to be updated
+     * @param {string} verb verb of the operation that neeeds to be updated
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     */
+    const rearrangeApiOperations = (
+        oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
+    ) => {
+        const newApiOperations: any = cloneDeep(apiOperations);
+        const operationInAction = newApiOperations.find((op: any) =>
+            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        const policyArray = operationInAction.operationPolicies[currentFlow];
+        operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+        
+        // Finally update the state
+        setApiOperations(newApiOperations);
+    }
+
+    /**
+     * To update the API object with the attached policies on Save
      */
     const saveApi = (isGatewayChanged: boolean) => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
-        // This is what we use to set to the api object ()
-        newApiOperations.forEach((op: any) => {
-            if (op.operationPolicies) {
-                // iterating request, response and faults
-                const { operationPolicies } = op;
-                for (const key in operationPolicies) {
-                    let policyArray = operationPolicies[key];
-                    policyArray.forEach((item: any) => {
-                        if (isGatewayChanged) {
-                            operationPolicies[key] = [];
-                        } else if (item.uuid) {
-                            delete item.uuid;
-                        }
-                    });
+
+        // Set operation policies to the API object
+        newApiOperations.forEach((operation: any) => {
+            if (operation.operationPolicies) {
+                const { operationPolicies } = operation;
+
+                // Iterating through the policy list of request flow, response flow and fault flow
+                for (const flow in operationPolicies) {
+                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+                        let policyArray = operationPolicies[flow];
+                        policyArray.forEach((policyItem: ApiPolicy) => {
+                            if(isGatewayChanged) {
+                                operationPolicies[flow] = [];
+                            } else if (policyItem.uuid) {
+                                // eslint-disable-next-line no-param-reassign
+                                delete policyItem.uuid;
+                            }
+                        });
+                    }
                 }
             }
         });
-        const updatePromise = updateAPI({ operations: newApiOperations });
+
+        const updatePromise = updateAPI({ operations: apiOperations });
         updatePromise
             .finally(() => {
                 setUpdating(false);
@@ -299,7 +339,13 @@ const Policies: React.FC<IProps> = ({ disableUpdate }) => {
 
     return (
         <ApiOperationContextProvider
-            value={{ apiOperations, updateApiOperations, updateAllApiOperations, deleteApiOperation }}
+            value={{
+                apiOperations,
+                updateApiOperations,
+                updateAllApiOperations,
+                deleteApiOperation,
+                rearrangeApiOperations,
+            }}
         >
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>

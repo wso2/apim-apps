@@ -24,7 +24,7 @@ import ViewPolicy from './ViewPolicy';
 
 /**
  * Have used key={Date.now()} for `Route` element in `/policies`
- * @returns {JSX} Route components related to globally maintained policy template list.
+ * @returns {TSX} Route components related to globally maintained policy template list.
  */
 const CommonPolicies = () => {
     return (

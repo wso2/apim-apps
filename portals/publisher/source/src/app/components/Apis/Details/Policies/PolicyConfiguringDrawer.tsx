@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC, useEffect, useContext, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
@@ -27,9 +27,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import { Progress } from 'AppComponents/Shared';
-import GeneralAdd from './PolicyForm/GeneralAdd';
-import { PolicySpec, ApiPolicy, AttachedPolicy, Policy } from './Types';
-import ApiOperationContext, { useApiOperationContext } from "./ApiOperationContext";
+import General from './AttachedPolicyForm/General';
+import { PolicySpec, ApiPolicy, Policy } from './Types';
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
@@ -54,7 +53,6 @@ interface PolicyConfiguringDrawerProps {
     currentFlow: string;
     target: string;
     verb: string;
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     allPolicies: PolicySpec[] | null;
 }
 
@@ -64,11 +62,10 @@ interface PolicyConfiguringDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
-    policyObj, setDroppedPolicy, currentFlow, target, verb, setCurrentPolicyList, allPolicies
+    policyObj, setDroppedPolicy, currentFlow, target, verb, allPolicies
 }) => {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(!!policyObj);
-    const { apiOperations } = useContext<any>(ApiOperationContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {
@@ -85,12 +82,30 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     const apiPolicy: ApiPolicy = {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
-        parameters: {}
+        parameters: {},
     };
 
     const handleDrawerClose = () => {
         setDrawerOpen(false);
         setDroppedPolicy(null);
+    }
+
+    /**
+     * Converts the PolicyObj prop of type Policy to AttachedPolicy
+     * @returns {AttachedPolicy} Returns a policy object of type AttachedPolicy
+     */
+    const getPolicyOfTypeAttachedPolicy = () => {
+        if (policyObj) {
+            return {
+                id: policyObj?.id,
+                name: policyObj?.name,
+                displayName: policyObj?.displayName,
+                applicableFlows: policyObj?.applicableFlows,
+                uniqueKey: '',
+            };
+        } else {
+            return null;
+        }
     }
 
     return (
@@ -124,8 +139,8 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     </ListItem>
                 </List>
                 <Divider light />
-                <GeneralAdd
-                    policyObj={policyObj}
+                <General
+                    policyObj={getPolicyOfTypeAttachedPolicy()}
                     setDroppedPolicy={setDroppedPolicy}
                     currentFlow={currentFlow}
                     target={target}
@@ -133,6 +148,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     policySpec={policySpec}
                     apiPolicy={apiPolicy}
                     handleDrawerClose={handleDrawerClose}
+                    isEditMode={false}
                 />
             </Box>
         </Drawer>

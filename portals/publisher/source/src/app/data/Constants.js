@@ -41,7 +41,7 @@ const CONSTS = {
     },
     DEFAULT_ENDPOINT_SECURITY: {
         enabled: false,
-        type: '',
+        type: 'NONE',
         username: '',
         password: null, // has to use null to differentiate the returned '' (empty) password vs no password provided
         grantType: '',

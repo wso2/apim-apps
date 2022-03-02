@@ -48,9 +48,6 @@ const useStyles = makeStyles((theme: any) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
-    tabContentBox: {
-        // overflowY: 'scroll',
-    },
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
@@ -143,7 +140,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 />)
                             }
                         </Tabs>
-                        <Box className={classes.tabContentBox} height='50vh' pt={1} overflow='scroll'>
+                        <Box height='60vh' pt={1} overflow='scroll'>
                             <TabPanel
                                 policyList={policyList.filter((policy) => {
                                     return (policy.applicableFlows.includes('request') && policy.supportedGateways.includes(gatewayType))

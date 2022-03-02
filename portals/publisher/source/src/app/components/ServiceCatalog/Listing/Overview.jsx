@@ -206,7 +206,15 @@ function Overview(props) {
      */
     function downloadServiceDefinition(serviceKey, serviceDefinitionType) {
         return ServiceCatalog.getServiceDefinition(serviceKey).then((file) => {
-            return Utils.downloadServiceDefinition(beautify(file), serviceDefinitionType);
+            let currentServiceDefinition = null;
+            if (service.definitionType === 'WSDL1' || service.definitionType === 'WSDL2') {
+                currentServiceDefinition = beautify(file);
+            } else if (service.definitionType !== 'GRAPHQL_SDL') {
+                currentServiceDefinition = file;
+            } else {
+                currentServiceDefinition = file.obj.schemaDefinition;
+            }
+            return Utils.downloadServiceDefinition(currentServiceDefinition, serviceDefinitionType);
         }).catch((error) => {
             if (error.response) {
                 Alert.error(error.response.body.description);

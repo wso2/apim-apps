@@ -185,7 +185,6 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     currentFlow={currentFlow}
                     target={target}
                     verb={verb}
-                    setCurrentPolicyList={setCurrentPolicyList}
                     allPolicies={allPolicies}
                 />
             )}

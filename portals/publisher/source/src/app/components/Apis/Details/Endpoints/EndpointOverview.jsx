@@ -595,6 +595,8 @@ function EndpointOverview(props) {
         let newEndpointSecurityObj = endpointSecurityObj;
         if (type === 'NONE') {
             newEndpointSecurityObj = { ...CONSTS.DEFAULT_ENDPOINT_SECURITY, type };
+        } else {
+            newEndpointSecurityObj.enabled = true;
         }
         endpointsDispatcher({
             action: 'endpointSecurity',

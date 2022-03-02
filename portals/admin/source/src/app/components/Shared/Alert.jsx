@@ -19,10 +19,10 @@
 import React from 'react';
 import Notification from 'rc-notification';
 import Themes from 'Themes';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ThemeProvider as MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Message from './Message';
 
-const theme = createTheme(Themes.light);
+const theme = createMuiTheme(Themes.light);
 
 /**
  * Common alerting/message displaying component for Store application, Pre-set vertical: 'top',

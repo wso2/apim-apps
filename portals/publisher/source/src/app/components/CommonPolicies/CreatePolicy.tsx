@@ -54,7 +54,7 @@ const DefaultPolicySpec = {
     name: '',
     displayName: '',
     description: '',
-    multipleAllowed: false,
+    multipleAllowed: true,
     applicableFlows: ['request', 'response', 'fault'],
     supportedGateways: ['Synapse'],
     supportedApiTypes: ['REST'],

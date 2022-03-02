@@ -14,7 +14,8 @@ import {
     FormHelperText,
 } from '@material-ui/core';
 import cloneDeep from 'lodash.clonedeep';
-import { uuidv4, hasModifiedAbstract } from '../util/MapUtils';
+import { hasModifiedAbstract } from '../util/MapUtils';
+import { uuidv4 } from '../../Utils';
 import MapAdd from './MapAdd';
 import MapDelete from './MapDelete';
 
