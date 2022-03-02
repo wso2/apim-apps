@@ -64,7 +64,6 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
     }
 
     (() => {
-        console.log("This is called....");
         if (isChoreoConnectEnabled) {
             selectedGatewayType = SupportedGatewayTypes.CC;
         } else {

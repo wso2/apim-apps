@@ -54,6 +54,9 @@ const CONSTS = {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
     },
+    PATH_TEMPLATES: {
+        COMMON_POLICY: '/policies',
+    }
 };
 
 export default CONSTS;

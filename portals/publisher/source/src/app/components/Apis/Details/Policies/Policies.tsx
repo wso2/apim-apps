@@ -326,7 +326,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             }
         });
 
-        const updatePromise = updateAPI({ operations: apiOperations });
+        const updatePromise = updateAPI({ operations: newApiOperations });
         updatePromise
             .finally(() => {
                 setUpdating(false);

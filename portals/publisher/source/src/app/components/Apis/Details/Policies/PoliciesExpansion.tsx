@@ -194,14 +194,6 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
 
     }, [apiOperations])
 
-    useEffect(()=>{
-        // console.log("Deletion happens.."+ isChoreoConnectEnabled);
-        // setRequestFlowPolicyList([]);
-        // setResponseFlowPolicyList([]);
-        // setFaultFlowPolicyList([]);
-    },[isGatewayChanged])
-
-
     return (
         <ExpansionPanelDetails>
             <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>

@@ -165,17 +165,11 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                     </Box>
                 </CardContent>
             </Card>
-            <Backdrop
-                className={classes.backdrop}
-                open={dialogOpen}
-                onClick={handleAddPolicyClose}
-            >
-                <CreatePolicy
-                    dialogOpen={dialogOpen}
-                    handleDialogClose={handleAddPolicyClose}
-                    fetchPolicies={fetchPolicies}
-                />
-            </Backdrop>
+            <CreatePolicy
+                dialogOpen={dialogOpen}
+                handleDialogClose={handleAddPolicyClose}
+                fetchPolicies={fetchPolicies}
+            />
         </Paper>
     );
 }
