@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 /**
  * Renders the view policy UI
- * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policy view UI.
  */
 const ViewPolicy: React.FC = () => {
@@ -79,8 +78,6 @@ const ViewPolicy: React.FC = () => {
                     const { status } = error;
                     if (status === 404) {
                         setNotFound(true);
-                    } else {
-                        setNotFound(false);
                     }
                 })
                 .finally(() => {
@@ -93,17 +90,17 @@ const ViewPolicy: React.FC = () => {
         history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
     };
 
-    const resourceNotFountMessage = {
+    const resourceNotFoundMessage = {
         title: 'Policy Not Found',
         body: 'The policy you are looking for is not available',
     };
 
-    if (notFound) {
-        return <ResourceNotFoundError message={resourceNotFountMessage} />;
+    if (loading) {
+        return <Progress per={90} message='Loading Policy ...' />;
     }
 
-    if (loading || !policySpec) {
-        return <Progress per={90} message='Loading Policy ...' />;
+    if (notFound || !policySpec) {
+        return <ResourceNotFoundError message={resourceNotFoundMessage} />;
     }
 
     return (

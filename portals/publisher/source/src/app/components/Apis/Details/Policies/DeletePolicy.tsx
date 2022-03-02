@@ -65,8 +65,8 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 setOpenLocal(!open);
                 fetchPolicies();
             })
-            .catch((errorResponse) => {
-                console.error(errorResponse);
+            .catch((error) => {
+                console.error(error);
                 Alert.error('Error occurred while deleteting policy');
                 setOpenLocal(!open);
             });

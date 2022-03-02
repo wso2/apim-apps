@@ -51,7 +51,6 @@ const useStyles = makeStyles((theme: any) => ({
 
 /**
  * Create a new common policy
- * @param {JSON} props Input props from parent components.
  * @returns {TSX} Create common policy UI to render.
  */
 const CreatePolicy: React.FC = () => {

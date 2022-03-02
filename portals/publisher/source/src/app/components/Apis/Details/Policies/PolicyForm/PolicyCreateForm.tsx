@@ -218,59 +218,57 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     };
 
     return (
-        <>
-            <Paper elevation={0} className={classes.root}>
-                {/* General details of policy */}
-                <GeneralDetails
-                    displayName={state.displayName}
-                    description={state.description}
-                    applicableFlows={state.applicableFlows}
-                    dispatch={dispatch}
-                    isViewMode={false}
-                />
-                <Divider light />
-                {/* Gateway specific details of policy */}
-                <SourceDetails
-                    supportedGateways={state.supportedGateways}
-                    policyDefinitionFile={policyDefinitionFile}
-                    setPolicyDefinitionFile={setPolicyDefinitionFile}
-                    dispatch={dispatch}
-                />
-                <Divider light />
-                {/* Attributes of policy */}
-                <PolicyAttributes
-                    policyAttributes={state.policyAttributes}
-                    dispatch={dispatch}
-                    isViewMode={false}
-                />
-                <Box>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={onPolicySave}
-                        disabled={
-                            isRestricted(['apim:shared_scope_manage']) ||
-                            isFormDisabled
-                        }
-                    >
-                        {saving ? (
-                            <CircularProgress size={16} />
-                        ) : (
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.save'
-                                defaultMessage='Save'
-                            />
-                        )}
-                    </Button>
-                    <Button className={classes.cancelBtn} onClick={onCancel}>
+        <Paper elevation={0} className={classes.root}>
+            {/* General details of policy */}
+            <GeneralDetails
+                displayName={state.displayName}
+                description={state.description}
+                applicableFlows={state.applicableFlows}
+                dispatch={dispatch}
+                isViewMode={false}
+            />
+            <Divider light />
+            {/* Gateway specific details of policy */}
+            <SourceDetails
+                supportedGateways={state.supportedGateways}
+                policyDefinitionFile={policyDefinitionFile}
+                setPolicyDefinitionFile={setPolicyDefinitionFile}
+                dispatch={dispatch}
+            />
+            <Divider light />
+            {/* Attributes of policy */}
+            <PolicyAttributes
+                policyAttributes={state.policyAttributes}
+                dispatch={dispatch}
+                isViewMode={false}
+            />
+            <Box>
+                <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={onPolicySave}
+                    disabled={
+                        isRestricted(['apim:shared_scope_manage']) ||
+                        isFormDisabled
+                    }
+                >
+                    {saving ? (
+                        <CircularProgress size={16} />
+                    ) : (
                         <FormattedMessage
-                            id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.cancel'
-                            defaultMessage='Cancel'
+                            id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.save'
+                            defaultMessage='Save'
                         />
-                    </Button>
-                </Box>
-            </Paper>
-        </>
+                    )}
+                </Button>
+                <Button className={classes.cancelBtn} onClick={onCancel}>
+                    <FormattedMessage
+                        id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.cancel'
+                        defaultMessage='Cancel'
+                    />
+                </Button>
+            </Box>
+        </Paper>
     );
 };
 

@@ -176,10 +176,10 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 setExpandedResource(verb + target)
             })
             .catch((error: any) => {
+                console.error(error);
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 }
-                console.error(error);
             });
     }, [api.id]);
 

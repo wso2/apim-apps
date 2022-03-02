@@ -64,8 +64,13 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                 .then((response) => {
                     setPolicySpec(response.body);
                 })
-                .catch((errorMessage) => {
-                    Alert.error(JSON.stringify(errorMessage));
+                .catch((error) => {
+                    console.error(error);
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Something went wrong while retrieving policy details');
+                    }
                 })
                 .finally(() => {
                     setLoading(false);
@@ -78,8 +83,13 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                 .then((response) => {
                     setPolicySpec(response.body);
                 })
-                .catch((errorMessage) => {
-                    Alert.error(JSON.stringify(errorMessage));
+                .catch((error) => {
+                    console.error(error);
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Something went wrong while retrieving policy details');
+                    }
                 })
                 .finally(() => {
                     setLoading(false);

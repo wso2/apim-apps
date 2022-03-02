@@ -82,12 +82,8 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
             })
             .catch((error) => {
                 handleDialogClose();
-                const { response } = error;
-                if (response.body) {
-                    const { description } = response.body;
-                    console.error(description);
-                    Alert.error('Something went wrong while creating policy');
-                }
+                console.error(error);
+                Alert.error('Something went wrong while creating policy');
             })
             .finally(() => {
                 setSaving(false);

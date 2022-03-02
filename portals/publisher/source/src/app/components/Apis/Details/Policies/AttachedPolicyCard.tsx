@@ -137,7 +137,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     })
                     .catch((error) => {
                         if (process.env.NODE_ENV !== 'production') {
-                            console.log(error);
+                            console.error(error);
                             Alert.error(
                                 <FormattedMessage
                                     id='Policies.ViewPolicy.download.error'

@@ -257,7 +257,21 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                 </Box>
                             </Grid>    
                         </Box>
-                    )}                           
+                    )}
+                    {isViewMode && policyAttributes.length === 0 && (
+                        <Box component='div'>
+                            <Grid item xs={12}>
+                                <Box flex='1'>
+                                    <Typography color='inherit' variant='body1' component='div'>
+                                        <FormattedMessage
+                                            id='Policies.PolicyPolicyForm.add.policy.attributes.title'
+                                            defaultMessage='Looks like this policy does not have any attributes'
+                                        />
+                                    </Typography>
+                                </Box>
+                            </Grid>    
+                        </Box>
+                    )}
                 </Box>
             </Box>
             <Box component='div' m={3}>
@@ -274,10 +288,12 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             name='name'
                                             label={
                                                 <FormattedMessage
-                                                    id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                        + 'property.name'}
+                                                    id={
+                                                        'Policies.PolicyForm.add.policy.attributes.add.' +
+                                                        'property.name'
+                                                    }
                                                     defaultMessage='Name'
-                                                />                                        
+                                                />                                     
                                             }
                                             error={getAttributeFormError(attribute, 'name') !== ''}
                                             margin='dense'
@@ -288,8 +304,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                     'name',
                                                 ) || (
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.'
-                                                            + 'PolicyAttributes.name'}
+                                                        id={
+                                                            'Apis.Details.Policies.PolicyForm.' +
+                                                            'PolicyAttributes.name'
+                                                        }
                                                         defaultMessage='Attribute Name'
                                                     />
                                                 )
@@ -309,8 +327,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             name='displayName'
                                             label={
                                                 <FormattedMessage
-                                                    id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                        + 'property.displayName'}
+                                                    id={
+                                                        'Policies.PolicyForm.add.policy.attributes.add.' +
+                                                        'property.displayName'
+                                                    }
                                                     defaultMessage='Display Name'
                                                 />                                        
                                             }
@@ -323,8 +343,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                     'displayName',
                                                 ) || (
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.'
-                                                            + 'PolicyAttributes.displayName'}
+                                                        id={
+                                                            'Apis.Details.Policies.PolicyForm.' +
+                                                            'PolicyAttributes.displayName'
+                                                        }
                                                         defaultMessage='Attribute Display Name'
                                                     />
                                                 )
@@ -344,8 +366,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                 placement='top'
                                                 title={
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
-                                                            + 'required.tooltip'}
+                                                        id={
+                                                            'Apis.Details.Policies.PolicyForm.PolicyAttributes.' +
+                                                            'required.tooltip'
+                                                        }
                                                         defaultMessage='Required'
                                                     />
                                                 }
@@ -368,8 +392,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                 placement='top'
                                                 title={
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
-                                                            + 'description.tooltip'}
+                                                        id={
+                                                            'Apis.Details.Policies.PolicyForm.PolicyAttributes.' +
+                                                            'description.tooltip'
+                                                        }
                                                         defaultMessage='Description'
                                                     />
                                                 }
@@ -402,8 +428,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                         rows={4}
                                                         label={
                                                             <FormattedMessage
-                                                                id={'Policies.PolicyForm.add.policy.attributes.add.'
-                                                                    + 'property.description'}
+                                                                id={
+                                                                    'Policies.PolicyForm.add.policy.attributes.add.' +
+                                                                    'property.description'
+                                                                }
                                                                 defaultMessage='Description'
                                                             />                                        
                                                         }
@@ -416,10 +444,14 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                 'description',
                                                             ) || (
                                                                 <FormattedMessage
-                                                                    id={'Apis.Details.Policies.PolicyForm.'
-                                                                        + 'PolicyAttributes.description'}
-                                                                    defaultMessage={'Short description about '
-                                                                        + 'the policy attribute'}
+                                                                    id={
+                                                                        'Apis.Details.Policies.PolicyForm.' +
+                                                                        'PolicyAttributes.description'
+                                                                    }
+                                                                    defaultMessage={
+                                                                        'Short description about ' +
+                                                                        'the policy attribute'
+                                                                    }
                                                                 />
                                                             )
                                                         }
@@ -438,8 +470,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                 placement='top'
                                                 title={
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
-                                                            + 'attribute.value.properties.tooltip'}
+                                                        id={
+                                                            'Apis.Details.Policies.PolicyForm.PolicyAttributes.' +
+                                                            'attribute.value.properties.tooltip'
+                                                        }
                                                         defaultMessage='Value Properties'
                                                     />
                                                 }
@@ -467,8 +501,11 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                     <Box m={2}>
                                                         <Typography color='inherit' variant='subtitle2' component='div'>
                                                             <FormattedMessage
-                                                                id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
-                                                                    + 'attribute.value.properties.popover.title'}
+                                                                id={
+                                                                    'Apis.Details.Policies.PolicyForm.' +
+                                                                    'PolicyAttributes.attribute.value.properties.' +
+                                                                    'popover.title'
+                                                                }
                                                                 defaultMessage='Value Properties'
                                                             />
                                                         </Typography>
@@ -487,8 +524,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                 value={attribute.type}
                                                                 label={
                                                                     <FormattedMessage
-                                                                        id={'Policies.PolicyForm.add.policy.attributes.'
-                                                                            + 'add.property.type'}
+                                                                        id={
+                                                                            'Policies.PolicyForm.add.policy.' +
+                                                                            'attributes.add.property.type'
+                                                                        }
                                                                         defaultMessage='Type'
                                                                     />
                                                                 }
@@ -513,12 +552,12 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                 <TextField
                                                                     fullWidth
                                                                     required
-                                                                    id={attribute.name}
                                                                     name='allowedValues'
                                                                     label={
                                                                         <FormattedMessage
-                                                                            id={'Policies.PolicyForm.PolicyAttributes.'
-                                                                                + 'property.allowedValues'}
+                                                                            id={
+                                                                                'Policies.PolicyForm.PolicyAttributes' +
+                                                                                '.property.allowedValues'}
                                                                             defaultMessage='Allowed Values'
                                                                         />
                                                                     }
@@ -527,10 +566,14 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                     value={attribute.allowedValues}
                                                                     helperText={
                                                                         <FormattedMessage
-                                                                            id={'Policies.PolicyForm.PolicyAttributes.'
-                                                                                + 'helperText.allowedValues'}
-                                                                            defaultMessage={'Comma separated list of '
-                                                                                + 'allowed values for Enum attribute'}
+                                                                            id={
+                                                                                'Policies.PolicyForm.PolicyAttributes' +
+                                                                                '.helperText.allowedValues'
+                                                                            }
+                                                                            defaultMessage={
+                                                                                'Comma separated list of ' +
+                                                                                'allowed values for Enum attribute'
+                                                                            }
                                                                         />
                                                                     }
                                                                     onChange={
@@ -551,8 +594,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                 name='validationRegex'
                                                                 label={
                                                                     <FormattedMessage
-                                                                        id={'Policies.PolicyForm.add.policy.attributes.'
-                                                                            + 'add.property.validationRegex'}
+                                                                        id={
+                                                                            'Policies.PolicyForm.add.policy.' +
+                                                                            'attributes.add.property.validationRegex'
+                                                                        }
                                                                         defaultMessage='Validation Regex'
                                                                     />                                        
                                                                 }
@@ -570,10 +615,14 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                         'validationRegex',
                                                                     ) || (
                                                                         <FormattedMessage
-                                                                            id={'Apis.Details.Policies.PolicyForm.'
-                                                                                + 'PolicyAttributes.validationRegex'}
-                                                                            defaultMessage={'Regex for attribute '
-                                                                                + 'validation ( E.g.: ^([a-zA-Z]+)$ )'}
+                                                                            id={
+                                                                                'Apis.Details.Policies.PolicyForm.' +
+                                                                                'PolicyAttributes.validationRegex'
+                                                                            }
+                                                                            defaultMessage={
+                                                                                'Regex for attribute ' +
+                                                                                'validation ( E.g.: ^([a-zA-Z]+)$ )'
+                                                                            }
                                                                         />
                                                                     )
                                                                 }
@@ -593,8 +642,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                 name='defaultValue'
                                                                 label={
                                                                     <FormattedMessage
-                                                                        id={'Policies.PolicyForm.add.policy.attributes.'
-                                                                            + 'add.property.defaultValue'}
+                                                                        id={
+                                                                            'Policies.PolicyForm.add.policy.' +
+                                                                            'attributes.add.property.defaultValue'
+                                                                        }
                                                                         defaultMessage='Default Value'
                                                                     />                                        
                                                                 }
@@ -612,10 +663,14 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                         'defaultValue',
                                                                     ) || (
                                                                         <FormattedMessage
-                                                                            id={'Apis.Details.Policies.PolicyForm.'
-                                                                                + 'PolicyAttributes.defaultValue'}
-                                                                            defaultMessage={'Default value for '
-                                                                                + 'the attribute (if any)'}
+                                                                            id={
+                                                                                'Apis.Details.Policies.PolicyForm.' +
+                                                                                'PolicyAttributes.defaultValue'
+                                                                            }
+                                                                            defaultMessage={
+                                                                                'Default value for ' +
+                                                                                'the attribute (if any)'
+                                                                            }
                                                                         />
                                                                     )
                                                                 }
@@ -636,8 +691,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                 placement='top'
                                                 title={
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Policies.PolicyForm.PolicyAttributes.'
-                                                            + 'delete.tooltip'}
+                                                        id={
+                                                            'Apis.Details.Policies.PolicyForm.PolicyAttributes.' +
+                                                            'delete.tooltip'
+                                                        }
                                                         defaultMessage='Delete'
                                                     />
                                                 }

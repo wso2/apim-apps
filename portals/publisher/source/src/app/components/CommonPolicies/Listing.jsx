@@ -88,7 +88,6 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * Renders the common policy management UI.
- * @param {JSON} props Input props from parent components.
  * @returns {JSX} Policy management page to render.
  */
 const Listing = () => {
@@ -308,12 +307,12 @@ const Listing = () => {
         );
     }
 
-    if (notFound) {
-        return <ResourceNotFoundError />;
+    if (loading) {
+        return <Progress per={90} message='Loading Policies ...' />;
     }
 
-    if (loading || !policies) {
-        return <Progress per={90} message='Loading Policies ...' />;
+    if (notFound || !policies) {
+        return <ResourceNotFoundError />;
     }
 
     return (
@@ -378,8 +377,8 @@ const Listing = () => {
                             <FormattedMessage
                                 id='Policies.Listing.Listing.update.not.allowed'
                                 defaultMessage={
-                                    '*You are not authorized to manage policies' +
-                                    ' due to insufficient permissions'
+                                    '*You are not authorized to manage policies ' +
+                                    'due to insufficient permissions'
                                 }
                             />
                         </Typography>
