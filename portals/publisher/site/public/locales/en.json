@@ -7779,6 +7779,12 @@
       "value": "Scopes"
     }
   ],
+  "CommonPolicies.Listing.table.header.name": [
+    {
+      "type": 0,
+      "value": "Policy Name"
+    }
+  ],
   "Connection.Timeout": [
     {
       "type": 0,
@@ -7899,12 +7905,6 @@
     {
       "type": 0,
       "value": "Description"
-    }
-  ],
-  "Policies.Listing.Listing.table.header.name": [
-    {
-      "type": 0,
-      "value": "Policy Name"
     }
   ],
   "Policies.Listing.Listing.update.not.allowed": [

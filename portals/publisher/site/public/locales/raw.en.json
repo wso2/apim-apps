@@ -3717,6 +3717,9 @@
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
   },
+  "CommonPolicies.Listing.table.header.name": {
+    "defaultMessage": "Policy Name"
+  },
   "Connection.Timeout": {
     "defaultMessage": "Connection Timeout"
   },
@@ -3773,9 +3776,6 @@
   },
   "Policies.Listing.Listing.table.header.description": {
     "defaultMessage": "Description"
-  },
-  "Policies.Listing.Listing.table.header.name": {
-    "defaultMessage": "Policy Name"
   },
   "Policies.Listing.Listing.update.not.allowed": {
     "defaultMessage": "*You are not authorized to manage policies due to insufficient permissions"

@@ -102,7 +102,7 @@ const General: FC<GeneralProps> = ({
         }
     }
 
-    const getValueOfPolicyParam = (policyParamName: any) => {
+    const getValueOfPolicyParam = (policyParamName: string) => {
         return apiPolicy.parameters[policyParamName];
     }
 
@@ -116,8 +116,13 @@ const General: FC<GeneralProps> = ({
         const updateCandidates: any = {};
         Object.keys(state).forEach((key) => {
             const value = state[key];
+            const attributeSpec = policySpec.policyAttributes.find(
+                (attribute: PolicySpecAttribute) => attribute.name === key,
+            );
             if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
                 updateCandidates[key] = getValueOfPolicyParam(key);
+            } else if (value === null && attributeSpec?.defaultValue && attributeSpec?.defaultValue !==  null) {
+                updateCandidates[key] = attributeSpec.defaultValue;
             } else {
                 updateCandidates[key] = value;
             }
@@ -156,12 +161,19 @@ const General: FC<GeneralProps> = ({
             } else if (
                 value !== '' &&
                 specInCheck.validationRegex &&
-                !new RegExp(specInCheck.validationRegex).test(value)
+                !(!specInCheck.validationRegex || specInCheck.validationRegex === '')
             ) {
-                error = intl.formatMessage({
-                    id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
-                    defaultMessage: 'Please enter a valid input',
-                });
+                // To check if the regex is a valid regex
+                try {
+                    if (!new RegExp(specInCheck.validationRegex).test(value)) {
+                        error = intl.formatMessage({
+                            id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
+                            defaultMessage: 'Please enter a valid input',
+                        });
+                    }
+                } catch(e) {
+                    console.error(e);
+                }
             }
         }
         return error;
@@ -172,9 +184,11 @@ const General: FC<GeneralProps> = ({
         const previousVal = getValueOfPolicyParam(specName);
         if (state[specName] !== null) {
             return state[specName];
-        } else if (previousVal) {
-            return previousVal;
-        } else if (spec.defaultValue) {
+        } else if (previousVal !== null && previousVal !== undefined) {
+            if (spec.type.toLowerCase() === 'integer') return parseInt(previousVal, 10);
+            else if (spec.type.toLowerCase() === 'boolean') return (previousVal.toString() === 'true');
+            else return previousVal;
+        } else if (spec.defaultValue !== null && spec.defaultValue !== undefined) {
             if (spec.type.toLowerCase() === 'integer') return parseInt(spec.defaultValue, 10);
             else if (spec.type.toLowerCase() === 'boolean') return (spec.defaultValue.toString() === 'true');
             else return spec.defaultValue;
@@ -193,7 +207,7 @@ const General: FC<GeneralProps> = ({
     /**
      * Function to check whether there are any errors in the form.
      * If there are errors, we disable the save button.
-     * @returns {boolean} Boolean value indicating whether or not the forma has any errors.
+     * @returns {boolean} Boolean value indicating whether or not the form has any errors.
      */
     const formHasErrors = () => {
         let formHasAnError = false;
@@ -377,8 +391,6 @@ const General: FC<GeneralProps> = ({
                                     )}
                                 />
                             )}
-
-                            {/* When attribute type is map */}
                         </Grid>
                     ))}
                     {setDroppedPolicy && (

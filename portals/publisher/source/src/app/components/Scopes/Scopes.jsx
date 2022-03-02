@@ -18,12 +18,14 @@
 
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Listing from './Listing/Listing';
 import ScopesCreate from './Create/CreateScope';
 import ScopesEdit from './EditScope';
 
 /**
- * Have used key={Date.now()} for `Route` element in `/scopes`
+ * `Route` elements for shared scopes UI.
+ * @returns {JSX} Shared scope routes.
  */
 const Scopes = () => {
     return (
@@ -31,11 +33,11 @@ const Scopes = () => {
             <Route
                 exact
                 path='/scopes'
-                key={Date.now()}
                 component={Listing}
             />
             <Route exact path='/scopes/create' component={ScopesCreate} />
             <Route exact path='/scopes/edit' component={ScopesEdit} />
+            <Route component={ResourceNotFound} />
         </Switch>
     );
 };

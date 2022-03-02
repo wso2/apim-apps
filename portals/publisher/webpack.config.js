@@ -23,6 +23,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./services/dev_proxy/auth_login.js');
 
 // When exporting a function, Current mode is received as the first arg to the function.
@@ -213,6 +214,7 @@ module.exports = (env, argv) => {
                 const pres = Math.round(percentage * 100);
                 if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
             }),
+            new ReactRefreshWebpackPlugin(),
         ],
     };
     const isAnalysis = process.env && process.env.NODE_ENVS === 'analysis';

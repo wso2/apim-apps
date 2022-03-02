@@ -151,8 +151,9 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                             margin: '0.2em',
                             backgroundColor: policyColor,
                         }}
-                        { ...Utils.stringAvatar(policyObj.displayName.toUpperCase())}
-                    />
+                    >
+                        {Utils.stringAvatar(policyObj.displayName.toUpperCase())}
+                    </Avatar>
                 </Tooltip>
                 <Box className={classes.actionsBox}>
                     <IconButton

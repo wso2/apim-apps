@@ -39,11 +39,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
-    outerDiv: {
-        flexDirection: 'row',
-        display: 'flex',
-        alignItems: 'center',
-    },
     listItem: {
         maxHeight: '100%',
         overflow: 'auto',
@@ -124,7 +119,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
 
     return (
         <>
-            <div className={classes.outerDiv}>
+            <Box display='flex' flexDirection='row' alignItems='center'>
                 <div
                     ref={drag}
                     style={containerStyle}
@@ -140,9 +135,9 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                                 style={{
                                     backgroundColor: Utils.stringToColor(policyObj.displayName),
                                 }}
-                                // eslint-disable-next-line react/jsx-props-no-spreading
-                                { ...Utils.stringAvatar(policyObj.displayName.toUpperCase())}
-                            />
+                            >
+                                {Utils.stringAvatar(policyObj.displayName.toUpperCase())}
+                            </Avatar>
                         </ListItemAvatar>
                         <ListItemText
                             id={policyObj.displayName}
@@ -185,7 +180,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                         </Box>
                     </ListItem>
                 </div>
-            </div>
+            </Box>
             <Backdrop
                 className={classes.backdrop}
                 open={dialogOpen}

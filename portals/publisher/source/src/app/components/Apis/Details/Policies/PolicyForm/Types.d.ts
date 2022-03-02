@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,13 +15,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// These must be the first lines in source/index.js
-import 'react-app-polyfill/ie11';
-import 'react-app-polyfill/stable';
-import 'fastestsmallesttextencoderdecoder'; // Added to fix TextEncoding issue in edge <79
 
-import ReactDOM from 'react-dom';
-import React from 'react';
-import Publisher from './src/Publisher';
+export type PolicyAttribute = {
+    id: string,
+    name: string,
+    displayName: string,
+    description: string,
+    required: boolean,
+    type: string,
+    validationRegex: string,
+    defaultValue: any,
+    allowedValues: string[],
+}
 
-ReactDOM.render(<Publisher />, document.getElementById('react-root'));
+export type NewPolicyState = {
+    displayName: string | null,
+    description: string,
+    applicableFlows: string[],
+    supportedGateways: string[],
+    policyAttributes: any,
+}

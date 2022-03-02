@@ -37,6 +37,7 @@ const SupportedGatewayTypes = {
     REGULAR: 'Regular Gateway',
     CC: 'Choreo Connect',
 };
+
 interface GatewaySelectorProps {
     getGatewayType(isChoreoConnectEnabled: boolean): void;
     isChoreoConnectEnabled: boolean;
