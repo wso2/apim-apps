@@ -926,9 +926,8 @@ class SubscriptionsTable extends Component {
         const subMails = {};
         const emails = subscriberClaims && Object.entries(subscriberClaims).map(([, v]) => {
             let email = null;
-            if (!subMails[v.name]) {
-                email = v.claims.length !== 0
-                && v.claims.find((claim) => claim.uri === 'http://wso2.org/claims/emailaddress').value;
+            if (!subMails[v.name] && v.claims.length > 0) {
+                email = v.claims.find((claim) => claim.uri === 'http://wso2.org/claims/emailaddress').value;
                 subMails[v.name] = email;
             }
             return email;
