@@ -22,7 +22,7 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import { FormattedMessage,  } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import type { CreatePolicySpec } from '../Types';
 import type { NewPolicyState, PolicyAttribute } from './Types';
@@ -39,10 +39,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         flexDirection: 'column',
         padding: 20,
     },
-    formGroup: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
     cancelBtn: {
         marginLeft: theme.spacing(1),
     },
@@ -54,8 +50,8 @@ export const ACTIONS = {
     UPDATE_SUPPORTED_GATEWAYS: 'updateSupportedGateways',
     ADD_POLICY_ATTRIBUTE: 'addPolicyAttribute',
     UPDATE_POLICY_ATTRIBUTE: 'updatePolicyAttribute',
-    DELETE_POLICY_ATTRIBUTE: 'deletePolicyAttribute'
-}
+    DELETE_POLICY_ATTRIBUTE: 'deletePolicyAttribute',
+};
 
 /**
  * Reducer to manage policy creation related logic
@@ -64,11 +60,11 @@ export const ACTIONS = {
  * @returns {Promise} Promised state
  */
 function policyReducer(state: NewPolicyState, action: any) {
-    switch(action.type) {
+    switch (action.type) {
         case ACTIONS.UPDATE_POLICY_METADATA: {
             return {
                 ...state,
-                [action.field]: action.value
+                [action.field]: action.value,
             };
         }
         case ACTIONS.UPDATE_APPLICALBLE_FLOWS: {
@@ -76,31 +72,38 @@ function policyReducer(state: NewPolicyState, action: any) {
                 ...state,
                 applicableFlows: action.checked
                     ? [...state.applicableFlows, action.name]
-                    : state.applicableFlows.filter((flow: string) => flow !== action.name)
-            }
+                    : state.applicableFlows.filter(
+                        (flow: string) => flow !== action.name,
+                    ),
+            };
         }
         case ACTIONS.UPDATE_SUPPORTED_GATEWAYS: {
             return {
                 ...state,
                 supportedGateways: action.checked
                     ? [...state.supportedGateways, action.name]
-                    : state.supportedGateways.filter((gateway: string) => gateway !== action.name)
-            }
+                    : state.supportedGateways.filter(
+                        (gateway: string) => gateway !== action.name,
+                    ),
+            };
         }
         case ACTIONS.ADD_POLICY_ATTRIBUTE: {
             return {
                 ...state,
-                policyAttributes: [...state.policyAttributes, {
-                    id: uuidv4(),
-                    name: null,
-                    displayName: null,
-                    description: '',
-                    required: false,
-                    type: 'String',
-                    validationRegex: null,
-                    defaultValue: null,
-                    allowedValues: [],
-                }]
+                policyAttributes: [
+                    ...state.policyAttributes,
+                    {
+                        id: uuidv4(),
+                        name: null,
+                        displayName: null,
+                        description: '',
+                        required: false,
+                        type: 'String',
+                        validationRegex: null,
+                        defaultValue: null,
+                        allowedValues: [],
+                    },
+                ],
             };
         }
         case ACTIONS.UPDATE_POLICY_ATTRIBUTE: {
@@ -108,12 +111,14 @@ function policyReducer(state: NewPolicyState, action: any) {
                 ...state,
                 policyAttributes: state.policyAttributes.map(
                     (policyAttribute: PolicyAttribute) =>
-                        policyAttribute.id === action.id ? {
-                            ...policyAttribute,
-                            [action.field]: action.value
-                        } : policyAttribute
-                )
-            }
+                        policyAttribute.id === action.id
+                            ? {
+                                ...policyAttribute,
+                                [action.field]: action.value,
+                            }
+                            : policyAttribute,
+                ),
+            };
         }
         case ACTIONS.DELETE_POLICY_ATTRIBUTE: {
             return {
@@ -121,7 +126,7 @@ function policyReducer(state: NewPolicyState, action: any) {
                 policyAttributes: state.policyAttributes.filter(
                     (policyAttribute: PolicyAttribute) =>
                         policyAttribute.id !== action.id,
-                )
+                ),
             };
         }
         default:
@@ -135,7 +140,7 @@ interface PolicyCreateFormProps {
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
     onCancel: () => void;
     saving: boolean;
-}    
+}
 
 /**
  * Renders the policy create form.
@@ -143,7 +148,11 @@ interface PolicyCreateFormProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
-    onSave, policyDefinitionFile, setPolicyDefinitionFile, onCancel, saving
+    onSave,
+    policyDefinitionFile,
+    setPolicyDefinitionFile,
+    onCancel,
+    saving,
 }) => {
     const classes = useStyles();
     const initialState: NewPolicyState = {
@@ -181,7 +190,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
             )
                 hasError = true;
         });
-        
+
         setIsFormDisabled(hasError);
     }, [
         state.displayName,
@@ -195,7 +204,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         if (state.displayName) {
             const policySpec = {
                 category: 'Mediation',
-                name: state.displayName.replace(/[^A-Za-z0-9]+/ig, ''),
+                name: state.displayName.replace(/[^A-Za-z0-9]+/gi, ''),
                 displayName: state.displayName,
                 description: state.description,
                 applicableFlows: state.applicableFlows,
@@ -206,7 +215,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
             };
             onSave(policySpec);
         }
-    }
+    };
 
     return (
         <>
@@ -235,23 +244,25 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                     isViewMode={false}
                 />
                 <Box>
-                    <Button 
+                    <Button
                         variant='contained'
                         color='primary'
                         onClick={onPolicySave}
-                        disabled={ isRestricted(['apim:shared_scope_manage']) || isFormDisabled }
+                        disabled={
+                            isRestricted(['apim:shared_scope_manage']) ||
+                            isFormDisabled
+                        }
                     >
-                        {saving ? (<CircularProgress size={16} />) : (
+                        {saving ? (
+                            <CircularProgress size={16} />
+                        ) : (
                             <FormattedMessage
                                 id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.save'
                                 defaultMessage='Save'
                             />
-                        )}               
+                        )}
                     </Button>
-                    <Button
-                        className={classes.cancelBtn}
-                        onClick={onCancel}
-                    >
+                    <Button className={classes.cancelBtn} onClick={onCancel}>
                         <FormattedMessage
                             id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.cancel'
                             defaultMessage='Cancel'
@@ -261,6 +272,6 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
             </Paper>
         </>
     );
-}
+};
 
 export default PolicyCreateForm;

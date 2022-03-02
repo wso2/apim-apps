@@ -43,7 +43,9 @@ interface DeletePolicyProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const DeletePolicy: FC<DeletePolicyProps> = ({
-    policyId, policyName, fetchPolicies
+    policyId,
+    policyName,
+    fetchPolicies,
 }) => {
     const { api } = useContext<any>(ApiContext);
     const [open, setOpen] = useState(false);
@@ -51,9 +53,12 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
     const toggleOpen = () => {
         setOpen(!open);
     };
-    
+
     const handleDelete = () => {
-        const promisedCommonPolicyDelete = API.deleteOperationPolicy(api.id, policyId);
+        const promisedCommonPolicyDelete = API.deleteOperationPolicy(
+            api.id,
+            policyId,
+        );
         promisedCommonPolicyDelete
             .then(() => {
                 Alert.info(`${policyName} policy deleted successfully!`);
@@ -65,11 +70,11 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 Alert.error('Error occurred while deleteting policy');
                 setOpenLocal(!open);
             });
-    }
+    };
 
     const handleClose = () => {
         setOpen(false);
-    }
+    };
 
     return (
         <>
@@ -89,8 +94,11 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                     <DeleteIcon />
                 </IconButton>
             </Tooltip>
-            <Dialog 
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            <Dialog
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
                 open={open}
                 onClose={handleClose}
             >
@@ -134,6 +142,6 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
             </Dialog>
         </>
     );
-}
+};
 
 export default DeletePolicy;

@@ -61,32 +61,38 @@ const CreatePolicy: React.FC = () => {
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
     const [saving, setSaving] = useState(false);
 
-    const addCommonPolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
+    const addCommonPolicy = (
+        policySpecContent: CreatePolicySpec,
+        policyDefinition: any,
+    ) => {
         setSaving(true);
-        const promisedCommonPolicyAdd = api.addCommonOperationPolicy(policySpecContent, policyDefinition);
+        const promisedCommonPolicyAdd = api.addCommonOperationPolicy(
+            policySpecContent,
+            policyDefinition,
+        );
         promisedCommonPolicyAdd
             .then(() => {
                 Alert.info('Policy created successfully!');
                 setPolicyDefinitionFile([]);
-                history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
+                history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
             })
             .catch((error) => {
                 console.error(error);
-                history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
+                history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
                 Alert.error('Something went wrong while creating policy');
             })
             .finally(() => {
                 setSaving(false);
             });
-    }
+    };
 
     const onSave = (policySpecification: CreatePolicySpec) => {
         addCommonPolicy(policySpecification, policyDefinitionFile);
-    }
+    };
 
     const onCancel = () => {
-        history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
-    }
+        history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
+    };
 
     return (
         <Grid container spacing={3}>
@@ -96,7 +102,10 @@ const CreatePolicy: React.FC = () => {
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
-                            <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY} className={classes.titleLink}>
+                            <Link
+                                to={CONST.PATH_TEMPLATES.COMMON_POLICIES}
+                                className={classes.titleLink}
+                            >
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
                                         id='CommonPolicies.CreatePolicy.CommonPolicy.listing.heading'
@@ -125,7 +134,7 @@ const CreatePolicy: React.FC = () => {
                 </Grid>
             </Grid>
             <Grid item sm={12} md={12}>
-                <Box mb={5}/>
+                <Box mb={5} />
             </Grid>
         </Grid>
     );

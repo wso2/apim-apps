@@ -72,19 +72,11 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
             customDivider: {
                 backgroundColor,
             },
-            linearProgress: {
-                height: '2px',
-            },
             highlightSelected: {
                 backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
             },
             contentNoMargin: {
                 margin: theme.spacing(0),
-            },
-            overlayUnmarkDelete: {
-                position: 'absolute',
-                zIndex: theme.zIndex.operationDeleteUndo,
-                right: '10%',
             },
             targetText: {
                 maxWidth: 300,
@@ -93,18 +85,6 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 display: 'inline-block',
-            },
-            title: {
-                display: 'inline',
-                margin: `0 ${theme.spacing(5)}px`,
-            },
-            dialogPaper: {
-                width: '800px',
-                maxHeight: '800px',
-            },
-            dialogContent: {
-                overflow: 'auto',
-                height: '90%',
             },
             flowSpecificPolicyAttachGrid: {
                 marginTop: theme.spacing(1),

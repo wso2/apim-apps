@@ -33,11 +33,19 @@ const CommonPolicies = () => {
         <Switch>
             <Route
                 exact
-                path={CONST.PATH_TEMPLATES.COMMON_POLICY}
+                path={CONST.PATH_TEMPLATES.COMMON_POLICIES}
                 component={Listing}
             />
-            <Route exact path='/policies/create' component={CreatePolicy} />
-            <Route exact path='/policies/:policyId/view' component={ViewPolicy} />
+            <Route
+                exact
+                path={CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE}
+                component={CreatePolicy}
+            />
+            <Route
+                exact
+                path='/policies/:policyId/view'
+                component={ViewPolicy}
+            />
             <Route component={ResourceNotFound} />
         </Switch>
     );

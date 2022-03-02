@@ -43,10 +43,6 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'right',
         alignItems: 'center',
     },
-    avatar: {
-        width: theme.spacing(14),
-        height: theme.spacing(15),
-    },
     btn: {
         marginRight: '1em',
     },

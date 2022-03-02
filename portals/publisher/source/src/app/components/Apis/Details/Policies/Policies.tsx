@@ -45,9 +45,6 @@ import SaveOperationPolicies from './SaveOperationPolicies';
 import PoliciesExpansion from './PoliciesExpansion';
 
 const useStyles = makeStyles(() => ({
-    head: {
-        fontWeight: 200,
-    },
     gridItem: {
         display: 'flex',
         width: '100%',

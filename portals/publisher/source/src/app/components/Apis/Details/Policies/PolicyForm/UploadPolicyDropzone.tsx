@@ -83,7 +83,8 @@ interface UploadPolicyDropzoneProps {
  * @returns {TSX} Policy file upload managing UI.
  */
 const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
-    policyDefinitionFile, setPolicyDefinitionFile
+    policyDefinitionFile,
+    setPolicyDefinitionFile,
 }) => {
     const classes = useStyles();
 
@@ -107,11 +108,12 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                     return (
                         // eslint-disable-next-line react/jsx-props-no-spreading
                         <div {...getRootProps({})}>
-                            <div className={classNames(
-                                classes.dropZoneWrapper,
-                                isDragAccept ? classes.acceptDrop : null,
-                                isDragReject ? classes.rejectDrop : null,
-                            )}
+                            <div
+                                className={classNames(
+                                    classes.dropZoneWrapper,
+                                    isDragAccept ? classes.acceptDrop : null,
+                                    isDragReject ? classes.rejectDrop : null,
+                                )}
                             >
                                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                                 <input {...getInputProps()} />
@@ -134,7 +136,11 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
         <>
             <Box display='flex' flexDirection='row' alignItems='center'>
                 <Box mt={2}>
-                    <Typography color='inherit' variant='subtitle2' component='div'>
+                    <Typography
+                        color='inherit'
+                        variant='subtitle2'
+                        component='div'
+                    >
                         <FormattedMessage
                             id='Policies.PolicyCreateForm.UploadPolicyDropzone.title'
                             defaultMessage='Upload Policy File'
@@ -159,7 +165,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                 </Box>
             </Box>
             <Box mt={2} mb={4}>
-                {(policyDefinitionFile.length === 0) ? (
+                {policyDefinitionFile.length === 0 ? (
                     renderPolicyFileDropzone()
                 ) : (
                     <List className={classes.uploadedFileDetails}>
@@ -183,10 +189,10 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                             </ListItemSecondaryAction>
                         </ListItem>
                     </List>
-                )}       
+                )}
             </Box>
         </>
     );
-}
+};
 
 export default UploadPolicyDropzone;

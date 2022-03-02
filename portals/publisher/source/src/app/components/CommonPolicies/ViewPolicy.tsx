@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ViewPolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const { policyId } = useParams<{policyId?: string}>();
+    const { policyId } = useParams<{ policyId?: string }>();
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -66,7 +66,8 @@ const ViewPolicy: React.FC = () => {
     useEffect(() => {
         setLoading(true);
         if (policyId) {
-            const promisedCommonPolicyGet = API.getCommonOperationPolicy(policyId);
+            const promisedCommonPolicyGet =
+                API.getCommonOperationPolicy(policyId);
             promisedCommonPolicyGet
                 .then((response) => {
                     setPolicySpec(response.body);
@@ -86,11 +87,11 @@ const ViewPolicy: React.FC = () => {
                     setLoading(false);
                 });
         }
-    }, [policyId])
+    }, [policyId]);
 
     const redirectToPolicies = () => {
-        history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
-    }
+        history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
+    };
 
     const resourceNotFountMessage = {
         title: 'Policy Not Found',
@@ -98,11 +99,11 @@ const ViewPolicy: React.FC = () => {
     };
 
     if (notFound) {
-        return <ResourceNotFoundError message={resourceNotFountMessage} />
+        return <ResourceNotFoundError message={resourceNotFountMessage} />;
     }
 
     if (loading || !policySpec) {
-        return <Progress per={90} message='Loading Policy ...'  />;
+        return <Progress per={90} message='Loading Policy ...' />;
     }
 
     return (
@@ -113,7 +114,10 @@ const ViewPolicy: React.FC = () => {
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
-                            <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY} className={classes.titleLink}>
+                            <Link
+                                to={CONST.PATH_TEMPLATES.COMMON_POLICIES}
+                                className={classes.titleLink}
+                            >
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
                                         id='CommonPolicies.CreatePolicy.listing.heading'

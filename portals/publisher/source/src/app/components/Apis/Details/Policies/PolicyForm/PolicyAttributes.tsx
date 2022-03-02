@@ -51,9 +51,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: '11.5px 14px',
         width: 100,
     },
-    allowedValuesPropery: {
-        marginTop: theme.spacing(1),
-    },
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
@@ -672,4 +669,4 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     );
 }
 
-export default PolicyAttributes;
+export default React.memo(PolicyAttributes);

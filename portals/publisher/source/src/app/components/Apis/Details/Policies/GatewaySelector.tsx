@@ -98,7 +98,11 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                         mr={5}
                     >
                         <Box>
-                            <Typography variant='subtitle1' component='h3' gutterBottom>
+                            <Typography
+                                variant='subtitle1'
+                                component='h3'
+                                gutterBottom
+                            >
                                 API Gateway
                                 <Tooltip
                                     title='Policy list is dependant on the selected Gateway'
@@ -130,7 +134,8 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                                                 onChange={handleApprovedGatewayChange}
                                             />
                                         }
-                                        label="Regular Gateway"
+                                        label='Regular Gateway'
+                                        labelPlacement='end'
                                     />
                                     <FormControlLabel
                                         value={SupportedGatewayTypes.CC}
@@ -141,7 +146,8 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                                                 onChange={handleApprovedGatewayChange}
                                             />
                                         }
-                                        label="Choreo Connect"
+                                        label='Choreo Connect'
+                                        labelPlacement='end'
                                     />
                                 </RadioGroup>
                             </FormControl>
@@ -189,6 +195,6 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
             </Grid>
         </Paper>
     );
-}
+};
 
 export default GatewaySelector;

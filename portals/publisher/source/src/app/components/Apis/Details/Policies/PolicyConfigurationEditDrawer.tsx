@@ -23,25 +23,26 @@ import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Drawer, makeStyles, ListItemIcon, Theme, Typography } from '@material-ui/core';
+import {
+    Drawer,
+    makeStyles,
+    ListItemIcon,
+    Theme,
+    Typography,
+} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import General from './AttachedPolicyForm/General';
 import type { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';
 import ApiContext from '../components/ApiContext';
-import ApiOperationContext from "./ApiOperationContext";
+import ApiOperationContext from './ApiOperationContext';
 import API from 'AppData/api';
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
         backgroundColor: 'white',
         width: '30%',
-    },
-    actionsBox: {
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: '1em',
     },
     iconSize: {
         height: '1.2em',
@@ -66,7 +67,13 @@ interface PolicyConfigurationEditDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
-    policyObj, currentFlow, target, verb, allPolicies, drawerOpen, setDrawerOpen
+    policyObj,
+    currentFlow,
+    target,
+    verb,
+    allPolicies,
+    drawerOpen,
+    setDrawerOpen,
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
@@ -76,11 +83,16 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     useEffect(() => {
         (async () => {
             if (policyObj) {
-                let policySpecVal =  allPolicies?.find((policy: PolicySpec) => policy.name === policyObj.name);
+                let policySpecVal = allPolicies?.find(
+                    (policy: PolicySpec) => policy.name === policyObj.name,
+                );
 
                 // If this policy is a deleted common policy we need to do an API call to get the policy specification
                 if (!policySpecVal) {
-                    const policyResponse = await API.getOperationPolicy(policyObj.id, api.id);
+                    const policyResponse = await API.getOperationPolicy(
+                        policyObj.id,
+                        api.id,
+                    );
                     policySpecVal = policyResponse.body;
                 }
 
@@ -90,10 +102,14 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
         })();
     }, [policyObj]);
 
-    const operationInAction = apiOperations.find((op: any) =>
-        op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-    const operationFlowPolicy =
-        operationInAction.operationPolicies[currentFlow].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
+    const operationInAction = apiOperations.find(
+        (op: any) =>
+            op.target === target &&
+            op.verb.toLowerCase() === verb.toLowerCase(),
+    );
+    const operationFlowPolicy = operationInAction.operationPolicies[
+        currentFlow
+    ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 
     const apiPolicy: ApiPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,
@@ -103,7 +119,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
 
     const handleDrawerClose = () => {
         setDrawerOpen(false);
-    }
+    };
 
     return (
         <Drawer
@@ -118,15 +134,18 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                         <ListItemIcon>
                             <Settings className={classes.iconSize} />
                         </ListItemIcon>
-                        <ListItemText primary={(
-                            <Typography variant='subtitle2'>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyConfigurationEditDrawer.title'
-                                    defaultMessage='Configure {policy} Policy'
-                                    values={{ policy: policyObj?.displayName }}
-                                />
-                            </Typography>
-                        )}
+                        <ListItemText
+                            primary={
+                                <Typography variant='subtitle2'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyConfigurationEditDrawer.title'
+                                        defaultMessage='Configure {policy} Policy'
+                                        values={{
+                                            policy: policyObj?.displayName,
+                                        }}
+                                    />
+                                </Typography>
+                            }
                         />
                         <ListItemIcon>
                             <IconButton onClick={handleDrawerClose}>
@@ -151,6 +170,6 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
             </Box>
         </Drawer>
     );
-}
+};
 
 export default PolicyConfigurationEditDrawer;

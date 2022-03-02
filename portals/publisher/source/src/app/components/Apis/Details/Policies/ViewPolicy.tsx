@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useContext, useEffect, useState }  from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
@@ -44,43 +44,65 @@ interface ViewPolicyProps {
  * @returns {TSX} Policy view UI.
  */
 const ViewPolicy: React.FC<ViewPolicyProps> = ({
-    handleDialogClose, dialogOpen, policyObj, isLocalToAPI
+    handleDialogClose,
+    dialogOpen,
+    policyObj,
+    isLocalToAPI,
 }) => {
     const { api } = useContext<any>(ApiContext);
-    const [policySpec, setPolicySpec] = useState<PolicySpec|null>(null);
+    const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (dialogOpen && isLocalToAPI) {
-            const promisedPolicyGet = API.getOperationPolicy(policyObj.id, api.id);
+            setLoading(true);
+            const promisedPolicyGet = API.getOperationPolicy(
+                policyObj.id,
+                api.id,
+            );
             promisedPolicyGet
                 .then((response) => {
                     setPolicySpec(response.body);
                 })
                 .catch((errorMessage) => {
                     Alert.error(JSON.stringify(errorMessage));
+                })
+                .finally(() => {
+                    setLoading(false);
                 });
         } else if (dialogOpen && !isLocalToAPI) {
-            const promisedCommonPolicyGet = API.getCommonOperationPolicy(policyObj.id);
+            const promisedCommonPolicyGet = API.getCommonOperationPolicy(
+                policyObj.id,
+            );
             promisedCommonPolicyGet
                 .then((response) => {
                     setPolicySpec(response.body);
                 })
                 .catch((errorMessage) => {
                     Alert.error(JSON.stringify(errorMessage));
-                });         
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
         }
-    }, [dialogOpen])
-    
-    const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    }, [dialogOpen]);
+
+    const stopPropagation = (
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    ) => {
         e.stopPropagation();
-    }
+    };
 
     const toggleOpen = () => {
         handleDialogClose();
+    };
+
+    if (loading) {
+        return <Progress />;
     }
 
     if (!policySpec) {
-        return <Progress />
+        return <></>;
     }
 
     return (
@@ -107,7 +129,11 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                         </Typography>
                     </Box>
                     <Box display='flex'>
-                        <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                        <IconButton
+                            color='inherit'
+                            onClick={toggleOpen}
+                            aria-label='Close'
+                        >
                             <Icon>close</Icon>
                         </IconButton>
                     </Box>

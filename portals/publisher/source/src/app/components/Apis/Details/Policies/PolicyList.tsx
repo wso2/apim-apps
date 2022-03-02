@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: any) => ({
     flowTabs: {
         '& button': {
             minWidth: 50,
-        }
+        },
     },
     flowTab: {
         fontSize: 'smaller',
@@ -47,14 +47,9 @@ const useStyles = makeStyles((theme: any) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-        backdropFilter: 'blur(1px)',
-    },
     paperPosition: {
         // position: 'fixed',
-    }
+    },
 }));
 
 interface PolicyListPorps {
@@ -76,11 +71,11 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
 
     const handleAddPolicy = () => {
         setDialogOpen(true);
-    }
+    };
 
     const handleAddPolicyClose = () => {
         setDialogOpen(false);
-    }
+    };
 
     if (isChoreoConnectEnabled) {
         gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
@@ -144,9 +139,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                         </Tabs>
                         <Box height='60vh' pt={1} overflow='scroll'>
                             <TabPanel
-                                policyList={policyList.filter((policy) => {
-                                    return (policy.applicableFlows.includes('request') && policy.supportedGateways.includes(gatewayType))
-                                })}
+                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('request') && policy.supportedGateways.includes(gatewayType))}
                                 index={0}
                                 selectedTab={selectedTab}
                                 fetchPolicies={fetchPolicies}
@@ -158,7 +151,9 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 fetchPolicies={fetchPolicies}
                             />
                             <TabPanel
-                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('fault'))}
+                                policyList={policyList.filter((policy) =>
+                                    policy.applicableFlows.includes('fault'),
+                                )}
                                 index={2}
                                 selectedTab={selectedTab}
                                 fetchPolicies={fetchPolicies}
@@ -174,6 +169,6 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
             />
         </Paper>
     );
-}
+};
 
 export default PolicyList;

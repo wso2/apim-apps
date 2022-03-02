@@ -21,4 +21,4 @@ export type CommonPolicy = {
     displayName: string;
     description: string;
     applicableFlows: string[];
-}
+};

@@ -36,7 +36,10 @@ interface TabPanelProps {
  * @returns {TSX} Tab panel.
  */
 const TabPanel: FC<TabPanelProps> = ({
-    index, policyList, selectedTab, fetchPolicies
+    index,
+    policyList,
+    selectedTab,
+    fetchPolicies,
 }) => {
     const flowNames = ['request', 'response', 'fault'];
     const currentFlow = flowNames[index];
@@ -49,7 +52,7 @@ const TabPanel: FC<TabPanelProps> = ({
             aria-labelledby={`${currentFlow}-tab`}
         >
             <Box py={1} px={3}>
-                {selectedTab === index && (
+                {selectedTab === index &&
                     policyList?.map((singlePolicy: Policy) => {
                         return (
                             <DraggablePolicyCard
@@ -60,11 +63,10 @@ const TabPanel: FC<TabPanelProps> = ({
                                 fetchPolicies={fetchPolicies}
                             />
                         );
-                    })
-                )}
+                    })}
             </Box>
         </div>
     );
-}
+};
 
 export default TabPanel;

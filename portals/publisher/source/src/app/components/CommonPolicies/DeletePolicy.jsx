@@ -31,9 +31,7 @@ import API from 'AppData/api';
  * @param {any} props Input props needed for common policy deletion.
  * @returns {JSX} Returns the rendered UI for common policy delete.
  */
-const DeletePolicy = ({
-    policyId, policyName, fetchCommonPolicies
-}) => {
+const DeletePolicy = ({ policyId, policyName, fetchCommonPolicies }) => {
     const [open, setOpen] = useState(false);
     const api = new API();
     const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
@@ -42,7 +40,8 @@ const DeletePolicy = ({
     };
 
     const deleteCommonPolicy = () => {
-        const promisedCommonPolicyDelete = api.deleteCommonOperationPolicy(policyId);
+        const promisedCommonPolicyDelete =
+            api.deleteCommonOperationPolicy(policyId);
         promisedCommonPolicyDelete
             .then(() => {
                 Alert.info(`${policyName} policy deleted successfully!`);
@@ -79,31 +78,31 @@ const DeletePolicy = ({
             </Button>
             <ConfirmDialog
                 key='key-dialog'
-                labelCancel={(
+                labelCancel={
                     <FormattedMessage
                         id='Policies.Delete.Delete.policy.listing.label.cancel'
                         defaultMessage='Cancel'
                     />
-                )}
-                title={(
+                }
+                title={
                     <FormattedMessage
                         id='Policies.Delete.Delete.policy.listing.delete.confirm'
                         defaultMessage='Confirm Delete'
                     />
-                )}
-                message={(
+                }
+                message={
                     <FormattedMessage
                         id='Policies.Delete.Delete.policy.label.ok.confirm'
                         defaultMessage='Are you sure you want to delete {policy} policy ?'
                         values={{ policy: policyName }}
                     />
-                )}
-                labelOk={(
+                }
+                labelOk={
                     <FormattedMessage
                         id='Policies.Delete.Delete.policy.listing.label.ok.yes'
                         defaultMessage='Yes'
                     />
-                )}
+                }
                 callback={runAction}
                 open={open}
             />

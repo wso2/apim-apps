@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useContext }  from 'react';
+import React, { useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
@@ -62,25 +62,24 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }
         <>
             <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
                 <Grid item>
-                    {api.isRevision
-                        || isRestricted(['apim:api_create'], api) ? (
-                            <Button
-                                disabled
-                                type='submit'
-                                variant='contained'
-                                color='primary'
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.SaveOperationPolicies.save.btn'
-                                    defaultMessage='Save'
-                                />
-                            </Button>
-                        ) : (
-                            <CustomSplitButton
-                                handleSave={handleSave}
-                                handleSaveAndDeploy={handleSaveAndDeploy}
+                    {api.isRevision || isRestricted(['apim:api_create'], api) ? (
+                        <Button
+                            disabled
+                            type='submit'
+                            variant='contained'
+                            color='primary'
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Policies.SaveOperationPolicies.save.btn'
+                                defaultMessage='Save'
                             />
-                        )}
+                        </Button>
+                    ) : (
+                        <CustomSplitButton
+                            handleSave={handleSave}
+                            handleSaveAndDeploy={handleSaveAndDeploy}
+                        />
+                    )}
                 </Grid>
             </Grid>
         </>

@@ -18,7 +18,7 @@
 
 import React, { FC, useState } from 'react';
 import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
-import { useDrop } from 'react-dnd'
+import { useDrop } from 'react-dnd';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import classNames from 'classnames';
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         justifyContent: 'left',
     },
     alignRight: {
-        justifyContent: 'right'
+        justifyContent: 'right',
     },
     alignCenter: {
         justifyContent: 'center',
@@ -63,7 +63,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface PolicyDropzoneProps {
     policyDisplayStartDirection: string;
     currentPolicyList: AttachedPolicy[];
-    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
+    setCurrentPolicyList: React.Dispatch<
+        React.SetStateAction<AttachedPolicy[]>
+    >;
     droppablePolicyList: string[];
     currentFlow: string;
     target: string;
@@ -77,8 +79,14 @@ interface PolicyDropzoneProps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const PolicyDropzone: FC<PolicyDropzoneProps> = ({
-    policyDisplayStartDirection, currentPolicyList, setCurrentPolicyList, droppablePolicyList, currentFlow,
-    target, verb, allPolicies
+    policyDisplayStartDirection,
+    currentPolicyList,
+    setCurrentPolicyList,
+    droppablePolicyList,
+    currentFlow,
+    target,
+    verb,
+    allPolicies,
 }) => {
     const classes = useStyles();
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
@@ -90,34 +98,42 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
         }),
-    })
+    });
 
     const isActive = canDrop && isOver;
-    
+
     return (
         <>
             <Grid container>
-                <div ref={drop} className={classNames({
-                    [classes.dropzoneDiv]: true,
-                    [classes.acceptDrop]: isActive,
-                    [classes.alignCenter]: currentPolicyList.length === 0,
-                    [classes.alignLeft]: currentPolicyList.length !== 0 && policyDisplayStartDirection === 'left',
-                    [classes.alignRight]: currentPolicyList.length !== 0 && policyDisplayStartDirection === 'right',
-                })}>
-                    {currentPolicyList.length === 0
-                        ? <Typography>Drag and drop policies here</Typography>
-                        : (
-                            <AttachedPolicyList
-                                currentPolicyList={currentPolicyList}
-                                setCurrentPolicyList={setCurrentPolicyList}
-                                policyDisplayStartDirection={policyDisplayStartDirection}
-                                currentFlow={currentFlow}
-                                target={target}
-                                verb={verb}
-                                allPolicies={allPolicies}
-                            />
-                        )
-                    }
+                <div
+                    ref={drop}
+                    className={classNames({
+                        [classes.dropzoneDiv]: true,
+                        [classes.acceptDrop]: isActive,
+                        [classes.alignCenter]: currentPolicyList.length === 0,
+                        [classes.alignLeft]:
+                            currentPolicyList.length !== 0 &&
+                            policyDisplayStartDirection === 'left',
+                        [classes.alignRight]:
+                            currentPolicyList.length !== 0 &&
+                            policyDisplayStartDirection === 'right',
+                    })}
+                >
+                    {currentPolicyList.length === 0 ? (
+                        <Typography>Drag and drop policies here</Typography>
+                    ) : (
+                        <AttachedPolicyList
+                            currentPolicyList={currentPolicyList}
+                            setCurrentPolicyList={setCurrentPolicyList}
+                            policyDisplayStartDirection={
+                                policyDisplayStartDirection
+                            }
+                            currentFlow={currentFlow}
+                            target={target}
+                            verb={verb}
+                            allPolicies={allPolicies}
+                        />
+                    )}
                 </div>
             </Grid>
             {droppedPolicy && (
@@ -132,6 +148,6 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
             )}
         </>
     );
-}
+};
 
 export default PolicyDropzone;

@@ -37,13 +37,12 @@ const useStyles = makeStyles((theme) => ({
             maxWidth: 800,
         },
     },
-}
-));
+}));
 
 interface OPGroupProps {
     openAPI: any;
     children: any;
-    tag: any;
+    tag: string;
     isChoreoConnectEnabled: boolean;
     verbObject: any;
 }

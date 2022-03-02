@@ -33,12 +33,9 @@ import { FormattedMessage } from 'react-intl';
 import ApiContext from '../components/ApiContext';
 import type { AttachedPolicy, PolicySpec } from './Types';
 import PolicyConfigurationEditDrawer from './PolicyConfigurationEditDrawer';
-import ApiOperationContext from "./ApiOperationContext";
+import ApiOperationContext from './ApiOperationContext';
 
 const useStyles = makeStyles(() => ({
-    drawerPaper: {
-        backgroundColor: 'white',
-    },
     actionsBox: {
         display: 'flex',
         flexDirection: 'column',
@@ -62,15 +59,22 @@ interface AttachedPolicyCardProps {
  * @returns {TSX} Sortable attached policy card UI.
  */
 const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
-    policyObj, currentPolicyList, setCurrentPolicyList, currentFlow, verb, target,
-    allPolicies
+    policyObj,
+    currentPolicyList,
+    setCurrentPolicyList,
+    currentFlow,
+    verb,
+    target,
+    allPolicies,
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
     const { deleteApiOperation } = useContext<any>(ApiOperationContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const policyColor = Utils.stringToColor(policyObj.displayName);
-    const policyBackgroundColor = drawerOpen ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)` : 'rgba(0, 0, 0, 0)';
+    const policyBackgroundColor = drawerOpen
+        ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)`
+        : 'rgba(0, 0, 0, 0)';
     const {
         attributes,
         listeners,
@@ -78,7 +82,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         transform,
         transition,
         isDragging,
-    } = useSortable({id: policyObj.uniqueKey.toString()});
+    } = useSortable({ id: policyObj.uniqueKey.toString() });
     const style: CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,
@@ -95,10 +99,19 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     };
 
     const handleDelete = (event: any) => {
-        const filteredList = currentPolicyList.filter((policy) => policy.uniqueKey !== policyObj.uniqueKey);
-        const policyToDelete = currentPolicyList.find((policy) => policy.uniqueKey === policyObj.uniqueKey);
+        const filteredList = currentPolicyList.filter(
+            (policy) => policy.uniqueKey !== policyObj.uniqueKey,
+        );
+        const policyToDelete = currentPolicyList.find(
+            (policy) => policy.uniqueKey === policyObj.uniqueKey,
+        );
         setCurrentPolicyList(filteredList);
-        deleteApiOperation(policyToDelete?.uniqueKey, target, verb, currentFlow);
+        deleteApiOperation(
+            policyToDelete?.uniqueKey,
+            target,
+            verb,
+            currentFlow,
+        );
         event.stopPropagation();
         event.preventDefault();
     };
@@ -106,13 +119,18 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     const handlePolicyDownload = (event: any) => {
         event.stopPropagation();
         event.preventDefault();
-        const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyObj.id);
+        const commonPolicyContentPromise = API.getCommonOperationPolicyContent(
+            policyObj.id,
+        );
         commonPolicyContentPromise
             .then((commonPolicyResponse) => {
                 Utils.forceDownload(commonPolicyResponse);
             })
             .catch(() => {
-                const apiPolicyContentPromise = API.getOperationPolicyContent(policyObj.id, api.id);
+                const apiPolicyContentPromise = API.getOperationPolicyContent(
+                    policyObj.id,
+                    api.id,
+                );
                 apiPolicyContentPromise
                     .then((apiPolicyResponse) => {
                         Utils.forceDownload(apiPolicyResponse);
@@ -124,16 +142,16 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                                 <FormattedMessage
                                     id='Policies.ViewPolicy.download.error'
                                     defaultMessage='Something went wrong while downloading the policy'
-                                />
+                                />,
                             );
                         }
                     });
             });
-    }
+    };
 
     const handleDrawerOpen = () => {
         setDrawerOpen(true);
-    }
+    };
 
     return (
         <>
@@ -145,14 +163,20 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 onClick={handleDrawerOpen}
                 onKeyDown={handleDrawerOpen}
             >
-                <Tooltip key={policyObj.id} title={policyObj.displayName} placement='top'>
+                <Tooltip
+                    key={policyObj.id}
+                    title={policyObj.displayName}
+                    placement='top'
+                >
                     <Avatar
                         style={{
                             margin: '0.2em',
                             backgroundColor: policyColor,
                         }}
                     >
-                        {Utils.stringAvatar(policyObj.displayName.toUpperCase())}
+                        {Utils.stringAvatar(
+                            policyObj.displayName.toUpperCase(),
+                        )}
                     </Avatar>
                 </Tooltip>
                 <Box className={classes.actionsBox}>
