@@ -27,7 +27,6 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { AddCircle } from '@material-ui/icons';
 import { Button, makeStyles } from '@material-ui/core';
-import Backdrop from '@material-ui/core/Backdrop';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
@@ -52,6 +51,9 @@ const useStyles = makeStyles((theme: any) => ({
         color: '#fff',
         backdropFilter: 'blur(1px)',
     },
+    paperPosition: {
+        // position: 'fixed',
+    }
 }));
 
 interface PolicyListPorps {
@@ -80,7 +82,7 @@ const PolicyList: FC<PolicyListPorps> = ({
     }
 
     return (
-        <Paper>
+        <Paper className={classes.paperPosition}>
             <Card variant='outlined'>
                 <CardContent>
                     <Box display='flex'>
@@ -154,17 +156,11 @@ const PolicyList: FC<PolicyListPorps> = ({
                     </Box>
                 </CardContent>
             </Card>
-            <Backdrop
-                className={classes.backdrop}
-                open={dialogOpen}
-                onClick={handleAddPolicyClose}    
-            >
-                <CreatePolicy
-                    dialogOpen={dialogOpen}
-                    handleDialogClose={handleAddPolicyClose}
-                    fetchPolicies={fetchPolicies}
-                />
-            </Backdrop>
+            <CreatePolicy
+                dialogOpen={dialogOpen}
+                handleDialogClose={handleAddPolicyClose}
+                fetchPolicies={fetchPolicies}
+            />
         </Paper>
     );
 }

@@ -18,19 +18,16 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Button, Grid, IconButton, Tooltip, Typography,
+    Button, Grid, IconButton, Tooltip, Typography, useTheme, makeStyles
 } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
-import { FormattedMessage, injectIntl } from 'react-intl';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import AddCircle from '@material-ui/icons/AddCircle';
 import MUIDataTable from 'mui-datatables';
 import Icon from '@material-ui/core/Icon';
 import { isRestricted } from 'AppData/AuthManager';
-import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Box from '@material-ui/core/Box';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
@@ -39,18 +36,10 @@ import Chip from '@material-ui/core/Chip';
 import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import TrendingDown from '@material-ui/icons/TrendingDown';
-import Alert from 'AppComponents/Shared/Alert';
+import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import Delete from './DeletePolicy';
 
-const styles = (theme) => ({
-    contentInside: {
-        padding: theme.spacing(3),
-        paddingTop: theme.spacing(2),
-        '& > div[class^="MuiPaper-root-"]': {
-            boxShadow: 'none',
-            backgroundColor: 'transparent',
-        },
-    },
+const useStyles = makeStyles((theme) => ({
     table: {
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -66,14 +55,6 @@ const styles = (theme) => ({
         '& th': {
             minWidth: '150px',
         },
-    },
-    root: {
-        paddingTop: 0,
-        paddingLeft: 0,
-    },
-    buttonProgress: {
-        position: 'relative',
-        margin: theme.spacing(1),
     },
     heading: {
         flexGrow: 1,
@@ -93,33 +74,39 @@ const styles = (theme) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
-    disableLink: {
-        pointerEvents: 'none',
-    },
     icon: {
         marginRight: theme.spacing(0.5),
     },
-});
+}));
 
 /**
  * Renders the common policy management UI.
  * @param {JSON} props Input props from parent components.
  * @returns {JSX} Policy management page to render.
  */
-const Listing = (props) => {
-    const { intl, classes, theme } = props;
+const Listing = () => {
+    const intl = useIntl();
+    const theme = useTheme();
+    const classes = useStyles();
     const { commonPolicyAddIcon } = theme.custom.landingPage.icons;
     const createUrl = '/policies/create';
     const [policies, setPolicies] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [notFound, setnotFound] = useState(false);
 
     const fetchCommonPolicies = () => {
+        setLoading(true);
         const promisedPolicies = API.getCommonOperationPolicies();
         promisedPolicies
             .then((response) => {
                 setPolicies(response.body.list);
             })
-            .catch((errorMessage) => {
-                Alert.error(JSON.stringify(errorMessage));
+            .catch((error) => {
+                console.error(error);
+                setnotFound(true);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }
 
@@ -132,6 +119,7 @@ const Listing = (props) => {
     }
 
     policies?.sort((a, b) => a.displayName.localeCompare(b.displayName));
+
     const policiesList = policies?.map((policyObj) => {
         const policy = [];
         policy.push(policyObj.id);
@@ -150,7 +138,7 @@ const Listing = (props) => {
             },
         },
         intl.formatMessage({
-            id: 'Policies.Listing.Listing.table.header.name',
+            id: 'CommonPolicies.Listing.table.header.name',
             defaultMessage: 'Policy Name',
         }),
         intl.formatMessage({
@@ -163,44 +151,42 @@ const Listing = (props) => {
                     if (tableMeta.rowData) {
                         const flows = value || [];
                         return (
-                            <div>
-                                {flows.map((flow) => {
-                                    let chipColor = theme.custom.policyFlowChipColor
-                                        ? theme.custom.policyFlowChipColor[flow.toLowerCase()]
-                                        : null;
-                                    let chipTextColor = '#000000';
-                                    if (!chipColor) {
-                                        // The policyFlowChipColor is not populated properly
-                                        chipColor = '#cccccc';
-                                    } else {
-                                        chipTextColor = theme.palette.getContrastText(
-                                            theme.custom.policyFlowChipColor[flow.toLowerCase()],
-                                        );
-                                    }
-                                    let flowIcon = null;
-                                    if (flow === 'request') {
-                                        flowIcon = <ArrowForward />;
-                                    } else if (flow === 'response') {
-                                        flowIcon = <ArrowBack />;
-                                    } else if (flow === 'fault') {
-                                        flowIcon = <TrendingDown />;
-                                    }
-                                    return (
-                                        <Chip
-                                            key={flow}
-                                            label={flow.toUpperCase()}
-                                            style={{
-                                                backgroundColor: chipColor,
-                                                color: chipTextColor,
-                                                height: 20,
-                                                fontSize: 9,
-                                                margin: '0.3em',
-                                            }}
-                                            icon={flowIcon}
-                                        />
+                            flows.map((flow) => {
+                                let chipColor = theme.custom.policyFlowChipColor
+                                    ? theme.custom.policyFlowChipColor[flow.toLowerCase()]
+                                    : null;
+                                let chipTextColor = '#000000';
+                                if (!chipColor) {
+                                    // The policyFlowChipColor is not populated properly
+                                    chipColor = '#cccccc';
+                                } else {
+                                    chipTextColor = theme.palette.getContrastText(
+                                        theme.custom.policyFlowChipColor[flow.toLowerCase()],
                                     );
-                                })}
-                            </div>
+                                }
+                                let flowIcon = null;
+                                if (flow === 'request') {
+                                    flowIcon = <ArrowForward />;
+                                } else if (flow === 'response') {
+                                    flowIcon = <ArrowBack />;
+                                } else if (flow === 'fault') {
+                                    flowIcon = <TrendingDown />;
+                                }
+                                return (
+                                    <Chip
+                                        key={flow}
+                                        label={flow.toUpperCase()}
+                                        style={{
+                                            backgroundColor: chipColor,
+                                            color: chipTextColor,
+                                            height: 20,
+                                            fontSize: 9,
+                                            margin: theme.spacing(0.3),
+                                        }}
+                                        icon={flowIcon}
+                                    />
+                                );
+                            })
                         );
                     }
                     return false;
@@ -306,8 +292,13 @@ const Listing = (props) => {
             </Onboarding>
         );
     }
-    if (!policies) {
-        return <Progress />
+
+    if (notFound) {
+        return <ResourceNotFoundError />;
+    }
+    
+    if (loading || !policies) {
+        return <Progress per={90} message='Loading Policies ...' />;
     }
 
     return (
@@ -375,9 +366,4 @@ const Listing = (props) => {
     );
 };
 
-Listing.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
-    intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
-};
-
-export default injectIntl(withAPI(withStyles(styles, { withTheme: true })(Listing)));
+export default Listing;

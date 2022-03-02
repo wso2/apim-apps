@@ -29,12 +29,12 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage} from 'react-intl';
-import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import PolicyStepper from './PolicyStepper';
+import CONST from 'AppData/Constants';
 import type { CreatePolicySpec } from './Types';
+import PolicyCreateForm from './PolicyForm/PolicyCreateForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
     link: {
@@ -43,18 +43,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'inline',
     }
 }));
-
-const DefaultPolicySpec = {
-    category: 'Mediation',
-    name: '',
-    displayName: '',
-    description: '',
-    multipleAllowed: false,
-    applicableFlows: ['request', 'response', 'fault'],
-    supportedGateways: ['Synapse'],
-    supportedApiTypes: ['REST'],
-    policyAttributes: [],
-};
 
 interface CreatePolicyProps {
     handleDialogClose: () => void;
@@ -72,17 +60,16 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
-
+    const [saving, setSaving] = useState(false);
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<CreatePolicySpec | null>(DefaultPolicySpec);
 
     const savePolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
+        setSaving(true);
         const promisedCommonPolicyAdd = API.addOperationPolicy(policySpecContent, policyDefinition, api.id);   
         promisedCommonPolicyAdd
             .then(() => {
                 Alert.info('Policy created successfully!');
                 setPolicyDefinitionFile([]);
-                setPolicySpec(DefaultPolicySpec);
                 handleDialogClose();
                 fetchPolicies();
             })
@@ -91,22 +78,20 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                 const { response } = error;
                 if (response.body) {
                     const { description } = response.body;
-                    console.log(description);
+                    console.error(description);
                     Alert.error('Something went wrong while creating policy');
                 }
+            })
+            .finally(() => {
+                setSaving(false);
             });
     }
 
     const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
     }
-
-    if (!policySpec) {
-        return <Progress />
-    }
-
-    const onPolicyCreateSave = () => {
-        savePolicy(policySpec, policyDefinitionFile);
+    const onSave = (policySpecification: CreatePolicySpec) => {
+        savePolicy(policySpecification, policyDefinitionFile);
         handleDialogClose();
     }
 
@@ -143,18 +128,20 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     </Box>
                 </Box>
                 <DialogContent>
-                    <DialogContentText>
-                        <PolicyStepper
-                            onSave={onPolicyCreateSave}
-                            policyDefinitionFile={policyDefinitionFile}
-                            setPolicyDefinitionFile={setPolicyDefinitionFile}
-                            policySpec={policySpec}
-                            setPolicySpec={setPolicySpec}
-                        />
-                    </DialogContentText>
+                    <Box my={2}>
+                        <DialogContentText>
+                            <PolicyCreateForm
+                                onSave={onSave}
+                                policyDefinitionFile={policyDefinitionFile}
+                                setPolicyDefinitionFile={setPolicyDefinitionFile}
+                                onCancel={handleDialogClose}
+                                saving={saving}
+                            />
+                        </DialogContentText>
+                    </Box>
                 </DialogContent>
                 <Box display='flex' flexDirection='row' justifyContent='right' px={3} pb={3}>
-                    <Link to='/policies'>
+                    <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY}>
                         <Typography className={classes.link} variant='caption'>
                             Want to create a common policy that will be visible to all APIs instead?
                             <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />

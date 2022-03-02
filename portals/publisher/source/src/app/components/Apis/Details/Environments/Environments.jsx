@@ -322,7 +322,7 @@ export default function Environments() {
     const classes = useStyles();
     const maxCommentLength = '255';
     const intl = useIntl();
-    const { api } = useContext(APIContext);
+    const { api, updateAPI } = useContext(APIContext);
     const history = useHistory();
     const { data: settings, isLoading } = usePublisherSettings();
     const {
@@ -660,6 +660,7 @@ export default function Environments() {
                 }).finally(() => {
                     getRevision();
                     getDeployedEnv();
+                    updateAPI();
                 });
         } else {
             restProductApi.restoreProductRevision(api.id, revisionId)

@@ -17,10 +17,8 @@
  */
 
 import React, { useContext, useEffect, useState }  from 'react';
-import {
-    Typography,
-} from '@material-ui/core';
 import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -31,7 +29,7 @@ import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import type { Policy, PolicySpec } from './Types';
 import ApiContext from '../components/ApiContext';
-import ViewAndDownloadPolicy from './ViewAndDownloadPolicy';
+import PolicyViewForm from './PolicyForm/PolicyViewForm';
 
 interface ViewPolicyProps {
     handleDialogClose: () => void;
@@ -115,12 +113,14 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                     </Box>
                 </Box>
                 <DialogContent>
-                    <DialogContentText>
-                        <ViewAndDownloadPolicy
-                            policySpec={policySpec}
-                            onDone={toggleOpen}
-                        />
-                    </DialogContentText>
+                    <Box my={2}>
+                        <DialogContentText>
+                            <PolicyViewForm
+                                policySpec={policySpec}
+                                onDone={toggleOpen}
+                            />
+                        </DialogContentText>
+                    </Box>
                 </DialogContent>
             </Dialog>
         </>

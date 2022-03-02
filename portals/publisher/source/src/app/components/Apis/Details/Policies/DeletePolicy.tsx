@@ -51,8 +51,8 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
     const toggleOpen = () => {
         setOpen(!open);
     };
-
-    const deleteOperationPolicy = () => {
+    
+    const handleDelete = () => {
         const promisedCommonPolicyDelete = API.deleteOperationPolicy(api.id, policyId);
         promisedCommonPolicyDelete
             .then(() => {
@@ -65,10 +65,6 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 Alert.error('Error occurred while deleteting policy');
                 setOpenLocal(!open);
             });
-    };
-    
-    const handleDelete = () => {
-        deleteOperationPolicy();
     }
 
     const handleClose = () => {

@@ -50,6 +50,9 @@ const CONSTS = {
         clientSecret: null, // same as above password case
         customParameters: {},
     },
+    PATH_TEMPLATES: {
+        COMMON_POLICY: '/policies',
+    }
 };
 
 export default CONSTS;

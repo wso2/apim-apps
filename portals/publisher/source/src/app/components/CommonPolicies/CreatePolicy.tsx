@@ -19,16 +19,16 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import {
-    Grid, Icon,
-} from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
-import PolicyStepper from 'AppComponents/Apis/Details/Policies/PolicyStepper';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
-import { Progress } from 'AppComponents/Shared';
+import PolicyCreateForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyCreateForm';
+import { Box } from '@material-ui/core';
+import CONST from 'AppData/Constants';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -49,18 +49,6 @@ const useStyles = makeStyles((theme: any) => ({
     },
 }));
 
-const DefaultPolicySpec = {
-    category: 'Mediation',
-    name: '',
-    displayName: '',
-    description: '',
-    multipleAllowed: true,
-    applicableFlows: ['request', 'response', 'fault'],
-    supportedGateways: ['Synapse'],
-    supportedApiTypes: ['REST'],
-    policyAttributes: [],
-};
-
 /**
  * Create a new common policy
  * @param {JSON} props Input props from parent components.
@@ -69,37 +57,35 @@ const DefaultPolicySpec = {
 const CreatePolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const redirectUrl = '/policies';
     const api = new API();
     const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
-    const [policySpec, setPolicySpec] = useState<CreatePolicySpec | null>(DefaultPolicySpec);
+    const [saving, setSaving] = useState(false);
 
     const addCommonPolicy = (policySpecContent: CreatePolicySpec, policyDefinition: any) => {
+        setSaving(true);
         const promisedCommonPolicyAdd = api.addCommonOperationPolicy(policySpecContent, policyDefinition);
         promisedCommonPolicyAdd
             .then(() => {
                 Alert.info('Policy created successfully!');
                 setPolicyDefinitionFile([]);
-                setPolicySpec(DefaultPolicySpec);
-                history.push(redirectUrl);
+                history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
             })
             .catch((error) => {
-                history.push(redirectUrl);
-                const { response } = error;
-                if (response.body) {
-                    const { description } = response.body;
-                    console.log(description);
-                    Alert.error('Something went wrong while creating policy');
-                }
+                console.error(error);
+                history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
+                Alert.error('Something went wrong while creating policy');
+            })
+            .finally(() => {
+                setSaving(false);
             });
     }
 
-    if (!policySpec) {
-        return <Progress />
+    const onSave = (policySpecification: CreatePolicySpec) => {
+        addCommonPolicy(policySpecification, policyDefinitionFile);
     }
 
-    const onPolicyCreateSave = () => {
-        addCommonPolicy(policySpec, policyDefinitionFile);
+    const onCancel = () => {
+        history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
     }
 
     return (
@@ -110,7 +96,7 @@ const CreatePolicy: React.FC = () => {
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
-                            <Link to={redirectUrl} className={classes.titleLink}>
+                            <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY} className={classes.titleLink}>
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
                                         id='CommonPolicies.CreatePolicy.CommonPolicy.listing.heading'
@@ -128,15 +114,18 @@ const CreatePolicy: React.FC = () => {
                         </div>
                     </Grid>
                     <Grid item md={12}>
-                        <PolicyStepper
-                            onSave={onPolicyCreateSave}
+                        <PolicyCreateForm
+                            onSave={onSave}
                             policyDefinitionFile={policyDefinitionFile}
                             setPolicyDefinitionFile={setPolicyDefinitionFile}
-                            policySpec={policySpec}
-                            setPolicySpec={setPolicySpec}
+                            onCancel={onCancel}
+                            saving={saving}
                         />
                     </Grid>
                 </Grid>
+            </Grid>
+            <Grid item sm={12} md={12}>
+                <Box mb={5}/>
             </Grid>
         </Grid>
     );
