@@ -74,6 +74,10 @@ const useStyles = makeStyles((theme) => ({
         '& th': {
             background: '#ccc',
         },
+        '& td': {
+            'word-break': 'break-all',
+            'white-space': 'normal',
+        },
     },
     expandContentRoot: {
         flexDirection: 'column',
