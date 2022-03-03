@@ -41,7 +41,11 @@ module.exports = {
         '^MaterialIcons$': '<rootDir>/site/public/fonts/iconfont/MaterialIcons.js',
         '^monaco-editor$': '<rootDir>/node_modules/react-monaco-editor',
     },
-    testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/source/Tests/Integration/'],
+    testPathIgnorePatterns: [
+        '<rootDir>/node_modules/', 
+        '<rootDir>/source/Tests/Integration/',
+        '<rootDir>/source/src/app/components/Apis/Details/NewOverview/Overview.test.jsx',
+        '<rootDir>/source/src/app/components/Apis/Create/GraphQL/ApiCreateGraphQL.test.tsx'],
     transformIgnorePatterns: ['<rootDir>/node_modules/'],
 
     // Automatically clear mock calls and instances between every test

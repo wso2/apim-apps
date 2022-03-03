@@ -24,11 +24,13 @@ module.exports = {
                     },
                 ],
                 '@babel/preset-react',
+                '@babel/preset-flow',
             ],
             plugins: [
                 '@babel/plugin-syntax-dynamic-import',
                 '@babel/plugin-proposal-class-properties',
                 'dynamic-import-node',
+                'babel-plugin-styled-components',
             ],
         },
         production: {
@@ -69,7 +71,7 @@ module.exports = {
                 '@babel/plugin-syntax-dynamic-import',
                 ['@babel/plugin-transform-spread'],
                 '@babel/plugin-proposal-object-rest-spread',
-                'react-refresh/babel',
+                'react-hot-loader/babel',
                 ['formatjs',
                     {
                         idInterpolationPattern: '[sha512:contenthash:base64:6]',

@@ -17,6 +17,7 @@
   },
   "scripts": {
     "test": "npm run test:ci --workspace=portals/publisher",
+    "ci": "npm run ci --workspaces --if-present",
     "build": "npm run build:prod --workspaces --if-present"
   },
   "repository": {
