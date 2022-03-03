@@ -361,7 +361,6 @@ export default function Environments() {
     const [currentLength, setCurrentLength] = useState(0);
     const [openDeployPopup, setOpenDeployPopup] = useState(history.location.state === 'deploy');
     const [externalEnvEndpoints, setExternalEnvEndpoints] = useState(null);
-    const triggerEffect = true;
 
     const allExternalGatewaysMap = [];
     const allExternalGateways = [];
@@ -420,7 +419,7 @@ export default function Environments() {
             });
             setExternalEnvEndpoints(externalEnvWithEndpoints);
         });
-    }, [triggerEffect, externalGateways]);
+    }, [api.id]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
         setRevisionToDelete([revisionName, revisionId]);
