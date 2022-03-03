@@ -50,11 +50,10 @@ interface OperationPolicyProps {
     policyList: Policy[];
     allPolicies: PolicySpec[] | null;
     isChoreoConnectEnabled: boolean;
-    isGatewayChanged: boolean;
 }
 
 const OperationPolicy: FC<OperationPolicyProps> = ({
-    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies, isChoreoConnectEnabled, isGatewayChanged
+    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies, isChoreoConnectEnabled, 
 }) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -382,7 +381,6 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                         allPolicies={allPolicies}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
                         policyList={policyList}
-                        isGatewayChanged={isGatewayChanged}
                     />) : <></>}
             </ExpansionPanel>
         </>

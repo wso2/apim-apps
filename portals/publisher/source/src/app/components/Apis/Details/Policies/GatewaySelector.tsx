@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { HelpOutline } from '@material-ui/icons';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Dialog, DialogTitle, DialogContent, Button, DialogActions } from '@material-ui/core';
@@ -41,7 +41,6 @@ const SupportedGatewayTypes = {
 interface GatewaySelectorProps {
     getGatewayType(isChoreoConnectEnabled: boolean): void;
     isChoreoConnectEnabled: boolean;
-    setGatewayChange(isGatewayChanged: boolean): void;
 }
 
 /**
@@ -49,7 +48,7 @@ interface GatewaySelectorProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Radio group for the API Gateway.
  */
-const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoConnectEnabled, setGatewayChange }) => {
+const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoConnectEnabled }) => {
     const [apiFromContext] = useAPI();
     let selectedGatewayType;
 
@@ -57,11 +56,11 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
 
     const saveAfterGatewayChange = (isChoreoConnectEnabled: boolean) => {
         if (isChoreoConnectEnabled) {
-            getGatewayType(false); setGatewayChange(true);
+            getGatewayType(false); 
         } else {
-            getGatewayType(true); setGatewayChange(true);
+            getGatewayType(true);
         }
-
+        setRadioButtonChange(false);
     }
 
     (() => {
@@ -138,7 +137,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                                         control={
                                             <Radio
                                                 color='primary'
-                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                disabled={true}
                                                 onChange={handleApprovedGatewayChange}
                                             />
                                         }
