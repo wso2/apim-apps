@@ -32,7 +32,7 @@ import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import { RadioGroup } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Utils from 'AppData/Utils';
 import Badge from '@material-ui/core/Badge';
 
@@ -41,6 +41,7 @@ function reducer(state, { field, value }) {
 }
 
 function WebhookSubscriptionUI(props) {
+    const intl = useIntl();
     const verb = props.topic.type.toLowerCase();
     const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
     const useStyles = makeStyles((theme) => {
@@ -105,7 +106,7 @@ function WebhookSubscriptionUI(props) {
             },
         };
     });
-    const { generateGenericWHSubscriptionCurl, topic, intl } = props;
+    const { generateGenericWHSubscriptionCurl, topic } = props;
     const initialSubscriptionState = {
         topic: topic.name,
         secret: null,
@@ -284,7 +285,13 @@ function WebhookSubscriptionUI(props) {
                 <Button size='small' onClick={handleClick}>
                     <FormattedMessage id='Apis.Details.AsyncApiConsole.Curl' defaultMessage='Generate Curl' />
                 </Button>
-                <CopyToClipboard text={curl} onCopy={() => Alert.info('cURL copied')}>
+                <CopyToClipboard
+                    text={curl}
+                    onCopy={() => Alert.info(intl.formatMessage({
+                        defaultMessage: 'cURL copied',
+                        id: 'Apis.Details.AsyncApiConsole.Webhooks.curl.copied',
+                    }))}
+                >
                     <Button size='small'>
                         <FormattedMessage id='Apis.Details.AsyncApiConsole.Copy' defaultMessage='Copy Curl' />
                     </Button>
@@ -294,4 +301,4 @@ function WebhookSubscriptionUI(props) {
     );
 }
 
-export default injectIntl(WebhookSubscriptionUI);
+export default WebhookSubscriptionUI;

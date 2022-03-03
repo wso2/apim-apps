@@ -393,7 +393,16 @@ function Overview() {
                                         {(descriptionIsBig && descriptionHidden) ? smallDescription : api.description}
                                         {descriptionIsBig && (
                                             <a aria-label='Show more/less description' onClick={collapseAllDescription} href='#'>
-                                                {descriptionHidden ? ' more' : ' less'}
+                                                {descriptionHidden
+                                                    ? intl.formatMessage({
+                                                        defaultMessage: ' more',
+                                                        id: 'Apis.Details.Overview.description.more',
+                                                    })
+                                                    : intl.formatMessage({
+                                                        defaultMessage: ' less',
+                                                        id: 'Apis.Details.Overview.description.less',
+                                                    })
+                                                }
                                             </a>
                                         )}
                                     </Typography>

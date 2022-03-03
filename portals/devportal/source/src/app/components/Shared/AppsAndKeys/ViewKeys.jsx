@@ -398,7 +398,17 @@ class ViewKeys extends React.Component {
                                                 {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
                                             </IconButton>
                                             <Tooltip
-                                                title={secretCopied ? 'Copied' : 'Copy to clipboard'}
+                                                title={
+                                                    secretCopied
+                                                        ? intl.formatMessage({
+                                                            defaultMessage: 'Copied',
+                                                            id: 'Shared.AppsAndKeys.ViewKeys.copied',
+                                                        })
+                                                        : intl.formatMessage({
+                                                            defaultMessage: 'Copy to clipboard',
+                                                            id: 'Shared.AppsAndKeys.ViewKeys.copy.to.clipboard',
+                                                        })
+                                                }
                                                 placement='right'
                                             >
                                                 <CopyToClipboard
