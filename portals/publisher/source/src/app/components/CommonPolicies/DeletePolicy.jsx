@@ -67,7 +67,14 @@ const DeletePolicy = ({ policyId, policyName, fetchCommonPolicies }) => {
         <>
             <Button
                 onClick={toggleOpen}
-                disabled={isRestricted(['apim:shared_scope_manage']) > 0}
+                disabled={
+                    isRestricted([
+                        'apim:api_create',
+                        'apim:api_manage',
+                        'apim:mediation_policy_manage',
+                        'apim:api_mediation_policy_manage',
+                    ]) > 0
+                }
                 aria-label={'Delete ' + policyName}
             >
                 <Icon>delete_forever</Icon>

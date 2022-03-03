@@ -219,13 +219,21 @@ const Listing = () => {
                             <Box display='flex' flexDirection='row'>
                                 <Button
                                     disabled={isRestricted([
-                                        'apim:shared_scope_manage',
+                                        'apim:api_view',
+                                        'apim:api_manage',
+                                        'apim:mediation_policy_view',
+                                        'apim:mediation_policy_manage',
+                                        'apim:api_mediation_policy_manage',
                                     ])}
                                     aria-label={'View ' + policyName}
                                     component={Link}
                                     to={
                                         !isRestricted([
-                                            'apim:shared_scope_manage',
+                                            'apim:api_view',
+                                            'apim:api_manage',
+                                            'apim:mediation_policy_view',
+                                            'apim:mediation_policy_manage',
+                                            'apim:api_mediation_policy_manage',
                                         ]) && {
                                             pathname: getViewUrl(policyId),
                                             state: {
@@ -301,7 +309,13 @@ const Listing = () => {
                     to={CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE}
                     name='Policies'
                     iconName={commonPolicyAddIcon}
-                    disabled={isRestricted(['apim:shared_scope_manage'])}
+                    disabled={isRestricted([
+                        'apim:api_create',
+                        'apim:api_manage',
+                        'apim:mediation_policy_create',
+                        'apim:mediation_policy_manage',
+                        'apim:api_mediation_policy_manage',
+                    ])}
                 />
             </Onboarding>
         );
@@ -357,11 +371,22 @@ const Listing = () => {
                         color='primary'
                         variant='outlined'
                         size='small'
-                        disabled={isRestricted(['apim:shared_scope_manage'])}
+                        disabled={isRestricted([
+                            'apim:api_create',
+                            'apim:api_manage',
+                            'apim:mediation_policy_create',
+                            'apim:mediation_policy_manage',
+                            'apim:api_mediation_policy_manage',
+                        ])}
                         component={Link}
                         to={
-                            !isRestricted(['apim:shared_scope_manage']) &&
-                            CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE
+                            !isRestricted([
+                                'apim:api_create',
+                                'apim:api_manage',
+                                'apim:mediation_policy_create',
+                                'apim:mediation_policy_manage',
+                                'apim:api_mediation_policy_manage',
+                            ]) && CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE
                         }
                     >
                         <AddCircle className={classes.buttonIcon} />
@@ -371,7 +396,13 @@ const Listing = () => {
                         />
                     </Button>
                 </Box>
-                {isRestricted(['apim:shared_scope_manage']) && (
+                {isRestricted([
+                    'apim:api_create',
+                    'apim:api_manage',
+                    'apim:mediation_policy_create',
+                    'apim:mediation_policy_manage',
+                    'apim:api_mediation_policy_manage',
+                ]) && (
                     <Grid item>
                         <Typography variant='body2' color='primary'>
                             <FormattedMessage

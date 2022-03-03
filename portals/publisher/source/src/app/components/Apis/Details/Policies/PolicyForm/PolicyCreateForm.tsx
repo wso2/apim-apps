@@ -248,8 +248,13 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                     color='primary'
                     onClick={onPolicySave}
                     disabled={
-                        isRestricted(['apim:shared_scope_manage']) ||
-                        isFormDisabled
+                        isRestricted([
+                            'apim:api_create',
+                            'apim:api_manage',
+                            'apim:mediation_policy_create',
+                            'apim:mediation_policy_manage',
+                            'apim:api_mediation_policy_manage',
+                        ]) || isFormDisabled
                     }
                 >
                     {saving ? (
