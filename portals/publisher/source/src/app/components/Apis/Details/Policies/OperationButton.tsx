@@ -20,7 +20,7 @@ import { FC } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
-interface OPProps {
+interface OperationButtonProps {
     verb: string;
 }
 
@@ -39,21 +39,19 @@ const getStyles = (verb: string) => {
     return useStyles;
 }
 
-const OperationButton: FC<OPProps> = ({ verb }) => {
+const OperationButton: FC<OperationButtonProps> = ({ verb }) => {
 
     const classes = getStyles(verb);
     return (
-        <>
-            <Button
-                disableFocusRipple
-                variant='contained'
-                aria-label={'HTTP verb ' + verb}
-                size='small'
-                className={classes.customButton}
-            >
-                {verb}
-            </Button>
-        </>
+        <Button
+            disableFocusRipple
+            variant='contained'
+            aria-label={'HTTP verb ' + verb}
+            size='small'
+            className={classes.customButton}
+        >
+            {verb}
+        </Button>
     );
 };
 

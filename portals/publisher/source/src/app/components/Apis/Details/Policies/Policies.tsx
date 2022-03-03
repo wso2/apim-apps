@@ -55,7 +55,7 @@ const useStyles = makeStyles(() => ({
     paper: {
         padding:'2px'
     },
-    ccTyPhography: {
+    ccTypography: {
         paddingLeft:'10px', 
         marginTop:'20px'
     }
@@ -148,11 +148,11 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             if (!isChoreoConnectEnabled) {
                 // Get synpase gateway supported policies
                 filteredList = unionByPolicyDisplayName.filter(
-                    (policy: Policy) => policy.supportedGateways.includes('Synapse'))
+                    (policy: Policy) => policy.supportedGateways.includes('Synapse'));
             } else {
                 // Get CC gateway supported policies
                 filteredList = unionByPolicyDisplayName.filter(
-                    (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'))
+                    (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'));
             }
 
             setPolicies(filteredList);
@@ -377,15 +377,14 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                     variant='h6'
                                     component='h2'
                                     gutterBottom
-                                    className={classes.ccTyPhography}
+                                    className={classes.ccTypography}
                                 >
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.ccMessage'
+                                        id='Apis.Details.Policies.Policies.cc.message'
                                         defaultMessage={
                                             'Choreo connect supports resource level ' +
                                             'request and response flow policies only.'
                                         }
-
                                     />
                                 </Typography>
                                 {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (

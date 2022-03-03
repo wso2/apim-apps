@@ -82,10 +82,6 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                 textOverflow: 'ellipsis',
                 display: 'inline-block',
             },
-            flowSpecificPolicyAttachGrid: {
-                marginTop: theme.spacing(1),
-                overflowX: 'scroll'
-            },
             operationSummaryGrid: {
                 display: 'flex',
                 alignItems: 'center',
@@ -102,10 +98,28 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
         apiOperation.usedProductIds,
     ) && apiOperation.usedProductIds.length;
 
-
     const handleExpansion = (panel: string) => (event: any, isExpanded: boolean) => {
         setExpandedResource(isExpanded ? panel : null);
     };
+
+    const renderUsedInApiProducts = () => {
+        return (isUsedInAPIProduct) ? (
+            <Grid item md={3}>
+                <Box display='flex' justifyContent='center'>
+                    <ReportProblemOutlinedIcon fontSize='small' />
+                    <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.OperationPolicy.operation.used.in.products'
+                            defaultMessage='This operation is used in {isUsedInAPIProduct} API product(s)'
+                            values={{ isUsedInAPIProduct }}
+                        />
+                    </Box>
+                </Box>
+            </Grid>
+        ) : (
+            <Grid item md={3} />
+        );
+    }
 
     return (
         <>
@@ -116,143 +130,96 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                 className={classes.paperStyles}
             >
                 {isChoreoConnectEnabled ?
-                    (
-                        <>
-                            <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                                <Grid item md={4} className={classes.operationSummaryGrid}>
-                                    <Badge
-                                        invisible={!operation['x-wso2-new']}
-                                        color='error'
-                                        variant='dot'
-                                        style={{ display: 'inline-block' }}
-                                    >
-                                        <Button
-                                            disableFocusRipple
-                                            variant='contained'
-                                            aria-label={'HTTP verb ' + verb}
-                                            size='small'
-                                            className={classes.customButton}
-                                        >
-                                            {verb}
-                                        </Button>
-                                    </Badge>
+                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                        <Grid item md={4} className={classes.operationSummaryGrid}>
+                            <Badge
+                                invisible={!operation['x-wso2-new']}
+                                color='error'
+                                variant='dot'
+                                style={{ display: 'inline-block' }}
+                            >
+                                <Button
+                                    disableFocusRipple
+                                    variant='contained'
+                                    aria-label={'HTTP verb ' + verb}
+                                    size='small'
+                                    className={classes.customButton}
+                                >
+                                    {verb}
+                                </Button>
+                            </Badge>
+                            <Typography
+                                display='inline'
+                                variant='h6'
+                                gutterBottom
+                                className={classes.targetText}
+                                title={target}
+                            >
+                                {target}
+                                {(operation.summary && operation.summary !== '') && (
                                     <Typography
                                         display='inline'
-                                        variant='h6'
+                                        style={{ margin: '0px 30px' }}
+                                        variant='caption'
                                         gutterBottom
-                                        className={classes.targetText}
-                                        title={target}
                                     >
-                                        {target}
-                                        {(operation.summary && operation.summary !== '') && (
-                                            <Typography
-                                                display='inline'
-                                                style={{ margin: '0px 30px' }}
-                                                variant='caption'
-                                                gutterBottom
-                                            >
-                                                {operation.summary}
-                                            </Typography>
-                                        )}
+                                        {operation.summary}
                                     </Typography>
-                                </Grid>
-                                {(isUsedInAPIProduct) ? (
-                                    <Grid item md={3}>
-                                        <Box display='flex' justifyContent='center'>
-                                            <ReportProblemOutlinedIcon fontSize='small' />
-                                            <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.Operation.this.operation.'
-                                                        + 'used.in.products'}
-                                                    defaultMessage={
-                                                        'This operation is used in {isUsedInAPIProduct} API ' +
-                                                        'product(s)'
-                                                    }
-                                                    values={{ isUsedInAPIProduct }}
-                                                />
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-                                ) : (
-                                    <Grid item md={3} />
                                 )}
-                            </Grid>
-                        </>
-                    ) :
-                    (
-                        <>
-                            <ExpansionPanelSummary
-                                className={highlight ? classes.highlightSelected : ''}
-                                disableRipple
-                                disableTouchRipple
-                                expandIcon={<ExpandMoreIcon />}
-                                id={verb + target}
-                                classes={{ content: classes.contentNoMargin }}
-                            >
-                                <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                                    <Grid item md={4} className={classes.operationSummaryGrid}>
-                                        <Badge
-                                            invisible={!operation['x-wso2-new']}
-                                            color='error'
-                                            variant='dot'
-                                            style={{ display: 'inline-block' }}
-                                        >
-                                            <Button
-                                                disableFocusRipple
-                                                variant='contained'
-                                                aria-label={'HTTP verb ' + verb}
-                                                size='small'
-                                                className={classes.customButton}
-                                            >
-                                                {verb}
-                                            </Button>
-                                        </Badge>
+                            </Typography>
+                        </Grid>
+                        {renderUsedInApiProducts}
+                    </Grid>
+                    :
+                    <ExpansionPanelSummary
+                        className={highlight ? classes.highlightSelected : ''}
+                        disableRipple
+                        disableTouchRipple
+                        expandIcon={<ExpandMoreIcon />}
+                        id={verb + target}
+                        classes={{ content: classes.contentNoMargin }}
+                    >
+                        <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                            <Grid item md={4} className={classes.operationSummaryGrid}>
+                                <Badge
+                                    invisible={!operation['x-wso2-new']}
+                                    color='error'
+                                    variant='dot'
+                                    style={{ display: 'inline-block' }}
+                                >
+                                    <Button
+                                        disableFocusRipple
+                                        variant='contained'
+                                        aria-label={'HTTP verb ' + verb}
+                                        size='small'
+                                        className={classes.customButton}
+                                    >
+                                        {verb}
+                                    </Button>
+                                </Badge>
+                                <Typography
+                                    display='inline'
+                                    variant='h6'
+                                    gutterBottom
+                                    className={classes.targetText}
+                                    title={target}
+                                >
+                                    {target}
+                                    {(operation.summary && operation.summary !== '') && (
                                         <Typography
                                             display='inline'
-                                            variant='h6'
+                                            style={{ margin: '0px 30px' }}
+                                            variant='caption'
                                             gutterBottom
-                                            className={classes.targetText}
-                                            title={target}
                                         >
-                                            {target}
-                                            {(operation.summary && operation.summary !== '') && (
-                                                <Typography
-                                                    display='inline'
-                                                    style={{ margin: '0px 30px' }}
-                                                    variant='caption'
-                                                    gutterBottom
-                                                >
-                                                    {operation.summary}
-                                                </Typography>
-                                            )}
+                                            {operation.summary}
                                         </Typography>
-                                    </Grid>
-                                    {(isUsedInAPIProduct) ? (
-                                        <Grid item md={3}>
-                                            <Box display='flex' justifyContent='center'>
-                                                <ReportProblemOutlinedIcon fontSize='small' />
-                                                <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
-                                                    <FormattedMessage
-                                                        id={
-                                                            'Apis.Details.Resources.components.Operation.this.' +
-                                                            'operation.used.in.products'
-                                                        }
-                                                        defaultMessage={
-                                                            'This operation is used in {isUsedInAPIProduct} API ' +
-                                                            'product(s)'
-                                                        }
-                                                        values={{ isUsedInAPIProduct }}
-                                                    />
-                                                </Box>
-                                            </Box>
-                                        </Grid>
-                                    ) : (
-                                        <Grid item md={3} />
                                     )}
-                                </Grid>
-                            </ExpansionPanelSummary>
-                        </>
-                    )
+                                </Typography>
+                            </Grid>
+                            {renderUsedInApiProducts}
+                        </Grid>
+                    </ExpansionPanelSummary>
                 }
                 <Divider light className={classes.customDivider} />
                 {!isChoreoConnectEnabled && (

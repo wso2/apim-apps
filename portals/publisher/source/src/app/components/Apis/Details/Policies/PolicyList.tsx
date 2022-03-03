@@ -26,13 +26,13 @@ import CardContent from '@material-ui/core/CardContent';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { AddCircle } from '@material-ui/icons';
-import { Button, makeStyles } from '@material-ui/core';
+import { Button, makeStyles, Theme } from '@material-ui/core';
 import CONSTS from 'AppData/Constants';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     flowTabs: {
         '& button': {
             minWidth: 50,

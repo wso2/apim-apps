@@ -26,7 +26,7 @@ import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import ApiContext from '../components/ApiContext';
 
 interface SaveOperationPoliciesProps {
-    saveApi: (isGatewayChanged:boolean) => void;
+    saveApi: (isGatewayChanged: boolean) => void;
 }
 
 /**

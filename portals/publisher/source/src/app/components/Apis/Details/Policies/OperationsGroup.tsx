@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-interface OPGroupProps {
+interface OperationGroupProps {
     openAPI: any;
     children: any;
     tag: string;
@@ -47,7 +47,9 @@ interface OPGroupProps {
     verbObject: any;
 }
 
-const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag, isChoreoConnectEnabled, verbObject }) => {
+const OperationGroup: FC<OperationGroupProps> = ({
+    openAPI, children, tag, isChoreoConnectEnabled, verbObject
+}) => {
     const classes = useStyles();
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo: any) => tagInfo.name === tag);
     let borderColor = "";
