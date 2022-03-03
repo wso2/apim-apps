@@ -55,7 +55,6 @@ export type PolicySpec = {
     applicableFlows: string[];
     supportedGateways: string[];
     supportedApiTypes: string[];
-    multipleAllowed: boolean;
     policyAttributes: PolicySpecAttribute[];
     isAPISpecific?: boolean;
     md5?: string;
@@ -70,7 +69,6 @@ export type CreatePolicySpec = {
     applicableFlows: string[];
     supportedGateways: string[];
     supportedApiTypes: string[];
-    multipleAllowed: boolean;
     policyAttributes: PolicySpecAttribute[];
 };
 

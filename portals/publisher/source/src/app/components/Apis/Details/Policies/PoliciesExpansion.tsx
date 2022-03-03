@@ -24,6 +24,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
 import { FormattedMessage } from 'react-intl';
+import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import API from 'AppData/api';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types'
 import FlowArrow from './components/FlowArrow';
@@ -104,7 +106,9 @@ const getStyles = (verb: string) => {
     return useStyles;
 }
 
-const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoConnectEnabled, policyList }) => {
+const PoliciesExpansion: FC<OPProps> = ({
+    target, verb, allPolicies, isChoreoConnectEnabled, policyList
+}) => {
 
     // Policies attached for each request, response and fault flow
     const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);
@@ -118,6 +122,7 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
 
     const classes = getStyles(verb);
     const { apiOperations } = useContext<any>(ApiOperationContext);
+    const { api } = useContext<any>(APIContext);
 
     useEffect(() => {
         const requestList = [];
@@ -140,58 +145,85 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
     }, [policyList])
 
     useEffect(() => {
-
-        let operationInAction = null;
-        if (!isChoreoConnectEnabled) {
-            operationInAction = apiOperations.find((op: any) =>
-                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-        } else {
-            operationInAction = apiOperations.find((op: any) =>
-                op.target === target);
-        }
-
-        // Populate request flow attached policy list
-        const requestFlowList: AttachedPolicy[] = [];
-        const requestFlow = operationInAction.operationPolicies.request;
-        requestFlow.map((requestFlowAttachedPolicy: any) => {
-            const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
-                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
-            if (policyObj) {
-                requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+        (async () => {
+            let operationInAction = null;
+            if (!isChoreoConnectEnabled) {
+                operationInAction = apiOperations.find((op: any) =>
+                    op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+            } else {
+                operationInAction = apiOperations.find((op: any) =>
+                    op.target === target);
             }
-        })
-        setRequestFlowPolicyList(requestFlowList);
+    
 
-        // Populate response flow attached policy list
-        const responseFlowList: AttachedPolicy[] = [];
-        const responseFlow = operationInAction.operationPolicies.response;
-        responseFlow.map((responseFlowAttachedPolicy: any) => {
-            const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
-            const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
-                || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
-            if (policyObj) {
-                responseFlowList.push({ ...policyObj, uniqueKey: uuid });
-            }
-        })
-        setResponseFlowPolicyList(responseFlowList);
-
-        if (!isChoreoConnectEnabled) {
-            // Populate fault flow attached policy list
-            const faultFlowList: AttachedPolicy[] = [];
-            const faultFlow = operationInAction.operationPolicies.fault;
-            faultFlow.map((faultFlowAttachedPolicy: any) => {
-                const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
-                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId)
-                    || allPolicies?.find((policy1: PolicySpec) => policy1.name === policyName);
+            // Populate request flow attached policy list
+            const requestFlowList:AttachedPolicy[] = [];
+            const requestFlow = operationInAction.operationPolicies.request;
+            for (const requestFlowAttachedPolicy of requestFlow) {
+                const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
+                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
                 if (policyObj) {
-                    faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                    requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+                } else {
+                    try {
+                        // eslint-disable-next-line no-await-in-loop
+                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
+                        if (policyResponse)
+                            requestFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
+                    } catch(error) {
+                        console.error(error);
+                    }
                 }
-            })
-            setFaultFlowPolicyList(faultFlowList);
-        }
+            }
+            setRequestFlowPolicyList(requestFlowList);
 
+            // Populate response flow attached policy list
+            const responseFlowList:AttachedPolicy[] = [];
+            const responseFlow = operationInAction.operationPolicies.response;
+            for (const responseFlowAttachedPolicy of responseFlow) {
+                const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
+                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
+                if (policyObj) {
+                    responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+                } else {
+                    try {
+                        // eslint-disable-next-line no-await-in-loop
+                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
+                        if (policyResponse)
+                            responseFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
+                    } catch(error) {
+                        console.error(error);
+                    }
+                }
+            }
+            setResponseFlowPolicyList(responseFlowList);
+            
+            if (!isChoreoConnectEnabled) {
+                // Populate fault flow attached policy list
+                const faultFlowList:AttachedPolicy[] = [];
+                const faultFlow = operationInAction.operationPolicies.fault;
+                for (const faultFlowAttachedPolicy of faultFlow) {
+                    const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
+                    const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
+                    if (policyObj) {
+                        faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                    } else {
+                        try {
+                            // eslint-disable-next-line no-await-in-loop
+                            const policyResponse = await API.getOperationPolicy(policyId, api.id);
+                            if (policyResponse)
+                                faultFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
+                        } catch(error) {
+                            console.error(error);
+                        }
+                    }
+                }
+                setFaultFlowPolicyList(faultFlowList);
+            }
+
+        })();
     }, [apiOperations])
+
 
     return (
         <ExpansionPanelDetails>
@@ -235,29 +267,27 @@ const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoCon
                             allPolicies={allPolicies}
                         />
                     </Box>
-                    {isChoreoConnectEnabled ? <></> :
-                        <>
-                            <Box className={classes.flowSpecificPolicyAttachGrid}>
-                                <Typography variant='subtitle2' align='left'>
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.Operation.fault.flow.title'
-                                        defaultMessage='Fault Flow'
-                                    />
-                                </Typography>
-                                <FlowArrow arrowDirection='right' />
-                                <PolicyDropzone
-                                    policyDisplayStartDirection='right'
-                                    currentPolicyList={faultFlowPolicyList}
-                                    setCurrentPolicyList={setFaultFlowPolicyList}
-                                    droppablePolicyList={faultFlowDroppablePolicyList}
-                                    currentFlow='fault'
-                                    target={target}
-                                    verb={verb}
-                                    allPolicies={allPolicies}
+                    {!isChoreoConnectEnabled && (
+                        <Box className={classes.flowSpecificPolicyAttachGrid}>
+                            <Typography variant='subtitle2' align='left'>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.Operation.fault.flow.title'
+                                    defaultMessage='Fault Flow'
                                 />
-                            </Box>
-                        </>
-                    }
+                            </Typography>
+                            <FlowArrow arrowDirection='right' />
+                            <PolicyDropzone
+                                policyDisplayStartDirection='right'
+                                currentPolicyList={faultFlowPolicyList}
+                                setCurrentPolicyList={setFaultFlowPolicyList}
+                                droppablePolicyList={faultFlowDroppablePolicyList}
+                                currentFlow='fault'
+                                target={target}
+                                verb={verb}
+                                allPolicies={allPolicies}
+                            />
+                        </Box>
+                    )}
                 </Grid>
             </Grid>
         </ExpansionPanelDetails>

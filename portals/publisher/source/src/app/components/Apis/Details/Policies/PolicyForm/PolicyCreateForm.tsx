@@ -210,7 +210,6 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 applicableFlows: state.applicableFlows,
                 supportedGateways: state.supportedGateways,
                 policyAttributes: state.policyAttributes,
-                multipleAllowed: true,
                 supportedApiTypes: ['HTTP'],
             };
             onSave(policySpec);

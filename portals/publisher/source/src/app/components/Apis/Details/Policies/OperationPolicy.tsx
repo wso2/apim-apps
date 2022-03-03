@@ -16,14 +16,13 @@
  * under the License.
  */
 
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,12 +30,8 @@ import Utils from 'AppData/Utils';
 import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
-import API from 'AppData/api';
-import PolicyDropzone from './PolicyDropzone';
 import PoliciesExpansion from './PoliciesExpansion';
-import type { AttachedPolicy, Policy, PolicySpec } from './Types'
-import ApiOperationContext from './ApiOperationContext';
-import FlowArrow from './components/FlowArrow';
+import type { Policy, PolicySpec } from './Types'
 
 interface OperationPolicyProps {
     target: string;
@@ -53,7 +48,8 @@ interface OperationPolicyProps {
 }
 
 const OperationPolicy: FC<OperationPolicyProps> = ({
-    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies, isChoreoConnectEnabled, 
+    operation, highlight, api, target, verb, expandedResource, setExpandedResource,
+    policyList, allPolicies, isChoreoConnectEnabled
 }) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -100,116 +96,15 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
     });
 
     const classes = useStyles();
-    const { apiOperations } = useContext<any>(ApiOperationContext);
 
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
         apiOperation.usedProductIds,
     ) && apiOperation.usedProductIds.length;
 
-    // Policies attached for each request, response and fault flow
-    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);
-    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<AttachedPolicy[]>([]);
-    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<AttachedPolicy[]>([]);
 
-    // Droppable policy identifier list for each request, response and fault flow
-    const [requestFlowDroppablePolicyList, setRequestFlowDroppablePolicyList] = useState<string[]>([]);
-    const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
-    const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
-
-    useEffect(() => {
-        const requestList = [];
-        const responseList = [];
-        const faultList = [];
-        for (const policy of policyList) {
-            if (policy.applicableFlows.includes('request')) {
-                requestList.push(`policyCard-${policy.id}`);
-            }
-            if (policy.applicableFlows.includes('response')) {
-                responseList.push(`policyCard-${policy.id}`);
-            }
-            if (policy.applicableFlows.includes('fault')) {
-                faultList.push(`policyCard-${policy.id}`);
-            }
-        }
-        setRequestFlowDroppablePolicyList(requestList);
-        setResponseFlowDroppablePolicyList(responseList);
-        setFaultFlowDroppablePolicyList(faultList);
-    }, [policyList])
-
-    useEffect(() => {
-        (async () => {
-            const operationInAction = apiOperations.find((op: any) =>
-                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-
-            // Populate request flow attached policy list
-            const requestFlowList:AttachedPolicy[] = [];
-            const requestFlow = operationInAction.operationPolicies.request;
-            for (const requestFlowAttachedPolicy of requestFlow) {
-                const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
-                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj) {
-                    requestFlowList.push({ ...policyObj, uniqueKey: uuid });
-                } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse)
-                            requestFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
-                    } catch(error) {
-                        console.error(error);
-                    }
-                }
-            }
-            setRequestFlowPolicyList(requestFlowList);
-
-            // Populate response flow attached policy list
-            const responseFlowList:AttachedPolicy[] = [];
-            const responseFlow = operationInAction.operationPolicies.response;
-            for (const responseFlowAttachedPolicy of responseFlow) {
-                const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
-                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj) {
-                    responseFlowList.push({ ...policyObj, uniqueKey: uuid });
-                } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse)
-                            responseFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
-                    } catch(error) {
-                        console.error(error);
-                    }
-                }
-            }
-            setResponseFlowPolicyList(responseFlowList);
-            
-            // Populate fault flow attached policy list
-            const faultFlowList:AttachedPolicy[] = [];
-            const faultFlow = operationInAction.operationPolicies.fault;
-            for (const faultFlowAttachedPolicy of faultFlow) {
-                const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
-                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj) {
-                    faultFlowList.push({ ...policyObj, uniqueKey: uuid });
-                } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse)
-                            faultFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
-                    } catch(error) {
-                        console.error(error);
-                    }
-                }
-            }
-            setFaultFlowPolicyList(faultFlowList);
-
-        })();
-    }, [apiOperations])
-
-    const handleExpansion = (panel: any) => (event: object, isExpanded: boolean) => {
-        setExpandedResource(isExpanded ? panel : false);
+    const handleExpansion = (panel: string) => (event: any, isExpanded: boolean) => {
+        setExpandedResource(isExpanded ? panel : null);
     };
 
     return (
@@ -269,8 +164,10 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.Operation.this.operation.'
                                                         + 'used.in.products'}
-                                                    defaultMessage={'This operation is used in {isUsedInAPIProduct} API '
-                                                        + 'product(s)'}
+                                                    defaultMessage={
+                                                        'This operation is used in {isUsedInAPIProduct} API ' +
+                                                        'product(s)'
+                                                    }
                                                     values={{ isUsedInAPIProduct }}
                                                 />
                                             </Box>
@@ -336,10 +233,14 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                                                 <ReportProblemOutlinedIcon fontSize='small' />
                                                 <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
                                                     <FormattedMessage
-                                                        id={'Apis.Details.Resources.components.Operation.this.operation.'
-                                                            + 'used.in.products'}
-                                                        defaultMessage={'This operation is used in {isUsedInAPIProduct} API '
-                                                            + 'product(s)'}
+                                                        id={
+                                                            'Apis.Details.Resources.components.Operation.this.' +
+                                                            'operation.used.in.products'
+                                                        }
+                                                        defaultMessage={
+                                                            'This operation is used in {isUsedInAPIProduct} API ' +
+                                                            'product(s)'
+                                                        }
                                                         values={{ isUsedInAPIProduct }}
                                                     />
                                                 </Box>
@@ -354,14 +255,15 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                     )
                 }
                 <Divider light className={classes.customDivider} />
-                {!isChoreoConnectEnabled ? (
+                {!isChoreoConnectEnabled && (
                     <PoliciesExpansion
                         target={target}
                         verb={verb}
                         allPolicies={allPolicies}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
                         policyList={policyList}
-                    />) : <></>}
+                    />
+                )}
             </ExpansionPanel>
         </>
     );

@@ -24,8 +24,8 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Box } from '@material-ui/core';
-import OperationButton from './OperationButton';
 import CONSTS from 'AppData/Constants';
+import OperationButton from './OperationButton';
 
 const useStyles = makeStyles((theme) => ({
     tagClass: {
@@ -67,12 +67,12 @@ const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag, isChoreoConn
                         {tag}
                     </Typography>
                     <Typography style={{ margin: '0px 10px' }} variant='caption'>
-                        {''}
+                        {' '}
                     </Typography>
                     {isChoreoConnectEnabled ?
-                        <Box display="flex" flexDirection="column wrap" gridRowGap={10} gridColumnGap={5}>
+                        <Box display='flex' flexDirection='column wrap' gridRowGap={10} gridColumnGap={5}>
 
-                            {Object.entries(verbObject).map(([verb, operation]) => {
+                            {Object.entries(verbObject).map(([verb]) => {
                                 return CONSTS.HTTP_METHODS.includes(verb) ? (
                                     <>
                                         <OperationButton

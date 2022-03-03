@@ -27,10 +27,10 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { AddCircle } from '@material-ui/icons';
 import { Button, makeStyles } from '@material-ui/core';
+import CONSTS from 'AppData/Constants';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
-import CONSTS from 'AppData/Constants';
 
 const useStyles = makeStyles((theme: any) => ({
     flowTabs: {
@@ -139,7 +139,15 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                         </Tabs>
                         <Box height='60vh' pt={1} overflow='scroll'>
                             <TabPanel
-                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('request') && policy.supportedGateways.includes(gatewayType))}
+                                policyList={policyList.filter(
+                                    (policy) =>
+                                        policy.applicableFlows.includes(
+                                            'request',
+                                        ) &&
+                                        policy.supportedGateways.includes(
+                                            gatewayType,
+                                        ),
+                                )}
                                 index={0}
                                 selectedTab={selectedTab}
                                 fetchPolicies={fetchPolicies}
