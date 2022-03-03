@@ -380,9 +380,9 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                     className={classes.ccTypography}
                                 >
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.Policies.cc.message'
+                                        id='Apis.Details.Policies.Policies.cc.info.title'
                                         defaultMessage={
-                                            'Choreo connect supports resource level ' +
+                                            'Choreo Connect supports resource level ' +
                                             'request and response flow policies only.'
                                         }
                                     />
