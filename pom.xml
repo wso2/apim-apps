@@ -39,21 +39,6 @@
                 <version>1.6.0</version>
                 <artifactId>exec-maven-plugin</artifactId>
                 <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>npm install (initialize)</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>ci</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
                 <configuration>
                     <environmentVariables>
                         <!-- The following parameters create an NPM sandbox for CI -->

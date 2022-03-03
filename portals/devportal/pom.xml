@@ -66,6 +66,19 @@
                 <version>1.5.0</version>
                 <executions>
                     <execution>
+                        <id>npm install (initialize devportal)</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>ci</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>npm run build (compile)</id>
                         <goals>
                             <goal>exec</goal>
