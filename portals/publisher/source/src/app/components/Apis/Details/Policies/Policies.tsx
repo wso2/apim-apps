@@ -17,7 +17,7 @@
  */
 
 import {
-    Grid, makeStyles, Typography, Button,
+    Grid, makeStyles, Typography,
 } from '@material-ui/core';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -45,9 +45,6 @@ import SaveOperationPolicies from './SaveOperationPolicies';
 import PoliciesExpansion from './PoliciesExpansion';
 
 const useStyles = makeStyles(() => ({
-    head: {
-        fontWeight: 200,
-    },
     gridItem: {
         display: 'flex',
         width: '100%',
@@ -58,9 +55,9 @@ const useStyles = makeStyles(() => ({
     paper: {
         padding:'2px'
     },
-    ccTyPhography: {
-      paddingLeft:'10px', 
-      marginTop:'20px'
+    ccTypography: {
+        paddingLeft:'10px', 
+        marginTop:'20px'
     }
 }));
 
@@ -81,10 +78,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
-
-    const setGatewayChange = (isGatewayChanged: boolean) => {
-        saveApi(isGatewayChanged);
-    }
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -147,13 +140,21 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
             // Get the union of policies depending on the policy display name
             const unionByPolicyDisplayName = [...mergedList
-                .reduce((map, obj) => map.set(obj.displayName, obj), new Map()).values()];
+                .reduce((map, obj) => map.set(obj.name, obj), new Map()).values()];
             unionByPolicyDisplayName.sort(
-                (a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName))
+                (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
-            // Get synpase/regular gateway supported policies
-            const filteredList = unionByPolicyDisplayName.filter(
-                (policy: Policy) => policy.supportedGateways.includes('Synapse'))
+            let filteredList = null;
+            if (!isChoreoConnectEnabled) {
+                // Get synpase gateway supported policies
+                filteredList = unionByPolicyDisplayName.filter(
+                    (policy: Policy) => policy.supportedGateways.includes('Synapse'));
+            } else {
+                // Get CC gateway supported policies
+                filteredList = unionByPolicyDisplayName.filter(
+                    (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'));
+            }
+
             setPolicies(filteredList);
 
         }).catch((error) => {
@@ -164,7 +165,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     useEffect(() => {
         fetchPolicies();
-    }, [])
+    }, [isChoreoConnectEnabled])
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
@@ -179,10 +180,10 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 setExpandedResource(verb + target)
             })
             .catch((error: any) => {
+                console.error(error);
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 }
-                console.error(error);
             });
     }, [api.id]);
 
@@ -286,8 +287,14 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
     ) => {
         const newApiOperations: any = cloneDeep(apiOperations);
-        const operationInAction = newApiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        let operationInAction = null;
+
+        if (!isChoreoConnectEnabled) {
+            operationInAction = newApiOperations.find((op: any) =>
+                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        } else {
+            operationInAction = newApiOperations.find((op: any) => op.target === target);
+        }
         const policyArray = operationInAction.operationPolicies[currentFlow];
         operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
         
@@ -297,6 +304,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     /**
      * To update the API object with the attached policies on Save
+     * @param {boolean} isGatewayChanged Boolean to check whether the gateway has changed
      */
     const saveApi = (isGatewayChanged: boolean) => {
         setUpdating(true);
@@ -310,7 +318,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 // Iterating through the policy list of request flow, response flow and fault flow
                 for (const flow in operationPolicies) {
                     if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
-                        let policyArray = operationPolicies[flow];
+                        const policyArray = operationPolicies[flow];
                         policyArray.forEach((policyItem: ApiPolicy) => {
                             if(isGatewayChanged) {
                                 operationPolicies[flow] = [];
@@ -349,28 +357,44 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
                         <FormattedMessage
-                            id='Apis.Details.Policies.title'
+                            id='Apis.Details.Policies.Policies.title'
                             defaultMessage='Policies'
                         />
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <GatewaySelector getGatewayType={getGatewayType} isChoreoConnectEnabled={isChoreoConnectEnabled}/>
+                    <GatewaySelector
+                        getGatewayType={getGatewayType}
+                        isChoreoConnectEnabled={isChoreoConnectEnabled}
+                    />
                 </Box>
                 {isChoreoConnectEnabled ?
                     <Box display='flex' flexDirection='row'>
-                        <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox} sx={{ border: 1 }}>
+                        <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox}>
                             <Paper className={classes.paper}>
-                                <Typography id='cc-specific-message' variant='h6' component='h2' gutterBottom className={classes.ccTyPhography}>
+                                <Typography
+                                    id='cc-specific-message'
+                                    variant='h6'
+                                    component='h2'
+                                    gutterBottom
+                                    className={classes.ccTypography}
+                                >
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.ccMessage'
-                                        defaultMessage='Choreo connect supports resource level request and response flow policies only.'
-
+                                        id='Apis.Details.Policies.Policies.cc.info.title'
+                                        defaultMessage={
+                                            'Choreo Connect supports resource level ' +
+                                            'request and response flow policies only.'
+                                        }
                                     />
                                 </Typography>
                                 {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
                                     <Grid key={target} item xs={12}>
-                                        <OperationsGroup openAPI={openAPISpec} tag={target} isChoreoConnectEnabled={isChoreoConnectEnabled} verbObject={verbObject}>
+                                        <OperationsGroup
+                                            openAPI={openAPISpec}
+                                            tag={target}
+                                            isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                            verbObject={verbObject}
+                                        >
                                             <Grid
                                                 container
                                                 direction='column'
@@ -380,11 +404,11 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                             >
                                                 <PoliciesExpansion
                                                     target={target}
-                                                    verb={"get"}
+                                                    verb='get'
                                                     allPolicies={allPolicies}
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                                                     policyList={policies}
-                                                ></PoliciesExpansion>
+                                                />
                                             </Grid>
                                         </OperationsGroup>
                                     </Grid>
@@ -407,7 +431,12 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                 {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
 
                                     <Grid key={target} item xs={12}>
-                                        <OperationsGroup openAPI={openAPISpec} tag={target} isChoreoConnectEnabled={isChoreoConnectEnabled} verbObject={null}>
+                                        <OperationsGroup
+                                            openAPI={openAPISpec}
+                                            tag={target}
+                                            isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                            verbObject={null}
+                                        >
                                             <Grid
                                                 container
                                                 direction='column'
@@ -417,7 +446,10 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                             >
                                                 {Object.entries(verbObject).map(([verb, operation]) => {
                                                     return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                                        <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
+                                                        <Grid
+                                                            key={`${target}/${verb}`}
+                                                            item className={classes.gridItem}
+                                                        >
                                                             <OperationPolicy
                                                                 target={target}
                                                                 verb={verb}
@@ -425,7 +457,8 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                                                 operation={operation}
                                                                 api={localAPI}
                                                                 disableUpdate={
-                                                                    disableUpdate || isRestricted(['apim:api_create'], api)
+                                                                    disableUpdate ||
+                                                                    isRestricted(['apim:api_create'], api)
                                                                 }
                                                                 expandedResource={expandedResource}
                                                                 setExpandedResource={setExpandedResource}

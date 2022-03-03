@@ -26,17 +26,17 @@ import CardContent from '@material-ui/core/CardContent';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { AddCircle } from '@material-ui/icons';
-import { Button, makeStyles } from '@material-ui/core';
+import { Button, makeStyles, Theme } from '@material-ui/core';
+import CONSTS from 'AppData/Constants';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
-import CONSTS from 'AppData/Constants';
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     flowTabs: {
         '& button': {
             minWidth: 50,
-        }
+        },
     },
     flowTab: {
         fontSize: 'smaller',
@@ -47,14 +47,9 @@ const useStyles = makeStyles((theme: any) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-        backdropFilter: 'blur(1px)',
-    },
     paperPosition: {
         // position: 'fixed',
-    }
+    },
 }));
 
 interface PolicyListPorps {
@@ -76,11 +71,11 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
 
     const handleAddPolicy = () => {
         setDialogOpen(true);
-    }
+    };
 
     const handleAddPolicyClose = () => {
         setDialogOpen(false);
-    }
+    };
 
     if (isChoreoConnectEnabled) {
         gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
@@ -107,7 +102,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
-                                id='Apis.Details.Policies.APIPolicyList.new.policy'
+                                id='Apis.Details.Policies.PolicyList.add.new.policy'
                                 defaultMessage='Add New Policy'
                             />
                         </Button>
@@ -127,13 +122,11 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 id='request-tab'
                                 aria-controls='request-tabpanel'
                             />
-                            {!isChoreoConnectEnabled && (
-                                <Tab
-                                    label={<span className={classes.flowTab}>Response</span>}
-                                    id='response-tab'
-                                    aria-controls='response-tabpanel'
-                                />)
-                            }
+                            <Tab
+                                label={<span className={classes.flowTab}>Response</span>}
+                                id='response-tab'
+                                aria-controls='response-tabpanel'
+                            />
                             {!isChoreoConnectEnabled && (
                                 <Tab
                                     label={<span className={classes.flowTab}>Fault</span>}
@@ -144,25 +137,43 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                         </Tabs>
                         <Box height='60vh' pt={1} overflow='scroll'>
                             <TabPanel
-                                policyList={policyList.filter((policy) => {
-                                    return (policy.applicableFlows.includes('request') && policy.supportedGateways.includes(gatewayType))
-                                })}
+                                policyList={policyList.filter(
+                                    (policy) =>
+                                        policy.applicableFlows.includes(
+                                            'request',
+                                        ) &&
+                                        policy.supportedGateways.includes(
+                                            gatewayType,
+                                        ),
+                                )}
                                 index={0}
                                 selectedTab={selectedTab}
                                 fetchPolicies={fetchPolicies}
                             />
                             <TabPanel
-                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('response'))}
+                                policyList={policyList.filter(
+                                    (policy) =>
+                                        policy.applicableFlows.includes(
+                                            'response',
+                                        ) &&
+                                        policy.supportedGateways.includes(
+                                            gatewayType,
+                                        ),
+                                )}
                                 index={1}
                                 selectedTab={selectedTab}
                                 fetchPolicies={fetchPolicies}
                             />
-                            <TabPanel
-                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('fault'))}
-                                index={2}
-                                selectedTab={selectedTab}
-                                fetchPolicies={fetchPolicies}
-                            />
+                            {!isChoreoConnectEnabled && (
+                                <TabPanel
+                                    policyList={policyList.filter((policy) =>
+                                        policy.applicableFlows.includes('fault'),
+                                    )}
+                                    index={2}
+                                    selectedTab={selectedTab}
+                                    fetchPolicies={fetchPolicies}
+                                />
+                            )}
                         </Box>
                     </Box>
                 </CardContent>
@@ -174,6 +185,6 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
             />
         </Paper>
     );
-}
+};
 
 export default PolicyList;

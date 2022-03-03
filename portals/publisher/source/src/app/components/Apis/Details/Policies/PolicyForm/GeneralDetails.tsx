@@ -25,7 +25,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage,  } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import FormControl from '@material-ui/core/FormControl';
 import { ACTIONS } from './PolicyCreateForm';
 
@@ -54,7 +54,11 @@ interface GeneralDetailsProps {
  * @returns {TSX} General details of the policy.
  */
 const GeneralDetails: FC<GeneralDetailsProps> = ({
-    displayName, description, applicableFlows, dispatch, isViewMode
+    displayName,
+    description,
+    applicableFlows,
+    dispatch,
+    isViewMode,
 }) => {
     const classes = useStyles();
 
@@ -74,16 +78,16 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
             dispatch({
                 type: ACTIONS.UPDATE_POLICY_METADATA,
                 field: event.target.name,
-                value: event.target.value
+                value: event.target.value,
             });
         }
-    }
+    };
 
     /**
      * Function to handle applicable flows related checkbox changes
      * @param {React.ChangeEvent<HTMLInputElement>} event event
      */
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>)  => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (dispatch) {
             dispatch({
                 type: ACTIONS.UPDATE_APPLICALBLE_FLOWS,
@@ -91,20 +95,20 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                 checked: event.target.checked,
             });
         }
-    }
+    };
 
     return (
         <Box display='flex' flexDirection='row' mt={1}>
             <Box width='40%'>
                 <Typography color='inherit' variant='subtitle2' component='div'>
                     <FormattedMessage
-                        id='Policies.PolicyCreateForm.add.policy.general.details.title'
+                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.title'
                         defaultMessage='General Details'
                     />
                 </Typography>
                 <Typography color='inherit' variant='caption' component='p'>
                     <FormattedMessage
-                        id='Policies.PolicyCreateForm.add.policy.general.details.description'
+                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.description'
                         defaultMessage='Provide the name, description and applicable flows of the policy.'
                     />
                 </Typography>
@@ -116,21 +120,21 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         id='name'
                         name='displayName'
                         required
-                        label={(
+                        label={
                             <>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.field.name'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.label'
                                     defaultMessage='Name'
                                 />
                             </>
-                        )}
+                        }
                         error={nameError}
                         helperText={
                             nameError ? (
                                 'Name is Empty'
                             ) : (
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.short.description.name'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.helperText'
                                     defaultMessage='Enter Policy Name ( E.g.: Add Header )'
                                 />
                             )
@@ -141,23 +145,23 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         onChange={handleInputChange}
                         inputProps={{
                             readOnly: isViewMode,
-                            style: isViewMode ? {cursor: 'auto'} : {},
+                            style: isViewMode ? { cursor: 'auto' } : {},
                         }}
                     />
                     <TextField
                         id='name'
                         name='description'
-                        label={(
+                        label={
                             <>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.field.description'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.label'
                                     defaultMessage='Description'
                                 />
                             </>
-                        )}
+                        }
                         helperText={
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyCreateForm.short.description.description'
+                                id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.helperText'
                                 defaultMessage='Short description about the policy'
                             />
                         }
@@ -168,18 +172,27 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         onChange={handleInputChange}
                         inputProps={{
                             readOnly: isViewMode,
-                            style: isViewMode ? {cursor: 'auto'} : {},
+                            style: isViewMode ? { cursor: 'auto' } : {},
                         }}
                     />
                     <Box display='flex' flexDirection='row' alignItems='center'>
-                        <Typography color='inherit' variant='body1' component='div'>
+                        <Typography
+                            color='inherit'
+                            variant='body1'
+                            component='div'
+                        >
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyCreateForm.field.applicable.flows'
+                                id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.applicable.flows.label'
                                 defaultMessage='Applicable Flows'
                             />
                             <sup className={classes.mandatoryStar}>*</sup>
                         </Typography>
-                        <Box flex='1' display='flex' flexDirection='row-reverse' justifyContent='space-around'>
+                        <Box
+                            flex='1'
+                            display='flex'
+                            flexDirection='row-reverse'
+                            justifyContent='space-around'
+                        >
                             <FormControl
                                 required
                                 component='fieldset'
@@ -193,7 +206,9 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             <Checkbox
                                                 name='request'
                                                 color='primary'
-                                                checked={applicableFlows.includes('request')}
+                                                checked={applicableFlows.includes(
+                                                    'request',
+                                                )}
                                                 onChange={handleChange}
                                             />
                                         }
@@ -204,7 +219,9 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             <Checkbox
                                                 name='response'
                                                 color='primary'
-                                                checked={applicableFlows.includes('response')}
+                                                checked={applicableFlows.includes(
+                                                    'response',
+                                                )}
                                                 onChange={handleChange}
                                             />
                                         }
@@ -215,7 +232,9 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             <Checkbox
                                                 name='fault'
                                                 color='primary'
-                                                checked={applicableFlows.includes('fault')}
+                                                checked={applicableFlows.includes(
+                                                    'fault',
+                                                )}
                                                 onChange={handleChange}
                                             />
                                         }
@@ -223,7 +242,9 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                     />
                                 </FormGroup>
                                 <FormHelperText>
-                                    {applicableFlowsError ? 'Please select one or more flows' : ''}
+                                    {applicableFlowsError
+                                        ? 'Please select one or more flows'
+                                        : ''}
                                 </FormHelperText>
                             </FormControl>
                         </Box>
@@ -231,7 +252,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                 </Box>
             </Box>
         </Box>
-    )
-}
+    );
+};
 
-export default GeneralDetails;
+export default React.memo(GeneralDetails);

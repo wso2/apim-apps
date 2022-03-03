@@ -55,7 +55,8 @@ const CONSTS = {
         choreoConnect: 'ChoreoConnect',
     },
     PATH_TEMPLATES: {
-        COMMON_POLICY: '/policies',
+        COMMON_POLICIES: '/policies',
+        COMMON_POLICY_CREATE: '/policies/create',
     }
 };
 

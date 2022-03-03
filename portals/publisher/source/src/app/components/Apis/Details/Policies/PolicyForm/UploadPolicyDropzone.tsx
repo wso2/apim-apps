@@ -83,7 +83,8 @@ interface UploadPolicyDropzoneProps {
  * @returns {TSX} Policy file upload managing UI.
  */
 const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
-    policyDefinitionFile, setPolicyDefinitionFile
+    policyDefinitionFile,
+    setPolicyDefinitionFile,
 }) => {
     const classes = useStyles();
 
@@ -107,18 +108,19 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                     return (
                         // eslint-disable-next-line react/jsx-props-no-spreading
                         <div {...getRootProps({})}>
-                            <div className={classNames(
-                                classes.dropZoneWrapper,
-                                isDragAccept ? classes.acceptDrop : null,
-                                isDragReject ? classes.rejectDrop : null,
-                            )}
+                            <div
+                                className={classNames(
+                                    classes.dropZoneWrapper,
+                                    isDragAccept ? classes.acceptDrop : null,
+                                    isDragReject ? classes.rejectDrop : null,
+                                )}
                             >
                                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                                 <input {...getInputProps()} />
                                 <Icon>cloud_upload</Icon>
                                 <Typography>
                                     <FormattedMessage
-                                        id='Policies.PolicyCreateForm.UploadPolicyDropzone.upload.policy.file'
+                                        id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.dropzone.description'
                                         defaultMessage='Click or drag the policy file to upload'
                                     />
                                 </Typography>
@@ -134,9 +136,13 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
         <>
             <Box display='flex' flexDirection='row' alignItems='center'>
                 <Box mt={2}>
-                    <Typography color='inherit' variant='subtitle2' component='div'>
+                    <Typography
+                        color='inherit'
+                        variant='subtitle2'
+                        component='div'
+                    >
                         <FormattedMessage
-                            id='Policies.PolicyCreateForm.UploadPolicyDropzone.title'
+                            id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title'
                             defaultMessage='Upload Policy File'
                         />
                         <sup className={classes.mandatoryStar}>*</sup>
@@ -152,14 +158,14 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                     </Typography>
                     <Typography color='inherit' variant='caption' component='p'>
                         <FormattedMessage
-                            id='Policies.PolicyCreateForm.UploadPolicyDropzone.description'
+                            id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.description'
                             defaultMessage='Policy file contains the business logic of the policy'
                         />
                     </Typography>
                 </Box>
             </Box>
             <Box mt={2} mb={4}>
-                {(policyDefinitionFile.length === 0) ? (
+                {policyDefinitionFile.length === 0 ? (
                     renderPolicyFileDropzone()
                 ) : (
                     <List className={classes.uploadedFileDetails}>
@@ -183,10 +189,10 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                             </ListItemSecondaryAction>
                         </ListItem>
                     </List>
-                )}       
+                )}
             </Box>
         </>
     );
-}
+};
 
 export default UploadPolicyDropzone;

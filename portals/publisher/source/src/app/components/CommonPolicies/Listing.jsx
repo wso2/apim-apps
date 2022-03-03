@@ -18,7 +18,13 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Button, Grid, IconButton, Tooltip, Typography, useTheme, makeStyles
+    Button,
+    Grid,
+    IconButton,
+    Tooltip,
+    Typography,
+    useTheme,
+    makeStyles,
 } from '@material-ui/core';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
@@ -37,6 +43,7 @@ import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import TrendingDown from '@material-ui/icons/TrendingDown';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
+import CONST from 'AppData/Constants';
 import Delete from './DeletePolicy';
 
 const useStyles = makeStyles((theme) => ({
@@ -81,7 +88,6 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * Renders the common policy management UI.
- * @param {JSON} props Input props from parent components.
  * @returns {JSX} Policy management page to render.
  */
 const Listing = () => {
@@ -89,7 +95,6 @@ const Listing = () => {
     const theme = useTheme();
     const classes = useStyles();
     const { commonPolicyAddIcon } = theme.custom.landingPage.icons;
-    const createUrl = '/policies/create';
     const [policies, setPolicies] = useState(null);
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
@@ -108,15 +113,15 @@ const Listing = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }
+    };
 
     useEffect(() => {
         fetchCommonPolicies();
-    }, [])
+    }, []);
 
     const getViewUrl = (policyId) => {
         return `/policies/${policyId}/view`;
-    }
+    };
 
     policies?.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
@@ -138,11 +143,11 @@ const Listing = () => {
             },
         },
         intl.formatMessage({
-            id: 'CommonPolicies.Listing.table.header.name',
+            id: 'CommonPolicies.Listing.table.header.policy.name',
             defaultMessage: 'Policy Name',
         }),
         intl.formatMessage({
-            id: 'Policies.Listing.Listing.table.header.description',
+            id: 'CommonPolicies.Listing.table.header.description',
             defaultMessage: 'Description',
         }),
         {
@@ -150,44 +155,46 @@ const Listing = () => {
                 customBodyRender: (value, tableMeta) => {
                     if (tableMeta.rowData) {
                         const flows = value || [];
-                        return (
-                            flows.map((flow) => {
-                                let chipColor = theme.custom.policyFlowChipColor
-                                    ? theme.custom.policyFlowChipColor[flow.toLowerCase()]
-                                    : null;
-                                let chipTextColor = '#000000';
-                                if (!chipColor) {
-                                    // The policyFlowChipColor is not populated properly
-                                    chipColor = '#cccccc';
-                                } else {
-                                    chipTextColor = theme.palette.getContrastText(
-                                        theme.custom.policyFlowChipColor[flow.toLowerCase()],
-                                    );
-                                }
-                                let flowIcon = null;
-                                if (flow === 'request') {
-                                    flowIcon = <ArrowForward />;
-                                } else if (flow === 'response') {
-                                    flowIcon = <ArrowBack />;
-                                } else if (flow === 'fault') {
-                                    flowIcon = <TrendingDown />;
-                                }
-                                return (
-                                    <Chip
-                                        key={flow}
-                                        label={flow.toUpperCase()}
-                                        style={{
-                                            backgroundColor: chipColor,
-                                            color: chipTextColor,
-                                            height: 20,
-                                            fontSize: 9,
-                                            margin: theme.spacing(0.3),
-                                        }}
-                                        icon={flowIcon}
-                                    />
+                        return flows.map((flow) => {
+                            let chipColor = theme.custom.policyFlowChipColor
+                                ? theme.custom.policyFlowChipColor[
+                                    flow.toLowerCase()
+                                ]
+                                : null;
+                            let chipTextColor = '#000000';
+                            if (!chipColor) {
+                                // The policyFlowChipColor is not populated properly
+                                chipColor = '#cccccc';
+                            } else {
+                                chipTextColor = theme.palette.getContrastText(
+                                    theme.custom.policyFlowChipColor[
+                                        flow.toLowerCase()
+                                    ],
                                 );
-                            })
-                        );
+                            }
+                            let flowIcon = null;
+                            if (flow === 'request') {
+                                flowIcon = <ArrowForward />;
+                            } else if (flow === 'response') {
+                                flowIcon = <ArrowBack />;
+                            } else if (flow === 'fault') {
+                                flowIcon = <TrendingDown />;
+                            }
+                            return (
+                                <Chip
+                                    key={flow}
+                                    label={flow.toUpperCase()}
+                                    style={{
+                                        backgroundColor: chipColor,
+                                        color: chipTextColor,
+                                        height: 20,
+                                        fontSize: 9,
+                                        margin: theme.spacing(0.3),
+                                    }}
+                                    icon={flowIcon}
+                                />
+                            );
+                        });
                     }
                     return false;
                 },
@@ -195,7 +202,7 @@ const Listing = () => {
                 sort: false,
                 label: (
                     <FormattedMessage
-                        id='Policies.Listing.Listing.table.header.applicable.flows'
+                        id='CommonPolicies.Listing.table.header.applicable.flows'
                         defaultMessage='Applicable Flows'
                     />
                 ),
@@ -211,21 +218,36 @@ const Listing = () => {
                         return (
                             <Box display='flex' flexDirection='row'>
                                 <Button
-                                    disabled={isRestricted(['apim:shared_scope_manage'])}
+                                    disabled={isRestricted([
+                                        'apim:api_view',
+                                        'apim:api_manage',
+                                        'apim:mediation_policy_view',
+                                        'apim:mediation_policy_manage',
+                                        'apim:api_mediation_policy_manage',
+                                    ])}
                                     aria-label={'View ' + policyName}
                                     component={Link}
-                                    to={!isRestricted(['apim:shared_scope_manage'])
-                                    && {
-                                        pathname: getViewUrl(policyId),
-                                        state: {
-                                            policyName,
-                                            policyId,
-                                        },
-                                    }}
+                                    to={
+                                        !isRestricted([
+                                            'apim:api_view',
+                                            'apim:api_manage',
+                                            'apim:mediation_policy_view',
+                                            'apim:mediation_policy_manage',
+                                            'apim:api_mediation_policy_manage',
+                                        ]) && {
+                                            pathname: getViewUrl(policyId),
+                                            state: {
+                                                policyName,
+                                                policyId,
+                                            },
+                                        }
+                                    }
                                 >
-                                    <Icon className={classes.icon}>visibility</Icon>
+                                    <Icon className={classes.icon}>
+                                        visibility
+                                    </Icon>
                                     <FormattedMessage
-                                        id='Policies.Listing.Listing.policies.view'
+                                        id='CommonPolicies.Listing.table.header.actions.view'
                                         defaultMessage='View'
                                     />
                                 </Button>
@@ -243,7 +265,7 @@ const Listing = () => {
                 sort: false,
                 label: (
                     <FormattedMessage
-                        id='Policies.Listing.Listing.table.header.actions'
+                        id='CommonPolicies.Listing.table.header.actions.title'
                         defaultMessage='Actions'
                     />
                 ),
@@ -267,57 +289,77 @@ const Listing = () => {
     if (policies && policies.length === 0) {
         return (
             <Onboarding
-                title={(
+                title={
                     <FormattedMessage
-                        id='Policies.Listing.Listing.create.new'
+                        id='CommonPolicies.Listing.onboarding.create.new'
                         defaultMessage='Let’s get started !'
                     />
-                )}
-                subTitle={(
+                }
+                subTitle={
                     <FormattedMessage
-                        id='Policies.Listing.Listing.policies.tooltip'
+                        id='CommonPolicies.Listing.onboarding.policies.tooltip'
                         defaultMessage={
-                            'Policies provide the capability to alter the behavior '
-                            + 'of API resources'
+                            'Policies provide the capability to alter the behavior ' +
+                            'of API resources'
                         }
                     />
-                )}
+                }
             >
                 <OnboardingMenuCard
-                    to='/policies/create'
+                    to={CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE}
                     name='Policies'
                     iconName={commonPolicyAddIcon}
-                    disabled={isRestricted(['apim:shared_scope_manage'])}
+                    disabled={isRestricted([
+                        'apim:api_create',
+                        'apim:api_manage',
+                        'apim:mediation_policy_create',
+                        'apim:mediation_policy_manage',
+                        'apim:api_mediation_policy_manage',
+                    ])}
                 />
             </Onboarding>
         );
     }
 
-    if (notFound) {
-        return <ResourceNotFoundError />;
-    }
-    
-    if (loading || !policies) {
+    if (loading) {
         return <Progress per={90} message='Loading Policies ...' />;
+    }
+
+    if (notFound || !policies) {
+        return <ResourceNotFoundError />;
     }
 
     return (
         <div className={classes.heading}>
-            <Grid className={classes.titleWrapper} xs={12} sm={12} md={11} lg={11} item>
-                <Typography variant='h4' align='left' component='h1' className={classes.mainTitle}>
+            <Grid
+                className={classes.titleWrapper}
+                xs={12}
+                sm={12}
+                md={11}
+                lg={11}
+                item
+            >
+                <Typography
+                    variant='h4'
+                    align='left'
+                    component='h1'
+                    className={classes.mainTitle}
+                >
                     <FormattedMessage
-                        id='Policies.Listing.Listing.heading.CommonPolicies.heading'
+                        id='CommonPolicies.Listing.policies.title.name'
                         defaultMessage='Policies'
                     />
                 </Typography>
                 <Tooltip
-                    title={(
+                    title={
                         <FormattedMessage
-                            id='Apis.Details.Policies.CommonPolicies.heading.tooltip'
-                            defaultMessage={'You can utilize these policies at the operation level'
-                            + ' by navigating to the Policies tab under any desired API'}
+                            id='CommonPolicies.Listing.policies.title.tooltip'
+                            defaultMessage={
+                                'You can utilize these policies at the operation level' +
+                                ' by navigating to the Policies tab under any desired API'
+                            }
                         />
-                    )}
+                    }
                     placement='bottom-start'
                 >
                     <IconButton size='small' aria-label='Policy-helper-text'>
@@ -329,32 +371,59 @@ const Listing = () => {
                         color='primary'
                         variant='outlined'
                         size='small'
-                        disabled={isRestricted(['apim:shared_scope_manage'])}
+                        disabled={isRestricted([
+                            'apim:api_create',
+                            'apim:api_manage',
+                            'apim:mediation_policy_create',
+                            'apim:mediation_policy_manage',
+                            'apim:api_mediation_policy_manage',
+                        ])}
                         component={Link}
-                        to={!isRestricted(['apim:shared_scope_manage']) && createUrl}
+                        to={
+                            !isRestricted([
+                                'apim:api_create',
+                                'apim:api_manage',
+                                'apim:mediation_policy_create',
+                                'apim:mediation_policy_manage',
+                                'apim:api_mediation_policy_manage',
+                            ]) && CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE
+                        }
                     >
                         <AddCircle className={classes.buttonIcon} />
                         <FormattedMessage
-                            id='Policies.Listing.Listing.heading.CommonPolicy.new'
+                            id='CommonPolicies.Listing.policies.title.add.new.policy'
                             defaultMessage='Add New Policy'
                         />
                     </Button>
                 </Box>
-                {isRestricted(['apim:shared_scope_manage']) && (
+                {isRestricted([
+                    'apim:api_create',
+                    'apim:api_manage',
+                    'apim:mediation_policy_create',
+                    'apim:mediation_policy_manage',
+                    'apim:api_mediation_policy_manage',
+                ]) && (
                     <Grid item>
                         <Typography variant='body2' color='primary'>
                             <FormattedMessage
-                                id='Policies.Listing.Listing.update.not.allowed'
+                                id='CommonPolicies.Listing.policies.title.update.not.allowed'
                                 defaultMessage={
-                                    '*You are not authorized to manage policies'
-                                + ' due to insufficient permissions'
+                                    '*You are not authorized to manage policies ' +
+                                    'due to insufficient permissions'
                                 }
                             />
                         </Typography>
                     </Grid>
                 )}
             </Grid>
-            <Grid className={classes.table} xs={12} sm={12} md={11} lg={11} item>
+            <Grid
+                className={classes.table}
+                xs={12}
+                sm={12}
+                md={11}
+                lg={11}
+                item
+            >
                 <MUIDataTable
                     title={false}
                     data={policiesList}

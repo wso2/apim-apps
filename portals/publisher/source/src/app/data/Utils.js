@@ -28,7 +28,10 @@ class Utils {
      * @param {String} environmentName - label of the environment of the cookie
      * @returns {String|null} - If found a cookie with given name , return its value,Else null value is returned
      */
-    static getCookie(name, environmentName = Utils.getCurrentEnvironment().label) {
+    static getCookie(
+        name,
+        environmentName = Utils.getCurrentEnvironment().label,
+    ) {
         const nameWithEnv = `${name}_${environmentName}`;
 
         const pairs = document.cookie.split(';');
@@ -75,7 +78,11 @@ class Utils {
      * @param {String} path - Path of the cookie which need to be deleted
      * @param {String} environmentName - label of the environment of the cookie
      */
-    static deleteCookie(name, path, environmentName = Utils.getCurrentEnvironment().label) {
+    static deleteCookie(
+        name,
+        path,
+        environmentName = Utils.getCurrentEnvironment().label,
+    ) {
         document.cookie = `${name}_${environmentName}=; path=${path}; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
     }
 
@@ -118,7 +125,9 @@ class Utils {
      * @returns {boolean}
      */
     static isEmptyObject(object) {
-        return Object.keys(object).length === 0 && object.constructor === Object;
+        return (
+            Object.keys(object).length === 0 && object.constructor === Object
+        );
     }
 
     /**
@@ -130,7 +139,9 @@ class Utils {
             return Utils.environment;
         }
 
-        const environmentData = localStorage.getItem(Utils.CONST.LOCAL_STORAGE_ENVIRONMENT);
+        const environmentData = localStorage.getItem(
+            Utils.CONST.LOCAL_STORAGE_ENVIRONMENT,
+        );
         if (!environmentData) {
             return Utils.getDefaultEnvironment();
         }
@@ -144,7 +155,10 @@ class Utils {
      * @param {string} name - name of the environment
      * @returns {number}
      */
-    static getEnvironmentID(environments, name = Utils.getCurrentEnvironment().label) {
+    static getEnvironmentID(
+        environments,
+        name = Utils.getCurrentEnvironment().label,
+    ) {
         if (!name) {
             return 0;
         }
@@ -172,7 +186,10 @@ class Utils {
         }
         // Store environment.
         Utils.environment = defaultEnvironment;
-        localStorage.setItem(Utils.CONST.LOCAL_STORAGE_ENVIRONMENT, JSON.stringify(defaultEnvironment));
+        localStorage.setItem(
+            Utils.CONST.LOCAL_STORAGE_ENVIRONMENT,
+            JSON.stringify(defaultEnvironment),
+        );
     }
 
     /**
@@ -184,14 +201,18 @@ class Utils {
      */
     static getSwaggerURL() {
         if (Configurations.app.proxy_context_path) {
-            return 'https://'
-            + Utils.getCurrentEnvironment().host
-            + Configurations.app.proxy_context_path
-            + Utils.CONST.SWAGGER_YAML;
+            return (
+                'https://' +
+                Utils.getCurrentEnvironment().host +
+                Configurations.app.proxy_context_path +
+                Utils.CONST.SWAGGER_YAML
+            );
         } else {
-            return 'https://'
-            + Utils.getCurrentEnvironment().host
-            + Utils.CONST.SWAGGER_YAML;
+            return (
+                'https://' +
+                Utils.getCurrentEnvironment().host +
+                Utils.CONST.SWAGGER_YAML
+            );
         }
     }
 
@@ -202,9 +223,9 @@ class Utils {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
             // Disable the no bitwise rule as this is a `very rare` usage of bitwise logic operators
             // eslint-disable-next-line no-bitwise
-            const r = Math.random() * 16 | 0; const
-                // eslint-disable-next-line no-bitwise
-                v = c === 'x' ? r : (r & (0x3 | 0x8));
+            const r = (Math.random() * 16) | 0;
+            const // eslint-disable-next-line no-bitwise
+                v = c === 'x' ? r : r & (0x3 | 0x8);
             return v.toString(16);
         });
     }
@@ -217,7 +238,11 @@ class Utils {
      * @memberof Utils
      */
     static getServiceCatalogSwaggerURL() {
-        return 'https://' + Utils.getCurrentEnvironment().host + Utils.CONST.SERVICE_CATALOG_SWAGGER_YAML;
+        return (
+            'https://' +
+            Utils.getCurrentEnvironment().host +
+            Utils.CONST.SERVICE_CATALOG_SWAGGER_YAML
+        );
         // return Utils.CONST.SERVICE_CATALOG_SWAGGER_YAML;
     }
 
@@ -239,15 +264,21 @@ class Utils {
     static setMultiEnvironmentOverviewEnabledInfo(environments, configs) {
         const autoLoginInfo = {};
         if (!Array.isArray(environments) || !Array.isArray(configs)) {
-            console.error('Error while storing auto login configs in local-storage');
+            console.error(
+                'Error while storing auto login configs in local-storage',
+            );
         }
 
         for (let i = 0; i < environments.length; i++) {
-            autoLoginInfo[environments[i].label] = configs[i].is_multi_environment_overview_enabled.value;
+            autoLoginInfo[environments[i].label] =
+                configs[i].is_multi_environment_overview_enabled.value;
         }
 
         const data = JSON.stringify(autoLoginInfo);
-        localStorage.setItem(Utils.CONST.MULTI_ENVIRONMENT_OVERVIEW_ENABLED, data);
+        localStorage.setItem(
+            Utils.CONST.MULTI_ENVIRONMENT_OVERVIEW_ENABLED,
+            data,
+        );
     }
 
     /**
@@ -255,8 +286,14 @@ class Utils {
      * @param environmentName - Name of the environment
      * @return {Boolean|undefined} auto login enabled
      */
-    static isMultiEnvironmentOverviewEnabled(environmentName = Utils.getCurrentEnvironment().label) {
-        const autoLoginInfo = JSON.parse(localStorage.getItem(Utils.CONST.MULTI_ENVIRONMENT_OVERVIEW_ENABLED));
+    static isMultiEnvironmentOverviewEnabled(
+        environmentName = Utils.getCurrentEnvironment().label,
+    ) {
+        const autoLoginInfo = JSON.parse(
+            localStorage.getItem(
+                Utils.CONST.MULTI_ENVIRONMENT_OVERVIEW_ENABLED,
+            ),
+        );
         return autoLoginInfo[environmentName];
     }
 
@@ -292,7 +329,10 @@ class Utils {
         // Freeze properties before freezing self
         for (const name of propNames) {
             const value = object[name];
-            trickObject[name] = value && typeof value === 'object' ? Utils.deepFreeze(value) : value;
+            trickObject[name] =
+                value && typeof value === 'object'
+                    ? Utils.deepFreeze(value)
+                    : value;
         }
 
         return Object.freeze(object);
@@ -331,7 +371,9 @@ class Utils {
             return r + r + g + g + b + b;
         });
 
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(commonHex);
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
+            commonHex,
+        );
         return result
             ? {
                 r: parseInt(result[1], 16),
@@ -349,10 +391,15 @@ class Utils {
      * @returns {String} Hex code
      */
     static rgbToHex(r, g, b) {
-        return '#' + [r, g, b].map((x) => {
-            const hex = x.toString(16);
-            return hex.length === 1 ? '0' + hex : hex;
-        }).join('');
+        return (
+            '#' +
+            [r, g, b]
+                .map((x) => {
+                    const hex = x.toString(16);
+                    return hex.length === 1 ? '0' + hex : hex;
+                })
+                .join('')
+        );
     }
 
     /**
@@ -378,7 +425,7 @@ class Utils {
         /* eslint-enable no-bitwise */
 
         return color;
-    };
+    }
 
     /**
      * Return letter(s) for Letter Avatars given any string
@@ -393,18 +440,18 @@ class Utils {
 
     /**
      * Return R, G & B color components given the HEX hashed color code
-     * @param {String} hex Color value in hex 
+     * @param {String} hex Color value in hex
      * @returns {String} Comma separated R, G & B values
      * @memberof Utils
      */
     static hexToRGB(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        if(result){
-            const r= parseInt(result[1], 16);
-            const g= parseInt(result[2], 16);
-            const b= parseInt(result[3], 16);
+        if (result) {
+            const r = parseInt(result[1], 16);
+            const g = parseInt(result[2], 16);
+            const b = parseInt(result[3], 16);
             return r + ', ' + g + ', ' + b;
-        } 
+        }
         return null;
     }
 
@@ -419,10 +466,14 @@ class Utils {
         let fileName = '';
         const contentDisposition = response.headers['content-disposition'];
 
-        if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+        if (
+            contentDisposition &&
+            contentDisposition.indexOf('attachment') !== -1
+        ) {
             const fileNameReg = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
             const matches = fileNameReg.exec(contentDisposition);
-            if (matches != null && matches[1]) fileName = matches[1].replace(/['"]/g, '');
+            if (matches != null && matches[1])
+                fileName = matches[1].replace(/['"]/g, '');
         }
         const contentType = response.headers['content-type'];
         const blob = new Blob([response.data], {
@@ -538,14 +589,26 @@ class Utils {
         // environment -> {revision deployed to env, vhost deployed to env with revision}
         const allEnvDeployments = [];
         environments.forEach((env) => {
-            const revision = allEnvRevision && allEnvRevision.find(
-                (r) => r.deploymentInfo.some((e) => e.name === env.name),
-            );
-            const envDetails = revision && revision.deploymentInfo.find((e) => e.name === env.name);
-            const disPlayDevportal = envDetails && envDetails.displayOnDevportal;
-            let vhost = envDetails && env.vhosts && env.vhosts.find((e) => e.host === envDetails.vhost);
-            if (!vhost) { // if vhost is deleted after deploying the revision, there is no matching vhost
-                vhost = { ...CONSTS.DEFAULT_VHOST, host: envDetails && envDetails.vhost };
+            const revision =
+                allEnvRevision &&
+                allEnvRevision.find((r) =>
+                    r.deploymentInfo.some((e) => e.name === env.name),
+                );
+            const envDetails =
+                revision &&
+                revision.deploymentInfo.find((e) => e.name === env.name);
+            const disPlayDevportal =
+                envDetails && envDetails.displayOnDevportal;
+            let vhost =
+                envDetails &&
+                env.vhosts &&
+                env.vhosts.find((e) => e.host === envDetails.vhost);
+            if (!vhost) {
+                // if vhost is deleted after deploying the revision, there is no matching vhost
+                vhost = {
+                    ...CONSTS.DEFAULT_VHOST,
+                    host: envDetails && envDetails.vhost,
+                };
             }
             allEnvDeployments[env.name] = { revision, vhost, disPlayDevportal };
         });

@@ -52,13 +52,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 /**
  * Renders the view policy UI
- * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policy view UI.
  */
 const ViewPolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const { policyId } = useParams<{policyId?: string}>();
+    const { policyId } = useParams<{ policyId?: string }>();
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -66,7 +65,8 @@ const ViewPolicy: React.FC = () => {
     useEffect(() => {
         setLoading(true);
         if (policyId) {
-            const promisedCommonPolicyGet = API.getCommonOperationPolicy(policyId);
+            const promisedCommonPolicyGet =
+                API.getCommonOperationPolicy(policyId);
             promisedCommonPolicyGet
                 .then((response) => {
                     setPolicySpec(response.body);
@@ -78,31 +78,29 @@ const ViewPolicy: React.FC = () => {
                     const { status } = error;
                     if (status === 404) {
                         setNotFound(true);
-                    } else {
-                        setNotFound(false);
                     }
                 })
                 .finally(() => {
                     setLoading(false);
                 });
         }
-    }, [policyId])
+    }, [policyId]);
 
     const redirectToPolicies = () => {
-        history.push(CONST.PATH_TEMPLATES.COMMON_POLICY);
-    }
+        history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
+    };
 
-    const resourceNotFountMessage = {
+    const resourceNotFoundMessage = {
         title: 'Policy Not Found',
         body: 'The policy you are looking for is not available',
     };
 
-    if (notFound) {
-        return <ResourceNotFoundError message={resourceNotFountMessage} />
+    if (loading) {
+        return <Progress per={90} message='Loading Policy ...' />;
     }
 
-    if (loading || !policySpec) {
-        return <Progress per={90} message='Loading Policy ...'  />;
+    if (notFound || !policySpec) {
+        return <ResourceNotFoundError message={resourceNotFoundMessage} />;
     }
 
     return (
@@ -113,10 +111,13 @@ const ViewPolicy: React.FC = () => {
                 <Grid container spacing={5} className={classes.titleGrid}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
-                            <Link to={CONST.PATH_TEMPLATES.COMMON_POLICY} className={classes.titleLink}>
+                            <Link
+                                to={CONST.PATH_TEMPLATES.COMMON_POLICIES}
+                                className={classes.titleLink}
+                            >
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
-                                        id='CommonPolicies.CreatePolicy.listing.heading'
+                                        id='CommonPolicies.ViewPolicy.policies.title'
                                         defaultMessage='Policies'
                                     />
                                 </Typography>

@@ -17,21 +17,21 @@
  */
 
 export type PolicyAttribute = {
-    id: string,
-    name: string,
-    displayName: string,
-    description: string,
-    required: boolean,
-    type: string,
-    validationRegex: string,
-    defaultValue: any,
-    allowedValues: string[],
-}
+    id: string;
+    name: string;
+    displayName: string;
+    description: string;
+    required: boolean;
+    type: string;
+    validationRegex: string;
+    defaultValue: any;
+    allowedValues: string[];
+};
 
 export type NewPolicyState = {
-    displayName: string | null,
-    description: string,
-    applicableFlows: string[],
-    supportedGateways: string[],
-    policyAttributes: any,
-}
+    displayName: string | null;
+    description: string;
+    applicableFlows: string[];
+    supportedGateways: string[];
+    policyAttributes: any;
+};

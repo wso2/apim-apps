@@ -16,14 +16,13 @@
  * under the License.
  */
 
-import React, { FC, useContext, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,12 +30,8 @@ import Utils from 'AppData/Utils';
 import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
-import API from 'AppData/api';
-import PolicyDropzone from './PolicyDropzone';
 import PoliciesExpansion from './PoliciesExpansion';
-import type { AttachedPolicy, Policy, PolicySpec } from './Types'
-import ApiOperationContext from './ApiOperationContext';
-import FlowArrow from './components/FlowArrow';
+import type { Policy, PolicySpec } from './Types'
 
 interface OperationPolicyProps {
     target: string;
@@ -53,7 +48,8 @@ interface OperationPolicyProps {
 }
 
 const OperationPolicy: FC<OperationPolicyProps> = ({
-    operation, highlight, api, target, verb, expandedResource, setExpandedResource, policyList, allPolicies, isChoreoConnectEnabled, 
+    operation, highlight, api, target, verb, expandedResource, setExpandedResource,
+    policyList, allPolicies, isChoreoConnectEnabled
 }) => {
     const useStyles = makeStyles((theme: any) => {
         const backgroundColor = theme.custom.resourceChipColors[verb];
@@ -72,19 +68,11 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
             customDivider: {
                 backgroundColor,
             },
-            linearProgress: {
-                height: '2px',
-            },
             highlightSelected: {
                 backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
             },
             contentNoMargin: {
                 margin: theme.spacing(0),
-            },
-            overlayUnmarkDelete: {
-                position: 'absolute',
-                zIndex: theme.zIndex.operationDeleteUndo,
-                right: '10%',
             },
             targetText: {
                 maxWidth: 300,
@@ -93,22 +81,6 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis',
                 display: 'inline-block',
-            },
-            title: {
-                display: 'inline',
-                margin: `0 ${theme.spacing(5)}px`,
-            },
-            dialogPaper: {
-                width: '800px',
-                maxHeight: '800px',
-            },
-            dialogContent: {
-                overflow: 'auto',
-                height: '90%',
-            },
-            flowSpecificPolicyAttachGrid: {
-                marginTop: theme.spacing(1),
-                overflowX: 'scroll'
             },
             operationSummaryGrid: {
                 display: 'flex',
@@ -120,117 +92,34 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
     });
 
     const classes = useStyles();
-    const { apiOperations } = useContext<any>(ApiOperationContext);
 
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
         apiOperation.usedProductIds,
     ) && apiOperation.usedProductIds.length;
 
-    // Policies attached for each request, response and fault flow
-    const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);
-    const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<AttachedPolicy[]>([]);
-    const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<AttachedPolicy[]>([]);
-
-    // Droppable policy identifier list for each request, response and fault flow
-    const [requestFlowDroppablePolicyList, setRequestFlowDroppablePolicyList] = useState<string[]>([]);
-    const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
-    const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
-
-    useEffect(() => {
-        const requestList = [];
-        const responseList = [];
-        const faultList = [];
-        for (const policy of policyList) {
-            if (policy.applicableFlows.includes('request')) {
-                requestList.push(`policyCard-${policy.id}`);
-            }
-            if (policy.applicableFlows.includes('response')) {
-                responseList.push(`policyCard-${policy.id}`);
-            }
-            if (policy.applicableFlows.includes('fault')) {
-                faultList.push(`policyCard-${policy.id}`);
-            }
-        }
-        setRequestFlowDroppablePolicyList(requestList);
-        setResponseFlowDroppablePolicyList(responseList);
-        setFaultFlowDroppablePolicyList(faultList);
-    }, [policyList])
-
-    useEffect(() => {
-        (async () => {
-            const operationInAction = apiOperations.find((op: any) =>
-                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-
-            // Populate request flow attached policy list
-            const requestFlowList:AttachedPolicy[] = [];
-            const requestFlow = operationInAction.operationPolicies.request;
-            for (const requestFlowAttachedPolicy of requestFlow) {
-                const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
-                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj && policyObj.supportedGateways.includes('Synapse')) {
-                    requestFlowList.push({ ...policyObj, uniqueKey: uuid });
-                } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse.supportedGateways.includes('Synapse'))
-                            requestFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
-                    } catch(error) {
-                        console.error(error);
-                    }
-                }
-            }
-            setRequestFlowPolicyList(requestFlowList);
-
-            // Populate response flow attached policy list
-            const responseFlowList:AttachedPolicy[] = [];
-            const responseFlow = operationInAction.operationPolicies.response;
-            for (const responseFlowAttachedPolicy of responseFlow) {
-                const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
-                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj && policyObj.supportedGateways.includes('Synapse')) {
-                    responseFlowList.push({ ...policyObj, uniqueKey: uuid });
-                } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse.supportedGateways.includes('Synapse'))
-                            responseFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
-                    } catch(error) {
-                        console.error(error);
-                    }
-                }
-            }
-            setResponseFlowPolicyList(responseFlowList);
-            
-            // Populate fault flow attached policy list
-            const faultFlowList:AttachedPolicy[] = [];
-            const faultFlow = operationInAction.operationPolicies.fault;
-            for (const faultFlowAttachedPolicy of faultFlow) {
-                const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
-                const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj && policyObj.supportedGateways.includes('Synapse')) {
-                    faultFlowList.push({ ...policyObj, uniqueKey: uuid });
-                } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse.supportedGateways.includes('Synapse'))
-                            faultFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
-                    } catch(error) {
-                        console.error(error);
-                    }
-                }
-            }
-            setFaultFlowPolicyList(faultFlowList);
-
-        })();
-    }, [apiOperations])
-
-    const handleExpansion = (panel: any) => (event: object, isExpanded: boolean) => {
-        setExpandedResource(isExpanded ? panel : false);
+    const handleExpansion = (panel: string) => (event: any, isExpanded: boolean) => {
+        setExpandedResource(isExpanded ? panel : null);
     };
+
+    const renderUsedInApiProducts = () => {
+        return (isUsedInAPIProduct) ? (
+            <Grid item md={3}>
+                <Box display='flex' justifyContent='center'>
+                    <ReportProblemOutlinedIcon fontSize='small' />
+                    <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.OperationPolicy.operation.used.in.products'
+                            defaultMessage='This operation is used in {isUsedInAPIProduct} API product(s)'
+                            values={{ isUsedInAPIProduct }}
+                        />
+                    </Box>
+                </Box>
+            </Grid>
+        ) : (
+            <Grid item md={3} />
+        );
+    }
 
     return (
         <>
@@ -241,147 +130,107 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                 className={classes.paperStyles}
             >
                 {isChoreoConnectEnabled ?
-                    (
-                        <>
-                            <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                                <Grid item md={4} className={classes.operationSummaryGrid}>
-                                    <Badge
-                                        invisible={!operation['x-wso2-new']}
-                                        color='error'
-                                        variant='dot'
-                                        style={{ display: 'inline-block' }}
-                                    >
-                                        <Button
-                                            disableFocusRipple
-                                            variant='contained'
-                                            aria-label={'HTTP verb ' + verb}
-                                            size='small'
-                                            className={classes.customButton}
-                                        >
-                                            {verb}
-                                        </Button>
-                                    </Badge>
+                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                        <Grid item md={4} className={classes.operationSummaryGrid}>
+                            <Badge
+                                invisible={!operation['x-wso2-new']}
+                                color='error'
+                                variant='dot'
+                                style={{ display: 'inline-block' }}
+                            >
+                                <Button
+                                    disableFocusRipple
+                                    variant='contained'
+                                    aria-label={'HTTP verb ' + verb}
+                                    size='small'
+                                    className={classes.customButton}
+                                >
+                                    {verb}
+                                </Button>
+                            </Badge>
+                            <Typography
+                                display='inline'
+                                variant='h6'
+                                gutterBottom
+                                className={classes.targetText}
+                                title={target}
+                            >
+                                {target}
+                                {(operation.summary && operation.summary !== '') && (
                                     <Typography
                                         display='inline'
-                                        variant='h6'
+                                        style={{ margin: '0px 30px' }}
+                                        variant='caption'
                                         gutterBottom
-                                        className={classes.targetText}
-                                        title={target}
                                     >
-                                        {target}
-                                        {(operation.summary && operation.summary !== '') && (
-                                            <Typography
-                                                display='inline'
-                                                style={{ margin: '0px 30px' }}
-                                                variant='caption'
-                                                gutterBottom
-                                            >
-                                                {operation.summary}
-                                            </Typography>
-                                        )}
+                                        {operation.summary}
                                     </Typography>
-                                </Grid>
-                                {(isUsedInAPIProduct) ? (
-                                    <Grid item md={3}>
-                                        <Box display='flex' justifyContent='center'>
-                                            <ReportProblemOutlinedIcon fontSize='small' />
-                                            <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.Operation.this.operation.'
-                                                        + 'used.in.products'}
-                                                    defaultMessage={'This operation is used in {isUsedInAPIProduct} API '
-                                                        + 'product(s)'}
-                                                    values={{ isUsedInAPIProduct }}
-                                                />
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-                                ) : (
-                                    <Grid item md={3} />
                                 )}
-                            </Grid>
-                        </>
-                    ) :
-                    (
-                        <>
-                            <ExpansionPanelSummary
-                                className={highlight ? classes.highlightSelected : ''}
-                                disableRipple
-                                disableTouchRipple
-                                expandIcon={<ExpandMoreIcon />}
-                                id={verb + target}
-                                classes={{ content: classes.contentNoMargin }}
-                            >
-                                <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                                    <Grid item md={4} className={classes.operationSummaryGrid}>
-                                        <Badge
-                                            invisible={!operation['x-wso2-new']}
-                                            color='error'
-                                            variant='dot'
-                                            style={{ display: 'inline-block' }}
-                                        >
-                                            <Button
-                                                disableFocusRipple
-                                                variant='contained'
-                                                aria-label={'HTTP verb ' + verb}
-                                                size='small'
-                                                className={classes.customButton}
-                                            >
-                                                {verb}
-                                            </Button>
-                                        </Badge>
+                            </Typography>
+                        </Grid>
+                        {renderUsedInApiProducts}
+                    </Grid>
+                    :
+                    <ExpansionPanelSummary
+                        className={highlight ? classes.highlightSelected : ''}
+                        disableRipple
+                        disableTouchRipple
+                        expandIcon={<ExpandMoreIcon />}
+                        id={verb + target}
+                        classes={{ content: classes.contentNoMargin }}
+                    >
+                        <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                            <Grid item md={4} className={classes.operationSummaryGrid}>
+                                <Badge
+                                    invisible={!operation['x-wso2-new']}
+                                    color='error'
+                                    variant='dot'
+                                    style={{ display: 'inline-block' }}
+                                >
+                                    <Button
+                                        disableFocusRipple
+                                        variant='contained'
+                                        aria-label={'HTTP verb ' + verb}
+                                        size='small'
+                                        className={classes.customButton}
+                                    >
+                                        {verb}
+                                    </Button>
+                                </Badge>
+                                <Typography
+                                    display='inline'
+                                    variant='h6'
+                                    gutterBottom
+                                    className={classes.targetText}
+                                    title={target}
+                                >
+                                    {target}
+                                    {(operation.summary && operation.summary !== '') && (
                                         <Typography
                                             display='inline'
-                                            variant='h6'
+                                            style={{ margin: '0px 30px' }}
+                                            variant='caption'
                                             gutterBottom
-                                            className={classes.targetText}
-                                            title={target}
                                         >
-                                            {target}
-                                            {(operation.summary && operation.summary !== '') && (
-                                                <Typography
-                                                    display='inline'
-                                                    style={{ margin: '0px 30px' }}
-                                                    variant='caption'
-                                                    gutterBottom
-                                                >
-                                                    {operation.summary}
-                                                </Typography>
-                                            )}
+                                            {operation.summary}
                                         </Typography>
-                                    </Grid>
-                                    {(isUsedInAPIProduct) ? (
-                                        <Grid item md={3}>
-                                            <Box display='flex' justifyContent='center'>
-                                                <ReportProblemOutlinedIcon fontSize='small' />
-                                                <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Resources.components.Operation.this.operation.'
-                                                            + 'used.in.products'}
-                                                        defaultMessage={'This operation is used in {isUsedInAPIProduct} API '
-                                                            + 'product(s)'}
-                                                        values={{ isUsedInAPIProduct }}
-                                                    />
-                                                </Box>
-                                            </Box>
-                                        </Grid>
-                                    ) : (
-                                        <Grid item md={3} />
                                     )}
-                                </Grid>
-                            </ExpansionPanelSummary>
-                        </>
-                    )
+                                </Typography>
+                            </Grid>
+                            {renderUsedInApiProducts}
+                        </Grid>
+                    </ExpansionPanelSummary>
                 }
                 <Divider light className={classes.customDivider} />
-                {!isChoreoConnectEnabled ? (
+                {!isChoreoConnectEnabled && (
                     <PoliciesExpansion
                         target={target}
                         verb={verb}
                         allPolicies={allPolicies}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
                         policyList={policyList}
-                    />) : <></>}
+                    />
+                )}
             </ExpansionPanel>
         </>
     );

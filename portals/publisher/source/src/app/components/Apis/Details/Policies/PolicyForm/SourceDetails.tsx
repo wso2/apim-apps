@@ -24,7 +24,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage,  } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import FormControl from '@material-ui/core/FormControl';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import Button from '@material-ui/core/Button';
@@ -44,15 +44,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'row',
     },
-    downloadPolicyLabel: {
-        marginTop: theme.spacing(1),
-    },
 }));
 
 const SUPPORTED_GATEWAYS = {
     SYNAPSE: 'Synapse',
-    CC: 'ChoreoConnect'
-}
+    CC: 'ChoreoConnect',
+};
 
 interface SourceDetailsProps {
     supportedGateways: string[];
@@ -69,7 +66,12 @@ interface SourceDetailsProps {
  * @returns {TSX} General details of the policy.
  */
 const SourceDetails: FC<SourceDetailsProps> = ({
-    supportedGateways, policyDefinitionFile, setPolicyDefinitionFile, dispatch, isViewMode, policyId
+    supportedGateways,
+    policyDefinitionFile,
+    setPolicyDefinitionFile,
+    dispatch,
+    isViewMode,
+    policyId,
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
@@ -82,46 +84,51 @@ const SourceDetails: FC<SourceDetailsProps> = ({
      * Function to handle supported gateways related checkbox changes
      * @param {React.ChangeEvent<HTMLInputElement>} event event
      */
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>)  => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (dispatch) {
             dispatch({
                 type: ACTIONS.UPDATE_SUPPORTED_GATEWAYS,
-                name: (event.target.name === 'regularGateway' ? SUPPORTED_GATEWAYS.SYNAPSE : SUPPORTED_GATEWAYS.CC) ,
+                name:
+                    event.target.name === 'regularGateway'
+                        ? SUPPORTED_GATEWAYS.SYNAPSE
+                        : SUPPORTED_GATEWAYS.CC,
                 checked: event.target.checked,
-            })
+            });
         }
-    }
+    };
 
     /**
      * Hanlde policy download
      */
     const handlePolicyDownload = () => {
         if (policyId) {
-            const commonPolicyContentPromise = API.getCommonOperationPolicyContent(policyId);
+            const commonPolicyContentPromise =
+                API.getCommonOperationPolicyContent(policyId);
             commonPolicyContentPromise
                 .then((commonPolicyResponse) => {
                     Utils.forceDownload(commonPolicyResponse);
                 })
                 .catch(() => {
-                    const apiPolicyContentPromise = API.getOperationPolicyContent(policyId, api.id);
+                    const apiPolicyContentPromise =
+                        API.getOperationPolicyContent(policyId, api.id);
                     apiPolicyContentPromise
                         .then((apiPolicyResponse) => {
                             Utils.forceDownload(apiPolicyResponse);
                         })
                         .catch((error) => {
                             if (process.env.NODE_ENV !== 'production') {
-                                console.log(error);
+                                console.error(error);
                                 Alert.error(
                                     <FormattedMessage
-                                        id='Policies.ViewPolicy.download.error'
+                                        id='Apis.Details.Policies.PolicyForm.SourceDetails.download.error'
                                         defaultMessage='Something went wrong while downloading the policy'
-                                    />
+                                    />,
                                 );
                             }
                         });
                 });
         }
-    }
+    };
 
     const renderPolicyFileDetails = () => {
         if (!isViewMode && policyDefinitionFile && setPolicyDefinitionFile) {
@@ -135,9 +142,13 @@ const SourceDetails: FC<SourceDetailsProps> = ({
             return (
                 <>
                     <Box display='flex' flexDirection='row' alignItems='center'>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
+                        <Typography
+                            color='inherit'
+                            variant='subtitle2'
+                            component='div'
+                        >
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.SourceDetails.download.policy'
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title'
                                 defaultMessage='Policy File'
                             />
                             <sup className={classes.mandatoryStar}>*</sup>
@@ -145,11 +156,18 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                     </Box>
                     <Typography color='inherit' variant='caption' component='p'>
                         <FormattedMessage
-                            id='Policies.PolicyCreateForm.UploadPolicyDropzone.description'
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description'
                             defaultMessage='Policy file contains the business logic of the policy'
                         />
                     </Typography>
-                    <Box flex='1' display='flex' flexDirection='row' justifyContent='left' mt={3} mb={3}>
+                    <Box
+                        flex='1'
+                        display='flex'
+                        flexDirection='row'
+                        justifyContent='left'
+                        mt={3}
+                        mb={3}
+                    >
                         <Button
                             aria-label='download-policy'
                             variant='contained'
@@ -159,32 +177,38 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                             endIcon={<CloudDownloadIcon />}
                         >
                             <FormattedMessage
-                                id='Policies.PolicyForm.SourceDetails.download.button'
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download'
                                 defaultMessage='Download Policy'
                             />
                         </Button>
                     </Box>
                 </>
-            )
+            );
         }
-    }
+    };
 
     return (
         <Box display='flex' flexDirection='row' mt={1}>
             <Box width='40%' pt={3} mb={2}>
                 <Box width='90%'>
-                    <Typography color='inherit' variant='subtitle2' component='div'>
+                    <Typography
+                        color='inherit'
+                        variant='subtitle2'
+                        component='div'
+                    >
                         <FormattedMessage
-                            id='Policies.PolicyPolicyForm.add.policy.gateway.specific.details.title'
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.title'
                             defaultMessage='Gateway Specific Details'
                         />
                     </Typography>
                     <Typography color='inherit' variant='caption' component='p'>
                         <FormattedMessage
-                            id='Policies.PolicyPolicyForm.add.policy.gateway.specific.details.description'
-                            defaultMessage={'Define the Gateway (s) that will be supporting this policy. '
-                            + 'Based off of this selection, you can upload the relevant business '
-                            + 'logic inclusive policy file.'}
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.description'
+                            defaultMessage={
+                                'Define the Gateway (s) that will be supporting this policy. ' +
+                                'Based off of this selection, you can upload the relevant business ' +
+                                'logic inclusive policy file.'
+                            }
                         />
                     </Typography>
                 </Box>
@@ -193,12 +217,17 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                 <Box display='flex' flexDirection='row' alignItems='center'>
                     <Typography color='inherit' variant='body1' component='div'>
                         <FormattedMessage
-                            id='Apis.Details.Policies.PolicyPolicyForm.field.supported.gateways'
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label'
                             defaultMessage='Supported Gateways'
                         />
                         <sup className={classes.mandatoryStar}>*</sup>
                     </Typography>
-                    <Box flex='1'  display='flex' flexDirection='row-reverse' justifyContent='space-around'>
+                    <Box
+                        flex='1'
+                        display='flex'
+                        flexDirection='row-reverse'
+                        justifyContent='space-around'
+                    >
                         <FormControl
                             required
                             component='fieldset'
@@ -212,7 +241,9 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                         <Checkbox
                                             name='regularGateway'
                                             color='primary'
-                                            checked={supportedGateways.includes(SUPPORTED_GATEWAYS.SYNAPSE)}
+                                            checked={supportedGateways.includes(
+                                                SUPPORTED_GATEWAYS.SYNAPSE,
+                                            )}
                                             onChange={handleChange}
                                         />
                                     }
@@ -223,7 +254,9 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                         <Checkbox
                                             name='choreoConnect'
                                             color='primary'
-                                            checked={supportedGateways.includes(SUPPORTED_GATEWAYS.CC)}
+                                            checked={supportedGateways.includes(
+                                                SUPPORTED_GATEWAYS.CC,
+                                            )}
                                             onChange={handleChange}
                                             disabled
                                         />
@@ -232,17 +265,18 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                 />
                             </FormGroup>
                             <FormHelperText>
-                                {supportedGatewaysError ? 'Please select one or more Gateways' : ''}
+                                {supportedGatewaysError
+                                    ? 'Please select one or more Gateways'
+                                    : ''}
                             </FormHelperText>
                         </FormControl>
                     </Box>
                 </Box>
-                {supportedGateways.includes(SUPPORTED_GATEWAYS.SYNAPSE) && (
-                    renderPolicyFileDetails()
-                )}
+                {supportedGateways.includes(SUPPORTED_GATEWAYS.SYNAPSE) &&
+                    renderPolicyFileDetails()}
             </Box>
         </Box>
-    )
-}
+    );
+};
 
-export default SourceDetails;
+export default React.memo(SourceDetails);

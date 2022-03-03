@@ -22,7 +22,13 @@ import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Drawer, makeStyles, ListItemIcon, Theme, Typography } from '@material-ui/core';
+import {
+    Drawer,
+    makeStyles,
+    ListItemIcon,
+    Theme,
+    Typography,
+} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
@@ -34,11 +40,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
         backgroundColor: 'white',
         width: '30%',
-    },
-    actionsBox: {
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: '1em',
     },
     iconSize: {
         height: '1.2em',
@@ -62,7 +63,12 @@ interface PolicyConfiguringDrawerProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
-    policyObj, setDroppedPolicy, currentFlow, target, verb, allPolicies
+    policyObj,
+    setDroppedPolicy,
+    currentFlow,
+    target,
+    verb,
+    allPolicies,
 }) => {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(!!policyObj);
@@ -70,13 +76,17 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
 
     useEffect(() => {
         if (policyObj) {
-            setPolicySpec(allPolicies?.find((policy: PolicySpec) => policy.id === policyObj.id));
+            setPolicySpec(
+                allPolicies?.find(
+                    (policy: PolicySpec) => policy.id === policyObj.id,
+                ),
+            );
             setDrawerOpen(true);
         }
     }, [policyObj]);
 
     if (!policySpec) {
-        return <Progress />
+        return <Progress />;
     }
 
     const apiPolicy: ApiPolicy = {
@@ -88,7 +98,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     const handleDrawerClose = () => {
         setDrawerOpen(false);
         setDroppedPolicy(null);
-    }
+    };
 
     /**
      * Converts the PolicyObj prop of type Policy to AttachedPolicy
@@ -106,7 +116,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
         } else {
             return null;
         }
-    }
+    };
 
     return (
         <Drawer
@@ -121,15 +131,18 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                         <ListItemIcon>
                             <Settings className={classes.iconSize} />
                         </ListItemIcon>
-                        <ListItemText primary={(
-                            <Typography variant='subtitle2'>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyConfiguringDrawer.title'
-                                    defaultMessage='Configure {policy} Policy'
-                                    values={{ policy: policyObj?.displayName }}
-                                />
-                            </Typography>
-                        )}
+                        <ListItemText
+                            primary={
+                                <Typography variant='subtitle2'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyConfiguringDrawer.title'
+                                        defaultMessage='Configure {policy} Policy'
+                                        values={{
+                                            policy: policyObj?.displayName,
+                                        }}
+                                    />
+                                </Typography>
+                            }
                         />
                         <ListItemIcon>
                             <IconButton onClick={handleDrawerClose}>
@@ -153,6 +166,6 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
             </Box>
         </Drawer>
     );
-}
+};
 
 export default PolicyConfiguringDrawer;

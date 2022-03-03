@@ -18,7 +18,7 @@
 
 import React, { FC, useContext } from 'react';
 import {
-    DndContext, 
+    DndContext,
     closestCenter,
     PointerSensor,
     useSensor,
@@ -50,42 +50,60 @@ interface AttachedPolicyListProps {
  * @returns {TSX} Radio group for the API Gateway.
  */
 const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
-    currentPolicyList, setCurrentPolicyList, policyDisplayStartDirection, currentFlow, target, verb,
-    allPolicies
+    currentPolicyList,
+    setCurrentPolicyList,
+    policyDisplayStartDirection,
+    currentFlow,
+    target,
+    verb,
+    allPolicies,
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
-    const policyListToDisplay = policyDisplayStartDirection === 'left' ? currentPolicyList : reversedPolicyList;
+    const policyListToDisplay =
+        policyDisplayStartDirection === 'left'
+            ? currentPolicyList
+            : reversedPolicyList;
     const { rearrangeApiOperations } = useContext<any>(ApiOperationContext);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
                 distance: 5,
-            }
+            },
         }),
     );
 
     const handleDragEnd = (event: DragEndEvent) => {
-        const {active, over} = event;
-        
+        const { active, over } = event;
+
         if (active.id !== over?.id) {
             const policyListCopy = [...currentPolicyList];
-            const oldIndex = policyListCopy.findIndex(item => item.uniqueKey === active.id);
-            const newIndex = policyListCopy.findIndex(item => item.uniqueKey === over?.id);
+            const oldIndex = policyListCopy.findIndex(
+                (item) => item.uniqueKey === active.id,
+            );
+            const newIndex = policyListCopy.findIndex(
+                (item) => item.uniqueKey === over?.id,
+            );
 
-            rearrangeApiOperations(oldIndex, newIndex, target, verb, currentFlow);
+            rearrangeApiOperations(
+                oldIndex,
+                newIndex,
+                target,
+                verb,
+                currentFlow,
+            );
         }
-    }
+    };
 
     return (
         <>
-            <DndContext 
+            <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
             >
-                <SortableContext 
-                    items={currentPolicyList.map(item => item.uniqueKey)}
+                <SortableContext
+                    items={currentPolicyList.map((item) => item.uniqueKey)}
                     strategy={horizontalListSortingStrategy}
                 >
                     {policyListToDisplay.map((policy: AttachedPolicy) => (
@@ -104,6 +122,6 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
             </DndContext>
         </>
     );
-}
+};
 
 export default AttachedPolicyList;

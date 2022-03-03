@@ -31,9 +31,7 @@ import API from 'AppData/api';
  * @param {any} props Input props needed for common policy deletion.
  * @returns {JSX} Returns the rendered UI for common policy delete.
  */
-const DeletePolicy = ({
-    policyId, policyName, fetchCommonPolicies
-}) => {
+const DeletePolicy = ({ policyId, policyName, fetchCommonPolicies }) => {
     const [open, setOpen] = useState(false);
     const api = new API();
     const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
@@ -42,7 +40,8 @@ const DeletePolicy = ({
     };
 
     const deleteCommonPolicy = () => {
-        const promisedCommonPolicyDelete = api.deleteCommonOperationPolicy(policyId);
+        const promisedCommonPolicyDelete =
+            api.deleteCommonOperationPolicy(policyId);
         promisedCommonPolicyDelete
             .then(() => {
                 Alert.info(`${policyName} policy deleted successfully!`);
@@ -68,42 +67,49 @@ const DeletePolicy = ({
         <>
             <Button
                 onClick={toggleOpen}
-                disabled={isRestricted(['apim:shared_scope_manage']) > 0}
+                disabled={
+                    isRestricted([
+                        'apim:api_create',
+                        'apim:api_manage',
+                        'apim:mediation_policy_manage',
+                        'apim:api_mediation_policy_manage',
+                    ]) > 0
+                }
                 aria-label={'Delete ' + policyName}
             >
                 <Icon>delete_forever</Icon>
                 <FormattedMessage
-                    id='Policies.Delete.Delete.policy.delete'
+                    id='CommonPolicies.DeletePolicy.policy.delete'
                     defaultMessage='Delete'
                 />
             </Button>
             <ConfirmDialog
                 key='key-dialog'
-                labelCancel={(
+                labelCancel={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.listing.label.cancel'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.cancel.delete'
                         defaultMessage='Cancel'
                     />
-                )}
-                title={(
+                }
+                title={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.listing.delete.confirm'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.confirm.title'
                         defaultMessage='Confirm Delete'
                     />
-                )}
-                message={(
+                }
+                message={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.label.ok.confirm'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.confirm.content'
                         defaultMessage='Are you sure you want to delete {policy} policy ?'
                         values={{ policy: policyName }}
                     />
-                )}
-                labelOk={(
+                }
+                labelOk={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.listing.label.ok.yes'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.confirm.delete'
                         defaultMessage='Yes'
                     />
-                )}
+                }
                 callback={runAction}
                 open={open}
             />

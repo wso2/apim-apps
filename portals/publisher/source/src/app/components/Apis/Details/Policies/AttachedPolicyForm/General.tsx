@@ -43,10 +43,6 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'right',
         alignItems: 'center',
     },
-    avatar: {
-        width: theme.spacing(14),
-        height: theme.spacing(15),
-    },
     btn: {
         marginRight: '1em',
     },
@@ -155,7 +151,7 @@ const General: FC<GeneralProps> = ({
         if (value !== null) {
             if (specInCheck.required && value === '') {
                 error = intl.formatMessage({
-                    id: 'Apis.Details.Policies.PolicyForm.General.required.error',
+                    id: 'Apis.Details.Policies.AttachedPolicyForm.General.required.error',
                     defaultMessage: 'Required field is empty',
                 });
             } else if (
@@ -167,7 +163,7 @@ const General: FC<GeneralProps> = ({
                 try {
                     if (!new RegExp(specInCheck.validationRegex).test(value)) {
                         error = intl.formatMessage({
-                            id: 'Apis.Details.Policies.PolicyForm.General.regex.error',
+                            id: 'Apis.Details.Policies.AttachedPolicyForm.General.regex.error',
                             defaultMessage: 'Please enter a valid input',
                         });
                     }
@@ -269,7 +265,7 @@ const General: FC<GeneralProps> = ({
                             <div className={classes.resetBtn}>
                                 <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.reset'
+                                        id='Apis.Details.Policies.AttachedPolicyForm.General.reset'
                                         defaultMessage='Reset'
                                     />
                                 </Button>
@@ -278,20 +274,23 @@ const General: FC<GeneralProps> = ({
                         <div>
                             <Typography variant='subtitle2' color='textPrimary'>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.General.description.title'
+                                    id='Apis.Details.Policies.AttachedPolicyForm.General.description.title'
                                     defaultMessage='Description'
                                 />
                             </Typography>
                             <Typography variant='caption' color='textPrimary'>
                                 {policySpec.description ? (
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.description.value.provided'
+                                        id='Apis.Details.Policies.AttachedPolicyForm.General.description.value.provided'
                                         defaultMessage='{description}'
                                         values={{ description: policySpec.description }}
                                     />
                                 ) : (
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.description.value.not.provided'
+                                        id={
+                                            'Apis.Details.Policies.AttachedPolicyForm.General.description.value.' +
+                                            'not.provided'
+                                        }
                                         defaultMessage='Oops! Looks like this policy does not have a description'
                                     />
                                 )}                            
@@ -408,7 +407,7 @@ const General: FC<GeneralProps> = ({
                                 label={(
                                     <Typography variant='subtitle1' color='textPrimary'>
                                         <FormattedMessage
-                                            id='Apis.Details.Policies.PolicyForm.General.apply.to.all.resources'
+                                            id='Apis.Details.Policies.AttachedPolicyForm.General.apply.to.all.resources'
                                             defaultMessage='Apply to all resources'
                                         />
                                     </Typography>
@@ -424,7 +423,7 @@ const General: FC<GeneralProps> = ({
                             className={classes.btn}
                         >
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.General.cancel'
+                                id='Apis.Details.Policies.AttachedPolicyForm.General.cancel'
                                 defaultMessage='Cancel'
                             />
                         </Button>
@@ -438,13 +437,13 @@ const General: FC<GeneralProps> = ({
                                 ? <>
                                     <CircularProgress size='small' />
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.saving'
+                                        id='Apis.Details.Policies.AttachedPolicyForm.General.saving'
                                         defaultMessage='Saving'
                                     />
                                 </>
                                 : <>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.General.save'
+                                        id='Apis.Details.Policies.AttachedPolicyForm.General.save'
                                         defaultMessage='Save'
                                     />
                                 </>

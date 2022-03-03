@@ -17,23 +17,24 @@
  */
 
 import React, { CSSProperties, useMemo, useState } from 'react';
+import { makeStyles } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
-import { useDrag } from 'react-dnd';
+import Box from '@material-ui/core/Box';
+import Tooltip from '@material-ui/core/Tooltip';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import { Box, makeStyles, Theme, Tooltip } from '@material-ui/core';
 import Utils from 'AppData/Utils';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import IconButton from '@material-ui/core/IconButton';
 import { FormattedMessage } from 'react-intl';
-import Backdrop from '@material-ui/core/Backdrop';
 import classNames from 'classnames';
+import { useDrag } from 'react-dnd';
 import type { Policy } from './Types';
 import ViewPolicy from './ViewPolicy';
 import DeletePolicy from './DeletePolicy';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
     policyCardText: {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
@@ -43,17 +44,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         maxHeight: '100%',
         overflow: 'auto',
     },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-        backdropFilter: 'blur(1px)',
-    },
     policyActions: {
         visibility: 'hidden',
         '&:hover': {
             visibility: 'inherit',
-        }
-    }
+        },
+    },
 }));
 
 const style: CSSProperties = {
@@ -79,7 +75,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     policyObj,
     showCopyIcon,
     isLocalToAPI,
-    fetchPolicies
+    fetchPolicies,
 }) => {
     const classes = useStyles();
     const [hovered, setHovered] = useState(false);
@@ -88,7 +84,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     const [{ isDragging }, drag] = useDrag(
         () => ({
             type: `policyCard-${policyObj.id}`,
-            item: {droppedPolicy: policyObj},
+            item: { droppedPolicy: policyObj },
             options: {
                 dropEffect: showCopyIcon ? 'copy' : 'move',
             },
@@ -102,28 +98,25 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     const containerStyle = useMemo(
         () => ({
             ...style,
-            opacity: (isDragging) ? 0.4 : 1,
+            opacity: isDragging ? 0.4 : 1,
             borderColor: Utils.stringToColor(policyObj.displayName),
             width: '100%',
         }),
         [isDragging],
-    )
+    );
 
     const handleViewPolicy = () => {
         setDialogOpen(true);
-    }
+    };
 
     const handleViewPolicyClose = () => {
         setDialogOpen(false);
-    }
+    };
 
     return (
         <>
             <Box display='flex' flexDirection='row' alignItems='center'>
-                <div
-                    ref={drag}
-                    style={containerStyle}
-                >
+                <div ref={drag} style={containerStyle}>
                     <ListItem
                         key={policyObj.id}
                         className={classes.listItem}
@@ -133,18 +126,22 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                         <ListItemAvatar>
                             <Avatar
                                 style={{
-                                    backgroundColor: Utils.stringToColor(policyObj.displayName),
+                                    backgroundColor: Utils.stringToColor(
+                                        policyObj.displayName,
+                                    ),
                                 }}
                             >
-                                {Utils.stringAvatar(policyObj.displayName.toUpperCase())}
+                                {Utils.stringAvatar(
+                                    policyObj.displayName.toUpperCase(),
+                                )}
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText
                             id={policyObj.displayName}
                             primary={policyObj.displayName}
                             classes={{
-                                primary: classes.policyCardText
-                            }} 
+                                primary: classes.policyCardText,
+                            }}
                         />
                         <Box
                             display='flex'
@@ -158,7 +155,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                                 placement='top'
                                 title={
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyList.Policy.View'
+                                        id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
                                         defaultMessage='View'
                                     />
                                 }
@@ -181,18 +178,12 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                     </ListItem>
                 </div>
             </Box>
-            <Backdrop
-                className={classes.backdrop}
-                open={dialogOpen}
-                onClick={handleViewPolicyClose}    
-            >
-                <ViewPolicy
-                    dialogOpen={dialogOpen}
-                    handleDialogClose={handleViewPolicyClose}
-                    policyObj={policyObj}
-                    isLocalToAPI={isLocalToAPI}
-                />
-            </Backdrop>
+            <ViewPolicy
+                dialogOpen={dialogOpen}
+                handleDialogClose={handleViewPolicyClose}
+                policyObj={policyObj}
+                isLocalToAPI={isLocalToAPI}
+            />
         </>
     );
 };

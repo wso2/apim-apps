@@ -16,10 +16,17 @@
  * under the License.
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState } from 'react';
 import { HelpOutline } from '@material-ui/icons';
 import Tooltip from '@material-ui/core/Tooltip';
-import { Dialog, DialogTitle, DialogContent, Button, DialogActions } from '@material-ui/core';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Button,
+    DialogActions,
+    Radio,
+} from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
@@ -30,7 +37,6 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { Radio } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 
 const SupportedGatewayTypes = {
@@ -39,7 +45,7 @@ const SupportedGatewayTypes = {
 };
 
 interface GatewaySelectorProps {
-    getGatewayType(isChoreoConnectEnabled: boolean): void;
+    getGatewayType: (isCCEnabled: boolean) => void;
     isChoreoConnectEnabled: boolean;
 }
 
@@ -48,13 +54,16 @@ interface GatewaySelectorProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Radio group for the API Gateway.
  */
-const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoConnectEnabled }) => {
+const GatewaySelector: FC<GatewaySelectorProps> = ({
+    getGatewayType,
+    isChoreoConnectEnabled
+}) => {
     const [apiFromContext] = useAPI();
     let selectedGatewayType;
 
     const [isRadioButtonChange, setRadioButtonChange] = useState(false);
 
-    const saveAfterGatewayChange = (isChoreoConnectEnabled: boolean) => {
+    const saveAfterGatewayChange = () => {
         if (isChoreoConnectEnabled) {
             getGatewayType(false); 
         } else {
@@ -76,14 +85,14 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
      */
     const handleApprovedGatewayChange = () => {
         setRadioButtonChange(true);
-    }
+    };
 
     /**
      * Handles discarded gateway type change after cancelling dialog box.
      */
     const handleDiscardedGatewayChange = () => {
         setRadioButtonChange(false);
-    }
+    };
 
     return (
         <Paper>
@@ -98,7 +107,11 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                         mr={5}
                     >
                         <Box>
-                            <Typography variant='subtitle1' component='h3' gutterBottom>
+                            <Typography
+                                variant='subtitle1'
+                                component='h3'
+                                gutterBottom
+                            >
                                 API Gateway
                                 <Tooltip
                                     title='Policy list is dependant on the selected Gateway'
@@ -116,32 +129,40 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                                 <RadioGroup
                                     aria-label='gateway'
                                     row
-                                    aria-labelledby="gateway-selector-radio-buttons-group-label"
-                                    name="gateway-selector-radio-buttons-group"
+                                    aria-labelledby='gateway-selector-radio-buttons-group-label'
+                                    name='gateway-selector-radio-buttons-group'
                                     value={selectedGatewayType}
                                 >
                                     <FormControlLabel
                                         value={SupportedGatewayTypes.REGULAR}
                                         control={
-                                            <Radio color='primary'
+                                            <Radio
+                                                color='primary'
                                                 defaultChecked
                                                 id='regularGateway'
-                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                onChange={handleApprovedGatewayChange}
+                                                disabled={isRestricted(
+                                                    ['apim:api_create'],
+                                                    apiFromContext,
+                                                )}
+                                                onChange={
+                                                    handleApprovedGatewayChange
+                                                }
                                             />
                                         }
-                                        label="Regular Gateway"
+                                        label='Regular Gateway'
+                                        labelPlacement='end'
                                     />
                                     <FormControlLabel
                                         value={SupportedGatewayTypes.CC}
                                         control={
                                             <Radio
                                                 color='primary'
-                                                disabled={true}
+                                                disabled
                                                 onChange={handleApprovedGatewayChange}
                                             />
                                         }
-                                        label="Choreo Connect"
+                                        label='Choreo Connect'
+                                        labelPlacement='end'
                                     />
                                 </RadioGroup>
                             </FormControl>
@@ -149,7 +170,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                                 <DialogTitle>
                                     <Typography>
                                         <FormattedMessage
-                                            id='Apis.Details.Policies.ApiPolicies.Gateway.change.title'
+                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title'
                                             defaultMessage='Change Gateway Type'
                                         />
                                     </Typography>
@@ -157,8 +178,11 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                                 <DialogContent>
                                     <Typography>
                                         <FormattedMessage
-                                            id='Apis.Details.Policies.ApiPolicies.Gateway.change.message'
-                                            defaultMessage='Changing the gateway type will remove all existing policies added to the API.'
+                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content'
+                                            defaultMessage={
+                                                'Changing the gateway type will remove all existing policies ' +
+                                                'added to the API.'
+                                            }
                                         />
                                     </Typography>
                                 </DialogContent>
@@ -168,16 +192,16 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
                                         color='primary'
                                     >
                                         <FormattedMessage
-                                            id='Apis.Details.Policies.ApiPolicies.Gateway.change.cancel'
+                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel'
                                             defaultMessage='Cancel'
                                         />
                                     </Button>
                                     <Button
-                                        onClick={() => { saveAfterGatewayChange(isChoreoConnectEnabled) }}
+                                        onClick={saveAfterGatewayChange}
                                         color='primary'
                                     >
                                         <FormattedMessage
-                                            id='Apis.Details.Policies.ApiPolicies.Gateway.change.proceed'
+                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed'
                                             defaultMessage='Proceed'
                                         />
                                     </Button>
@@ -189,6 +213,6 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({ getGatewayType, isChoreoCon
             </Grid>
         </Paper>
     );
-}
+};
 
 export default GatewaySelector;

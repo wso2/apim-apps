@@ -43,7 +43,9 @@ interface DeletePolicyProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const DeletePolicy: FC<DeletePolicyProps> = ({
-    policyId, policyName, fetchPolicies
+    policyId,
+    policyName,
+    fetchPolicies,
 }) => {
     const { api } = useContext<any>(ApiContext);
     const [open, setOpen] = useState(false);
@@ -51,25 +53,28 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
     const toggleOpen = () => {
         setOpen(!open);
     };
-    
+
     const handleDelete = () => {
-        const promisedCommonPolicyDelete = API.deleteOperationPolicy(api.id, policyId);
+        const promisedCommonPolicyDelete = API.deleteOperationPolicy(
+            api.id,
+            policyId,
+        );
         promisedCommonPolicyDelete
             .then(() => {
                 Alert.info(`${policyName} policy deleted successfully!`);
                 setOpenLocal(!open);
                 fetchPolicies();
             })
-            .catch((errorResponse) => {
-                console.error(errorResponse);
+            .catch((error) => {
+                console.error(error);
                 Alert.error('Error occurred while deleteting policy');
                 setOpenLocal(!open);
             });
-    }
+    };
 
     const handleClose = () => {
         setOpen(false);
-    }
+    };
 
     return (
         <>
@@ -77,7 +82,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 placement='top'
                 title={
                     <FormattedMessage
-                        id='Apis.Details.Policies.PolicyList.Policy.Delete'
+                        id='Apis.Details.Policies.DeletePolicy.delete.title'
                         defaultMessage='Delete'
                     />
                 }
@@ -89,21 +94,24 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                     <DeleteIcon />
                 </IconButton>
             </Tooltip>
-            <Dialog 
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            <Dialog
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
                 open={open}
                 onClose={handleClose}
             >
                 <DialogTitle>
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.delete.confirm'
+                        id='Apis.Details.Policies.DeletePolicy.delete.confirm'
                         defaultMessage='Confirm Delete'
                     />
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         <FormattedMessage
-                            id='Policies.Delete.Delete.policy.label.ok.confirm'
+                            id='Apis.Details.Policies.DeletePolicy.delete.confirm.content'
                             defaultMessage='Are you sure you want to delete {policy} policy ?'
                             values={{ policy: policyName }}
                         />
@@ -116,7 +124,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                         color='primary'
                     >
                         <FormattedMessage
-                            id='Policies.Delete.Delete.policy.listing.label.cancel'
+                            id='Apis.Details.Policies.DeletePolicy.cancel'
                             defaultMessage='Cancel'
                         />
                     </Button>
@@ -126,7 +134,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                         color='primary'
                     >
                         <FormattedMessage
-                            id='Policies.Delete.Delete.policy.listing.label.ok.yes'
+                            id='Apis.Details.Policies.DeletePolicy.confirm'
                             defaultMessage='Yes'
                         />
                     </Button>
@@ -134,6 +142,6 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
             </Dialog>
         </>
     );
-}
+};
 
 export default DeletePolicy;

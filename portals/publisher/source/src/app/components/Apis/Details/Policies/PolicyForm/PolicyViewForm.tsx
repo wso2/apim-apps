@@ -22,7 +22,7 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import { FormattedMessage,  } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import type { PolicySpec, PolicySpecAttribute } from '../Types';
 import PolicyAttributes from './PolicyAttributes';
 import GeneralDetails from './GeneralDetails';
@@ -37,33 +37,29 @@ const useStyles = makeStyles(() => ({
         flexDirection: 'column',
         padding: 20,
     },
-    formGroup: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
 }));
 
 interface PolicyViewFormProps {
     policySpec: PolicySpec;
     onDone: () => void;
-}    
+}
 
 /**
  * Renders the policy view form.
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Right drawer for policy configuration.
  */
-const PolicyViewForm: FC<PolicyViewFormProps> = ({
-    policySpec, onDone
-}) => {
+const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
     const classes = useStyles();
 
     const getPolicyAttributes = () => {
-        const policyAttributeList = policySpec.policyAttributes.map((attribute: PolicySpecAttribute) => {
-            return {...attribute, id: uuidv4()};
-        });
+        const policyAttributeList = policySpec.policyAttributes.map(
+            (attribute: PolicySpecAttribute) => {
+                return { ...attribute, id: uuidv4() };
+            },
+        );
         return policyAttributeList;
-    }
+    };
 
     return (
         <Paper elevation={0} className={classes.root}>
@@ -88,19 +84,15 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({
                 isViewMode
             />
             <Box>
-                <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={onDone}
-                >
+                <Button variant='contained' color='primary' onClick={onDone}>
                     <FormattedMessage
-                        id='Apis.Details.Policies.PolicyPolicyViewForm.policy.done'
+                        id='Apis.Details.Policies.PolicyForm.PolicyViewForm.done'
                         defaultMessage='Done'
-                    />    
+                    />
                 </Button>
             </Box>
         </Paper>
     );
-}
+};
 
 export default PolicyViewForm;

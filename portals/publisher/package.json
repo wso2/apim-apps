@@ -14,7 +14,7 @@
         "build:dev": "rimraf site/public/dist/ && webpack --mode development --watch ",
         "analysis": "NODE_ENVS=analysis NODE_OPTIONS=--max_old_space_size=8172 webpack --mode production --progress",
         "lint": "eslint --ignore-pattern '*.test.js' --ignore-pattern '*.test.jsx' --quiet -c .eslintrc.js --ext .jsx,.js source",
-        "i18n": "formatjs extract 'source/src/app/**/*.jsx' --throws --out-file site/public/locales/raw.en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+        "i18n": "formatjs extract 'source/src/app/**/*.{jsx,tsx}' --throws --out-file site/public/locales/raw.en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
         "i18n:compile": "formatjs compile site/public/locales/raw.en.json --ast --out-file site/public/locales/en.json",
         "start": "webpack serve --compress --https --port 8081 --mode development",
         "start:mocked": "concurrently npm:mocked 'WSO2_UI_MOCKED=true webpack serve --compress --https --port 8081 --mode production --progress'",
