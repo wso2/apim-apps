@@ -140,13 +140,21 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
             // Get the union of policies depending on the policy display name
             const unionByPolicyDisplayName = [...mergedList
-                .reduce((map, obj) => map.set(obj.displayName, obj), new Map()).values()];
+                .reduce((map, obj) => map.set(obj.name, obj), new Map()).values()];
             unionByPolicyDisplayName.sort(
-                (a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName))
+                (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
-            // Get synpase/regular gateway supported policies
-            const filteredList = unionByPolicyDisplayName.filter(
-                (policy: Policy) => policy.supportedGateways.includes('Synapse'))
+            let filteredList = null;
+            if (!isChoreoConnectEnabled) {
+                // Get synpase gateway supported policies
+                filteredList = unionByPolicyDisplayName.filter(
+                    (policy: Policy) => policy.supportedGateways.includes('Synapse'))
+            } else {
+                // Get CC gateway supported policies
+                filteredList = unionByPolicyDisplayName.filter(
+                    (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'))
+            }
+
             setPolicies(filteredList);
 
         }).catch((error) => {
@@ -157,7 +165,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     useEffect(() => {
         fetchPolicies();
-    }, [])
+    }, [isChoreoConnectEnabled])
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
@@ -279,8 +287,14 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
     ) => {
         const newApiOperations: any = cloneDeep(apiOperations);
-        const operationInAction = newApiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        let operationInAction = null;
+
+        if (!isChoreoConnectEnabled) {
+            operationInAction = newApiOperations.find((op: any) =>
+                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        } else {
+            operationInAction = newApiOperations.find((op: any) => op.target === target);
+        }
         const policyArray = operationInAction.operationPolicies[currentFlow];
         operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
         
@@ -290,6 +304,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     /**
      * To update the API object with the attached policies on Save
+     * @param {boolean} isGatewayChanged Boolean to check whether the gateway has changed
      */
     const saveApi = (isGatewayChanged: boolean) => {
         setUpdating(true);

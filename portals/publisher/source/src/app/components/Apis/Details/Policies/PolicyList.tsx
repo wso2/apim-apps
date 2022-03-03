@@ -122,13 +122,11 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 id='request-tab'
                                 aria-controls='request-tabpanel'
                             />
-                            {!isChoreoConnectEnabled && (
-                                <Tab
-                                    label={<span className={classes.flowTab}>Response</span>}
-                                    id='response-tab'
-                                    aria-controls='response-tabpanel'
-                                />)
-                            }
+                            <Tab
+                                label={<span className={classes.flowTab}>Response</span>}
+                                id='response-tab'
+                                aria-controls='response-tabpanel'
+                            />
                             {!isChoreoConnectEnabled && (
                                 <Tab
                                     label={<span className={classes.flowTab}>Fault</span>}
@@ -153,19 +151,29 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 fetchPolicies={fetchPolicies}
                             />
                             <TabPanel
-                                policyList={policyList.filter((policy) => policy.applicableFlows.includes('response'))}
+                                policyList={policyList.filter(
+                                    (policy) =>
+                                        policy.applicableFlows.includes(
+                                            'response',
+                                        ) &&
+                                        policy.supportedGateways.includes(
+                                            gatewayType,
+                                        ),
+                                )}
                                 index={1}
                                 selectedTab={selectedTab}
                                 fetchPolicies={fetchPolicies}
                             />
-                            <TabPanel
-                                policyList={policyList.filter((policy) =>
-                                    policy.applicableFlows.includes('fault'),
-                                )}
-                                index={2}
-                                selectedTab={selectedTab}
-                                fetchPolicies={fetchPolicies}
-                            />
+                            {!isChoreoConnectEnabled && (
+                                <TabPanel
+                                    policyList={policyList.filter((policy) =>
+                                        policy.applicableFlows.includes('fault'),
+                                    )}
+                                    index={2}
+                                    selectedTab={selectedTab}
+                                    fetchPolicies={fetchPolicies}
+                                />
+                            )}
                         </Box>
                     </Box>
                 </CardContent>
