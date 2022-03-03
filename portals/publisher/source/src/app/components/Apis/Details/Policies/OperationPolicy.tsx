@@ -148,13 +148,13 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
             for (const requestFlowAttachedPolicy of requestFlow) {
                 const { policyId, policyName, uuid } = requestFlowAttachedPolicy;
                 const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj && policyObj.supportedGateways.includes('Synapse')) {
+                if (policyObj) {
                     requestFlowList.push({ ...policyObj, uniqueKey: uuid });
                 } else {
                     try {
                         // eslint-disable-next-line no-await-in-loop
                         const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse.supportedGateways.includes('Synapse'))
+                        if (policyResponse)
                             requestFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
                     } catch(error) {
                         console.error(error);
@@ -169,13 +169,13 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
             for (const responseFlowAttachedPolicy of responseFlow) {
                 const { policyId, policyName, uuid } = responseFlowAttachedPolicy;
                 const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj && policyObj.supportedGateways.includes('Synapse')) {
+                if (policyObj) {
                     responseFlowList.push({ ...policyObj, uniqueKey: uuid });
                 } else {
                     try {
                         // eslint-disable-next-line no-await-in-loop
                         const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse.supportedGateways.includes('Synapse'))
+                        if (policyResponse)
                             responseFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
                     } catch(error) {
                         console.error(error);
@@ -190,13 +190,13 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
             for (const faultFlowAttachedPolicy of faultFlow) {
                 const { policyId, policyName, uuid } = faultFlowAttachedPolicy;
                 const policyObj = allPolicies?.find((policy: PolicySpec) => policy.name === policyName);
-                if (policyObj && policyObj.supportedGateways.includes('Synapse')) {
+                if (policyObj) {
                     faultFlowList.push({ ...policyObj, uniqueKey: uuid });
                 } else {
                     try {
                         // eslint-disable-next-line no-await-in-loop
                         const policyResponse = await API.getOperationPolicy(policyId, api.id);
-                        if (policyResponse.supportedGateways.includes('Synapse'))
+                        if (policyResponse)
                             faultFlowList.push({ ...policyResponse.body, uniqueKey: uuid });
                     } catch(error) {
                         console.error(error);
