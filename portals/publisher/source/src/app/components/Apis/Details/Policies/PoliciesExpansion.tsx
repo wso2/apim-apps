@@ -35,7 +35,6 @@ interface OPProps {
     allPolicies: PolicySpec[] | null;
     isChoreoConnectEnabled: boolean;
     policyList: Policy[];
-    isGatewayChanged: boolean;
 }
 
 const getStyles = (verb: string) => {
@@ -105,7 +104,7 @@ const getStyles = (verb: string) => {
     return useStyles;
 }
 
-const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoConnectEnabled, policyList, isGatewayChanged }) => {
+const PoliciesExpansion: FC<OPProps> = ({ target, verb, allPolicies, isChoreoConnectEnabled, policyList }) => {
 
     // Policies attached for each request, response and fault flow
     const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);

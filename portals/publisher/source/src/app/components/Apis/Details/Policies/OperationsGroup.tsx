@@ -51,8 +51,13 @@ interface OPGroupProps {
 const OperationGroup: FC<OPGroupProps> = ({ openAPI, children, tag, isChoreoConnectEnabled, verbObject }) => {
     const classes = useStyles();
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo: any) => tagInfo.name === tag);
+    let borderColor = "";
+    if (isChoreoConnectEnabled) {
+        borderColor = 'grey';
+    }
+
     return (
-        <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: '#AAAAAA', borderRadius: 1 }}>
+        <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
             <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
                     <Typography

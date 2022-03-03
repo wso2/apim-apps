@@ -81,10 +81,8 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
-    const [isGatewayChanged, getGatewayChange] = useState(false);
 
     const setGatewayChange = (isGatewayChanged: boolean) => {
-        getGatewayChange(isGatewayChanged);
         saveApi(isGatewayChanged);
     }
 
@@ -163,15 +161,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             Alert.error('Error occurred while retrieving the policy list');
         });
     }
-
-    useEffect(() => {
-        getChoreoConnectEnabled(JSON.parse(window.localStorage.getItem('isChoreoConnectEnabled')!));
-        getGatewayChange(false);
-    }, []);
-
-    useEffect(() => {
-        window.localStorage.setItem('isChoreoConnectEnabled', String(isChoreoConnectEnabled));
-    }, [isChoreoConnectEnabled]);
 
     useEffect(() => {
         fetchPolicies();
@@ -366,7 +355,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                     </Typography>
                 </Box>
                 <Box mb={4}>
-                    <GatewaySelector getGatewayType={getGatewayType} isChoreoConnectEnabled={isChoreoConnectEnabled} setGatewayChange={setGatewayChange} />
+                    <GatewaySelector getGatewayType={getGatewayType} isChoreoConnectEnabled={isChoreoConnectEnabled}/>
                 </Box>
                 {isChoreoConnectEnabled ?
                     <Box display='flex' flexDirection='row'>
@@ -395,7 +384,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                                     allPolicies={allPolicies}
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                                                     policyList={policies}
-                                                    isGatewayChanged={isGatewayChanged}
                                                 ></PoliciesExpansion>
                                             </Grid>
                                         </OperationsGroup>
@@ -444,7 +432,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                                                 policyList={policies}
                                                                 allPolicies={allPolicies}
                                                                 isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                                                isGatewayChanged={isGatewayChanged}
                                                             />
                                                         </Grid>
                                                     ) : null;
