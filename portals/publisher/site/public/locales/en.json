@@ -1,4 +1,10 @@
 {
+  "AApis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": [
+    {
+      "type": 0,
+      "value": "Provided regular expression is invalid"
+    }
+  ],
   "Api.category.dropdown.tooltip": [
     {
       "type": 0,
@@ -5249,6 +5255,506 @@
       "value": "Resources"
     }
   ],
+  "Apis.Details.Policies.AttachedPolicyCard.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.apply.to.all.resources": [
+    {
+      "type": 0,
+      "value": "Apply to all resources"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.description.title": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": [
+    {
+      "type": 0,
+      "value": "Oops! Looks like this policy does not have a description"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.description.value.provided": [
+    {
+      "type": 1,
+      "value": "description"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.regex.error": [
+    {
+      "type": 0,
+      "value": "Please enter a valid input"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.required.error": [
+    {
+      "type": 0,
+      "value": "Required field is empty"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.reset": [
+    {
+      "type": 0,
+      "value": "Reset"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyForm.General.saving": [
+    {
+      "type": 0,
+      "value": "Saving"
+    }
+  ],
+  "Apis.Details.Policies.CreatePolicy.create.new.policy": [
+    {
+      "type": 0,
+      "value": "Create New Policy"
+    }
+  ],
+  "Apis.Details.Policies.DeletePolicy.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Policies.DeletePolicy.confirm": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "Apis.Details.Policies.DeletePolicy.delete.confirm": [
+    {
+      "type": 0,
+      "value": "Confirm Delete"
+    }
+  ],
+  "Apis.Details.Policies.DeletePolicy.delete.confirm.content": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    },
+    {
+      "type": 0,
+      "value": " policy ?"
+    }
+  ],
+  "Apis.Details.Policies.DeletePolicy.delete.title": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "Apis.Details.Policies.DraggablePolicyCard.policy.view": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": [
+    {
+      "type": 0,
+      "value": "Changing the gateway type will remove all existing policies added to the API."
+    }
+  ],
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": [
+    {
+      "type": 0,
+      "value": "Proceed"
+    }
+  ],
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title": [
+    {
+      "type": 0,
+      "value": "Change Gateway Type"
+    }
+  ],
+  "Apis.Details.Policies.OperationPolicy.operation.used.in.products": [
+    {
+      "type": 0,
+      "value": "This operation is used in "
+    },
+    {
+      "type": 1,
+      "value": "isUsedInAPIProduct"
+    },
+    {
+      "type": 0,
+      "value": " API product(s)"
+    }
+  ],
+  "Apis.Details.Policies.Policies.cc.info.title": [
+    {
+      "type": 0,
+      "value": "Choreo Connect supports resource level request and response flow policies only."
+    }
+  ],
+  "Apis.Details.Policies.Policies.title": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
+  "Apis.Details.Policies.PoliciesExpansion.fault.flow.title": [
+    {
+      "type": 0,
+      "value": "Fault Flow"
+    }
+  ],
+  "Apis.Details.Policies.PoliciesExpansion.request.flow.title": [
+    {
+      "type": 0,
+      "value": "Request Flow"
+    }
+  ],
+  "Apis.Details.Policies.PoliciesExpansion.response.flow.title": [
+    {
+      "type": 0,
+      "value": "Response Flow"
+    }
+  ],
+  "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": [
+    {
+      "type": 0,
+      "value": "Configure "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    },
+    {
+      "type": 0,
+      "value": " Policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyConfiguringDrawer.title": [
+    {
+      "type": 0,
+      "value": "Configure "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    },
+    {
+      "type": 0,
+      "value": " Policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.description": [
+    {
+      "type": 0,
+      "value": "Provide the name, description and applicable flows of the policy."
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.applicable.flows.label": [
+    {
+      "type": 0,
+      "value": "Applicable Flows"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.helperText": [
+    {
+      "type": 0,
+      "value": "Short description about the policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.label": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.helperText": [
+    {
+      "type": 0,
+      "value": "Enter Policy Name ( E.g.: Add Header )"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.label": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.title": [
+    {
+      "type": 0,
+      "value": "General Details"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.add.policy.attribute": [
+    {
+      "type": 0,
+      "value": "Add Policy Attribute"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.defaultValue.validation.error": [
+    {
+      "type": 0,
+      "value": "Please enter a valid input"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.description": [
+    {
+      "type": 0,
+      "value": "Define attributes of the policy."
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.displayName.required.error": [
+    {
+      "type": 0,
+      "value": "Display Name is Empty"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.allowed.values.helperText": [
+    {
+      "type": 0,
+      "value": "Comma separated list of allowed values for Enum attribute"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.allowed.values.label": [
+    {
+      "type": 0,
+      "value": "Allowed Values"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.default.value.helperText": [
+    {
+      "type": 0,
+      "value": "Default value for the attribute (if any)"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.default.value.label": [
+    {
+      "type": 0,
+      "value": "Default Value"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.delete.tooltip": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.description.helperText": [
+    {
+      "type": 0,
+      "value": "Short description about the policy attribute"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.description.label": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.description.tooltip": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.displayName.helperText": [
+    {
+      "type": 0,
+      "value": "Attribute Display Name"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.displayName.label": [
+    {
+      "type": 0,
+      "value": "Display Name"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.name.helperText": [
+    {
+      "type": 0,
+      "value": "Attribute Name"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.name.label": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.required.tooltip": [
+    {
+      "type": 0,
+      "value": "Required"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.type.label": [
+    {
+      "type": 0,
+      "value": "Type"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.validation.regex.helperText": [
+    {
+      "type": 0,
+      "value": "Regex for attribute validation ( E.g.: ^([a-zA-Z]+)$ )"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.validation.regex.label": [
+    {
+      "type": 0,
+      "value": "Validation Regex"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.value.properties.popover.title": [
+    {
+      "type": 0,
+      "value": "Value Properties"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.value.properties.tooltip": [
+    {
+      "type": 0,
+      "value": "Value Properties"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.name.required.error": [
+    {
+      "type": 0,
+      "value": "Name is Empty"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.no.attributes.found": [
+    {
+      "type": 0,
+      "value": "Looks like this policy does not have any attributes"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.title": [
+    {
+      "type": 0,
+      "value": "Policy Attributes"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyViewForm.done": [
+    {
+      "type": 0,
+      "value": "Done"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.description": [
+    {
+      "type": 0,
+      "value": "Define the Gateway (s) that will be supporting this policy. Based off of this selection, you can upload the relevant business logic inclusive policy file."
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description": [
+    {
+      "type": 0,
+      "value": "Policy file contains the business logic of the policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download": [
+    {
+      "type": 0,
+      "value": "Download Policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": [
+    {
+      "type": 0,
+      "value": "Policy File"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": [
+    {
+      "type": 0,
+      "value": "Supported Gateways"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.title": [
+    {
+      "type": 0,
+      "value": "Gateway Specific Details"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.description": [
+    {
+      "type": 0,
+      "value": "Policy file contains the business logic of the policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.dropzone.description": [
+    {
+      "type": 0,
+      "value": "Click or drag the policy file to upload"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": [
+    {
+      "type": 0,
+      "value": "Upload Policy File"
+    }
+  ],
+  "Apis.Details.Policies.PolicyList.add.new.policy": [
+    {
+      "type": 0,
+      "value": "Add New Policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyList.title": [
+    {
+      "type": 0,
+      "value": "Policy List"
+    }
+  ],
+  "Apis.Details.Policies.SaveOperationPolicies.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": [
     {
       "type": 0,
@@ -7743,6 +8249,18 @@
       "value": "Scopes"
     }
   ],
+  "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": [
+    {
+      "type": 0,
+      "value": "Create New Policy"
+    }
+  ],
+  "CommonPolicies.CreatePolicy.breadcrumb.policies": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
   "CommonPolicies.DeletePolicy.confirm.dialog.cancel.delete": [
     {
       "type": 0,
@@ -7845,6 +8363,12 @@
     {
       "type": 0,
       "value": "Policy Name"
+    }
+  ],
+  "CommonPolicies.ViewPolicy.policies.title": [
+    {
+      "type": 0,
+      "value": "Policies"
     }
   ],
   "Connection.Timeout": [

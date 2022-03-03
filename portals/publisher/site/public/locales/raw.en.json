@@ -1,4 +1,7 @@
 {
+  "AApis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": {
+    "defaultMessage": "Provided regular expression is invalid"
+  },
   "Api.category.dropdown.tooltip": {
     "defaultMessage": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
   },
@@ -2493,6 +2496,240 @@
   "Apis.Details.Overview.ProductResources.resources": {
     "defaultMessage": "Resources"
   },
+  "Apis.Details.Policies.AttachedPolicyCard.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.apply.to.all.resources": {
+    "defaultMessage": "Apply to all resources"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.description.title": {
+    "defaultMessage": "Description"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": {
+    "defaultMessage": "Oops! Looks like this policy does not have a description"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.description.value.provided": {
+    "defaultMessage": "{description}"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.regex.error": {
+    "defaultMessage": "Please enter a valid input"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.required.error": {
+    "defaultMessage": "Required field is empty"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.reset": {
+    "defaultMessage": "Reset"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.save": {
+    "defaultMessage": "Save"
+  },
+  "Apis.Details.Policies.AttachedPolicyForm.General.saving": {
+    "defaultMessage": "Saving"
+  },
+  "Apis.Details.Policies.CreatePolicy.create.new.policy": {
+    "defaultMessage": "Create New Policy"
+  },
+  "Apis.Details.Policies.DeletePolicy.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Policies.DeletePolicy.confirm": {
+    "defaultMessage": "Yes"
+  },
+  "Apis.Details.Policies.DeletePolicy.delete.confirm": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "Apis.Details.Policies.DeletePolicy.delete.confirm.content": {
+    "defaultMessage": "Are you sure you want to delete {policy} policy ?"
+  },
+  "Apis.Details.Policies.DeletePolicy.delete.title": {
+    "defaultMessage": "Delete"
+  },
+  "Apis.Details.Policies.DraggablePolicyCard.policy.view": {
+    "defaultMessage": "View"
+  },
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": {
+    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API."
+  },
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": {
+    "defaultMessage": "Proceed"
+  },
+  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title": {
+    "defaultMessage": "Change Gateway Type"
+  },
+  "Apis.Details.Policies.OperationPolicy.operation.used.in.products": {
+    "defaultMessage": "This operation is used in {isUsedInAPIProduct} API product(s)"
+  },
+  "Apis.Details.Policies.Policies.cc.info.title": {
+    "defaultMessage": "Choreo Connect supports resource level request and response flow policies only."
+  },
+  "Apis.Details.Policies.Policies.title": {
+    "defaultMessage": "Policies"
+  },
+  "Apis.Details.Policies.PoliciesExpansion.fault.flow.title": {
+    "defaultMessage": "Fault Flow"
+  },
+  "Apis.Details.Policies.PoliciesExpansion.request.flow.title": {
+    "defaultMessage": "Request Flow"
+  },
+  "Apis.Details.Policies.PoliciesExpansion.response.flow.title": {
+    "defaultMessage": "Response Flow"
+  },
+  "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": {
+    "defaultMessage": "Configure {policy} Policy"
+  },
+  "Apis.Details.Policies.PolicyConfiguringDrawer.title": {
+    "defaultMessage": "Configure {policy} Policy"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.description": {
+    "defaultMessage": "Provide the name, description and applicable flows of the policy."
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.applicable.flows.label": {
+    "defaultMessage": "Applicable Flows"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.helperText": {
+    "defaultMessage": "Short description about the policy"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.label": {
+    "defaultMessage": "Description"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.helperText": {
+    "defaultMessage": "Enter Policy Name ( E.g.: Add Header )"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.label": {
+    "defaultMessage": "Name"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.title": {
+    "defaultMessage": "General Details"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.add.policy.attribute": {
+    "defaultMessage": "Add Policy Attribute"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.defaultValue.validation.error": {
+    "defaultMessage": "Please enter a valid input"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.description": {
+    "defaultMessage": "Define attributes of the policy."
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.displayName.required.error": {
+    "defaultMessage": "Display Name is Empty"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.allowed.values.helperText": {
+    "defaultMessage": "Comma separated list of allowed values for Enum attribute"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.allowed.values.label": {
+    "defaultMessage": "Allowed Values"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.default.value.helperText": {
+    "defaultMessage": "Default value for the attribute (if any)"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.default.value.label": {
+    "defaultMessage": "Default Value"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.delete.tooltip": {
+    "defaultMessage": "Delete"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.description.helperText": {
+    "defaultMessage": "Short description about the policy attribute"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.description.label": {
+    "defaultMessage": "Description"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.description.tooltip": {
+    "defaultMessage": "Description"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.displayName.helperText": {
+    "defaultMessage": "Attribute Display Name"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.displayName.label": {
+    "defaultMessage": "Display Name"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.name.helperText": {
+    "defaultMessage": "Attribute Name"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.name.label": {
+    "defaultMessage": "Name"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.required.tooltip": {
+    "defaultMessage": "Required"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.type.label": {
+    "defaultMessage": "Type"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.validation.regex.helperText": {
+    "defaultMessage": "Regex for attribute validation ( E.g.: ^([a-zA-Z]+)$ )"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.validation.regex.label": {
+    "defaultMessage": "Validation Regex"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.value.properties.popover.title": {
+    "defaultMessage": "Value Properties"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.form.value.properties.tooltip": {
+    "defaultMessage": "Value Properties"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.name.required.error": {
+    "defaultMessage": "Name is Empty"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.no.attributes.found": {
+    "defaultMessage": "Looks like this policy does not have any attributes"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.title": {
+    "defaultMessage": "Policy Attributes"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.save": {
+    "defaultMessage": "Save"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyViewForm.done": {
+    "defaultMessage": "Done"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.description": {
+    "defaultMessage": "Define the Gateway (s) that will be supporting this policy. Based off of this selection, you can upload the relevant business logic inclusive policy file."
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description": {
+    "defaultMessage": "Policy file contains the business logic of the policy"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download": {
+    "defaultMessage": "Download Policy"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": {
+    "defaultMessage": "Policy File"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": {
+    "defaultMessage": "Supported Gateways"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.title": {
+    "defaultMessage": "Gateway Specific Details"
+  },
+  "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.description": {
+    "defaultMessage": "Policy file contains the business logic of the policy"
+  },
+  "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.dropzone.description": {
+    "defaultMessage": "Click or drag the policy file to upload"
+  },
+  "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": {
+    "defaultMessage": "Upload Policy File"
+  },
+  "Apis.Details.Policies.PolicyList.add.new.policy": {
+    "defaultMessage": "Add New Policy"
+  },
+  "Apis.Details.Policies.PolicyList.title": {
+    "defaultMessage": "Policy List"
+  },
+  "Apis.Details.Policies.SaveOperationPolicies.save": {
+    "defaultMessage": "Save"
+  },
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": {
     "defaultMessage": "Select API Resources"
   },
@@ -3699,6 +3936,12 @@
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
   },
+  "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": {
+    "defaultMessage": "Create New Policy"
+  },
+  "CommonPolicies.CreatePolicy.breadcrumb.policies": {
+    "defaultMessage": "Policies"
+  },
   "CommonPolicies.DeletePolicy.confirm.dialog.cancel.delete": {
     "defaultMessage": "Cancel"
   },
@@ -3746,6 +3989,9 @@
   },
   "CommonPolicies.Listing.table.header.policy.name": {
     "defaultMessage": "Policy Name"
+  },
+  "CommonPolicies.ViewPolicy.policies.title": {
+    "defaultMessage": "Policies"
   },
   "Connection.Timeout": {
     "defaultMessage": "Connection Timeout"
