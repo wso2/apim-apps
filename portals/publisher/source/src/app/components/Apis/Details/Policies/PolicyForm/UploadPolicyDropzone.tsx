@@ -120,7 +120,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                                 <Icon>cloud_upload</Icon>
                                 <Typography>
                                     <FormattedMessage
-                                        id='Policies.PolicyCreateForm.UploadPolicyDropzone.upload.policy.file'
+                                        id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.dropzone.description'
                                         defaultMessage='Click or drag the policy file to upload'
                                     />
                                 </Typography>
@@ -142,7 +142,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                         component='div'
                     >
                         <FormattedMessage
-                            id='Policies.PolicyCreateForm.UploadPolicyDropzone.title'
+                            id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title'
                             defaultMessage='Upload Policy File'
                         />
                         <sup className={classes.mandatoryStar}>*</sup>
@@ -158,7 +158,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                     </Typography>
                     <Typography color='inherit' variant='caption' component='p'>
                         <FormattedMessage
-                            id='Policies.PolicyCreateForm.UploadPolicyDropzone.description'
+                            id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.description'
                             defaultMessage='Policy file contains the business logic of the policy'
                         />
                     </Typography>

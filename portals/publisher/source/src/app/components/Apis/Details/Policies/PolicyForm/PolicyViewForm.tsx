@@ -86,7 +86,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
             <Box>
                 <Button variant='contained' color='primary' onClick={onDone}>
                     <FormattedMessage
-                        id='Apis.Details.Policies.PolicyPolicyViewForm.policy.done'
+                        id='Apis.Details.Policies.PolicyForm.PolicyViewForm.done'
                         defaultMessage='Done'
                     />
                 </Button>

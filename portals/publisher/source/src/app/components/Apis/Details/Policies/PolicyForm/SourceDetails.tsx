@@ -120,7 +120,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                 console.error(error);
                                 Alert.error(
                                     <FormattedMessage
-                                        id='Policies.ViewPolicy.download.error'
+                                        id='Apis.Details.Policies.PolicyForm.SourceDetails.download.error'
                                         defaultMessage='Something went wrong while downloading the policy'
                                     />,
                                 );
@@ -148,7 +148,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                             component='div'
                         >
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.SourceDetails.download.policy'
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title'
                                 defaultMessage='Policy File'
                             />
                             <sup className={classes.mandatoryStar}>*</sup>
@@ -156,7 +156,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                     </Box>
                     <Typography color='inherit' variant='caption' component='p'>
                         <FormattedMessage
-                            id='Policies.PolicyCreateForm.UploadPolicyDropzone.description'
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description'
                             defaultMessage='Policy file contains the business logic of the policy'
                         />
                     </Typography>
@@ -177,7 +177,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                             endIcon={<CloudDownloadIcon />}
                         >
                             <FormattedMessage
-                                id='Policies.PolicyForm.SourceDetails.download.button'
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download'
                                 defaultMessage='Download Policy'
                             />
                         </Button>
@@ -197,13 +197,13 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                         component='div'
                     >
                         <FormattedMessage
-                            id='Policies.PolicyPolicyForm.add.policy.gateway.specific.details.title'
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.title'
                             defaultMessage='Gateway Specific Details'
                         />
                     </Typography>
                     <Typography color='inherit' variant='caption' component='p'>
                         <FormattedMessage
-                            id='Policies.PolicyPolicyForm.add.policy.gateway.specific.details.description'
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.description'
                             defaultMessage={
                                 'Define the Gateway (s) that will be supporting this policy. ' +
                                 'Based off of this selection, you can upload the relevant business ' +
@@ -217,7 +217,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                 <Box display='flex' flexDirection='row' alignItems='center'>
                     <Typography color='inherit' variant='body1' component='div'>
                         <FormattedMessage
-                            id='Apis.Details.Policies.PolicyPolicyForm.field.supported.gateways'
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label'
                             defaultMessage='Supported Gateways'
                         />
                         <sup className={classes.mandatoryStar}>*</sup>

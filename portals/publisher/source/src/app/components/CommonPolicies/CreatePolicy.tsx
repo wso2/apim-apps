@@ -107,7 +107,7 @@ const CreatePolicy: React.FC = () => {
                             >
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
-                                        id='CommonPolicies.CreatePolicy.CommonPolicy.listing.heading'
+                                        id='CommonPolicies.CreatePolicy.breadcrumb.policies'
                                         defaultMessage='Policies'
                                     />
                                 </Typography>
@@ -115,7 +115,7 @@ const CreatePolicy: React.FC = () => {
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h3'>
                                 <FormattedMessage
-                                    id='CommonPolicies.CreatePolicy.CommonPolicy.main.heading'
+                                    id='CommonPolicies.CreatePolicy.breadcrumb.create.new.policy'
                                     defaultMessage='Create New Policy'
                                 />
                             </Typography>

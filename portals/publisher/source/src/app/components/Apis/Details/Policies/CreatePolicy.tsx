@@ -121,7 +121,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     <Box display='flex'>
                         <Typography variant='h4' component='h2'>
                             <FormattedMessage
-                                id='Policies.CreatePolicy.listing.heading'
+                                id='Apis.Details.Policies.CreatePolicy.create.new.policy'
                                 defaultMessage='Create New Policy'
                             />
                         </Typography>

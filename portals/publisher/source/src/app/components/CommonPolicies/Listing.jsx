@@ -143,11 +143,11 @@ const Listing = () => {
             },
         },
         intl.formatMessage({
-            id: 'CommonPolicies.Listing.table.header.name',
+            id: 'CommonPolicies.Listing.table.header.policy.name',
             defaultMessage: 'Policy Name',
         }),
         intl.formatMessage({
-            id: 'Policies.Listing.Listing.table.header.description',
+            id: 'CommonPolicies.Listing.table.header.description',
             defaultMessage: 'Description',
         }),
         {
@@ -202,7 +202,7 @@ const Listing = () => {
                 sort: false,
                 label: (
                     <FormattedMessage
-                        id='Policies.Listing.Listing.table.header.applicable.flows'
+                        id='CommonPolicies.Listing.table.header.applicable.flows'
                         defaultMessage='Applicable Flows'
                     />
                 ),
@@ -247,7 +247,7 @@ const Listing = () => {
                                         visibility
                                     </Icon>
                                     <FormattedMessage
-                                        id='Policies.Listing.Listing.policies.view'
+                                        id='CommonPolicies.Listing.table.header.actions.view'
                                         defaultMessage='View'
                                     />
                                 </Button>
@@ -265,7 +265,7 @@ const Listing = () => {
                 sort: false,
                 label: (
                     <FormattedMessage
-                        id='Policies.Listing.Listing.table.header.actions'
+                        id='CommonPolicies.Listing.table.header.actions.title'
                         defaultMessage='Actions'
                     />
                 ),
@@ -291,13 +291,13 @@ const Listing = () => {
             <Onboarding
                 title={
                     <FormattedMessage
-                        id='Policies.Listing.Listing.create.new'
+                        id='CommonPolicies.Listing.onboarding.create.new'
                         defaultMessage='Let’s get started !'
                     />
                 }
                 subTitle={
                     <FormattedMessage
-                        id='Policies.Listing.Listing.policies.tooltip'
+                        id='CommonPolicies.Listing.onboarding.policies.tooltip'
                         defaultMessage={
                             'Policies provide the capability to alter the behavior ' +
                             'of API resources'
@@ -346,14 +346,14 @@ const Listing = () => {
                     className={classes.mainTitle}
                 >
                     <FormattedMessage
-                        id='Policies.Listing.Listing.heading.CommonPolicies.heading'
+                        id='CommonPolicies.Listing.policies.title.name'
                         defaultMessage='Policies'
                     />
                 </Typography>
                 <Tooltip
                     title={
                         <FormattedMessage
-                            id='Apis.Details.Policies.CommonPolicies.heading.tooltip'
+                            id='CommonPolicies.Listing.policies.title.tooltip'
                             defaultMessage={
                                 'You can utilize these policies at the operation level' +
                                 ' by navigating to the Policies tab under any desired API'
@@ -391,7 +391,7 @@ const Listing = () => {
                     >
                         <AddCircle className={classes.buttonIcon} />
                         <FormattedMessage
-                            id='Policies.Listing.Listing.heading.CommonPolicy.new'
+                            id='CommonPolicies.Listing.policies.title.add.new.policy'
                             defaultMessage='Add New Policy'
                         />
                     </Button>
@@ -406,7 +406,7 @@ const Listing = () => {
                     <Grid item>
                         <Typography variant='body2' color='primary'>
                             <FormattedMessage
-                                id='Policies.Listing.Listing.update.not.allowed'
+                                id='CommonPolicies.Listing.policies.title.update.not.allowed'
                                 defaultMessage={
                                     '*You are not authorized to manage policies ' +
                                     'due to insufficient permissions'

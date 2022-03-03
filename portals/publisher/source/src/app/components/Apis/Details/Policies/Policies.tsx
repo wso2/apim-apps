@@ -346,7 +346,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
                         <FormattedMessage
-                            id='Apis.Details.Policies.title'
+                            id='Apis.Details.Policies.Policies.title'
                             defaultMessage='Policies'
                         />
                     </Typography>

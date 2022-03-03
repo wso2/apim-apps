@@ -140,7 +140,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                             console.error(error);
                             Alert.error(
                                 <FormattedMessage
-                                    id='Policies.ViewPolicy.download.error'
+                                    id='Apis.Details.Policies.AttachedPolicyCard.download.error'
                                     defaultMessage='Something went wrong while downloading the policy'
                                 />,
                             );

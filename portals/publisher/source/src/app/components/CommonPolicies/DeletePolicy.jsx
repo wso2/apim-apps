@@ -79,7 +79,7 @@ const DeletePolicy = ({ policyId, policyName, fetchCommonPolicies }) => {
             >
                 <Icon>delete_forever</Icon>
                 <FormattedMessage
-                    id='Policies.Delete.Delete.policy.delete'
+                    id='CommonPolicies.DeletePolicy.policy.delete'
                     defaultMessage='Delete'
                 />
             </Button>
@@ -87,26 +87,26 @@ const DeletePolicy = ({ policyId, policyName, fetchCommonPolicies }) => {
                 key='key-dialog'
                 labelCancel={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.listing.label.cancel'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.cancel.delete'
                         defaultMessage='Cancel'
                     />
                 }
                 title={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.listing.delete.confirm'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.confirm.title'
                         defaultMessage='Confirm Delete'
                     />
                 }
                 message={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.label.ok.confirm'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.confirm.content'
                         defaultMessage='Are you sure you want to delete {policy} policy ?'
                         values={{ policy: policyName }}
                     />
                 }
                 labelOk={
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.listing.label.ok.yes'
+                        id='CommonPolicies.DeletePolicy.confirm.dialog.confirm.delete'
                         defaultMessage='Yes'
                     />
                 }

@@ -102,13 +102,13 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
             <Box width='40%'>
                 <Typography color='inherit' variant='subtitle2' component='div'>
                     <FormattedMessage
-                        id='Policies.PolicyCreateForm.add.policy.general.details.title'
+                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.title'
                         defaultMessage='General Details'
                     />
                 </Typography>
                 <Typography color='inherit' variant='caption' component='p'>
                     <FormattedMessage
-                        id='Policies.PolicyCreateForm.add.policy.general.details.description'
+                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.description'
                         defaultMessage='Provide the name, description and applicable flows of the policy.'
                     />
                 </Typography>
@@ -123,7 +123,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         label={
                             <>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.field.name'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.label'
                                     defaultMessage='Name'
                                 />
                             </>
@@ -134,7 +134,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                 'Name is Empty'
                             ) : (
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.short.description.name'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.helperText'
                                     defaultMessage='Enter Policy Name ( E.g.: Add Header )'
                                 />
                             )
@@ -154,14 +154,14 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         label={
                             <>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyCreateForm.field.description'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.label'
                                     defaultMessage='Description'
                                 />
                             </>
                         }
                         helperText={
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyCreateForm.short.description.description'
+                                id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.helperText'
                                 defaultMessage='Short description about the policy'
                             />
                         }
@@ -182,7 +182,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                             component='div'
                         >
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyCreateForm.field.applicable.flows'
+                                id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.applicable.flows.label'
                                 defaultMessage='Applicable Flows'
                             />
                             <sup className={classes.mandatoryStar}>*</sup>

@@ -82,7 +82,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 placement='top'
                 title={
                     <FormattedMessage
-                        id='Apis.Details.Policies.PolicyList.Policy.Delete'
+                        id='Apis.Details.Policies.DeletePolicy.delete.title'
                         defaultMessage='Delete'
                     />
                 }
@@ -104,14 +104,14 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
             >
                 <DialogTitle>
                     <FormattedMessage
-                        id='Policies.Delete.Delete.policy.delete.confirm'
+                        id='Apis.Details.Policies.DeletePolicy.delete.confirm'
                         defaultMessage='Confirm Delete'
                     />
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         <FormattedMessage
-                            id='Policies.Delete.Delete.policy.label.ok.confirm'
+                            id='Apis.Details.Policies.DeletePolicy.delete.confirm.content'
                             defaultMessage='Are you sure you want to delete {policy} policy ?'
                             values={{ policy: policyName }}
                         />
@@ -124,7 +124,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                         color='primary'
                     >
                         <FormattedMessage
-                            id='Policies.Delete.Delete.policy.listing.label.cancel'
+                            id='Apis.Details.Policies.DeletePolicy.cancel'
                             defaultMessage='Cancel'
                         />
                     </Button>
@@ -134,7 +134,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                         color='primary'
                     >
                         <FormattedMessage
-                            id='Policies.Delete.Delete.policy.listing.label.ok.yes'
+                            id='Apis.Details.Policies.DeletePolicy.confirm'
                             defaultMessage='Yes'
                         />
                     </Button>

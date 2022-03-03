@@ -155,7 +155,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                                 placement='top'
                                 title={
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyList.Policy.View'
+                                        id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
                                         defaultMessage='View'
                                     />
                                 }

@@ -70,7 +70,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }
                             color='primary'
                         >
                             <FormattedMessage
-                                id='Apis.Details.Policies.SaveOperationPolicies.save.btn'
+                                id='Apis.Details.Policies.SaveOperationPolicies.save'
                                 defaultMessage='Save'
                             />
                         </Button>

@@ -117,7 +117,7 @@ const ViewPolicy: React.FC = () => {
                             >
                                 <Typography variant='h4' component='h2'>
                                     <FormattedMessage
-                                        id='CommonPolicies.CreatePolicy.listing.heading'
+                                        id='CommonPolicies.ViewPolicy.policies.title'
                                         defaultMessage='Policies'
                                     />
                                 </Typography>

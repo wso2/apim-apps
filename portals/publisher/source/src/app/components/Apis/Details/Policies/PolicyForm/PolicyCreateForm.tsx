@@ -261,14 +261,14 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                         <CircularProgress size={16} />
                     ) : (
                         <FormattedMessage
-                            id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.save'
+                            id='Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.save'
                             defaultMessage='Save'
                         />
                     )}
                 </Button>
                 <Button className={classes.cancelBtn} onClick={onCancel}>
                     <FormattedMessage
-                        id='Apis.Details.Policies.PolicyPolicyCreateForm.policy.cancel'
+                        id='Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.cancel'
                         defaultMessage='Cancel'
                     />
                 </Button>

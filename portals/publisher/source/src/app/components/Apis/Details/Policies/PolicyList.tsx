@@ -102,7 +102,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
-                                id='Apis.Details.Policies.APIPolicyList.new.policy'
+                                id='Apis.Details.Policies.PolicyList.add.new.policy'
                                 defaultMessage='Add New Policy'
                             />
                         </Button>
