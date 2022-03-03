@@ -2493,24 +2493,6 @@
   "Apis.Details.Overview.ProductResources.resources": {
     "defaultMessage": "Resources"
   },
-  "Apis.Details.Policies.CommonPolicies.heading.tooltip": {
-    "defaultMessage": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
-  },
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.message": {
-    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API."
-  },
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.proceed": {
-    "defaultMessage": "Proceed"
-  },
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.title": {
-    "defaultMessage": "Change Gateway Type"
-  },
-  "Apis.Details.Policies.ApiPolicies.Gateway.ChoreoConnect.support.message": {
-    "defaultMessage": "Choreo connect supports resource level request flow policies only."
-  },
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": {
     "defaultMessage": "Select API Resources"
   },
@@ -3717,7 +3699,52 @@
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
   },
-  "CommonPolicies.Listing.table.header.name": {
+  "CommonPolicies.DeletePolicy.confirm.dialog.cancel.delete": {
+    "defaultMessage": "Cancel"
+  },
+  "CommonPolicies.DeletePolicy.confirm.dialog.confirm.content": {
+    "defaultMessage": "Are you sure you want to delete {policy} policy ?"
+  },
+  "CommonPolicies.DeletePolicy.confirm.dialog.confirm.delete": {
+    "defaultMessage": "Yes"
+  },
+  "CommonPolicies.DeletePolicy.confirm.dialog.confirm.title": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "CommonPolicies.DeletePolicy.policy.delete": {
+    "defaultMessage": "Delete"
+  },
+  "CommonPolicies.Listing.onboarding.create.new": {
+    "defaultMessage": "Let’s get started !"
+  },
+  "CommonPolicies.Listing.onboarding.policies.tooltip": {
+    "defaultMessage": "Policies provide the capability to alter the behavior of API resources"
+  },
+  "CommonPolicies.Listing.policies.title.add.new.policy": {
+    "defaultMessage": "Add New Policy"
+  },
+  "CommonPolicies.Listing.policies.title.name": {
+    "defaultMessage": "Policies"
+  },
+  "CommonPolicies.Listing.policies.title.tooltip": {
+    "defaultMessage": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
+  },
+  "CommonPolicies.Listing.policies.title.update.not.allowed": {
+    "defaultMessage": "*You are not authorized to manage policies due to insufficient permissions"
+  },
+  "CommonPolicies.Listing.table.header.actions.title": {
+    "defaultMessage": "Actions"
+  },
+  "CommonPolicies.Listing.table.header.actions.view": {
+    "defaultMessage": "View"
+  },
+  "CommonPolicies.Listing.table.header.applicable.flows": {
+    "defaultMessage": "Applicable Flows"
+  },
+  "CommonPolicies.Listing.table.header.description": {
+    "defaultMessage": "Description"
+  },
+  "CommonPolicies.Listing.table.header.policy.name": {
     "defaultMessage": "Policy Name"
   },
   "Connection.Timeout": {
@@ -3737,48 +3764,6 @@
   },
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
-  },
-  "Policies.Delete.Delete.policy.delete": {
-    "defaultMessage": "Delete"
-  },
-  "Policies.Delete.Delete.policy.label.ok.confirm": {
-    "defaultMessage": "Are you sure you want to delete {policy} policy ?"
-  },
-  "Policies.Delete.Delete.policy.listing.delete.confirm": {
-    "defaultMessage": "Confirm Delete"
-  },
-  "Policies.Delete.Delete.policy.listing.label.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Policies.Delete.Delete.policy.listing.label.ok.yes": {
-    "defaultMessage": "Yes"
-  },
-  "Policies.Listing.Listing.create.new": {
-    "defaultMessage": "Let’s get started !"
-  },
-  "Policies.Listing.Listing.heading.CommonPolicies.heading": {
-    "defaultMessage": "Policies"
-  },
-  "Policies.Listing.Listing.heading.CommonPolicy.new": {
-    "defaultMessage": "Add New Policy"
-  },
-  "Policies.Listing.Listing.policies.tooltip": {
-    "defaultMessage": "Policies provide the capability to alter the behavior of API resources"
-  },
-  "Policies.Listing.Listing.policies.view": {
-    "defaultMessage": "View"
-  },
-  "Policies.Listing.Listing.table.header.actions": {
-    "defaultMessage": "Actions"
-  },
-  "Policies.Listing.Listing.table.header.applicable.flows": {
-    "defaultMessage": "Applicable Flows"
-  },
-  "Policies.Listing.Listing.table.header.description": {
-    "defaultMessage": "Description"
-  },
-  "Policies.Listing.Listing.update.not.allowed": {
-    "defaultMessage": "*You are not authorized to manage policies due to insufficient permissions"
   },
   "Scopes.Create.CreateScope.cancel": {
     "defaultMessage": "Cancel"

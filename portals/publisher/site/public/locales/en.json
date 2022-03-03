@@ -5249,42 +5249,6 @@
       "value": "Resources"
     }
   ],
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.cancel": [
-    {
-      "type": 0,
-      "value": "Cancel"
-    }
-  ],
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.message": [
-    {
-      "type": 0,
-      "value": "Changing the gateway type will remove all existing policies added to the API."
-    }
-  ],
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.proceed": [
-    {
-      "type": 0,
-      "value": "Proceed"
-    }
-  ],
-  "Apis.Details.Policies.ApiPolicies.Gateway.change.title": [
-    {
-      "type": 0,
-      "value": "Change Gateway Type"
-    }
-  ],
-  "Apis.Details.Policies.ApiPolicies.Gateway.ChoreoConnect.support.message": [
-    {
-      "type": 0,
-      "value": "Choreo connect supports resource level request flow policies only."
-    }
-  ],
-  "Apis.Details.Policies.CommonPolicies.heading.tooltip": [
-    {
-      "type": 0,
-      "value": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
-    }
-  ],
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": [
     {
       "type": 0,
@@ -7779,7 +7743,105 @@
       "value": "Scopes"
     }
   ],
-  "CommonPolicies.Listing.table.header.name": [
+  "CommonPolicies.DeletePolicy.confirm.dialog.cancel.delete": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "CommonPolicies.DeletePolicy.confirm.dialog.confirm.content": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    },
+    {
+      "type": 0,
+      "value": " policy ?"
+    }
+  ],
+  "CommonPolicies.DeletePolicy.confirm.dialog.confirm.delete": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "CommonPolicies.DeletePolicy.confirm.dialog.confirm.title": [
+    {
+      "type": 0,
+      "value": "Confirm Delete"
+    }
+  ],
+  "CommonPolicies.DeletePolicy.policy.delete": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "CommonPolicies.Listing.onboarding.create.new": [
+    {
+      "type": 0,
+      "value": "Let’s get started !"
+    }
+  ],
+  "CommonPolicies.Listing.onboarding.policies.tooltip": [
+    {
+      "type": 0,
+      "value": "Policies provide the capability to alter the behavior of API resources"
+    }
+  ],
+  "CommonPolicies.Listing.policies.title.add.new.policy": [
+    {
+      "type": 0,
+      "value": "Add New Policy"
+    }
+  ],
+  "CommonPolicies.Listing.policies.title.name": [
+    {
+      "type": 0,
+      "value": "Policies"
+    }
+  ],
+  "CommonPolicies.Listing.policies.title.tooltip": [
+    {
+      "type": 0,
+      "value": "You can utilize these policies at the operation level by navigating to the Policies tab under any desired API"
+    }
+  ],
+  "CommonPolicies.Listing.policies.title.update.not.allowed": [
+    {
+      "type": 0,
+      "value": "*You are not authorized to manage policies due to insufficient permissions"
+    }
+  ],
+  "CommonPolicies.Listing.table.header.actions.title": [
+    {
+      "type": 0,
+      "value": "Actions"
+    }
+  ],
+  "CommonPolicies.Listing.table.header.actions.view": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
+  "CommonPolicies.Listing.table.header.applicable.flows": [
+    {
+      "type": 0,
+      "value": "Applicable Flows"
+    }
+  ],
+  "CommonPolicies.Listing.table.header.description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "CommonPolicies.Listing.table.header.policy.name": [
     {
       "type": 0,
       "value": "Policy Name"
@@ -7819,98 +7881,6 @@
     {
       "type": 0,
       "value": "Error 403 : Forbidden"
-    }
-  ],
-  "Policies.Delete.Delete.policy.delete": [
-    {
-      "type": 0,
-      "value": "Delete"
-    }
-  ],
-  "Policies.Delete.Delete.policy.label.ok.confirm": [
-    {
-      "type": 0,
-      "value": "Are you sure you want to delete "
-    },
-    {
-      "type": 1,
-      "value": "policy"
-    },
-    {
-      "type": 0,
-      "value": " policy ?"
-    }
-  ],
-  "Policies.Delete.Delete.policy.listing.delete.confirm": [
-    {
-      "type": 0,
-      "value": "Confirm Delete"
-    }
-  ],
-  "Policies.Delete.Delete.policy.listing.label.cancel": [
-    {
-      "type": 0,
-      "value": "Cancel"
-    }
-  ],
-  "Policies.Delete.Delete.policy.listing.label.ok.yes": [
-    {
-      "type": 0,
-      "value": "Yes"
-    }
-  ],
-  "Policies.Listing.Listing.create.new": [
-    {
-      "type": 0,
-      "value": "Let’s get started !"
-    }
-  ],
-  "Policies.Listing.Listing.heading.CommonPolicies.heading": [
-    {
-      "type": 0,
-      "value": "Policies"
-    }
-  ],
-  "Policies.Listing.Listing.heading.CommonPolicy.new": [
-    {
-      "type": 0,
-      "value": "Add New Policy"
-    }
-  ],
-  "Policies.Listing.Listing.policies.tooltip": [
-    {
-      "type": 0,
-      "value": "Policies provide the capability to alter the behavior of API resources"
-    }
-  ],
-  "Policies.Listing.Listing.policies.view": [
-    {
-      "type": 0,
-      "value": "View"
-    }
-  ],
-  "Policies.Listing.Listing.table.header.actions": [
-    {
-      "type": 0,
-      "value": "Actions"
-    }
-  ],
-  "Policies.Listing.Listing.table.header.applicable.flows": [
-    {
-      "type": 0,
-      "value": "Applicable Flows"
-    }
-  ],
-  "Policies.Listing.Listing.table.header.description": [
-    {
-      "type": 0,
-      "value": "Description"
-    }
-  ],
-  "Policies.Listing.Listing.update.not.allowed": [
-    {
-      "type": 0,
-      "value": "*You are not authorized to manage policies due to insufficient permissions"
     }
   ],
   "Scopes.Create.CreateScope.cancel": [
