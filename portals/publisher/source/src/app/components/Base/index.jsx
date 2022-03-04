@@ -18,7 +18,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Footer from 'AppComponents/Base/Footer/Footer';
 import Header from 'AppComponents/Base/Header';
 import { Toaster } from 'react-hot-toast';
@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
  */
 const Base = ({ children, user }) => {
     const classes = useStyles();
+    const theme = useTheme();
     return (
         <>
             {/* <CssBaseline /> */}
@@ -67,13 +68,34 @@ const Base = ({ children, user }) => {
                 gutter={8}
                 toastOptions={{
                     style: {
-                        background: '#DDEFFF',
+                        background: '#008fcc',
+                        color: '#ffffff',
+                        fontFamily: theme.typography.fontFamily,
+                        fontSize: "13px",
                     },
                     success: {
-                        style: { backgroundColor: '#C7FFBE' },
+                        style: {
+                            backgroundColor: '#4caf50',
+                            color: '#ffffff',
+                            fontFamily: theme.typography.fontFamily,
+                            fontSize: "13px"
+                        },
+                        iconTheme: {
+                            primary: '#ffffff',
+                            secondary: '#4caf50',
+                        },
                     },
                     error: {
-                        style: { backgroundColor: '#FFC7BE' },
+                        style: {
+                            backgroundColor: '#BD0808',
+                            color: '#ffffff',
+                            fontFamily: theme.typography.fontFamily,
+                            fontSize: "13px"
+                        },
+                        iconTheme: {
+                            primary: '#ffffff',
+                            secondary: '#BD0808',
+                        },
                     },
                     custom: {
                         style: { backgroundColor: '#DDEFFF' },

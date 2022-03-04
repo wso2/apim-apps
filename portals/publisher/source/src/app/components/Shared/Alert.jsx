@@ -19,7 +19,7 @@ import toast from 'react-hot-toast';
 import React from 'react';
 
 export default {
-    info: toast,
+    info: toast.success,
     success: toast.success,
     error: toast.error,
     warning: (message, options) => toast(message, {
