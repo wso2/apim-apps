@@ -38,50 +38,57 @@ Setup build environment
 2. Install Maven from [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi). * For Maven 3.8 and up, please check the Troubleshoot section.
 3. Install JDK 1.8 [https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html).
 
+Fixing an issue in a web application
+==================================
+If you are planning to fix an issue in a specific web application, you don't need to build the whole repository. You only need to build that specific application from the portals folder. We will take fixing an issue in publisher web application as an example.
+
+1. If you do not build a WSO2 API Manager server, Download the built distribution of WSO2 API Manager Server from http://wso2.com/api-manager. 
+
+2. Execute api-manager.sh (For unix environment) or api-manager.bat (For windows environment) file from the bin directory to run WSO2 API Manager Server.
+
+3. Goto `portals/publisher` directory in the `apim-apps` repository
+
+4. You can either run `mvn clean install` or `npm ci`. Note that the `npm ci` will be faster since `mvn clean install` command is executing production build and UI tests.
+
+5. Run `npm start` to start publisher portal in development mode.
+
+Now you can update the code to view the changes in the development server. Once you are done with the fixes,
+you can run `npm run build:prod` to check for errors before committing. Also refer to 'Running Tests' section and run test if the tests are effected. At the moment these tests are valid for only publisher app.
+
+### Adding or updating a new dependency
+1. Setup the development environment by following the steps given above.
+
+2. Run the npm command from the web application root folder. ( Ex: For publisher web app, it's portals/publisher ).
+   - Adding a dependency `npm i <package-name>`. (Ex: `npm i base64url`)
+   - Removing a dependency `npm uninstall <package-name>`. (Ex: `npm uninstall base64url`)
+   - Updating a version or specifying version when installing `npm i <package-name>@<version>`. (Ex: `npm i base64url@3.0.1`).
+
+3. Once you successfully run the above commands the package.json and package-lock.json files will be updated. You need to commit both of them. 
+
+>
+> Never run `npm i` since it will update the package lock for all the dependencies with there minor updated versions.
+>
+
 Building & Running
 ==================================
 ### Build
  1. Download or clone the project source code from https://github.com/wso2/apim-apps
 
-2. Open the `portals/` directory (where the lerna.json is located)
+ 2. If you want to build all web apps, run `mvn clean install` from the command line in the project root directory (where the root pom.xml is located). 
 
-3. Run following commands from the `portals/` directory :
-
-    i.  Run `npm run bootstrap` to install the dependencies for all 3 portals
-
-    ii. Run `npm run build:prod` to build all 3 portal apps
-
-4. If you are building the [product-apim](https://github.com/wso2/product-apim),
-
-5. Run `mvn clean install` from the command line in the project root directory (where the root pom.xml is located).
-
-6. Then you just need to build [WSO2 API Manager Server](https://github.com/wso2/product-apim) after. (Follow the guide there)
+ 3. Then you just need to build [WSO2 API Manager Server](https://github.com/wso2/product-apim) after. (Follow the guide there)
 
 ### Run
 
-7. Extract the wso2am-4.0.0.zip and go to the 'bin' directory
+4. Extract the wso2am-4.0.0.zip and go to the 'bin' directory
 
-8. Run the api-manager.sh or api-manager.bat script based on you operating system.
+5. Run the api-manager.sh or api-manager.bat script based on you operating system.
 
-3. Access the respective WSO2 API-M interfaces
+6. Access the respective WSO2 API-M interfaces
     * API Publisher web application is running at - https://localhost:9443/publisher \
   You may sign in to the Publisher using the default administrator credentials (username: admin, password: admin).
     * Developer Portal web application is running at - https://localhost:9443/devportal \
   You may sign in to the Developer Portal using the default administrator credentials (username: admin, password: admin).
-
-Run in dev mode
-==================================
-1. If you do not build a WSO2 API Manager server from the above steps, Download the built distribution of WSO2 API Manager Server from http://wso2.com/api-manager. 
-
-2. Execute api-manager.sh (For unix environment) or api-manager.bat (For windows environment) file from the bin directory to run WSO2 API Manager Server.
-
-3. Goto `portals/` directory in the `apim-apps` repository
-
-4. Run `npm start` to start all three portals in development mode.
-> **_Note :-_** 
-   >  
-   > If you haven't bootstrap the dependencies you have to run `npm run bootstrap` before starting the development build
-   >
 Running Tests
 ==================================
 ## Unit Tests
