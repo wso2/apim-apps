@@ -18,10 +18,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, useTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
+import { Toaster } from 'react-hot-toast';
 
 /**
  * Render copyright
@@ -74,21 +75,62 @@ function Base(props) {
     const {
         classes, children, leftMenu, header,
     } = props;
-
+    const theme = useTheme();
     return (
-        <div className={classes.root}>
-            <CssBaseline />
-            <nav className={classes.drawer}>
-                {leftMenu}
-            </nav>
-            <div className={classes.app}>
-                {header}
-                {children}
-                <footer className={classes.footer}>
-                    <Copyright />
-                </footer>
+        <>
+            <Toaster
+                position='bottom-right'
+                gutter={8}
+                toastOptions={{
+                    style: {
+                        background: '#008fcc',
+                        color: '#ffffff',
+                        fontFamily: theme.typography.fontFamily,
+                        fontSize: '13px',
+                    },
+                    success: {
+                        style: {
+                            backgroundColor: '#4caf50',
+                            color: '#ffffff',
+                            fontFamily: theme.typography.fontFamily,
+                            fontSize: '13px',
+                        },
+                        iconTheme: {
+                            primary: '#ffffff',
+                            secondary: '#4caf50',
+                        },
+                    },
+                    error: {
+                        style: {
+                            backgroundColor: '#BD0808',
+                            color: '#ffffff',
+                            fontFamily: theme.typography.fontFamily,
+                            fontSize: '13px',
+                        },
+                        iconTheme: {
+                            primary: '#ffffff',
+                            secondary: '#BD0808',
+                        },
+                    },
+                    custom: {
+                        style: { backgroundColor: '#DDEFFF' },
+                    },
+                }}
+            />
+            <div className={classes.root}>
+                <CssBaseline />
+                <nav className={classes.drawer}>
+                    {leftMenu}
+                </nav>
+                <div className={classes.app}>
+                    {header}
+                    {children}
+                    <footer className={classes.footer}>
+                        <Copyright />
+                    </footer>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 
