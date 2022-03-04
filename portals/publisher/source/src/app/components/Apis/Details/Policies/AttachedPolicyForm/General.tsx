@@ -223,24 +223,37 @@ const General: FC<GeneralProps> = ({
         if (!isEditMode) {
             let isDisabled = false;
             policySpec.policyAttributes.forEach((spec) => {
-                const currentState = state[spec.name];
-                const currentVal = getValue(spec);
-                if (spec.required && !(currentState || currentVal)) {
-                    isDisabled =  true;
+                if (spec.type !== 'Boolean') {
+                    const currentState = state[spec.name];
+                    const currentVal = getValue(spec);
+                    if (spec.required && !(currentState || currentVal)) {
+                        isDisabled = true;
+                    }
                 }
             });
             return isDisabled;
         } else {
             let isDisabled = true;
             policySpec.policyAttributes.forEach((spec) => {
-                const currentState = state[spec.name];
-                if (currentState !== null) {
-                    isDisabled = false;
+                if (spec.type !== 'Boolean') {
+                    const currentState = state[spec.name];
+                    if (currentState !== null) {
+                        isDisabled = false;
+                    }
+                } else {
+                    const currentState = state[spec.name];
+                    if (
+                        currentState !== null &&
+                        (currentState.toString() === 'true' ||
+                            currentState.toString() === 'false')
+                    ) {
+                        isDisabled = false;
+                    }
                 }
             });
             return isDisabled;
         }
-    }
+    };
 
     /**
      * Toggle the apply to all option on initial policy drop.
@@ -250,7 +263,9 @@ const General: FC<GeneralProps> = ({
     }
 
     const hasAttributes = policySpec.policyAttributes.length !== 0;
-    const resetDisabled = Object.values(state).filter(value => !!value).length === 0;
+    const resetDisabled = Object.values(state).filter((value: any) => 
+        (value !== null && (value.toString() !== 'true' || value.toString() !== 'false')) || !!value
+    ).length === 0;
 
     if (!policySpec) {
         return <CircularProgress />
