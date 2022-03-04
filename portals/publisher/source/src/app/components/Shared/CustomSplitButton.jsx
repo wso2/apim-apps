@@ -125,4 +125,5 @@ export default function CustomSplitButton(props) {
 CustomSplitButton.propTypes = {
     handleSave: PropTypes.shape({}).isRequired,
     handleSaveAndDeploy: PropTypes.shape({}).isRequired,
+    isUpdating: PropTypes.bool.isRequired,
 };

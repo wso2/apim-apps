@@ -26,7 +26,8 @@ import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import ApiContext from '../components/ApiContext';
 
 interface SaveOperationPoliciesProps {
-    saveApi: (isGatewayChanged: boolean) => void;
+    saveApi: () => void;
+    updating: boolean;
 }
 
 /**
@@ -34,7 +35,9 @@ interface SaveOperationPoliciesProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policies page save button.
  */
-const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }) => {
+const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
+    saveApi, updating
+}) => {
     const { api } = useContext<any>(ApiContext);
     const history = useHistory();
 
@@ -43,7 +46,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }
      *
      */
     const handleSave = () => {
-        saveApi(false);
+        saveApi();
     }
 
     /**
@@ -51,7 +54,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }
      * 
      */
     const handleSaveAndDeploy = () => {
-        saveApi(false);
+        saveApi();
         history.push({
             pathname: `/apis/${api.id}/deployments`,
             state: 'deploy',
@@ -78,6 +81,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({ saveApi }
                         <CustomSplitButton
                             handleSave={handleSave}
                             handleSaveAndDeploy={handleSaveAndDeploy}
+                            isUpdating={updating}
                         />
                     )}
                 </Grid>

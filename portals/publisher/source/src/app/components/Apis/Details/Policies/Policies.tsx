@@ -304,9 +304,8 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     /**
      * To update the API object with the attached policies on Save
-     * @param {boolean} isGatewayChanged Boolean to check whether the gateway has changed
      */
-    const saveApi = (isGatewayChanged: boolean) => {
+    const saveApi = () => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
 
@@ -320,9 +319,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                     if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
                         const policyArray = operationPolicies[flow];
                         policyArray.forEach((policyItem: ApiPolicy) => {
-                            if(isGatewayChanged) {
-                                operationPolicies[flow] = [];
-                            } else if (policyItem.uuid) {
+                            if (policyItem.uuid) {
                                 // eslint-disable-next-line no-param-reassign
                                 delete policyItem.uuid;
                             }
@@ -362,7 +359,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                         />
                     </Typography>
                 </Box>
-                <Box mb={4}>
+                <Box mb={4} px={1}>
                     <GatewaySelector
                         getGatewayType={getGatewayType}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
@@ -414,7 +411,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                     </Grid>
                                 ))}
                             </Paper>
-                            <SaveOperationPolicies saveApi={() => { saveApi(false) }} />
                         </Box>
                         <Box width='35%' pl={1}>
                             <PolicyList
@@ -474,7 +470,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                     </Grid>
                                 ))}
                             </Paper>
-                            <SaveOperationPolicies saveApi={() => { saveApi(false) }} />
                         </Box>
                         <Box width='35%' p={1}>
                             <PolicyList
@@ -486,6 +481,10 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                     </Box>
                 }
             </DndProvider>
+            <SaveOperationPolicies
+                saveApi={saveApi}
+                updating={updating}
+            />
         </ApiOperationContextProvider>
     );
 };
