@@ -912,6 +912,9 @@
   "Apis.Details.Configuration.components.DescriptionEditor.edit.description.of": {
     "defaultMessage": "Description :"
   },
+  "Apis.Details.Configuration.components.DescriptionEditor.markdown.help": {
+    "defaultMessage": "The Markdown option allows you to replace the content of the Overview page in devportal with the content given below."
+  },
   "Apis.Details.Configuration.components.DescriptionEditor.update.cont.button": {
     "defaultMessage": "Update Content"
   },
