@@ -20,14 +20,13 @@ import React, {
     useState, useEffect, useRef, useContext,
 } from 'react';
 import GraphiQL from 'graphiql';
-import fetch from 'isomorphic-fetch';
 import 'graphiql/graphiql.css';
 import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import GraphiQLExplorer from 'graphiql-explorer';
 import Collapse from '@material-ui/core/Collapse';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
-import { graphQLFetcher } from 'graphiql-subscriptions-fetcher/dist/fetcher';
+import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import QueryComplexityView from './QueryComplexityView';
@@ -47,7 +46,6 @@ export default function GraphQLUI(props) {
         securitySchemeType,
         accessTokenProvider,
         additionalHeaders,
-
     } = props;
     const { api } = useContext(ApiContext);
     const [schema, setSchema] = useState(null);
@@ -80,11 +78,11 @@ export default function GraphQLUI(props) {
     };
 
     /**
-     * Execute GraphQL query
-     * @param {*} graphQLParams GraphQL query parameters
-     * @returns {Promise} GraphQL query promise
+     * Get subscription fetcher.
+     * @param {string} wsUrl subscription websocket URL
+     * @return {string} The subscription fetcher
      */
-    function graphiQLFetcher(graphQLParams) {
+    function queryFetcher(wsUrl) {
         let token;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             token = accessTokenProvider();
@@ -95,9 +93,8 @@ export default function GraphQLUI(props) {
         } else {
             token = 'Bearer ' + accessTokenProvider();
         }
+
         const headers = {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
             [authorizationHeader]: token,
         };
 
@@ -105,29 +102,11 @@ export default function GraphQLUI(props) {
             headers[header.name] = header.value;
         });
 
-        return fetch((URLs && URLs.https), {
-            method: 'post',
+        return createGraphiQLFetcher({
             headers,
-            body: JSON.stringify(graphQLParams),
-        }).then((response) => response.json());
-    }
-
-    /**
-     * Get subscription fetcher.
-     * @param {string} wsUrl subscription websocket URL
-     * @return {string} The subscription fetcher
-     */
-    function queryFetcher(wsUrl) {
-        if (wsUrl == null) {
-            return graphiQLFetcher;
-        } else {
-            const subscriptionsClient = new SubscriptionClient(wsUrl + '?access_token=' + accessTokenProvider(), {
-                reconnect: true,
-                lazy: true,
-            });
-            const subscriptionFetcher = graphQLFetcher(subscriptionsClient, graphiQLFetcher);
-            return subscriptionFetcher;
-        }
+            url: URLs.https,
+            legacyWsClient: new SubscriptionClient(wsUrl + '?access_token=' + accessTokenProvider(), { reconnect: false, lazy: true }),
+        });
     }
 
     if ({ schema } === null) {

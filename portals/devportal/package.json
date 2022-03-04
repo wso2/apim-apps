@@ -81,7 +81,7 @@
         "react-tagcloud": "^2.2.0",
         "remark-gfm": "^3.0.1",
         "sanitize-html": "^2.7.0",
-        "subscriptions-transport-ws": "^0.8.3",
+        "subscriptions-transport-ws": "^0.9.19",
         "swagger-client": "^3.18.4",
         "swagger-ui": "^3.52.5",
         "swagger-ui-react": "^3.52.5",
