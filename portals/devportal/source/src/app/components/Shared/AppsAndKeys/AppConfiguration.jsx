@@ -111,6 +111,18 @@ const AppConfiguration = (props) => {
         id_token_expiry_time: {
            id: 'Shared.AppsAndKeys.AppConfiguration.id.token.expiry.time',
            defaultMessage: 'Id Token Expiry Time',
+        },
+        pkceMandatory: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.pkce.mandatory',
+            defaultMessage: 'Enable PKCE',
+          },
+        pkceSupportPlain: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.pkce.support.plain',
+            defaultMessage: 'Support PKCE Plain text',
+        },
+        bypassClientCredentials: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.bypass.client.credentials',
+            defaultMessage: 'Public client',
         }
     });
 
@@ -130,6 +142,18 @@ const AppConfiguration = (props) => {
         id_token_expiry_time: {
            id: 'Shared.AppsAndKeys.AppConfiguration.id.token.expiry.time.tooltip',
            defaultMessage: 'Type ID Token Expiry Time',
+        },
+        pkceMandatory: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.pkce.mandatory.tooltip',
+            defaultMessage: 'Enable PKCE',
+          },
+        pkceSupportPlain: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.pkce.support.plain.tooltip',
+            defaultMessage: 'S256 is recommended, plain text too can be used.',
+        },
+        bypassClientCredentials: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.bypass.client.credentials.tooltip',
+            defaultMessage: 'Allow authentication without the client secret.',
         }
     });
 
