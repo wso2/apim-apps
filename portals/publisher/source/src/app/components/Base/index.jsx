@@ -68,37 +68,37 @@ const Base = ({ children, user }) => {
                 gutter={8}
                 toastOptions={{
                     style: {
-                        background: '#008fcc',
+                        background: '#008fccC8',
                         color: '#ffffff',
                         fontFamily: theme.typography.fontFamily,
                         fontSize: "13px",
                     },
                     success: {
                         style: {
-                            backgroundColor: '#4caf50',
+                            backgroundColor: '#4caf50C8',
                             color: '#ffffff',
                             fontFamily: theme.typography.fontFamily,
-                            fontSize: "13px"
+                            fontSize: "13px",
                         },
                         iconTheme: {
-                            primary: '#ffffff',
-                            secondary: '#4caf50',
+                            primary: '#ffffffC8',
+                            secondary: '#4caf50C8',
                         },
                     },
                     error: {
                         style: {
-                            backgroundColor: '#BD0808',
+                            backgroundColor: '#BD0808BE',
                             color: '#ffffff',
                             fontFamily: theme.typography.fontFamily,
                             fontSize: "13px"
                         },
                         iconTheme: {
-                            primary: '#ffffff',
-                            secondary: '#BD0808',
+                            primary: '#ffffffBE',
+                            secondary: '#BD0808BE',
                         },
                     },
                     custom: {
-                        style: { backgroundColor: '#DDEFFF' },
+                        style: { backgroundColor: '#DDEFFFC8' },
                     },
                 }}
             />
