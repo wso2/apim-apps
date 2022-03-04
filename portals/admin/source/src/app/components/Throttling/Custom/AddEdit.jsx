@@ -78,7 +78,7 @@ const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@
 + 'INSERT INTO EligibilityStream; FROM EligibilityStream[isEligible==true]#throttler:timeBatch(1 min) '
 + 'SELECT throttleKey, (count(userId) >= 5) as isThrottled, expiryTimeStamp group by throttleKey '
 + 'INSERT ALL EVENTS into ResultStream;';
-const formattedSampleSiddhiQuery = format(sampleSiddhiQuery);
+const formattedSampleSiddhiQuery = format(sampleSiddhiQuery, { language: 'spark' });
 
 /**
  * Reducer
@@ -130,7 +130,7 @@ function AddEdit(props) {
     useEffect(() => {
         if (editMode) {
             restApi.customPolicyGet(policyId).then((result) => {
-                const formattedSiddhiQuery = format(result.body.siddhiQuery);
+                const formattedSiddhiQuery = format(result.body.siddhiQuery, { language: 'spark' });
                 const editState = {
                     policyName: result.body.policyName,
                     description: result.body.description,
