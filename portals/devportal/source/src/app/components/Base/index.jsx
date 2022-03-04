@@ -37,7 +37,7 @@ import Popper from '@material-ui/core/Popper';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-
+import { Toaster } from 'react-hot-toast';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderSearch from 'AppComponents/Base/Header/Search/HeaderSearch';
 import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
@@ -397,6 +397,45 @@ class Layout extends React.Component {
                             )}
                     </div>
                 )}
+                <Toaster
+                    position='bottom-right'
+                    gutter={8}
+                    toastOptions={{
+                        style: {
+                            background: '#008fcc',
+                            color: '#ffffff',
+                            fontFamily: theme.typography.fontFamily,
+                            fontSize: '13px',
+                        },
+                        success: {
+                            style: {
+                                backgroundColor: '#4caf50',
+                                color: '#ffffff',
+                                fontFamily: theme.typography.fontFamily,
+                                fontSize: '13px',
+                            },
+                            iconTheme: {
+                                primary: '#ffffff',
+                                secondary: '#4caf50',
+                            },
+                        },
+                        error: {
+                            style: {
+                                backgroundColor: '#BD0808',
+                                color: '#ffffff',
+                                fontFamily: theme.typography.fontFamily,
+                                fontSize: '13px',
+                            },
+                            iconTheme: {
+                                primary: '#ffffff',
+                                secondary: '#BD0808',
+                            },
+                        },
+                        custom: {
+                            style: { backgroundColor: '#DDEFFF' },
+                        },
+                    }}
+                />
                 <div className={classes.reactRoot} id='pageRoot'>
                     <div className={classes.wrapper}>
                         <AppBar position='fixed' className={classes.appBar} id='appBar'>
