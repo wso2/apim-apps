@@ -45,6 +45,7 @@ export default function GraphQLUI(props) {
         URLs,
         securitySchemeType,
         accessTokenProvider,
+        additionalHeaders,
     } = props;
     const { api } = useContext(ApiContext);
     const [schema, setSchema] = useState(null);
@@ -92,8 +93,17 @@ export default function GraphQLUI(props) {
         } else {
             token = 'Bearer ' + accessTokenProvider();
         }
+
+        const headers = {
+            [authorizationHeader]: token,
+        };
+
+        additionalHeaders.forEach((header) => {
+            headers[header.name] = header.value;
+        });
+
         return createGraphiQLFetcher({
-            headers: { Accept: 'application/json', 'Content-Type': 'application/json', [authorizationHeader]: token },
+            headers,
             url: URLs.https,
             legacyWsClient: new SubscriptionClient(wsUrl + '?access_token=' + accessTokenProvider(), { reconnect: false, lazy: true }),
         });
