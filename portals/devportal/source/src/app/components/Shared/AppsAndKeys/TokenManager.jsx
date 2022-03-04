@@ -288,7 +288,7 @@ class TokenManager extends React.Component {
         const { availableGrantTypes } = selectedKM;
 
         if (keys.size > 0 && keys.get(newSelectedTab) && keys.get(newSelectedTab).keyType === keyType) {
-            const { callbackUrl, supportedGrantTypes, additionalProperties } = keys.get(newSelectedTab);
+            const { callbackUrl, supportedGrantTypes, additionalProperties, mode } = keys.get(newSelectedTab);
             const newRequest = {
                 ...keyRequest,
                 callbackUrl,
@@ -296,7 +296,7 @@ class TokenManager extends React.Component {
                     || availableGrantTypes.filter((type) => (type !== 'authorization_code' && type !== 'implicit')),
                 additionalProperties: additionalProperties || this.getDefaultAdditionalProperties(selectedKM),
             };
-            this.setState({ keyRequest: newRequest, selectedTab: newSelectedTab });
+            this.setState({ keyRequest: newRequest, selectedTab: newSelectedTab, mode });
         } else {
             // Fill the keyRequest.additionalProperties from the selectedKM.applicationConfiguration defaultValues.
             this.setState({
