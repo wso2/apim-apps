@@ -2023,6 +2023,12 @@
       "value": "Description :"
     }
   ],
+  "Apis.Details.Configuration.components.DescriptionEditor.markdown.help": [
+    {
+      "type": 0,
+      "value": "The Markdown option allows you to replace the content of the Overview page in devportal with the content given below."
+    }
+  ],
   "Apis.Details.Configuration.components.DescriptionEditor.update.cont.button": [
     {
       "type": 0,

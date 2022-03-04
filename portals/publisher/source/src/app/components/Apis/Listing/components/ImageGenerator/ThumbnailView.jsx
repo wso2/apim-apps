@@ -451,7 +451,7 @@ class ThumbnailView extends Component {
                                         }}
                                     >
                                         {({ getRootProps, getInputProps, rejectedFiles }) => {
-                                            const isFileTooLarge = rejectedFiles.length > 0
+                                            const isFileTooLarge = rejectedFiles && rejectedFiles.length > 0
                                                 && rejectedFiles[0].size > maxSize;
                                             return (
                                                 <div {...getRootProps({ style: dropzoneStyles })}>

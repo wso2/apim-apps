@@ -144,7 +144,7 @@ export default function DescriptionEditor(props) {
                             justify='space-between'
                             alignItems='center'
                         >
-                            <Grid item xs={6}>
+                            <Grid item xs={8}>
                                 <Box display='flex'>
                                     <IconButton edge='start' color='inherit' onClick={toggleOpen} aria-label='close'>
                                         <CloseIcon />
@@ -186,6 +186,17 @@ export default function DescriptionEditor(props) {
                                                 />
                                             </RadioGroup>
                                         </FormControl>
+                                        <Box>
+                                            { descriptionType !== CONSTS.DESCRIPTION_TYPES.DESCRIPTION && (
+                                                <Typography variant='caption'>
+                                                    <FormattedMessage
+                                                    // eslint-disable-next-line max-len
+                                                        id='Apis.Details.Configuration.components.DescriptionEditor.markdown.help'
+                                                        // eslint-disable-next-line max-len
+                                                        defaultMessage='The Markdown option allows you to replace the content of the Overview page in devportal with the content given below.'
+                                                    />
+                                                </Typography>)}
+                                        </Box>
                                     </Box>
                                 </Box>
                             </Grid>
@@ -242,7 +253,7 @@ export default function DescriptionEditor(props) {
                                     <Grid item xs={6}>
                                         <div className={classes.markdownViewWrapper}>
                                             <Suspense fallback={<CircularProgress />}>
-                                                <ReactMarkdown escapeHtml source={content} />
+                                                <ReactMarkdown escapeHtml>{content}</ReactMarkdown>
                                             </Suspense>
                                         </div>
                                     </Grid>
