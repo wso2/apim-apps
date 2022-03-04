@@ -200,6 +200,26 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         policyDefinitionFile,
     ]);
 
+    /**
+     * Cleans and retrieves the policy attributes of the policy to be created
+     * @returns {PolicyAttribute[]} List of policy attributes relevant to the policy to be created
+     */
+    const getPolicyAttributes = () => {
+        const policyAttributesCopy = state.policyAttributes.map((attribute: PolicyAttribute) => {
+            return {
+                name: attribute.name,
+                displayName: attribute.displayName,
+                description: attribute.description,
+                required: attribute.required,
+                type: attribute.type,
+                ...(attribute.validationRegex !== null ? {validationRegex: attribute.validationRegex} : {}),
+                ...(attribute.defaultValue !== null ? {defaultValue: attribute.defaultValue} : {}),
+                allowedValues: attribute.allowedValues,
+            }
+        })
+        return policyAttributesCopy;    
+    }
+
     const onPolicySave = () => {
         if (state.displayName) {
             const policySpec = {
@@ -209,7 +229,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 description: state.description,
                 applicableFlows: state.applicableFlows,
                 supportedGateways: state.supportedGateways,
-                policyAttributes: state.policyAttributes,
+                policyAttributes: getPolicyAttributes(),
                 supportedApiTypes: ['HTTP'],
             };
             onSave(policySpec);
