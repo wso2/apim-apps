@@ -28,7 +28,7 @@ import API from 'AppData/api.js';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import PolicyCreateForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyCreateForm';
 import { Box } from '@material-ui/core';
-import CONST from 'AppData/Constants';
+import CONSTS from 'AppData/Constants';
 
 const useStyles = makeStyles((theme: any) => ({
     titleWrapper: {
@@ -57,27 +57,31 @@ const CreatePolicy: React.FC = () => {
     const classes = useStyles();
     const history = useHistory();
     const api = new API();
-    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
+    const [ccPolicyDefinitionFile, setCcPolicyDefinitionFile] = useState<any[]>([]);
     const [saving, setSaving] = useState(false);
 
     const addCommonPolicy = (
         policySpecContent: CreatePolicySpec,
-        policyDefinition: any,
+        synapsePolicyDefinition: any,
+        ccPolicyDefinition: any,
     ) => {
         setSaving(true);
         const promisedCommonPolicyAdd = api.addCommonOperationPolicy(
             policySpecContent,
-            policyDefinition,
+            synapsePolicyDefinition,
+            ccPolicyDefinition
         );
         promisedCommonPolicyAdd
             .then(() => {
                 Alert.info('Policy created successfully!');
-                setPolicyDefinitionFile([]);
-                history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
+                setSynapsePolicyDefinitionFile([]);
+                setCcPolicyDefinitionFile([]);
+                history.push(CONSTS.PATH_TEMPLATES.COMMON_POLICIES);
             })
             .catch((error) => {
                 console.error(error);
-                history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
+                history.push(CONSTS.PATH_TEMPLATES.COMMON_POLICIES);
                 Alert.error('Something went wrong while creating policy');
             })
             .finally(() => {
@@ -86,11 +90,17 @@ const CreatePolicy: React.FC = () => {
     };
 
     const onSave = (policySpecification: CreatePolicySpec) => {
-        addCommonPolicy(policySpecification, policyDefinitionFile);
+        const synapseFile = synapsePolicyDefinitionFile.length !== 0 ? synapsePolicyDefinitionFile : null;
+        const ccFile = ccPolicyDefinitionFile.length !== 0 ? ccPolicyDefinitionFile : null;
+        addCommonPolicy(
+            policySpecification,
+            synapseFile,
+            ccFile
+        );
     };
 
     const onCancel = () => {
-        history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
+        history.push(CONSTS.PATH_TEMPLATES.COMMON_POLICIES);
     };
 
     return (
@@ -102,7 +112,7 @@ const CreatePolicy: React.FC = () => {
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
                             <Link
-                                to={CONST.PATH_TEMPLATES.COMMON_POLICIES}
+                                to={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}
                                 className={classes.titleLink}
                             >
                                 <Typography variant='h4' component='h2'>
@@ -124,8 +134,10 @@ const CreatePolicy: React.FC = () => {
                     <Grid item md={12}>
                         <PolicyCreateForm
                             onSave={onSave}
-                            policyDefinitionFile={policyDefinitionFile}
-                            setPolicyDefinitionFile={setPolicyDefinitionFile}
+                            synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
+                            setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
+                            ccPolicyDefinitionFile={ccPolicyDefinitionFile}
+                            setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
                             onCancel={onCancel}
                             saving={saving}
                         />

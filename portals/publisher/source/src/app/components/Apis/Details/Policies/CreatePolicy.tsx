@@ -30,7 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import CONST from 'AppData/Constants';
+import CONSTS from 'AppData/Constants';
 import type { CreatePolicySpec } from './Types';
 import PolicyCreateForm from './PolicyForm/PolicyCreateForm';
 
@@ -158,7 +158,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     px={3}
                     pb={3}
                 >
-                    <Link to={CONST.PATH_TEMPLATES.COMMON_POLICIES}>
+                    <Link to={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}>
                         <Typography className={classes.link} variant='caption'>
                             Want to create a common policy that will be visible to all APIs instead?
                             <LaunchIcon

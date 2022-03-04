@@ -24,7 +24,7 @@ import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
-import CONST from 'AppData/Constants';
+import CONSTS from 'AppData/Constants';
 import API from 'AppData/api';
 import { PolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import { Progress } from 'AppComponents/Shared';
@@ -85,7 +85,7 @@ const ViewPolicy: React.FC = () => {
     }, [policyId]);
 
     const redirectToPolicies = () => {
-        history.push(CONST.PATH_TEMPLATES.COMMON_POLICIES);
+        history.push(CONSTS.PATH_TEMPLATES.COMMON_POLICIES);
     };
 
     const resourceNotFoundMessage = {
@@ -110,7 +110,7 @@ const ViewPolicy: React.FC = () => {
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
                             <Link
-                                to={CONST.PATH_TEMPLATES.COMMON_POLICIES}
+                                to={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}
                                 className={classes.titleLink}
                             >
                                 <Typography variant='h4' component='h2'>

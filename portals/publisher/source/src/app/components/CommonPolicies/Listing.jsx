@@ -43,7 +43,7 @@ import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import TrendingDown from '@material-ui/icons/TrendingDown';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
-import CONST from 'AppData/Constants';
+import CONSTS from 'AppData/Constants';
 import Delete from './DeletePolicy';
 import CommonPolicyGatewaySelector from './CommonPolicyGatewaySelector';
 
@@ -332,7 +332,7 @@ const Listing = () => {
                 }
             >
                 <OnboardingMenuCard
-                    to={CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE}
+                    to={CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE}
                     name='Policies'
                     iconName={commonPolicyAddIcon}
                     disabled={isRestricted([
@@ -412,7 +412,7 @@ const Listing = () => {
                                 'apim:mediation_policy_create',
                                 'apim:mediation_policy_manage',
                                 'apim:api_mediation_policy_manage',
-                            ]) && CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE
+                            ]) && CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE
                         }
                     >
                         <AddCircle className={classes.buttonIcon} />

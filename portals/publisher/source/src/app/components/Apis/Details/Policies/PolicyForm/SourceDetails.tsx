@@ -31,6 +31,7 @@ import Button from '@material-ui/core/Button';
 import Utils from 'AppData/Utils';
 import API from 'AppData/api.js';
 import { Alert } from 'AppComponents/Shared';
+import CONSTS from 'AppData/Constants';
 import { ACTIONS } from './PolicyCreateForm';
 import UploadPolicyDropzone from './UploadPolicyDropzone';
 import ApiContext from '../../components/ApiContext';
@@ -45,11 +46,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         flexDirection: 'row',
     },
 }));
-
-const SUPPORTED_GATEWAYS = {
-    SYNAPSE: 'Synapse',
-    CC: 'ChoreoConnect',
-};
 
 interface SourceDetailsProps {
     supportedGateways: string[];
@@ -92,8 +88,8 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                 type: ACTIONS.UPDATE_SUPPORTED_GATEWAYS,
                 name:
                     event.target.name === 'regularGateway'
-                        ? SUPPORTED_GATEWAYS.SYNAPSE
-                        : SUPPORTED_GATEWAYS.CC,
+                        ? CONSTS.GATEWAY_TYPE.synapse
+                        : CONSTS.GATEWAY_TYPE.choreoConnect,
                 checked: event.target.checked,
             });
         }
@@ -254,7 +250,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                             name='regularGateway'
                                             color='primary'
                                             checked={supportedGateways.includes(
-                                                SUPPORTED_GATEWAYS.SYNAPSE,
+                                                CONSTS.GATEWAY_TYPE.synapse,
                                             )}
                                             onChange={handleChange}
                                         />
@@ -267,7 +263,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                             name='choreoConnect'
                                             color='primary'
                                             checked={supportedGateways.includes(
-                                                SUPPORTED_GATEWAYS.CC,
+                                                CONSTS.GATEWAY_TYPE.choreoConnect,
                                             )}
                                             onChange={handleChange}
                                             disabled
@@ -284,7 +280,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                         </FormControl>
                     </Box>
                 </Box>
-                {supportedGateways.includes(SUPPORTED_GATEWAYS.SYNAPSE) &&
+                {supportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse) &&
                     renderPolicyFileDetails()}
             </Box>
         </Box>

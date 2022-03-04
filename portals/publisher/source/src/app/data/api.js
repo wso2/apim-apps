@@ -2850,10 +2850,11 @@ class API extends Resource {
     /**
      * Add a common operation policy
      * @param {Object} policySpec policy specification of the common operation policy to upload
-     * @param {any} policyDefinition policy definition of the common operation policy to upload
+     * @param {any} synapsePolicyDefinition policy definition of the common operation policy for Synapse
+     * @param {any} ccPolicyDefinition policy definition of the common operation policy for Choreo Connect
      * @returns {Promise} Promise containing uploaded operation policy specification
      */
-    addCommonOperationPolicy(policySpec, policyDefinition) {
+    addCommonOperationPolicy(policySpec, synapsePolicyDefinition = null, ccPolicyDefinition = null) {
         const promised_addCommonOperationPolicy = this.client.then(client => {
             const payload = {
                 'Content-Type': 'multipart/form-data',
@@ -2861,8 +2862,9 @@ class API extends Resource {
             const requestBody = {
                 requestBody: {
                     policySpecFile: JSON.stringify(policySpec),
-                    synapsePolicyDefinitionFile: policyDefinition,
-                }
+                    ...(synapsePolicyDefinition !== null ? {synapsePolicyDefinitionFile: synapsePolicyDefinition} : {}),
+                    ...(ccPolicyDefinition !== null ? {ccPolicyDefinitionFile: ccPolicyDefinition} : {}),
+                },
             }
             return client.apis['Operation Policies'].addCommonOperationPolicy(
                 payload,
@@ -2969,11 +2971,12 @@ class API extends Resource {
     /**
      * Add an API specific operation policy
      * @param {Object} policySpec policy specification of the operation policy
-     * @param {any} policyDefinition policy definition of the operation policy
+     * @param {any} synapsePolicyDefinition policy definition of the operation policy for Synapse
+     * @param {any} ccPolicyDefinition policy definition of the operation policy for Choreo Connect
      * @param {String} apiId UUID of the API
      * @returns {Promise} Promise containing added operation policy specification
      */
-    static addOperationPolicy(policySpec, policyDefinition, apiId) {
+    static addOperationPolicy(policySpec, synapsePolicyDefinition = null, ccPolicyDefinition = null, apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['API Operation Policies'].addAPISpecificOperationPolicy(
@@ -2983,7 +2986,8 @@ class API extends Resource {
                 {
                     requestBody: {
                         policySpecFile: JSON.stringify(policySpec),
-                        synapsePolicyDefinitionFile: policyDefinition,
+                        ...(synapsePolicyDefinition !== null ? {synapsePolicyDefinitionFile: synapsePolicyDefinition} : {}),
+                        ...(ccPolicyDefinition !== null ? {ccPolicyDefinitionFile: ccPolicyDefinition} : {}),
                     },
                 },
                 this._requestMetaData({

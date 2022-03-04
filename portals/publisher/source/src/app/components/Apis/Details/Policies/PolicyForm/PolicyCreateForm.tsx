@@ -24,6 +24,7 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
+import CONSTS from 'AppData/Constants';
 import type { CreatePolicySpec } from '../Types';
 import type { NewPolicyState, PolicyAttribute } from './Types';
 import PolicyAttributes from './PolicyAttributes';
@@ -136,8 +137,10 @@ function policyReducer(state: NewPolicyState, action: any) {
 
 interface PolicyCreateFormProps {
     onSave: (policySpecification: CreatePolicySpec) => void;
-    policyDefinitionFile: any[];
-    setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
+    synapsePolicyDefinitionFile: any[];
+    setSynapsePolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
+    ccPolicyDefinitionFile: any[];
+    setCcPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
     onCancel: () => void;
     saving: boolean;
 }
@@ -149,8 +152,10 @@ interface PolicyCreateFormProps {
  */
 const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     onSave,
-    policyDefinitionFile,
-    setPolicyDefinitionFile,
+    synapsePolicyDefinitionFile,
+    setSynapsePolicyDefinitionFile,
+    ccPolicyDefinitionFile,
+    setCcPolicyDefinitionFile,
     onCancel,
     saving,
 }) => {
@@ -177,9 +182,20 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         // Supported gateways current state validation
         if (state.supportedGateways.length === 0) hasError = true;
 
-        // Policy file upload current state validation
-        if (policyDefinitionFile.length === 0) hasError = true;
+        // Synapse policy file upload current state validation
+        if (
+            state.supportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse) &&
+            synapsePolicyDefinitionFile.length === 0
+        )
+            hasError = true;
 
+        // CC policy file upload current state validation
+        if (
+            state.supportedGateways.includes(CONSTS.GATEWAY_TYPE.choreoConnect) &&
+            ccPolicyDefinitionFile.length === 0
+        )
+            hasError = true;        
+        
         // Policy attributes current state validation
         state.policyAttributes.forEach((attribute: PolicyAttribute) => {
             if (
@@ -197,7 +213,8 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         state.applicableFlows,
         state.supportedGateways,
         state.policyAttributes,
-        policyDefinitionFile,
+        synapsePolicyDefinitionFile,
+        ccPolicyDefinitionFile
     ]);
 
     /**
@@ -250,8 +267,10 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
             {/* Gateway specific details of policy */}
             <SourceDetails
                 supportedGateways={state.supportedGateways}
-                policyDefinitionFile={policyDefinitionFile}
-                setPolicyDefinitionFile={setPolicyDefinitionFile}
+                synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
+                setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
+                ccPolicyDefinitionFile={ccPolicyDefinitionFile}
+                setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
                 dispatch={dispatch}
             />
             <Divider light />
