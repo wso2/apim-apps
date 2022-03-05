@@ -47,10 +47,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
+export const GATEWAY_TYPE_LABELS = {
+    SYNAPSE: 'Regular Gateway',
+    CC: 'Choreo Connect'
+}
+
 interface SourceDetailsProps {
     supportedGateways: string[];
-    policyDefinitionFile?: any[];
-    setPolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
+    synapsePolicyDefinitionFile?: any[];
+    setSynapsePolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
+    ccPolicyDefinitionFile?: any[];
+    setCcPolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
     dispatch?: React.Dispatch<any>;
     isViewMode?: boolean;
     policyId?: string;
@@ -64,8 +71,10 @@ interface SourceDetailsProps {
  */
 const SourceDetails: FC<SourceDetailsProps> = ({
     supportedGateways,
-    policyDefinitionFile,
-    setPolicyDefinitionFile,
+    synapsePolicyDefinitionFile,
+    setSynapsePolicyDefinitionFile,
+    ccPolicyDefinitionFile,
+    setCcPolicyDefinitionFile,
     dispatch,
     isViewMode,
     policyId,
@@ -138,62 +147,78 @@ const SourceDetails: FC<SourceDetailsProps> = ({
         }
     };
 
-    const renderPolicyFileDetails = () => {
-        if (!isViewMode && policyDefinitionFile && setPolicyDefinitionFile) {
-            return (
-                <UploadPolicyDropzone
-                    policyDefinitionFile={policyDefinitionFile}
-                    setPolicyDefinitionFile={setPolicyDefinitionFile}
-                />
-            );
-        } else {
-            return (
-                <>
-                    <Box display='flex' flexDirection='row' alignItems='center'>
-                        <Typography
-                            color='inherit'
-                            variant='subtitle2'
-                            component='div'
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title'
-                                defaultMessage='Policy File'
-                            />
-                            <sup className={classes.mandatoryStar}>*</sup>
-                        </Typography>
-                    </Box>
-                    <Typography color='inherit' variant='caption' component='p'>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description'
-                            defaultMessage='Policy file contains the business logic of the policy'
-                        />
-                    </Typography>
-                    <Box
-                        flex='1'
-                        display='flex'
-                        flexDirection='row'
-                        justifyContent='left'
-                        mt={3}
-                        mb={3}
-                    >
-                        <Button
-                            aria-label='download-policy'
-                            variant='contained'
-                            size='large'
-                            color='primary'
-                            onClick={handlePolicyDownload}
-                            endIcon={<CloudDownloadIcon />}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download'
-                                defaultMessage='Download Policy'
-                            />
-                        </Button>
-                    </Box>
-                </>
-            );
-        }
+    /**
+     * Renders the policy file upload related section
+     * @param {any[]} policyFile Policy file
+     * @param {React.Dispatch<React.SetStateAction<any[]>>} setPolicyFile Policy file setter
+     * @param {string} gateway Gateway type
+     * @returns {TSX} Policy upload section
+     */
+    const renderPolicyFileUpload = (
+        policyFile: any[],
+        setPolicyFile: React.Dispatch<React.SetStateAction<any[]>>,
+        gateway: string,
+    ) => {
+        return (
+            <UploadPolicyDropzone
+                policyDefinitionFile={policyFile}
+                setPolicyDefinitionFile={setPolicyFile}
+                gateway={gateway}
+            />
+        );
     };
+
+    /**
+     *
+     * @returns {TSX} Policy download section
+     */
+    const renderPolicyDownload = () => {
+        return (
+            <>
+                <Box display='flex' flexDirection='row' alignItems='center'>
+                    <Typography
+                        color='inherit'
+                        variant='subtitle2'
+                        component='div'
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title'
+                            defaultMessage='Policy File(s)'
+                        />
+                        <sup className={classes.mandatoryStar}>*</sup>
+                    </Typography>
+                </Box>
+                <Typography color='inherit' variant='caption' component='p'>
+                    <FormattedMessage
+                        id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description'
+                        defaultMessage='Policy file contains the business logic of the policy'
+                    />
+                </Typography>
+                <Box
+                    flex='1'
+                    display='flex'
+                    flexDirection='row'
+                    justifyContent='left'
+                    mt={3}
+                    mb={3}
+                >
+                    <Button
+                        aria-label='download-policy'
+                        variant='contained'
+                        size='large'
+                        color='primary'
+                        onClick={handlePolicyDownload}
+                        endIcon={<CloudDownloadIcon />}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download'
+                            defaultMessage='Download Policy'
+                        />
+                    </Button>
+                </Box>
+            </>
+        );
+    }
 
     return (
         <Box display='flex' flexDirection='row' mt={1}>
@@ -255,7 +280,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                             onChange={handleChange}
                                         />
                                     }
-                                    label='Regular Gateway'
+                                    label={GATEWAY_TYPE_LABELS.SYNAPSE}
                                 />
                                 <FormControlLabel
                                     control={
@@ -266,10 +291,9 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                                 CONSTS.GATEWAY_TYPE.choreoConnect,
                                             )}
                                             onChange={handleChange}
-                                            disabled
                                         />
                                     }
-                                    label='Choreo Connect'
+                                    label={GATEWAY_TYPE_LABELS.CC}
                                 />
                             </FormGroup>
                             <FormHelperText>
@@ -280,8 +304,30 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                         </FormControl>
                     </Box>
                 </Box>
+
+                {/* Render dropzones for policy file uploads */}
                 {supportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse) &&
-                    renderPolicyFileDetails()}
+                    !isViewMode &&
+                    synapsePolicyDefinitionFile &&
+                    setSynapsePolicyDefinitionFile &&
+                    renderPolicyFileUpload(
+                        synapsePolicyDefinitionFile,
+                        setSynapsePolicyDefinitionFile,
+                        GATEWAY_TYPE_LABELS.SYNAPSE,
+                        
+                    )}
+                {supportedGateways.includes(CONSTS.GATEWAY_TYPE.choreoConnect) &&
+                    !isViewMode &&
+                    ccPolicyDefinitionFile &&
+                    setCcPolicyDefinitionFile &&
+                    renderPolicyFileUpload(
+                        ccPolicyDefinitionFile,
+                        setCcPolicyDefinitionFile,
+                        GATEWAY_TYPE_LABELS.CC,
+                    )}
+
+                {/* Render policy file download option in view mode */}
+                {isViewMode && renderPolicyDownload()}
             </Box>
         </Box>
     );

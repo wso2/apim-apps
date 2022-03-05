@@ -182,14 +182,14 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         // Supported gateways current state validation
         if (state.supportedGateways.length === 0) hasError = true;
 
-        // Synapse policy file upload current state validation
+        // Policy file upload current state validation for Synapse
         if (
             state.supportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse) &&
             synapsePolicyDefinitionFile.length === 0
         )
             hasError = true;
 
-        // CC policy file upload current state validation
+        // Policy file upload current state validation for Choreo Connect
         if (
             state.supportedGateways.includes(CONSTS.GATEWAY_TYPE.choreoConnect) &&
             ccPolicyDefinitionFile.length === 0

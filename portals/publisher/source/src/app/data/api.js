@@ -2820,10 +2820,11 @@ class API extends Resource {
      */
     static getCommonOperationPolicies() {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
             return client.apis['Operation Policies'].getAllCommonOperationPolicies(
-                {limit},
+                {
+                    limit: 50,
+                },
                 this._requestMetaData(),
             );
         });
