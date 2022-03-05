@@ -95,7 +95,7 @@ const CreatePolicy: React.FC = () => {
         addCommonPolicy(
             policySpecification,
             synapseFile,
-            ccFile
+            ccFile,
         );
     };
 

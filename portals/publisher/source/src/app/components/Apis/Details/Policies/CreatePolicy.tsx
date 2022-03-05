@@ -61,22 +61,26 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
     const [saving, setSaving] = useState(false);
-    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
+    const [ccPolicyDefinitionFile, setCcPolicyDefinitionFile] = useState<any[]>([]);
 
     const savePolicy = (
         policySpecContent: CreatePolicySpec,
-        policyDefinition: any,
+        synapsePolicyDefinition: any,
+        ccPolicyDefinition: any,
     ) => {
         setSaving(true);
         const promisedCommonPolicyAdd = API.addOperationPolicy(
             policySpecContent,
-            policyDefinition,
+            synapsePolicyDefinition,
+            ccPolicyDefinition,
             api.id,
         );
         promisedCommonPolicyAdd
             .then(() => {
                 Alert.info('Policy created successfully!');
-                setPolicyDefinitionFile([]);
+                setSynapsePolicyDefinitionFile([]);
+                setCcPolicyDefinitionFile([]);
                 handleDialogClose();
                 fetchPolicies();
             })
@@ -90,14 +94,21 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
             });
     };
 
+    const onSave = (policySpecification: CreatePolicySpec) => {
+        const synapseFile = synapsePolicyDefinitionFile.length !== 0 ? synapsePolicyDefinitionFile : null;
+        const ccFile = ccPolicyDefinitionFile.length !== 0 ? ccPolicyDefinitionFile : null;
+        savePolicy(
+            policySpecification,
+            synapseFile,
+            ccFile,
+        );
+        handleDialogClose();
+    };
+
     const stopPropagation = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
         e.stopPropagation();
-    };
-    const onSave = (policySpecification: CreatePolicySpec) => {
-        savePolicy(policySpecification, policyDefinitionFile);
-        handleDialogClose();
     };
 
     return (
@@ -141,10 +152,10 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                         <DialogContentText>
                             <PolicyCreateForm
                                 onSave={onSave}
-                                policyDefinitionFile={policyDefinitionFile}
-                                setPolicyDefinitionFile={
-                                    setPolicyDefinitionFile
-                                }
+                                synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
+                                setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
+                                ccPolicyDefinitionFile={ccPolicyDefinitionFile}
+                                setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
                                 onCancel={handleDialogClose}
                                 saving={saving}
                             />
