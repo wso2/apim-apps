@@ -154,6 +154,7 @@ function EndpointSecurity(props) {
             tmpSecurity.clientId = clientId === '' ? '********' : clientId;
             tmpSecurity.clientSecret = clientSecret === '' ? '********' : clientSecret;
             tmpSecurity.customParameters = customParameters;
+            tmpSecurity.enabled = true;
         }
         setEndpointSecurityInfo(tmpSecurity);
     }, [securityInfo]);
