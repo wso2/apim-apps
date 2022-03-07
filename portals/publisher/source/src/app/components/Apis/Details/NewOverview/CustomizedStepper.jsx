@@ -165,6 +165,9 @@ export default function CustomizedStepper() {
     const { data: settings } = usePublisherSettings();
     const userNameSplit = user.name.split('@');
     const tenantDomain = userNameSplit[userNameSplit.length - 1];
+    const securityScheme = [...api.securityScheme];
+    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
+    && securityScheme.includes('mutualssl_mandatory');
     let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
     // TODO: tmkasun need to handle is loading
     if (tenantList && tenantList.length > 0) {
@@ -178,16 +181,18 @@ export default function CustomizedStepper() {
         forceComplete.push(steps.indexOf('Publish') + 1);
     }
     let activeStep = 0;
-    if (api && (api.type === 'WEBSUB' || isEndpointAvailable) && isTierAvailable && !deploymentsAvailable) {
+    if (api && (api.type === 'WEBSUB' || isEndpointAvailable)
+        && (isTierAvailable || isMutualSslOnly) && !deploymentsAvailable) {
         activeStep = 1;
-    } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB') || (api && !isTierAvailable)) {
+    } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB')
+        || (api && !isMutualSslOnly && !isTierAvailable)) {
         activeStep = 0;
-    } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && isTierAvailable
+    } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
         && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
         activeStep = 3;
     } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
         && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
-        && isTierAvailable && deploymentsAvailable) {
+        && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
         activeStep = 4;
     }
 
@@ -360,7 +365,8 @@ export default function CustomizedStepper() {
                                 variant='contained'
                                 color='primary'
                                 onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
-                                disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable) || !isTierAvailable)
+                                disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
+                                    || (!isMutualSslOnly && !isTierAvailable))
                                     || !deploymentsAvailable
                                     || api.isRevision || AuthManager.isNotPublisher()
                                     || api.workflowStatus === 'CREATED'}
@@ -383,10 +389,10 @@ export default function CustomizedStepper() {
     }
     const isTestLinkDisabled = lifecycleState === 'RETIERD' || !deploymentsAvailable
     || (!api.isAPIProduct() && !isEndpointAvailable)
-    || !isTierAvailable
+    || (!isMutualSslOnly && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
     const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || !isTierAvailable
+    || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED');
     return (
         <div id='itest-overview-api-flow' className={classes.root}>
