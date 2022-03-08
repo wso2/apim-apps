@@ -137,15 +137,13 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     Utils.forceDownload(apiPolicyResponse);
                 })
                 .catch((error) => {
-                    if (process.env.NODE_ENV !== 'production') {
-                        console.error(error);
-                        Alert.error(
-                            <FormattedMessage
-                                id='Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error'
-                                defaultMessage='Something went wrong while downloading the policy'
-                            />,
-                        );
-                    }
+                    console.error(error);
+                    Alert.error(
+                        <FormattedMessage
+                            id='Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error'
+                            defaultMessage='Something went wrong while downloading the policy'
+                        />,
+                    );
                 });
         } else {
             const commonPolicyContentPromise = API.getCommonOperationPolicyContent(
@@ -156,15 +154,13 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     Utils.forceDownload(commonPolicyResponse);
                 })
                 .catch((error) => {
-                    if (process.env.NODE_ENV !== 'production') {
-                        console.error(error);
-                        Alert.error(
-                            <FormattedMessage
-                                id='Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error'
-                                defaultMessage='Something went wrong while downloading the policy'
-                            />,
-                        );
-                    }
+                    console.error(error);
+                    Alert.error(
+                        <FormattedMessage
+                            id='Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error'
+                            defaultMessage='Something went wrong while downloading the policy'
+                        />,
+                    );
                 });
         }
     };

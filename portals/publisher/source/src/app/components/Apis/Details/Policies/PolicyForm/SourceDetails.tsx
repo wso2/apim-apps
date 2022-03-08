@@ -114,15 +114,13 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                         Utils.forceDownload(apiPolicyResponse);
                     })
                     .catch((error) => {
-                        if (process.env.NODE_ENV !== 'production') {
-                            console.error(error);
-                            Alert.error(
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error'
-                                    defaultMessage='Something went wrong while downloading the policy'
-                                />,
-                            );
-                        }
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
                     });
             } else {
                 const commonPolicyContentPromise =
@@ -132,15 +130,13 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                         Utils.forceDownload(commonPolicyResponse);
                     })
                     .catch((error) => {
-                        if (process.env.NODE_ENV !== 'production') {
-                            console.error(error);
-                            Alert.error(
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error'
-                                    defaultMessage='Something went wrong while downloading the policy'
-                                />,
-                            );
-                        }
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
                     });
             }
         }
