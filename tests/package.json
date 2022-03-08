@@ -22,6 +22,7 @@
   "dependencies": {
     "aws-sdk": "^2.942.0",
     "cypress-dashboard": "^3.1.4",
+    "cypress-file-upload": "^5.0.8",
     "html-pdf": "^3.0.1",
     "require-text": "0.0.1",
     "styliner": "^1.1.0",
