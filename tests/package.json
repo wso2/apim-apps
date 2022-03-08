@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "cypress run",
-    "test:gui": "cypress run --headed"
+    "test:gui": "cypress run --headed",
+    "test:dev": "cypress open"
   },
   "keywords": [
     "cypress.io"
@@ -15,7 +16,16 @@
   "devDependencies": {
     "@cypress/browserify-preprocessor": "^3.0.1",
     "babel-plugin-module-resolver": "^4.1.0",
-    "cypress": "^7.0.0",
+    "cypress": "^9.1.1",
     "eslint-plugin-cypress": "^2.11.2"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.942.0",
+    "cypress-dashboard": "^3.1.4",
+    "html-pdf": "^3.0.1",
+    "require-text": "0.0.1",
+    "styliner": "^1.1.0",
+    "wdio": "^4.0.0",
+    "wdio-junit-to-html": "^3.1.2"
   }
 }
