@@ -2,5 +2,5 @@
     "chromeWebSecurity": false,
     "pageLoadTimeout": 11195,
     "defaultCommandTimeout": 10456,
-    "scrollBehavior" : false
+    "scrollBehavior" : "nearest"
 }

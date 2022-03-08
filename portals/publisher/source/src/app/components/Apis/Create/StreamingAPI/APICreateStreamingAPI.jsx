@@ -449,6 +449,7 @@ const APICreateStreamingAPI = (props) => {
                                 color='primary'
                                 disabled={!(isAPICreatable && apiInputs.isFormValid)}
                                 onClick={createAPIOnly}
+                                data-testid='itest-create-streaming-api-button'
                             >
                                 Create
                                 {' '}

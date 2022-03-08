@@ -36,6 +36,7 @@ const StreamingAPIMenu = (props) => {
                 />
             )}
             icon={icon}
+            id='itest-streaming-api-create-menu'
         >
             <LandingMenuItem
                 dense={dense}
