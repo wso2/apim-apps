@@ -36,6 +36,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import ResponseCaching from './components/ResponseCaching';
 import CORSConfiguration from './components/CORSConfiguration';
+import SchemaValidation from './components/SchemaValidation';
 import MaxBackendTps from './components/MaxBackendTps';
 import Endpoints from './components/Endpoints';
 import APISecurity from './components/APISecurity/APISecurity';
@@ -470,6 +471,9 @@ export default function RuntimeConfiguration() {
                                         { api.type !== 'WS' && (
                                             <CORSConfiguration api={apiConfig} configDispatcher={configDispatcher} />
                                         )}
+
+                                        {(api.type !== 'GRAPHQL' && !isAsyncAPI)
+                                            && <SchemaValidation api={apiConfig} configDispatcher={configDispatcher} />}
                                         {api.type === 'GRAPHQL' && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
