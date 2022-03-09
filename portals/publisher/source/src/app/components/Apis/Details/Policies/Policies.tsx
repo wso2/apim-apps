@@ -165,7 +165,12 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     useEffect(() => {
         fetchPolicies();
-    }, [isChoreoConnectEnabled])
+    
+        // Loads CC related policies considering the gateway type when rendering the page.
+        if(api.gatewayType === 'WSO2_CHOREO_CONNECT') {
+            getChoreoConnectEnabled(true);
+        }
+    }, [])
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
@@ -308,6 +313,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const saveApi = () => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
+        let getewayVendorForPolicies = "wso2";
 
         // Set operation policies to the API object
         newApiOperations.forEach((operation: any) => {
@@ -329,7 +335,11 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             }
         });
 
-        const updatePromise = updateAPI({ operations: newApiOperations });
+        if(isChoreoConnectEnabled) {
+            getewayVendorForPolicies = "WSO2_CHOREO_CONNECT";
+        }
+
+        const updatePromise = updateAPI({ operations: newApiOperations, gatewayVendor: getewayVendorForPolicies });
         updatePromise
             .finally(() => {
                 setUpdating(false);
