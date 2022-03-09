@@ -585,14 +585,18 @@ class TokenManager extends React.Component {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(error);
                 }
-                const { status } = error;
+                const { status, response } = error;
                 if (status === 404) {
                     this.setState({ notFound: true });
                 }
-                Alert.error(intl.formatMessage({
-                    id: 'Shared.AppsAndKeys.TokenManager.key.provide.error',
-                    defaultMessage: 'Error occurred when providing application keys',
-                }));
+                if (response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.TokenManager.key.provide.error',
+                        defaultMessage: 'Error occurred when providing application keys',
+                    }));
+                }
             });
     }
 
