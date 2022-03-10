@@ -2541,7 +2541,7 @@ class API extends Resource {
             return client.apis['External Stores'].publishAPIToExternalStores(
                 {
                     apiId: apiId,
-                    externalStoreIds: externalStoreIds,
+                    externalStoreIds: externalStoreIds.join(','),
                 },
                 this._requestMetaData,
             );
