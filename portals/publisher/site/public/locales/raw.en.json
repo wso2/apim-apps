@@ -2250,13 +2250,25 @@
   "Apis.Details.NewOverview.Endpoints.production.endpoint": {
     "defaultMessage": "Production Endpoint"
   },
+  "Apis.Details.NewOverview.Endpoints.production.endpoint.security": {
+    "defaultMessage": "Production Endpoint Security"
+  },
+  "Apis.Details.NewOverview.Endpoints.production.security.not.set": {
+    "defaultMessage": "-"
+  },
   "Apis.Details.NewOverview.Endpoints.prototype.endpoint": {
     "defaultMessage": "Prototype Endpoint"
   },
   "Apis.Details.NewOverview.Endpoints.sandbox.endpoint": {
     "defaultMessage": "Sandbox Endpoint"
   },
+  "Apis.Details.NewOverview.Endpoints.sandbox.endpoint.security": {
+    "defaultMessage": "Sandbox Endpoint Security"
+  },
   "Apis.Details.NewOverview.Endpoints.sandbox.not.set": {
+    "defaultMessage": "-"
+  },
+  "Apis.Details.NewOverview.Endpoints.sandbox.security.not.set": {
     "defaultMessage": "-"
   },
   "Apis.Details.NewOverview.Endpoints.security.not.set": {
