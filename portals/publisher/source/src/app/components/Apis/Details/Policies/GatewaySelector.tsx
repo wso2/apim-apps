@@ -86,12 +86,11 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
 
     /**
      * Handles accepted gateway type change after approving dialog box.
+     * @param {boolean} isCCEnabled  Indicates whether CC enabled or not.
      */
     const handleApprovedGatewayChange = (isCCEnabled: boolean) => {
         setRadioButtonChange(true);
-        console.log("Zzzzzzzz" ,isCCSelected);
         setIsCCSelected(isCCEnabled);
-        console.log("ZzzzzzzzBBBB" ,isCCSelected);
     }
 
     /**

@@ -78,20 +78,11 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
-    const [isGatewayChanged, getGatewayChange] = useState(false);
-
-    const setGatewayChange = (isGatewayChanged: boolean) => {
-        getGatewayChange(isGatewayChanged);
-        saveApi(isGatewayChanged);
-    }
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
     const getGatewayType = (isCCEnabled: boolean) => {
-        console.log("isCCEnabled", isCCEnabled);
-        console.log("CC1", isChoreoConnectEnabled);
-        getChoreoConnectEnabled(isCCEnabled)
-        console.log("CC2", isChoreoConnectEnabled);
+        getChoreoConnectEnabled(isCCEnabled);
     }
 
     // console.log("CC3", isChoreoConnectEnabled);
@@ -176,11 +167,8 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     useEffect(() => {
         fetchPolicies();
     
-        console.log("gatewayV type: " ,api.gatewayVendor);
-        console.log("gateway type: " ,api.gatewayType);
         // Loads CC related policies considering the gateway type when rendering the page.
         if(api.gatewayType === 'wso2/choreo-connect') {
-            console.log("AAAA");
             getChoreoConnectEnabled(true);
         }
     }, [])
@@ -321,15 +309,14 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     }
 
     /**
-     * To update the API object with the attached policies on Save
+     * To update the API object with the attached policies on Save.
+     * @param {booean} isGatewayChanged Indicates whether the gateway type changed or not.
      */
     const saveApi = (isGatewayChanged: boolean) => {
-        console.log("Called");
-        console.log(isChoreoConnectEnabled);
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
         let getewayTypeForPolicies = "wso2/synapse";
-        let getewayVendorForPolicies = "wso2";
+        const getewayVendorForPolicies = "wso2";
 
         // Set operation policies to the API object
         newApiOperations.forEach((operation: any) => {
@@ -341,7 +328,9 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                     if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
                         const policyArray = operationPolicies[flow];
                         policyArray.forEach((policyItem: ApiPolicy) => {
-                            if (policyItem.uuid) {
+                            if(isGatewayChanged) {
+                                operationPolicies[flow] = [];
+                            } else if (policyItem.uuid) {
                                 // eslint-disable-next-line no-param-reassign
                                 delete policyItem.uuid;
                             }
@@ -352,28 +341,30 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         });
 
         if(isGatewayChanged) {
-            console.log(">>>>", api.gatewayVendor);
             if(api.gatewayType === 'wso2/choreo-connect') {
                 getewayTypeForPolicies = "wso2/synapse";
-                console.log("MMMMM");
             } else {
                 getewayTypeForPolicies = "wso2/choreo-connect";
-                console.log("NNNNNN");
             }
         }
 
-        console.log(">>>>||||", getewayTypeForPolicies);
-        console.log(">>>>||||>>>>", isChoreoConnectEnabled);
+        // Handles normal policy savings for choreo connect gateway type.
         if(isChoreoConnectEnabled && !isGatewayChanged) {
-            console.log("OOOO");
             getewayTypeForPolicies = "wso2/choreo-connect";
         }
 
-        const updatePromise = updateAPI({ operations: newApiOperations, gatewayVendor: getewayVendorForPolicies, gatewayType: getewayTypeForPolicies});
+        const updatePromise = updateAPI({ 
+            operations: newApiOperations, 
+            gatewayVendor: getewayVendorForPolicies, 
+            gatewayType: getewayTypeForPolicies});
         updatePromise
             .finally(() => {
                 setUpdating(false);
             });
+    }
+
+    const setGatewayChange = (isGatewayChanged: boolean) => {
+        saveApi(isGatewayChanged);
     }
 
     if (!policies || !openAPISpec || updating) {
