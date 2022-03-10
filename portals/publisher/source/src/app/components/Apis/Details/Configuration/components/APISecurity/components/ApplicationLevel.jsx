@@ -173,6 +173,7 @@ export default function ApplicationLevel(props) {
                                         })}
                                         value={API_SECURITY_BASIC_AUTH}
                                         color='primary'
+                                        id='api-security-basic-auth-checkbox'
                                     />
                                 )}
                                 label='Basic'
@@ -188,6 +189,7 @@ export default function ApplicationLevel(props) {
                                         })}
                                         value={API_SECURITY_API_KEY}
                                         color='primary'
+                                        id='api-security-api-key-checkbox'
                                     />
                                 )}
                                 label='Api Key'

@@ -356,6 +356,7 @@ export default function UploadCertificate(props) {
                     />
                 </Button>
                 <Button
+                    id='upload-cert-save-btn'
                     onClick={saveCertificate}
                     variant='contained'
                     color='primary'
