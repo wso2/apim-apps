@@ -254,7 +254,8 @@ class LifeCycleUpdate extends Component {
                         || (api.type !== 'WEBSUB' && api.endpointConfig != null
                             && api.endpointConfig.implementation_status === 'prototyped'))
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised))
-                        || (deploymentsAvailable && (!isBusinessPlanAvailable || api.endpointConfig == null)),
+                        || (deploymentsAvailable && api.gatewayVendor === 'wso2' &&
+                        (!isBusinessPlanAvailable || api.endpointConfig == null)),
                 };
             }
             return {
