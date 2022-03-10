@@ -3017,17 +3017,6 @@ class API extends Resource {
         });
     }
 
-    /**
-     * Retrieve the operation policy specification related JSON schema
-     * @returns {Promise}
-     */
-    static getOperationPolicySpecSchema() {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        return restApiClient.then(client => {
-            return client.apis['Operation Policies'].exportOperationPolicySpecificationSchema();
-        });
-    }
-
 }
 
 API.CONSTS = {
