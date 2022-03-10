@@ -47,7 +47,7 @@ const SupportedGatewayTypes = {
 interface GatewaySelectorProps {
     getGatewayType: (isCCEnabled: boolean) => void;
     isChoreoConnectEnabled: boolean;
-    setGatewayChange(isChoreoConnectEnabled: boolean): void;
+    setGatewayChange: (isChoreoConnectEnabled: boolean) => void;
 }
 
 /**

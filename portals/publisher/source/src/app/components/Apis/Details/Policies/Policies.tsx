@@ -85,7 +85,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         getChoreoConnectEnabled(isCCEnabled);
     }
 
-    // console.log("CC3", isChoreoConnectEnabled);
     /**
      * Function to get the initial state of all the operation policies from the API object.
      * We are setting a unique ID for all the operation policies solely for UI specific operations.
