@@ -2499,7 +2499,10 @@
   "Apis.Details.Overview.ProductResources.resources": {
     "defaultMessage": "Resources"
   },
-  "Apis.Details.Policies.AttachedPolicyCard.download.error": {
+  "Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": {
     "defaultMessage": "Something went wrong while downloading the policy"
   },
   "Apis.Details.Policies.AttachedPolicyForm.General.apply.to.all.resources": {
@@ -2539,7 +2542,7 @@
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Policies.DeletePolicy.confirm": {
-    "defaultMessage": "Yes"
+    "defaultMessage": "Delete"
   },
   "Apis.Details.Policies.DeletePolicy.delete.confirm": {
     "defaultMessage": "Confirm Delete"
@@ -2694,11 +2697,14 @@
   "Apis.Details.Policies.PolicyForm.PolicyViewForm.done": {
     "defaultMessage": "Done"
   },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
   "Apis.Details.Policies.PolicyForm.SourceDetails.description": {
     "defaultMessage": "Define the Gateway (s) that will be supporting this policy. Based off of this selection, you can upload the relevant business logic inclusive policy file."
-  },
-  "Apis.Details.Policies.PolicyForm.SourceDetails.download.error": {
-    "defaultMessage": "Something went wrong while downloading the policy"
   },
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description": {
     "defaultMessage": "Policy file contains the business logic of the policy"

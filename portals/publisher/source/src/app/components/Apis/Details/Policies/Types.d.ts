@@ -33,6 +33,7 @@ export type AttachedPolicy = {
     applicableFlows: string[];
     uniqueKey: string;
     attributes?: any;
+    isAPISpecific?: boolean;
 };
 
 export type PolicySpecAttribute = {

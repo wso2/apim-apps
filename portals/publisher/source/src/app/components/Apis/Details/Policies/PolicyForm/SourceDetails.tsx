@@ -58,6 +58,7 @@ interface SourceDetailsProps {
     dispatch?: React.Dispatch<any>;
     isViewMode?: boolean;
     policyId?: string;
+    isAPISpecific?: boolean;
 }
 
 /**
@@ -72,6 +73,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
     dispatch,
     isViewMode,
     policyId,
+    isAPISpecific,
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
@@ -102,31 +104,41 @@ const SourceDetails: FC<SourceDetailsProps> = ({
      */
     const handlePolicyDownload = () => {
         if (policyId) {
-            const commonPolicyContentPromise =
-                API.getCommonOperationPolicyContent(policyId);
-            commonPolicyContentPromise
-                .then((commonPolicyResponse) => {
-                    Utils.forceDownload(commonPolicyResponse);
-                })
-                .catch(() => {
-                    const apiPolicyContentPromise =
-                        API.getOperationPolicyContent(policyId, api.id);
-                    apiPolicyContentPromise
-                        .then((apiPolicyResponse) => {
-                            Utils.forceDownload(apiPolicyResponse);
-                        })
-                        .catch((error) => {
-                            if (process.env.NODE_ENV !== 'production') {
-                                console.error(error);
-                                Alert.error(
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyForm.SourceDetails.download.error'
-                                        defaultMessage='Something went wrong while downloading the policy'
-                                    />,
-                                );
-                            }
-                        });
-                });
+            if (isAPISpecific) {
+                const apiPolicyContentPromise = API.getOperationPolicyContent(
+                    policyId,
+                    api.id,
+                );
+                apiPolicyContentPromise
+                    .then((apiPolicyResponse) => {
+                        Utils.forceDownload(apiPolicyResponse);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
+                    });
+            } else {
+                const commonPolicyContentPromise =
+                    API.getCommonOperationPolicyContent(policyId);
+                commonPolicyContentPromise
+                    .then((commonPolicyResponse) => {
+                        Utils.forceDownload(commonPolicyResponse);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
+                    });
+            }
         }
     };
 
