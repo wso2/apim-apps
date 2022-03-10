@@ -166,6 +166,7 @@ export default function DevelopSectionMenu(props) {
                             route='configuration'
                             to={pathPrefix + 'configuration'}
                             Icon={<ConfigurationIcon />}
+                            id='left-menu-itemDesignConfigurations'
                         />
                         <LeftMenuItem
                             text={intl.formatMessage({
@@ -252,6 +253,7 @@ export default function DevelopSectionMenu(props) {
                                 route='runtime-configuration'
                                 to={pathPrefix + 'runtime-configuration'}
                                 Icon={<RuntimeConfigurationIcon />}
+                                id='left-menu-itemRuntimeConfigurations'
                             />
                         )}
                         {isAPIProduct && (
@@ -263,6 +265,7 @@ export default function DevelopSectionMenu(props) {
                                 route='runtime-configuration'
                                 to={pathPrefix + 'runtime-configuration'}
                                 Icon={<RuntimeConfigurationIcon />}
+                                id='left-menu-itemRuntimeConfigurations'
                             />
                         )}
                         {api.isWebSocket() && (
@@ -274,6 +277,7 @@ export default function DevelopSectionMenu(props) {
                                 route='runtime-configuration'
                                 to={pathPrefix + 'runtime-configuration-websocket'}
                                 Icon={<RuntimeConfigurationIcon />}
+                                id='left-menu-itemRuntimeConfigurations'
                             />
                         )}
                         {getLeftMenuItemForResourcesByType(api.type)}
@@ -287,6 +291,7 @@ export default function DevelopSectionMenu(props) {
                                 })}
                                 to={pathPrefix + 'endpoints'}
                                 Icon={<EndpointIcon />}
+                                id='left-menu-itemendpoints'
                             />
                         )}
                         {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
@@ -298,6 +303,7 @@ export default function DevelopSectionMenu(props) {
                                 route='scopes'
                                 to={pathPrefix + 'scopes'}
                                 Icon={<ScopesIcon />}
+                                id='left-menu-itemLocalScopes'
                             />
                         )}
                         {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct

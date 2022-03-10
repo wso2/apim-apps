@@ -483,6 +483,7 @@ class Details extends Component {
                             })}
                             to={pathPrefix + 'resources'}
                             Icon={<ResourcesIcon />}
+                            id='left-menu-itemresources'
                         />
                     </>
                 );

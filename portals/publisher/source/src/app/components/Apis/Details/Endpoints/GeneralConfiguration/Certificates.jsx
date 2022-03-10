@@ -186,6 +186,7 @@ function Certificates(props) {
                         disabled={(isRestricted(['apim:api_create'], apiFromContext))}
                         className={classes.addCertificateBtn}
                         onClick={() => setUploadCertificateOpen(true)}
+                        id='certs-add-btn'
                     >
                         <ListItemAvatar>
                             <IconButton>
@@ -199,7 +200,7 @@ function Certificates(props) {
                     {certificateList.length > 0 ? (
                         certificateList.map((cert) => {
                             return (
-                                <ListItem>
+                                <ListItem id='endpoint-cert-list'>
                                     <ListItemAvatar>
                                         <Icon>lock</Icon>
                                     </ListItemAvatar>

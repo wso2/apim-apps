@@ -221,7 +221,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
         // failing the test
         return false
     });
-    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/`,{ timeout: 30000 });
     cy.get(`#${apiName}`).click();
 
     cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
@@ -269,7 +269,7 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
     cy.get('#itest-id-apiversion-input').type(`v${random_number}`);
     cy.get('#itest-id-apiendpoint-input').click();
     cy.get('#itest-create-default-api-button').click();
-    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/`);
     cy.get(`#sample_api_${random_number}`).click();
 
 
