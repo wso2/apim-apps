@@ -179,7 +179,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         console.log("gatewayV type: " ,api.gatewayVendor);
         console.log("gateway type: " ,api.gatewayType);
         // Loads CC related policies considering the gateway type when rendering the page.
-        if(api.gatewayType === 'WSO2_CHOREO_CONNECT') {
+        if(api.gatewayType === 'wso2/choreo-connect') {
             console.log("AAAA");
             getChoreoConnectEnabled(true);
         }
@@ -328,6 +328,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         console.log(isChoreoConnectEnabled);
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
+        let getewayTypeForPolicies = "wso2/synapse";
         let getewayVendorForPolicies = "wso2";
 
         // Set operation policies to the API object
@@ -352,23 +353,23 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
         if(isGatewayChanged) {
             console.log(">>>>", api.gatewayVendor);
-            if(api.gatewayType === 'WSO2_CHOREO_CONNECT') {
-                getewayVendorForPolicies = "wso2";
+            if(api.gatewayType === 'wso2/choreo-connect') {
+                getewayTypeForPolicies = "wso2/synapse";
                 console.log("MMMMM");
             } else {
-                getewayVendorForPolicies = "WSO2_CHOREO_CONNECT";
+                getewayTypeForPolicies = "wso2/choreo-connect";
                 console.log("NNNNNN");
             }
         }
 
-        console.log(">>>>||||", getewayVendorForPolicies);
+        console.log(">>>>||||", getewayTypeForPolicies);
         console.log(">>>>||||>>>>", isChoreoConnectEnabled);
         if(isChoreoConnectEnabled && !isGatewayChanged) {
             console.log("OOOO");
-            getewayVendorForPolicies = "WSO2_CHOREO_CONNECT";
+            getewayTypeForPolicies = "wso2/choreo-connect";
         }
 
-        const updatePromise = updateAPI({ operations: newApiOperations, gatewayVendor: getewayVendorForPolicies });
+        const updatePromise = updateAPI({ operations: newApiOperations, gatewayVendor: getewayVendorForPolicies, gatewayType: getewayTypeForPolicies});
         updatePromise
             .finally(() => {
                 setUpdating(false);
