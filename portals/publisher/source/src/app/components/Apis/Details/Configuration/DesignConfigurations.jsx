@@ -256,6 +256,9 @@ function configReducer(state, configAction) {
 export default function DesignConfigurations() {
     const { api, updateAPI } = useContext(APIContext);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [errorInAccessRoles, setErrorInAccessRoles] = useState(false);
+    const [errorInRoleVisibility, setErrorInRoleVisibility] = useState(false);
+    const [errorInTags, setErrorInTags] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
     const classes = useStyles();
     const [descriptionType, setDescriptionType] = useState('');
@@ -455,11 +458,10 @@ export default function DesignConfigurations() {
         configDispatcher({ action: 'advertised', value: api.advertiseInfo.advertised });
         setIsOpen(false);
     };
-
-    const isDisabled = isRestricted(['apim:api_publish', 'apim:api_create'], api
-                    || isUpdating || api.isRevision || invalidTagsExist
-                    || (apiConfig.visibility === 'RESTRICTED'
-                    && apiConfig.visibleRoles.length === 0));
+    const restricted = isRestricted(['apim:api_publish', 'apim:api_create'], api
+    || isUpdating || api.isRevision || invalidTagsExist
+    || (apiConfig.visibility === 'RESTRICTED'
+    && apiConfig.visibleRoles.length === 0));
 
     return (
         <>
@@ -510,7 +512,6 @@ export default function DesignConfigurations() {
                                             <Grid item xs={12} md={10}>
                                                 <DescriptionEditor
                                                     api={apiConfig}
-                                                    disabled={isDisabled}
                                                     updateContent={updateContent}
                                                     descriptionType={descriptionType}
                                                     handleChange={handleChange}
@@ -520,13 +521,16 @@ export default function DesignConfigurations() {
                                         </Grid>
                                     </Box>
                                     <Box py={1}>
-                                        <AccessControl api={apiConfig} configDispatcher={configDispatcher} />
+                                        <AccessControl api={apiConfig} configDispatcher={configDispatcher}  
+                                            setIsDisabled={setErrorInAccessRoles} />
                                     </Box>
                                     <Box py={1}>
-                                        <StoreVisibility api={apiConfig} configDispatcher={configDispatcher} />
+                                        <StoreVisibility api={apiConfig} configDispatcher={configDispatcher}
+                                            setIsDisabled={setErrorInRoleVisibility} />
                                     </Box>
                                     <Box py={1}>
-                                        <Tags api={apiConfig} configDispatcher={configDispatcher} />
+                                        <Tags api={apiConfig} configDispatcher={configDispatcher}
+                                            setIsDisabled={setErrorInTags} />
                                     </Box>
                                     <Box py={1}>
                                         <APICategories
@@ -559,7 +563,10 @@ export default function DesignConfigurations() {
                                     </Box>
                                     <Box pt={2}>
                                         <Button
-                                            disabled={isDisabled}
+                                            disabled={errorInAccessRoles || 
+                                                errorInRoleVisibility || 
+                                                restricted || 
+                                                errorInTags}
                                             type='submit'
                                             variant='contained'
                                             color='primary'

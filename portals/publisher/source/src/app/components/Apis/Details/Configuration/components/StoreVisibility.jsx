@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 export default function StoreVisibility(props) {
     const [roleValidity, setRoleValidity] = useState(true);
     const [roleExists, setRoleExists] = useState(true);
-    const { api, configDispatcher } = props;
+    const { api, configDispatcher, setIsDisabled } = props;
     const [invalidRoles, setInvalidRoles] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
     const [apiFromContext] = useAPI();
@@ -78,6 +78,9 @@ export default function StoreVisibility(props) {
             setRoleExists(true);
         }
     }, [invalidRoles]);
+    useEffect(() => {
+        setIsDisabled(!roleValidity || !roleExists);
+    }, [roleValidity, roleExists])
     const handleRoleAddition = (role) => {
         const promise = APIValidation.role.validate(base64url.encode(role));
         promise.then(() => {
