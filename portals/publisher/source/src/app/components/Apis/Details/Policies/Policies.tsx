@@ -61,16 +61,11 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-interface PoliciesProps {
-    disableUpdate: any;
-}
-
 /**
  * Renders the policy management page.
- * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policy management page to render.
  */
-const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
+const Policies: React.FC = () => {
     const classes = useStyles();
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
@@ -483,10 +478,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                                                 highlight
                                                                 operation={operation}
                                                                 api={localAPI}
-                                                                disableUpdate={
-                                                                    disableUpdate ||
-                                                                    isRestricted(['apim:api_create'], api)
-                                                                }
+                                                                disableUpdate={isRestricted(['apim:api_create'], api)}
                                                                 expandedResource={expandedResource}
                                                                 setExpandedResource={setExpandedResource}
                                                                 policyList={policies}
