@@ -77,12 +77,12 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
-    const getGatewayType = (isCCEnabled: boolean) => {
-        getChoreoConnectEnabled(isCCEnabled);
+    const handleGatewayChange = (isCCEnabled: boolean) => {
+        setIsChoreoConnectEnabled(isCCEnabled);
     }
 
     /**
@@ -163,13 +163,28 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         });
     }
 
+    const removeAPIPoliciesForGatewayChange = () => {
+        const newApiOperations: any = cloneDeep(apiOperations);
+        // Set operation policies to the API object
+        newApiOperations.forEach((operation: any) => {
+            if (operation.operationPolicies) {
+                const { operationPolicies } = operation;
+
+                // Iterating through the policy list of request flow, response flow and fault flow
+                for (const flow in operationPolicies) {
+                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+
+                        operationPolicies[flow] = [];
+
+                    }
+                }
+            }
+        });
+        setApiOperations(newApiOperations);
+    }
+
     useEffect(() => {
         fetchPolicies();
-    
-        // Loads CC related policies considering the gateway type when rendering the page.
-        if(api.gatewayType === 'wso2/choreo-connect') {
-            getChoreoConnectEnabled(true);
-        }
     }, [isChoreoConnectEnabled])
 
     useEffect(() => {
@@ -362,10 +377,6 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             });
     }
 
-    const setGatewayChange = (isGatewayChanged: boolean) => {
-        saveApi(isGatewayChanged);
-    }
-
     if (!policies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
     }
@@ -391,9 +402,9 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 </Box>
                 <Box mb={4} px={1}>
                     <GatewaySelector
-                        getGatewayType={getGatewayType}
+                        handleGatewayChange={handleGatewayChange}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
-                        setGatewayChange={setGatewayChange}
+                        removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                     />
                 </Box>
                 {isChoreoConnectEnabled ?

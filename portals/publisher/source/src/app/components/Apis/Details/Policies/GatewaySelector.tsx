@@ -45,9 +45,9 @@ const SupportedGatewayTypes = {
 };
 
 interface GatewaySelectorProps {
-    getGatewayType: (isCCEnabled: boolean) => void;
+    handleGatewayChange: (isCCEnabled: boolean) => void;
     isChoreoConnectEnabled: boolean;
-    setGatewayChange: (isChoreoConnectEnabled: boolean) => void;
+    removeAPIPoliciesForGatewayChange: () => void;
 }
 
 /**
@@ -56,9 +56,9 @@ interface GatewaySelectorProps {
  * @returns {TSX} Radio group for the API Gateway.
  */
 const GatewaySelector: FC<GatewaySelectorProps> = ({
-    getGatewayType,
+    handleGatewayChange,
     isChoreoConnectEnabled,
-    setGatewayChange
+    removeAPIPoliciesForGatewayChange
 }) => {
     const [apiFromContext] = useAPI();
     let selectedGatewayType;
@@ -68,21 +68,19 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
 
     const saveAfterGatewayChange = () => {
         if (isCCSelected) {
-            getGatewayType(true); 
+            handleGatewayChange(true); 
         } else {
-            getGatewayType(false);
+            handleGatewayChange(false);
         }
-        setGatewayChange(true);
+        removeAPIPoliciesForGatewayChange();
         setRadioButtonChange(false);
     }
 
-    (() => {
-        if (isChoreoConnectEnabled) {
-            selectedGatewayType = SupportedGatewayTypes.CC;
-        } else {
-            selectedGatewayType = SupportedGatewayTypes.REGULAR;
-        }
-    })();
+    if (isChoreoConnectEnabled) {
+        selectedGatewayType = SupportedGatewayTypes.CC;
+    } else {
+        selectedGatewayType = SupportedGatewayTypes.REGULAR;
+    }
 
     /**
      * Handles accepted gateway type change after approving dialog box.
@@ -172,51 +170,53 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                     />
                                 </RadioGroup>
                             </FormControl>
-                            <Dialog open={isRadioButtonChange}>
-                                <DialogTitle>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title'
-                                            defaultMessage='Change Gateway Type'
-                                        />
-                                    </Typography>
-                                </DialogTitle>
-                                <DialogContent>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content'
-                                            defaultMessage={
-                                                'Changing the gateway type will remove all existing policies ' +
-                                                'added to the API.'
-                                            }
-                                        />
-                                    </Typography>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button
-                                        onClick={handleDiscardedGatewayChange}
-                                        color='primary'
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel'
-                                            defaultMessage='Cancel'
-                                        />
-                                    </Button>
-                                    <Button
-                                        onClick={() => { saveAfterGatewayChange() }}
-                                        color='primary'
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed'
-                                            defaultMessage='Proceed'
-                                        />
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
                         </Box>
                     </Box>
                 </Grid>
             </Grid>
+            <Dialog open={isRadioButtonChange}>
+                <DialogTitle>
+                    <Typography>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title'
+                            defaultMessage='Change Gateway Type'
+                        />
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content'
+                            defaultMessage={
+                                'Changing the gateway type will remove all existing policies ' +
+                                'added to the API'
+                            }
+                        />
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleDiscardedGatewayChange}
+                        color='primary'
+                        variant='outlined'
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button
+                        onClick={() => { saveAfterGatewayChange() }}
+                        color='primary'
+                        variant='contained'
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed'
+                            defaultMessage='Proceed'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Paper>
     );
 };
