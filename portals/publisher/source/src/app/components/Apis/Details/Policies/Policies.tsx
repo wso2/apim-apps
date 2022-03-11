@@ -170,7 +170,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
         if(api.gatewayType === 'wso2/choreo-connect') {
             getChoreoConnectEnabled(true);
         }
-    }, [])
+    }, [isChoreoConnectEnabled])
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
