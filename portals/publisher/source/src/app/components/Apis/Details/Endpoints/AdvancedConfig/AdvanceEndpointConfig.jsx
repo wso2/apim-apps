@@ -27,6 +27,8 @@ import {
     Typography,
     Button,
     withStyles,
+    Checkbox,
+    ListItemText,
 } from '@material-ui/core';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -354,10 +356,15 @@ function AdvanceEndpointConfig(props) {
                         input={<Input id='err-code-select' />}
                         MenuProps={MenuProps}
                         variant='outlined'
+                        renderValue={(allSelected) => 
+                            allSelected.map(selected => errorCodes.find(code => code.key === selected).value)}
                     >
                         {errorCodes.map((code) => (
                             <MenuItem key={code.key} value={code.key}>
-                                {code.value}
+                                <Checkbox checked={advanceConfigObj.suspendErrorCode.indexOf(code.key) > -1}         
+                                    color='primary'
+                                />
+                                <ListItemText primary={code.value} />
                             </MenuItem>
                         ))}
                     </Select>
@@ -426,10 +433,15 @@ function AdvanceEndpointConfig(props) {
                         onChange={(event) => handleConfigFieldChange(event, 'retryErroCode')}
                         input={<Input id='err-code-select' />}
                         MenuProps={MenuProps}
+                        renderValue={(allSelected) => 
+                            allSelected.map(selected => errorCodes.find(code => code.key === selected).value)}
                     >
                         {errorCodes.map((code) => (
                             <MenuItem key={code.key} value={code.key}>
-                                {code.value}
+                                <Checkbox checked={advanceConfigObj.retryErroCode.indexOf(code.key) > -1}         
+                                    color='primary'
+                                />
+                                <ListItemText primary={code.value} />
                             </MenuItem>
                         ))}
                     </Select>
