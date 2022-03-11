@@ -45,7 +45,7 @@ const SupportedGatewayTypes = {
 };
 
 interface GatewaySelectorProps {
-    handleGatewayChange: (isCCEnabled: boolean) => void;
+    setIsChangedToCCGatewayType: (isCCEnabled: boolean) => void;
     isChoreoConnectEnabled: boolean;
     removeAPIPoliciesForGatewayChange: () => void;
 }
@@ -56,24 +56,26 @@ interface GatewaySelectorProps {
  * @returns {TSX} Radio group for the API Gateway.
  */
 const GatewaySelector: FC<GatewaySelectorProps> = ({
-    handleGatewayChange,
+    setIsChangedToCCGatewayType,
     isChoreoConnectEnabled,
     removeAPIPoliciesForGatewayChange
 }) => {
     const [apiFromContext] = useAPI();
     let selectedGatewayType;
 
-    const [isRadioButtonChange, setRadioButtonChange] = useState(false);
+    const [isDialogBoxVisible, setIsDialogBoxVisible] = useState(false);
+    // This state is maintained until user gived approval for gateway change.
+    // Without this state radio buttons will switch even user disagrees to proceed gateway change.
     const [isCCSelected, setIsCCSelected] = useState(false);
 
     const saveAfterGatewayChange = () => {
         if (isCCSelected) {
-            handleGatewayChange(true); 
+            setIsChangedToCCGatewayType(true); 
         } else {
-            handleGatewayChange(false);
+            setIsChangedToCCGatewayType(false);
         }
         removeAPIPoliciesForGatewayChange();
-        setRadioButtonChange(false);
+        setIsDialogBoxVisible(false);
     }
 
     if (isChoreoConnectEnabled) {
@@ -84,18 +86,22 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
 
     /**
      * Handles accepted gateway type change after approving dialog box.
-     * @param {boolean} isCCEnabled  Indicates whether CC enabled or not.
+     * @param {event: React.ChangeEvent<HTMLInputElement>} event Indicates gateway type radio button change event.
      */
-    const handleApprovedGatewayChange = (isCCEnabled: boolean) => {
-        setRadioButtonChange(true);
-        setIsCCSelected(isCCEnabled);
+    const handleDialogBox = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if(event.target.value === SupportedGatewayTypes.CC) {
+            setIsCCSelected(true)
+        } else {
+            setIsCCSelected(false);
+        }
+        setIsDialogBoxVisible(true);
     }
 
     /**
      * Handles discarded gateway type change after cancelling dialog box.
      */
     const handleDiscardedGatewayChange = () => {
-        setRadioButtonChange(false);
+        setIsDialogBoxVisible(false);
     };
 
     return (
@@ -136,6 +142,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                     aria-labelledby='gateway-selector-radio-buttons-group-label'
                                     name='gateway-selector-radio-buttons-group'
                                     value={selectedGatewayType}
+                                    onChange={handleDialogBox}
                                 >
                                     <FormControlLabel
                                         value={SupportedGatewayTypes.REGULAR}
@@ -148,9 +155,6 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                                     ['apim:api_create'],
                                                     apiFromContext,
                                                 )}
-                                                onChange={
-                                                    () => handleApprovedGatewayChange(false)
-                                                }
                                             />
                                         }
                                         label='Regular Gateway'
@@ -162,7 +166,6 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                             <Radio
                                                 color='primary'
                                                 disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                onChange={() => handleApprovedGatewayChange(true)}
                                             />
                                         }
                                         label='Choreo Connect'
@@ -174,7 +177,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                     </Box>
                 </Grid>
             </Grid>
-            <Dialog open={isRadioButtonChange}>
+            <Dialog open={isDialogBoxVisible}>
                 <DialogTitle>
                     <Typography>
                         <FormattedMessage
@@ -206,7 +209,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                         />
                     </Button>
                     <Button
-                        onClick={() => { saveAfterGatewayChange() }}
+                        onClick={saveAfterGatewayChange}
                         color='primary'
                         variant='contained'
                     >

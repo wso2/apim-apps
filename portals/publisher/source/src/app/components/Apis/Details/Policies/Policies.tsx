@@ -81,7 +81,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
-    const handleGatewayChange = (isCCEnabled: boolean) => {
+    const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
         setIsChoreoConnectEnabled(isCCEnabled);
     }
 
@@ -324,9 +324,8 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
 
     /**
      * To update the API object with the attached policies on Save.
-     * @param {booean} isGatewayChanged Indicates whether the gateway type changed or not.
      */
-    const saveApi = (isGatewayChanged: boolean) => {
+    const saveApi = () => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
         let getewayTypeForPolicies = "wso2/synapse";
@@ -342,9 +341,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                     if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
                         const policyArray = operationPolicies[flow];
                         policyArray.forEach((policyItem: ApiPolicy) => {
-                            if(isGatewayChanged) {
-                                operationPolicies[flow] = [];
-                            } else if (policyItem.uuid) {
+                            if (policyItem.uuid) {
                                 // eslint-disable-next-line no-param-reassign
                                 delete policyItem.uuid;
                             }
@@ -354,16 +351,8 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             }
         });
 
-        if(isGatewayChanged) {
-            if(api.gatewayType === 'wso2/choreo-connect') {
-                getewayTypeForPolicies = "wso2/synapse";
-            } else {
-                getewayTypeForPolicies = "wso2/choreo-connect";
-            }
-        }
-
         // Handles normal policy savings for choreo connect gateway type.
-        if(isChoreoConnectEnabled && !isGatewayChanged) {
+        if(isChoreoConnectEnabled) {
             getewayTypeForPolicies = "wso2/choreo-connect";
         }
 
@@ -402,7 +391,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 </Box>
                 <Box mb={4} px={1}>
                     <GatewaySelector
-                        handleGatewayChange={handleGatewayChange}
+                        setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
                         removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                     />
@@ -524,7 +513,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 }
             </DndProvider>
             <SaveOperationPolicies
-                saveApi={() => { saveApi(false) }}
+                saveApi={saveApi}
                 updating={updating}
             />
         </ApiOperationContextProvider>
