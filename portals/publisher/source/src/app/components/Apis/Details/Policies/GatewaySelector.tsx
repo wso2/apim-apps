@@ -137,9 +137,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                         <Box>
                             <FormControl component='fieldset'>
                                 <RadioGroup
-                                    aria-label='gateway'
                                     row
-                                    aria-labelledby='gateway-selector-radio-buttons-group-label'
                                     name='gateway-selector-radio-buttons-group'
                                     value={selectedGatewayType}
                                     onChange={handleDialogBox}
@@ -155,6 +153,9 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                                     ['apim:api_create'],
                                                     apiFromContext,
                                                 )}
+                                                inputProps={{
+                                                    'aria-label': 'Regular Gateway',
+                                                }}
                                             />
                                         }
                                         label='Regular Gateway'
@@ -166,6 +167,9 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                             <Radio
                                                 color='primary'
                                                 disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                inputProps={{
+                                                    'aria-label': 'Choreo Connect',
+                                                }}
                                             />
                                         }
                                         label='Choreo Connect'
@@ -177,9 +181,12 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                     </Box>
                 </Grid>
             </Grid>
-            <Dialog open={isDialogBoxVisible}>
+            <Dialog
+                open={isDialogBoxVisible}
+                maxWidth='xl'
+            >
                 <DialogTitle>
-                    <Typography>
+                    <Typography variant='h4'>
                         <FormattedMessage
                             id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title'
                             defaultMessage='Change Gateway Type'
@@ -187,7 +194,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <Typography>
+                    <Typography variant='h6'>
                         <FormattedMessage
                             id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content'
                             defaultMessage={
