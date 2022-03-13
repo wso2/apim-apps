@@ -6,8 +6,8 @@ const AppConfig = {
     app: {
         context: '/publisher', // Note the leading `/` and no trailing `/`
         /*
-        If the proxy context path is configured, it's required to provide it here as well.
-        for example, to serve https://company.com/apim/publisher/ URL the context and proxy_context_path will be as follows.
+        If the proxy context path is configured, it's required to provide it here as well. For example,
+        to serve https://company.com/apim/publisher/ URL the context and proxy_context_path will be as follows.
         context: '/apim/publisher',
         proxy_context_path: '/apim',
         */
@@ -16,25 +16,27 @@ const AppConfig = {
             forwardedHeader: 'X-Forwarded-For',
         },
         origin: {
-            host: 'localhost', // Used to construct the loopback origin, It's very unlike you need to change this hostname,
+            // Used to construct the loopback origin, It's very unlike you need to change this hostname,
             // It is `localhost` in 99.99% case, If you want to change server host name change it in deployment.toml
+            host: 'localhost',
         },
         feedback: { // If enabled, Feedback form option(an icon) will be available in the footer LHS bottom
             enable: false,
             serviceURL: '', // Check `/source/src/app/components/Base/Footer/FeedbackForm.jsx` for details
         },
         singleLogout: {
-            enabled: true, // If enabled, user will be logged out from the App when logged out from the IDP (eg: SSO logout from a different App).
+            // If enabled, user will be logged out from the App when logged out from the IDP
+            // (eg: SSO logout from a different App).
+            enabled: true,
             timeout: 4000, // Defines the timeout for the above periodical session status check
         },
         throttlingPolicyLimit: 80,
-        mediationPolicyCount: 50,
         operationPolicyCount: 50,
         propertyDisplaySuffix: '__display',
         loadDefaultLocales: true, // If false, Default en.json file will not be used/loaded in app.
         // loadDefaultLocales = false is good for performance but text overrides using the locale file will not work
-        supportedDocTypes: 'application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document,'
-                    + ' application/pdf, text/plain, application/vnd.ms-excel,'
+        supportedDocTypes: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document,'
+                    + ' application/msword, application/pdf, text/plain, application/vnd.ms-excel,'
                     + ' application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,'
                     + ' application/vnd.oasis.opendocument.text, application/vnd.oasis.opendocument.spreadsheet,'
                     + ' application/json, application/x-yaml, .md',
