@@ -30,7 +30,7 @@ import Avatar from '@material-ui/core/Avatar';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Dropzone from 'react-dropzone';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import Icon from '@material-ui/core/Icon';
@@ -112,7 +112,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                         // eslint-disable-next-line react/jsx-props-no-spreading
                         <div {...getRootProps({})}>
                             <div
-                                className={classNames(
+                                className={clsx(
                                     classes.dropZoneWrapper,
                                     isDragAccept ? classes.acceptDrop : null,
                                     isDragReject ? classes.rejectDrop : null,

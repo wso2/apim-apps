@@ -21,7 +21,7 @@ import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
 import { useDrop } from 'react-dnd';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
@@ -107,7 +107,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
             <Grid container>
                 <div
                     ref={drop}
-                    className={classNames({
+                    className={clsx({
                         [classes.dropzoneDiv]: true,
                         [classes.acceptDrop]: isActive,
                         [classes.alignCenter]: currentPolicyList.length === 0,
