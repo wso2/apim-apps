@@ -19,7 +19,7 @@ import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
 import cloneDeep from 'lodash.clonedeep';
-import Configurations from '/site/public/conf/settings';
+import Configurations from '../../../../site/public/conf/settings';
 
 /**
  * An abstract representation of an API
@@ -2751,7 +2751,6 @@ class API extends Resource {
      * @returns {boolean|*}
      */
     updateAsyncAPIDefinitionByFile(apiId, AsyncAPIFile) {
-        console.log('hello');
         console.log(apiId);
         console.log(AsyncAPIFile);
         let payload, promise_updated;
