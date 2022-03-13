@@ -361,20 +361,23 @@ const Policies: React.FC = () => {
             });
     }
 
+    /**
+     * To memoize the value passed into ApiOperationContextProvider
+     */
+    const providerValue = useMemo(() => ({
+        apiOperations,
+        updateApiOperations,
+        updateAllApiOperations,
+        deleteApiOperation,
+        rearrangeApiOperations,
+    }), [apiOperations, updateApiOperations, updateAllApiOperations, deleteApiOperation, rearrangeApiOperations])
+
     if (!policies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
     }
 
     return (
-        <ApiOperationContextProvider
-            value={{
-                apiOperations,
-                updateApiOperations,
-                updateAllApiOperations,
-                deleteApiOperation,
-                rearrangeApiOperations,
-            }}
-        >
+        <ApiOperationContextProvider value={providerValue}>
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
