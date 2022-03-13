@@ -91,16 +91,13 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     const classes = useStyles();
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
 
-    const [{ canDrop, isOver }, drop] = useDrop({
+    const [{ canDrop }, drop] = useDrop({
         accept: droppablePolicyList,
         drop: (item: any) => setDroppedPolicy(item.droppedPolicy),
         collect: (monitor) => ({
-            isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
         }),
     });
-
-    const isActive = canDrop && isOver;
 
     return (
         <>
@@ -109,7 +106,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                     ref={drop}
                     className={clsx({
                         [classes.dropzoneDiv]: true,
-                        [classes.acceptDrop]: isActive,
+                        [classes.acceptDrop]: canDrop,
                         [classes.alignCenter]: currentPolicyList.length === 0,
                         [classes.alignLeft]:
                             currentPolicyList.length !== 0 &&

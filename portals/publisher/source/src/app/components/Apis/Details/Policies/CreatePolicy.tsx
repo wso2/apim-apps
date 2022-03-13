@@ -72,9 +72,9 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
         setSaving(true);
         const promisedCommonPolicyAdd = API.addOperationPolicy(
             policySpecContent,
+            api.id,
             synapsePolicyDefinition,
             ccPolicyDefinition,
-            api.id,
         );
         promisedCommonPolicyAdd
             .then(() => {

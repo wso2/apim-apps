@@ -19,7 +19,7 @@ import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
 import cloneDeep from 'lodash.clonedeep';
-import Configurations from 'Config';
+import Configurations from '/site/public/conf/settings';
 
 /**
  * An abstract representation of an API
@@ -2470,38 +2470,6 @@ class API extends Resource {
     }
 
     /**
-     * Get global mediation policies.
-     * @returns {Promise}
-     *
-     */
-    static getGlobalMediationPolicies() {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        const limit = Configurations.app.mediationPolicyCount;
-        return restApiClient.then(client => {
-            return client.apis['Global Mediation Policies'].getAllGlobalMediationPolicies({limit}, this._requestMetaData());
-        });
-    }
-
-    /**
-     * Get the content of a mediation policy.
-     * @param {String} mediationPolicyId mediation policy uuid
-     * @param {String} apiId uuid of the api
-     * @returns {Promise}
-     *
-     */
-    static getGlobalMediationPolicyContent(mediationPolicyId) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        return restApiClient.then(client => {
-            return client.apis['Global Mediation Policy'].getGlobalMediationPolicyContent(
-                {
-                    mediationPolicyId: mediationPolicyId,
-                },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
      * @static
      * Get all the external stores configured for the current environment
      * @returns {Promise}
@@ -2820,11 +2788,10 @@ class API extends Resource {
      */
     static getCommonOperationPolicies() {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
             return client.apis['Operation Policies'].getAllCommonOperationPolicies(
-                {
-                    limit: 50,
-                },
+                {limit},
                 this._requestMetaData(),
             );
         });
@@ -2837,7 +2804,6 @@ class API extends Resource {
      */
     static getCommonOperationPolicy(policyId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        const limit = Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
             return client.apis['Operation Policies'].getCommonOperationPolicyByPolicyId(
                 {
@@ -2972,12 +2938,12 @@ class API extends Resource {
     /**
      * Add an API specific operation policy
      * @param {Object} policySpec policy specification of the operation policy
+     * @param {String} apiId UUID of the API
      * @param {any} synapsePolicyDefinition policy definition of the operation policy for Synapse
      * @param {any} ccPolicyDefinition policy definition of the operation policy for Choreo Connect
-     * @param {String} apiId UUID of the API
      * @returns {Promise} Promise containing added operation policy specification
      */
-    static addOperationPolicy(policySpec, synapsePolicyDefinition = null, ccPolicyDefinition = null, apiId) {
+    static addOperationPolicy(policySpec, apiId, synapsePolicyDefinition = null, ccPolicyDefinition = null) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['API Operation Policies'].addAPISpecificOperationPolicy(
