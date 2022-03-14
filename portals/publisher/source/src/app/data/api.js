@@ -2782,15 +2782,20 @@ class API extends Resource {
     }
 
     /**
-     * Get all common operation policies to all the APIs
-     * @returns {Promise} Promise containing a list of all common operation policies that can be used by any API
+     * Get all common operation policies
+     * @param {String} limit limit of the common operation policy list which needs to be retrieved
+     * @param {String} offset offset of the common operation policy list which needs to be retrieved
+     * @returns {Promise} Promise containing common operation policies that can be used by any API
      */
-    static getCommonOperationPolicies() {
+    static getCommonOperationPolicies(limit = null, offset = null) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        const limit = Configurations.app.operationPolicyCount;
+        const policyLimit = limit ? limit : Configurations.app.operationPolicyCount;
         return restApiClient.then(client => {
             return client.apis['Operation Policies'].getAllCommonOperationPolicies(
-                {limit},
+                {
+                    limit: policyLimit,
+                    offset
+                },
                 this._requestMetaData(),
             );
         });
