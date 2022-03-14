@@ -104,7 +104,7 @@ export default function GraphQLUI(props) {
 
         return createGraphiQLFetcher({
             headers,
-            url: URLs.https,
+            url: URLs ? URLs.https : null,
             legacyWsClient: new SubscriptionClient(wsUrl + '?access_token=' + accessTokenProvider(), { reconnect: false, lazy: true }),
         });
     }
