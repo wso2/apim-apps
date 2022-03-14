@@ -202,7 +202,7 @@ class LifeCycleUpdate extends Component {
         const {
             api: { id: apiUUID, advertiseInfo },
         } = this.props;
-        if (action === 'Publish' && !deploymentsAvailable && !advertiseInfo.advertised) {
+        if (action === 'Publish' && !deploymentsAvailable && advertiseInfo && !advertiseInfo.advertised) {
             this.setIsOpen(true);
         } else {
             this.updateLCStateOfAPI(apiUUID, action);
