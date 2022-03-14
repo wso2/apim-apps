@@ -178,6 +178,9 @@ function Endpoints(props) {
      */
     const handleSave = (isRedirect) => {
         const { endpointConfig, endpointImplementationType, serviceInfo } = apiObject;
+        if (endpointConfig.endpoint_type === 'service') {
+            endpointConfig.endpoint_type = 'http';
+        }
         setUpdating(true);
         if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
             api.updateSwagger(swagger).then((resp) => {
@@ -191,7 +194,11 @@ function Endpoints(props) {
                 }
             });
         } else {
-            updateAPI(apiObject).finally(() => {
+            const apiObjectCopy = cloneDeep(apiObject);
+            if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
+                apiObjectCopy.endpointConfig.endpoint_type = 'http';
+            }
+            updateAPI(apiObjectCopy).finally(() => {
                 setUpdating(false);
                 if (isRedirect) {
                     history.push('/apis/' + api.id + '/runtime-configuration');
@@ -201,20 +208,27 @@ function Endpoints(props) {
     };
 
     const handleSaveAndDeploy = () => {
-        const { endpointConfig, endpointImplementationType, endpointSecurity } = apiObject;
+        const { endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo } = apiObject;
+        if (endpointConfig.endpoint_type === 'service') {
+            endpointConfig.endpoint_type = 'http';
+        }
         setUpdating(true);
         if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity });
+                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo });
             }).finally(() => history.push({
                 pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                     : `/apis/${api.id}/deployments`,
                 state: 'deploy',
             }));
         } else {
-            updateAPI(apiObject).finally(() => history.push({
+            const apiObjectCopy = cloneDeep(apiObject);
+            if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
+                apiObjectCopy.endpointConfig.endpoint_type = 'http';
+            }
+            updateAPI(apiObjectCopy).finally(() => history.push({
                 pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                     : `/apis/${api.id}/deployments`,
                 state: 'deploy',
