@@ -187,14 +187,14 @@ function Endpoints(props) {
             }).finally(() => {
                 setUpdating(false);
                 if (isRedirect) {
-                    history.push('/apis/' + api.id + '/runtime-configuration');
+                    history.push('/apis/' + api.id + '/policies');
                 }
             });
         } else {
             updateAPI(apiObject).finally(() => {
                 setUpdating(false);
                 if (isRedirect) {
-                    history.push('/apis/' + api.id + '/runtime-configuration');
+                    history.push('/apis/' + api.id + '/policies');
                 }
             });
         }

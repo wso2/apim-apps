@@ -33,13 +33,18 @@ import { red } from '@material-ui/core/colors/';
  * @returns
  */
 export default function Tags(props) {
-    const { api, configDispatcher } = props;
+    const { api, configDispatcher, setIsDisabled } = props;
     const [apiFromContext] = useAPI();
     const [isTagValid, setIsTagValid] = useState(true);
     const [invalidTags, setInvalidTags] = useState([]);
     const [isTagWithinLimit, setIsTagWithinLimit] = useState(true);
     const regexPattern = /([~!@#;%^&*+=|\\<>"'/,])/;
     const helperText = () => {
+        if(!isTagWithinLimit || !isTagValid) {
+            setIsDisabled(true);
+        } else {
+            setIsDisabled(false);
+        }
         if (isTagValid && isTagWithinLimit) {
             return (
                 <FormattedMessage
