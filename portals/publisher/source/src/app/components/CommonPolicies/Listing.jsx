@@ -127,9 +127,9 @@ const Listing = () => {
 
     // Provides the gateway specific policies list.
     const getPoliciesList = () => {
-        let gatewayType = CONST.GATEWAY_TYPE.synapse;
+        let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
         if (isAllowedToFilterCCPolicies) {
-            gatewayType = CONST.GATEWAY_TYPE.choreoConnect;
+            gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
         }
         // removes irrelevant policies for the selected gateway type
         return policies?.filter((policy) => {
