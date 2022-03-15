@@ -31,6 +31,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -38,6 +39,8 @@ import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
+import Alert from '@material-ui/lab/Alert';
+import Typography from '@material-ui/core/Typography';
 
 /**
  * Render a list
@@ -64,7 +67,8 @@ const useStyles = makeStyles((theme) => ({
 export default function ListApplications() {
     const intl = useIntl();
     const classes = useStyles();
-    const [applicationList, setApplicationList] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [applicationList, setApplicationList] = useState(null);
     const [totalApps, setTotalApps] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
@@ -74,10 +78,11 @@ export default function ListApplications() {
     * API call to get application list
     * @returns {Promise}.
     */
-    function apiCall(pageNo) {
+    function apiCall(pageNo, user = owner) {
+        setLoading(true);
         const restApi = new API();
         return restApi
-            .getApplicationList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, user: owner })
+            .getApplicationList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, user })
             .then((result) => {
                 setApplicationList(result.body.list);
                 const { pagination: { total } } = result.body;
@@ -86,6 +91,9 @@ export default function ListApplications() {
             })
             .catch((error) => {
                 throw error;
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }
 
@@ -122,7 +130,7 @@ export default function ListApplications() {
     function clearSearch() {
         setPage(0);
         setOwner('');
-        apiCall(page).then((result) => {
+        apiCall(page, '').then((result) => {
             setApplicationList(result);
         });
     }
@@ -136,7 +144,8 @@ export default function ListApplications() {
         }
     }
 
-    function filterApps() {
+    function filterApps(e) {
+        e.preventDefault();
         setPage(0);
         apiCall(page).then((result) => {
             setApplicationList(result);
@@ -147,28 +156,32 @@ export default function ListApplications() {
         <ContentBase>
             <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
                 <Toolbar>
-                    <Grid container spacing={2} alignItems='center'>
-                        <Grid item>
-                            <SearchIcon className={classes.block} color='inherit' />
-                        </Grid>
-                        <Grid item xs>
-                            <TextField
-                                fullWidth
-                                id='search-label'
-                                label={intl.formatMessage({
-                                    defaultMessage: 'Search',
-                                    id: 'Applications.Listing.Listing.applications.search.label',
-                                })}
-                                placeholder='Search application by owner'
-                                InputProps={{
-                                    disableUnderline: true,
-                                    className: classes.searchInput,
-                                }}
-                                value={owner}
-                                onChange={setQuery}
+                    <form onSubmit={filterApps} style={{ width: '100%' }} disabled={loading}>
+                        <Grid container spacing={2} alignItems='center'>
+                            <Grid item>
+                                <SearchIcon className={classes.block} color='inherit' />
+                            </Grid>
+                            <Grid item xs>
+                                <TextField
+                                    fullWidth
+                                    id='search-label'
+                                    label={intl.formatMessage({
+                                        defaultMessage: 'Search Application by Application Owner',
+                                        id: 'Applications.Listing.Listing.applications.search.label',
+                                    })}
+                                    placeholder={intl.formatMessage({
+                                        defaultMessage: 'Application Owner',
+                                        id: 'Applications.Listing.Listing.search.placeholder',
+                                    })}
+                                    InputProps={{
+                                        disableUnderline: true,
+                                        className: classes.searchInput,
+                                    }}
+                                    value={owner}
+                                    onChange={setQuery}
                                 // onKeyPress={this.handleSearchKeyPress}
-                            />
-                            { owner.length > 0
+                                />
+                                { owner.length > 0
                                 && (
                                     <Tooltip
                                         title={
@@ -187,54 +200,82 @@ export default function ListApplications() {
                                         </IconButton>
                                     </Tooltip>
                                 )}
-                        </Grid>
-                        <Grid item>
-                            <Button variant='contained' className={classes.addUser} onClick={filterApps}>
-                                <FormattedMessage
-                                    id='Applications.Listing.Listing.applications.search'
-                                    defaultMessage='Search'
-                                />
-                            </Button>
+                            </Grid>
+                            <Grid item>
+                                <Button
+                                    variant='contained'
+                                    className={classes.addUser}
+                                    type='submit'
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <FormattedMessage
+                                            id='Applications.Listing.Listing.applications.searching'
+                                            defaultMessage='Searching'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            id='Applications.Listing.Listing.applications.search'
+                                            defaultMessage='Search'
+                                        />
+                                    )}
 
+                                </Button>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </form>
                 </Toolbar>
             </AppBar>
-            <Table id='itest-application-list-table'>
-                <ApplicationTableHead />
-                <AppsTableContent
-                    apps={applicationList}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                    editComponentProps={{
-                        icon: <EditIcon />,
-                        title: 'Change Application Owner',
-                        applicationList,
-                    }}
-                    EditComponent={EditApplication}
-                    apiCall={apiCall}
-                />
-                <TableFooter>
-                    <TableRow>
-                        <TablePagination
-                            component='td'
-                            count={totalApps}
-                            rowsPerPage={rowsPerPage}
-                            rowsPerPageOptions={[5, 10, 15]}
-                            labelRowsPerPage='Show'
+            {applicationList && applicationList.length > 0
+                && (
+                    <Table id='itest-application-list-table'>
+                        <ApplicationTableHead />
+                        <AppsTableContent
+                            apps={applicationList}
                             page={page}
-                            backIconButtonProps={{
-                                'aria-label': 'Previous Page',
+                            rowsPerPage={rowsPerPage}
+                            editComponentProps={{
+                                icon: <EditIcon />,
+                                title: 'Change Application Owner',
+                                applicationList,
                             }}
-                            nextIconButtonProps={{
-                                'aria-label': 'Next Page',
-                            }}
-                            onChangePage={handleChangePage}
-                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                            EditComponent={EditApplication}
+                            apiCall={apiCall}
                         />
-                    </TableRow>
-                </TableFooter>
-            </Table>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    component='td'
+                                    count={totalApps}
+                                    rowsPerPage={rowsPerPage}
+                                    rowsPerPageOptions={[5, 10, 15]}
+                                    labelRowsPerPage='Show'
+                                    page={page}
+                                    backIconButtonProps={{
+                                        'aria-label': 'Previous Page',
+                                    }}
+                                    nextIconButtonProps={{
+                                        'aria-label': 'Next Page',
+                                    }}
+                                    onChangePage={handleChangePage}
+                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                )}
+            {applicationList && applicationList.length === 0 && !loading && (
+                <Box>
+                    <Alert severity='info'>
+                        <Typography variant='subtitle2'>
+                            <FormattedMessage
+                                id='Applications.Listing.Listing.empty.message'
+                                defaultMessage='No Data to Display'
+                            />
+                        </Typography>
+                    </Alert>
+                </Box>
+            )}
         </ContentBase>
     );
 }
