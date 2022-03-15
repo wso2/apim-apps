@@ -31,7 +31,7 @@ const AppConfig = {
             timeout: 4000, // Defines the timeout for the above periodical session status check
         },
         throttlingPolicyLimit: 80,
-        operationPolicyCount: 50,
+        operationPolicyCount: 500,
         propertyDisplaySuffix: '__display',
         loadDefaultLocales: true, // If false, Default en.json file will not be used/loaded in app.
         // loadDefaultLocales = false is good for performance but text overrides using the locale file will not work
