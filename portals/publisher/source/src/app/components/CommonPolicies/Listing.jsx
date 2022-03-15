@@ -128,11 +128,11 @@ const Listing = () => {
     // Provides the gateway specific policies list.
     const getPoliciesList = () => {
         let gatewayType = CONST.GATEWAY_TYPE.synapse;
-        if(isAllowedToFilterCCPolicies){
+        if (isAllowedToFilterCCPolicies) {
             gatewayType = CONST.GATEWAY_TYPE.choreoConnect;
         }
         // removes irrelevant policies for the selected gateway type
-        return policies?.filter((policy)=>{
+        return policies?.filter((policy) => {
             return policy.supportedGateways.includes(gatewayType)
         }).map((policyObj) => {
             const policy = [];
@@ -142,8 +142,7 @@ const Listing = () => {
                     policy.push(policyObj.displayName);
                     policy.push(policyObj.description);
                     policy.push(policyObj.applicableFlows);
-    
-                } 
+                }
             });
             return policy;
         });
