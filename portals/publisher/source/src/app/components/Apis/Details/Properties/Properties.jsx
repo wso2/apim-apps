@@ -163,7 +163,6 @@ function Properties(props) {
     }
 
     const [additionalProperties, setAdditionalProperties] = useState(additionalPropertiesTemp);
-    // const [additionalPropertiesMap, setAdditionalPropertiesMap] = useState(new Map());
     const [showAddProperty, setShowAddProperty] = useState(false);
     const [propertyKey, setPropertyKey] = useState(null);
     const [propertyValue, setPropertyValue] = useState(null);
