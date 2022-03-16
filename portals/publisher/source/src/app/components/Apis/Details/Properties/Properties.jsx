@@ -232,7 +232,13 @@ function Properties(props) {
         if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'slack_url')) {
             additionalProperties.slack_url = api.additionalProperties.slack_url;
         }
-        const updatePromise = updateAPI({ additionalProperties });
+        const additionalPropertiesCopyForMap = cloneDeep(additionalProperties);
+        const additionalPropertiesMap = {};
+        additionalPropertiesCopyForMap.map((property) => {
+            additionalPropertiesMap[property.name] = property;
+            return additionalPropertiesMap;
+        });
+        const updatePromise = updateAPI({ additionalProperties, additionalPropertiesMap });
         updatePromise
             .then(() => {
                 setUpdating(false);
@@ -256,7 +262,13 @@ function Properties(props) {
         if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'slack_url')) {
             additionalProperties.slack_url = api.additionalProperties.slack_url;
         }
-        const updatePromise = updateAPI({ additionalProperties });
+        const additionalPropertiesCopyForMap = cloneDeep(additionalProperties);
+        const additionalPropertiesMap = {};
+        additionalPropertiesCopyForMap.map((property) => {
+            additionalPropertiesMap[property.name] = property;
+            return additionalPropertiesMap;
+        });
+        const updatePromise = updateAPI({ additionalProperties, additionalPropertiesMap });
         updatePromise
             .then(() => {
                 setUpdating(false);
