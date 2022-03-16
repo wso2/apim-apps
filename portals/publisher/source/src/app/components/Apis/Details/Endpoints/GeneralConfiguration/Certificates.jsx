@@ -218,6 +218,7 @@ function Certificates(props) {
                                         <IconButton
                                             disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                             onClick={() => setCertificateToDelete({ open: true, alias: cert.alias })}
+                                            id='delete-cert-btn'
                                         >
                                             <Icon className={isRestricted(['apim:api_create'], apiFromContext)
                                                 ? classes.deleteIconDisable : classes.deleteIcon}
@@ -266,6 +267,7 @@ function Certificates(props) {
                         color='primary'
                         disabled={isDeleting}
                         autoFocus
+                        id='delete-cert-confirm-btn'
                     >
                         <FormattedMessage
                             id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.delete.ok.button'

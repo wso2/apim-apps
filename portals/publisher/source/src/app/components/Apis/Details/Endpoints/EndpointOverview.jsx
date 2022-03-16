@@ -693,6 +693,7 @@ function EndpointOverview(props) {
                                                 <Radio
                                                     disabled={(isRestricted(['apim:api_create'], api))}
                                                     color='primary'
+                                                    id={endpoint.key}
                                                 />
                                             )}
                                             label={endpoint.value}
@@ -848,6 +849,7 @@ function EndpointOverview(props) {
                                                                 <FormControlLabel
                                                                     control={(
                                                                         <Checkbox
+                                                                            id='production-endpoint-checkbox'
                                                                             disabled={isRestricted(
                                                                                 ['apim:api_create'], api)}
                                                                             checked={endpointCategory.prod}
@@ -1000,6 +1002,7 @@ function EndpointOverview(props) {
                                                                     <FormControlLabel
                                                                         control={(
                                                                             <Checkbox
+                                                                                id='sandbox-endpoint-checkbox'
                                                                                 disabled={isRestricted(
                                                                                     ['apim:api_create'], api)}
                                                                                 checked={endpointCategory.sandbox}
@@ -1275,6 +1278,7 @@ function EndpointOverview(props) {
                     <Button
                         onClick={() => { changeEndpointType(typeChangeConfirmation.type); }}
                         color='primary'
+                        id='change-endpoint-type-btn'
                     >
                         <FormattedMessage
                             id='Apis.Details.Endpoints..EndpointOverview.change.type.proceed'

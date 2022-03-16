@@ -340,7 +340,7 @@ function EndpointSecurity(props) {
                     onBlur={() => validateAndUpdateSecurityInfo(isProduction)}
                 >
                     {authTypes.map((type) => (
-                        <MenuItem value={type.key}>{type.value}</MenuItem>
+                        <MenuItem value={type.key} id={'auth-type-' + type.key}>{type.value}</MenuItem>
                     ))}
                 </TextField>
             </Grid>
@@ -755,6 +755,7 @@ function EndpointSecurity(props) {
                     autoFocus
                     variant='contained'
                     style={{ marginTop: '10px', marginRight: '10px', marginBottom: '10px' }}
+                    id='endpoint-security-submit-btn'
                 >
                     <FormattedMessage
                         id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurityConfig.config.save.button'
