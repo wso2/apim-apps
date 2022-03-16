@@ -329,6 +329,7 @@ export default function DeploymentOnboarding(props) {
                                         display='inline'
                                         startIcon={<AddIcon />}
                                         onClick={handleDescriptionOpen}
+                                        id='add-description-btn'
                                     >
                                         Add a description
                                     </Button>
@@ -356,12 +357,14 @@ export default function DeploymentOnboarding(props) {
                                                 rows={3}
                                                 defaultValue={description === true ? '' : description}
                                                 onBlur={handleChange}
+                                                id='add-description'
                                             />
                                         </>
                                     )}
                                 </Box>
                                 <Box mt={3}>
                                     <Button
+                                        id='deploy-btn'
                                         type='submit'
                                         variant='contained'
                                         onClick={

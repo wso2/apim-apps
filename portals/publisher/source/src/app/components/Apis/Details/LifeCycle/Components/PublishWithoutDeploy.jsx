@@ -287,6 +287,7 @@ export default function PublishWithoutDeploy(props) {
                     color='primary'
                     component={RouterLink}
                     to={'/apis/' + api.id + '/deployments'}
+                    id='deployments-btn'
                 >
                     <Box fontSize='button.fontSize' alignItems='center' display='flex' fontFamily='fontFamily'>
                         <FormattedMessage

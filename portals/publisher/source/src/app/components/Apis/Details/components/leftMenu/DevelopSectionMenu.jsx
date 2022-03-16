@@ -196,6 +196,7 @@ export default function DevelopSectionMenu(props) {
                                 })}
                                 to={pathPrefix + 'subscriptions'}
                                 Icon={<SubscriptionsIcon />}
+                                id='left-menu-itemsubscriptions'
                             />
                         )}
                         <LeftMenuItem
