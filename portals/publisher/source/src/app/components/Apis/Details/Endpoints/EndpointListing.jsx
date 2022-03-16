@@ -120,13 +120,13 @@ function EndpointListing(props) {
         <div className={classes.listingWrapper} ref={selectedRef}>
             <Grid container xs={12}>
                 <Grid xs={12}>
-                    {(endpointType === 'failover' || endpointType === 'load_balance')
-                        ? 
+                    {(endpointType === 'failover' || endpointType === 'load_balance') ?
                         <GenericEndpointAdd
-                            addEndpoint={addEndpoint} 
-                            endpointType={endpointType} 
+                            addEndpoint={addEndpoint}
+                            endpointType={endpointType}
                             category={category}
-                        /> : <div />}
+                        /> : <div />
+                    }
                 </Grid>
                 <Grid xs={12}>
                     {
