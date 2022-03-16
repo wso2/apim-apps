@@ -123,6 +123,7 @@ class SubscriptionPoliciesManage extends Component {
                         <FormGroup>
                             { subscriptionPolicies && Object.entries(subscriptionPolicies).map((value) => (
                                 <FormControlLabel
+                                    data-testid={'policy-checkbox-' + value[1].displayName.toLowerCase()}
                                     key={value[1].displayName}
                                     control={(
                                         <Checkbox
