@@ -378,6 +378,7 @@ class Details extends Component {
                 route='api definition'
                 to={pathPrefix + 'api definition'}
                 Icon={<CodeIcon />}
+                id='left-menu-itemAPIdefinition'
             />
         );
 

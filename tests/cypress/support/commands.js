@@ -48,8 +48,8 @@ Cypress.Commands.add('portalLogin', (username, password, portal) => {
     }
     cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
     cy.get('[data-testid=login-page-username-input]').click();
-    cy.get('[data-testid=login-page-username-input]').type('admin');
-    cy.get('[data-testid=login-page-password-input]').type('admin');
+    cy.get('[data-testid=login-page-username-input]').type(username);
+    cy.get('[data-testid=login-page-password-input]').type(password);
     cy.get('#loginForm').submit();
     cy.url().should('contains', `${Utils.getAppOrigin()}/${portal}`);
 })
@@ -260,7 +260,8 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
     const randomName = `sample_api_${random_number}`;
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
-    cy.get('#itest-create-api-menu-button').click();
+    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
+    cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-landing-rest-create-default').click();
     cy.get('#itest-id-apiname-input').type(name || randomName);
     cy.get('#itest-id-apicontext-input').click();

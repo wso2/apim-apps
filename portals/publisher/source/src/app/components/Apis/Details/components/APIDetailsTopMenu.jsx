@@ -409,6 +409,7 @@ const APIDetailsTopMenu = (props) => {
                         onClick={exportAPI}
                         onKeyDown={null}
                         className={classes.downloadApiFlex}
+                        id='download-api-btn'
                     >
                         <div>
                             <CloudDownloadRounded />
