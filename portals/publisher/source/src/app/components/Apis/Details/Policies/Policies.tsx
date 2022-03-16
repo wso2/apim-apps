@@ -77,12 +77,12 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
-    const getGatewayType = (isCCEnabled: boolean) => {
-        getChoreoConnectEnabled(isCCEnabled)
+    const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
+        setIsChoreoConnectEnabled(isCCEnabled);
     }
 
     /**
@@ -161,6 +161,26 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             console.error(error);
             Alert.error('Error occurred while retrieving the policy list');
         });
+    }
+
+    const removeAPIPoliciesForGatewayChange = () => {
+        const newApiOperations: any = cloneDeep(apiOperations);
+        // Set operation policies to the API object
+        newApiOperations.forEach((operation: any) => {
+            if (operation.operationPolicies) {
+                const { operationPolicies } = operation;
+
+                // Iterating through the policy list of request flow, response flow and fault flow
+                for (const flow in operationPolicies) {
+                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+
+                        operationPolicies[flow] = [];
+
+                    }
+                }
+            }
+        });
+        setApiOperations(newApiOperations);
     }
 
     useEffect(() => {
@@ -303,11 +323,13 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     }
 
     /**
-     * To update the API object with the attached policies on Save
+     * To update the API object with the attached policies on Save.
      */
     const saveApi = () => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
+        let getewayTypeForPolicies = "wso2/synapse";
+        const getewayVendorForPolicies = "wso2";
 
         // Set operation policies to the API object
         newApiOperations.forEach((operation: any) => {
@@ -329,7 +351,15 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             }
         });
 
-        const updatePromise = updateAPI({ operations: newApiOperations });
+        // Handles normal policy savings for choreo connect gateway type.
+        if(isChoreoConnectEnabled) {
+            getewayTypeForPolicies = "wso2/choreo-connect";
+        }
+
+        const updatePromise = updateAPI({ 
+            operations: newApiOperations, 
+            gatewayVendor: getewayVendorForPolicies, 
+            gatewayType: getewayTypeForPolicies});
         updatePromise
             .finally(() => {
                 setUpdating(false);
@@ -361,8 +391,9 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 </Box>
                 <Box mb={4} px={1}>
                     <GatewaySelector
-                        getGatewayType={getGatewayType}
+                        setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
+                        removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                     />
                 </Box>
                 {isChoreoConnectEnabled ?
