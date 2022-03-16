@@ -175,6 +175,7 @@ export default function DevelopSectionMenu(props) {
                             })}
                             to={pathPrefix + 'business info'}
                             Icon={<BusinessIcon />}
+                            id='left-menu-itembusinessinfo'
                         />
                         {!isAPIProduct && (
                             <LeftMenuItem
