@@ -602,6 +602,7 @@ function ProductResourcesEdit(props) {
                                     <Button
                                         onClick={() => addSelectedResourcesToTree()}
                                         onKeyDown={() => addSelectedResourcesToTree()}
+                                        id='add-selected-resources'
                                     >
                                         <Typography variant='body2'>
                                             <FormattedMessage
@@ -616,6 +617,7 @@ function ProductResourcesEdit(props) {
                                     <Button
                                         onClick={() => addSelectedResourcesToTree(true)}
                                         onKeyDown={() => addSelectedResourcesToTree(true)}
+                                        id='add-all-resources-btn'
                                     >
                                         <Typography variant='body2'>
                                             <FormattedMessage
@@ -629,7 +631,7 @@ function ProductResourcesEdit(props) {
                                 </div>
                                 <div className={classes.ResourceWrapper}>
                                     <div className='frame'>
-                                        <List dense>
+                                        <List dense id='resource-wrapper'>
                                             {Object.keys(selectedApiPaths).map((key) => {
                                                 const path = selectedApiPaths[key];
                                                 const labelId = `checkbox-list-label_${key}`;
