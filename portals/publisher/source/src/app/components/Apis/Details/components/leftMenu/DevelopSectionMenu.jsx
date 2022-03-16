@@ -328,6 +328,7 @@ export default function DevelopSectionMenu(props) {
                             })}
                             to={pathPrefix + 'properties'}
                             Icon={<PropertiesIcon />}
+                            id='left-menu-itemproperties'
                         />
 
                         {!api.isWebSocket() && !isRestricted(['apim:api_publish'], api) && (
