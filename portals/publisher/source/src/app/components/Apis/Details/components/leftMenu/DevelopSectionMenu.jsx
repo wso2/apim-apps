@@ -205,6 +205,7 @@ export default function DevelopSectionMenu(props) {
                             })}
                             to={pathPrefix + 'documents'}
                             Icon={<DocumentsIcon />}
+                            id='left-menu-itemdocuments'
                         />
                         {!isAPIProduct && (
                             <LeftMenuItem

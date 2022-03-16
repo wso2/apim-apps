@@ -515,6 +515,7 @@ class Listing extends React.Component {
                                 }
                                 <div className={classes.actions}>
                                     <Button
+                                        id='add-new-document-btn'
                                         variant='contained'
                                         color='primary'
                                         component={Link}
