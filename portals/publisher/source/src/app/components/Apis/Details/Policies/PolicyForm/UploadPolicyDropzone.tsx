@@ -30,11 +30,12 @@ import Avatar from '@material-ui/core/Avatar';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Dropzone from 'react-dropzone';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import Icon from '@material-ui/core/Icon';
 import { HelpOutline } from '@material-ui/icons';
+import { GATEWAY_TYPE_LABELS } from './SourceDetails';
 
 const useStyles = makeStyles((theme: Theme) => ({
     dropZoneWrapper: {
@@ -75,6 +76,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface UploadPolicyDropzoneProps {
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
+    gateway: string;
 }
 
 /**
@@ -85,6 +87,7 @@ interface UploadPolicyDropzoneProps {
 const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     policyDefinitionFile,
     setPolicyDefinitionFile,
+    gateway,
 }) => {
     const classes = useStyles();
 
@@ -109,7 +112,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                         // eslint-disable-next-line react/jsx-props-no-spreading
                         <div {...getRootProps({})}>
                             <div
-                                className={classNames(
+                                className={clsx(
                                     classes.dropZoneWrapper,
                                     isDragAccept ? classes.acceptDrop : null,
                                     isDragReject ? classes.rejectDrop : null,
@@ -143,11 +146,16 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                     >
                         <FormattedMessage
                             id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title'
-                            defaultMessage='Upload Policy File'
+                            defaultMessage='Upload Policy File for {gateway}'
+                            values={{ gateway }}
                         />
                         <sup className={classes.mandatoryStar}>*</sup>
                         <Tooltip
-                            title='Regular gateway supports only .j2 and .xml file uploads'
+                            title={
+                                gateway === GATEWAY_TYPE_LABELS.SYNAPSE
+                                    ? 'Regular gateway only supports .j2 and .xml file uploads'
+                                    : 'Choreo Connect only supports .gotmpl file uploads'
+                            }
                             placement='right'
                             interactive
                         >

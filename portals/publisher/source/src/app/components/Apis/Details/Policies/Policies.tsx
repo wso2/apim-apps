@@ -61,16 +61,11 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-interface PoliciesProps {
-    disableUpdate: any;
-}
-
 /**
  * Renders the policy management page.
- * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policy management page to render.
  */
-const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
+const Policies: React.FC = () => {
     const classes = useStyles();
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
@@ -366,20 +361,23 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             });
     }
 
+    /**
+     * To memoize the value passed into ApiOperationContextProvider
+     */
+    const providerValue = useMemo(() => ({
+        apiOperations,
+        updateApiOperations,
+        updateAllApiOperations,
+        deleteApiOperation,
+        rearrangeApiOperations,
+    }), [apiOperations, updateApiOperations, updateAllApiOperations, deleteApiOperation, rearrangeApiOperations])
+
     if (!policies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
     }
 
     return (
-        <ApiOperationContextProvider
-            value={{
-                apiOperations,
-                updateApiOperations,
-                updateAllApiOperations,
-                deleteApiOperation,
-                rearrangeApiOperations,
-            }}
-        >
+        <ApiOperationContextProvider value={providerValue}>
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
@@ -483,10 +481,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                                                 highlight
                                                                 operation={operation}
                                                                 api={localAPI}
-                                                                disableUpdate={
-                                                                    disableUpdate ||
-                                                                    isRestricted(['apim:api_create'], api)
-                                                                }
+                                                                disableUpdate={isRestricted(['apim:api_create'], api)}
                                                                 expandedResource={expandedResource}
                                                                 setExpandedResource={setExpandedResource}
                                                                 policyList={policies}

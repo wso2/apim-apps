@@ -2560,7 +2560,7 @@
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": {
-    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API."
+    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API"
   },
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": {
     "defaultMessage": "Proceed"
@@ -2713,7 +2713,7 @@
     "defaultMessage": "Download Policy"
   },
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": {
-    "defaultMessage": "Policy File"
+    "defaultMessage": "Policy File(s)"
   },
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": {
     "defaultMessage": "Supported Gateways"
@@ -2728,7 +2728,7 @@
     "defaultMessage": "Click or drag the policy file to upload"
   },
   "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": {
-    "defaultMessage": "Upload Policy File"
+    "defaultMessage": "Upload Policy File for {gateway}"
   },
   "Apis.Details.Policies.PolicyList.add.new.policy": {
     "defaultMessage": "Add New Policy"

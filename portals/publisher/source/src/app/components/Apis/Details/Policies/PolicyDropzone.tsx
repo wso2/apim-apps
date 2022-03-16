@@ -21,7 +21,7 @@ import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
 import { useDrop } from 'react-dnd';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
@@ -91,25 +91,22 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     const classes = useStyles();
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
 
-    const [{ canDrop, isOver }, drop] = useDrop({
+    const [{ canDrop }, drop] = useDrop({
         accept: droppablePolicyList,
         drop: (item: any) => setDroppedPolicy(item.droppedPolicy),
         collect: (monitor) => ({
-            isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
         }),
     });
-
-    const isActive = canDrop && isOver;
 
     return (
         <>
             <Grid container>
                 <div
                     ref={drop}
-                    className={classNames({
+                    className={clsx({
                         [classes.dropzoneDiv]: true,
-                        [classes.acceptDrop]: isActive,
+                        [classes.acceptDrop]: canDrop,
                         [classes.alignCenter]: currentPolicyList.length === 0,
                         [classes.alignLeft]:
                             currentPolicyList.length !== 0 &&
