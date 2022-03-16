@@ -2560,7 +2560,7 @@
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": {
-    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API."
+    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API"
   },
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": {
     "defaultMessage": "Proceed"
