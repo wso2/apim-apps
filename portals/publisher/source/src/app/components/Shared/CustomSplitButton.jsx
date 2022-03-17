@@ -21,10 +21,19 @@ const options = ['Save and deploy', 'Save'];
 export default function CustomSplitButton(props) {
     const [open, setOpen] = React.useState(false);
     const {
-        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating,
+        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api,
     } = props;
     const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = React.useState(1);
+    const securityScheme = [...api.securityScheme];
+    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
+    && securityScheme.includes('mutualssl_mandatory');
+    const isEndpointAvailable = api.endpointConfig !== null;
+    const isTierAvailable = api.policies.length !== 0;
+
+    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
+    || (!isMutualSslOnly && !isTierAvailable)
+    || api.workflowStatus === 'CREATED');
 
     const handleClick = (event, index) => {
         setSelectedIndex(index);
@@ -106,6 +115,7 @@ export default function CustomSplitButton(props) {
                                                     key={option}
                                                     selected={index === selectedIndex}
                                                     onClick={(event) => handleClick(event, index)}
+                                                    disabled={(option === 'Save and deploy' && isDeployButtonDisabled)}
                                                 >
                                                     {option}
                                                 </MenuItem>
@@ -123,6 +133,7 @@ export default function CustomSplitButton(props) {
 }
 
 CustomSplitButton.propTypes = {
+    api: PropTypes.shape({}).isRequired,
     handleSave: PropTypes.shape({}).isRequired,
     handleSaveAndDeploy: PropTypes.shape({}).isRequired,
     isUpdating: PropTypes.bool.isRequired,

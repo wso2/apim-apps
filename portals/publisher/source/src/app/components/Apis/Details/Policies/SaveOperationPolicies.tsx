@@ -81,6 +81,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
                     ) : (
                         <CustomSplitButton
                             handleSave={handleSave}
+                            api={api}
                             handleSaveAndDeploy={handleSaveAndDeploy}
                             isUpdating={updating}
                         />

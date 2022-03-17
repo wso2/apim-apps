@@ -782,6 +782,7 @@ function Properties(props) {
                                             ) : (
                                                 <CustomSplitButton
                                                     advertiseInfo={api.advertiseInfo}
+                                                    api={api}
                                                     handleSave={handleSave}
                                                     handleSaveAndDeploy={handleSaveAndDeploy}
                                                     isUpdating={isUpdating}

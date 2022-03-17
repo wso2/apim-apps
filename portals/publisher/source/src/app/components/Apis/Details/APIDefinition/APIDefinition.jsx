@@ -921,6 +921,7 @@ class APIDefinition extends React.Component {
                             <Grid item>
                                 <CustomSplitButton
                                     advertiseInfo={api.advertiseInfo}
+                                    api={api}
                                     handleSave={this.handleSave}
                                     handleSaveAndDeploy={this.handleSaveAndDeploy}
                                     isUpdating={isUpdating}
