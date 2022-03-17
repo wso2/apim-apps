@@ -401,8 +401,7 @@ function Overview() {
                                                     : intl.formatMessage({
                                                         defaultMessage: ' less',
                                                         id: 'Apis.Details.Overview.description.less',
-                                                    })
-                                                }
+                                                    })}
                                             </a>
                                         )}
                                     </Typography>
