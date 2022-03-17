@@ -297,10 +297,8 @@ class Credentials extends React.Component {
     };
 
     /**
-     * used to load the token manager component when
-     * key type is selected in the applicaiton list
-     * @param {*} selectedKeyType key type
-     * @param {*} selectedAppId  application id
+     * used to check if key manager is in the allowed list for an API
+     * @param {*} name name of the key manager
      * @memberof Credentials
      */
     isKeyManagerAllowed = (name) => {

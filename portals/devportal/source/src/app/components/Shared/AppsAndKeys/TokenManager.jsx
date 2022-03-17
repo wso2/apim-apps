@@ -892,7 +892,11 @@ class TokenManager extends React.Component {
                                                             onClick={
                                                                 key ? this.updateKeys : this.generateKeys
                                                             }
-                                                            disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation}
+                                                            disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation 
+                                                                || (isKeyManagerAllowed
+                                                                    && !isKeyManagerAllowed(keymanager.name)
+                                                                    && ((keymanager.name !== 'Resident Key Manager')
+                                                                    || (!this.isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
                                                         >
                                                             {key ? 'Update keys' : 'Generate Keys'}
                                                             {isLoading && <CircularProgress size={20}/>}
@@ -1095,7 +1099,11 @@ class TokenManager extends React.Component {
                                                                     onClick={
                                                                         key ? this.updateKeys : this.generateKeys
                                                                     }
-                                                                    disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation}
+                                                                    disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation
+                                                                        || (isKeyManagerAllowed
+                                                                            && !isKeyManagerAllowed(keymanager.name)
+                                                                            && ((keymanager.name !== 'Resident Key Manager')
+                                                                            || (!isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
                                                                 >
                                                                     {key ? 'Update keys' : 'Generate Keys'}
                                                                     {isLoading && <CircularProgress size={20}/>}
