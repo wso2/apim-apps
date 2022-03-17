@@ -62,7 +62,7 @@ const styles = (theme) => ({
 
 const subscriptionTableRow = (props) => {
     const {
-        classes, loadInfo, handleSubscriptionDelete,
+        classes, loadInfo, handleSubscriptionDelete, isKeyManagerAllowed,
         theme, selectedAppId, updateSubscriptionData, selectedKeyType, app, applicationOwner, hashEnabled,
     } = props;
     return (
@@ -173,6 +173,7 @@ const subscriptionTableRow = (props) => {
                     <td colSpan='4'>
                         <div className={classes.selectedWrapper}>
                             <TokenManager
+                                isKeyManagerAllowed={isKeyManagerAllowed}
                                 keyType={selectedKeyType}
                                 selectedApp={{
                                     appId: app.value,
