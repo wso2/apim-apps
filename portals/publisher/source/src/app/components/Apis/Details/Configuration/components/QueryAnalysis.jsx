@@ -30,6 +30,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Container from '@material-ui/core/Container';
+import { isRestricted } from 'AppData/AuthManager';
 import Api from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
@@ -219,6 +220,7 @@ export default function GraphQLQueryAnalysis(props) {
                             className={classes.editIcon}
                             size='small'
                             onClick={handleClickOpen}
+                            disabled={isRestricted(['apim:api_create'], api)}
                         >
                             <EditRounded />
                         </Button>
