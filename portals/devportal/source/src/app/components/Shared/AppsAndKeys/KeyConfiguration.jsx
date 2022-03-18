@@ -109,7 +109,7 @@ const KeyConfiguration = (props) => {
     const [callbackHelper, setCallbackHelper] = useState(false);
     const intl = useIntl();
     const {
-        classes, notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError,
+        classes, notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError,mode,
     } = props;
     const {
         selectedGrantTypes, callbackUrl,
@@ -365,7 +365,7 @@ const KeyConfiguration = (props) => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        <TableRow>
+                        {mode !== 'MAPPED' && (<><TableRow>
                             <TableCell component='th' scope='row' className={classes.leftCol}>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.KeyConfiguration.grant.types'
@@ -459,6 +459,7 @@ const KeyConfiguration = (props) => {
                                 handleChange={handleChange}
                             />
                         ))}
+                        </>)}
                     </TableBody>
                 </Table>
             </Box>
@@ -468,6 +469,7 @@ const KeyConfiguration = (props) => {
 KeyConfiguration.defaultProps = {
     notFound: false,
     validating: false,
+    mode: null,
 };
 KeyConfiguration.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
@@ -482,6 +484,7 @@ KeyConfiguration.propTypes = {
     setGenerateEnabled: PropTypes.func.isRequired,
     updateKeyRequest: PropTypes.func.isRequired,
     validating: PropTypes.bool,
+    mode: PropTypes.string,
 };
 
 

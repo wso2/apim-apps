@@ -370,13 +370,19 @@ class TokenManager extends React.Component {
                             mode,
                         });
                     } else {
-                        const selectdKMGrants = selectdKM.availableGrantTypes || [];
+                        const selectedGrantTypes = [];
+                        if(selectdKM.availableGrantTypes.find( gt => gt ==='password')){
+                            selectedGrantTypes.push('password');
+                        }
+                        if(selectdKM.availableGrantTypes.find( gt => gt ==='client_credentials')){
+                            selectedGrantTypes.push('client_credentials');
+                        }
 
                         this.setState({
                             keys,
                             keyRequest: {
                                 ...keyRequest,
-                                selectedGrantTypes: selectdKMGrants.filter((type) => (type !== 'authorization_code' && type !== 'implicit')),
+                                selectedGrantTypes,
                                 additionalProperties: this.getDefaultAdditionalProperties(selectdKM),
                             },
                             keyManagers: responseKeyManagerList,
@@ -385,11 +391,15 @@ class TokenManager extends React.Component {
                     }
                 })
                 .catch((error) => {
-                    if (process.env.NODE_ENV !== 'production') {
-                        console.error(error);
-                    }
+                    console.error(error);
                     if (error.status === 404) {
                         this.setState({ notFound: true });
+                    } else {
+                        Alert.error(error.description
+                            || intl.formatMessage({
+                                id: 'Shared.AppsAndKeys.TokenManager.get.keys.request.error',
+                                defaultMessage: 'Error while retrieving the keys',
+                            }));
                     }
                 });
         }
@@ -470,9 +480,10 @@ class TokenManager extends React.Component {
                 } else if (status === 500) {
                     this.loadApplication();
                 }
-                Alert.error(intl.formatMessage({
-                    id: 'Shared.AppsAndKeys.TokenManager.key.generate.error',
-                    defaultMessage: 'Error occurred when generating application keys',
+                Alert.error(error.description
+                    || intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.TokenManager.key.generate.error',
+                        defaultMessage: 'Error occurred when generating application keys',
                 }));
             }).finally(() => this.setState({ isLoading: false }));
     }
@@ -530,8 +541,8 @@ class TokenManager extends React.Component {
                     this.loadApplication();
                 }
                 const { response } = error;
-                if (response && response.body) {
-                    Alert.error(response.body.message);
+                if (response && response.body && response.body.message && response.body.description) {
+                    Alert.error(`${response.body.message}: ${response.body.description}`);
                 }
             }).finally(() => this.setState({ isLoading: false }));
     }
@@ -559,11 +570,13 @@ class TokenManager extends React.Component {
                 const { status } = error;
                 if (status === 404) {
                     this.setState({ notFound: true });
-                }
-                Alert.error(intl.formatMessage({
+                } 
+                Alert.error(error.description || intl.formatMessage({
                     id: 'Shared.AppsAndKeys.TokenManager.key.cleanup.error',
                     defaultMessage: 'Error occurred while cleaning up application keys',
                 }));
+                
+                
             });
     }
 
@@ -589,6 +602,7 @@ class TokenManager extends React.Component {
             })
             .then(() => {
                 this.setState({ providedConsumerKey: '', providedConsumerSecret: '' });
+                this.loadApplication();
                 Alert.info(intl.formatMessage({
                     id: 'Shared.AppsAndKeys.TokenManager.key.provide.success',
                     defaultMessage: 'Application keys provided successfully',
@@ -602,7 +616,7 @@ class TokenManager extends React.Component {
                 if (status === 404) {
                     this.setState({ notFound: true });
                 }
-                Alert.error(intl.formatMessage({
+                Alert.error(error.description || intl.formatMessage({
                     id: 'Shared.AppsAndKeys.TokenManager.key.provide.error',
                     defaultMessage: 'Error occurred when providing application keys',
                 }));
@@ -803,8 +817,7 @@ class TokenManager extends React.Component {
                             {keymanager.tokenType === 'DIRECT' && (
                                 <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
                                     <Box display='flex' flexDirection='row'>
-                                        <Typography className={classes.heading} variant='h6' component='h6'
-                                                    className={classes.subTitle}>
+                                        <Typography className={classes.subTitle} variant='h6' component='h6'>
                                             <FormattedMessage
                                                 defaultMessage='Key and Secret'
                                                 id='Shared.AppsAndKeys.TokenManager.key.and.secret'
@@ -839,10 +852,10 @@ class TokenManager extends React.Component {
                                             isUserOwner={isUserOwner}
                                             hashEnabled={keymanager.enableTokenHashing || hashEnabled}
                                             keyManagerConfig={keymanager}
+                                            mode={mode}
                                         />
                                     </Box>
-                                    <Typography className={classes.heading} variant='h6' component='h6'
-                                                className={classes.subTitle}>
+                                    <Typography className={classes.subTitle} variant='h6' component='h6'>
                                         {
                                             key
                                                 ? (
@@ -876,6 +889,7 @@ class TokenManager extends React.Component {
                                             callbackError={hasError}
                                             setValidating={this.setValidating}
                                             defaultTokenEndpoint={defaultTokenEndpoint}
+                                            mode={mode}
                                         />
                                         <div className={classes.generateWrapper}>
                                             <ScopeValidation
@@ -947,8 +961,7 @@ class TokenManager extends React.Component {
                             )}
                             {keymanager.tokenType === 'EXCHANGED' && (
                                 <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
-                                    <Typography className={classes.heading} variant='h6' component='h6'
-                                                className={classes.subTitle}>
+                                    <Typography className={classes.subTitle} variant='h6' component='h6'>
                                         <FormattedMessage
                                             defaultMessage='Token Generation'
                                             id='Shared.AppsAndKeys.TokenManager.ExchangeToken.key.configuration'
@@ -1010,8 +1023,7 @@ class TokenManager extends React.Component {
                                     {tokenType === 'DIRECT' && (
                                         <>
                                             <Box display='flex' flexDirection='row'>
-                                                <Typography className={classes.heading} variant='h6' component='h6'
-                                                            className={classes.subTitle}>
+                                                <Typography className={classes.subTitle} variant='h6' component='h6'>
                                                     <FormattedMessage
                                                         defaultMessage='Key and Secret'
                                                         id='Shared.AppsAndKeys.TokenManager.key.and.secret'
@@ -1046,10 +1058,10 @@ class TokenManager extends React.Component {
                                                     isUserOwner={isUserOwner}
                                                     hashEnabled={keymanager.enableTokenHashing || hashEnabled}
                                                     keyManagerConfig={keymanager}
+                                                    mode={mode}
                                                 />
                                             </Box>
-                                            <Typography className={classes.heading} variant='h6' component='h6'
-                                                        className={classes.subTitle}>
+                                            <Typography className={classes.subTitle} variant='h6' component='h6'>
                                                 {
                                                     key
                                                         ? (
@@ -1099,11 +1111,7 @@ class TokenManager extends React.Component {
                                                                     onClick={
                                                                         key ? this.updateKeys : this.generateKeys
                                                                     }
-                                                                    disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation
-                                                                        || (isKeyManagerAllowed
-                                                                            && !isKeyManagerAllowed(keymanager.name)
-                                                                            && ((keymanager.name !== 'Resident Key Manager')
-                                                                            || (!isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
+                                                                 
                                                                 >
                                                                     {key ? 'Update keys' : 'Generate Keys'}
                                                                     {isLoading && <CircularProgress size={20}/>}
@@ -1123,11 +1131,7 @@ class TokenManager extends React.Component {
                                                                     color='primary'
                                                                     className={classes.button}
                                                                     onClick={key ? this.updateKeys : this.generateKeys}
-                                                                    disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation)
-                                                                        || (mode && mode === 'MAPPED') || (isKeyManagerAllowed
-                                                                            && !isKeyManagerAllowed(keymanager.name)
-                                                                            && ((keymanager.name !== 'Resident Key Manager')
-                                                                            || (!isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
+                        
                                                                 >
                                                                     {key ? 'Update' : 'Generate Keys'}
                                                                     {isLoading && <CircularProgress size={20}/>}
@@ -1153,8 +1157,7 @@ class TokenManager extends React.Component {
                                     )}
                                         {(tokenType === 'EXCHANGED'  && isResidentKeyManagerTokensAvailable) && (
                                             <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
-                                                <Typography className={classes.heading} variant='h6' component='h6'
-                                                            className={classes.subTitle}>
+                                                <Typography className={classes.subTitle} variant='h6' component='h6'>
                                                     <FormattedMessage
                                                         defaultMessage='Token Generation'
                                                         id='Shared.AppsAndKeys.TokenManager.ExchangeToken.key.configuration'

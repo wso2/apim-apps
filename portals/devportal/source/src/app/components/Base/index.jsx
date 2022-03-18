@@ -174,6 +174,7 @@ const styles = (theme) => {
         links: {
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
         },
         selected: {
             background: theme.custom.appBar.activeBackground,
@@ -339,7 +340,7 @@ class Layout extends React.Component {
                     showSearch,
                 },
                 footer: {
-                    active: footerActive, text: footerText, footerHTML,
+                    active: footerActive, text: footerText, footerHTML, dangerMode,
                 },
                 languageSwitch: { active: languageSwitchActive },
                 publicTenantStore,
@@ -626,7 +627,8 @@ class Layout extends React.Component {
                         <footer className={classes.footer} id='footer'>
                             {footerHTML && footerHTML !== '' ? (
                                 <>
-                                    <ReactSafeHtml html={footerHTML} />
+                                    {!dangerMode && (<ReactSafeHtml html={footerHTML} />)}
+                                    {dangerMode && (<div contentEditable='true' dangerouslySetInnerHTML={{ __html: footerHTML }} />)}
                                 </>
                             ) : (
                                 <Typography noWrap>
