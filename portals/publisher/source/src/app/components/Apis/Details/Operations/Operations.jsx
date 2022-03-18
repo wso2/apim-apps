@@ -423,7 +423,7 @@ class Operations extends React.Component {
                                         color='primary'
                                     >
                                         <FormattedMessage
-                                            id='Apis.Details.Operations.Operations.save'
+                                            id='Apis.Details.Operations.Operation.save'
                                             defaultMessage='Save'
                                         />
                                     </Button>

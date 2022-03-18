@@ -5141,6 +5141,12 @@
       "value": "Shared Scopes"
     }
   ],
+  "Apis.Details.Operations.Operation.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
   "Apis.Details.Operations.Operation.scopes": [
     {
       "type": 0,
@@ -5151,12 +5157,6 @@
     {
       "type": 0,
       "value": "Rate Limiting"
-    }
-  ],
-  "Apis.Details.Operations.Operations.save": [
-    {
-      "type": 0,
-      "value": "Save"
     }
   ],
   "Apis.Details.Operations.Operations.title": [
