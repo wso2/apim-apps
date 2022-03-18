@@ -370,13 +370,19 @@ class TokenManager extends React.Component {
                             mode,
                         });
                     } else {
-                        const selectdKMGrants = selectdKM.availableGrantTypes || [];
+                        const selectedGrantTypes = [];
+                        if(selectdKM.availableGrantTypes.find( gt => gt ==='password')){
+                            selectedGrantTypes.push('password');
+                        }
+                        if(selectdKM.availableGrantTypes.find( gt => gt ==='client_credentials')){
+                            selectedGrantTypes.push('client_credentials');
+                        }
 
                         this.setState({
                             keys,
                             keyRequest: {
                                 ...keyRequest,
-                                selectedGrantTypes: selectdKMGrants.filter((type) => (type !== 'authorization_code' && type !== 'implicit')),
+                                selectedGrantTypes,
                                 additionalProperties: this.getDefaultAdditionalProperties(selectdKM),
                             },
                             keyManagers: responseKeyManagerList,
