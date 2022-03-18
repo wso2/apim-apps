@@ -32,8 +32,9 @@ import TableRow from '@material-ui/core/TableRow';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import Grid from '@material-ui/core/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { withRouter } from 'react-router';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
+import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { isRestricted } from 'AppData/AuthManager';
 import APIRateLimiting from '../Resources/components/APIRateLimiting';
 import Operation from './Operation';
@@ -141,6 +142,7 @@ class Operations extends React.Component {
         this.handleUpdateList = this.handleUpdateList.bind(this);
         this.handleApiThrottlePolicy = this.handleApiThrottlePolicy.bind(this);
         this.updateOperations = this.updateOperations.bind(this);
+        this.handleSaveAndDeployOperations = this.handleSaveAndDeployOperations.bind(this);
     }
 
     /**
@@ -240,6 +242,25 @@ class Operations extends React.Component {
         this.setState({ apiScopesByName });
         this.setState({ operations: updatedList });
     }
+
+    /**
+     *
+     */
+    handleSaveAndDeployOperations() {
+        const { operations, apiThrottlingPolicy, apiScopesByName } = this.state;
+        const { api, history, updateAPI } = this.props;
+        this.setState({ isSaving: true });
+        this.updateApiScopes(operations);
+        const scopes = Object.keys(apiScopesByName).map((key) => { return apiScopesByName[key]; });
+        updateAPI({ operations, apiThrottlingPolicy, scopes }).finally(() => {
+            history.push({
+                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
+                    : `/apis/${api.id}/deployments`,
+                state: 'deploy',
+            });
+            this.setState({ isSaving: false });
+        })
+    };
 
     /**
      *
@@ -391,29 +412,41 @@ class Operations extends React.Component {
                             })}
                         </Table>
                     </Grid>
-                    <Grid item>
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            disabled={isSaving || api.isRevision
-                                || isRestricted(['apim:api_publish', 'apim:api_create'])}
-                            className={classes.buttonMain}
-                            onClick={this.updateOperations}
-                        >
-                            {isSaving && <CircularProgress size={20} />}
-                            <FormattedMessage
-                                id='Apis.Details.Operations.Operation.save'
-                                defaultMessage='Save'
-                            />
-                        </Button>
-                        <Link to={'/apis/' + api.id + '/overview'}>
-                            <Button>
-                                <FormattedMessage
-                                    id='Apis.Details.Operations.Operation.cancel'
-                                    defaultMessage='Cancel'
-                                />
-                            </Button>
-                        </Link>
+                    <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
+                        <Grid item>
+                            {api.isRevision
+                                || isRestricted(['apim:api_create'], api) ? (
+                                    <Button
+                                        disabled
+                                        type='submit'
+                                        variant='contained'
+                                        color='primary'
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.Operations.Operations.save'
+                                            defaultMessage='Save'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <CustomSplitButton
+                                        advertiseInfo={api.advertiseInfo}
+                                        api={api}
+                                        handleSave={this.updateOperations}
+                                        handleSaveAndDeploy={this.handleSaveAndDeployOperations}
+                                        isUpdating={isSaving}
+                                    />
+                                )}
+                        </Grid>
+                        <Grid item>
+                            <Link to={'/apis/' + api.id + '/overview'}>
+                                <Button>
+                                    <FormattedMessage
+                                        id='Apis.Details.Operations.Operation.cancel'
+                                        defaultMessage='Cancel'
+                                    />
+                                </Button>
+                            </Link>
+                        </Grid>
                     </Grid>
                 </Grid>
             </>
@@ -430,6 +463,9 @@ Operations.propTypes = {
         policies: PropTypes.func,
         id: PropTypes.string,
     }).isRequired,
+    history: PropTypes.shape({
+        push: PropTypes.shape({}),
+    }).isRequired,
     resourceNotFoundMessage: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({
@@ -438,4 +474,4 @@ Operations.propTypes = {
     updateAPI: PropTypes.func.isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Operations));
+export default withRouter(injectIntl(withStyles(styles)(Operations)));

@@ -2439,14 +2439,14 @@
   "Apis.Details.Operations.Operation.operation.scope.select.shared": {
     "defaultMessage": "Shared Scopes"
   },
-  "Apis.Details.Operations.Operation.save": {
-    "defaultMessage": "Save"
-  },
   "Apis.Details.Operations.Operation.scopes": {
     "defaultMessage": "Scope"
   },
   "Apis.Details.Operations.Operation.throttling.policy": {
     "defaultMessage": "Rate Limiting"
+  },
+  "Apis.Details.Operations.Operations.save": {
+    "defaultMessage": "Save"
   },
   "Apis.Details.Operations.Operations.title": {
     "defaultMessage": "Operations"
