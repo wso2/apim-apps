@@ -234,26 +234,21 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     const apiName = name ? name : `sample_api_${random_number}`;
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
-    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-    cy.get('[data-testid="itest-id-createapi"]', { timeout: 30000 });
-    cy.get('[data-testid="itest-id-createapi"]').click();
-    cy.get('[data-testid="itest-id-createdefault"]').click();
-    cy.get('[data-testid="itest-id-apiname-input"]').type(apiName);
-    cy.get('[data-testid="itest-id-apicontext-input"] input').click();
-    cy.get('[data-testid="itest-id-apicontext-input"] input').type(apiContext);
-    cy.get('[data-testid="itest-id-apiversion-input"] input').click();
-    cy.get('[data-testid="itest-id-apiversion-input"] input').type(apiVersion);
-    cy.get('[data-testid="itest-id-apiendpoint-input"]').click();
-    cy.get('[data-testid="itest-id-apiendpoint-input"]').type(`https://apis.wso2.com/sample${random_number}`);
-    cy.get('[data-testid="select-policy-dropdown"]').click();
-    cy.get('[data-testid="policy-item-Silver"]').click();
-    cy.get('[data-testid="policy-item-Unlimited"]').click();
-    cy.get('#menu-policies').click('topLeft');
+    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
+    cy.get('#itest-rest-api-create-menu').click();
+    cy.get('#itest-id-landing-rest-create-default').click();
+    cy.get('#itest-id-apiname-input').type(apiName);
+    cy.get('#itest-id-apicontext-input').click();
+    cy.get('#itest-id-apicontext-input').type(apiContext);
+    cy.get('#itest-id-apiversion-input').click();
+    cy.get('#itest-id-apiversion-input').type(apiVersion);
+    cy.get('#itest-id-apiendpoint-input').click();
+    cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('#itest-id-apicreatedefault-createnpublish').click();
 
     // Wait for the api to load
-    cy.get('[data-testid="itest-api-name-version"]', { timeout: 30000 }).should('be.visible');
-    cy.get('[data-testid="itest-api-name-version"]').contains(apiVersion);
+    cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+    cy.get('#itest-api-name-version').contains(apiVersion);
 })
 
 Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
@@ -286,11 +281,11 @@ Cypress.Commands.add('createApp', (appName, appDescription) => {
     cy.get('#application-description').click();
     cy.get('#application-description').type('{backspace}');
     cy.get('#application-description').type(appDescription);
-    cy.get('[data-testid="application-save-btn"]').click();
+    cy.get('#itest-application-create-save').click();
 
     // Checking the app name exists in the overview page.
     cy.url().should('contain', '/overview');
-    cy.get('[data-testid="application-title"]').contains(appName).should('exist');
+    cy.get('#itest-info-bar-application-name').contains(appName).should('exist');
 });
 
 Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
@@ -339,7 +334,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
 Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
     cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
     cy.get('#userToggleButton').click();
-    cy.get('[data-testid="logout-link"]').click();
+    cy.get('#logout-link').click();
     cy.url().should('contain', '/devportal/logout');
     cy.url().should('contain', referer);
 })
