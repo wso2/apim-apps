@@ -99,12 +99,6 @@ const DefaultConfigurations = {
         adminRole: 'admin',
         commentsLimit: 5,
         maxCommentLength: 512,
-        overviewPage: {
-            commentsBackground: '/site/public/images/overview/comments.svg',
-            documentsBackground: '/site/public/images/overview/documents.svg',
-            credentialsBackground: '/site/public/images/overview/credentials.svg',
-            keysBackground: '/site/public/images/overview/keys.svg',
-        },
         resourceChipColors: {
             get: '#02a8f4',
             post: '#8ac149',
@@ -317,6 +311,7 @@ const DefaultConfigurations = {
             textAlign: 'center',
         },
         footer: {
+            dangerMode: false,
             active: true,
             footerHTML: '',
             text: '', // Leave empty to show the default WSO2 Text. Provide custom text to display your own thing.
@@ -331,34 +326,34 @@ const DefaultConfigurations = {
         languageSwitch: {
             active: false,
             languages: [
-                {
-                    key: 'en',
-                    image: '/site/public/images/flags/en.png',
-                    imageWidth: 24, // in pixles
-                    text: 'English',
-                    direction: 'ltr',
-                },
-                {
-                    key: 'es',
-                    image: '/site/public/images/flags/sp.png',
-                    imageWidth: 24, // in pixles
-                    text: 'Spanish',
-                    direction: 'ltr',
-                },
-                {
-                    key: 'ar',
-                    image: '/site/public/images/flags/ar.png',
-                    imageWidth: 24, // in pixles
-                    text: 'Arabic',
-                    direction: 'rtl',
-                },
-                {
-                    key: 'si',
-                    image: '/site/public/images/flags/si.png',
-                    imageWidth: 24, // in pixles
-                    text: 'Sinhala',
-                    direction: 'ltr',
-                },
+                // {
+                //     key: 'en',
+                //     image: '/site/public/images/flags/en.png',
+                //     imageWidth: 24, // in pixles
+                //     text: 'English',
+                //     direction: 'ltr',
+                // },
+                // {
+                //     key: 'es',
+                //     image: '/site/public/images/flags/sp.png',
+                //     imageWidth: 24, // in pixles
+                //     text: 'Spanish',
+                //     direction: 'ltr',
+                // },
+                // {
+                //     key: 'ar',
+                //     image: '/site/public/images/flags/ar.png',
+                //     imageWidth: 24, // in pixles
+                //     text: 'Arabic',
+                //     direction: 'rtl',
+                // },
+                // {
+                //     key: 'si',
+                //     image: '/site/public/images/flags/si.png',
+                //     imageWidth: 24, // in pixles
+                //     text: 'Sinhala',
+                //     direction: 'ltr',
+                // },
             ],
             showFlag: true,
             showText: true,
