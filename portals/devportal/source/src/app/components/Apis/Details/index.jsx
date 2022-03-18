@@ -450,7 +450,6 @@ class Details extends React.Component {
                                 [classes.leftMenuVerticalRight]: position === 'vertical-right',
                             },
                             'left-menu',
-
                         )}
                     >
                         {rootIconVisible && (
@@ -484,6 +483,7 @@ class Details extends React.Component {
                                     iconText='credentials'
                                     to={pathPrefix + 'credentials'}
                                     open={open}
+                                    id='left-menu-credentials'
                                 />
 
                             </>
