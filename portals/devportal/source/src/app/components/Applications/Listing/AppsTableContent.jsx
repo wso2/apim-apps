@@ -233,6 +233,7 @@ class AppsTableContent extends Component {
                                                     onClick={toggleDeleteConfirmation}
                                                     color='default'
                                                     aria-label={'Delete' + app.name}
+                                                    id={'delete-' + app.name + '-btn'}
                                                 >
                                                     <Icon>delete</Icon>
                                                 </IconButton>
