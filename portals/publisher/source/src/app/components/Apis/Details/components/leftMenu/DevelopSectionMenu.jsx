@@ -217,6 +217,7 @@ export default function DevelopSectionMenu(props) {
                                 route='comments'
                                 to={pathPrefix + 'comments'}
                                 Icon={<CommentIcon />}
+                                id='left-menu-itemcomments'
                             />
                         )}
                     </div>

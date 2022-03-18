@@ -205,6 +205,7 @@ class CommentAdd extends React.Component {
                                 || currentLength === 0}
                                 onClick={() => this.handleClickAddComment()}
                                 className={classes.commentAddButton}
+                                id='add-comment-btn'
                             >
                                 <FormattedMessage
                                     id='Apis.Details.Comments.CommentAdd.btn.add.comment'
