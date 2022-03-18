@@ -297,6 +297,17 @@ class Credentials extends React.Component {
     };
 
     /**
+     * used to check if key manager is in the allowed list for an API
+     * @param {*} name name of the key manager
+     * @memberof Credentials
+     */
+    isKeyManagerAllowed = (name) => {
+        const { api } = this.context;
+        return api && ((api.keyManagers && api.keyManagers.includes('all'))
+        || (api.keyManagers && api.keyManagers.includes(name)));
+    };
+
+    /**
      * Update subscription Request state
      * @param {Object} subscriptionRequest parameters requried for subscription
      */
@@ -536,6 +547,7 @@ class Credentials extends React.Component {
                                             <SubscriptionTableRow
                                                 key={app.id}
                                                 loadInfo={this.loadInfo}
+                                                isKeyManagerAllowed={this.isKeyManagerAllowed}
                                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                                 selectedAppId={selectedAppId}
                                                 updateSubscriptionData={updateSubscriptionData}

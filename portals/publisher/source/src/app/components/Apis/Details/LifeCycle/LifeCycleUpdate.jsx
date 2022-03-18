@@ -202,7 +202,7 @@ class LifeCycleUpdate extends Component {
         const {
             api: { id: apiUUID, advertiseInfo },
         } = this.props;
-        if (action === 'Publish' && !deploymentsAvailable && !advertiseInfo.advertised) {
+        if (action === 'Publish' && !deploymentsAvailable && advertiseInfo && !advertiseInfo.advertised) {
             this.setIsOpen(true);
         } else {
             this.updateLCStateOfAPI(apiUUID, action);
@@ -254,7 +254,8 @@ class LifeCycleUpdate extends Component {
                         || (api.type !== 'WEBSUB' && api.endpointConfig != null
                             && api.endpointConfig.implementation_status === 'prototyped'))
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised))
-                        || (deploymentsAvailable && (!isBusinessPlanAvailable || api.endpointConfig == null)),
+                        || (deploymentsAvailable && api.gatewayVendor === 'wso2' &&
+                        (!isBusinessPlanAvailable || api.endpointConfig == null)),
                 };
             }
             return {

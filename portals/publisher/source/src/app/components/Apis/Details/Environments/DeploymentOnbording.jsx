@@ -34,6 +34,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useTheme } from '@material-ui/core';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Checkbox from '@material-ui/core/Checkbox';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -84,12 +85,22 @@ export default function DeploymentOnboarding(props) {
         advertiseInfo,
     } = props;
     const classes1 = useStyles();
+    const [api] = useAPI();
     const theme = useTheme();
     const { maxCommentLength } = theme.custom;
     const { settings: { environment: environments } } = useAppContext();
     const internalGateways = environments.filter((p) => !p.provider.toLowerCase().includes('solace'));
     const externalGateways = environments.filter((p) => p.provider.toLowerCase().includes('solace'));
     const hasOnlyOneEnvironment = internalGateways.length === 1;
+    const securityScheme = [...api.securityScheme];
+    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
+    && securityScheme.includes('mutualssl_mandatory');
+    const isEndpointAvailable = api.endpointConfig !== null;
+    const isTierAvailable = api.policies.length !== 0;
+
+    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
+    || (!isMutualSslOnly && !isTierAvailable)
+    || api.workflowStatus === 'CREATED');
 
     const defaultVhosts = internalGateways.map(
         (e) => (e.vhosts && e.vhosts.length > 0 ? { env: e.name, vhost: e.vhosts[0].host } : undefined),
@@ -358,7 +369,8 @@ export default function DeploymentOnboarding(props) {
                                         }
                                         color='primary'
                                         disabled={selectedEnvironment.length === 0
-                                            || (advertiseInfo && advertiseInfo.advertised)}
+                                            || (advertiseInfo && advertiseInfo.advertised)
+                                            || isDeployButtonDisabled}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.deploy.deploy'
@@ -502,7 +514,8 @@ export default function DeploymentOnboarding(props) {
                                         }
                                         color='primary'
                                         disabled={selectedSolaceEnvironment.length === 0
-                                            || isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                            || isRestricted(['apim:api_publish', 'apim:api_create'])
+                                            || isDeployButtonDisabled}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.deploy.deploy'

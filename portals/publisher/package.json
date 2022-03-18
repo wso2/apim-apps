@@ -48,7 +48,6 @@
         "babel-plugin-formatjs": "^10.3.18",
         "base64url": "3.0.1",
         "caniuse-api": "^3.0.0",
-        "classnames": "^2.3.1",
         "clean-webpack-plugin": "^4.0.0",
         "dayjs": "^1.10.7",
         "downshift": "^6.1.7",

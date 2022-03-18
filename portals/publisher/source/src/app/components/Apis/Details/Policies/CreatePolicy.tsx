@@ -30,7 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import CONST from 'AppData/Constants';
+import CONSTS from 'AppData/Constants';
 import type { CreatePolicySpec } from './Types';
 import PolicyCreateForm from './PolicyForm/PolicyCreateForm';
 
@@ -61,22 +61,26 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
     const [saving, setSaving] = useState(false);
-    const [policyDefinitionFile, setPolicyDefinitionFile] = useState<any[]>([]);
+    const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
+    const [ccPolicyDefinitionFile, setCcPolicyDefinitionFile] = useState<any[]>([]);
 
     const savePolicy = (
         policySpecContent: CreatePolicySpec,
-        policyDefinition: any,
+        synapsePolicyDefinition: any,
+        ccPolicyDefinition: any,
     ) => {
         setSaving(true);
         const promisedCommonPolicyAdd = API.addOperationPolicy(
             policySpecContent,
-            policyDefinition,
             api.id,
+            synapsePolicyDefinition,
+            ccPolicyDefinition,
         );
         promisedCommonPolicyAdd
             .then(() => {
                 Alert.info('Policy created successfully!');
-                setPolicyDefinitionFile([]);
+                setSynapsePolicyDefinitionFile([]);
+                setCcPolicyDefinitionFile([]);
                 handleDialogClose();
                 fetchPolicies();
             })
@@ -90,14 +94,21 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
             });
     };
 
+    const onSave = (policySpecification: CreatePolicySpec) => {
+        const synapseFile = synapsePolicyDefinitionFile.length !== 0 ? synapsePolicyDefinitionFile : null;
+        const ccFile = ccPolicyDefinitionFile.length !== 0 ? ccPolicyDefinitionFile : null;
+        savePolicy(
+            policySpecification,
+            synapseFile,
+            ccFile,
+        );
+        handleDialogClose();
+    };
+
     const stopPropagation = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
         e.stopPropagation();
-    };
-    const onSave = (policySpecification: CreatePolicySpec) => {
-        savePolicy(policySpecification, policyDefinitionFile);
-        handleDialogClose();
     };
 
     return (
@@ -141,10 +152,10 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                         <DialogContentText>
                             <PolicyCreateForm
                                 onSave={onSave}
-                                policyDefinitionFile={policyDefinitionFile}
-                                setPolicyDefinitionFile={
-                                    setPolicyDefinitionFile
-                                }
+                                synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
+                                setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
+                                ccPolicyDefinitionFile={ccPolicyDefinitionFile}
+                                setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
                                 onCancel={handleDialogClose}
                                 saving={saving}
                             />
@@ -158,7 +169,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     px={3}
                     pb={3}
                 >
-                    <Link to={CONST.PATH_TEMPLATES.COMMON_POLICIES}>
+                    <Link to={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}>
                         <Typography className={classes.link} variant='caption'>
                             Want to create a common policy that will be visible to all APIs instead?
                             <LaunchIcon

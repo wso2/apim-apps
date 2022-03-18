@@ -5392,7 +5392,7 @@
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": [
     {
       "type": 0,
-      "value": "Changing the gateway type will remove all existing policies added to the API."
+      "value": "Changing the gateway type will remove all existing policies added to the API"
     }
   ],
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": [
@@ -5722,7 +5722,7 @@
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": [
     {
       "type": 0,
-      "value": "Policy File"
+      "value": "Policy File(s)"
     }
   ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": [
@@ -5752,7 +5752,11 @@
   "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": [
     {
       "type": 0,
-      "value": "Upload Policy File"
+      "value": "Upload Policy File for "
+    },
+    {
+      "type": 1,
+      "value": "gateway"
     }
   ],
   "Apis.Details.Policies.PolicyList.add.new.policy": [

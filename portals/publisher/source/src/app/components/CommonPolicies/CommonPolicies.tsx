@@ -19,7 +19,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import CONST from 'AppData/Constants';
+import CONSTS from 'AppData/Constants';
 import Listing from './Listing';
 import CreatePolicy from './CreatePolicy';
 import ViewPolicy from './ViewPolicy';
@@ -33,12 +33,12 @@ const CommonPolicies = () => {
         <Switch>
             <Route
                 exact
-                path={CONST.PATH_TEMPLATES.COMMON_POLICIES}
+                path={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}
                 component={Listing}
             />
             <Route
                 exact
-                path={CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE}
+                path={CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE}
                 component={CreatePolicy}
             />
             <Route

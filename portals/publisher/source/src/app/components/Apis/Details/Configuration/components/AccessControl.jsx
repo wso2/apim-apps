@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AccessControl(props) {
     const [roleValidity, setRoleValidity] = useState(true);
     const [userRoleValidity, setUserRoleValidity] = useState(true);
-    const { api, configDispatcher } = props;
+    const { api, configDispatcher, setIsDisabled } = props;
     const isNone = api.accessControl === 'NONE';
     const [apiFromContext] = useAPI();
     const classes = useStyles();
@@ -118,6 +118,11 @@ export default function AccessControl(props) {
     };
 
     const handleRoleValidationFailure = () => {
+        if(!roleValidity || !userRoleValidity) {
+            setIsDisabled(true);
+        } else {
+            setIsDisabled(false);
+        }
         if (!roleValidity) {
             return (
                 <FormattedMessage
