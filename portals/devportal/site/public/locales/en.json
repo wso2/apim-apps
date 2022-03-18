@@ -353,7 +353,7 @@
   "Applications.Listing.AppsTableContent.edit.tooltip.disabled.button": "Not allowed to modify shared applications",
   "Applications.Listing.AppsTableContent.inactive": "INACTIVE",
   "Applications.Listing.AppsTableContent.rejected": "REJECTED",
-  "Applications.Listing.AppsTableContent.wait.approval": " waiting for approval",
+  "Applications.Listing.AppsTableContent.wait.approval": "waiting for approval",
   "Applications.Listing.DeleteConfirmation.dialog,delete": "Delete",
   "Applications.Listing.DeleteConfirmation.dialog.cancel": "Cancel",
   "Applications.Listing.DeleteConfirmation.dialog.text.description": "The application will be removed",

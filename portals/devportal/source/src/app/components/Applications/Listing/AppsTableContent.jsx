@@ -146,7 +146,12 @@ class AppsTableContent extends Component {
                                     )}
                                     {app.status === this.APPLICATION_STATES.CREATED && (
                                         <>
-                                            <Typography variant='subtitle1' component='label' gutterBottom>
+                                            <Typography
+                                                variant='subtitle1'
+                                                style={{ textIndent: '10px' }}
+                                                component='label'
+                                                gutterBottom
+                                            >
                                                 <FormattedMessage
                                                     id='Applications.Listing.AppsTableContent.inactive'
                                                     defaultMessage='INACTIVE'
@@ -156,7 +161,7 @@ class AppsTableContent extends Component {
                                             <Typography variant='caption'>
                                                 <FormattedMessage
                                                     id='Applications.Listing.AppsTableContent.wait.approval'
-                                                    defaultMessage=' waiting for approval'
+                                                    defaultMessage='waiting for approval'
                                                 />
                                             </Typography>
                                         </>
