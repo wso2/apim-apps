@@ -148,7 +148,6 @@ class AppsTableContent extends Component {
                                         <>
                                             <Typography
                                                 variant='subtitle1'
-                                                style={{ textIndent: '10px' }}
                                                 component='label'
                                                 gutterBottom
                                             >
@@ -158,7 +157,7 @@ class AppsTableContent extends Component {
                                                 />
 
                                             </Typography>
-                                            <Typography variant='caption'>
+                                            <Typography variant='caption' style={{ textIndent: '10px', display: 'inline-block' }}>
                                                 <FormattedMessage
                                                     id='Applications.Listing.AppsTableContent.wait.approval'
                                                     defaultMessage='waiting for approval'
