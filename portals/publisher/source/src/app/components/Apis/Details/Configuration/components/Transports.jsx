@@ -93,6 +93,7 @@ export default function Transports(props) {
                                     })}
                                     value='http'
                                     color='primary'
+                                    id='http-transport'
                                 />
                             )}
                             label='HTTP'

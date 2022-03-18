@@ -223,7 +223,7 @@ function AddParameter(props) {
                                 return null;
                             }
                             return (
-                                <MenuItem value={paramType} dense>
+                                <MenuItem value={paramType} dense id={'param-' + verb + target + '/' + paramType}>
                                     {capitalizeFirstLetter(paramType)}
                                 </MenuItem>
                             );
@@ -311,7 +311,7 @@ function AddParameter(props) {
                     >
                         {getSupportedDataTypes(specVersion, newParameter.in).map((paramType) => {
                             return (
-                                <MenuItem value={paramType} dense>
+                                <MenuItem value={paramType} dense id={'data-' + verb + target + '/' + paramType}>
                                     {capitalizeFirstLetter(paramType)}
                                 </MenuItem>
                             );
@@ -373,6 +373,7 @@ function AddParameter(props) {
                             aria-label='Add Parameter'
                             color='primary'
                             onClick={addNewParameter}
+                            id = {`param-${verb}${target}-add-btn`}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Resources.components.operationComponents.AddParameter.add'

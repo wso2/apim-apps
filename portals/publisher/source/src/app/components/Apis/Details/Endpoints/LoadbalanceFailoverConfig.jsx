@@ -269,7 +269,12 @@ function LoadbalanceFailoverConfig(props) {
                                         className={classes.endpointTypeSelect}
                                     >
                                         {endpointTypes.map((type) => {
-                                            return <MenuItem value={type.key}>{type.value}</MenuItem>;
+                                            return <MenuItem
+                                                value={type.key}
+                                                id={'config-type-' + type.key}
+                                            >
+                                                {type.value}
+                                            </MenuItem>;
                                         })}
                                     </TextField>
                                     <div className={classes.lpConfigWrapper}>

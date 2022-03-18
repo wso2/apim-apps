@@ -164,7 +164,7 @@ function APIThumbPlain(props) {
     return (
         <Card className={classes.root} variant='outlined'>
             <CardContent>
-                <Box>
+                <Box id={api.name}>
                     <Link to={'/apis/' + api.id + '/overview'} aria-hidden='true'>
                         <Box display='flex'>
                             <Box>

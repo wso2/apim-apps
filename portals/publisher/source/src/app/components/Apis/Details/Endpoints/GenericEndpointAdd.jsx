@@ -56,6 +56,8 @@ function GenericEndpointAdd(props) {
     const {
         classes,
         addEndpoint,
+        endpointType,
+        category
     } = props;
     const [serviceUrl, setServiceUrl] = useState('');
     const { api } = useContext(APIContext);
@@ -86,6 +88,7 @@ function GenericEndpointAdd(props) {
                 margin='normal'
                 placeholder='Enter the Endpoint URL and press + button'
                 InputProps={{
+                    id: category + '-' + endpointType,
                     endAdornment: (
                         <InputAdornment position='end'>
                             <IconButton
@@ -94,6 +97,7 @@ function GenericEndpointAdd(props) {
                                 className={classes.iconButton}
                                 aria-label='Search'
                                 disabled={serviceUrl === ''}
+                                id={category + '-' + endpointType + '-add-btn'}
                             >
                                 <Icon>
                                     add
@@ -110,6 +114,8 @@ function GenericEndpointAdd(props) {
 GenericEndpointAdd.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     addEndpoint: PropTypes.func.isRequired,
+    endpointType: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(GenericEndpointAdd);

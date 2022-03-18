@@ -159,10 +159,12 @@ function GenericEndpoint(props) {
                 InputProps={{
                     readOnly,
                     autoFocus,
+                    id: category,
                     endAdornment: (
                         <InputAdornment position='end'>
                             {statusCode && (
                                 <Chip
+                                    id={category + '-endpoint-test-status'}
                                     label={statusCode}
                                     className={isEndpointValid ? classes.endpointValidChip : iff(
                                         isErrorCode,
@@ -177,6 +179,7 @@ function GenericEndpoint(props) {
                                     aria-label='TestEndpoint'
                                     onClick={() => testEndpoint(serviceUrl, apiId)}
                                     disabled={(isRestricted(['apim:api_create'], api)) || isUpdating}
+                                    id={category + '-endpoint-test-icon-btn'}
                                 >
                                     {isUpdating
                                         ? <CircularProgress size={20} />
@@ -229,6 +232,7 @@ function GenericEndpoint(props) {
                                             aria-label='Security'
                                             onClick={() => setESConfigOpen(type, esCategory)}
                                             disabled={(isRestricted(['apim:api_create'], api))}
+                                            id={category + '-endpoint-security-icon-btn'}
                                         >
                                             <Tooltip
                                                 placement='top-start'

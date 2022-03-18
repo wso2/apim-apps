@@ -37,6 +37,7 @@ const GraphqlAPIMenu = (props) => {
                 />
             )}
             icon={icon}
+            id='itest-graphql-api-create-menu'
         >
             <LandingMenuItem
                 dense={dense}

@@ -306,6 +306,7 @@ class Scopes extends React.Component {
                                     disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
                                     component={Link}
                                     to={!isRestricted(['apim:api_create'], api) && !api.isRevision && url}
+                                    id='create-scope-btn'
                                 >
                                     <FormattedMessage
                                         id='Apis.Details.Scopes.Scopes.create.scopes.button'
@@ -370,7 +371,7 @@ class Scopes extends React.Component {
                     )}
                 </div>
 
-                <MUIDataTable title={false} data={scopesList} columns={columns} options={options} />
+                <MUIDataTable title={false} data={scopesList} columns={columns} options={options}/>
             </div>
         );
     }
