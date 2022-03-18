@@ -156,7 +156,7 @@ class AppsTableContent extends Component {
                                             <Typography variant='caption'>
                                                 <FormattedMessage
                                                     id='Applications.Listing.AppsTableContent.wait.approval'
-                                                    defaultMessage='waiting for approval'
+                                                    defaultMessage=' waiting for approval'
                                                 />
                                             </Typography>
                                         </>
