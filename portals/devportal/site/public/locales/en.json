@@ -310,6 +310,7 @@
   "Applications.Details.SubscriptionTableData.update.throttling.policy.onHold": "Subscription is currently ON_HOLD state. You need to get approval to the subscription before editing the tier",
   "Applications.Details.SubscriptionTableData.update.throttling.policy.rejected": "Subscription is currently REJECTED state. You need to get approval to the subscription before editing the tier",
   "Applications.Details.SubscriptionTableData.update.throttling.policy.tier.update": "Pending Tier Update : ",
+  "Applications.Details.SubscriptionTableData.update.throttling.policy.tierUpdatePending": "Subscription is currently TIER_UPDATE_PENDING state. You need to get approval to the existing subscription edit request before editing the tier",
   "Applications.Details.Subscriptions\n                                                                        .business.plan": "Business Plan",
   "Applications.Details.Subscriptions\n                                                                        .subscription.state": "Lifecycle State",
   "Applications.Details.Subscriptions.Status": "Subscription Status",
@@ -583,5 +584,6 @@
   "solace.application.topics.subscribe": "Subscribe Topics",
   "solace.application.topics.subscribe.empty": "No Subscribe Topics to Display.",
   "subscription.pending": "Your subscription request has been submitted and is now awaiting approval.",
+  "subscription.tierPending": "Your subscription update request has been submitted and is now awaiting approval.",
   "username": "Username"
 }

@@ -290,7 +290,12 @@ class Subscriptions extends React.Component {
                     Alert.info('Something went wrong while updating the Subscription!');
                     return;
                 }
-                Alert.info('Business Plan updated successfully!');
+                if (response.body.status === 'TIER_UPDATE_PENDING') {
+                    Alert.info('Your subscription update request has been submitted and is now awaiting '
+                    + 'approval.');
+                } else {
+                    Alert.info('Business Plan updated successfully!');
+                }
                 this.updateSubscriptions(applicationId);
                 this.props.getApplication();
             })
@@ -335,6 +340,12 @@ class Subscriptions extends React.Component {
                             defaultMessage: 'Your subscription request has been submitted and is now awaiting '
                                 + 'approval.',
                             id: 'subscription.pending',
+                        }));
+                    } else if (response.body.status === 'TIER_UPDATE_PENDING') {
+                        Alert.info(intl.formatMessage({
+                            defaultMessage: 'Your subscription update request has been submitted and is now awaiting '
+                                + 'approval.',
+                            id: 'subscription.tierPending',
                         }));
                     } else {
                         Alert.info(intl.formatMessage({
