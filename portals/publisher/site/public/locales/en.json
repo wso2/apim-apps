@@ -489,6 +489,12 @@
       "value": "Create an API by providing a Name, a Version and a Context"
     }
   ],
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg": [
+    {
+      "type": 0,
+      "value": "This feature is deprecated. Please use the WSO2 Integrator product as an alternative"
+    }
+  ],
   "Apis.Create.WSDL.ApiCreateWSDL.error.policies.not.available": [
     {
       "type": 0,
