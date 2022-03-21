@@ -167,7 +167,8 @@ function AddEdit(props) {
         let keys;
         const schema = Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/);
         const validateKeyTemplates = ['$userId', '$apiContext', '$apiVersion', '$resourceKey',
-            '$appTenant', '$apiTenant', '$appId', '$clientIp'];
+            '$appTenant', '$apiTenant', '$appId', '$clientIp', '$customProperty'];
+        let isWrongPattern = false;
         switch (fieldName) {
             case 'policyName':
                 if (value === '') {
@@ -197,10 +198,18 @@ function AddEdit(props) {
                 break;
             case 'keyTemplate':
                 keys = value.split(':');
+                isWrongPattern = keys.map((obj) => {
+                    let partialIsValid = false;
+                    partialIsValid = validateKeyTemplates.includes(obj);
+                    if (!partialIsValid && obj.indexOf('$customProperty') !== -1) {
+                        partialIsValid = true;
+                    }
+                    return partialIsValid;
+                }).includes(false);
                 if (value === '') {
                     error = (fieldName + ' is Empty');
                 } else if (value.indexOf(' ') !== -1
-                || keys.map((obj) => validateKeyTemplates.includes(obj)).includes(false)) {
+                || isWrongPattern) {
                     error = intl.formatMessage({
                         id: 'Throttling.Custom.Policy.policy.invalid.key.template',
                         defaultMessage: 'Invalid Key Template',
@@ -373,7 +382,7 @@ function AddEdit(props) {
                                     defaultMessage={'The specific combination of attributes being checked '
                                         + 'in the policy need to be defined as the key template. Allowed values are : '
                                         + '$userId, $apiContext, $apiVersion, $resourceKey, $appTenant, $apiTenant,'
-                                        + ' $appId, $clientIp'}
+                                        + ' $appId, $clientIp, $customProperty, $customProperty.somevalue'}
                                 />
                             )}
                         />
@@ -426,10 +435,18 @@ function AddEdit(props) {
                             disabled={validationError && validationError.length !== 0
                                 && Object.values(validationError)[0] !== false}
                         >
-                            <FormattedMessage
-                                id='Throttling.Custom.AddEdit.form.add'
-                                defaultMessage='Add'
-                            />
+                            {!editMode && (
+                                <FormattedMessage
+                                    id='Throttling.Custom.AddEdit.form.add'
+                                    defaultMessage='Add'
+                                />
+                            )}
+                            {editMode && (
+                                <FormattedMessage
+                                    id='Throttling.Custom.AddEdit.form.edit'
+                                    defaultMessage='Edit'
+                                />
+                            )}
                         </Button>
                         <RouterLink to='/throttling/custom'>
                             <Button variant='contained'>
