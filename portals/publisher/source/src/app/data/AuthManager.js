@@ -177,8 +177,8 @@ class AuthManager {
             return false;
         } else {
             const arrayLength = AuthManager.getUser().scopes.length;
-            if (arrayLength === 2) {
-                return intersectionBy(AuthManager.getUser().scopes, ['apim:api_view', 'openid']);
+            if (arrayLength === 3) {
+                return intersectionBy(AuthManager.getUser().scopes, ['apim:api_view', 'apim:publisher_settings', 'openid']);
             }
             return false;
         }
