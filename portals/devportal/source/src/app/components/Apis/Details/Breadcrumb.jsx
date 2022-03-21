@@ -25,6 +25,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import Box from '@material-ui/core/Box';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
+import { useIntl } from 'react-intl';
 
 const useStyles = makeStyles((theme) => {
     const mainBack = theme.custom.infoBar.background || '#ffffff';
@@ -50,30 +51,49 @@ export default function Breadcrumb() {
     const { api } = useContext(ApiContext);
     const classes = useStyles();
     const history = useHistory();
+    const intl = useIntl();
     const pages = [
         {
             route: 'overview',
-            text: 'Overview',
+            text: intl.formatMessage({
+                defaultMessage: 'Overview',
+                id: 'Apis.Details.Breadcrumb.overview',
+            }),
         },
         {
             route: 'credentials',
-            text: 'Subscriptions',
+            text: intl.formatMessage({
+                defaultMessage: 'Subscriptions',
+                id: 'Apis.Details.Breadcrumb.subscriptions',
+            }),
         },
         {
             route: 'test',
-            text: 'Try Out',
+            text: intl.formatMessage({
+                defaultMessage: 'Try Out',
+                id: 'Apis.Details.Breadcrumb.try.out',
+            }),
         },
         {
             route: 'comments',
-            text: 'Comments',
+            text: intl.formatMessage({
+                defaultMessage: 'Comments',
+                id: 'Apis.Details.Breadcrumb.comments',
+            }),
         },
         {
             route: 'documents',
-            text: 'Documents',
+            text: intl.formatMessage({
+                defaultMessage: 'Documents',
+                id: 'Apis.Details.Breadcrumb.documents',
+            }),
         },
         {
             route: 'sdk',
-            text: 'SDKs',
+            text: intl.formatMessage({
+                defaultMessage: 'SDKs',
+                id: 'Apis.Details.Breadcrumb.sdks',
+            }),
         },
     ];
 

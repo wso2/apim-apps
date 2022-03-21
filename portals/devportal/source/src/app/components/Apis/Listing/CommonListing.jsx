@@ -155,6 +155,9 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    apiListingWrapper: {
+        width: '100%',
+    },
 });
 
 /**
@@ -293,11 +296,11 @@ class CommonListing extends React.Component {
         const tagPaneVisible = allTags && allTags.length > 0 && (tagCloudActive || active);
         const categoryPaneVisible = allCategories && allCategories.length > 0;
         return (
-            <>
+            <div className={classNames(classes.apiListingWrapper, 'api-listing-wrapper')}>
                 {(categoryPaneVisible || tagPaneVisible) && showLeftMenu && (
-                    <div className={classes.LeftMenu}>
+                    <div className={classNames(classes.LeftMenu, 'api-listing-left-menu')}>
                         <div
-                            className={classes.sliderButton}
+                            className={classNames(classes.sliderButton, 'api-listing-slider-btn')}
                             onClick={this.toggleLeftMenu}
                             onKeyDown={this.toggleLeftMenu}
                         >
@@ -309,16 +312,16 @@ class CommonListing extends React.Component {
                     </div>
                 )}
                 {(categoryPaneVisible || tagPaneVisible) && !showLeftMenu && (
-                    <div className={classes.LeftMenuForSlider}>
+                    <div className={classNames(classes.LeftMenuForSlider, 'api-listing-left-menu-hidden')}>
                         <div
-                            className={classes.sliderButton}
+                            className={classNames(classes.sliderButton, 'api-listing-slider-btn')}
                             onClick={this.toggleLeftMenu}
                             onKeyDown={this.toggleLeftMenu}
                         >
                             <Icon>keyboard_arrow_right</Icon>
                         </div>
                         <div
-                            className={classes.rotatedText}
+                            className={classNames(classes.rotatedText, 'api-listing-title-section-hidden')}
                             onClick={this.toggleLeftMenu}
                             onKeyDown={this.toggleLeftMenu}
                         >
@@ -336,11 +339,12 @@ class CommonListing extends React.Component {
                         { [classes.contentWithoutTags]: !(tagPaneVisible || categoryPaneVisible) || !showLeftMenu },
                         { [classes.contentWithTagsHidden]: (tagPaneVisible || categoryPaneVisible) && !showLeftMenu },
                         { [classes.contentWithTags]: (tagPaneVisible || categoryPaneVisible) && showLeftMenu },
+                        'content-section',
                     )}
                     id='commonListing'
                 >
                     <div className={classes.appBar} id='commonListingAppBar'>
-                        <div className={classes.mainIconWrapper}>
+                        <div className={classNames(classes.mainIconWrapper, 'main-icon-wrapper')}>
                             <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon='api' />
                         </div>
                         <div className={classes.mainTitleWrapper} id='mainTitleWrapper'>
@@ -415,7 +419,7 @@ class CommonListing extends React.Component {
                             </div>
                         )}
                 </div>
-            </>
+            </div>
         );
     }
 }

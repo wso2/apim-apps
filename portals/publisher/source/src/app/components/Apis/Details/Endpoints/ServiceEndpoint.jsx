@@ -80,7 +80,10 @@ function ServiceEndpoint(props) {
     const setEndpointValue = (value) => {
         editEndpoint(index, category, value.serviceUrl);
         setSelectedServiceUrl(value.serviceUrl);
-        editService(value);
+        if (esCategory ==='production') {
+            editService(value);
+        }
+        
     };
 
     return (

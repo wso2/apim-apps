@@ -777,6 +777,7 @@ class APIDefinition extends React.Component {
                             component={Link}
                             download={fileName}
                             href={downloadLink}
+                            id='download-definition-btn'
                         >
                             <CloudDownloadRounded className={classes.buttonIcon} />
                             <FormattedMessage
@@ -921,6 +922,7 @@ class APIDefinition extends React.Component {
                             <Grid item>
                                 <CustomSplitButton
                                     advertiseInfo={api.advertiseInfo}
+                                    api={api}
                                     handleSave={this.handleSave}
                                     handleSaveAndDeploy={this.handleSaveAndDeploy}
                                     isUpdating={isUpdating}

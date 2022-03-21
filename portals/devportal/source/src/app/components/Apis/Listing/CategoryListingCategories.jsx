@@ -17,6 +17,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
@@ -83,10 +84,10 @@ function CategoryListingCategories(props) {
     return allCategories && allCategories.length > 0 ? (
         (
             <>
-                <Typography variant='h6' gutterBottom className={classes.filterTitle}>
+                <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'api-cat-title')}>
                     <FormattedMessage defaultMessage='API Categories' id='Apis.Listing.CategoryListingCategories.title' />
                 </Typography>
-                <List component='nav' aria-label='main mailbox folders'>
+                <List component='nav' aria-label='main mailbox folders' className='category-listing-categories'>
                     {Object.keys(allCategories).map((key) => {
                         return <APICategoryThumb key={key} category={allCategories[key]} path={tagWiseURL} style={style} />;
                     })}
@@ -94,7 +95,7 @@ function CategoryListingCategories(props) {
             </>
         )
     ) : (
-        <div className={classes.mainTitle}>
+        <div className={classNames(classes.mainTitle, 'category-listing-categories-empty')}>
             <Typography variant='subtitle1' gutterBottom align='center'>
                 <FormattedMessage
                     defaultMessage='Categories cannot be found'

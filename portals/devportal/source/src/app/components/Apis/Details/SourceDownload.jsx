@@ -136,6 +136,7 @@ function SourceDownload(props) {
             >
                 <MUILink
                     onClick={() => downloadWSDL(api.id, selectedEndpoint.environmentName)}
+                    className={classes.downloadLink}
                 >
                     <CloudDownloadRounded className={classes.buttonIcon} />
                     <FormattedMessage

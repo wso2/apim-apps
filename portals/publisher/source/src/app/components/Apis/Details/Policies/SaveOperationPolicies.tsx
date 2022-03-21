@@ -18,6 +18,7 @@
 
 import React, { useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { isRestricted } from 'AppData/AuthManager';
@@ -62,9 +63,9 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
     }
 
     return (
-        <>
-            <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
-                <Grid item>
+        <Grid container direction='row' spacing={1}>
+            <Grid item>
+                <Box p={1} mt={3}>
                     {api.isRevision || isRestricted(['apim:api_create'], api) ? (
                         <Button
                             disabled
@@ -80,13 +81,14 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
                     ) : (
                         <CustomSplitButton
                             handleSave={handleSave}
+                            api={api}
                             handleSaveAndDeploy={handleSaveAndDeploy}
                             isUpdating={updating}
                         />
                     )}
-                </Grid>
+                </Box>
             </Grid>
-        </>
+        </Grid>
     );
 };
 

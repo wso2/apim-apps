@@ -174,6 +174,7 @@ function Create(props) {
 
                                 <div className={classes.addNewOther}>
                                     <Button
+                                        id='add-document-btn'
                                         variant='contained'
                                         color='primary'
                                         onClick={() => addDocument(api.id)}

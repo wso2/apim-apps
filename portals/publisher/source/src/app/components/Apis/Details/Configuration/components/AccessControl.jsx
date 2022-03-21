@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AccessControl(props) {
     const [roleValidity, setRoleValidity] = useState(true);
     const [userRoleValidity, setUserRoleValidity] = useState(true);
-    const { api, configDispatcher } = props;
+    const { api, configDispatcher, setIsDisabled } = props;
     const isNone = api.accessControl === 'NONE';
     const [apiFromContext] = useAPI();
     const classes = useStyles();
@@ -118,6 +118,11 @@ export default function AccessControl(props) {
     };
 
     const handleRoleValidationFailure = () => {
+        if(!roleValidity || !userRoleValidity) {
+            setIsDisabled(true);
+        } else {
+            setIsDisabled(false);
+        }
         if (!roleValidity) {
             return (
                 <FormattedMessage
@@ -179,7 +184,7 @@ export default function AccessControl(props) {
                             defaultMessage='All'
                         />
                     </MenuItem>
-                    <MenuItem value='RESTRICTED'>
+                    <MenuItem value='RESTRICTED' id='access-control-restricted-by-roles'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.AccessControl.dropdown.restricted'
                             defaultMessage='Restrict by role(s)'
@@ -230,6 +235,7 @@ export default function AccessControl(props) {
             {!isNone && (
                 <Box py={1} style={{ marginTop: 10 }}>
                     <ChipInput
+                        data-testid='access-control-select-role'
                         fullWidth
                         variant='outlined'
                         label={(

@@ -278,7 +278,10 @@ class Sdk extends React.Component {
                                                             aria-label={'Download ' + language + ' SDK'}
                                                         >
                                                             <Icon>arrow_downward</Icon>
-                                                            Download
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Sdk.download.btn'
+                                                                defaultMessage='Download'
+                                                            />
                                                         </Button>
                                                     </Grid>
                                                 </CardActions>

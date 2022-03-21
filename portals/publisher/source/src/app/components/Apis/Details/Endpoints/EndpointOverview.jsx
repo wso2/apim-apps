@@ -51,7 +51,7 @@ import GenericEndpoint from './GenericEndpoint';
 import AdvanceEndpointConfig from './AdvancedConfig/AdvanceEndpointConfig';
 import EndpointSecurity from './GeneralConfiguration/EndpointSecurity';
 import Credentials from './AWSLambda/Credentials.jsx';
-import ServiceEndpoint from '../APIDefinition/ServiceEndpoint';
+import ServiceEndpoint from './ServiceEndpoint';
 
 const styles = (theme) => ({
     listing: {
@@ -163,7 +163,8 @@ function EndpointOverview(props) {
         config: undefined,
     });
     const [endpointCategory, setEndpointCategory] = useState({ sandbox: false, prod: false });
-    const [typeChangeConfirmation, setTypeChangeConfirmation] = useState({ openDialog: false });
+    const [typeChangeConfirmation, setTypeChangeConfirmation] = useState({ openDialog: false, serviceInfo:
+    (api.serviceInfo) });
     const [servicesList, setServicesList] = useState([]);
 
     const handleToggleEndpointSecurity = () => {
@@ -192,6 +193,9 @@ function EndpointOverview(props) {
             && apiObject.endpointConfig.implementation_status === 'prototyped') {
             return endpointTypes[3];
         } else if (type === 'http') {
+            if (typeChangeConfirmation.serviceInfo) {
+                return endpointTypes[6];
+            }
             return endpointTypes[0];
         } else if (type === 'default') {
             return endpointTypes[1];
@@ -462,7 +466,7 @@ function EndpointOverview(props) {
      * @param {string} value The selected endpoint type.
      * */
     const changeEndpointType = (value) => {
-        setTypeChangeConfirmation({ openDialog: false });
+        setTypeChangeConfirmation({ openDialog: false, serviceInfo: false });
         const selectedKey = typeChangeConfirmation.type || value;
         if (selectedKey === 'INLINE' || selectedKey === 'MOCKED_OAS') {
             const tmpConfig = createEndpointConfig('prototyped');
@@ -689,6 +693,7 @@ function EndpointOverview(props) {
                                                 <Radio
                                                     disabled={(isRestricted(['apim:api_create'], api))}
                                                     color='primary'
+                                                    id={endpoint.key}
                                                 />
                                             )}
                                             label={endpoint.value}
@@ -844,6 +849,7 @@ function EndpointOverview(props) {
                                                                 <FormControlLabel
                                                                     control={(
                                                                         <Checkbox
+                                                                            id='production-endpoint-checkbox'
                                                                             disabled={isRestricted(
                                                                                 ['apim:api_create'], api)}
                                                                             checked={endpointCategory.prod}
@@ -996,6 +1002,7 @@ function EndpointOverview(props) {
                                                                     <FormControlLabel
                                                                         control={(
                                                                             <Checkbox
+                                                                                id='sandbox-endpoint-checkbox'
                                                                                 disabled={isRestricted(
                                                                                     ['apim:api_create'], api)}
                                                                                 checked={endpointCategory.sandbox}
@@ -1260,7 +1267,7 @@ function EndpointOverview(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={() => { setTypeChangeConfirmation({ openDialog: false }); }}
+                        onClick={() => { setTypeChangeConfirmation({ openDialog: false, serviceInfo: false }); }}
                         color='primary'
                     >
                         <FormattedMessage
@@ -1271,6 +1278,7 @@ function EndpointOverview(props) {
                     <Button
                         onClick={() => { changeEndpointType(typeChangeConfirmation.type); }}
                         color='primary'
+                        id='change-endpoint-type-btn'
                     >
                         <FormattedMessage
                             id='Apis.Details.Endpoints..EndpointOverview.change.type.proceed'

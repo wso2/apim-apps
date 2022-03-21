@@ -128,9 +128,11 @@ function ProductResourcesEdit() {
                             <div>
                                 <CustomSplitButton
                                     advertiseInfo={api.advertiseInfo}
+                                    api={api}
                                     handleSave={handleSave}
                                     handleSaveAndDeploy={handleSaveAndDeploy}
                                     isUpdating={isUpdating}
+                                    id='save-product-resources'
                                 />
                             </div>
                         </Grid>

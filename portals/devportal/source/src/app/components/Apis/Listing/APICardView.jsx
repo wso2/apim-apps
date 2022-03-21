@@ -300,6 +300,14 @@ class APICardView extends React.Component {
                 this.rowsPerPage = numberOfRows;
                 this.getData();
             },
+            textLabels: {
+                pagination: {
+                    rowsPerPage: intl.formatMessage({
+                        id: 'Apis.Listing.APICardView.rows.per.page',
+                        defaultMessage: 'Rows per page',
+                    }),
+                },
+            },
         };
         if (loading) {
             return <Loading />;

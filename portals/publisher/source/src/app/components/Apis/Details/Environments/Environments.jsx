@@ -323,6 +323,15 @@ export default function Environments() {
     const maxCommentLength = '255';
     const intl = useIntl();
     const { api, updateAPI } = useContext(APIContext);
+    const securityScheme = [...api.securityScheme];
+    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
+    && securityScheme.includes('mutualssl_mandatory');
+    const isEndpointAvailable = api.endpointConfig !== null;
+    const isTierAvailable = api.policies.length !== 0;
+
+    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
+    || (!isMutualSslOnly && !isTierAvailable)
+    || api.workflowStatus === 'CREATED');
     const history = useHistory();
     const { data: settings, isLoading } = usePublisherSettings();
     const {
@@ -1463,7 +1472,7 @@ export default function Environments() {
                     <Button
                         onClick={toggleDeployRevisionPopup}
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                    || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                    || (api.advertiseInfo && api.advertiseInfo.advertised) || isDeployButtonDisabled}
                         variant='contained'
                         color='primary'
                         size='large'
@@ -1844,7 +1853,8 @@ export default function Environments() {
                             disabled={SelectedEnvironment.length === 0
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
                                 || isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                || isDeployButtonDisabled}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Environments.Environments.deploy.deploy'
@@ -2215,6 +2225,7 @@ export default function Environments() {
                                                                 allEnvDeployments[row.name].revision.id, row.name,
                                                             )}
                                                             size='small'
+                                                            id='undeploy-btn'
                                                         >
                                                             <FormattedMessage
                                                                 id='Apis.Details.Environments.Environments.undeploy.btn'
@@ -2266,7 +2277,8 @@ export default function Environments() {
                                                                 (r) => r.env === row.name && r.revision,
                                                             ) || !selectedVhosts.some(
                                                                 (v) => v.env === row.name && v.vhost,
-                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                                            || isDeployButtonDisabled}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,
@@ -2482,7 +2494,8 @@ export default function Environments() {
                                                             className={classes.button2}
                                                             disabled={api.isRevision || !selectedRevision.some(
                                                                 (r) => r.env === row.name && r.revision,
-                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                                            || isDeployButtonDisabled}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,

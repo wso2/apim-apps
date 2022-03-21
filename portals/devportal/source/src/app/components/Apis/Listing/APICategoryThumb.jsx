@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -62,13 +63,16 @@ function APICategoryThumb(props) {
         <Link to={categoryLink} className={classes.textWrapper}>
             <Tooltip placement='right' title={category.description.length <= 50 ? '' : category.description}>
                 <ListItem button alignItems='flex-start'>
-                    <ListItemIcon>
+                    <ListItemIcon className='category-listing-icon'>
                         <Icon>label</Icon>
                     </ListItemIcon>
                     <ListItemText
                         primary={category.name}
                         secondary={categoryDesc}
-                        classes={{ primary: classes.listItemText }}
+                        classes={{
+                            primary: classNames(classes.listItemText, 'category-listing-primary'),
+                            secondary: 'category-listing-secondary',
+                        }}
                     />
                 </ListItem>
             </Tooltip>

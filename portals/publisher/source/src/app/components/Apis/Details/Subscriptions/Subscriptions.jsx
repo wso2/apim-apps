@@ -136,6 +136,7 @@ function Subscriptions(props) {
                             color='primary'
                             disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                             onClick={() => saveAPI()}
+                            id='subscriptions-save-btn'
                         >
                             <FormattedMessage
                                 id='Apis.Details.Subscriptions.Subscriptions.save'

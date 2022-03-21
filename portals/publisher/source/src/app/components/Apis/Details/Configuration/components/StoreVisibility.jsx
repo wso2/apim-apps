@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 export default function StoreVisibility(props) {
     const [roleValidity, setRoleValidity] = useState(true);
     const [roleExists, setRoleExists] = useState(true);
-    const { api, configDispatcher } = props;
+    const { api, configDispatcher, setIsDisabled } = props;
     const [invalidRoles, setInvalidRoles] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
     const [apiFromContext] = useAPI();
@@ -78,6 +78,9 @@ export default function StoreVisibility(props) {
             setRoleExists(true);
         }
     }, [invalidRoles]);
+    useEffect(() => {
+        setIsDisabled(!roleValidity || !roleExists);
+    }, [roleValidity, roleExists])
     const handleRoleAddition = (role) => {
         const promise = APIValidation.role.validate(base64url.encode(role));
         promise.then(() => {
@@ -150,7 +153,7 @@ export default function StoreVisibility(props) {
                             defaultMessage='Public'
                         />
                     </MenuItem>
-                    <MenuItem value='RESTRICTED'>
+                    <MenuItem value='RESTRICTED' id='visibility-restricted-by-roles'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.storeVisibility.dropdown.restrict'
                             defaultMessage='Restrict by role(s)'
@@ -215,6 +218,7 @@ export default function StoreVisibility(props) {
             {isRestrictedByRoles && (
                 <Box py={2} style={{ marginTop: -10, marginBottom: 10 }}>
                     <ChipInput
+                        data-testid='visibility-select-role'
                         fullWidth
                         variant='outlined'
                         label={(

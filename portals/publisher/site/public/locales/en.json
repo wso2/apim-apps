@@ -5261,7 +5261,13 @@
       "value": "Resources"
     }
   ],
-  "Apis.Details.Policies.AttachedPolicyCard.download.error": [
+  "Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": [
     {
       "type": 0,
       "value": "Something went wrong while downloading the policy"
@@ -5342,7 +5348,7 @@
   "Apis.Details.Policies.DeletePolicy.confirm": [
     {
       "type": 0,
-      "value": "Yes"
+      "value": "Delete"
     }
   ],
   "Apis.Details.Policies.DeletePolicy.delete.confirm": [
@@ -5386,7 +5392,7 @@
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": [
     {
       "type": 0,
-      "value": "Changing the gateway type will remove all existing policies added to the API."
+      "value": "Changing the gateway type will remove all existing policies added to the API"
     }
   ],
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": [
@@ -5683,16 +5689,22 @@
       "value": "Done"
     }
   ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.description": [
     {
       "type": 0,
       "value": "Define the Gateway (s) that will be supporting this policy. Based off of this selection, you can upload the relevant business logic inclusive policy file."
-    }
-  ],
-  "Apis.Details.Policies.PolicyForm.SourceDetails.download.error": [
-    {
-      "type": 0,
-      "value": "Something went wrong while downloading the policy"
     }
   ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description": [
@@ -5710,7 +5722,7 @@
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": [
     {
       "type": 0,
-      "value": "Policy File"
+      "value": "Policy File(s)"
     }
   ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": [
@@ -5740,7 +5752,11 @@
   "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": [
     {
       "type": 0,
-      "value": "Upload Policy File"
+      "value": "Upload Policy File for "
+    },
+    {
+      "type": 1,
+      "value": "gateway"
     }
   ],
   "Apis.Details.Policies.PolicyList.add.new.policy": [

@@ -48,11 +48,17 @@ function GlobalNavBar(props) {
                         to='/home'
                         className={classNames({
                             [classes.selected]: selected === 'home',
+                            // eslint-disable-next-line quote-props
+                            'selected': selected === 'home',
                             [classes.links]: true,
-                        })}
+                        }, 'header-link')}
                     >
                         <ListItem component='div' classes={{ root: classes.listItemRoot }}>
-                            <ListItemIcon classes={{ root: classNames({ [classes.smallIcon]: !drawerView }) }}>
+                            <ListItemIcon classes={{
+                                root: classNames({ [classes.smallIcon]: !drawerView },
+                                    'heder-menu-icon-home', 'header-menu-icon'),
+                            }}
+                            >
                                 <Icon
                                     style={{
                                         fontSize: iconWidth,
@@ -83,10 +89,19 @@ function GlobalNavBar(props) {
                 ) }
             <Link
                 to={(theme.custom.tagWise.active && theme.custom.tagWise.style === 'page') ? '/api-groups' : '/apis'}
-                className={classNames({ [classes.selected]: selected === 'apis', [classes.links]: true })}
+                className={classNames({
+                    [classes.selected]: selected === 'apis',
+                    // eslint-disable-next-line quote-props
+                    'selected': selected === 'apis',
+                    [classes.links]: true,
+                }, 'header-link')}
             >
                 <ListItem component='div' classes={{ root: classes.listItemRoot }}>
-                    <ListItemIcon classes={{ root: classNames({ [classes.smallIcon]: !drawerView }) }}>
+                    <ListItemIcon classes={{
+                        root: classNames({ [classes.smallIcon]: !drawerView },
+                            'heder-menu-icon-apis', 'header-menu-icon'),
+                    }}
+                    >
                         <CustomIcon
                             width={iconWidth}
                             height={iconWidth}
@@ -116,11 +131,17 @@ function GlobalNavBar(props) {
                 to='/applications'
                 className={classNames({
                     [classes.selected]: selected === 'applications',
+                    // eslint-disable-next-line quote-props
+                    'selected': selected === 'applications',
                     [classes.links]: true,
-                })}
+                }, 'header-link')}
             >
                 <ListItem component='div' classes={{ root: classes.listItemRoot }}>
-                    <ListItemIcon classes={{ root: classNames({ [classes.smallIcon]: !drawerView }) }}>
+                    <ListItemIcon classes={{
+                        root: classNames({ [classes.smallIcon]: !drawerView },
+                            'heder-menu-icon-applications', 'header-menu-icon'),
+                    }}
+                    >
                         <CustomIcon
                             width={iconWidth}
                             height={iconWidth}
