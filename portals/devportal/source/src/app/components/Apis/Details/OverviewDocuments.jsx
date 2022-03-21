@@ -27,7 +27,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
 import { withStyles } from '@material-ui/core/styles';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 
@@ -109,6 +109,7 @@ const styles = (theme) => ({
  */
 function OverviewDocuments(props) {
     const [docs, setDocs] = useState([]);
+    const intl = useIntl();
     const { apiId } = props;
     const history = useHistory();
     useEffect(() => {
@@ -127,7 +128,10 @@ function OverviewDocuments(props) {
                 }
                 const { status } = error;
                 if (status === 404) {
-                    Alert.error('Error occurred');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Overview.documents.error.occurred',
+                        defaultMessage: 'Error occurred',
+                    }));
                 }
             });
     }, []);

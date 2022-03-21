@@ -21,7 +21,7 @@ import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import AuthManager from 'AppData/AuthManager';
 import Icon from '@material-ui/core/Icon';
@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AsyncApiConsole() {
+    const intl = useIntl();
     const classes = useStyles();
     const { api } = useContext(ApiContext);
     const [securitySchemeType, setSecurityScheme] = useState('OAUTH');
@@ -113,7 +114,10 @@ export default function AsyncApiConsole() {
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(error);
-                    Alert.error('Error occurred while retrieving the API');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Overview.documents.error.occurred',
+                        defaultMessage: 'Error occurred while retrieving the API',
+                    }));
                 }
                 setScopes([]);
                 setEnvironments([]);

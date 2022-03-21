@@ -156,19 +156,31 @@ const apiKeyRestrictions = (props) => {
             <FormControlLabel
               value="none"
               control={<Radio color="primary" />}
-              label="None"
+              label={intl.formatMessage({
+                defaultMessage: "None",
+                id:
+                  "Shared.ApiKeyRestriction.key.restrictions.none",
+              })}
               labelPlacement="end"
             />
             <FormControlLabel
               value="ip"
               control={<Radio color="primary" />}
-              label="IP Addresses"
+              label={intl.formatMessage({
+                defaultMessage: "IP Addresses",
+                id:
+                  "Shared.ApiKeyRestriction.key.restrictions.ip.addresses",
+              })}
               labelPlacement="end"
             />
             <FormControlLabel
               value="referer"
               control={<Radio color="primary" />}
-              label="HTTP Referrers (Web Sites)"
+              label={intl.formatMessage({
+                defaultMessage: "HTTP Referrers (Web Sites)",
+                id:
+                  "Shared.ApiKeyRestriction.key.restrictions.http.referrers",
+              })}
               labelPlacement="end"
             />
           </RadioGroup>
@@ -185,7 +197,11 @@ const apiKeyRestrictions = (props) => {
             >
               <Grid item md={10} xs={10}>
                 <TextField
-                  label="IP Address"
+                  label={intl.formatMessage({
+                    defaultMessage: "IP Address",
+                    id:
+                      "Shared.AppsAndKeys.Tokens.apiKeyRestriction.ip.address.label",
+                  })}
                   value={newIP}
                   onChange={onIpTextUpdate}
                   className={classes.inputText}
@@ -237,7 +253,13 @@ const apiKeyRestrictions = (props) => {
                     <ListItem>
                       <ListItemText primary={ip} />
                       <ListItemSecondaryAction>
-                        <Tooltip title="Delete task" placement="top">
+                        <Tooltip title={
+                          intl.formatMessage({
+                            defaultMessage: 'Delete task',
+                            id: 'Shared.ApiKeyRestriction.key.restrictions.delete.task.tooltip',
+                          })}
+                          placement="top"
+                        >
                           <IconButton
                             edge="end"
                             aria-label="delete"
@@ -266,7 +288,11 @@ const apiKeyRestrictions = (props) => {
             >
               <Grid item md={10} xs={10}>
                 <TextField
-                  label="Referer"
+                  label={intl.formatMessage({
+                    defaultMessage: "Referer",
+                    id:
+                      "Shared.AppsAndKeys.Tokens.apiKeyRestriction.referer.label",
+                  })}
                   value={newReferer}
                   onChange={onRefererTextUpdate}
                   className={classes.inputText}
@@ -317,7 +343,13 @@ const apiKeyRestrictions = (props) => {
                     <ListItem>
                       <ListItemText primary={referer} />
                       <ListItemSecondaryAction>
-                        <Tooltip title="Delete task" placement="top">
+                        <Tooltip title={
+                          intl.formatMessage({
+                            defaultMessage: 'Delete task',
+                            id: 'Shared.ApiKeyRestriction.key.restrictions.delete.task.tooltip',
+                          })}
+                          placement="top"
+                        >
                           <IconButton
                             edge="end"
                             aria-label="delete"

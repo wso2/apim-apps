@@ -151,7 +151,20 @@ function ViewCurl(props) {
                         </div>
                     </div>
                     <div>
-                        <Tooltip title={tokenCopied ? 'Copied' : 'Copy to clipboard'} placement='right'>
+                        <Tooltip
+                            title={
+                                tokenCopied
+                                    ? intl.formatMessage({
+                                        defaultMessage: 'Copied',
+                                        id: 'Shared.AppsAndKeys.ViewCurl.copied',
+                                    })
+                                    : intl.formatMessage({
+                                        defaultMessage: 'Copy to clipboard',
+                                        id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
+                                    })
+                            }
+                            placement='right'
+                        >
                             <CopyToClipboard
                                 text={`curl -k -X POST ${tokenEndpoint} -d ` +
                                 '"grant_type=client_credentials" -H' +

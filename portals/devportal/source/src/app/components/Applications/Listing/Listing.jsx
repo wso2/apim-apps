@@ -477,7 +477,10 @@ class Listing extends Component {
                                             defaultMessage: 'Search',
                                             id: 'Applications.Listing.Listing.applications.search.label',
                                         })}
-                                        placeholder='Search application by name'
+                                        placeholder={intl.formatMessage({
+                                            defaultMessage: 'Search application by name',
+                                            id: 'Applications.Listing.Listing.applications.search.placeholder',
+                                        })}
                                         InputProps={{
                                             disableUnderline: true,
                                             className: classes.searchInput,

@@ -20,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles/index';
 import { matchPath } from 'react-router';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -101,6 +101,7 @@ const useStyles = makeStyles((theme) => (
 export default function WebHookDetails(props) {
     const classes = useStyles();
     const { location: { pathname } } = props;
+    const intl = useIntl();
     const match = matchPath(pathname, {
         path: '/applications/:applicationId/webhooks/:apiId',
         exact: true,
@@ -130,7 +131,10 @@ export default function WebHookDetails(props) {
             setSubscribedTopics(sortedSubscriptions);
         }).catch((error) => {
             console.log(error);
-            Alert.error('Error while retrieving webhook subscriptions');
+            Alert.error(intl.formatMessage({
+                id: 'Applications.Details.Subscriptions.error.occurred.webhook.subscription',
+                defaultMessage: 'Error while retrieving webhook subscriptions',
+            }));
         });
     }, []);
 

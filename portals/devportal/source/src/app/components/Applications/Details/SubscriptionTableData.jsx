@@ -409,7 +409,12 @@ class SubscriptionTableData extends React.Component {
                     </ScopeValidation>
 
                     <Dialog open={openMenu} transition={Slide}>
-                        <DialogTitle>Confirm</DialogTitle>
+                        <DialogTitle>
+                            <FormattedMessage
+                                id='Applications.Details.SubscriptionTableData.delete.subscription.confirmation.dialog.title'
+                                defaultMessage='Confirm'
+                            />
+                        </DialogTitle>
                         <DialogContent>
                             <DialogContentText>
                                 <FormattedMessage
