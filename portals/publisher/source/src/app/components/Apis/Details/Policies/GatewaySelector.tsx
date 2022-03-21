@@ -186,7 +186,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                 maxWidth='xl'
             >
                 <DialogTitle>
-                    <Typography variant='h4'>
+                    <Typography variant='subtitle2'>
                         <FormattedMessage
                             id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title'
                             defaultMessage='Change Gateway Type'
@@ -194,7 +194,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <Typography variant='h6'>
+                    <Typography>
                         <FormattedMessage
                             id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content'
                             defaultMessage={
