@@ -29,6 +29,7 @@ import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
 import Wsdl from 'AppData/Wsdl';
 import Alert from 'AppComponents/Shared/Alert';
+import { Alert as MUIAlert } from '@material-ui/lab';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
@@ -172,13 +173,15 @@ export default function ApiCreateWSDL(props) {
         <APICreateBase
             title={(
                 <>
-                    <Alert severity="warning">
-                        <FormattedMessage
-                            id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg'
-                            defaultMessage='This feature is deprecated. Please use the WSO2 Integrator product as an
-                            alternative'
-                        />
-                    </Alert>
+                    <Box mb={2}>
+                        <MUIAlert severity='warning'>
+                            <FormattedMessage
+                                id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg'
+                                defaultMessage='This feature is deprecated. Please use the WSO2 Integrator product as an
+                                alternative'
+                            />
+                        </MUIAlert>
+                    </Box>
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.WSDL.ApiCreateWSDL.heading'
