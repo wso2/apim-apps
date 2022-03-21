@@ -23,6 +23,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import { useIntl, FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 
 /**
  * Render delete dialog box.
@@ -45,7 +46,12 @@ function Delete({ updateList, dataRow }) {
                 })}`;
             })
             .catch((e) => {
-                return (e);
+                const { response, message } = e;
+                if (response && response.body) {
+                    Alert.error(response.body.description);
+                } else if (message) {
+                    Alert.error(message);
+                }
             });
     };
 
