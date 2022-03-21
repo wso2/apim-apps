@@ -325,9 +325,19 @@ const Policies: React.FC = () => {
         const newApiOperations: any = cloneDeep(apiOperations);
         let getewayTypeForPolicies = "wso2/synapse";
         const getewayVendorForPolicies = "wso2";
+        // holds previous target name to handle resource level policies for CC
+        let previousPolicyTargetForCC =  "";
+        // holds previous policies common to a given resource
+        let previousPoliciesForCC: any; 
 
         // Set operation policies to the API object
-        newApiOperations.forEach((operation: any) => {
+        newApiOperations.forEach((operation: any, index: any, array: any) => {
+
+            // handles CC related policies commonly in
+            if(previousPolicyTargetForCC === operation.target && isChoreoConnectEnabled) {
+                array[index].operationPolicies = previousPoliciesForCC;
+            }
+
             if (operation.operationPolicies) {
                 const { operationPolicies } = operation;
 
@@ -343,7 +353,9 @@ const Policies: React.FC = () => {
                         });
                     }
                 }
+                previousPoliciesForCC = operationPolicies;
             }
+            previousPolicyTargetForCC = operation.target;
         });
 
         // Handles normal policy savings for choreo connect gateway type.
@@ -359,6 +371,16 @@ const Policies: React.FC = () => {
             .finally(() => {
                 setUpdating(false);
             });
+    }
+
+    // handles operations (verbs) for CC policy expansion.
+    const handleVerbsForCC = (verbObject: any) => {
+        const array = Object.entries(verbObject).map(([verb]) => {
+            return verb;
+        })
+        // returns the first element since CC handles resource level policies only.
+        // therefore returning only the first verb (operation) here for the resource.
+        return array[0]
     }
 
     /**
@@ -430,7 +452,7 @@ const Policies: React.FC = () => {
                                             >
                                                 <PoliciesExpansion
                                                     target={target}
-                                                    verb='get'
+                                                    verb={handleVerbsForCC(verbObject)}
                                                     allPolicies={allPolicies}
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                                                     policyList={policies}
