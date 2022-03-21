@@ -172,6 +172,13 @@ export default function ApiCreateWSDL(props) {
         <APICreateBase
             title={(
                 <>
+                    <Alert severity="warning">
+                        <FormattedMessage
+                            id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg'
+                            defaultMessage='This feature is deprecated. Please use the WSO2 Integrator product as an
+                            alternative'
+                        />
+                    </Alert>
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.WSDL.ApiCreateWSDL.heading'
