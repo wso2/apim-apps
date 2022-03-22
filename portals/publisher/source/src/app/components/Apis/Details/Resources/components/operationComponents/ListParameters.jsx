@@ -131,8 +131,8 @@ export default function ListParameters(props) {
                             return (
                                 <TableRow
                                     key={paramCopy.name}
-                                    id={`param-list-${paramCopy.in}-${paramCopy.name}-${paramCopy.schema.type}`}
-                                >
+                                    id={`param-list-${paramCopy.in}-${paramCopy.name}-${paramCopy.schema
+                                        ? paramCopy.schema.type : paramCopy.type}`}>
                                     <TableCell align='left'>{capitalizeFirstLetter(paramCopy.in)}</TableCell>
                                     <TableCell align='left'>{paramCopy.name}</TableCell>
                                     <TableCell align='left'>

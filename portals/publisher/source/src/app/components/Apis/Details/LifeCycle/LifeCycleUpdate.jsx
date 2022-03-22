@@ -235,31 +235,33 @@ class LifeCycleUpdate extends Component {
         const isBusinessPlanAvailable = api.policies.length !== 0;
         const lifeCycleStatus = isAPIProduct ? api.state : api.lifeCycleStatus;
         const lifecycleButtons = lifecycleStates.map((item) => {
-            const state = { ...item, displayName: item.event };
-            if (state.event === 'Deploy as a Prototype') {
-                if (state.displayName === 'Deploy as a Prototype') {
-                    state.displayName = 'Pre-Release';
+            const lifecycleState = { ...item, displayName: item.event };
+            if (lifecycleState.event === 'Deploy as a Prototype') {
+                if (lifecycleState.displayName === 'Deploy as a Prototype') {
+                    lifecycleState.displayName = 'Pre-Release';
                 }
                 return {
-                    ...state,
+                    ...lifecycleState,
                     disabled:
                         (api.type !== 'WEBSUB' && api.endpointConfig == null && !isAPIProduct),
                 };
             }
-            if (state.event === 'Publish') {
+            if (lifecycleState.event === 'Publish') {
+
+
+                const buttonDisabled = (((isMutualSSLEnabled && !isCertAvailable)
+                || (api.type !== 'WEBSUB' && api.endpointConfig !== null
+                    && api.endpointConfig.implementation_status === 'prototyped'))
+                && (!api.advertiseInfo || !api.advertiseInfo.advertised))
+                || (deploymentsAvailable && api.gatewayVendor === 'wso2' &&
+                (!isBusinessPlanAvailable || api.endpointConfig === null));
                 return {
-                    ...state,
-                    disabled:
-                        (((isMutualSSLEnabled && !isCertAvailable)
-                        || (api.type !== 'WEBSUB' && api.endpointConfig != null
-                            && api.endpointConfig.implementation_status === 'prototyped'))
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised))
-                        || (deploymentsAvailable && api.gatewayVendor === 'wso2' &&
-                        (!isBusinessPlanAvailable || api.endpointConfig == null)),
+                    ...lifecycleState,
+                    disabled: buttonDisabled,
                 };
             }
             return {
-                ...state,
+                ...lifecycleState,
                 disabled: false,
             };
         });
