@@ -299,6 +299,13 @@ class TokenManager extends React.Component {
         const { keyType } = this.props;
         const selectedKM = keyManagers.find((x) => x.name === newSelectedTab);
         const { availableGrantTypes } = selectedKM;
+        const selectedGrantsByDefault = [];
+        if(availableGrantTypes.find( gt => gt ==='password')){
+            selectedGrantsByDefault.push('password');
+        }
+        if(availableGrantTypes.find( gt => gt ==='client_credentials')){
+            selectedGrantsByDefault.push('client_credentials');
+        }
 
         if (keys.size > 0 && keys.get(newSelectedTab) && keys.get(newSelectedTab).keyType === keyType) {
             const { callbackUrl, supportedGrantTypes, additionalProperties, mode } = keys.get(newSelectedTab);
@@ -306,7 +313,7 @@ class TokenManager extends React.Component {
                 ...keyRequest,
                 callbackUrl,
                 selectedGrantTypes: supportedGrantTypes
-                    || availableGrantTypes.filter((type) => (type !== 'authorization_code' && type !== 'implicit')),
+                    || selectedGrantsByDefault,
                 additionalProperties: additionalProperties || this.getDefaultAdditionalProperties(selectedKM),
             };
             this.setState({ keyRequest: newRequest, selectedTab: newSelectedTab, mode });
@@ -315,7 +322,7 @@ class TokenManager extends React.Component {
             this.setState({
                 keyRequest: {
                     ...keyRequest,
-                    selectedGrantTypes: availableGrantTypes.filter((type) => (type !== 'authorization_code' && type !== 'implicit')),
+                    selectedGrantTypes: selectedGrantsByDefault,
                     additionalProperties: this.getDefaultAdditionalProperties(selectedKM),
                 },
                 selectedTab: newSelectedTab,
