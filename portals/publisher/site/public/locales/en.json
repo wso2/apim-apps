@@ -492,7 +492,13 @@
   "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg": [
     {
       "type": 0,
-      "value": "This feature is deprecated. Please use the WSO2 Integrator product as an alternative"
+      "value": "This feature is deprecated. Please use the WSO2 Integration Studio as an alternative"
+    }
+  ],
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg": [
+    {
+      "type": 0,
+      "value": "Integration Studio Documentation:"
     }
   ],
   "Apis.Create.WSDL.ApiCreateWSDL.error.policies.not.available": [
