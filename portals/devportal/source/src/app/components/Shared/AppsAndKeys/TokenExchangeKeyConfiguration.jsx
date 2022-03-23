@@ -412,8 +412,7 @@ const TokenExchangeKeyConfiguration = (props) => {
      * */
     const handleClickOpen = () => {
             setOpen(true);
-            setShowToken(true);
-            setIsResidenceTokenAvailable(false);
+            setShowToken(false);
     };
     /**
      * Handle on open of dialog for generating access token and get curl
