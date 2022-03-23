@@ -131,7 +131,7 @@
                     <include>publisher/.npmrc</include>
                     <include>publisher/babel.config.js</include>
                     <include>publisher/jest.config.js</include>
-                    <include>publisher/jsconfig.json</include>
+                    <include>publisher/tsconfig.json</include>
                     <include>publisher/loader.js</include>
                     <include>publisher/package-lock.json</include>
                     <include>publisher/package.json</include>
