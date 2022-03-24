@@ -255,6 +255,10 @@ function SolaceTopicsInfo() {
         setProtocolTopics(protocol, selectedEnv);
     };
 
+    if (!applicationList) {
+        return <Loading />;
+    }
+
     return (
         <>
             { !application && <SubscriptionNotFound /> }
