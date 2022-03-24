@@ -409,6 +409,7 @@
   "Base.Errors.ResourceNotFound.more.links": "You may check the links below",
   "Base.Errors.ResourceNotfound.default_body": "The page you are looking for is not available",
   "Base.Errors.ResourceNotfound.default_tittle": "Page Not Found",
+  "Base.Errors.SubscriptionNotFound.default_title": "Solace Info Page is not displayed without subscriptions to the API. Please Subscribed to the API",
   "Base.Errors.ScopeNotFound.message.first": "Sorry, the page you are looking for ",
   "Base.Errors.ScopeNotFound.message.second": "is not allowed under logged in user role scopes. Please login with different user with relevant permission to access this resource.",
   "Base.Errors.ScopeNotFound.title": "Un-authorized Access",

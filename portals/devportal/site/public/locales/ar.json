@@ -243,6 +243,7 @@
  "Base.Header.GlobalNavbar.menu.apis": "واجهات برمجة التطبيقات",
  "Base.Header.headersearch.HeaderSearch.tooltip.option1": "حسب اسم API [افتراضي]",
  "Base.Errors.ResourceNotfound.default_tittle": "الصفحة غير موجودة",
+ "Base.Errors.SubscriptionNotFound.default_title": "الصفحة غير موجودة",
  "Base.Header.headersearch.HeaderSearch.search_api.tooltip": "بحث APIs",
  "Base.Errors.ResourceNotFound.more.links": "يمكنك التحقق من الروابط أدناه",
  "Base.Header.headersearch.HeaderSearch.tooltip.option5": "حسب الوصف [الوصف - الوصف: xxxx]",

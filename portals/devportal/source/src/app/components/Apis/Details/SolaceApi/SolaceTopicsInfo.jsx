@@ -32,6 +32,7 @@ import Chip from '@material-ui/core/Chip';
 import { upperCaseString } from 'AppData/stringFormatter';
 import API from 'AppData/api';
 import Loading from 'AppComponents/Base/Loading/Loading';
+import SubscriptionNotFound from '../../../Base/Errors/SubscriptionNotFound';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import solaceTopicStyles from './SolaceTopicStyles';
 
@@ -178,9 +179,6 @@ function SolaceTopicsInfo() {
     if (notFound) {
         return <ResourceNotFound />;
     }
-    if (!application) {
-        return <Loading />;
-    }
     // Handle topic changes with protocol change
     function setProtocolTopics(protocol, selectedEnv) {
         if (protocol === 'mqtt') {
@@ -257,12 +255,10 @@ function SolaceTopicsInfo() {
         setProtocolTopics(protocol, selectedEnv);
     };
 
-    if (!applicationList) {
-        return <Loading />;
-    }
     return (
         <>
-            { environment && topics && apiTopics && (
+            { !application && <SubscriptionNotFound /> }
+            { environment && topics && apiTopics && applicationList && (
                 <div className={classes.root}>
                     <Typography id='itest-api-details-bushiness-plans-head' variant='h5'>
                         <FormattedMessage
