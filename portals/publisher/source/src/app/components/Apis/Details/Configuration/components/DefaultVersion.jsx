@@ -73,6 +73,7 @@ export default function DefaultVersion(props) {
                                         defaultMessage='Yes'
                                     />
                                 )}
+                                id='default-version-yes'
                             />
                             <FormControlLabel
                                 disabled={isRestricted(['apim:api_create'], apiFromContext)}

@@ -46,7 +46,7 @@ export default function SelectEndpoint(props) {
                 defaultMessage='Endpoint for the Certificate'
             />)}
             required
-            id='certificateEndpoint'
+            id='endpoint-certificate'
             label={(
                 <FormattedMessage
                     id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.endpoint'

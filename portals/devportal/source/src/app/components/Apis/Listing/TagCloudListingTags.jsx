@@ -108,7 +108,7 @@ function TagCloudListingTags(props) {
     return apisTagCloudGroup && apisTagCloudGroup.length > 0 ? (
         <>
             {!mainPage && (
-                <Typography variant='h6' gutterBottom className={classes.filterTitle}>
+                <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'api-listing-tags-title')}>
                     <FormattedMessage defaultMessage='API Groups' id='Apis.Listing.TagCloudListingTags.title' />
                 </Typography>
             )}
@@ -126,7 +126,7 @@ function TagCloudListingTags(props) {
                 })}
             </List>
             {showAllApis && (
-                <div className={classNames({ [classes.mainPageAllApis]: mainPage })}>
+                <div className={classNames({ [classes.mainPageAllApis]: mainPage }, 'tag-cloud-listing-wrapper')}>
                     <Divider />
 
                     <Link to='apis/' className={classes.textWrapper}>
@@ -151,18 +151,18 @@ function TagCloudListingTags(props) {
     ) : (
         <>
             {!mainPage && (
-                <Typography variant='h6' gutterBottom className={classes.filterTitle}>
+                <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'apis-listing-tags-group')}>
                     <FormattedMessage defaultMessage='API Groups' id='Apis.Listing.TagCloudListingTags.title' />
                 </Typography>
             )}
-            <div className={classes.mainTitle}>
+            <div className={classNames(classes.mainTitle, 'apis-listing-tags-empty')}>
                 <Typography variant='subtitle1' gutterBottom align='center'>
                     <FormattedMessage
                         defaultMessage='API groups cannot be found'
                         id='Apis.Listing.TagCloudListingTags.tagsNotFound'
                     />
                 </Typography>
-                <Link to='apis/' className={classes.linkTextWrapper}>
+                <Link to='apis/' className={classNames(classes.linkTextWrapper, 'apis-listing-tags-group-all-apis-link')}>
                     <Typography variant='subtitle1' gutterBottom align='center'>
                         <FormattedMessage
                             defaultMessage='All Apis'

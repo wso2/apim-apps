@@ -135,7 +135,7 @@ const styles = (theme) => ({
  * @returns {JSX} Returning JSX to render.
  */
 function Documents(props) {
-    const { classes } = props;
+    const { classes, intl } = props;
     const { location: { pathname } } = props;
     let match = matchPath(pathname, {
         path: '/apis/:apiUuid/documents/:documentId',
@@ -191,7 +191,10 @@ function Documents(props) {
                 }
                 const { status } = error;
                 if (status === 404) {
-                    Alert.error('Error occurred');
+                    Alert.error(intl.formatMessage({
+                        defaultMessage: 'Error occurred',
+                        id: 'Apis.Details.Documents.Documentation.error.occurred',
+                    }));
                 }
             });
     }, []);

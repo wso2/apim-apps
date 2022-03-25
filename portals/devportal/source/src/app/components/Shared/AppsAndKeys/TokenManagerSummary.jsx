@@ -11,16 +11,6 @@ const useStyles = makeStyles(theme => ({
     root: {
         padding: theme.spacing(3, 2),
     },
-    noKeysRoot: {
-        backgroundImage: `url(${app.context + theme.custom.overviewPage.keysBackground})`,
-        height: '100%',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        minHeight: 192,
-        display: 'flex',
-        alignItems: 'center',
-    },
 }));
 
 /**

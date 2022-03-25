@@ -218,7 +218,9 @@ class ApiKeyManager extends React.Component {
               onClick={this.handleClickOpen}
               className={classes.generateKey}
             >
-              {"Generate Key"}
+              {this.props.intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyManager.generate.key.btn',
+                defaultMessage: 'Generate Key'})}
             </Button>
             <Typography
               component="div"
@@ -238,7 +240,9 @@ class ApiKeyManager extends React.Component {
             className={classes.dialog}
           >
             <DialogTitle id="responsive-dialog-title" className={classes.dialogTitle}>
-              {"Generate API Key"}
+              {this.props.intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyManager.generate.api.key.btn',
+                defaultMessage: 'Generate API Key'})}
             </DialogTitle>
             <DialogContent className={classes.dialogContent}>
               <DialogContentText>

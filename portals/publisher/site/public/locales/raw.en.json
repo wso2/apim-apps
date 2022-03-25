@@ -212,6 +212,12 @@
   "Apis.Create.StreamingAPI.APICreateStreamingAPI.websub.api.sub.heading": {
     "defaultMessage": "Create an API by providing a Name, a Version and a Context"
   },
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg": {
+    "defaultMessage": "This feature is deprecated. Please use the WSO2 Integration Studio as an alternative"
+  },
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg": {
+    "defaultMessage": "Integration Studio Documentation:"
+  },
   "Apis.Create.WSDL.ApiCreateWSDL.error.policies.not.available": {
     "defaultMessage": "Throttling policies not available. Contact your administrator"
   },

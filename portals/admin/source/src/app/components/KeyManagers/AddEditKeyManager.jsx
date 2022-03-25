@@ -336,6 +336,10 @@ function AddEditKeyManager(props) {
         return error;
     };
 
+    const resetAdditionalProperties = () => {
+        dispatch({ field: 'additionalProperties', value: {} });
+    };
+
     const onChange = (e) => {
         if (e.target.type === 'checkbox') {
             if (e.target.name === 'enableDirectToken' || e.target.name === 'enableExchangeToken') {
@@ -346,6 +350,7 @@ function AddEditKeyManager(props) {
                 }
                 if (e.target.name === 'enableDirectToken') {
                     setEnableDirectToken(e.target.checked);
+                    resetAdditionalProperties();
                 } else {
                     setEnableExchangeToken(e.target.checked);
                 }

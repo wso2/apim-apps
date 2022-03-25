@@ -338,6 +338,7 @@ class BusinessInformation extends React.Component {
                                                     isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                                     || !this.isValid() || api.isRevision
                                                 }
+                                                id='business-info-save'
                                             >
                                                 <FormattedMessage id='save' defaultMessage='Save' />
                                             </Button>

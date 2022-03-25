@@ -455,7 +455,7 @@ class CreateEditForm extends React.Component {
                                 this.validate('summary', value);
                             },
                         }}
-                        id='doc-summery'
+                        id='doc-summary'
                         margin='normal'
                         variant='outlined'
                         label={
@@ -479,7 +479,6 @@ class CreateEditForm extends React.Component {
                         }
                         type='text'
                         name='summary'
-                        margin='normal'
                         value={summary}
                         onChange={this.handleChange('summary')}
                         InputLabelProps={{
@@ -755,7 +754,6 @@ class CreateEditForm extends React.Component {
                             helperText={this.getUrlHelperText()}
                             type='text'
                             name='sourceUrl'
-                            margin='normal'
                             value={sourceUrl}
                             onChange={this.handleChange('sourceUrl')}
                             InputLabelProps={{

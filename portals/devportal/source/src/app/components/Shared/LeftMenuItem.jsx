@@ -157,6 +157,7 @@ function LeftMenuItem(props) {
                     {
                         [classes.leftLink_IconLeft]: leftMenu === 'icon left',
                         [classes.submenu]: submenu,
+                        'selected': selected,
                     },
                     'leftLInk',
                 )}

@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from 'react-intl';
@@ -81,7 +82,7 @@ function ApiTagCloud(props) {
     return (
         apisTagWithoutGroups && (
             <>
-                <Typography variant='h6' gutterBottom className={classes.filterTitle}>
+                <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'apis-listing-tags-title')}>
                     <FormattedMessage defaultMessage='Tags' id='Apis.Listing.ApiTagCloud.title' />
                 </Typography>
                 <TagCloud

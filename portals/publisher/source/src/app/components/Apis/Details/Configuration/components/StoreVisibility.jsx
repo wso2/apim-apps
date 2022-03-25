@@ -153,7 +153,7 @@ export default function StoreVisibility(props) {
                             defaultMessage='Public'
                         />
                     </MenuItem>
-                    <MenuItem value='RESTRICTED'>
+                    <MenuItem value='RESTRICTED' id='visibility-restricted-by-roles'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.storeVisibility.dropdown.restrict'
                             defaultMessage='Restrict by role(s)'
@@ -218,6 +218,7 @@ export default function StoreVisibility(props) {
             {isRestrictedByRoles && (
                 <Box py={2} style={{ marginTop: -10, marginBottom: 10 }}>
                     <ChipInput
+                        data-testid='visibility-select-role'
                         fullWidth
                         variant='outlined'
                         label={(

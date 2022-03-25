@@ -108,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function LeftMenuItem(props) {
     const {
-        Icon, to, text, route, head,
+        Icon, to, text, route, head, id,
     } = props;
     const classes = useStyles();
     const theme = useTheme();
@@ -132,6 +132,7 @@ function LeftMenuItem(props) {
                 isSelected && classes.selectedMenu,
             )}
             to={to}
+            id={id}
         >
             {// If the icon pro ( which is coming from the React Material library )
                 // is coming we add css class and render.

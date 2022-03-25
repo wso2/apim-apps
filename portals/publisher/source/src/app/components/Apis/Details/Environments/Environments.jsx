@@ -2225,6 +2225,7 @@ export default function Environments() {
                                                                 allEnvDeployments[row.name].revision.id, row.name,
                                                             )}
                                                             size='small'
+                                                            id='undeploy-btn'
                                                         >
                                                             <FormattedMessage
                                                                 id='Apis.Details.Environments.Environments.undeploy.btn'
