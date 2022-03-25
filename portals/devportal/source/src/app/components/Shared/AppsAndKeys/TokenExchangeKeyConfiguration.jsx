@@ -412,7 +412,6 @@ const TokenExchangeKeyConfiguration = (props) => {
      * */
     const handleClickOpen = () => {
             setOpen(true);
-            setShowToken(false);
     };
     /**
      * Handle on open of dialog for generating access token and get curl
@@ -427,7 +426,6 @@ const TokenExchangeKeyConfiguration = (props) => {
         && keys.get("Resident Key Manager") || false;
     const consumerKey = csCkKeys && csCkKeys.consumerKey;
     const consumerSecret = csCkKeys && csCkKeys.consumerSecret;
-
     return (
         <>
                     <Box display='flex' alignItems='center'>
@@ -589,7 +587,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                                         </React.Fragment>
                                                     )}
                                                     {showToken &&
-                                                    <ViewToken token={{...tokenResponse, isOauth: true}} isTokenExchange />}
+                                                    <ViewToken token={{...tokenResponse, isOauth: true}} isResidenceTokenAvailable={isResidenceTokenAvailable} isTokenExchange />}
                                                 </DialogContentText>
                                             )}
                                             {showCurl && (
