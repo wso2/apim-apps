@@ -83,7 +83,7 @@ export default function UpdateWithoutDetails(props) {
             if (isAsyncAPI) {
                 API.asyncAPIPolicies().then((response) => {
                     if (response.body.list && response.body.list.length > 0) {
-                        setAvailableTiers([response.body.list[0].name]);
+                        setAvailableTiers([response.body.list[0].policyName]);
                     }
                 });
             } else {
