@@ -218,7 +218,7 @@ class LifeCycleUpdate extends Component {
             api, lcState, classes, theme, handleChangeCheckList, checkList, certList, isAPIProduct,
         } = this.props;
         const lifecycleStates = [...lcState.availableTransitions];
-        const { newState, pageError, isOpen } = this.state;
+        const { newState, pageError, isOpen, deploymentsAvailable } = this.state;
         const isWorkflowPending = api.workflowStatus && api.workflowStatus === this.WORKFLOW_STATUS.CREATED;
         const lcMap = new Map();
         lcMap.set('Published', 'Publish');
@@ -248,6 +248,7 @@ class LifeCycleUpdate extends Component {
             }
             if (lifecycleState.event === 'Publish') {
                 const buttonDisabled = (isMutualSSLEnabled && !isCertAvailable)
+                                    || (deploymentsAvailable && !isBusinessPlanAvailable)
                                     || (isAPIProduct && !isBusinessPlanAvailable);
                 // When business plans are not assigned and deployments available
 
