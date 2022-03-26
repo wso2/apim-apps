@@ -285,6 +285,12 @@
       "value": "Throttling policies not available. Contact your administrator"
     }
   ],
+  "Apis.Create.Default.APICreateDefault.error.url.not.valid": [
+    {
+      "type": 0,
+      "value": "URL is not valid"
+    }
+  ],
   "Apis.Create.Default.APICreateDefault.success.otherStatus": [
     {
       "type": 0,

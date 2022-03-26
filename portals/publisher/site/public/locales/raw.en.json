@@ -134,6 +134,9 @@
   "Apis.Create.Default.APICreateDefault.error.policies.not.available": {
     "defaultMessage": "Throttling policies not available. Contact your administrator"
   },
+  "Apis.Create.Default.APICreateDefault.error.url.not.valid": {
+    "defaultMessage": "URL is not valid"
+  },
   "Apis.Create.Default.APICreateDefault.success.otherStatus": {
     "defaultMessage": "API updated successfully"
   },
