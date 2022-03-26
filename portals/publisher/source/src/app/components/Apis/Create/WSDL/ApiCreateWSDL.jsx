@@ -186,9 +186,11 @@ export default function ApiCreateWSDL(props) {
                             <FormattedMessage
                                 id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg'
                                 defaultMessage='Integration Studio Documentation: '
-                            /><MUILink 
-                                href={`https://apim.docs.wso2.com/en/4.1.0/integrate/develop/
-                                    creating-artifacts/creating-an-api/`} target='_blank'>
+                            />
+                            <MUILink
+                                // eslint-disable-next-line
+                                href={`https://apim.docs.wso2.com/en/4.1.0/integrate/develop/creating-artifacts/creating-an-api/`}
+                                target='_blank'>
                                 https://apim.docs.wso2.com/en/4.1.0/integrate/develop/
                                 creating-artifacts/creating-an-api/
                             </MUILink>
