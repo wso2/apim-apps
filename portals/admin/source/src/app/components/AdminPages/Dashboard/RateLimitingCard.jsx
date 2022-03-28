@@ -30,6 +30,7 @@ import PolicyIcon from '@material-ui/icons/Policy';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -52,6 +53,7 @@ const useStyles = makeStyles(() => ({
  */
 export default function RateLimitingCard() {
     const classes = useStyles();
+    const { isSuperTenant } = useAppContext();
     const intl = useIntl();
     const selectedRateLimitingPolicies = [
         {
@@ -102,8 +104,13 @@ export default function RateLimitingCard() {
             }),
             icon: <AssignmentIcon color='inherit' fontSize='small' />,
             path: '/throttling/custom',
+            id: 'Custom Policies',
         },
     ];
+    let selectedPolicies = selectedRateLimitingPolicies;
+    if (!isSuperTenant) {
+        selectedPolicies = selectedRateLimitingPolicies.filter((item) => item.id !== 'Custom Policies');
+    }
 
     return (
         <Card className={classes.root} style={{ textAlign: 'left' }}>
@@ -117,7 +124,7 @@ export default function RateLimitingCard() {
 
                 <Divider light />
                 <Box mt={1} mb={-2}>
-                    {selectedRateLimitingPolicies.map((policy) => {
+                    {selectedPolicies.map((policy) => {
                         return (
                             <Box display='flex'>
                                 <Box mx={1} mt={0.5}>
