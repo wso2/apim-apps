@@ -2481,6 +2481,12 @@
   "Apis.Details.Overview.CustomizedStepper.blocked": {
     "defaultMessage": "Blocked"
   },
+  "Apis.Details.Overview.CustomizedStepper.btn.prototyped": {
+    "defaultMessage": "Pre-Released"
+  },
+  "Apis.Details.Overview.CustomizedStepper.btn.publish": {
+    "defaultMessage": "Publish"
+  },
   "Apis.Details.Overview.CustomizedStepper.deprecated": {
     "defaultMessage": "Deprecated"
   },

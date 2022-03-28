@@ -5225,6 +5225,18 @@
       "value": "Blocked"
     }
   ],
+  "Apis.Details.Overview.CustomizedStepper.btn.prototyped": [
+    {
+      "type": 0,
+      "value": "Pre-Released"
+    }
+  ],
+  "Apis.Details.Overview.CustomizedStepper.btn.publish": [
+    {
+      "type": 0,
+      "value": "Publish"
+    }
+  ],
   "Apis.Details.Overview.CustomizedStepper.deprecated": [
     {
       "type": 0,
