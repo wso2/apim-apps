@@ -506,6 +506,7 @@
   "Throttling.Blacklist.Policy.search.default": "Deny Policies",
   "Throttling.Custom.AddEdit.form.add": "Add",
   "Throttling.Custom.AddEdit.form.cancel": "Cancel",
+  "Throttling.Custom.AddEdit.form.edit": "Edit",
   "Throttling.Custom.AddEdit.title.add": "Custom Rate Limiting Policy - Define Policy",
   "Throttling.Custom.AddEdit.title.edit": "Custom Rate Limiting Policy - Edit",
   "Throttling.Custom.List.add.new.polcy": "Define Policy",
