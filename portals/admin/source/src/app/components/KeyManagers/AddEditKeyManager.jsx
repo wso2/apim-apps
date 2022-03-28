@@ -1463,6 +1463,35 @@ function AddEditKeyManager(props) {
                                             defaultMessage: 'E.g., https://localhost:9443/oauth2/revoke',
                                         })}
                                     />
+                                    <TextField
+                                        id='issuer'
+                                        margin='dense'
+                                        name='issuer'
+                                        fullWidth
+                                        variant='outlined'
+                                        value={issuer}
+                                        onChange={onChange}
+                                        label={(
+                                            <span>
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.form.Issuer'
+                                                    defaultMessage='Issuer'
+                                                />
+                                                <span className={classes.error}>*</span>
+                                            </span>
+                                        )}
+                                        error={hasErrors('issuer', issuer, validating)}
+                                        helperText={
+                                            hasErrors('issuer', issuer, validating)
+                                                    || (
+                                                        <FormattedMessage
+                                                            id='KeyManagers.AddEditKeyManager.form.issuer.help'
+                                                            defaultMessage='E.g.,:
+                                                            https://localhost:9443/oauth2/token'
+                                                        />
+                                                    )
+                                        }
+                                    />
                                 </Box>
                             </Grid>
                         </>
