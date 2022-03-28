@@ -356,7 +356,10 @@ export default function CustomizedStepper() {
                                     || AuthManager.isNotPublisher()
                                     || !deploymentsAvailable}
                             >
-                                Prototype
+                                <FormattedMessage
+                                    id='Apis.Details.Overview.CustomizedStepper.btn.prototyped'
+                                    defaultMessage='Pre-Released'
+                                />
                                 {isUpdating && <CircularProgress size={20} />}
                             </Button>
                         ) : (
@@ -371,7 +374,10 @@ export default function CustomizedStepper() {
                                     || api.isRevision || AuthManager.isNotPublisher()
                                     || api.workflowStatus === 'CREATED'}
                             >
-                                Publish
+                                <FormattedMessage
+                                    id='Apis.Details.Overview.CustomizedStepper.btn.publish'
+                                    defaultMessage='Publish'
+                                />
                                 {isUpdating && <CircularProgress size={20} />}
                             </Button>
                         )}
