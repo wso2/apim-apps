@@ -161,7 +161,12 @@ function Navigator(props) {
                 }) => (
                     <>
                         {!children && (
-                            <Link component={RouterLink} to={parentPath} style={{ textDecoration: 'none' }}>
+                            <Link
+                                component={RouterLink}
+                                to={parentPath}
+                                style={{ textDecoration: 'none' }}
+                                data-testid={id}
+                            >
                                 <ListItem
                                     className={clsx(
                                         classes.item,
