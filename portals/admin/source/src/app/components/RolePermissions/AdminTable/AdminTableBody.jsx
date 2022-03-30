@@ -137,7 +137,6 @@ function AdminTableBody(props) {
                             tabIndex={-1}
                             key={rowIndex} // eslint-disable-line react/no-array-index-key
                             selected={isItemSelected}
-
                         >
                             {multiSelect && (
                                 <TableCell padding='checkbox'>
@@ -154,6 +153,7 @@ function AdminTableBody(props) {
                                     scope='row'
                                     padding={multiSelect ? 'none' : 'default'}
                                     align={index === 0 ? 'left' : 'right'}
+                                    data-testid={column}
                                 >
                                     {column}
                                 </TableCell>
