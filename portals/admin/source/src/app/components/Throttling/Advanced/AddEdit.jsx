@@ -125,18 +125,20 @@ function AddEdit(props) {
 
     useEffect(() => {
         const restApi = new API();
-        restApi
-            .getThrottlingPoliciesAdvancedPolicyId(id)
-            .then((result) => {
-                const { body } = result;
-                return body;
-            })
-            .then((data) => {
-                dispatch({ field: 'all', value: data });
-            })
-            .catch((error) => {
-                throw error;
-            });
+        if (id) {
+            restApi
+                .getThrottlingPoliciesAdvancedPolicyId(id)
+                .then((result) => {
+                    const { body } = result;
+                    return body;
+                })
+                .then((data) => {
+                    dispatch({ field: 'all', value: data });
+                })
+                .catch((error) => {
+                    throw error;
+                });
+        }
     }, []);
 
     const onChange = (e) => {
