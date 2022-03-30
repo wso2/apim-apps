@@ -67,7 +67,12 @@ function NavigatorChildren(props) {
                 {navigationChildren && navigationChildren.map(({
                     id: childId, icon, path, active,
                 }) => (
-                    <Link component={RouterLink} to={path || '/'} style={{ textDecoration: 'none' }}>
+                    <Link
+                        component={RouterLink}
+                        to={path || '/'}
+                        style={{ textDecoration: 'none' }}
+                        data-testid={childId + '-child-link'}
+                    >
                         <ListItem
                             key={childId}
                             button
