@@ -171,6 +171,7 @@ function AddEditVhost(props) {
                                         value={vhost.host}
                                         helperText='ex: mg.wso2.com'
                                         variant='outlined'
+                                        data-testid='vhost'
                                     />
                                 </Grid>
                                 {/* Remove VHost Button */}
