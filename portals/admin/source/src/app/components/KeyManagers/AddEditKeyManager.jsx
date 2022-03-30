@@ -716,6 +716,7 @@ function AddEditKeyManager(props) {
                                             value={type}
                                             onChange={onChange}
                                             classes={{ select: classes.select }}
+                                            data-testid='key-manager-type-select'
                                         >
                                             {settings.keyManagerConfiguration.map((keymanager) => (
                                                 <MenuItem key={keymanager.type} value={keymanager.type}>
