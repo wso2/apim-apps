@@ -153,7 +153,7 @@ function Overview(props) {
                 promisedTier.then((tierResponse) => {
                     setTierDescription(tierResponse.obj.description);
                     setApplication(appInner);
-                    if (appInner.solaceDeployedEnvironments !== null) {
+                    if (appInner.solaceDeployedEnvironments) {
                         setEnvironment(appInner.solaceDeployedEnvironments[0]);
                         setSelectedProtocol(appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol);
                         setSelectedEndpoint(appInner.solaceDeployedEnvironments[0].solaceURLs[0].endpointURL);
