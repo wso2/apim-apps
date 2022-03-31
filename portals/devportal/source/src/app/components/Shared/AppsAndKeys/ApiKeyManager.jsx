@@ -217,6 +217,7 @@ class ApiKeyManager extends React.Component {
               color="primary"
               onClick={this.handleClickOpen}
               className={classes.generateKey}
+              id='generate-key-btn'
             >
               {this.props.intl.formatMessage({
                 id: 'Shared.AppsAndKeys.ApiKeyManager.generate.key.btn',
@@ -263,6 +264,7 @@ class ApiKeyManager extends React.Component {
                   color="primary"
                   variant='contained'
                   className={classes.button}
+                  id='generate-api-keys-btn'
                 >
                   <FormattedMessage
                     id="Shared.AppsAndKeys.ViewKeys.consumer.generate.btn"
@@ -271,7 +273,7 @@ class ApiKeyManager extends React.Component {
                    {isGenerating && <CircularProgress size={24} />}
                 </Button>
               )}
-              <Button onClick={this.handleClose} color="primary" autoFocus>
+              <Button onClick={this.handleClose} color="primary" autoFocus id='generate-api-keys-close-btn'>
                 <FormattedMessage
                   id="Shared.AppsAndKeys.ViewKeys.consumer.close.btn"
                   defaultMessage="Close"
