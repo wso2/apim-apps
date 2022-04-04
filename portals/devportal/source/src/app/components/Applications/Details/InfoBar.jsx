@@ -381,6 +381,7 @@ class InfoBar extends React.Component {
                                                 defaultMessage='Edit'
                                             />
                                         )}
+                                        id='edit-application'
                                     >
                                         <Icon>edit</Icon>
                                         <Typography variant='caption' style={{ marginTop: '2px' }}>

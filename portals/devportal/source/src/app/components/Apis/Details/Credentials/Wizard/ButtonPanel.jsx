@@ -86,6 +86,7 @@ const ButtonPanel = (props) => {
                     color='primary'
                     onClick={handleCurrentStep}
                     disabled={!nextActive}
+                    id={'wizard-next-' + currentStep + '-btn'}
                 >
                     {currentStep === stepsLength - 1
                         ? (

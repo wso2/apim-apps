@@ -291,43 +291,50 @@ Cypress.Commands.add('createApp', (appName, appDescription) => {
 Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
     // select the option from the menu item
-    cy.get('[data-testid="itest-id-createapi"]').click();
-    cy.get('[data-testid="create-api-open-api"]').click();
-    cy.get('[data-testid="open-api-file-select-radio"]').click();
+    cy.get('#itest-rest-api-create-menu').click();
+    cy.get('#itest-id-landing-upload-oas').click();
+    cy.get('#open-api-file-select-radio').click();
 
     // upload the swagger
-    cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
+    cy.get('#browse-to-upload-btn').then(function () {
         const filepath = 'api_artifacts/swagger_2.0.json'
         cy.get('input[type="file"]').attachFile(filepath)
     });
 
     // go to the next step
-    cy.get('[data-testid="api-create-next-btn"]').click();
+    cy.get('#open-api-create-next-btn').click();
 
     // Fill the second step form
     if (apiName) {
         const random_number = Math.floor(Date.now() / 1000);
 
-        cy.get('[data-testid="itest-id-apiname-input"]').clear().type(apiName);
-        cy.get('[data-testid="itest-id-apicontext-input"] input').click();
-        cy.get('[data-testid="itest-id-apicontext-input"] input').clear().type(`/api_${random_number}`);
+        cy.get('#itest-id-apiname-input').clear().type(apiName);
+        cy.get('#itest-id-apicontext-input').click();
+        cy.get('#itest-id-apicontext-input').clear().type(`/api_${random_number}`);
+        cy.get('#itest-id-apiendpoint-input').click().type('https://petstore.swagger.io');
     }
-    cy.get('[data-testid="select-policy-dropdown"]').click();
-    cy.get('[data-testid="policy-item-Silver"]').click();
-    cy.get('[data-testid="policy-item-Unlimited"]').click();
-    cy.get('#menu-policies').click('topLeft');
 
-    // validate
-    cy.intercept('**/lifecycle-state').as('lifeCycleStatus');
-    // finish the wizard
-    cy.get('[data-testid="api-create-finish-btn"]').click();
-    cy.wait('@lifeCycleStatus', { requestTimeout: 30000 });
+    cy.get('#open-api-create-btn').click();
+
+    //select subscription tiers
+    cy.get('#itest-api-details-portal-config-acc').click();
+    cy.get('#left-menu-itemsubscriptions').click();
+    cy.get('[data-testid="policy-checkbox-silver"]').click();
+    cy.get('[data-testid="policy-checkbox-unlimited"]').click();
+    cy.get('#subscriptions-save-btn').click();
+
+    // deploy
+    cy.get('#left-menu-itemdeployments').click();
+    cy.get('#left-menu-itemdeployments').then(()=>{
+        cy.get('#deploy-btn').click();
+        cy.get('#undeploy-btn').should('exist');
+    })
 
     // publish
-    cy.get('[data-testid="publish-btn"]', { timeout: 30000 });
-    cy.get('[data-testid="publish-btn"]').click();
-    cy.get('[data-testid="published-status"]', { timeout: 30000 });
-    cy.get('[data-testid="published-status"]').contains('Published').should('exist');
+    cy.get('#left-menu-itemlifecycle').click();
+    cy.wait(2000);
+    cy.get('[data-testid="Publish-btn"]').click();
+    cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
 
 })
 

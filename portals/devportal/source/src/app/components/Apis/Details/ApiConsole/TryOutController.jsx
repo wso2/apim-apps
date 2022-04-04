@@ -750,6 +750,7 @@ function TryOutController(props) {
                                             className={classes.genKeyButton}
                                             disabled={!user || (subscriptions && subscriptions.length === 0)
                                                         || (!ksGenerated && securitySchemeType === 'OAUTH')}
+                                            id='gen-test-key'
                                         >
                                             {isUpdating && (
                                                 <CircularProgress size={15} />

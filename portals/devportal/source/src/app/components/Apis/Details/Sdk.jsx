@@ -201,6 +201,7 @@ class Sdk extends React.Component {
                                     onKeyDown={(event) => this.handleClick(event, language)}
                                     style={{ cursor: 'pointer' }}
                                     aria-label={'Download ' + language + ' SDK'}
+                                    id='download-sdk-btn'
                                 >
                                     <img
                                         alt={language}
@@ -276,6 +277,7 @@ class Sdk extends React.Component {
                                                             color='secondary'
                                                             onClick={(event) => this.handleClick(event, language)}
                                                             aria-label={'Download ' + language + ' SDK'}
+                                                            id='download-sdk-btn'
                                                         >
                                                             <Icon>arrow_downward</Icon>
                                                             <FormattedMessage
