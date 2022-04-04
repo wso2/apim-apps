@@ -86,9 +86,14 @@ class SubscriptionPolicySelect extends React.Component {
                         onChange={(e) => {
                             this.setState({ selectedPolicy: e.target.value });
                         }}
+                        id='policy-select'
                     >
                         {policies.map((policy) => (
-                            <MenuItem value={policy} key={policy}>
+                            <MenuItem
+                                value={policy}
+                                key={policy}
+                                id={'policy-select-' + policy}
+                            >
                                 {policy}
                             </MenuItem>
                         ))}
@@ -105,8 +110,12 @@ class SubscriptionPolicySelect extends React.Component {
                             onClick={() => {
                                 handleSubscribe(applicationId, apiId, selectedPolicy);
                             }}
+                            id='policy-subscribe-btn'
                         >
-                            <FormattedMessage defaultMessage='Subscribe' id='Apis.Listing.SubscriptionPolicySelect.subscribe' />
+                            <FormattedMessage
+                                defaultMessage='Subscribe'
+                                id='Apis.Listing.SubscriptionPolicySelect.subscribe'
+                            />
                         </Button>
                     </ScopeValidation>
                 </div>

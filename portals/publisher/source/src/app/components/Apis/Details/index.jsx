@@ -756,6 +756,7 @@ class Details extends Component {
                                         route='deployments'
                                         to={pathPrefix + 'deployments'}
                                         Icon={<PersonPinCircleOutlinedIcon />}
+                                        id='left-menu-itemdeployments'
                                     />
                                 </>
                             )}
@@ -772,6 +773,7 @@ class Details extends Component {
                                         })}
                                         to={pathPrefix + 'test-console'}
                                         iconText='test'
+                                        id='left-menu-itemTestConsole'
                                     />
                                 </div>
                             )}

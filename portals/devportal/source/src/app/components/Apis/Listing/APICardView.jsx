@@ -316,12 +316,14 @@ class APICardView extends React.Component {
             return <NoApi />;
         }
         return (
-            <MUIDataTable
-                title=''
-                data={data}
-                columns={columns}
-                options={options}
-            />
+            <div id='subscribe-to-api-table'>
+                <MUIDataTable
+                    title=''
+                    data={data}
+                    columns={columns}
+                    options={options}
+                />
+            </div>
         );
     }
 }
