@@ -390,44 +390,46 @@ export default function Environments() {
     useEffect(() => {
         const promise = restApi.getAsyncAPIDefinition(api.id);
         promise.then(async (response) => {
-            const doc = await parse(response.data);
-            const protocolBindings = [];
-            // eslint-disable-next-line array-callback-return
-            doc.channelNames().map((channelName) => {
-                if (doc.channel(channelName).hasPublish()) {
-                    // eslint-disable-next-line array-callback-return
-                    doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
-                        if (!protocolBindings.includes(protocol)) {
-                            protocolBindings.push(protocol);
-                        }
-                    });
-                }
-                if (doc.channel(channelName).hasSubscribe()) {
-                    // eslint-disable-next-line array-callback-return
-                    doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
-                        if (!protocolBindings.includes(protocol)) {
-                            protocolBindings.push(protocol);
-                        }
-                    });
-                }
-            });
-            // eslint-disable-next-line array-callback-return
-            allExternalGateways.map((env) => {
-                const endpoints = [];
+            if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
+                const doc = await parse(response.data);
+                const protocolBindings = [];
                 // eslint-disable-next-line array-callback-return
-                env.endpointURIs.map((endpoint) => {
-                    // eslint-disable-next-line array-callback-return
-                    protocolBindings.map((protocol) => {
-                        if (protocol === endpoint.protocol) {
-                            const uri = endpoint.endpointURI;
-                            endpoints.push({ protocol, uri });
-                        }
-                    });
+                doc.channelNames().map((channelName) => {
+                    if (doc.channel(channelName).hasPublish()) {
+                        // eslint-disable-next-line array-callback-return
+                        doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
+                            if (!protocolBindings.includes(protocol)) {
+                                protocolBindings.push(protocol);
+                            }
+                        });
+                    }
+                    if (doc.channel(channelName).hasSubscribe()) {
+                        // eslint-disable-next-line array-callback-return
+                        doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
+                            if (!protocolBindings.includes(protocol)) {
+                                protocolBindings.push(protocol);
+                            }
+                        });
+                    }
                 });
-                externalEnvWithEndpoints[env.name] = endpoints;
-            });
-            setExternalEnvEndpoints(externalEnvWithEndpoints);
-        });
+                // eslint-disable-next-line array-callback-return
+                allExternalGateways.map((env) => {
+                    const endpoints = [];
+                    // eslint-disable-next-line array-callback-return
+                    env.endpointURIs.map((endpoint) => {
+                        // eslint-disable-next-line array-callback-return
+                        protocolBindings.map((protocol) => {
+                            if (protocol === endpoint.protocol) {
+                                const uri = endpoint.endpointURI;
+                                endpoints.push({ protocol, uri });
+                            }
+                        });
+                    });
+                    externalEnvWithEndpoints[env.name] = endpoints;
+                });
+                setExternalEnvEndpoints(externalEnvWithEndpoints);
+            }
+        })
     }, [api.id]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {

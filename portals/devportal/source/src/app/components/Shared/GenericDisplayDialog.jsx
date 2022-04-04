@@ -52,6 +52,7 @@ const genericDisplayDialog = (props) => {
                         color='primary'
                         className={classes.button}
                         onClick={handleClick}
+                        id='start-key-gen-wizard-btn'
                     >
                         {buttonText}
                     </Button>

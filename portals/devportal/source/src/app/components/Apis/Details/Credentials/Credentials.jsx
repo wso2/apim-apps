@@ -603,6 +603,7 @@ class Credentials extends React.Component {
                                                     || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers}
                                                     size='small'
+                                                    id='start-key-gen-wizard-btn'
                                                 >
                                                     <Icon>add_circle_outline</Icon>
                                                     <FormattedMessage

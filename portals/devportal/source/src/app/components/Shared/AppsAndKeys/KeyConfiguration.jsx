@@ -374,7 +374,7 @@ const KeyConfiguration = (props) => {
 
                             </TableCell>
                             <TableCell>
-                                <div className={classes.checkboxWrapperColumn}>
+                                <div className={classes.checkboxWrapperColumn} id='grant-types'>
                                     {Object.keys(grantTypeDisplayListMap).map((key) => {
                                         const value = grantTypeDisplayListMap[key];
                                         return (
@@ -388,6 +388,7 @@ const KeyConfiguration = (props) => {
                                                         value={value}
                                                         disabled={!isUserOwner}
                                                         color='primary'
+                                                        data-testid={key}
                                                     />
                                                 )}
                                                 label={value}
