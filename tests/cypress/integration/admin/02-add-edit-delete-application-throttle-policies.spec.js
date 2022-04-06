@@ -32,10 +32,7 @@ describe("Add Edit Delete application throttle policies", () => {
         cy.get('input[name="requestCount"]').type('80');
         cy.get('input[name="unitTime"]').type('1');
         cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
-        cy
-            .get("tbody")
-            .get("tr")
-            .contains(`${policyName}`).should('exist');
+        cy.get(`[data-testid="${policyName}-actions"]`).should('exist');
 
         // editing
         cy.intercept('**/throttling/policies/application/*').as('getPolicy');
