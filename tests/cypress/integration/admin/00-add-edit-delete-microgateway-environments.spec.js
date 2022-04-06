@@ -16,7 +16,7 @@
  * under the License.
  */
 
-describe("Add Edit Delete Microgateway lables", () => {
+describe("Add Edit Delete Microgateway Environments", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 

@@ -32,15 +32,15 @@ describe("Add custom throttle policies", () => {
         cy.get('input[name="description"]').type('Allow 5 requests per minute for an Admin user');
         cy.get('input[name="keyTemplate"]').type('$userId');
         cy.get('button.MuiButton-containedPrimary > span').contains('Add').click();
-        cy.get('td a').contains(policyName).should('exist');
+        cy.get(`[data-testid="${policyName}-actions"]`).should('exist');
 
         // editing
-        cy.get('td a').contains(policyName).click();
+        cy.get(`[data-testid="${policyName}-actions"] > a > span:first-child`).click();
         cy.get('input[name="description"]').invoke('val').should('not.be.empty')
         cy.get('input[name="description"]').clear().type(secondDesc);
 
         cy.intercept('GET', '**/throttling/policies/custom').as('getCustomPolicies');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Add').click();
+        cy.get('button.MuiButton-containedPrimary > span').contains('Edit').click();
         cy.wait('@getCustomPolicies');
         cy.get('td').contains(secondDesc).should('exist');
 

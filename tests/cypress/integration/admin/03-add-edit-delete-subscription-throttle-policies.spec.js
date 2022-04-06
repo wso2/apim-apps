@@ -48,9 +48,7 @@ describe("Add Edit Delete subscription throttle policies", () => {
         cy.get('[data-testid="pagination-next"]').click();
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();
         cy.get('button > span').contains('Delete').click();
-        cy.wait(4000);
-        cy.get('[data-testid="pagination-next"]').click();
-        cy.get(`[data-testid="${policyName}-actions"]`).should('not.exist');
+        cy.get('div[role="status"]').should('have.text','Subscription Rate Limiting Policy successfully deleted.');
     });
 
 })
