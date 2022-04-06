@@ -39,6 +39,7 @@ describe("Undeploy new revision", () => {
         cy.get('#left-menu-itemdeployments').click();
 
         // Deploying
+        cy.wait(500);
         cy.get('#add-description-btn')
             .scrollIntoView()
             .click();

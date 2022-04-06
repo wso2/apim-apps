@@ -27,6 +27,7 @@
     "require-text": "0.0.1",
     "styliner": "^1.1.0",
     "wdio": "^4.0.0",
-    "wdio-junit-to-html": "^3.1.2"
+    "wdio-junit-to-html": "^3.1.2",
+    "yamljs": "^0.3.0"
   }
 }

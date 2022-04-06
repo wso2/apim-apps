@@ -204,7 +204,6 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
     cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-landing-rest-create-default').click();
     cy.get('#itest-id-apiname-input').type(apiName);
@@ -221,6 +220,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
         // failing the test
         return false
     });
+    cy.wait(500);
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/`,{ timeout: 30000 });
     cy.get(`#${apiName}`).click();
 
@@ -265,6 +265,7 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
     cy.get('#itest-id-apiversion-input').type(`v${random_number}`);
     cy.get('#itest-id-apiendpoint-input').click();
     cy.get('#itest-create-default-api-button').click();
+    cy.wait(500);
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/`);
     cy.get(`#sample_api_${random_number}`).click();
 

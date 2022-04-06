@@ -35,7 +35,7 @@ describe("Create websocket api - super tenant", () => {
         const randomName = `sample_api_${random_number}`;
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
         // select the option from the menu item
-        cy.get('#itest-streaming-api-create-menu').click();
+        cy.get('#itest-create-api-menu-button').click();
         cy.get('#itest-id-create-streaming-api-ws').click();
 
         // Filling the form
