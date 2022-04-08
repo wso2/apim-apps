@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="6.9260" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:56:24" tests="0" file="cypress/integration/03-admin/00-add-edit-delete-microgateway-environments.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add Edit Delete Microgateway lables" timestamp="2022-03-01T07:56:24" tests="1" time="6.9260" failures="0">
-    <testcase name="Add Edit Delete Microgateway lables Add Edit Delete Microgateway lables" time="6.9260" classname="Add Edit Delete Microgateway lables">
-    </testcase>
-  </testsuite>
-</testsuites>

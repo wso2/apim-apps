@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="21.5670" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:39:14" tests="0" file="cypress/integration/01-publisher/004-endpoints/02-check-endpoint-test-button.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Check endpoint test button" timestamp="2022-03-01T07:39:14" tests="1" time="21.5670" failures="0">
-    <testcase name="Check endpoint test button Check endpoint test button" time="21.5670" classname="Check endpoint test button">
-    </testcase>
-  </testsuite>
-</testsuites>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="36.4380" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:46:38" tests="0" file="cypress/integration/01-publisher/011-lifecycle/01-block-demote-to-created-depricate-api.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Lifecycle changes" timestamp="2022-03-01T07:46:38" tests="1" time="36.4380" failures="0">
-    <testcase name="Lifecycle changes Block demote retire api" time="36.4380" classname="Block demote retire api">
-    </testcase>
-  </testsuite>
-</testsuites>

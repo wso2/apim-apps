@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="15.0820" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:42:34" tests="0" file="cypress/integration/01-publisher/006-subscriptions/00-select-subscription-tiers.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Select subscription tiers for the API" timestamp="2022-03-01T07:42:34" tests="1" time="15.0820" failures="0">
-    <testcase name="Select subscription tiers for the API Select subscription tiers for the API" time="15.0820" classname="Select subscription tiers for the API">
-    </testcase>
-  </testsuite>
-</testsuites>

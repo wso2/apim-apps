@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="18.0900" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:46:15" tests="0" file="cypress/integration/01-publisher/011-lifecycle/00-save-and-publish-api.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Save and publish API" timestamp="2022-03-01T07:46:15" tests="1" time="18.0900" failures="0">
-    <testcase name="Save and publish API Save and publish API" time="18.0900" classname="Save and publish API">
-    </testcase>
-  </testsuite>
-</testsuites>

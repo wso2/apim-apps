@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="15.7270" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:47:40" tests="0" file="cypress/integration/01-publisher/012-documents/00-add-edit-inline-document.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="creating document" timestamp="2022-03-01T07:47:40" tests="1" time="15.7270" failures="0">
-    <testcase name="creating document Creating inline document" time="15.7270" classname="Creating inline document">
-    </testcase>
-  </testsuite>
-</testsuites>

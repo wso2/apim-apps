@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="37.0130" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:54:38" tests="0" file="cypress/integration/02-devportal/002-subscriptions/04-generate-keys-api-details-page.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Generate keys from api details page" timestamp="2022-03-01T07:54:38" tests="1" time="37.0130" failures="0">
-    <testcase name="Generate keys from api details page Generate keys from api details page" time="37.0130" classname="Generate keys from api details page">
-    </testcase>
-  </testsuite>
-</testsuites>
