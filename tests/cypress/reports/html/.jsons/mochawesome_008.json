@@ -1,0 +1,165 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:32:08.240Z",
+    "end": "2022-03-01T07:33:37.741Z",
+    "duration": 89501,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "05870b2a-faac-45c3-849b-b274ecc75524",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/001-api-create/03-create-api-with-swagger-url-super-tenant.spec.js",
+      "file": "cypress/integration/01-publisher/001-api-create/03-create-api-with-swagger-url-super-tenant.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "605261d5-ec6e-4115-8413-ade7b964b2eb",
+          "title": "Create api with swagger file super tenant",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Create API from swagger from file openapi 2",
+              "fullTitle": "Create api with swagger file super tenant Create API from swagger from file openapi 2",
+              "timedOut": null,
+              "duration": 29415,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(publisher, password);\nopenApi2Create();",
+              "err": {},
+              "uuid": "52cea3c5-6935-4e4d-a207-d4f618639583",
+              "parentUUID": "605261d5-ec6e-4115-8413-ade7b964b2eb",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Create API from swagger from file openapi 3",
+              "fullTitle": "Create api with swagger file super tenant Create API from swagger from file openapi 3",
+              "timedOut": null,
+              "duration": 19302,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(publisher, password);\nopenApi3Create();",
+              "err": {},
+              "uuid": "07648187-0937-45f2-ad9f-51f4294fd5e0",
+              "parentUUID": "605261d5-ec6e-4115-8413-ade7b964b2eb",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Create API from swagger from file openapi 2 - tenant user",
+              "fullTitle": "Create api with swagger file super tenant Create API from swagger from file openapi 2 - tenant user",
+              "timedOut": null,
+              "duration": 16179,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(`${tenantUser}@${tenant}`, password);\nopenApi2Create();",
+              "err": {},
+              "uuid": "a7c88c1e-ec0b-4b0f-9d50-59ea49400f4e",
+              "parentUUID": "605261d5-ec6e-4115-8413-ade7b964b2eb",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Create API from swagger from file openapi 3 - tenant user",
+              "fullTitle": "Create api with swagger file super tenant Create API from swagger from file openapi 3 - tenant user",
+              "timedOut": null,
+              "duration": 18824,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(`${tenantUser}@${tenant}`, password);\nopenApi3Create();",
+              "err": {},
+              "uuid": "378a28df-397a-4966-b666-9a73249398e5",
+              "parentUUID": "605261d5-ec6e-4115-8413-ade7b964b2eb",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "52cea3c5-6935-4e4d-a207-d4f618639583",
+            "07648187-0937-45f2-ad9f-51f4294fd5e0",
+            "a7c88c1e-ec0b-4b0f-9d50-59ea49400f4e",
+            "378a28df-397a-4966-b666-9a73249398e5"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 83720,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

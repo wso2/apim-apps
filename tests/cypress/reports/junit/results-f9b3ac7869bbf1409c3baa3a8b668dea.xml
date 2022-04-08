@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="42.1860" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:48:37" tests="0" file="cypress/integration/02-devportal/000-general/01-anonymous-user-view-public-apis.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Anonymous view apis" timestamp="2022-03-01T07:48:37" tests="4" time="42.1860" failures="0">
+    <testcase name="Anonymous view apis Anonymous view apis" time="24.9050" classname="Anonymous view apis">
+    </testcase>
+    <testcase name="Anonymous view apis Download swagger" time="3.1410" classname="Download swagger">
+    </testcase>
+    <testcase name="Anonymous view apis Download client sdks" time="8.2130" classname="Download client sdks">
+    </testcase>
+    <testcase name="Anonymous view apis Login to devportal by supper tenant user" time="5.9270" classname="Login to devportal by supper tenant user">
+    </testcase>
+  </testsuite>
+</testsuites>

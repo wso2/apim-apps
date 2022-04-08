@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:41:53.177Z",
+    "end": "2022-03-01T07:42:11.264Z",
+    "duration": 18087,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "b0b80b34-9b59-47b9-8e4d-149a69e7c887",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/005-design-config/01-make-api-the-default-version.spec.js",
+      "file": "cypress/integration/01-publisher/005-design-config/01-make-api-the-default-version.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "5121de05-ca9c-4927-9d94-58cdaaabeb8f",
+          "title": "Make api the default version",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add Authorization Header for the api",
+              "fullTitle": "Make api the default version Add Authorization Header for the api",
+              "timedOut": null,
+              "duration": 14497,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itemDesignConfigurations\"]').click();\ncy.get('[data-testid=\"default-version-yes\"]').click();\ncy.get('[data-testid=\"design-config-save-btn\"]').click();\ncy.get('[data-testid=\"design-config-save-btn\"]').then(function () {\n  cy.get('[data-testid=\"default-version-yes\"] input').should('be.checked');\n});",
+              "err": {},
+              "uuid": "5ba0e682-0536-47ea-893a-04b4cf837e64",
+              "parentUUID": "5121de05-ca9c-4927-9d94-58cdaaabeb8f",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "5ba0e682-0536-47ea-893a-04b4cf837e64"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 14497,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

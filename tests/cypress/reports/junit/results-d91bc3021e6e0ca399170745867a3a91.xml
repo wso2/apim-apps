@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="38.9410" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:53:42" tests="0" file="cypress/integration/02-devportal/002-subscriptions/03-change-subscription-tier-on-an-application.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Change subscription tier of an application" timestamp="2022-03-01T07:53:42" tests="1" time="38.9410" failures="0">
+    <testcase name="Change subscription tier of an application Change subscription tier" time="38.9410" classname="Change subscription tier">
+    </testcase>
+  </testsuite>
+</testsuites>

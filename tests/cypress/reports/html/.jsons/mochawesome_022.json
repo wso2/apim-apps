@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:39:14.082Z",
+    "end": "2022-03-01T07:39:37.653Z",
+    "duration": 23571,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "430aa57a-a537-4953-93b3-c0617b982550",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/004-endpoints/02-check-endpoint-test-button.spec.js",
+      "file": "cypress/integration/01-publisher/004-endpoints/02-check-endpoint-test-button.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "c7611b08-9987-45b6-9318-074702b3c081",
+          "title": "Check endpoint test button",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Check endpoint test button",
+              "fullTitle": "Check endpoint test button Check endpoint test button",
+              "timedOut": null,
+              "duration": 21567,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const endpoint200 = 'https://petstore.swagger.io/v2/store/inventory'; // 200 OK\nconst endpoint400 = 'https://petstore.swagger.io/v2/store/inventory/7777777'; //404 Not Found\nconst endpointUnknown = 'http://bull-8772776363-url.foo123'; // Unknown Host\nconst endpointNoProtocol = 'bullproto://'; // unknown protocol: bullproto\ncy.createAPIWithoutEndpoint();\ncy.get('[data-testid=\"left-menu-itemendpoints\"]').click();\ncy.get('[data-testid=\"http__rest_endpoint-start\"]').click(); // Add the prod and sandbox endpoints\ncy.get('[data-testid=\"production-endpoint-checkbox\"]').click(); // endpoint-test-icon\ncy.get('#primaryEndpoint').focus().type(endpoint200);\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-icon-btn\"]').trigger(\"click\");\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-status\"] span', {\n  timeout: 30000\n}).should('have.text', '200 OK'); // endpoint-test-icon\ncy.get('#primaryEndpoint').focus().clear().type(endpoint400);\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-icon-btn\"]').trigger(\"click\");\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-status\"] span', {\n  timeout: 30000\n}).should('have.text', '404 Not Found');\ncy.get('#primaryEndpoint').focus().clear().type(endpointUnknown);\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-icon-btn\"]').trigger(\"click\");\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-status\"] span', {\n  timeout: 30000\n}).should('have.text', 'Unknown Host');\ncy.get('#primaryEndpoint').focus().clear().type(endpointNoProtocol);\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-icon-btn\"]').trigger(\"click\");\ncy.get('[data-testid=\"primaryEndpoint-endpoint-test-status\"] span', {\n  timeout: 30000\n}).should('have.text', 'unknown protocol: bullproto');",
+              "err": {},
+              "uuid": "3222f3d6-a87c-49e2-a679-fd72f8b0c7c6",
+              "parentUUID": "c7611b08-9987-45b6-9318-074702b3c081",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "3222f3d6-a87c-49e2-a679-fd72f8b0c7c6"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 21567,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

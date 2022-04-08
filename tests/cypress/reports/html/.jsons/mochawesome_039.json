@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:46:15.607Z",
+    "end": "2022-03-01T07:46:37.582Z",
+    "duration": 21975,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "42d870dc-5789-46fe-a1d7-4d6e6a335fb4",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/011-lifecycle/00-save-and-publish-api.spec.js",
+      "file": "cypress/integration/01-publisher/011-lifecycle/00-save-and-publish-api.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "5e870011-0cc8-499b-b9c5-84d6f42f9952",
+          "title": "Save and publish API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Save and publish API",
+              "fullTitle": "Save and publish API Save and publish API",
+              "timedOut": null,
+              "duration": 18090,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itemsubscriptions\"]').click();\ncy.get('[data-testid=\"policy-checkbox-unlimited\"]').click();\ncy.get('[data-testid=\"policy-checkbox-silver\"]').click();\ncy.get('[data-testid=\"subscriptions-save-btn\"]').click(); // Going to lifecycle page\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click(); // Publishing\ncy.wait(2000);\ncy.get('button[data-testid=\"Publish\"]').click(); // Validate\ncy.get('button[data-testid=\"Demote to Created\"]').should('exist');",
+              "err": {},
+              "uuid": "b331f73b-a985-48df-b451-7bb6c895175f",
+              "parentUUID": "5e870011-0cc8-499b-b9c5-84d6f42f9952",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "b331f73b-a985-48df-b451-7bb6c895175f"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 18090,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="11.7530" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:49:46" tests="0" file="cypress/integration/02-devportal/001-applications/01-create-jwt-app-generate-keys.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Application tests" timestamp="2022-03-01T07:49:46" tests="1" time="11.7530" failures="0">
+    <testcase name="Application tests Add Applications for JWT token Type" time="11.7530" classname="Add Applications for JWT token Type">
+    </testcase>
+  </testsuite>
+</testsuites>

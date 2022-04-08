@@ -1,0 +1,112 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2022-03-01T07:55:38.274Z",
+    "end": "2022-03-01T07:56:23.966Z",
+    "duration": 45692,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 1,
+    "hasOther": true,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "2d0984eb-d0aa-4ceb-9dc6-fa848b59c501",
+      "title": "",
+      "fullFile": "cypress/integration/02-devportal/004-test/00-tryout-api-invocations-from-swagger-console.spec.js",
+      "file": "cypress/integration/02-devportal/004-test/00-tryout-api-invocations-from-swagger-console.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "d5ea55c1-fe20-45d4-b1dc-d6aa13ffc854",
+          "title": "Tryout API invocations",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Tryout API invocations from swagger console",
+              "fullTitle": "Tryout API invocations Tryout API invocations from swagger console",
+              "timedOut": null,
+              "duration": 1030,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "[\n  {\n    \"title\": \"Failed screenshot\",\n    \"value\": \"screenshots/02-devportal/004-test/00-tryout-api-invocations-from-swagger-console.spec.js/Tryout API invocations -- Tryout API invocations from swagger console (failed).png\"\n  },\n  {\n    \"title\": \"Failed screenshot\",\n    \"value\": \"screenshots/02-devportal/004-test/00-tryout-api-invocations-from-swagger-console.spec.js/Tryout API invocations -- Tryout API invocations from swagger console -- after all hook (failed).png\"\n  }\n]",
+              "code": "cy.loginToPublisher(publisher, password);\ncy.createAndPublishApi(apiName, apiVersion);\ncy.logoutFromPublisher();\ncy.loginToDevportal(developer, password); // Create an app and subscribe\ncy.createApp(appName, appDescription);\ncy.visit('/devportal/apis?tenant=carbon.super');\ncy.url().should('contain', '/apis?tenant=carbon.super');\ncy.get(`[title=\"${apiName}\"]`, {\n  timeout: 30000\n});\ncy.get(`[title=\"${apiName}\"]`).click();\ncy.get('[data-testid=\"left-menu-credentials\"]').click(); // Click and select the new application\ncy.get('#application-subscribe').click();\ncy.get(`.MuiAutocomplete-popper li`).contains(appName).click();\ncy.get(`[data-testid=\"subscribe-to-api-btn\"]`).click();\ncy.get(`[data-testid=\"subscription-table\"] td`).contains(appName).should('exist'); // Generate prod keys\ncy.get(`#${appName}-PK`).click();\ncy.get('input#client_credentials').check();\ncy.get('input#password').check();\ncy.get('[data-testid=\"generate-application-keys\"]').click();\ncy.get('#consumer-key', {\n  timeout: 30000\n});\ncy.get('#consumer-key').should('exist'); // Go to test console\ncy.get('[data-testid=\"left-menu-test\"]').click();\ncy.intercept('**/oauth-keys').as('oauthKeys');\ncy.wait('@oauthKeys');\ncy.get('[data-testid=\"gen-test-key\"]').should('not.have.attr', 'disabled', {\n  timeout: 30000\n}); // Generate token and wait for response\ncy.get('[data-testid=\"gen-test-key\"]').click();\ncy.intercept('**/generate-token').as('genToken');\ncy.wait('@genToken'); // Test the console\ncy.get('#operations-pet-getPetById').click();\ncy.get('#operations-pet-getPetById .try-out__btn').click();\ncy.get('#operations-pet-getPetById [placeholder=\"petId - ID of pet to return\"]').type('1');\ncy.get('#operations-pet-getPetById button.execute').click();\ncy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');",
+              "err": {
+                "message": "CypressError: `cy.click()` failed because it requires a DOM element.\n\nThe subject received was:\n\n  > `undefined`\n\nThe previous command that ran was:\n\n  > `cy.get()`\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `Tryout API invocations`",
+                "estack": "CypressError: `cy.click()` failed because it requires a DOM element.\n\nThe subject received was:\n\n  > `undefined`\n\nThe previous command that ran was:\n\n  > `cy.get()`\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `Tryout API invocations`\n    at ensureElement (https://localhost:9443/__cypress/runner/cypress_runner.js:162678:76)\n    at validateType (https://localhost:9443/__cypress/runner/cypress_runner.js:162501:16)\n    at $Cy.ensureSubjectByType (https://localhost:9443/__cypress/runner/cypress_runner.js:162537:9)\n    at pushSubjectAndValidate (https://localhost:9443/__cypress/runner/cypress_runner.js:171827:12)\n    at Context.<anonymous> (https://localhost:9443/__cypress/runner/cypress_runner.js:172102:20)\nFrom Your Spec Code:\n    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/integration/02-devportal/004-test/00-tryout-api-invocations-from-swagger-console.spec.js:181:53)",
+                "diff": null
+              },
+              "uuid": "05d1d64b-327f-4efb-ab94-f056885faa20",
+              "parentUUID": "d5ea55c1-fe20-45d4-b1dc-d6aa13ffc854",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "05d1d64b-327f-4efb-ab94-f056885faa20"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 1030,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

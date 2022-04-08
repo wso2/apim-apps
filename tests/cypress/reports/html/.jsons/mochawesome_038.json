@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:45:54.871Z",
+    "end": "2022-03-01T07:46:14.559Z",
+    "duration": 19688,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "cb493a51-3d43-4605-8904-24d530d1b352",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/010-additional-properties/00-add-additional-properties.spec.js",
+      "file": "cypress/integration/01-publisher/010-additional-properties/00-add-additional-properties.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "fa3621b8-50fe-4eea-8136-92f2e8273e58",
+          "title": "Add additional properties",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add additional properties",
+              "fullTitle": "Add additional properties Add additional properties",
+              "timedOut": null,
+              "duration": 15805,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const prop = 'prop1';\nconst propVal = 'prop1-val';\ncy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itemproperties\"]').click(); // Click the add property button\ncy.get('[data-testid=\"add-new-property\"]').click(); // Fill the form\ncy.get('#property-name').click().type(prop);\ncy.get('#property-value').click().type(propVal); // Add them\ncy.get('[data-testid=\"properties-add\"]').click(); // Save the api\ncy.get('[data-testid=\"save-api-properties\"]').click(); // Checking the values exists\ncy.get('[data-testid=\"save-api-properties\"]').then(function () {\n  cy.contains(prop).should('exist');\n  cy.contains(propVal).should('exist');\n});",
+              "err": {},
+              "uuid": "6b1afdb8-72ca-41d4-9fb0-23e257315896",
+              "parentUUID": "fa3621b8-50fe-4eea-8136-92f2e8273e58",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "6b1afdb8-72ca-41d4-9fb0-23e257315896"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 15805,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

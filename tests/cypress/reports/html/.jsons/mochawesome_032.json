@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:42:54.029Z",
+    "end": "2022-03-01T07:44:12.343Z",
+    "duration": 78314,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "0f693359-30f5-48a1-9c08-55dfa995d0d6",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/006-subscriptions/01-subscribtion-blocking.spec.js",
+      "file": "cypress/integration/01-publisher/006-subscriptions/01-subscribtion-blocking.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "85b529e8-c33e-4685-a859-b25f8f35393d",
+          "title": "Subscription blocking",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Subscribe and unsubscribe to API from api details page",
+              "fullTitle": "Subscription blocking Subscribe and unsubscribe to API from api details page",
+              "timedOut": null,
+              "duration": 54205,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(publisher, password);\ncy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);\ncy.logoutFromPublisher();\ncy.loginToDevportal(developer, password);\ncy.createApp(appName, appDescription);\ncy.visit('/devportal/apis?tenant=carbon.super');\ncy.url().should('contain', '/apis?tenant=carbon.super'); // After publishing the api appears in devportal with a delay.\n// We need to keep refresing and look for the api in the listing page\n// following waitUntilApiExists function does that recursively.\nlet remainingAttempts = 30;\nfunction waitUntilApiExists() {\n  let $apis = Cypress.$(`[title=\"${apiName}\"]`);\n  if ($apis.length) {\n    // At least one with api name was found.\n    // Return a jQuery object.\n    return $apis;\n  }\n  if (--remainingAttempts) {\n    cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts); // Requesting the page to reload (F5)\n    cy.reload(); // Wait a second for the server to respond and the DOM to be present.\n    return cy.wait(4000).then(() => {\n      return waitUntilApiExists();\n    });\n  }\n  throw Error('Table was not found.');\n}\nwaitUntilApiExists().then($apis => {\n  cy.log('apis: ' + $apis.text());\n  cy.get(`[title=\"${apiName}\"]`, {\n    timeout: 30000\n  });\n  cy.get(`[title=\"${apiName}\"]`).click();\n  cy.get('[data-testid=\"left-menu-credentials\"]').click(); // Click and select the new application\n  cy.get('#application-subscribe').click();\n  cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();\n  cy.get(`[data-testid=\"subscribe-to-api-btn\"]`).click();\n  cy.get(`[data-testid=\"subscription-table\"] td`).contains(appName).should('exist'); // Subscription blocking port in the publisher side.\n  cy.logoutFromDevportal();\n  cy.loginToPublisher(publisher, password);\n  cy.get(`#${apiName}`).click(); // wait until page load\n  cy.get('[data-testid=\"itest-api-name-context\"]', {\n    timeout: 30000\n  }).should('be.visible');\n  cy.url().should('contain', '/overview');\n  cy.get('[data-testid=\"itest-api-name-context\"]').contains(`/${apiContext}`); // click the left menu to go to subscriptions page.\n  cy.get('[data-testid=\"left-menu-itemsubscriptions\"]').click();\n  cy.get('table tr button span').contains('Block Production Only').click();\n  cy.get('table tr td').contains('PROD_ONLY_BLOCKED').should('exist');\n  cy.get('table tr button span').contains('Block All').click();\n  cy.get('table tr td').contains('BLOCKED').should('exist');\n  cy.logoutFromPublisher();\n});",
+              "err": {},
+              "uuid": "9d520690-087a-475d-abcf-1a7da63c6e1b",
+              "parentUUID": "85b529e8-c33e-4685-a859-b25f8f35393d",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "9d520690-087a-475d-abcf-1a7da63c6e1b"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 54205,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}
