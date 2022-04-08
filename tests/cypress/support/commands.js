@@ -176,9 +176,10 @@ Cypress.Commands.add('deploySampleAPI', () => {
 
 Cypress.Commands.add('createAnAPI', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
-    const randomName = `sample_api_${random_number}`;
+    const randomName = `0sample_api_${random_number}`;
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
-    cy.get('#itest-create-api-menu-button').click()
+    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
+    cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-landing-rest-create-default').click()
     cy.get('#itest-id-apiname-input').type(name || randomName);
     cy.get('#itest-id-apicontext-input').click();
@@ -200,7 +201,7 @@ Cypress.Commands.add('createAnAPI', (name, type = 'REST') => {
 Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, context = null) => {
     const random_number = Math.floor(Date.now() / 1000);
 
-    const apiName = name ? name : `sample_api_${random_number}`;
+    const apiName = name ? name : `0sample_api_${random_number}`;
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
@@ -232,7 +233,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
 Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version = null, context = null) => {
     const random_number = Math.floor(Date.now() / 1000);
 
-    const apiName = name ? name : `sample_api_${random_number}`;
+    const apiName = name ? name : `0sample_api_${random_number}`;
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
     cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
@@ -254,7 +255,7 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
 
 Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
-    const randomName = `sample_api_${random_number}`;
+    const randomName = `0sample_api_${random_number}`;
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
     cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
     cy.get('#itest-rest-api-create-menu').click();
