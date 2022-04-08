@@ -40,9 +40,8 @@ describe("Create new revision and deploy", () => {
 
         // Deploying
         cy.get('#add-description-btn')
-            .scrollIntoView()
-            .click();
-        cy.get('#add-description').click();
+            .scrollIntoView().click({"force":true});
+        cy.get('#add-description').click({"force":true});
         cy.get('#add-description').type('test');
         cy.get('#deploy-btn').click();
         cy.get('#undeploy-btn').should('exist');

@@ -15,6 +15,7 @@ describe("Deploy as prototype", () => {
         cy.createAPIWithoutEndpoint();
         cy.get('#itest-api-details-api-config-acc').click();
         cy.get('#left-menu-itemendpoints').click();
+        cy.wait(500);
         cy.get('[data-testid="http/restendpoint-add-btn"]').click();
         cy.get('[data-testid="prototype_endpoint-start"]').click();
 

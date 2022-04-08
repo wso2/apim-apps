@@ -66,6 +66,7 @@ describe("Mock the api response and test it", () => {
                 const pathSegments = pathName.split('/');
                 const uuid = pathSegments[pathSegments.length - 2];
 
+                cy.wait(1000);
                 // Go to api product create page
                 cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/create`);
 
@@ -91,7 +92,7 @@ describe("Mock the api response and test it", () => {
                 cy.get('#left-menu-itemdeployments').click();
 
                 // Deploying
-                cy.get('#deploy-btn').click();
+                cy.get('#deploy-btn').click({"force":true});
                 cy.get('#undeploy-btn').should('exist');
 
                 // Going to lifecycle page
@@ -103,28 +104,19 @@ describe("Mock the api response and test it", () => {
 
                 cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
 
-                // //Get the api product id
-                // cy.location('pathname').then((pathName) => {
-                //     const pathSegments = pathName.split('/');
-                //     const uuidProduct = pathSegments[pathSegments.length - 2];
-                //
-                //     cy.log(uuid, uuidProduct);
-                //
-                //     // Deleting the api and api product
-                //     cy.get(`#itest-id-deleteapi-icon-button`).click();
-                //     cy.get(`#itest-id-deleteconf`).click();
-                //
-                //     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
-                //     cy.get('#itest-api-name-version', { timeout: 30000 });
-                //     cy.get(`#itest-id-deleteapi-icon-button`).click();
-                //     cy.get(`#itest-id-deleteconf`).click();
-                // });
+                cy.get(`#itest-id-deleteapi-icon-button`).click();
+                cy.get(`#itest-id-deleteconf`).click();
+
+                cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                     cy.get(`#itest-id-deleteapi-icon-button`).click();
+                     cy.get(`#itest-id-deleteconf`).click();
             });
         });
     });
 
-    // after(function () {
-    //     cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-    //     cy.deleteUser(publisher);
-    // })
+    after(function () {
+        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
+        cy.deleteUser(publisher);
+     })
 })

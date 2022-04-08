@@ -57,8 +57,8 @@ describe("Upload api spec from the api definition page", () => {
             cy.log(uuid);
 
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/resources`, {timeout: 30000});
-            cy.get('#get/pets/{petId}', { timeout: 30000 });
-            cy.get('#get/pets/{petId}').should('be.visible');
+            cy.get('#\\/pets\\/\\{petId\\}', { timeout: 30000 }).scrollIntoView();
+            cy.get('#\\/pets\\/\\{petId\\}').should('be.visible');
         })
 
         // cy.get('#itest-api-details-api-config-acc').click();

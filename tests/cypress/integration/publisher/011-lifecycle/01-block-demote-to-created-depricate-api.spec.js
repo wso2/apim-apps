@@ -67,14 +67,17 @@ describe("Lifecycle changes", () => {
         cy.get('#left-menu-itemlifecycle').click();
 
         // Publishing
+        cy.wait(3000);
         cy.get('[data-testid="Publish-btn"]').click();
-
+        
+        cy.wait(2000);
         cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
         cy.get('#left-menu-itemlifecycle').click();
         cy.wait(2000);
 
         // Demote to created
         cy.get('button[data-testid="Demote to Created-btn"]').click();
+        cy.wait(2000);
         cy.get('[data-testid="Publish-btn"]').then(() => {
             cy.get('[data-testid="Publish-btn"]').click();
         });
@@ -86,7 +89,8 @@ describe("Lifecycle changes", () => {
         cy.get('[data-testid="Block-btn"]').then(() => {
             cy.get('[data-testid="Block-btn"]').click();
         });
-        cy.get('button[data-testid="Re-Publish"]').should('exist');
+        cy.wait(2000);
+        cy.get('button[data-testid="Re-Publish-btn"]').should('exist');
         cy.get('#left-menu-itemlifecycle').click();
         cy.wait(2000);
 
@@ -103,7 +107,6 @@ describe("Lifecycle changes", () => {
             cy.get('button[data-testid="Deprecate-btn"]').click();
         });
         cy.get('button[data-testid="Retire-btn"]').should('exist');
-        cy.get('#left-menu-itemlifecycle"').click();
         cy.wait(2000);
 
 
