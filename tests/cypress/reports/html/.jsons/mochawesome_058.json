@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:56:48.318Z",
+    "end": "2022-03-01T07:56:55.885Z",
+    "duration": 7567,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "e07b79d6-5fe8-49a1-92b4-62ee21b80dc1",
+      "title": "",
+      "fullFile": "cypress/integration/03-admin/03-add-edit-delete-subscription-throttle-policies.spec.js",
+      "file": "cypress/integration/03-admin/03-add-edit-delete-subscription-throttle-policies.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "41eaae34-cadb-4d66-8754-145f276c3b61",
+          "title": "Add Edit Delete subscription throttle policies",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add Edit Delete subscription throttle policies",
+              "fullTitle": "Add Edit Delete subscription throttle policies Add Edit Delete subscription throttle policies",
+              "timedOut": null,
+              "duration": 7491,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const policyName = 'Platinum';\ncy.get('[data-testid=\"Subscription Policies-child-link\"]').click();\ncy.get('.MuiButton-label').contains('Add Policy').click();\ncy.get('input[name=\"policyName\"]').type(policyName);\ncy.get('textarea[name=\"description\"]').type('Allows 10k requests per minute');\ncy.get('input[name=\"requestCount\"]').type('10000');\ncy.get('input[name=\"unitTime\"]').type('1');\ncy.get('button.MuiButton-containedPrimary > span').contains('Save').click();\ncy.get(`[data-testid=\"${policyName}-actions\"]`).should('exist'); // editing\ncy.intercept('**/throttling/policies/subscription/*').as('getPolicy');\ncy.get(`[data-testid=\"${policyName}-actions\"] > a`).click();\ncy.wait('@getPolicy');\ncy.get('input[name=\"requestCount\"]').clear().type('10001');\ncy.intercept('GET', '**/throttling/policies/subscription').as('getPolicies');\ncy.get('button.MuiButton-containedPrimary > span').contains('Save').click();\ncy.wait('@getPolicies'); // delete\ncy.get(`[data-testid=\"${policyName}-actions\"] > span svg`).click();\ncy.get('button > span').contains('Delete').click();\ncy.get(`[data-testid=\"${policyName}-actions\"]`).should('not.exist');",
+              "err": {},
+              "uuid": "ce441cc6-f69a-4e85-b5f1-cf5f94930b26",
+              "parentUUID": "41eaae34-cadb-4d66-8754-145f276c3b61",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "ce441cc6-f69a-4e85-b5f1-cf5f94930b26"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 7491,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

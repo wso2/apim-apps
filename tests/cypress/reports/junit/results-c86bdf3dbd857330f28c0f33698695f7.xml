@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="14.5520" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:44:55" tests="0" file="cypress/integration/01-publisher/009-api-definition/00-download-api.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Api Definition" timestamp="2022-03-01T07:44:55" tests="1" time="14.5520" failures="0">
+    <testcase name="Api Definition Download api" time="14.5520" classname="Download api">
+    </testcase>
+  </testsuite>
+</testsuites>

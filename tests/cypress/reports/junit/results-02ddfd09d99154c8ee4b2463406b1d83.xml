@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="36.3870" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:51:54" tests="0" file="cypress/integration/02-devportal/002-subscriptions/01-subscribe-unsubscribe-to-app-from-app.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Anonymous view apis" timestamp="2022-03-01T07:51:54" tests="1" time="36.3870" failures="0">
+    <testcase name="Anonymous view apis Subscribe unsubscribe to app from application view" time="36.3870" classname="Subscribe unsubscribe to app from application view">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="28.0140" tests="2" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:31:38" tests="0" file="cypress/integration/01-publisher/001-api-create/02-create-api-with-swagger-file-super-tenant.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Create api with swagger file super tenant" timestamp="2022-03-01T07:31:38" tests="2" time="28.0140" failures="0">
+    <testcase name="Create api with swagger file super tenant Create API from swagger from file - supper admin" time="13.5660" classname="Create API from swagger from file - supper admin">
+    </testcase>
+    <testcase name="Create api with swagger file super tenant Create API from swagger from file - tenant user" time="14.4480" classname="Create API from swagger from file - tenant user">
+    </testcase>
+  </testsuite>
+</testsuites>

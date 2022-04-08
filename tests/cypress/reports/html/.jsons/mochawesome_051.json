@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:52:48.213Z",
+    "end": "2022-03-01T07:53:41.785Z",
+    "duration": 53572,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "58b29782-0c83-457f-a672-12c0a9ff9404",
+      "title": "",
+      "fullFile": "cypress/integration/02-devportal/002-subscriptions/02-subscribe-via-wizard.spec.js",
+      "file": "cypress/integration/02-devportal/002-subscriptions/02-subscribe-via-wizard.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "1f166012-d063-4095-9811-9d5ffc777218",
+          "title": "Anonymous view apis",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Subscribe to API",
+              "fullTitle": "Anonymous view apis Subscribe to API",
+              "timedOut": null,
+              "duration": 37708,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(publisher, password);\ncy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);\ncy.logoutFromPublisher();\ncy.loginToDevportal(developer, password);\ncy.visit('/devportal/apis?tenant=carbon.super');\ncy.url().should('contain', '/apis?tenant=carbon.super'); // After publishing the api appears in devportal with a delay.\n// We need to keep refresing and look for the api in the listing page\n// following waitUntilApiExists function does that recursively.\nlet remainingAttempts = 30;\nfunction waitUntilApiExists() {\n  let $apis = Cypress.$(`[title=\"${apiName}\"]`);\n  if ($apis.length) {\n    // At least one with api name was found.\n    // Return a jQuery object.\n    return $apis;\n  }\n  if (--remainingAttempts) {\n    cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts); // Requesting the page to reload (F5)\n    cy.reload(); // Wait a second for the server to respond and the DOM to be present.\n    return cy.wait(4000).then(() => {\n      return waitUntilApiExists();\n    });\n  }\n  throw Error('Table was not found.');\n}\nwaitUntilApiExists().then($apis => {\n  cy.log('apis: ' + $apis.text());\n  cy.get(`[title=\"${apiName}\"]`, {\n    timeout: 30000\n  });\n  cy.get(`[title=\"${apiName}\"]`).click();\n  cy.get('[data-testid=\"left-menu-credentials\"]').click(); // Go through the wizard\n  cy.get('[data-testid=\"start-key-gen-wizard-btn\"]').click();\n  cy.get('#application-name').type(appName);\n  cy.get('[data-testid=\"wizard-next-0-btn\"]').click();\n  cy.get('[data-testid=\"wizard-next-1-btn\"]', {\n    timeout: 30000\n  });\n  cy.get('[data-testid=\"wizard-next-1-btn\"]').click();\n  cy.get('[data-testid=\"wizard-next-2-btn\"]', {\n    timeout: 30000\n  });\n  cy.get('[data-testid=\"wizard-next-2-btn\"]').click();\n  cy.intercept('**/oauth-keys').as('oauthKeys');\n  cy.wait('@oauthKeys');\n  cy.get('[data-testid=\"wizard-next-3-btn\"]', {\n    timeout: 30000\n  });\n  cy.get('[data-testid=\"wizard-next-3-btn\"]').click();\n  /*\n  Rest of the test we need to skip for now. Cypress is failing the token gen request but the actual one is not\n  */\n  // cy.intercept('**/generate-token').as('generateToken');\n  // cy.wait('@generateToken');\n  // cy.get('#access-token').should('not.be.empty');\n  // cy.get('[data-testid=\"wizard-next-4-btn\"]', { timeout: 30000 });\n  // cy.get('[data-testid=\"wizard-next-4-btn\"]').click();\n  // cy.get('[data-testid=\"left-menu-credentials\"]').click();\n  // Click and select the new application\n  // cy.get(`[data-testid=\"subscription-table\"] td`).contains(appName).should('exist');\n});",
+              "err": {},
+              "uuid": "d0460898-f5a3-4162-9f69-6744f60eb36e",
+              "parentUUID": "1f166012-d063-4095-9811-9d5ffc777218",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "d0460898-f5a3-4162-9f69-6744f60eb36e"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 37708,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

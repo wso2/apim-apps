@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:46:38.640Z",
+    "end": "2022-03-01T07:47:17.903Z",
+    "duration": 39263,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "451c3f4b-6cbc-494d-a739-827c516ac491",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/011-lifecycle/01-block-demote-to-created-depricate-api.spec.js",
+      "file": "cypress/integration/01-publisher/011-lifecycle/01-block-demote-to-created-depricate-api.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "dfd9d811-ef53-49bf-8235-cdb9ab043b53",
+          "title": "Lifecycle changes",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Block demote retire api",
+              "fullTitle": "Lifecycle changes Block demote retire api",
+              "timedOut": null,
+              "duration": 36438,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itemsubscriptions\"]').click();\ncy.get('[data-testid=\"policy-checkbox-unlimited\"]').click();\ncy.get('[data-testid=\"policy-checkbox-silver\"]').click();\ncy.get('[data-testid=\"subscriptions-save-btn\"]').click(); // Going to lifecycle page\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click(); // This wait is ant pattern. But there is no other way unless the React components are rewrite.\ncy.wait(2000); // Publishing\ncy.get('button[data-testid=\"Publish\"]').click();\ncy.get('button[data-testid=\"Redeploy\"]').should('exist'); // Even though this step is redundant we need to do this. The component is behaving\n// It removes the buttons after some time of initial rendering.\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click();\ncy.wait(2000); // Redeploy\ncy.get('button[data-testid=\"Redeploy\"]').then(() => {\n  cy.get('button[data-testid=\"Redeploy\"]').click();\n});\ncy.get('button[data-testid=\"Demote to Created\"]').should('exist');\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click();\ncy.wait(2000); // Demote to created\ncy.get('button[data-testid=\"Demote to Created\"]').click();\ncy.get('button[data-testid=\"Publish\"]').then(() => {\n  cy.get('button[data-testid=\"Publish\"]').click();\n});\ncy.get('button[data-testid=\"Demote to Created\"]').should('exist');\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click();\ncy.wait(2000); // Block\ncy.get('button[data-testid=\"Block\"]').then(() => {\n  cy.get('button[data-testid=\"Block\"]').click();\n});\ncy.get('button[data-testid=\"Re-Publish\"]').should('exist');\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click();\ncy.wait(2000); // Re-Publish\ncy.get('button[data-testid=\"Re-Publish\"]').then(() => {\n  cy.get('button[data-testid=\"Re-Publish\"]').click();\n});\ncy.get('button[data-testid=\"Deprecate\"]').should('exist');\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click();\ncy.wait(2000); // Deprecate\ncy.get('button[data-testid=\"Deprecate\"]').then(() => {\n  cy.get('button[data-testid=\"Deprecate\"]').click();\n});\ncy.get('button[data-testid=\"Retire\"]').should('exist');\ncy.get('[data-testid=\"left-menu-itemlifecycle\"]').click();\ncy.wait(2000);\ncy.get('button[data-testid=\"Retire\"]').then(() => {\n  cy.get('button[data-testid=\"Retire\"]').click();\n});",
+              "err": {},
+              "uuid": "20cb51ca-cb59-4886-a9bc-6617f0ba9747",
+              "parentUUID": "dfd9d811-ef53-49bf-8235-cdb9ab043b53",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "20cb51ca-cb59-4886-a9bc-6617f0ba9747"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 36438,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

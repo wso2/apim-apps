@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:44:33.691Z",
+    "end": "2022-03-01T07:44:54.075Z",
+    "duration": 20384,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "86b07718-f3cb-4bf7-9a73-9704a92d908c",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/008-business-info/00-business-info.spec.js",
+      "file": "cypress/integration/01-publisher/008-business-info/00-business-info.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "f2e860b1-18fb-4ee5-a9d3-f8f21158ef00",
+          "title": "Add business information",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add business information",
+              "fullTitle": "Add business information Add business information",
+              "timedOut": null,
+              "duration": 16821,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const ownerName = 'Raccoon Panda';\nconst ownerEmail = 'raccoon@wso2.com';\nconst techOwnerName = 'Big Cat';\nconst techOwnerEmail = 'bigcat@wso2.com';\ncy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itembusinessinfo\"]').click();\ncy.get('[data-testid=\"business-owner-name\"]').click().type(ownerName);\ncy.get('[data-testid=\"business-owner-email\"]').click().type(ownerEmail);\ncy.get('[data-testid=\"technical-owner-name\"]').click().type(techOwnerName);\ncy.get('[data-testid=\"technical-owner-email\"]').click().type(techOwnerEmail);\ncy.get('[data-testid=\"business-info-save\"]').click();\ncy.get('[data-testid=\"business-info-save\"]').then(function () {\n  cy.get('[data-testid=\"business-owner-name\"] input').should('have.value', ownerName);\n  cy.get('[data-testid=\"business-owner-email\"] input').should('have.value', ownerEmail);\n  cy.get('[data-testid=\"technical-owner-name\"] input').should('have.value', techOwnerName);\n  cy.get('[data-testid=\"technical-owner-email\"] input').should('have.value', techOwnerEmail);\n});",
+              "err": {},
+              "uuid": "a25d5115-aa74-4da8-859b-46ccfe0c16e8",
+              "parentUUID": "f2e860b1-18fb-4ee5-a9d3-f8f21158ef00",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "a25d5115-aa74-4da8-859b-46ccfe0c16e8"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 16821,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

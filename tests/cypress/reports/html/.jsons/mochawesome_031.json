@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:42:34.168Z",
+    "end": "2022-03-01T07:42:52.959Z",
+    "duration": 18791,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "6654e46d-91de-4ba1-985d-9d4b1937904c",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/006-subscriptions/00-select-subscription-tiers.spec.js",
+      "file": "cypress/integration/01-publisher/006-subscriptions/00-select-subscription-tiers.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "f372b616-8ea0-4435-8c53-8485b9619ee1",
+          "title": "Select subscription tiers for the API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Select subscription tiers for the API",
+              "fullTitle": "Select subscription tiers for the API Select subscription tiers for the API",
+              "timedOut": null,
+              "duration": 15082,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itemsubscriptions\"]').click();\ncy.get('[data-testid=\"policy-checkbox-unlimited\"]').click();\ncy.get('[data-testid=\"policy-checkbox-silver\"]').click();\ncy.get('[data-testid=\"subscriptions-save-btn\"]').click();\ncy.get('[data-testid=\"subscriptions-save-btn\"]').then(function () {\n  cy.get('[data-testid=\"policy-checkbox-unlimited\"] input').should('be.checked');\n  cy.get('[data-testid=\"policy-checkbox-silver\"] input').should('be.checked');\n});",
+              "err": {},
+              "uuid": "0f713a0b-46fe-4a00-a5b9-b84387baf9bc",
+              "parentUUID": "f372b616-8ea0-4435-8c53-8485b9619ee1",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "0f713a0b-46fe-4a00-a5b9-b84387baf9bc"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 15082,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

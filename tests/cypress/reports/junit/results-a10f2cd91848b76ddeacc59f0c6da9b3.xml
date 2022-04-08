@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="16.9230" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:38:54" tests="0" file="cypress/integration/01-publisher/004-endpoints/01-add-soap-endpoints-production-sandbox.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Add production sandbox endpoints for SOAP" timestamp="2022-03-01T07:38:54" tests="1" time="16.9230" failures="0">
+    <testcase name="Add production sandbox endpoints for SOAP Add production sandbox endpoints for SOAP" time="16.9230" classname="Add production sandbox endpoints for SOAP">
+    </testcase>
+  </testsuite>
+</testsuites>

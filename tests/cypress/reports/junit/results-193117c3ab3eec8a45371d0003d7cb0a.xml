@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="19.4910" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:39:38" tests="0" file="cypress/integration/01-publisher/004-endpoints/03-add-failover.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Endpoint testing" timestamp="2022-03-01T07:39:38" tests="1" time="19.4910" failures="0">
+    <testcase name="Endpoint testing Add REST endpoints for production and sandbox endpoints with failover" time="19.4910" classname="Add REST endpoints for production and sandbox endpoints with failover">
+    </testcase>
+  </testsuite>
+</testsuites>
