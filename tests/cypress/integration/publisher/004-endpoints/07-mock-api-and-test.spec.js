@@ -73,6 +73,7 @@ describe("Mock the api response and test it", () => {
                 cy.get('#left-menu-itemdeployments').click();
 
                 // Deploying
+                cy.wait(1000);
                 cy.get('#deploy-btn').click();
                 cy.get('#undeploy-btn').should('exist');
 

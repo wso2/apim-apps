@@ -91,7 +91,7 @@ describe("Mock the api response and test it", () => {
                 cy.get('#left-menu-itemdeployments').click();
 
                 // Deploying
-                cy.get('#deploy-btn').click();
+                cy.get('#deploy-btn').click({"force":true});
                 cy.get('#undeploy-btn').should('exist');
                 cy.get('#undeploy-btn').click();
                 cy.get('#revision-selector').should('exist');

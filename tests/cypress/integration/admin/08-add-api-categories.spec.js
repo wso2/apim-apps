@@ -38,6 +38,7 @@ describe("Add API Categories and assign via publisher portal", () => {
         cy.get('button.MuiButton-containedPrimary span').contains('Save').click();
 
         // Go to publisher
+        cy.wait(500);
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('#itest-api-details-portal-config-acc').click();

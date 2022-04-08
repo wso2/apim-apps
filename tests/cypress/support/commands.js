@@ -221,6 +221,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
         // failing the test
         return false
     });
+    cy.wait(500);
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/`,{ timeout: 30000 });
     cy.get(`#${apiName}`).click();
 
@@ -265,6 +266,7 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
     cy.get('#itest-id-apiversion-input').type(`v${random_number}`);
     cy.get('#itest-id-apiendpoint-input').click();
     cy.get('#itest-create-default-api-button').click();
+    cy.wait(500);
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/`);
     cy.get(`#sample_api_${random_number}`).click();
 
@@ -326,6 +328,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
     // deploy
     cy.get('#left-menu-itemdeployments').click();
     cy.get('#left-menu-itemdeployments').then(()=>{
+        cy.wait(1000);
         cy.get('#deploy-btn').click();
         cy.get('#undeploy-btn').should('exist');
     })
@@ -340,6 +343,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
 
 Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
     cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+    cy.wait(2000);
     cy.get('#userToggleButton').click();
     cy.get('#logout-link').click();
     cy.url().should('contain', '/devportal/logout');
