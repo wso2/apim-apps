@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="37.7080" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:52:48" tests="0" file="cypress/integration/02-devportal/002-subscriptions/02-subscribe-via-wizard.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Anonymous view apis" timestamp="2022-03-01T07:52:48" tests="1" time="37.7080" failures="0">
+    <testcase name="Anonymous view apis Subscribe to API" time="37.7080" classname="Subscribe to API">
+    </testcase>
+  </testsuite>
+</testsuites>

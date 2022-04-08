@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="27.8010" tests="2" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:33:38" tests="0" file="cypress/integration/01-publisher/001-api-create/04-creating-web-socket-api-as-super-tenant-user.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Create websocket api - super tenant" timestamp="2022-03-01T07:33:38" tests="2" time="27.8010" failures="0">
+    <testcase name="Create websocket api - super tenant Create websocket API from url" time="10.9830" classname="Create websocket API from url">
+    </testcase>
+    <testcase name="Create websocket api - super tenant Create websocket API from url - tenant user" time="16.8180" classname="Create websocket API from url - tenant user">
+    </testcase>
+  </testsuite>
+</testsuites>

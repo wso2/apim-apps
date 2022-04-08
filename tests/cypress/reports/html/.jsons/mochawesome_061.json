@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:57:12.984Z",
+    "end": "2022-03-01T07:57:17.568Z",
+    "duration": 4584,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "547c7360-e560-407b-8b31-375ad4c7fa85",
+      "title": "",
+      "fullFile": "cypress/integration/03-admin/06-add-delete-black-list-policies.spec.js",
+      "file": "cypress/integration/03-admin/06-add-delete-black-list-policies.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "e55c45f9-780a-499c-a406-7f8496f3feb8",
+          "title": "Add deny policies",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add deny policies",
+              "fullTitle": "Add deny policies Add deny policies",
+              "timedOut": null,
+              "duration": 4565,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const ipAddress = '127.0.0.1';\ncy.get('[data-testid=\"Deny Policies-child-link\"]').click();\ncy.get('.MuiButton-label').contains('Add Policy').click();\ncy.get('input[value=\"IP\"]').click();\ncy.get('input[name=\"fixedIp\"]').type(ipAddress);\ncy.get('button.MuiButton-containedPrimary > span').contains('Deny').click();\ncy.get('[data-testid=\"MuiDataTableBodyCell-1-0\"] div').contains(ipAddress).should('exist'); // delete\ncy.get(`[data-testid=\"IP-actions\"] svg`).click();\ncy.get('button > span').contains('Delete').click(); // cy.get('#client-snackbar').contains('API Category deleted successfully').should('exist');",
+              "err": {},
+              "uuid": "c642036f-4d45-4457-ab8b-971922c6b4e9",
+              "parentUUID": "e55c45f9-780a-499c-a406-7f8496f3feb8",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "c642036f-4d45-4457-ab8b-971922c6b4e9"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 4565,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

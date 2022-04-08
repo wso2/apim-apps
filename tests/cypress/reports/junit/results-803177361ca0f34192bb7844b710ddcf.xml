@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="1" failures="2">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:30:26" tests="0" file="cypress/integration/01-publisher/000-general/00-deploy-sample-api.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Deploy sample api" timestamp="2022-03-01T07:30:26" tests="1" time="0.0000" failures="2">
+    <testcase name="Deploy sample api Deploy sample api" time="0.0000" classname="Deploy sample api">
+      <failure message="Timed out retrying after 10000ms: Expected to find element: `[data-testid=&quot;deploy-sample-api-btn&quot;]`, but never found it." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: Expected to find element: `[data-testid="deploy-sample-api-btn"]`, but never found it.
+    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/support/index.js:307:6)]]></failure>
+    </testcase>
+    <testcase name="Deploy sample api &quot;after all&quot; hook for &quot;Deploy sample api&quot;" time="0.0000" classname="&quot;after all&quot; hook for &quot;Deploy sample api&quot;">
+      <failure message="`cy.click()` failed because it requires a DOM element.
+
+The subject received was:
+
+  &gt; `undefined`
+
+The previous command that ran was:
+
+  &gt; `cy.get()`
+
+Because this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `Deploy sample api`" type="CypressError"><![CDATA[CypressError: `cy.click()` failed because it requires a DOM element.
+
+The subject received was:
+
+  > `undefined`
+
+The previous command that ran was:
+
+  > `cy.get()`
+
+Because this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `Deploy sample api`
+    at ensureElement (https://localhost:9443/__cypress/runner/cypress_runner.js:162678:76)
+    at validateType (https://localhost:9443/__cypress/runner/cypress_runner.js:162501:16)
+    at $Cy.ensureSubjectByType (https://localhost:9443/__cypress/runner/cypress_runner.js:162537:9)
+    at pushSubjectAndValidate (https://localhost:9443/__cypress/runner/cypress_runner.js:171827:12)
+    at Context.<anonymous> (https://localhost:9443/__cypress/runner/cypress_runner.js:172102:20)
+From Your Spec Code:
+    at Context.eval (https://localhost:9443/__cypress/tests?p=cypress/support/index.js:285:52)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

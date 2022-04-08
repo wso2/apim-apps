@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:41:07.517Z",
+    "end": "2022-03-01T07:41:31.853Z",
+    "duration": 24336,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "d61fb65c-83b7-4757-8aa0-1cea50b250ce",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/004-endpoints/07-mock-api-and-test.spec.js",
+      "file": "cypress/integration/01-publisher/004-endpoints/07-mock-api-and-test.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "f9f5cfcd-729c-4660-8733-8d78d344433c",
+          "title": "Mock the api response and test it",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Mock the api response and test it",
+              "fullTitle": "Mock the api response and test it Mock the api response and test it",
+              "timedOut": null,
+              "duration": 22276,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit(`/publisher/apis`); // select the option from the menu item\ncy.get('[data-testid=\"itest-id-createapi\"]').click();\ncy.get('[data-testid=\"create-api-open-api\"]').click();\ncy.get('[data-testid=\"open-api-file-select-radio\"]').click(); // upload the swagger\n// upload the swagger\ncy.get('[data-testid=\"browse-to-upload-btn\"]').then(function () {\n  const filepath = 'api_artifacts/petstore-v3.json';\n  cy.get('input[type=\"file\"]').attachFile(filepath);\n});\ncy.get('[data-testid=\"api-create-next-btn\"]').click();\ncy.get('[data-testid=\"itest-id-apiversion-input\"] input[type=\"text\"]', {\n  timeout: 30000\n});\ncy.document().then(doc => {\n  cy.get('[data-testid=\"itest-id-apicontext-input\"] input[type=\"text\"]').type('petstore3');\n  cy.get('[data-testid=\"itest-id-apiversion-input\"] input[type=\"text\"]').click();\n  const version = doc.querySelector('[data-testid=\"itest-id-apiversion-input\"] input[type=\"text\"]').value; // finish the wizard\n  cy.get('[data-testid=\"api-create-finish-btn\"]').click(); // validate\n  cy.get('[data-testid=\"itest-api-name-version\"]', {\n    timeout: 30000\n  });\n  cy.get('[data-testid=\"itest-api-name-version\"]').contains(version); // Go to endpoints page\n  cy.get('[data-testid=\"left-menu-itemendpoints\"]').click(); // Change the endpoint type to Prototype Implementation\n  cy.get('[data-testid=\"EndpointType\"] input[value=\"INLINE\"]').click(); // Confirm it\n  cy.get('[data-testid=\"change-endpoint-type-btn\"]').click();\n  cy.get('[data-testid=\"endpoint-save-btn\"]').click();\n  cy.get('[data-testid=\"endpoint-save-btn\"]').then(() => {\n    cy.get('[data-testid=\"left-menu-itemTestConsole\"]').click();\n    cy.get('button[data-testid=\"initialize-test-btn\"]').then(() => {\n      cy.get('button[data-testid=\"initialize-test-btn\"]').click();\n    }); // Wait until the api is saved\n    cy.intercept('**/subscriptions**').as('subGet');\n    cy.wait('@subGet');\n    cy.get('#operations-pet-getPetById').click();\n    cy.get('#operations-pet-getPetById .try-out__btn').click();\n    cy.get('#operations-pet-getPetById [placeholder=\"petId - ID of pet to return\"]').type('1');\n    cy.get('#operations-pet-getPetById button.execute').click();\n    cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');\n  });\n});",
+              "err": {},
+              "uuid": "d18b77d5-4c05-4983-bd40-50a27600bef7",
+              "parentUUID": "f9f5cfcd-729c-4660-8733-8d78d344433c",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "d18b77d5-4c05-4983-bd40-50a27600bef7"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 22276,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

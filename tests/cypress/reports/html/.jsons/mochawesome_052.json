@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:53:42.831Z",
+    "end": "2022-03-01T07:54:37.316Z",
+    "duration": 54485,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "31a6554d-ce02-4d9c-ac2a-06f715a74e15",
+      "title": "",
+      "fullFile": "cypress/integration/02-devportal/002-subscriptions/03-change-subscription-tier-on-an-application.spec.js",
+      "file": "cypress/integration/02-devportal/002-subscriptions/03-change-subscription-tier-on-an-application.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "bc865665-b8ef-4cda-b195-11bb34acf845",
+          "title": "Change subscription tier of an application",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Change subscription tier",
+              "fullTitle": "Change subscription tier of an application Change subscription tier",
+              "timedOut": null,
+              "duration": 38941,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(publisher, password);\ncy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);\ncy.logoutFromPublisher();\ncy.loginToDevportal(developer, password); // After publishing the api appears in devportal with a delay.\n// We need to keep refresing and look for the api in the listing page\n// following waitUntilApiExists function does that recursively.\nlet remainingAttempts = 30;\nfunction waitUntilApiExists() {\n  let $apis = Cypress.$(`[title=\"${apiName}\"]`);\n  if ($apis.length) {\n    // At least one with api name was found.\n    // Return a jQuery object.\n    return $apis;\n  }\n  if (--remainingAttempts) {\n    cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts); // Requesting the page to reload (F5)\n    cy.reload(); // Wait a second for the server to respond and the DOM to be present.\n    return cy.wait(4000).then(() => {\n      return waitUntilApiExists();\n    });\n  }\n  throw Error('Table was not found.');\n}\nwaitUntilApiExists().then($apis => {\n  cy.log('apis: ' + $apis.text()); // Create an app and subscribe\n  cy.createApp(appName, 'application description');\n  cy.visit('/devportal/applications?tenant=carbon.super');\n  cy.get(`[data-testid=\"application-listing-table\"] td a`).contains(appName).click(); // Go to application subscription page\n  cy.get('[data-testid=\"left-menu-subscriptions\"]').click();\n  cy.get('[data-testid=\"subscribe-api-btn\"]').click();\n  cy.get(`[data-testid=\"policy-select-${apiName}\"]`).click();\n  cy.get(`[data-testid=\"policy-select-${apiName}-Unlimited\"]`).click();\n  cy.get(`[data-testid=\"policy-subscribe-btn-${apiName}\"]`).click();\n  cy.get('[data-testid=\"close-btn\"]').click(); // Check the subscriptions existence\n  cy.get(`[data-testid=\"subscriptions-table\"] td a`).contains(`${apiName} - ${apiVersion}`).should('exist'); // Edit the subscription\n  cy.get(`[data-testid=\"edit-api-subscription-${apiName}\"]`).click();\n  cy.get('[data-testid=\"edit-api-subscription-select\"]').click();\n  cy.get(`[data-testid=\"select-Silver\"]`).click();\n  cy.get('button span').contains('Update').click(); // Checking the update is success.\n  cy.get(`[data-testid=\"policy-for-${apiName}\"]`).contains('Silver').should('exist');\n});",
+              "err": {},
+              "uuid": "0a563a52-1cc6-41bc-9c1d-d27720e0ad22",
+              "parentUUID": "bc865665-b8ef-4cda-b195-11bb34acf845",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "0a563a52-1cc6-41bc-9c1d-d27720e0ad22"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 38941,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:37:51.434Z",
+    "end": "2022-03-01T07:38:13.367Z",
+    "duration": 21933,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "1e7ed7c4-0f3d-4c54-a3b8-81cbc3d48e7f",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/003-run-time-configs/05-enable-mutual-ssl-and-upload-certificate.spec.js",
+      "file": "cypress/integration/01-publisher/003-run-time-configs/05-enable-mutual-ssl-and-upload-certificate.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "c0ee663f-f4ce-4e2c-bdc5-b23430022de2",
+          "title": "Runtime configuration",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Enable mutual ssl and upload cert",
+              "fullTitle": "Runtime configuration Enable mutual ssl and upload cert",
+              "timedOut": null,
+              "duration": 17331,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const random_number = Math.floor(Date.now() / 1000);\nconst alias = `alias${random_number}`;\ncy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itemRuntimeConfigurations\"]').click();\ncy.get('[data-testid=\"transport-level-security-head\"]').click();\ncy.get('[data-testid=\"mutual-ssl-checkbox\"]').click(); // uploading the cert\ncy.get('[data-testid=\"general-configuration-certs-add-btn\"]').click();\ncy.get('[data-testid=\"select-policy-dropdown-input\"]').click();\ncy.get('[data-testid=\"policy-item-Bronze\"]').click();\ncy.get('[data-testid=\"certificate-alias-textbox\"] input').click().type(alias); // upload the cert\nconst filepath = 'api_artifacts/sample.crt.pem';\ncy.get('input[type=\"file\"]').attachFile(filepath); // Click away\ncy.get('[data-testid=\"upload-cert-save-btn\"]').click();\ncy.get('[data-testid=\"upload-cert-save-btn\"]').then(() => {\n  cy.get('[data-testid=\"save-runtime-configurations\"]').click();\n});\ncy.get('[data-testid=\"save-runtime-configurations\"]').get(() => {\n  cy.get('[data-testid=\"transport-level-security-head\"]').click();\n  cy.get('[data-testid=\"mutual-ssl-checkbox\"] input').should('be.checked');\n  cy.get('[data-testid=\"endpoint-cert-list\"]').contains(alias).should('be.visible');\n});",
+              "err": {},
+              "uuid": "95f7a0e6-045e-44fa-a05c-1bb6353e03b7",
+              "parentUUID": "c0ee663f-f4ce-4e2c-bdc5-b23430022de2",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "95f7a0e6-045e-44fa-a05c-1bb6353e03b7"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 17331,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

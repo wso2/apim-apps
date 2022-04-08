@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:44:55.144Z",
+    "end": "2022-03-01T07:45:11.665Z",
+    "duration": 16521,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "c4e12868-3bde-472b-802a-b4bfcfb317d3",
+      "title": "",
+      "fullFile": "cypress/integration/01-publisher/009-api-definition/00-download-api.spec.js",
+      "file": "cypress/integration/01-publisher/009-api-definition/00-download-api.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "511b1e88-3909-498b-ae36-d3bd23268990",
+          "title": "Api Definition",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Download api",
+              "fullTitle": "Api Definition Download api",
+              "timedOut": null,
+              "duration": 14552,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.createAPIByRestAPIDesign(apiName, apiVersion);\ncy.get('[data-testid=\"left-menu-itemAPIdefinition\"]').click();\ncy.get('[data-testid=\"download-api-btn\"]').click(); // Downloading API\nconst fileName = `${publisher}-${apiName}-${apiVersion}`;\nconst downloadsFolder = Cypress.config('downloadsFolder');\nconst downloadedFilename = `${downloadsFolder}/${fileName}.zip`;\ncy.readFile(downloadedFilename, 'binary', {\n  timeout: 15000\n}).should(buffer => expect(buffer.length).to.be.gt(100));",
+              "err": {},
+              "uuid": "f52b77db-282b-4e52-a0be-cb970daafa56",
+              "parentUUID": "511b1e88-3909-498b-ae36-d3bd23268990",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "f52b77db-282b-4e52-a0be-cb970daafa56"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 14552,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

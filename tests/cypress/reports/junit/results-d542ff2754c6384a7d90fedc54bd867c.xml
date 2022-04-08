@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="54.2050" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:42:54" tests="0" file="cypress/integration/01-publisher/006-subscriptions/01-subscribtion-blocking.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Subscription blocking" timestamp="2022-03-01T07:42:54" tests="1" time="54.2050" failures="0">
+    <testcase name="Subscription blocking Subscribe and unsubscribe to API from api details page" time="54.2050" classname="Subscribe and unsubscribe to API from api details page">
+    </testcase>
+  </testsuite>
+</testsuites>

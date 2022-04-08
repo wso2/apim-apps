@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="15.4500" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:38:14" tests="0" file="cypress/integration/01-publisher/003-run-time-configs/05-oauth2-and-api-key-security.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Runtime configuration" timestamp="2022-03-01T07:38:14" tests="1" time="15.4500" failures="0">
+    <testcase name="Runtime configuration OAuth2 and api key security spec" time="15.4500" classname="OAuth2 and api key security spec">
+    </testcase>
+  </testsuite>
+</testsuites>

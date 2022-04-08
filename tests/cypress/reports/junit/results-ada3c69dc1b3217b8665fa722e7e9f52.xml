@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="15.3400" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:44:13" tests="0" file="cypress/integration/01-publisher/007-environments/00-select-gateway-environments.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Select gateway environments" timestamp="2022-03-01T07:44:13" tests="1" time="15.3400" failures="0">
+    <testcase name="Select gateway environments Select gateway environments" time="15.3400" classname="Select gateway environments">
+    </testcase>
+  </testsuite>
+</testsuites>

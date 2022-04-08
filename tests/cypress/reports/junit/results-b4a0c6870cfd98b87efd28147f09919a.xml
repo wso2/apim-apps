@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="11.9230" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-03-01T07:49:31" tests="0" file="cypress/integration/02-devportal/000-general/02-logout-from-devportal.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Login logout from devportal" timestamp="2022-03-01T07:49:31" tests="1" time="11.9230" failures="0">
+    <testcase name="Login logout from devportal Login logout from devportal" time="11.9230" classname="Login logout from devportal">
+    </testcase>
+  </testsuite>
+</testsuites>

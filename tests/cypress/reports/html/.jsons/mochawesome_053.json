@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-03-01T07:54:38.408Z",
+    "end": "2022-03-01T07:55:37.220Z",
+    "duration": 58812,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "68868769-e80d-4284-9acf-8dc69d7c4c9c",
+      "title": "",
+      "fullFile": "cypress/integration/02-devportal/002-subscriptions/04-generate-keys-api-details-page.spec.js",
+      "file": "cypress/integration/02-devportal/002-subscriptions/04-generate-keys-api-details-page.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "53bef27a-fd7a-466a-a1ec-3dfff9134cb9",
+          "title": "Generate keys from api details page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Generate keys from api details page",
+              "fullTitle": "Generate keys from api details page Generate keys from api details page",
+              "timedOut": null,
+              "duration": 37013,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.loginToPublisher(publisher, password);\ncy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);\ncy.logoutFromPublisher();\ncy.loginToDevportal(developer, password); // Create an app and subscribe\ncy.createApp(appName, 'application description');\ncy.visit('/devportal/apis?tenant=carbon.super');\ncy.url().should('contain', '/apis?tenant=carbon.super');\ncy.get(`[title=\"${apiName}\"]`, {\n  timeout: 30000\n});\ncy.get(`[title=\"${apiName}\"]`).click();\ncy.get('[data-testid=\"left-menu-credentials\"]').click(); // Click and select the new application\ncy.get('#application-subscribe').click();\ncy.get(`.MuiAutocomplete-popper li`).contains(appName).click();\ncy.get(`[data-testid=\"subscribe-to-api-btn\"]`).click();\ncy.get(`[data-testid=\"subscription-table\"] td`).contains(appName).should('exist'); // Generate prod keys\ncy.get(`#${appName}-PK`).click();\ncy.get('input#client_credentials').check();\ncy.get('input#password').check();\ncy.get('[data-testid=\"generate-application-keys\"]').click();\ncy.get('#consumer-key', {\n  timeout: 30000\n});\ncy.get('#consumer-key').should('exist');",
+              "err": {},
+              "uuid": "aa54d18c-3b65-433e-a85e-e4c235d1c563",
+              "parentUUID": "53bef27a-fd7a-466a-a1ec-3dfff9134cb9",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "aa54d18c-3b65-433e-a85e-e4c235d1c563"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 37013,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.2.2"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}
