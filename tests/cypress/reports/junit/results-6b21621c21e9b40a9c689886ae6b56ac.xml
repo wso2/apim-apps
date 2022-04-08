@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="22.2760" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:41:07" tests="0" file="cypress/integration/01-publisher/004-endpoints/07-mock-api-and-test.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Mock the api response and test it" timestamp="2022-03-01T07:41:07" tests="1" time="22.2760" failures="0">
-    <testcase name="Mock the api response and test it Mock the api response and test it" time="22.2760" classname="Mock the api response and test it">
-    </testcase>
-  </testsuite>
-</testsuites>

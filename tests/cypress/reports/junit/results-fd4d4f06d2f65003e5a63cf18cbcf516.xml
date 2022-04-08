@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="15.8050" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:45:54" tests="0" file="cypress/integration/01-publisher/010-additional-properties/00-add-additional-properties.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add additional properties" timestamp="2022-03-01T07:45:54" tests="1" time="15.8050" failures="0">
-    <testcase name="Add additional properties Add additional properties" time="15.8050" classname="Add additional properties">
-    </testcase>
-  </testsuite>
-</testsuites>

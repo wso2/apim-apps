@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="14.8710" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:37:31" tests="0" file="cypress/integration/01-publisher/003-run-time-configs/03-enable-schema-validation.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Runtime configuration" timestamp="2022-03-01T07:37:31" tests="1" time="14.8710" failures="0">
-    <testcase name="Runtime configuration Add Authorization Header for the api" time="14.8710" classname="Add Authorization Header for the api">
-    </testcase>
-  </testsuite>
-</testsuites>

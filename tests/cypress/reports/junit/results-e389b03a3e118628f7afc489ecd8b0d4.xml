@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="16.4020" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:35:41" tests="0" file="cypress/integration/01-publisher/002-api-resources/01-add-advance-throttling-policies-for-api.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add advanced throttling policies" timestamp="2022-03-01T07:35:41" tests="1" time="16.4020" failures="0">
-    <testcase name="Add advanced throttling policies Add Authorization Header for the api" time="16.4020" classname="Add Authorization Header for the api">
-    </testcase>
-  </testsuite>
-</testsuites>
