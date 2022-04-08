@@ -93,7 +93,7 @@ describe("Change subscription tier of an application", () => {
             // Edit the subscription
             cy.get(`#edit-api-subscription-${apiName}`).click();
             cy.get('#outlined-select-currency').click();
-            cy.get(`#select-Silver`).click();
+            cy.get(`data-value="Unlimited"`).click();
             cy.get('button span').contains('Update').click();
 
             // Checking the update is success.

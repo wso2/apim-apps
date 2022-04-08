@@ -54,7 +54,7 @@ describe("Create websocket api - super tenant", () => {
         cy.get('#itest-api-name-version').contains(`v${random_number}`);
 
         // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click();
+        cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
         cy.get(`#itest-id-deleteconf`).click();
     }
     it("Create websocket API from url", () => {
