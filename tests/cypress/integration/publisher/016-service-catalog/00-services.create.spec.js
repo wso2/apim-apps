@@ -1,5 +1,3 @@
-
-
 import { getSampleServiceMeta, getSampleOpenAPI } from '../../../support/mockData/serviceCatalog';
 import Utils from "@support/utils";
 
