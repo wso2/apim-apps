@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="14.6130" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:45:12" tests="0" file="cypress/integration/01-publisher/009-api-definition/01-download-swagger.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Download swagger" timestamp="2022-03-01T07:45:12" tests="1" time="14.6130" failures="0">
-    <testcase name="Download swagger Download swagger" time="14.6130" classname="Download swagger">
-    </testcase>
-  </testsuite>
-</testsuites>

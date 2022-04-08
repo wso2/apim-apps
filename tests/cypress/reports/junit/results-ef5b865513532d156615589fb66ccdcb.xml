@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="7.3280" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-03-01T07:56:32" tests="0" file="cypress/integration/03-admin/01-add-edit-delete-advance-throttle-policies.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add Edit Delete advance throttle policies" timestamp="2022-03-01T07:56:32" tests="1" time="7.3280" failures="0">
-    <testcase name="Add Edit Delete advance throttle policies Add Edit Delete advance throttle policies" time="7.3280" classname="Add Edit Delete advance throttle policies">
-    </testcase>
-  </testsuite>
-</testsuites>
