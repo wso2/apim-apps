@@ -104,6 +104,7 @@ const subscriptionTableRow = (props) => {
                                 )}
                                 id={app.label + '-UN'}
                                 aria-labelledby={app.label + '-UN ' + app.label}
+                                to='#'
                             >
                                 <span>
                                     <FormattedMessage
