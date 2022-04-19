@@ -17,7 +17,8 @@
         "lint": "eslint --ignore-pattern '*.test.js' --ignore-pattern '*.test.jsx' --quiet -c .eslintrc.js --ext .jsx,.js source",
         "i18n": "extract-messages -l=en -o site//public//locales// -d en --extractFromFormatMessageCall --flat 'source//src//app//**//*.jsx'",
         "check-unused": "webpack --mode production --env.unused true --display errors-only",
-        "start": "webpack serve --compress --https --port 8084 --mode development "
+        "start": "webpack serve --compress --https --port 8084 --mode development ",
+        "replace": "ls | entr -s 'rimraf /home/tharani/clone/pack/repository/deployment/server/jaggeryapps/devportal/site/public/dist && cp -R /home/tharani/clone/apim-apps/portals/devportal/site/public/dist /home/tharani/clone/pack/repository/deployment/server/jaggeryapps/devportal/site/public ' "
     },
     "repository": {
         "type": "git",
