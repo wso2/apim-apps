@@ -101,8 +101,8 @@ else
     echo "NPM Deos NOT exists and installing existing version."
 fi
 
-wget https://nodejs.org/dist/latest-v12.x/node-v12.22.3-linux-x64.tar.gz
-tar -xvf node-v12.22.3-linux-x64.tar.gz
+wget https://nodejs.org/dist/v12.22.3/node-v12.22.3-linux-x64.tar.xz
+tar -xvf node-v12.22.3-linux-x64.tar.xz
 sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/node /usr/bin/node
 sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npm /usr/bin/npm
 sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
