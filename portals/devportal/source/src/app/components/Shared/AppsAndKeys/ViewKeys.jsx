@@ -610,6 +610,7 @@ class ViewKeys extends React.Component {
                                     && mode !== 'MAPPED'
                                     && (
                                         <Button
+                                            id = 'generate-access-token-oauth2'
                                             variant='outlined'
                                             size='small'
                                             color='primary'
