@@ -291,10 +291,10 @@ class ViewKeys extends React.Component {
                     this.setState({ notFound: true });
                 } else if (status === 400) {
                     Alert.error(error.description
-                         || intl.formatMessage({
-                             id: 'Shared.AppsAndKeys.TokenManager.key.generate.bad.request.error',
-                             defaultMessage: 'Error occurred when generating Access Token',
-                         }));
+                        || intl.formatMessage({
+                            id: 'Shared.AppsAndKeys.TokenManager.key.generate.bad.request.error',
+                            defaultMessage: 'Error occurred when generating Access Token',
+                        }));
                 }
                 this.setState({ isUpdating: false });
                 const { response } = error;
@@ -349,7 +349,7 @@ class ViewKeys extends React.Component {
                                                 classes={{ root: classes.iconButton }}
                                             >
                                                 <IconButton aria-label='Copy to clipboard'
-                                                            classes={{root: classes.iconButton}}>
+                                                    classes={{ root: classes.iconButton }}>
                                                     <Icon color='secondary'>
                                                         file_copy
                                                     </Icon>
@@ -588,14 +588,23 @@ class ViewKeys extends React.Component {
                             <DialogActions>
                                 {isUpdating && <CircularProgress size={24} />}
                                 {!showToken && !showCurl && !isKeyJWT && !showSecretGen && (
-                                    <Button onClick={this.generateAccessToken} color='primary' disabled={isUpdating}>
+                                    <Button
+                                        onClick={this.generateAccessToken}
+                                        color='primary'
+                                        id='generate-access-token-generate-btn'
+                                        disabled={isUpdating}
+                                    >
                                         <FormattedMessage
                                             id='Shared.AppsAndKeys.ViewKeys.consumer.generate.btn'
                                             defaultMessage='Generate'
                                         />
                                     </Button>
                                 )}
-                                <Button onClick={this.handleClose} color='primary' autoFocus>
+                                <Button 
+                                onClick={this.handleClose} 
+                                id='generate-access-token-close-btn'
+                                color='primary' 
+                                autoFocus>
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ViewKeys.consumer.close.btn'
                                         defaultMessage='Close'
@@ -610,7 +619,7 @@ class ViewKeys extends React.Component {
                                     && mode !== 'MAPPED'
                                     && (
                                         <Button
-                                            id = 'generate-access-token-oauth2'
+                                            id='generate-access-token-oauth2'
                                             variant='outlined'
                                             size='small'
                                             color='primary'
