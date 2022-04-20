@@ -229,7 +229,7 @@ class ViewToken extends React.Component {
                         placement='right'
                     >
                         <CopyToClipboard text={token.accessToken} onCopy={this.onCopy('tokenCopied')}>
-                            <IconButton aria-label='Copy to clipboard'>
+                            <IconButton id = 'copy-to-clipbord-icon' aria-label='Copy to clipboard'>
                                 <FileCopy color='secondary'>file_copy</FileCopy>
                             </IconButton>
                         </CopyToClipboard>
