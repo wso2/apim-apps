@@ -18,16 +18,20 @@ import Utils from "@support/utils";
 
 describe("Invoke API Product", () => {
     const publisher = 'publisher';
+    const developer = 'developer';
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
     const productName = 'petstoreProduct';
     const apiName = 'SwaggerPetstore-OpenAPI30';
     const apiVersion = '1.0.6';
+    const appName = 'InvokeApiProduct' + Math.floor(Date.now() / 1000);
+    const appDescription = 'Testing app ';
 
     before(function () {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
@@ -124,24 +128,44 @@ describe("Invoke API Product", () => {
                     cy.get('#add-selected-resources').click();
                     cy.get('#save-product-resources').click();
 
+                    cy.logoutFromPublisher();
+                    //Log into developer portal
+                    cy.loginToDevportal(developer, password);
+                    cy.visit(`${Utils.getAppOrigin()}/devportal/applications/create?tenant=carbon.super`);
+                    cy.createApp(appName, appDescription);
+                    
+                    cy.get('#production-keys-oauth').click();
+                    cy.get('#generate-keys', {timeout: 30000}).click();
+                    cy.get('#generate-access-token-oauth2',{timeout: 30000}).click();
+                    cy.get('#generate-access-token-generate-btn',{timeout: 30000}).click();
+                    cy.get('#copy-to-clipbord-icon').click();
+                    cy.get('#generate-access-token-close-btn').click();
+            
+            
+                    cy.logoutFromDevportal();
+                    cy.loginToPublisher(publisher, password);
+
                     // Deleting the api and api product
                     cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/${uuidProduct}/overview`);
                     cy.get(`#itest-id-deleteapi-icon-button`).click();
                     cy.get(`#itest-id-deleteconf`).click();
 
+                    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                    cy.get(`#itest-id-deleteapi-icon-button`).click();
+                    cy.get(`#itest-id-deleteconf`).click();
+
                 });
-
-                cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
-                cy.get('#itest-api-name-version', { timeout: 30000 });
-                cy.get(`#itest-id-deleteapi-icon-button`).click();
-                cy.get(`#itest-id-deleteconf`).click();
-
             });
         });
+ 
     });
 
     after(function () {
+
+        //Delete Users
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(publisher);
+        cy.deleteUser(developer);
     })
 })
