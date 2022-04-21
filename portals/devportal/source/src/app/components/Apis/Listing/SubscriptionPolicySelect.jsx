@@ -110,7 +110,7 @@ class SubscriptionPolicySelect extends React.Component {
                             onClick={() => {
                                 handleSubscribe(applicationId, apiId, selectedPolicy);
                             }}
-                            id='policy-subscribe-btn'
+                            id={apiId + '-policy-subscribe-btn'}
                         >
                             <FormattedMessage
                                 defaultMessage='Subscribe'
