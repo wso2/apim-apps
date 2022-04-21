@@ -94,7 +94,7 @@ function FormDialogBase({
                     <Button onClick={handleClose}>
                         Cancel
                     </Button>
-                    <Button onClick={saveTriggerd} color='primary' variant='contained' disabled={saving}>
+                    <Button onClick={saveTriggerd} color='primary' variant='contained' disabled={saving} data-testid={saveButtonText + '-btn'}>
                         {saving ? (<CircularProgress size={16} />) : (<>{saveButtonText}</>)}
                     </Button>
                 </DialogActions>
