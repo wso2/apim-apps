@@ -136,7 +136,7 @@ describe("Resource add edit operations", () => {
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         addApiAndResource(verb);
         // Click the operation level radio button on the top
-        cy.get('#api-rate-limiting-operation-level').click();
+        cy.get('#api-rate-limiting-operation-level').click({force:true});
 
         // expand the section
         cy.get(`#${verb}\\${target}`).click();

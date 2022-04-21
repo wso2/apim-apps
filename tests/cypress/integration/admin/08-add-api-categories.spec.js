@@ -56,8 +56,9 @@ describe("Add API Categories and assign via publisher portal", () => {
 
         // Delete
         cy.visit(`${Utils.getAppOrigin()}/admin/settings/api-categories`);
+        cy.wait(4000);
         cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)').click();
-        cy.get('button span.MuiButton-label').contains('Delete').click();
+        cy.get('[data-testid="Delete-btn"]').click();
         cy.get('div[role="status"]').should('have.text','API Category deleted successfully');
     })
 
