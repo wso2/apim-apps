@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as MUILink } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
@@ -73,7 +73,7 @@ const subscriptionTableRow = (props) => {
                 <td className={classes.td}>{app.status}</td>
                 <td className={classes.td}>
                     <div className={classes.actionColumn}>
-                        <Link
+                        <MUILink
                             className={classes.button}
                             to={'/applications/' + app.value}
                             id={app.label + '-MA'}
@@ -91,17 +91,19 @@ const subscriptionTableRow = (props) => {
                                 strokeColor={theme.palette.primary.main}
                                 icon='applications'
                             />
-                        </Link>
+                        </MUILink>
                         <ScopeValidation
                             resourcePath={resourcePaths.SINGLE_SUBSCRIPTION}
                             resourceMethod={resourceMethods.DELETE}
                         >
-                            <Link
+                             <MUILink
                                 className={classes.button}
-                                onClick={() => handleSubscriptionDelete(
+                                onClick={(e) => { 
+                                e.preventDefault(); 
+                                 handleSubscriptionDelete(
                                     app.subscriptionId,
                                     updateSubscriptionData,
-                                )}
+                                )}}
                                 id={app.label + '-UN'}
                                 aria-labelledby={app.label + '-UN ' + app.label}
                             >
@@ -117,9 +119,9 @@ const subscriptionTableRow = (props) => {
                                     strokeColor={theme.palette.primary.main}
                                     icon='subscriptions'
                                 />
-                            </Link>
+                            </MUILink>
                         </ScopeValidation>
-                        <Link
+                        <MUILink
                             className={classNames(classes.button, {
                                 [classes.activeLink]: selectedAppId
                                             && selectedKeyType === 'PRODUCTION'
@@ -141,8 +143,8 @@ const subscriptionTableRow = (props) => {
                                 strokeColor={theme.palette.primary.main}
                                 icon='productionkeys'
                             />
-                        </Link>
-                        <Link
+                        </MUILink>
+                        <MUILink
                             className={classNames(classes.button, {
                                 [classes.activeLink]: selectedAppId
                                             && selectedKeyType === 'SANDBOX'
@@ -164,7 +166,7 @@ const subscriptionTableRow = (props) => {
                                 strokeColor={theme.palette.primary.main}
                                 icon='productionkeys'
                             />
-                        </Link>
+                        </MUILink>
                     </div>
                 </td>
             </tr>
