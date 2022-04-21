@@ -96,14 +96,15 @@ const subscriptionTableRow = (props) => {
                             resourcePath={resourcePaths.SINGLE_SUBSCRIPTION}
                             resourceMethod={resourceMethods.DELETE}
                         >
-                             <MUILink
+                            <MUILink
                                 className={classes.button}
-                                onClick={(e) => { 
-                                e.preventDefault(); 
-                                 handleSubscriptionDelete(
-                                    app.subscriptionId,
-                                    updateSubscriptionData,
-                                )}}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubscriptionDelete(
+                                        app.subscriptionId,
+                                        updateSubscriptionData,
+                                    );
+                                }}
                                 id={app.label + '-UN'}
                                 aria-labelledby={app.label + '-UN ' + app.label}
                             >
