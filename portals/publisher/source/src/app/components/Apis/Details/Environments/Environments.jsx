@@ -391,7 +391,13 @@ export default function Environments() {
         const promise = restApi.getAsyncAPIDefinition(api.id);
         promise.then(async (response) => {
             if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
-                const doc = await parse(response.data);
+                let doc;
+                try {
+                    doc = await parse(response.data);
+                } catch (err) {
+                    console.warn("Async API does not found");
+                    return;
+                }
                 const protocolBindings = [];
                 // eslint-disable-next-line array-callback-return
                 doc.channelNames().map((channelName) => {
