@@ -348,7 +348,7 @@ class SubscriptionTableData extends React.Component {
                                                                 variant='outlined'
                                                             >
                                                                 {this.state.tiers.map((tier) => (
-                                                                    <MenuItem key={tier.value} value={tier.value}>
+                                                                    <MenuItem key={tier.value} value={tier.value} id={tier.value}>
                                                                         {tier.label}
                                                                     </MenuItem>
                                                                 ))}
