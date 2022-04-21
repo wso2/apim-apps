@@ -140,6 +140,12 @@ describe("Invoke API Product", () => {
                     cy.get('#generate-access-token-generate-btn',{timeout: 30000}).click();
                     cy.get('#copy-to-clipbord-icon').click();
                     cy.get('#generate-access-token-close-btn').click();
+
+                    //Subscription of APi Product
+                    cy.get('#left-menu-subscriptions').click();
+                    cy.get({uuid}+ '#-policy-subscribe-btn').click();
+
+                    
             
             
                     cy.logoutFromDevportal();
