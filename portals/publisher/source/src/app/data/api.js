@@ -744,6 +744,27 @@ class API extends Resource {
     }
 
     /**
+     * Validate an open api definition.
+     * @param api {Object} Updated API object(JSON) which needs to be updated
+     *
+     */
+     validateSwagger(swagger) {
+        const promised_update = this.client.then(client => {
+            const payload = {
+                file: swagger,
+                'Content-Type': 'multipart/form-data',
+            };
+            return client.apis['Validation'].validateOpenAPIDefinition(
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promised_update;
+    }
+    
+    /**
      * Update an api via PUT HTTP method, Need to give the updated API object as the argument.
      * @param api {Object} Updated API object(JSON) which needs to be updated
      * @deprecated

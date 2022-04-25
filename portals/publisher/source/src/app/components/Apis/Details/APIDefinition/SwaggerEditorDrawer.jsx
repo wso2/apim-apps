@@ -19,6 +19,12 @@ import React, { lazy } from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import InlineMessage from 'AppComponents/Shared/InlineMessage';
+import { FormattedMessage } from 'react-intl';
+import CancelIcon from '@material-ui/icons/Cancel';
+import IconButton from '@material-ui/core/IconButton';
 import SwaggerUI from './swaggerUI/SwaggerUI';
 
 const styles = () => ({
@@ -62,7 +68,7 @@ class SwaggerEditorDrawer extends React.Component {
      * @inheritDoc
      */
     render() {
-        const { classes, language, swagger } = this.props;
+        const { classes, language, swagger, errors, setErrors } = this.props;
         const swaggerUrl = 'data:text/' + language + ',' + encodeURIComponent(swagger);
         return (
             <>
@@ -79,6 +85,34 @@ class SwaggerEditorDrawer extends React.Component {
                         />
                     </Grid>
                     <Grid item className={classes.editorPane}>
+                        {(errors && errors.length > 0) && (
+                            <Box mr={2}>
+                                <InlineMessage type='warning' height='100%'>
+                                    <Box>
+                                        <Box onClick={setErrors} position='absolute' right='0' top='0'>
+                                            <IconButton area-label='close'>
+                                                <CancelIcon />
+                                            </IconButton>
+                                        </Box>
+                                        <Typography
+                                            variant='h5'
+                                            component='h3'
+                                            className={classes.head}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.APIDefinition.SwaggerEditorDrawer.title'
+                                                defaultMessage='Failed to Validate OpenAPI File'
+                                            />
+                                        </Typography>
+                                        {errors.map((e) => (
+                                            <Typography component='p' className={classes.content}>
+                                                {e.description}
+                                            </Typography>
+                                        ))}
+                                    </Box>
+                                </InlineMessage>
+                            </Box>
+                        )}
                         <SwaggerUI url={swaggerUrl} />
                     </Grid>
                 </Grid>
@@ -92,6 +126,8 @@ SwaggerEditorDrawer.propTypes = {
     language: PropTypes.string.isRequired,
     swagger: PropTypes.string.isRequired,
     onEditContent: PropTypes.func.isRequired,
+    errors: PropTypes.shape([]).isRequired,
+    setErrors: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(SwaggerEditorDrawer);

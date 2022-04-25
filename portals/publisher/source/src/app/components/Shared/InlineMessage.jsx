@@ -21,6 +21,7 @@ const styles = (theme) => ({
             fontSize: 80,
             color: amber[700],
         },
+        position: 'relative',
     },
     button: {
         marginTop: theme.spacing(1),
