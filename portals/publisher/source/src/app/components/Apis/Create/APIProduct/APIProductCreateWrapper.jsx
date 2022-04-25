@@ -438,6 +438,7 @@ export default function ApiProductCreateWrapper(props) {
                                     <Button
                                         variant='contained'
                                         color='primary'
+                                        id='create-and-publish-api-product-btn'
                                         disabled={
                                             !apiInputs.isFormValid || isCreating || (apiResources.length === 0)
                                             || isDeploying || isRevisioning || !apiInputs.isFormValid
