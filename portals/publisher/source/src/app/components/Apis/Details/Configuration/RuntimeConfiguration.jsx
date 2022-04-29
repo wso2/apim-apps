@@ -578,7 +578,7 @@ export default function RuntimeConfiguration() {
                                         disabled
                                         type='submit'
                                         variant='contained'
-                                        color='primary'
+                                        color='primary'                     
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Configuration.Configuration.save'
@@ -592,6 +592,7 @@ export default function RuntimeConfiguration() {
                                         handleSave={handleSave}
                                         handleSaveAndDeploy={handleSaveAndDeploy}
                                         isUpdating={isUpdating}
+                                        id = 'runtime-config-save-button'
                                     />
                                 )}
                         </Grid>
