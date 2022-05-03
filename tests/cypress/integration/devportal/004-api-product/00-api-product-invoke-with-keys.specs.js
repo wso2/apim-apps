@@ -100,17 +100,18 @@ describe("Invoke API Product", () => {
 
                     // Deploying
                     cy.get('#deploy-btn',{ timeout: 30000 }).click({force:true});
-                    
-                    //Publish the api
-                    cy.on('uncaught:exception', (err, runnable) => {
-                        return false
-                    })
 
                     cy.get('#left-menu-itemlifecycle').click();
                     
                     // Publishing api product
                     cy.wait(2000);
                     cy.get('[data-testid="Publish-btn"]').click();
+                    cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/${uuidProduct}/runtime-configuration`);
+                    cy.get('#applicationLevel').click();
+                    cy.wait(2000);
+                    cy.get('#api-security-api-key-checkbox').check().should('be.checked');
+
+                    cy.get('#runtime-config-save-button').scrollIntoView().click();
 
                     cy.logoutFromPublisher();
 
@@ -160,6 +161,50 @@ describe("Invoke API Product", () => {
                         
                     });
 
+                    //Test with API Key
+                    cy.createApp(appName, appDescription);
+                    cy.location('pathname').then((pathName) => {
+                        const pathSegments = pathName.split('/');
+                        const uuidApp = pathSegments[pathSegments.length - 2];
+                        cy.get('#production-keys-apikey').click();
+                        // Generate with none option
+                        cy.get('#generate-key-btn').click();
+                        cy.get('#generate-api-keys-btn',{timeout: 30000}).click({force:true});
+                        cy.get('#generate-api-keys-close-btn').should('be.visible').click({force:true});
+                        cy.wait(2000);
+                                
+                        //Subscription of APi Product
+                        cy.visit(`${Utils.getAppOrigin()}/devportal/applications/${uuidApp}/subscriptions`);
+                        cy.get('#left-menu-subscriptions').click();
+                        cy.get('#subscribe-api-btn').click();
+
+                        cy.get(`#policy-subscribe-btn-${uuidProduct}`).click();
+                        cy.get('#close-btn').click();
+                   
+                        cy.visit(`${Utils.getAppOrigin()}/devportal/apis/${uuidProduct}/test`);
+                        cy.wait(2000);
+                        cy.get('#api-key-select-radio-button').click();
+
+                        //test
+                        cy.get('#gen-test-key').should('not.have.attr', 'disabled', { timeout: 30000 });
+                        cy.get('#gen-test-key').click();
+
+                        cy.intercept('**/generate-token').as('genToken');
+                        //cy.wait('@genToken');
+
+                        // Test console with api key
+                        cy.get('#operations-default-get_menu').click();
+                        cy.get('#operations-default-get_menu .try-out__btn').click();
+                        cy.get('#operations-default-get_menu button.execute').click();
+                        cy.wait(3000);
+                        cy.get('#operations-default-get_menu  td.response-col_status').contains('200').should('exist');
+
+                        cy.visit(`${Utils.getAppOrigin()}/devportal/applications`);
+                        cy.get(`#delete-${appName}-btn`, { timeout: 30000 });
+                        cy.get(`#delete-${appName}-btn`).click();
+                        cy.get(`#itest-confirm-application-delete`).click();
+                        
+                    });
 
                     cy.logoutFromDevportal();
 
