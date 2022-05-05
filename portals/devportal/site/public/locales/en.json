@@ -412,7 +412,6 @@
   "Base.Errors.ScopeNotFound.message.first": "Sorry, the page you are looking for ",
   "Base.Errors.ScopeNotFound.message.second": "is not allowed under logged in user role scopes. Please login with different user with relevant permission to access this resource.",
   "Base.Errors.ScopeNotFound.title": "Un-authorized Access",
-  "Base.Errors.SubscriptionNotFound.default_title": "Solace Info Page is not displayed without subscriptions to the API.\n                                        Please Subscribed to the API",
   "Base.Header.GlobalNavbar.menu.apis": "APIs",
   "Base.Header.GlobalNavbar.menu.applications": "Applications",
   "Base.Header.GlobalNavbar.menu.home": "Home",
