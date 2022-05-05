@@ -19,8 +19,7 @@
         "i18n:compile": "formatjs compile site/public/locales/raw.en.json --ast --out-file site/public/locales/en.json",
         "start": "webpack serve --compress --https --port 8081 --mode development",
         "start:mocked": "concurrently npm:mocked 'WSO2_UI_MOCKED=true webpack serve --compress --https --port 8081 --mode production --progress'",
-        "mocked": "multi-mock-oas",
-        "replace": "ls | entr -s 'rimraf /home/tharani/clone/pack/repository/deployment/server/jaggeryapps/publisher/site/public/dist && cp -R /home/tharani/clone/apim-apps/portals/publisher/site/public/dist /home/tharani/clone/pack/repository/deployment/server/jaggeryapps/publisher/site/public ' "
+        "mocked": "multi-mock-oas"
     },
     "repository": {
         "type": "git",
