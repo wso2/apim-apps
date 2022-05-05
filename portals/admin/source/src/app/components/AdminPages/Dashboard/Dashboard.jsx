@@ -28,6 +28,8 @@ import TasksWorkflowCard from 'AppComponents/AdminPages/Dashboard/TasksWorkflowC
  * @returns {JSX} Loading animation.
  */
 export default function Dashboard() {
+    const { user: { _scopes } } = useAppContext();
+    const hasWorkflowViewPermission = _scopes.includes('apim:api_workflow_view');
     return (
         <ContentBase width='full' title='Dashboard' pageStyle='paperLess'>
             <Grid container spacing={3} justify='center'>
@@ -37,9 +39,11 @@ export default function Dashboard() {
                 <Grid item xs={11} md={6}>
                     <APICategoriesCard />
                 </Grid>
-                <Grid item xs={11} md={6}>
-                    <TasksWorkflowCard />
-                </Grid>
+                {hasWorkflowViewPermission && (
+                    <Grid item xs={11} md={6}>
+                        <TasksWorkflowCard />
+                    </Grid>
+                )}
             </Grid>
         </ContentBase>
     );

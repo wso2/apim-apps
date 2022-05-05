@@ -79,6 +79,11 @@ function Navigator(props) {
         routeMenuMapping = RouteMenuMapping(intl).filter((menu) => menu.id !== 'Manage Alerts');
     }
 
+    const hasWorkflowViewPermission = _scopes.includes('apim:api_workflow_view');
+    if (!hasWorkflowViewPermission) {
+        routeMenuMapping = RouteMenuMapping(intl).filter((menu) => menu.id !== 'Tasks');
+    }
+
     const isWorkflowManager = _scopes.includes('apim:api_workflow_view')
     && _scopes.includes('apim:api_workflow_approve')
     && _scopes.includes('apim:tenantInfo')
