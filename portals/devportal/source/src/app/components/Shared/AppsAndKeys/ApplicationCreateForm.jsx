@@ -261,6 +261,7 @@ const ApplicationCreate = (props) => {
                         defaultMessage: 'Type a group and enter',
                         id: 'Shared.AppsAndKeys.ApplicationCreateForm.type.a.group.and.enter',
                     })}
+                    id='application-group-id'
                     margin='normal'
                     variant='outlined'
                     fullWidth
