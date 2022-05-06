@@ -22,6 +22,7 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import APICategoriesCard from 'AppComponents/AdminPages/Dashboard/APICategoriesCard';
 import RateLimitingCard from 'AppComponents/AdminPages/Dashboard/RateLimitingCard';
 import TasksWorkflowCard from 'AppComponents/AdminPages/Dashboard/TasksWorkflowCard';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 /**
  * Render progress inside a container centering in the container.
