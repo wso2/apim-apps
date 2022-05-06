@@ -25,6 +25,8 @@ const CONSTS = {
         NO_TOKEN_FOUND: '901401: No partial token found!',
     },
     TENANT_STATE_ACTIVE: 'ACTIVE',
+    DEFAULT_MIN_SCOPES_TO_LOGIN: ['apim:api_workflow_view', 'apim:api_workflow_approve', 'apim:tenantInfo',
+        'apim:admin_settings'],
 };
 
 export default CONSTS;

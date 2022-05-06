@@ -22,12 +22,15 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import APICategoriesCard from 'AppComponents/AdminPages/Dashboard/APICategoriesCard';
 import RateLimitingCard from 'AppComponents/AdminPages/Dashboard/RateLimitingCard';
 import TasksWorkflowCard from 'AppComponents/AdminPages/Dashboard/TasksWorkflowCard';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 /**
  * Render progress inside a container centering in the container.
  * @returns {JSX} Loading animation.
  */
 export default function Dashboard() {
+    const { user: { _scopes } } = useAppContext();
+    const hasWorkflowViewPermission = _scopes.includes('apim:api_workflow_view');
     return (
         <ContentBase width='full' title='Dashboard' pageStyle='paperLess'>
             <Grid container spacing={3} justify='center'>
@@ -37,9 +40,11 @@ export default function Dashboard() {
                 <Grid item xs={11} md={6}>
                     <APICategoriesCard />
                 </Grid>
-                <Grid item xs={11} md={6}>
-                    <TasksWorkflowCard />
-                </Grid>
+                {hasWorkflowViewPermission && (
+                    <Grid item xs={11} md={6}>
+                        <TasksWorkflowCard />
+                    </Grid>
+                )}
             </Grid>
         </ContentBase>
     );
