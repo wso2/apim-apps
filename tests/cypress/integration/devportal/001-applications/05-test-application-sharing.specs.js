@@ -82,7 +82,7 @@ describe("Invoke API Product", () => {
             cy.get('input[name="http://wso2.org/claims/organization"]').type('org1');
             cy.get('#termsCheckbox').check().should('be.checked');
             cy.get('#registrationSubmit').click();
-            cy.contains('Close').click() 
+            cy.contains('Close').click();
 
 
             //Log into developer portal as user 1
@@ -99,16 +99,17 @@ describe("Invoke API Product", () => {
             cy.get('#application-description').type(appDescription);
             cy.get('#itest-application-create-save').click();
             cy.wait(2000);
+            cy.logoutFromDevportal();
+
+            //Log into developer portal as user 2
+            cy.loginToDevportal(user2, password);
+            cy.visit(`${Utils.getAppOrigin()}/devportal/applications`);
+            cy.contains('App_A1').click();
 
             cy.location('pathname').then((pathName) => {
                 const pathSegments = pathName.split('/');
                 const uuidApp = pathSegments[pathSegments.length - 2];
-                cy.logoutFromDevportal();
-
-                //Log into developer portal as user 2
-                cy.loginToDevportal(user2, password);
-                cy.visit(`${Utils.getAppOrigin()}/devportal/applications/${uuidApp}/overview`);
-
+                
                 //Subscription of API
                 cy.get('#left-menu-subscriptions').click();
                 cy.get('#subscribe-api-btn').click();
