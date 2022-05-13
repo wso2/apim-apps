@@ -285,6 +285,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                     variant='contained'
                     color='primary'
                     onClick={onPolicySave}
+                    data-testid='policy-create-save-btn'
                     disabled={
                         isRestricted([
                             'apim:api_create',

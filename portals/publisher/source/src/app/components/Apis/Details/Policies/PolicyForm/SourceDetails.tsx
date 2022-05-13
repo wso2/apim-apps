@@ -205,6 +205,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                     <Button
                         aria-label='download-policy'
                         variant='contained'
+                        data-testid='download-policy-file'
                         size='large'
                         color='primary'
                         onClick={handlePolicyDownload}

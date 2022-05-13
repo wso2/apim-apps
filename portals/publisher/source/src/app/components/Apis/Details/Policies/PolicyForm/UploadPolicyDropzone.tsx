@@ -121,7 +121,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                                 <input {...getInputProps()} />
                                 <Icon>cloud_upload</Icon>
-                                <Typography>
+                                <Typography id='upload-policy-file-for-policy'>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.dropzone.description'
                                         defaultMessage='Click or drag the policy file to upload'
