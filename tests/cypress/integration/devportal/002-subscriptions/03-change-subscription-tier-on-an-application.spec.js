@@ -34,14 +34,14 @@ describe("Change subscription tier of an application", () => {
     })
     it.only("Change subscription tier", () => {
 
-        Cypress.on('uncaught:exception', () => false);
-
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.get('#itest-api-details-portal-config-acc').click();
         cy.get('#left-menu-itemsubscriptions').click();
         cy.get('[data-testid="policy-checkbox-silver"]').click();
         cy.get('#subscriptions-save-btn').click();
+        // TODO: Proper error handling here instead of cypress wait
+        cy.wait(3000);
         cy.logoutFromPublisher();
         cy.loginToDevportal(developer, password);
 

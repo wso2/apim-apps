@@ -38,11 +38,12 @@ describe("Add Edit Delete subscription throttle policies", () => {
         // editing
         cy.intercept('**/throttling/policies/subscription/*').as('getPolicy');
         cy.get(`[data-testid="${policyName}-actions"] > a`).click();
-        cy.wait('@getPolicy');
-        cy.get('input[name="requestCount"]').clear().type('10001');
+        cy.wait('@getPolicy', {timeout: 3000}).then(() => {
+            cy.get('input[name="requestCount"]').clear().type('10001');
+        });
         cy.intercept('GET', '**/throttling/policies/subscription').as('getPolicies');
         cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
-        cy.wait('@getPolicies');
+        cy.wait('@getPolicies', {timeout: 3000});
 
         // delete
         cy.get('[data-testid="pagination-next"]').click();

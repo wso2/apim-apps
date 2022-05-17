@@ -48,22 +48,14 @@ describe("Upload api spec from the api definition page", () => {
 
         // Wait until the api is saved
         cy.intercept('**/apis/**').as('apiGet');
-        cy.wait('@apiGet');
-
-        // Check the resource exists
-        return cy.location('pathname').then((pathName) => {
-            const pathSegments = pathName.split('/');
-            const uuid = pathSegments[pathSegments.length - 2];
-            cy.log(uuid);
-
+        cy.wait('@apiGet', {timeout: 3000}).then((res) => {
+            // Check the resource exists
+            const uuid =  res.response.body.id
+            
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/resources`, {timeout: 30000});
             cy.get('#\\/pets\\/\\{petId\\}', { timeout: 30000 }).scrollIntoView();
             cy.get('#\\/pets\\/\\{petId\\}').should('be.visible');
-        })
-
-        // cy.get('#itest-api-details-api-config-acc').click();
-
-
+        });
     });
 
     after(function () {

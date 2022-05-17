@@ -33,16 +33,17 @@ describe("Add Edit Delete api categories", () => {
         cy.get('[data-testid="MuiDataTableBodyCell-2-0"]').contains('finance related apis').should('exist');
 
         // editing
-        cy.get(`[data-testid="MuiDataTableBodyCell-4-0"] > div > span:first-child`).click();
+        cy.get(`[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:first-child`).click();
         cy.get('textarea[name="description"]').clear().type('finance apis');
 
         cy.intercept('GET', '**/api-categories').as('getCategories');
         cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
-        cy.wait('@getCategories');
-        cy.get('[data-testid="MuiDataTableBodyCell-2-0"]').contains('finance apis').should('exist');
+        cy.wait('@getCategories', {timeout: 3000}).then(() => {
+            cy.get('[data-testid="MuiDataTableBodyCell-2-0"]').contains('finance apis').should('exist');
+        });
 
         // delete
-        cy.get(`[data-testid="MuiDataTableBodyCell-4-0"] > div > span:nth-child(2)`).click();
+        cy.get(`[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)`).click();
         cy.get('button > span').contains('Delete').click();
         cy.get('div[role="status"]').should('have.text','API Category deleted successfully');
     });
