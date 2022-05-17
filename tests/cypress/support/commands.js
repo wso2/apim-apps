@@ -137,10 +137,11 @@ Cypress.Commands.add('deleteUser', (name) => {
 Cypress.Commands.add('deleteApi', (name, version) => {
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
     cy.intercept('**/apis*').as('getApis');
-    cy.wait('@getApis');
-    cy.get('#itest-id-deleteapi-icon-button', { timeout: 30000 });
-    cy.get('#itest-id-deleteapi-icon-button').click();
-    cy.get('#itest-id-deleteconf').click();
+    cy.wait('@getApis', {timeout: 3000}).then(() => {
+        cy.get('#itest-id-deleteapi-icon-button', { timeout: 30000 });
+        cy.get('#itest-id-deleteapi-icon-button').click();
+        cy.get('#itest-id-deleteconf').click();
+    });
 });
 
 // Don't use this 
@@ -167,11 +168,11 @@ Cypress.Commands.add('deploySampleAPI', () => {
     cy.get('#itest-api-name-version', { timeout: 10000 }).should('be.visible');
     cy.url().should('contains', '/overview');
     cy.get("#itest-api-name-version").contains('PizzaShackAPI');
-    return cy.location('pathname').then((pathName) => {
-        const pathSegments = pathName.split('/');
-        const apiUUID = pathSegments[pathSegments.length - 2];
+    cy.intercept('**/apis/**').as('apiGet');
+    cy.wait('@apiGet', {timeout: 3000}).then((res) => {
+        const apiUUID =  res.response.body.id;
         return { uuid: apiUUID };
-    })
+    });
 })
 
 Cypress.Commands.add('createAnAPI', (name, type = 'REST') => {
@@ -190,11 +191,11 @@ Cypress.Commands.add('createAnAPI', (name, type = 'REST') => {
     cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('#itest-create-default-api-button').click();
     cy.get("#itest-api-name-version").contains(`sample_api_${random_number}`);
-    return cy.location('pathname').then((pathName) => {
-        const pathSegments = pathName.split('/');
-        const apiUUID = pathSegments[pathSegments.length - 2];
+    cy.intercept('**/apis/**').as('apiGet');
+    cy.wait('@apiGet', {timeout: 3000}).then((res) => {
+        const apiUUID =  res.response.body.id;
         return { uuid: apiUUID, name: randomName };
-    })
+    });
 
 })
 
@@ -320,7 +321,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
     cy.get('#open-api-create-btn').click();
 
     //select subscription tiers
-    cy.get('#itest-api-details-portal-config-acc').click();
+    cy.get('#itest-api-details-portal-config-acc', {timeout: 30000}).click();
     cy.get('#left-menu-itemsubscriptions').click();
     cy.get('[data-testid="policy-checkbox-silver"]').click();
     cy.get('[data-testid="policy-checkbox-unlimited"]').click();

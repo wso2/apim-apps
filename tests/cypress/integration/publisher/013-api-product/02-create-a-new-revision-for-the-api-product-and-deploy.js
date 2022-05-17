@@ -57,16 +57,16 @@ describe("Mock the api response and test it", () => {
             // finish the wizard
             cy.get('#open-api-create-btn').click();
 
-            // validate
-            cy.get('#itest-api-name-version', { timeout: 30000 });
-            cy.get('#itest-api-name-version').contains(version);
+            cy.intercept('**/apis/**').as('apiGet');
+            cy.wait('@apiGet', {timeout: 30000}).then((res) => {
+                
+                //Get the api id
+                const uuid = res.response.body.id;
 
-            //Get the api id
-            cy.location('pathname').then((pathName) => {
-                const pathSegments = pathName.split('/');
-                const uuid = pathSegments[pathSegments.length - 2];
+                // validate
+                cy.get('#itest-api-name-version', { timeout: 30000 });
+                cy.get('#itest-api-name-version').contains(version);
 
-                cy.wait(1000);
                 // Go to api product create page
                 cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/create`);
 

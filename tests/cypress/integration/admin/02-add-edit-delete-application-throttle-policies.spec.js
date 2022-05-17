@@ -37,11 +37,12 @@ describe("Add Edit Delete application throttle policies", () => {
         // editing
         cy.intercept('**/throttling/policies/application/*').as('getPolicy');
         cy.get(`[data-testid="${policyName}-actions"] > span:first-child`).click();
-        cy.wait('@getPolicy');
-        cy.get('input[name="requestCount"]').clear().type('81');
+        cy.wait('@getPolicy', {timeout: 3000}).then(() => {
+            cy.get('input[name="requestCount"]').clear().type('81');
+        });
         cy.intercept('GET', '**/throttling/policies/application').as('getPolicies');
         cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
-        cy.wait('@getPolicies');
+        cy.wait('@getPolicies', {timeout: 3000});
 
         // delete
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();

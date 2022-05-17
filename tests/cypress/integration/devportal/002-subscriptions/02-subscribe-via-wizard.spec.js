@@ -87,24 +87,24 @@ describe("Anonymous view apis", () => {
             cy.get('#wizard-next-2-btn', { timeout: 30000 });
             cy.get('#wizard-next-2-btn').click();
     
-            cy.intercept('**/oauth-keys').as('oauthKeys');
-            cy.wait('@oauthKeys');
+            cy.intercept('GET','**/oauth-keys').as('oauthKeys');
+            cy.wait('@oauthKeys', {timeout: 4000}).then(() => {
+                cy.get('#wizard-next-3-btn', { timeout: 30000 });
+                cy.get('#wizard-next-3-btn').click();
+            });
     
-            cy.get('#wizard-next-3-btn', { timeout: 30000 });
-            cy.get('#wizard-next-3-btn').click();
             /*
             Rest of the test we need to skip for now. Cypress is failing the token gen request but the actual one is not
             */
-            // cy.intercept('**/generate-token').as('generateToken');
-            // cy.wait('@generateToken');
-
-            // cy.get('#access-token').should('not.be.empty');
-            // cy.get('#wizard-next-4-btn', { timeout: 30000 });
-            // cy.get('#wizard-next-4-btn').click();
-            //
-            // cy.get('#left-menu-credentials').click();
-            // // Click and select the new application
-            // cy.get(`#subscription-table td`).contains(appName).should('exist');
+            // cy.intercept('POST','**/generate-token').as('generateToken');
+            // cy.wait('@generateToken', {timeout: 4000}).then(() => {
+            //     cy.get('#access-token').should('not.be.empty');
+            //     cy.get('#wizard-next-4-btn').click();
+            
+            //     cy.get('#left-menu-credentials').click();
+            //     // Click and select the new application
+            //     cy.get(`#subscription-table td`).contains(appName).should('exist');
+            // });
         });
     })
 

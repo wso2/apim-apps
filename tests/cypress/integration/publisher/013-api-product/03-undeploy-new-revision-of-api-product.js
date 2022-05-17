@@ -57,15 +57,20 @@ describe("Mock the api response and test it", () => {
             // finish the wizard
             cy.get('#open-api-create-btn').click();
 
-            // validate
-            cy.get('#itest-api-name-version', { timeout: 30000 });
-            cy.get('#itest-api-name-version').contains(version);
+            cy.intercept({
+                method: "GET",
+                url: `**/apis/**`,
+                times: 1,
+              }).as('apiGet');
+            cy.wait('@apiGet', {timeout: 30000}).then((res) => {
+                
+                //Get the api id
+                const uuid = res.response.body.id;
 
-            //Get the api id
-            cy.location('pathname').then((pathName) => {
-                const pathSegments = pathName.split('/');
-                const uuid = pathSegments[pathSegments.length - 2];
-
+                // validate
+                cy.get('#itest-api-name-version', { timeout: 30000 });
+                cy.get('#itest-api-name-version').contains(version);
+                
                 // Go to api product create page
                 cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/create`);
 
@@ -80,39 +85,43 @@ describe("Mock the api response and test it", () => {
                 cy.get('#resource-wrapper', { timeout: 30000 });
                 cy.get('#resource-wrapper').click();
 
+                cy.intercept("POST", `**/api-products`).as('apiProductsGet');
+
                 // add all resources
                 cy.get('#add-all-resources-btn').click();
                 cy.get('#create-api-product-btn').scrollIntoView().dblclick();
 
-                cy.get('#itest-api-name-version', { timeout: 30000 });
-                cy.get('#itest-api-name-version').contains(productName);
+                cy.wait('@apiProductsGet', {timeout: 30000}).then((res) => {
 
-                // Going to deployments page
-                cy.get('#left-menu-itemdeployments').click();
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                    cy.get('#itest-api-name-version').contains(productName);
 
-                // Deploying
-                cy.get('#deploy-btn').click({"force":true});
-                cy.get('#undeploy-btn').should('exist');
-                cy.get('#undeploy-btn').click();
-                cy.get('#revision-selector').should('exist');
+                    // Going to deployments page
+                    cy.get('#left-menu-itemdeployments').click();
 
-                //Get the api product id
-                cy.location('pathname').then((pathName) => {
-                    const pathSegments = pathName.split('/');
-                    const uuidProduct = pathSegments[pathSegments.length - 2];
+                    // Deploying
+                    cy.get('#deploy-btn').click({"force":true});
+                    cy.get('#undeploy-btn').should('exist');
+                    cy.get('#undeploy-btn').click();
+                    cy.get('#revision-selector').should('exist');
+
+                    //Get the api product id
+                    const uuidProduct = res.response.body.id;
 
                     cy.log(uuid, uuidProduct);
 
                     // Deleting the api and api product
-                    cy.get(`#itest-id-deleteapi-icon-button`).click();
+                    cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/${uuidProduct}/overview`);
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                    cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
                     cy.get(`#itest-id-deleteconf`).click();
 
                     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
                     cy.get('#itest-api-name-version', { timeout: 30000 });
-                    cy.get(`#itest-id-deleteapi-icon-button`).click();
+                    cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
                     cy.get(`#itest-id-deleteconf`).click();
-                });
-            });
+                })
+            });    
         });
     });
 

@@ -41,17 +41,17 @@ describe("Add key manager", () => {
         // importing config'
         cy.intercept('**/key-managers/discover').as('importConfig');
         cy.get('button span.MuiButton-label').contains('Import').click();
-        cy.wait('@importConfig');
+        cy.wait('@importConfig', {timeout: 3000}).then(() => {
+            // filing the tokens
+            cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
+            cy.get('input[name="client_id"]').type(clientId);
+            cy.get('input[name="client_secret"]').type(clientSecret);
+            cy.get('input[name="audience"]').type(audience);
+            cy.get('button.MuiButton-containedPrimary span').contains('Add').click();
 
-        // filing the tokens
-        cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
-        cy.get('input[name="client_id"]').type(clientId);
-        cy.get('input[name="client_secret"]').type(clientSecret);
-        cy.get('input[name="audience"]').type(audience);
-        cy.get('button.MuiButton-containedPrimary span').contains('Add').click();
-
-        // validating
-        cy.get('td > div').contains(km).should('exist');
+            // validating
+            cy.get('td > div').contains(km).should('exist');
+        });
 
         // delete
         cy.get(`[data-testid="${km}-actions"] > span:first-child svg`).click();

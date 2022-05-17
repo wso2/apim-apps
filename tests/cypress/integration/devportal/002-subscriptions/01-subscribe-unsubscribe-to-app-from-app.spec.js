@@ -38,9 +38,10 @@ describe("Anonymous view apis", () => {
 
     it.only("Subscribe unsubscribe to app from application view", () => {
 
-        // Cypress.on('uncaught:exception', () => false);
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
+        // TODO: Proper error handling here instead of cypress wait
+        cy.wait(3000);
         cy.logoutFromPublisher();
         cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);

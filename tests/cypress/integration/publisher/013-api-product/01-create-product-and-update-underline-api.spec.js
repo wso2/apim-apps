@@ -57,14 +57,19 @@ describe("Mock the api response and test it", () => {
             // finish the wizard
             cy.get('#open-api-create-btn').click();
 
-            // validate
-            cy.get('#itest-api-name-version', { timeout: 30000 });
-            cy.get('#itest-api-name-version').contains(version);
+            cy.intercept({
+                method: "GET",
+                url: `**/apis/**`,
+                times: 1,
+              }).as('apiGet');
+            cy.wait('@apiGet', {timeout: 30000}).then((res) => {
+                
+                // validate
+                cy.get('#itest-api-name-version', { timeout: 30000 });
+                cy.get('#itest-api-name-version').contains(version);
 
-            //Get the api id
-            cy.location('pathname').then((pathName) => {
-                const pathSegments = pathName.split('/');
-                const uuid = pathSegments[pathSegments.length - 2];
+                //Get the api id
+                const uuid = res.response.body.id;
 
                 // Go to api product create page
                 cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/create`);
@@ -80,17 +85,20 @@ describe("Mock the api response and test it", () => {
                 cy.get('#resource-wrapper', { timeout: 30000 });
                 cy.get('#resource-wrapper').click();
 
+                cy.intercept("POST", `**/api-products`).as('apiProductsGet');
+
                 // add all resources
                 cy.get('#add-all-resources-btn').click();
                 cy.get('#create-api-product-btn').scrollIntoView().click();
 
-                cy.get('#itest-api-name-version', { timeout: 30000 });
-                cy.get('#itest-api-name-version').contains(productName);
+                cy.wait('@apiProductsGet', {timeout: 30000}).then((res) => {
 
-                //Get the api product id
-                cy.location('pathname').then((pathName) => {
-                    const pathSegments = pathName.split('/');
-                    const uuidProduct = pathSegments[pathSegments.length - 2];
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                    cy.get('#itest-api-name-version').contains(productName);
+
+                    //Get the api product id
+                    const uuidProduct = res.response.body.id;
+
                     // Need to update the underline api and update the api product again.
                     // ==================================================================== //
                     cy.log(uuid, uuidProduct);
@@ -125,6 +133,8 @@ describe("Mock the api response and test it", () => {
                     cy.get('#save-product-resources').click();
 
                     // Deleting the api and api product
+                    cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/${uuidProduct}/overview`);
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
                     cy.get(`#itest-id-deleteapi-icon-button`).click();
                     cy.get(`#itest-id-deleteconf`).click();
 

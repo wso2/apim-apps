@@ -36,10 +36,10 @@ describe("Generate keys from api details page", () => {
     })
     it.only("Generate keys from api details page", () => {
 
-        Cypress.on('uncaught:exception', () => false);
-
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
+        // TODO: Proper error handling here instead of cypress wait
+        cy.wait(3000);
         cy.logoutFromPublisher();
         cy.loginToDevportal(developer, password);
 

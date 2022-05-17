@@ -617,7 +617,7 @@ class SubscriptionsTable extends Component {
             this.setState({ monetizationStatus: status.enabled });
         });
         api.getSubscriptionPolicies(this.api.id).then((policies) => {
-            const filteredPolicies = policies.filter((policy) => policy.tierPlan === 'COMMERCIAL');
+            const filteredPolicies = policies ? policies.filter((policy) => policy.tierPlan === 'COMMERCIAL') : [];
             this.setState({ policies: filteredPolicies });
         });
     }

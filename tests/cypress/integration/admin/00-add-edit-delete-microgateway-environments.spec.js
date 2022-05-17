@@ -34,8 +34,9 @@ describe("Add Edit Delete Microgateway Environments", () => {
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
         cy.get('button > span').contains('Save').click();
-        cy.wait('@environmentsGet');
-        cy.get('table tr td').contains('MARKETING_STORE').should('exist');
+        cy.wait('@environmentsGet',{timeout: 3000}).then(() => {
+            cy.get('table tr td').contains('MARKETING_STORE').should('exist');
+        });
 
         // editing
         cy.get('[data-testid="MuiDataTableBodyCell-5-1"] div > div > button:first-child').click();
@@ -43,8 +44,9 @@ describe("Add Edit Delete Microgateway Environments", () => {
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
         cy.get('button > span').contains('Save').click();
-        cy.wait('@environmentsGet');
-        cy.get('table tr td').contains('marketing store').should('exist');
+        cy.wait('@environmentsGet', {timeout: 3000}).then(() => {
+            cy.get('table tr td').contains('marketing store').should('exist');
+        });
 
         // deleting
         cy.get('[data-testid="MuiDataTableBodyCell-5-1"] div > div > button:nth-child(2)').click();

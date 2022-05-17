@@ -41,8 +41,9 @@ describe("Add custom throttle policies", () => {
 
         cy.intercept('GET', '**/throttling/policies/custom').as('getCustomPolicies');
         cy.get('button.MuiButton-containedPrimary > span').contains('Edit').click();
-        cy.wait('@getCustomPolicies');
-        cy.get('td').contains(secondDesc).should('exist');
+        cy.wait('@getCustomPolicies', {timeout: 3000}).then(() => {
+            cy.get('td').contains(secondDesc).should('exist');
+        });
 
         // delete
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();
