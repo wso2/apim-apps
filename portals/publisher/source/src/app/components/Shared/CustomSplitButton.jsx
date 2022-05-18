@@ -82,6 +82,7 @@ export default function CustomSplitButton(props) {
                         <Button
                             onClick={(event) => handleClick(event, selectedIndex)}
                             disabled={isUpdating}
+                            data-testid = 'custom-select-save-button'
                             style={{ width: '200px' }}
                             id={id}
                         >
