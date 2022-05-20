@@ -38,6 +38,7 @@
         "autosuggest-highlight": "^3.2.0",
         "axios": "^0.25.0",
         "base64url": "3.0.1",
+        "btoa": "^1.2.1",
         "caniuse-api": "^1.6.1",
         "cleanup-dependencies": "0.0.6",
         "dataloader": "^2.0.0",
