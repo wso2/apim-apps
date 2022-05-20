@@ -446,6 +446,7 @@ const General: FC<GeneralProps> = ({
                             variant='contained'
                             type='submit'
                             color='primary'
+                            data-testid='policy-attached-details-save'
                             disabled={ isSaveDisabled() || formHasErrors() || saving}
                         >
                             {saving

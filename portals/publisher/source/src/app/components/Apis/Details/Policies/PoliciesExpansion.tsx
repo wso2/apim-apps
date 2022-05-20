@@ -251,7 +251,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 alignItems='flex-start'
             >
                 <Grid item xs={12} md={12}>
-                    <Box className={classes.flowSpecificPolicyAttachGrid}>
+                    <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-request'>
                         <Typography variant='subtitle2' align='left'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.PoliciesExpansion.request.flow.title'
@@ -270,7 +270,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                             allPolicies={allPolicies}
                         />
                     </Box>
-                    <Box className={classes.flowSpecificPolicyAttachGrid}>
+                    <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-response'>
                         <Typography variant='subtitle2' align='left'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.PoliciesExpansion.response.flow.title'

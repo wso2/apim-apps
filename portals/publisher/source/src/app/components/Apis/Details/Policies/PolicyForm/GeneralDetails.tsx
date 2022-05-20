@@ -232,6 +232,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             <Checkbox
                                                 name='fault'
                                                 color='primary'
+                                                id='fault-select-check-box'
                                                 checked={applicableFlows.includes(
                                                     'fault',
                                                 )}

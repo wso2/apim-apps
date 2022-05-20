@@ -97,6 +97,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                             disabled={false}
                             variant='outlined'
                             color='primary'
+                            data-testid='add-new-api-specific-policy'
                             size='small'
                             className={classes.addPolicyBtn}
                         >

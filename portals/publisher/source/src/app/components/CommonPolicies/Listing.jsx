@@ -397,6 +397,7 @@ const Listing = () => {
                         color='primary'
                         variant='outlined'
                         size='small'
+                        data-testid='add-new-common-policy'
                         disabled={isRestricted([
                             'apim:api_create',
                             'apim:api_manage',
