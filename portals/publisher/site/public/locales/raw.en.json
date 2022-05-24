@@ -311,9 +311,6 @@
   "Apis.Details.APIDefinition.APIDefinition.error.updating.graphQL.schema": {
     "defaultMessage": "Error while updating GraphQL schema"
   },
-  "Apis.Details.APIDefinition.APIDefinition.error.while.parsing.api.definition": {
-    "defaultMessage": "Error occurred while updating the API Definition"
-  },
   "Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition": {
     "defaultMessage": "Error occurred while updating the API Definition"
   },
@@ -497,6 +494,9 @@
   },
   "Apis.Details.APIDefinition.ImportDefinition.error.updating.WSDL": {
     "defaultMessage": "Error while updating WSDL"
+  },
+  "Apis.Details.APIDefinition.SwaggerEditorDrawer.title": {
+    "defaultMessage": "Failed to Validate OpenAPI File"
   },
   "Apis.Details.APIDefinition.WSDL.download.definition": {
     "defaultMessage": "Download WSDL"

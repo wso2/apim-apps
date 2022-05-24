@@ -439,7 +439,8 @@ class SubscriptionsTable extends Component {
      *
      * @param event rows per page change event
      * */
-    handleChangeRowsPerPage(event) {
+    handleChangeRowsPerPage(event, changeRowsPerPage) {
+        changeRowsPerPage(event.target.value);
         this.setState({ rowsPerPage: event.target.value, page: 0 }, this.fetchSubscriptionData);
     }
 
@@ -908,7 +909,7 @@ class SubscriptionsTable extends Component {
             search: false,
             selectableRows: 'none',
             rowsPerPageOptions: [5, 10, 25, 50, 100],
-            customFooter: () => {
+            customFooter: (count, muiPage, muiRowsPerPage, changeRowsPerPage) => {
                 return (
                     <TablePagination
                         rowsPerPageOptions={rowsPerPageOptions}
@@ -917,7 +918,7 @@ class SubscriptionsTable extends Component {
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onChangePage={this.handleChangePage}
-                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        onChangeRowsPerPage={(e) => this.handleChangeRowsPerPage(e, changeRowsPerPage)}
                         ActionsComponent={SubscriptionTablePagination}
                     />
                 );
