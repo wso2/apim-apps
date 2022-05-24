@@ -219,7 +219,7 @@
   "KeyManagers.AddEditKeyManager.claim.uris": "Claim URIs",
   "KeyManagers.AddEditKeyManager.claim.uris.description": "Provide claim URIs for consumer key and scopes.",
   "KeyManagers.AddEditKeyManager.connector.configurations": "Connector Configurations",
-  "KeyManagers.AddEditKeyManager.connector.configurations.description": "Provide connection params for the selected Key Manager.",
+  "KeyManagers.AddEditKeyManager.connector.configurations.description": "Provide connection params for the selected Key\n                                                 Manager.",
   "KeyManagers.AddEditKeyManager.endpoints": "Key Manager Endpoints",
   "KeyManagers.AddEditKeyManager.endpoints.description": "Configure endpoints such as client registration endpoint, the token endpoint for this Key Manager.",
   "KeyManagers.AddEditKeyManager.exchange.token.form.\n                                                token.audience.help": "The Audience of the authorization server which\n                                                the access token is intended for.",
