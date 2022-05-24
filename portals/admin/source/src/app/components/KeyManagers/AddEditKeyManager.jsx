@@ -1603,50 +1603,54 @@ function AddEditKeyManager(props) {
                     </Grid>
                     {enableDirectToken && (
                         <>
-                            {(keymanagerConnectorConfigurations && keymanagerConnectorConfigurations.length > 0) && (
-                                <>
-                                    <Grid item xs={12} md={12} lg={3}>
-                                        <Typography
-                                            color='inherit'
-                                            variant='subtitle2'
-                                            component='div'
-                                            id='KeyManagers.AddEditKeyManager.connector.configurations.header'
-                                        >
-                                            <FormattedMessage
-                                                id='KeyManagers.AddEditKeyManager.connector.configurations'
-                                                defaultMessage='Connector Configurations'
-                                            />
-                                        </Typography>
-                                        <Typography
-                                            color='inherit'
-                                            variant='caption'
-                                            component='p'
-                                            id='KeyManagers.AddEditKeyManager.connector.configurations.body'
-                                        >
-                                            <FormattedMessage
-                                                id='KeyManagers.AddEditKeyManager.connector.configurations.description'
-                                                defaultMessage='Provide connection params for the selected Key Manager.'
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={12} md={12} lg={9}>
-                                        <Box component='div' m={1}>
-                                            <KeyManagerConfiguration
-                                                keymanagerConnectorConfigurations={keymanagerConnectorConfigurations}
-                                                additionalProperties={cloneDeep(additionalProperties)}
-                                                setAdditionalProperties={setAdditionalProperties}
-                                                hasErrors={hasErrors}
-                                                validating={validating}
-                                            />
-                                        </Box>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Box marginTop={2} marginBottom={2}>
-                                            <hr className={classes.hr} />
-                                        </Box>
-                                    </Grid>
-                                </>
-                            )}
+                            {(!isResidentKeyManager
+                             && keymanagerConnectorConfigurations
+                             && keymanagerConnectorConfigurations.length > 0)
+                             && (
+                                 <>
+                                     <Grid item xs={12} md={12} lg={3}>
+                                         <Typography
+                                             color='inherit'
+                                             variant='subtitle2'
+                                             component='div'
+                                             id='KeyManagers.AddEditKeyManager.connector.configurations.header'
+                                         >
+                                             <FormattedMessage
+                                                 id='KeyManagers.AddEditKeyManager.connector.configurations'
+                                                 defaultMessage='Connector Configurations'
+                                             />
+                                         </Typography>
+                                         <Typography
+                                             color='inherit'
+                                             variant='caption'
+                                             component='p'
+                                             id='KeyManagers.AddEditKeyManager.connector.configurations.body'
+                                         >
+                                             <FormattedMessage
+                                                 id='KeyManagers.AddEditKeyManager.connector.configurations.description'
+                                                 defaultMessage='Provide connection params for the selected Key
+                                                 Manager.'
+                                             />
+                                         </Typography>
+                                     </Grid>
+                                     <Grid item xs={12} md={12} lg={9}>
+                                         <Box component='div' m={1}>
+                                             <KeyManagerConfiguration
+                                                 keymanagerConnectorConfigurations={keymanagerConnectorConfigurations}
+                                                 additionalProperties={cloneDeep(additionalProperties)}
+                                                 setAdditionalProperties={setAdditionalProperties}
+                                                 hasErrors={hasErrors}
+                                                 validating={validating}
+                                             />
+                                         </Box>
+                                     </Grid>
+                                     <Grid item xs={12}>
+                                         <Box marginTop={2} marginBottom={2}>
+                                             <hr className={classes.hr} />
+                                         </Box>
+                                     </Grid>
+                                 </>
+                             )}
                         </>
                     )}
                     <Grid item xs={12} md={12} lg={3}>
