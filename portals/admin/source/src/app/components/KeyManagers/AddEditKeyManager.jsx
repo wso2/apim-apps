@@ -252,9 +252,9 @@ function AddEditKeyManager(props) {
                         if (defaultConsumerKeyClaim) {
                             dispatch({ field: 'consumerKeyClaim', value: defaultConsumerKeyClaim });
                         }
-                    }
-                    if (defaultScopesClaim) {
-                        dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
+                        if (defaultScopesClaim) {
+                            dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
+                        }
                     }
                     setKeyManagerConfiguration(configurations);
                     return true;
