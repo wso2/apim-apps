@@ -116,6 +116,9 @@ module.exports = (env, argv) => {
                 OverrideData: path.resolve(__dirname, 'override/src/app/data/'),
                 OverrideComponents: path.resolve(__dirname, 'override/src/app/components/'),
                 AppTests: path.resolve(__dirname, 'source/Tests/'),
+                'nimma/fallbacks': require.resolve('./node_modules/nimma/dist/legacy/cjs/fallbacks/index.js'), // nimma/* things Added because of spectral
+                'nimma/legacy': require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
+                nimma: require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
             },
             extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
