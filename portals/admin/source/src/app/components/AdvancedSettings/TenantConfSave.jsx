@@ -201,6 +201,7 @@ function TenantConfSave() {
                             color='primary'
                             className={classes.saveButton}
                             onClick={formSaveCallback}
+                            data-testid='monaco-editor-save'
                         >
                             <FormattedMessage
                                 id='Settings.Advanced.TenantConfSave.form.save'
