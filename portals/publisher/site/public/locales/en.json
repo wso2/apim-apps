@@ -1177,6 +1177,12 @@
       "value": "Error while updating WSDL"
     }
   ],
+  "Apis.Details.APIDefinition.Linting.APILinting.loading": [
+    {
+      "type": 0,
+      "value": "Linting . . ."
+    }
+  ],
   "Apis.Details.APIDefinition.SwaggerEditorDrawer.title": [
     {
       "type": 0,

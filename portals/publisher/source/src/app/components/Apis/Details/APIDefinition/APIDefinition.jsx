@@ -51,6 +51,7 @@ import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import APISecurityAudit from './APISecurityAudit';
 import ImportDefinition from './ImportDefinition';
 import DefinitionOutdated from './DefinitionOutdated';
+import APILinting from './Linting/APILinting';
 
 const EditorDialog = lazy(() => import('./SwaggerEditorDrawer' /* webpackChunkName: "EditorDialog" */));
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
@@ -684,6 +685,7 @@ class APIDefinition extends React.Component {
 
         return (
             <>
+                {/* TODO tmkasun: use <Box> component for alignment  */}
                 <div className={classes.topBar}>
                     <div className={classes.titleWrapper}>
                         <Typography id='itest-api-details-api-definition-head' variant='h4' component='h2'>
@@ -757,7 +759,6 @@ class APIDefinition extends React.Component {
                                 defaultMessage='Download Definition'
                             />
                         </Button>
-
                         {(securityAuditProperties.apiToken && securityAuditProperties.collectionId
                         && api.type !== 'GRAPHQL' && !asyncAPI)
                             && (
@@ -783,6 +784,7 @@ class APIDefinition extends React.Component {
                             </Button>
                         </div>
                     )}
+                    <APILinting document={swagger} />
                 </div>
                 <div>
                     <Suspense fallback={<Progress />}>
