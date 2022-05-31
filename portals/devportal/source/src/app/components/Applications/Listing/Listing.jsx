@@ -381,8 +381,21 @@ class Listing extends Component {
             id: 'Applications.Listing.Listing.application.deleted.successfully',
         }, { name: app.name });
         const promisedDelete = Application.deleteApp(deletingId);
-        promisedDelete.then((ok) => {
-            if (ok) {
+        promisedDelete.then((status) => {
+            if (status === 201) {
+                newData.delete(deletingId);
+                Alert.info(intl.formatMessage({
+                    defaultMessage: 'Delete request created for application {name}',
+                    id: 'Applications.Listing.Listing.application.deleting.requested',
+                }, { name: app.name }));
+                this.toggleDeleteConfirmation();
+                // Page is reduced by 1, when there is only one application in a
+                // particular page and it is deleted (except when in first page)
+                if (newData.size === 0 && page !== 0) {
+                    this.setState((state) => ({ page: state.page - 1 }));
+                }
+                this.updateApps();
+            } else if (status === 200) {
                 newData.delete(deletingId);
                 Alert.info(message);
                 this.toggleDeleteConfirmation();

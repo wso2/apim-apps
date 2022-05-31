@@ -44,7 +44,9 @@ import PolicyIcon from '@material-ui/icons/Policy';
 import BlockIcon from '@material-ui/icons/Block';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
+import ApplicationDeletion from 'AppComponents/Workflow/ApplicationDeletion';
 import SubscriptionCreation from 'AppComponents/Workflow/SubscriptionCreation';
+import SubscriptionDeletion from 'AppComponents/Workflow/SubscriptionDeletion';
 import SubscriptionUpdate from 'AppComponents/Workflow/SubscriptionUpdate';
 import RegistrationCreation from 'AppComponents/Workflow/RegistrationCreation';
 import APIStateChange from 'AppComponents/Workflow/APIStateChange';
@@ -236,11 +238,29 @@ const RouteMenuMapping = (intl) => [
             },
             {
                 id: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.application.deletion',
+                    defaultMessage: 'Application Deletion',
+                }),
+                path: '/tasks/application-deletion',
+                component: ApplicationDeletion,
+                icon: <DnsRoundedIcon />,
+            },
+            {
+                id: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.subscription.creation',
                     defaultMessage: 'Subscription Creation',
                 }),
                 path: '/tasks/subscription-creation',
                 component: SubscriptionCreation,
+                icon: <TouchAppIcon />,
+            },
+            {
+                id: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.subscription.deletion',
+                    defaultMessage: 'Subscription Deletion',
+                }),
+                path: '/tasks/subscription-deletion',
+                component: SubscriptionDeletion,
                 icon: <TouchAppIcon />,
             },
             {
