@@ -124,7 +124,7 @@ export const APILinting = (props: APILintingProps) => {
                         onClick={() => { openSwaggerUI(true) }}
                         selected={isSwaggerUIButtonSelected}
                     >
-                        SwaggerUI
+                        Swagger UI
                     </ToggleButton>
                     <ToggleButton
                         className={classes.activeButton}
