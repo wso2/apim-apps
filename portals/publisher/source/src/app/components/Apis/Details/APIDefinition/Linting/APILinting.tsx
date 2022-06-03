@@ -20,10 +20,6 @@ import {
 import { green, orange } from '@material-ui/core/colors';
 import { oas } from '@stoplight/spectral-rulesets';
 import { FormattedMessage } from 'react-intl';
-import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
-import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
-import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
-import FormatAlignJustifyIcon from '@material-ui/icons/FormatAlignJustify';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import Box from '@material-ui/core/Box';
@@ -31,12 +27,16 @@ import WarningIcon from '@material-ui/icons/Warning';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import {makeStyles} from "@material-ui/core/styles";
 
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };
 
 type APILintingProps = {
     document: string;
+    setIsSwaggerUI: Function;
+    linterResults: ISpectralDiagnostic[];
+    setLinterResults: Function;
 };
 
 /** @type DiagnosticSeverity 
@@ -55,18 +55,26 @@ Something to hint to a better way of doing it, like proposing a refactoring.
     Hint = 3
 
 */
-const spectralSeverityMap: { [key: number]: JSX.Element } = {
+export const spectralSeverityMap: { [key: number]: JSX.Element } = {
     0: <ErrorIcon color="error" />,
     1: <WarningIcon style={{ color: orange[500] }} />,
     2: <InfoIcon color="primary" />,
     3: <HelpOutlineIcon style={{ color: green[500] }} />,
 };
 
+const useStyles = makeStyles((theme) => ({
+    activeButton: {
+        "&:selected": {
+            backgroundColor: theme.palette.background.default,
+        }
+    }
+}));
+
 export const APILinting = (props: APILintingProps) => {
-    const { document: apiDocument } = props;
-    const [linterResults, setLinterResults] = useState<
-        ISpectralDiagnostic[] | null
-    >(null);
+    const { document: apiDocument, setIsSwaggerUI, linterResults, setLinterResults } = props;
+    const classes = useStyles();
+    const [isSwaggerUIButtonSelected, setIsSwaggerUIButtonSelected] = useState<boolean>(true);
+
     useEffect(() => {
         if (apiDocument) {
             (async () => {
@@ -79,6 +87,11 @@ export const APILinting = (props: APILintingProps) => {
         }
     }, [apiDocument]);
     const severityCounts: { [key: number]: number } = {};
+
+    function openSwaggerUI(open: boolean) {
+        setIsSwaggerUI(open);
+        setIsSwaggerUIButtonSelected(open);
+    };
 
     if (linterResults) {
         linterResults.map(({ severity }) => {
@@ -96,24 +109,42 @@ export const APILinting = (props: APILintingProps) => {
             {linterResults && linterResults.length !== 0 && (
                 <ToggleButtonGroup
                     exclusive
-                    onChange={() => {}}
                     aria-label="text alignment"
                     size="small"
                 >
-                    {Object.entries(spectralSeverityMap).map(([severity, component]) => (
-                        <ToggleButton
-                            size="small"
-                            aria-disabled
-                            disableRipple
-                            disableTouchRipple
-                            disableFocusRipple
-                            value="right"
-                            aria-label="right aligned"
-                        >
-                            {component}
-                            <Box color="text.primary" ml={1}>{severityCounts[Number(severity)] || '-'}</Box>
-                        </ToggleButton>
-                    ))}
+                    <ToggleButton
+                        className={classes.activeButton}
+                        size="small"
+                        aria-disabled
+                        disableRipple
+                        disableTouchRipple
+                        disableFocusRipple
+                        value="right"
+                        aria-label="right aligned"
+                        onClick={() => { openSwaggerUI(true) }}
+                        selected={isSwaggerUIButtonSelected}
+                    >
+                        SwaggerUI
+                    </ToggleButton>
+                    <ToggleButton
+                        className={classes.activeButton}
+                        size="small"
+                        aria-disabled
+                        disableRipple
+                        disableTouchRipple
+                        disableFocusRipple
+                        value="right"
+                        aria-label="right aligned"
+                        onClick={() => { openSwaggerUI(false) }}
+                        selected={!isSwaggerUIButtonSelected}
+                    >
+                        {Object.entries(spectralSeverityMap).map(([severity, component]) => (
+                            <Box ml={1} display="flex">
+                                {component}
+                                {severityCounts[Number(severity)] || '-'}
+                            </Box>
+                        ))}
+                    </ToggleButton>
                 </ToggleButtonGroup>
             )}
         </Box>

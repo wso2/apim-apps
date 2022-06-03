@@ -47,6 +47,7 @@ import API from 'AppData/api.js';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import { withRouter } from 'react-router';
 import { isRestricted } from 'AppData/AuthManager';
+import Box from '@material-ui/core/Box';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import APISecurityAudit from './APISecurityAudit';
 import ImportDefinition from './ImportDefinition';
@@ -105,6 +106,11 @@ const styles = (theme) => ({
     warningIconStyle: {
         color: theme.custom.serviceCatalog.onboarding.buttonText,
     },
+    popupTopBar: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
 });
 /**
  * This component holds the functionality of viewing the api definition content of an api. The initial view is a
@@ -133,6 +139,8 @@ class APIDefinition extends React.Component {
             asyncAPIModified: null,
             isAsyncAPIValid: true,
             errors: [],
+            isSwaggerUI: true,
+            linterResults: [],
         };
         this.handleNo = this.handleNo.bind(this);
         this.handleSave = this.handleSave.bind(this);
@@ -647,7 +655,7 @@ class APIDefinition extends React.Component {
         const {
             swagger, graphQL, openEditor, openDialog, format, convertTo, notFound, isAuditApiClicked,
             securityAuditProperties, isSwaggerValid, swaggerModified, isUpdating,
-            asyncAPI, asyncAPIModified, isAsyncAPIValid, errors,
+            asyncAPI, asyncAPIModified, isAsyncAPIValid, errors, isSwaggerUI, linterResults,
         } = this.state;
 
         const {
@@ -683,6 +691,8 @@ class APIDefinition extends React.Component {
             return <Progress />;
         }
 
+        // @ts-ignore
+        // @ts-ignore
         return (
             <>
                 {/* TODO tmkasun: use <Box> component for alignment  */}
@@ -784,7 +794,6 @@ class APIDefinition extends React.Component {
                             </Button>
                         </div>
                     )}
-                    <APILinting document={swagger} />
                 </div>
                 <div>
                     <Suspense fallback={<Progress />}>
@@ -805,33 +814,45 @@ class APIDefinition extends React.Component {
                 </div>
                 <Dialog fullScreen open={openEditor} onClose={this.closeEditor} TransitionComponent={this.transition}>
                     <Paper square className={classes.popupHeader}>
-                        <IconButton
-                            className={classes.button}
-                            color='inherit'
-                            onClick={this.closeEditor}
-                            aria-label={(
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.btn.close'
-                                    defaultMessage='Close'
-                                />
-                            )}
-                        >
-                            <Icon>close</Icon>
-                        </IconButton>
+                        <Box className={classes.popupTopBar}>
+                            <Box>
+                                <IconButton
+                                    className={classes.button}
+                                    color='inherit'
+                                    onClick={this.closeEditor}
+                                    aria-label={(
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.APIDefinition.btn.close'
+                                            defaultMessage='Close'
+                                        />
+                                    )}
+                                >
+                                    <Icon>close</Icon>
+                                </IconButton>
 
-                        <Button
-                            className={classes.button}
-                            variant='contained'
-                            color='primary'
-                            onClick={this.openUpdateConfirmation}
-                            disabled={(!isSwaggerValid || isUpdating) || (!isAsyncAPIValid || isUpdating)}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.update.content'
-                                defaultMessage='Update Content'
-                            />
-                            {isUpdating && <CircularProgress className={classes.progressLoader} size={24} />}
-                        </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant='contained'
+                                    color='primary'
+                                    onClick={this.openUpdateConfirmation}
+                                    disabled={(!isSwaggerValid || isUpdating) || (!isAsyncAPIValid || isUpdating)}
+                                >
+                                    <FormattedMessage
+                                        id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
+                                            + 'update.content'}
+                                        defaultMessage='Update Content'
+                                    />
+                                    {isUpdating && <CircularProgress className={classes.progressLoader} size={24}/>}
+                                </Button>
+                            </Box>
+                            <Box margin='3px'>
+                                <APILinting document={ swaggerModified }
+                                    setIsSwaggerUI={ (open) => { this.setState({ isSwaggerUI: open }) }}
+                                    linterResults={ linterResults }
+                                    setLinterResults={ (data) => { this.setState({ linterResults: data })}}
+                                />
+                            </Box>
+                        </Box>
                     </Paper>
                     <Suspense
                         fallback={(
@@ -844,7 +865,9 @@ class APIDefinition extends React.Component {
                                 language={format}
                                 onEditContent={this.onChangeSwaggerContent}
                                 errors={errors}
-                                setErrors={this.setErrors}  
+                                setErrors={this.setErrors}
+                                isSwaggerUI={ isSwaggerUI }
+                                linterResults={ linterResults }
                             />
                         ) : (
                             <AsyncAPIEditor
