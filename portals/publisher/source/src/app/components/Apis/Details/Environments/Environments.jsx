@@ -1091,7 +1091,7 @@ export default function Environments() {
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <AddIcon className={classes.plusIconStyle} />
+                        <AddIcon className={classes.plusIconStyle}  data-testid='new-revision-icon-btn'/>
                     </Grid>
                 )}
 
