@@ -456,6 +456,7 @@ class Listing extends React.Component {
                     {docs && docs.length > 0 && (
                         <Button
                             size='small'
+                            data-testid='add-document-btn'
                             className={classes.button}
                             component={Link}
                             to={!isRestricted(['apim:api_create', 'apim:api_publish'], api) && !api.isRevision && url}
@@ -516,6 +517,7 @@ class Listing extends React.Component {
                                 <div className={classes.actions}>
                                     <Button
                                         id='add-new-document-btn'
+                                        data-testid='add-document-btn'
                                         variant='contained'
                                         color='primary'
                                         component={Link}
