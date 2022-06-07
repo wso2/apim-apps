@@ -236,9 +236,7 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     const apiName = name ? name : `0sample_api_${random_number}`;
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
-    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
-    cy.get('#itest-rest-api-create-menu').click();
-    cy.get('#itest-id-landing-rest-create-default').click();
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/rest`,{ timeout: 30000 });
     cy.get('#itest-id-apiname-input').type(apiName);
     cy.get('#itest-id-apicontext-input').click();
     cy.get('#itest-id-apicontext-input').type(apiContext);
@@ -252,30 +250,7 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
     cy.get('#itest-api-name-version').contains(apiVersion);
 })
-
-
-Cypress.Commands.add('createAndPublishRestAPIfromScratch', (name = null, version = null, context = null) => {
-    const random_number = Math.floor(Date.now() / 1000);
-
-    const apiName = name ? name : `0sample_api_${random_number}`;
-    const apiVersion = version ? version : `v${random_number}`;
-    const apiContext = context ? context : `/sample_context_${random_number}`;
-    cy.get('#itest-create-api-menu-button', { timeout: 30000 });
-    cy.get('#itest-create-api-menu-button').click();
-    cy.get('#itest-id-landing-rest-create-default').click();
-    cy.get('#itest-id-apiname-input').type(apiName);
-    cy.get('#itest-id-apicontext-input').click();
-    cy.get('#itest-id-apicontext-input').type(apiContext);
-    cy.get('#itest-id-apiversion-input').click();
-    cy.get('#itest-id-apiversion-input').type(apiVersion);
-    cy.get('#itest-id-apiendpoint-input').click();
-    cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
-    cy.get('#itest-id-apicreatedefault-createnpublish').click();
-
-    // Wait for the api to load
-    cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
-    cy.get('#itest-api-name-version').contains(apiVersion);
-})
+  
 
 Cypress.Commands.add('createLocalScope', (name, displayname='sample display name',description='sample description',roles=[]) => {
     
@@ -414,7 +389,7 @@ Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel,httpverb,u
 
 
 Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
-    cy.get('#add-new-property').click();
+    cy.get('#add-new-property',{ timeout: 30000 }).click();
     cy.get('#property-name').type(name);
     cy.get('#property-value').type(value);
 
@@ -428,7 +403,7 @@ Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
 
     //save the property
     cy.get('[data-testid="custom-select-save-button"]').click();
-
+    cy.timeout(3000);
 })
 
 Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
