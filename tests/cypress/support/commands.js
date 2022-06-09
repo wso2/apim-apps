@@ -364,11 +364,11 @@ Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
 
     //check if other protocol option is added in AsyncApi
-//    cy.get('#itest-streaming-api-create-menu', { timeout: 30000 });
-//    cy.get('#itest-streaming-api-create-menu').click();
-//    cy.get('#itest-id-create-streaming-api-import').click();
-//    cy.get('#outlined-full-width').type('https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml');
-//    cy.get('#outlined-full-width').should('have.value','https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml');
+    cy.get('#itest-streaming-api-create-menu', { timeout: 30000 });
+    cy.get('#itest-streaming-api-create-menu').click();
+    cy.get('#itest-id-create-streaming-api-import').click();
+    cy.get('#outlined-full-width').type('https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml');
+    cy.get('#outlined-full-width').should('have.value','https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml');
 
 // ==============
 //    cy.intercept('/**/validate-asyncapi*').as('validateAsyncapi');
@@ -399,76 +399,73 @@ Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {
 //    }
 //    cy.wait(5000);
 // ======================
-//    cy.get('button span').contains('Next').should('not.be.disabled');
-//    cy.get('button span').contains('Next').click();
-//    cy.get('#mui-component-select-protocol').click();
-//    cy.get('#other').should('exist');
-//    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-//
-//    // select rest-api option from the menu item
-//    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
-//    cy.get('#itest-rest-api-create-menu').click();;
-//    cy.get('#itest-id-landing-rest-create-default').click();
-//    cy.get('#itest-id-apiname-input').type('ThirdPartyApi');
-//    cy.get('#itest-id-apicontext-input').type('/thirdpartyapi');
-//    cy.get('#itest-id-apiversion-input').type('1.0.0');
-//    cy.get('#itest-id-apiendpoint-input').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/api`);
-//    cy.get('#itest-create-default-api-button').click();
-//
-//    //Mark as third party api
-//    cy.get('#itest-api-details-portal-config-acc').click();
-//    cy.get('#left-menu-itemDesignConfigurations').click();
-//    cy.get('[name="advertised"]:first').click();
-//    cy.get('[name="apiExternalProductionEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/externalapi`);
-//    cy.get('[name="apiExternalSandboxEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/externalapi`);
-//    cy.get('[name="originalDevPortalUrl"]').type('http://www.mocky.io/v2/5ec501532f00009700dc2dc1');
-//    cy.get('#design-config-save-btn').click();
-//    cy.get('#itest-api-details-portal-config-acc').click();
-//
-//    // publish
-//    cy.get('#left-menu-itemlifecycle').click();
-//    cy.get('[data-testid="Publish-btn"]').should('exist');
-//    cy.get('[data-testid="Deploy as a Prototype-btn"]').should('exist');
-//    cy.get('[data-testid="Publish-btn"]').click();
-//    //Does not prompt to publish without deployments???
+    cy.get('button span').contains('Next').should('not.be.disabled');
+    cy.get('button span').contains('Next').click();
+    cy.get('#mui-component-select-protocol').click();
+    cy.get('#other').should('exist');
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
 
-//    //check if the api is third-party and published
-//    cy.get('[role="alert"] div').contains('Third Party').should('exist');
-//    //check if the state is published???
-//
-//    //Check if the subscriptions,runtime config, resources, scopes, monetization, test console sections are present
-//    cy.get('#itest-api-details-portal-config-acc').click();
-//    cy.get('#left-menu-itemsubscriptions').should('exist');
-//    cy.get('#left-menu-itemsubscriptions').click();
-//    cy.get('[name="Unlimited"]').click();
-//    cy.get('#subscriptions-save-btn').click();
-//    cy.get('#itest-api-details-portal-config-acc').click();
-//    cy.get('#itest-api-details-api-config-acc').click();
-//    cy.get('#left-menu-itemRuntimeConfigurations').should('exist');
-//    cy.get('#left-menu-itemresources').should('exist');
-//    cy.get('#left-menu-itemLocalScopes').should('exist');
-//    cy.get('a p').contains('monetization').should('exist');
-//    //Check if monetization is present??? does not have an id
-//    cy.get('#itest-api-details-api-config-acc').click();
-//    cy.get('#left-menu-itemTestConsole').should('exist');
-//
-//    //Document says the lifecycle diagram should not be present but it is there??? Solved
-//
-//    //Check if the api is not deployable
-//    cy.get('#left-menu-itemdeployments').click();
-//    cy.get('[role="alert"] span').contains('This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required.').should('exist');
-//    cy.get('#deploy-btn').should('be.disabled');
-//
-//    //Check if prompts when switching to a regular api
-//    cy.get('#itest-api-details-portal-config-acc').click();
-//    cy.get('#left-menu-itemDesignConfigurations').click();
-//    cy.get('[name="advertised"]:last').click();
-//    cy.get('[aria-labelledby="update-api-confirmation"]').should('exist');
-//
-//    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-//    //check if third party tag is present???
-//    //cy.get('[aria-label="ThirdPartyApi Thumbnail"] ~ div').contains('third party').should('exist');???
-//    //check if the tag is published???
+    // select rest-api option from the menu item
+    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
+    cy.get('#itest-rest-api-create-menu').click();;
+    cy.get('#itest-id-landing-rest-create-default').click();
+    cy.get('#itest-id-apiname-input').type('ThirdPartyApi');
+    cy.get('#itest-id-apicontext-input').type('/thirdpartyapi');
+    cy.get('#itest-id-apiversion-input').type('1.0.0');
+    cy.get('#itest-id-apiendpoint-input').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/api`);
+    cy.get('#itest-create-default-api-button').click();
+
+    //Mark as third party api
+    cy.get('#itest-api-details-portal-config-acc').click();
+    cy.get('#left-menu-itemDesignConfigurations').click();
+    cy.get('[name="advertised"]:first').click();
+    cy.get('[name="apiExternalProductionEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/externalapi`);
+    cy.get('[name="apiExternalSandboxEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/externalapi`);
+    cy.get('[name="originalDevPortalUrl"]').type('http://www.mocky.io/v2/5ec501532f00009700dc2dc1');
+    cy.get('#design-config-save-btn').click();
+    cy.get('#itest-api-details-portal-config-acc').click();
+    //prompt for api-endpoints ???
+
+    // publish
+    cy.get('#left-menu-itemlifecycle').click();
+    cy.get('[data-testid="Publish-btn"]').should('exist');
+    cy.get('[data-testid="Deploy as a Prototype-btn"]').should('exist');
+    cy.get('[data-testid="Publish-btn"]').click();
+
+    //check if the api is third-party and published
+    cy.get('[data-testid="itest-api-state"]').contains('PUBLISHED').should('exist');
+    cy.get('[data-testid="itest-third-party-api-label"]').contains('Third Party').should('exist');
+
+    //Check if the subscriptions,runtime config, resources, scopes, monetization, test console sections are present
+    cy.get('#itest-api-details-portal-config-acc').click();
+    cy.get('#left-menu-itemsubscriptions').should('exist');
+    cy.get('#left-menu-itemsubscriptions').click();
+    cy.get('[name="Unlimited"]').click();
+    cy.get('#subscriptions-save-btn').click();
+    cy.get('#itest-api-details-portal-config-acc').click();
+    cy.get('#itest-api-details-api-config-acc').click();
+    cy.get('#left-menu-itemRuntimeConfigurations').should('exist');
+    cy.get('#left-menu-itemresources').should('exist');
+    cy.get('#left-menu-itemLocalScopes').should('exist');
+    cy.get('#left-menu-itemMonetization').should('exist');
+    cy.get('#itest-api-details-api-config-acc').click();
+    cy.get('#left-menu-itemTestConsole').should('exist');
+
+    //Check if the api is not deployable
+    cy.get('#left-menu-itemdeployments').click();
+    cy.get('[data-testid="third-party-api-deployment-dialog"]').contains('This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required.').should('exist');
+    cy.get('#deploy-btn').should('be.disabled');
+
+    //Check if prompts when switching to a regular api
+    cy.get('#itest-api-details-portal-config-acc').click();
+    cy.get('#left-menu-itemDesignConfigurations').click();
+    cy.get('[name="advertised"]:last').click();
+    cy.get('[data-testid="itest-update-api-confirmation"]').should('exist');
+
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+    cy.get('[data-testid="itest-api-lifecycleState"] span').contains('PUBLISHED').should('exist');
+    cy.get('[data-testid="third-party-api-card-label"]').should('exist');
+
 })
 
 Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
@@ -477,13 +474,13 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
     //Check if the subscriptions, tryout, comments and SDKs sections are present
     cy.get('#left-menu-credentials').should('exist');
     cy.get('#left-menu-test').should('exist');
-    //comments has no way of addressing???
+    cy.get('#left-menu-comments').should('exist');
     cy.get('#left-menu-sdk').should('exist');
 
     //Visit Original Developer Portal is not working??? But it is working in the overview
     cy.get('#left-menu-credentials').click();
-    //Original Dev Portal link has no way of addressing???
-    cy.get('[role="alert"] p').contains('No tiers are available for the API.').should('exist');
+    cy.get('[data-testid="itest-original-devportal-link"]').should('exist');
+    cy.get('[data-testid="itest-no-tier-dialog"]').contains('No tiers are available for the API.').should('exist');
 
     //Check if authorization header and value can be customized
     cy.get('#left-menu-test').click();

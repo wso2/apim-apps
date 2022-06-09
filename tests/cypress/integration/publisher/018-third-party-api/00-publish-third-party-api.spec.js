@@ -27,29 +27,29 @@ describe("Publish thirdparty api", () => {
     const carbonPassword = 'admin';
 
     before(function () {
-//        cy.carbonLogin(carbonUsername, carbonPassword);
-//        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], publisherPassword);
-//        cy.addNewUser(subscriber, ['Internal/subscriber','Internal/everyone'], subscriberPassword);
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], publisherPassword);
+        cy.addNewUser(subscriber, ['Internal/subscriber','Internal/everyone'], subscriberPassword);
         cy.loginToPublisher(publisher, publisherPassword);
     })
 
     it.only("Publish thirdparty api", () => {
         cy.publishThirdPartyApi();
-//        cy.logoutFromPublisher();
-//        cy.loginToDevportal(subscriber, subscriberPassword);
-//        cy.viewThirdPartyApi();
-//        cy.logoutFromDevportal();
+        cy.logoutFromPublisher();
+        cy.loginToDevportal(subscriber, subscriberPassword);
+        cy.viewThirdPartyApi();
+        cy.logoutFromDevportal();
 
     });
 
     after(function () {
         // Test is done. Now delete the api
-//        cy.loginToPublisher(publisher, publisherPassword);
-//        cy.deleteApi('ThirdPartyAPI', '1.0.0');
-//
-//        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-//        cy.deleteUser(publisher);
-//        cy.deleteUser(subscriber);
+        cy.loginToPublisher(publisher, publisherPassword);
+        cy.deleteApi('ThirdPartyAPI', '1.0.0');
+
+        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
+        cy.deleteUser(publisher);
+        cy.deleteUser(subscriber);
 
     })
 });

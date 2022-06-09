@@ -1438,7 +1438,7 @@ export default function Environments() {
         <>
             {api.advertiseInfo && api.advertiseInfo.advertised && (
                 <MuiAlert severity='info' className={classes.infoAlert}>
-                    <Typography variant='body' align='left'>
+                    <Typography variant='body' align='left' data-testid='third-party-api-deployment-dialog'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.advertise.only.warning'
                             defaultMessage={'This API is marked as a third party API. The requests are not proxied'

@@ -631,7 +631,7 @@ class Credentials extends React.Component {
                             ) : (
                                 <Paper elevation={0} className={classes.paper}>
                                     <InlineMessage type='info' className={classes.dialogContainer}>
-                                        <Typography component='p'>
+                                        <Typography component='p' data-testid='itest-no-tier-dialog'>
                                             <FormattedMessage
                                                 id='Apis.Details.Creadentials.credetials.no.tiers'
                                                 defaultMessage='No tiers are available for the API.'
