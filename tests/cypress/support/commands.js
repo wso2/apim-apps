@@ -375,7 +375,7 @@ Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {
     cy.get('#other').should('exist');
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
 
-    // select rest-api option from the menu item
+    //select rest-api option from the menu item
     cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
     cy.get('#itest-rest-api-create-menu').click();;
     cy.get('#itest-id-landing-rest-create-default').click();
@@ -394,9 +394,8 @@ Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {
     cy.get('[name="originalDevPortalUrl"]').type('http://www.mocky.io/v2/5ec501532f00009700dc2dc1');
     cy.get('#design-config-save-btn').click();
     cy.get('#itest-api-details-portal-config-acc').click();
-    //prompt for api-endpoints ???
 
-    // publish
+    //publish
     cy.get('#left-menu-itemlifecycle').click();
     cy.get('[data-testid="Publish-btn"]').should('exist');
     cy.get('[data-testid="Deploy as a Prototype-btn"]').should('exist');
@@ -447,7 +446,7 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
     cy.get('#left-menu-comments').should('exist');
     cy.get('#left-menu-sdk').should('exist');
 
-    //Visit Original Developer Portal is not working??? But it is working in the overview
+    //Visit Original Developer Portal
     cy.get('#left-menu-credentials').click();
     cy.get('[data-testid="itest-original-devportal-link"]').should('exist');
     cy.get('[data-testid="itest-no-tier-dialog"]').contains('No tiers are available for the API.').should('exist');
