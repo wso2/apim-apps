@@ -291,7 +291,7 @@ class APIThumb extends Component {
                         classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
                         label={lifecycleState}
                         color='default'
-                        data-testid="itest-api-lifecycleState"
+                        data-testid='itest-api-lifecycleState'
                     />
                     {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
                         <Chip

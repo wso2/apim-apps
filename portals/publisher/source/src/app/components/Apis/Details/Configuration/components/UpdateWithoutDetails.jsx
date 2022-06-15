@@ -113,7 +113,8 @@ export default function UpdateWithoutDetails(props) {
     };
 
     return (
-        <Dialog onClose={handleClose} aria-labelledby='update-api-confirmation' data-testid='itest-update-api-confirmation' open={open}>
+        <Dialog onClose={handleClose} aria-labelledby='update-api-confirmation' 
+            data-testid='itest-update-api-confirmation' open={open}>
             <MuiDialogTitle disableTypography className={classes.dialogTitle}>
                 <Typography variant='h6'>
                     <FormattedMessage
