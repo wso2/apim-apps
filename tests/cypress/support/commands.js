@@ -369,36 +369,6 @@ Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {
     cy.get('#itest-id-create-streaming-api-import').click();
     cy.get('#outlined-full-width').type('https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml');
     cy.get('#outlined-full-width').should('have.value','https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml');
-
-// ==============
-//    cy.intercept('/**/validate-asyncapi*').as('validateAsyncapi');
-//    cy.wait(Array(66).fill('@validateAsyncapi')).then((requests) => {
-//        requests.forEach((res) => {
-//            expect(res.status).not.to.be.null
-//        })
-//    })
-//    cy.wait(10000);
-//    cy.intercept({
-//        pathname:'/**/validate-asyncapi*',
-//        query:{
-////        'Content-Type' : 'application/json',
-//          'url' :'https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml',
-//        },}).as('validateAsyncapi');
-//      cy.wait('@validateAsyncapi',{ timeout: 30000 }).its('response.body').should('have.property', 'isValid', true);
-//    cy.wait('@validateAsyncapi').its('request.body').should('include', 'https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml');
-
-
-//    cy.intercept({
-//        url:'**/validate-asyncapi*',
-//        body:   {formData["url"]='https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.yml'}
-//            },(req)=> {
-//            expect(res.body).
-//            })
-//            }
-//        }
-//    }
-//    cy.wait(5000);
-// ======================
     cy.get('button span').contains('Next').should('not.be.disabled');
     cy.get('button span').contains('Next').click();
     cy.get('#mui-component-select-protocol').click();
