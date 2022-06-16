@@ -250,11 +250,70 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
     cy.get('#itest-api-name-version').contains(apiVersion);
 })
-  
+
+
+Cypress.Commands.add('createGraphqlAPIfromFile', (name,version,context,filepath)=>{
+
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/graphQL`);
+    
+    cy.timeout(3000);
+
+    // upload the graphql file
+    cy.get('[data-testid="browse-to-upload-btn"]',{timeout:3000}).then(function () {
+        cy.get('input[type="file"]').attachFile(filepath)
+    });
+
+    // Wait to upload and go to next page
+    cy.get('[data-testid="uploaded-list-graphql"]', {timeout: 6000}).should('be.visible');
+    cy.get('[data-testid="create-graphql-next-btn"]').click();
+
+    // Filling the form
+    cy.get('#itest-id-apiname-input').type(name);
+    cy.get('#itest-id-apicontext-input').click();
+    cy.get('#itest-id-apicontext-input').type(context);
+    cy.get('#itest-id-apiversion-input').click();
+    cy.get('#itest-id-apiversion-input').type(version);
+    cy.get('#itest-id-apiendpoint-input').click();
+    cy.get('#itest-id-apiendpoint-input').type('http://localhost:8080/graphql');
+    // Saving the form
+    cy.get('[data-testid="itest-create-graphql-api-button"]').click();
+
+    //Checking the version in the overview
+    cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+    cy.get('#itest-api-name-version').contains(version);
+})
+
+
+Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath)=>{
+    
+    //const filename=filepath.split( '/' ).last;
+    var filename = filepath.replace(/^.*[\\\/]/, '');
+    var uploadedDefinitionPanel=null;
+
+    cy.contains('button', 'Import Definition').click();
+    // upload the graphql file
+    cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
+        cy.get('input[type="file"]').attachFile(filepath)
+    });
+
+    cy.contains('h2','Import GraphQL Schema Definition').should('exist');
+    uploadedDefinitionPanel=cy.get('[data-testid="uploaded-list-graphql"]').get('li').get('[data-testid="uploaded-list-content-graphql"]')
+    uploadedDefinitionPanel.contains(`[data-testid="file-input-${filename}"]`,filename).should('be.visible');
+    uploadedDefinitionPanel.get('[data-testid="btn-delete-imported-file"]').should('be.visible');
+    cy.get('#import-open-api-btn').click();
+    cy.timeout(3000);
+
+    cy.get('.react-monaco-editor-container').get('.monaco-editor textarea:first')
+    .type('{cmd}f',{force:true});
+    cy.get('.find-part .input').type('modified schema file');
+    cy.contains('.find-actions','1 of').should('be.visible');
+   
+})
+
 
 Cypress.Commands.add('createLocalScope', (name, displayname='sample display name',description='sample description',roles=[]) => {
     
-    cy.get('#name').type(name);
+    cy.get('#name',{timeout:3000}).type(name);
     cy.get('#displayName',{timeout: 30000 }).type(displayname);
     cy.get('#description',{timeout: 30000 }).type(description);
     roles.forEach(role => {

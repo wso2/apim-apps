@@ -29,37 +29,7 @@ describe("Create GraphQl API from file", () => {
     })
 
     it("Create GraphQl API from file", () => {
-        const random_number = Math.floor(Date.now() / 1000);
-        const randomName = `sample_api_${random_number}`;
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        // select the option from the menu item
-        cy.get('#itest-graphql-api-create-menu').click();
-        cy.get('#itest-id-create-graphql-api').click();
-
-        // upload the graphql file
-        cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
-            const filepath = 'api_artifacts/schema_graphql.graphql'
-            cy.get('input[type="file"]').attachFile(filepath)
-        });
-
-        // Wait to upload and go to next page
-        cy.get('[data-testid="uploaded-list-graphql"]', {timeout: 6000}).should('be.visible');
-        cy.get('[data-testid="create-graphql-next-btn"]').click();
-
-        // Filling the form
-        cy.get('#itest-id-apiname-input').type(randomName);
-        cy.get('#itest-id-apicontext-input').click();
-        cy.get('#itest-id-apicontext-input').type(`/sample_context_${random_number}`);
-        cy.get('#itest-id-apiversion-input').click();
-        cy.get('#itest-id-apiversion-input').type(`v${random_number}`);
-        cy.get('#itest-id-apiendpoint-input').click();
-        cy.get('#itest-id-apiendpoint-input').type('https://graphql.api.wso2.com');
-        // Saving the form
-        cy.get('[data-testid="itest-create-graphql-api-button"]').click();
-
-        //Checking the version in the overview
-        cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
-        cy.get('#itest-api-name-version').contains(`v${random_number}`);
+        cy.createGraphqlAPIfromFile();
     });
 
     after(function () {
