@@ -110,7 +110,7 @@ function Operations(props) {
                             </Table>
                         </div>
                         <Box py={2}>
-                            <Link to={'/apis/' + api.id + '/operations'} data-testid='show-more-navigate-to-operation'>
+                            <Link to={'/apis/' + api.id + '/operations'}>
                                 <Typography
                                     className={classes.subHeading}
                                     color='primary'

@@ -455,7 +455,6 @@ class Details extends Component {
                             })}
                             to={pathPrefix + 'operations'}
                             Icon={<ResourcesIcon />}
-                            id='left-menu-operations'
                         />
                     </>
                 );
@@ -719,7 +718,6 @@ class Details extends Component {
                                 to={pathPrefix + 'overview'}
                                 Icon={<DashboardIcon />}
                                 head='valueOnly'
-                                id='left-menu-overview'
                             />
                             <Typography className={classes.headingText}>
                                 Develop
