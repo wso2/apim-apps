@@ -335,7 +335,6 @@ export default function ImportDefinition(props) {
                 onValidate={handleOnValidate}
                 apiInputs={apiInputs}
                 inputsDispatcher={inputsDispatcher}
-                data-testid='import-graphql-schema-dialog-content-root'
             />
         );
     }

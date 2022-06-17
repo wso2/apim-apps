@@ -219,7 +219,7 @@ class Operation extends React.Component {
             );
         }
         return (
-            <TableRow style={{ borderStyle: 'hidden' }} data-testid={operation.target + '-tbl-row'}>
+            <TableRow style={{ borderStyle: 'hidden' }}>
                 <TableCell>
                     <Typography variant='body1'>
                         {operation.target}
@@ -352,7 +352,6 @@ class Operation extends React.Component {
                         value={isSecurity}
                         color='primary'
                         disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        data-testid={operation.target + '-security-btn'}
                     />
                 </TableCell>
             </TableRow>
