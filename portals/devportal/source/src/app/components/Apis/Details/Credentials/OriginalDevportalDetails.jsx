@@ -41,7 +41,7 @@ const OriginalDevportalDetails = (props) => {
                 href={originalDevPortalUrl}
                 variant='body2'
             >
-                <div className={classes.originalDevPortalLink}>
+                <div className={classes.originalDevPortalLink} data-testid='itest-original-devportal-link'>
                     <FormattedMessage
                         id='Apis.Details.Credentials.OriginalDevportalDetails.visit.original.developer.portal'
                         defaultMessage='Visit Original Developer Portal'

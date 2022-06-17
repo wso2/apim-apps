@@ -232,7 +232,7 @@ const APIDetailsTopMenu = (props) => {
             </Link>
             <VerticalDivider height={70} />
             <div className={classes.infoItem}>
-                <Typography component='div' variant='subtitle1'>
+                <Typography data-testid='itest-api-state' component='div' variant='subtitle1'>
                     {lifecycleState}
                 </Typography>
                 <Typography variant='caption' align='left'>
@@ -259,6 +259,7 @@ const APIDetailsTopMenu = (props) => {
             <div className={classes.dateWrapper} />
             {(api.advertiseInfo && api.advertiseInfo.advertised) && (
                 <MUIAlert
+                    data-testid='itest-third-party-api-label'
                     variant='outlined'
                     severity='warning'
                     icon={false}

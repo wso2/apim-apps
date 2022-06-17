@@ -547,6 +547,7 @@ class Details extends React.Component {
                                 iconText='comments'
                                 to={pathPrefix + 'comments'}
                                 open={open}
+                                id='left-menu-comments'
                             />
 
                         )}
