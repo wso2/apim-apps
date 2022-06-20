@@ -5,8 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "cypress run",
+    "test:local": "./test.local.sh",
     "test:gui": "cypress run --headed",
-    "test:dev": "cypress open"
+    "test:dev": "cypress open",
+    "delete:reportFolderHTML": "rm -rf cypress/reports/html/.jsons/*",
+    "delete:reportFolderJUnit": "rm -rf cypress/reports/junit/*",
+    "delete:reportFolderReport": "rm -rf cypress/reports/mochawesome-bundle.json",
+    "delete:reportSummary": "rm -rf cypress/reports/summary.txt",
+    "pre-test": "npm run delete:reportFolderHTML && npm run delete:reportFolderJUnit && npm run delete:reportFolderReport && npm run delete:reportSummary",
+    "report:merge": "mochawesome-merge ./cypress/reports/html/.jsons/*.json > ./cypress/reports/mochawesome-bundle.json",
+    "report:generate": "marge --inline --saveHtml --charts ./cypress/reports/mochawesome-bundle.json -o ./cypress/reports/html",
+    "merge-junit-reports": "jrm ./cypress/reports/junit/combined.xml \"./cypress/reports/junit/*.xml\"",
+    "test:admin": "cypress run --spec cypress/integration/admin/*.spec.js"
   },
   "keywords": [
     "cypress.io"
@@ -17,7 +27,15 @@
     "@cypress/browserify-preprocessor": "^3.0.1",
     "babel-plugin-module-resolver": "^4.1.0",
     "cypress": "^9.1.1",
-    "eslint-plugin-cypress": "^2.11.2"
+    "cypress-mochawesome-reporter": "^2.2.0",
+    "cypress-multi-reporters": "^1.5.0",
+    "eslint-plugin-cypress": "^2.11.2",
+    "junit-report-merger": "^2.2.3",
+    "mocha": "^9.0.2",
+    "mocha-junit-reporter": "^2.0.0",
+    "mochawesome": "^6.2.2",
+    "mochawesome-merge": "^4.2.0",
+    "mochawesome-report-generator": "^5.2.0"
   },
   "dependencies": {
     "aws-sdk": "^2.942.0",
@@ -26,6 +44,7 @@
     "require-text": "0.0.1",
     "styliner": "^1.1.0",
     "wdio": "^4.0.0",
-    "wdio-junit-to-html": "^3.1.2"
+    "wdio-junit-to-html": "^3.1.2",
+    "yamljs": "^0.3.0"
   }
 }

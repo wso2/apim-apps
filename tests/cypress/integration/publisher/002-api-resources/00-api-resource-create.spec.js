@@ -19,63 +19,13 @@
 import Utils from "@support/utils";
 
 describe("Resource add edit operations", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+
+    const { publisher, password, } = Utils.getUserInfo();
     const target = '/test';
 
-    before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
-
-    beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add new resource", () => {
-        const apiName = 'newapi' + Math.floor(Date.now() / 1000);
-        const apiVersion = '1.0.0';
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
+    const addApiAndResource = (verb, apiId) => {
         // Typing the resource name
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemresources').click();
-        cy.get('#operation-target').type(target);
-        cy.get('body').click();
-        cy.get('#add-operation-selection-dropdown').click();
-
-        // Checking all the operations
-        cy.get('#add-operation-get').click();
-        cy.get('#add-operation-post').click();
-        cy.get('#add-operation-put').click();
-        cy.get('#add-operation-patch').click();
-        cy.get('#add-operation-delete').click();
-        cy.get('#add-operation-head').click();
-
-        cy.get('body').click();
-        cy.get('#add-operation-button').click();
-        cy.get('#resources-save-operations').click();
-
-        // Validating if the resource exists after saving
-        cy.get('#resources-save-operations', { timeout: 30000 });
-
-        cy.get(`#get\\${target}`).should('be.visible');
-        cy.get(`#post\\${target}`).should('be.visible');
-        cy.get(`#put\\${target}`).should('be.visible');
-        cy.get(`#patch\\${target}`).should('be.visible');
-        cy.get(`#delete\\${target}`).should('be.visible');
-        cy.get(`#head\\${target}`).should('be.visible');
-
-        // Test is done. Now delete the api
-        cy.get('#itest-id-deleteapi-icon-button').click({force: true});
-        cy.get('#itest-id-deleteconf').click();
-    });
-
-    const addApiAndResource = (verb) => {
-        // Typing the resource name
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemresources').click();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/resources`);
         cy.get('#operation-target').type(target);
         cy.get('body').click();
         cy.get('#add-operation-selection-dropdown').click();
@@ -92,69 +42,111 @@ describe("Resource add edit operations", () => {
 
         cy.get(`#${verb}\\${target}`).should('be.visible');
     }
+
+    it.only("Add new resource", () => {
+        const apiName = Utils.generateName();
+        const apiVersion = '1.0.0';
+        cy.loginToPublisher(publisher, password);
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/resources`);
+
+            // Typing the resource name
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemresources').click();
+            cy.get('#operation-target').type(target);
+            cy.get('body').click();
+            cy.get('#add-operation-selection-dropdown').click();
+
+            // Checking all the operations
+            cy.get('#add-operation-get').click();
+            cy.get('#add-operation-post').click();
+            cy.get('#add-operation-put').click();
+            cy.get('#add-operation-patch').click();
+            cy.get('#add-operation-delete').click();
+            cy.get('#add-operation-head').click();
+
+            cy.get('body').click();
+            cy.get('#add-operation-button').click();
+            cy.get('#resources-save-operations').click();
+
+            // Validating if the resource exists after saving
+            cy.get('#resources-save-operations', { timeout: 30000 });
+
+            cy.get(`#get\\${target}`).should('be.visible');
+            cy.get(`#post\\${target}`).should('be.visible');
+            cy.get(`#put\\${target}`).should('be.visible');
+            cy.get(`#patch\\${target}`).should('be.visible');
+            cy.get(`#delete\\${target}`).should('be.visible');
+            cy.get(`#head\\${target}`).should('be.visible');
+
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
+    });
+
     it.only("Add delete query path parameters for resources", () => {
         const verb = 'get';
         const paramType = 'query';
         const paramName = 'count';
         const paramDataType = 'string';
-        const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+        const apiName = Utils.generateName();
         const apiVersion = '1.0.0';
+        cy.loginToPublisher(publisher, password);
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            addApiAndResource(verb, apiId);
 
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        addApiAndResource(verb);
+            cy.get(`#${verb}\\${target}`).click();
+            cy.get(`#param-${verb}\\${target}`).click();
+            cy.get(`#param-${verb}\\${target}\\/${paramType}`).click();
 
-        cy.get(`#${verb}\\${target}`).click();
-        cy.get(`#param-${verb}\\${target}`).click();
-        cy.get(`#param-${verb}\\${target}\\/${paramType}`).click();
+            cy.get(`#name-${verb}\\${target}`).click();
+            cy.get(`#name-${verb}\\${target}`).type(paramName);
 
-        cy.get(`#name-${verb}\\${target}`).click();
-        cy.get(`#name-${verb}\\${target}`).type(paramName);
+            // Clicking the parameter data type drop down
+            cy.get(`#data-${verb}\\${target}`).click();
+            cy.get(`#data-${verb}\\${target}\\/${paramDataType}`).click();
+            cy.get(`#param-${verb}\\${target}-add-btn`).click({ force: true });
 
-        // Clicking the parameter data type drop down
-        cy.get(`#data-${verb}\\${target}`).click();
-        cy.get(`#data-${verb}\\${target}\\/${paramDataType}`).click();
-        cy.get(`#param-${verb}\\${target}-add-btn`).click({force: true});
+            // Save the resources
+            cy.get('#resources-save-operations').click();
 
-        // Save the resources
-        cy.get('#resources-save-operations').click();
+            // Validating if the param exists after saving
+            cy.get('#resources-save-operations', { timeout: 30000 });
+            cy.get(`#param-list-${paramType}-${paramName}-${paramDataType}`).should('be.visible');
 
-        // Validating if the param exists after saving
-        cy.get('#resources-save-operations', { timeout: 30000 });
-        cy.get(`#param-list-${paramType}-${paramName}-${paramDataType}`).should('be.visible');
-
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
-        cy.get(`#itest-id-deleteconf`).click();
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
 
     it.only("Add advance throttling policies per resource", () => {
         const verb = 'get';
         const rateLimitName = '50KPerMin';
-        const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+        const apiName = Utils.generateName();
         const apiVersion = '1.0.0';
-        
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        addApiAndResource(verb);
-        // Click the operation level radio button on the top
-        cy.get('#api-rate-limiting-operation-level').click({force:true});
+        cy.loginToPublisher(publisher, password);
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            addApiAndResource(verb, apiId);
+            // Click the operation level radio button on the top
+            cy.get('#api-rate-limiting-operation-level').click({ force: true });
 
-        // expand the section
-        cy.get(`#${verb}\\${target}`).click();
+            // expand the section
+            cy.get(`#${verb}\\${target}`).click();
 
-        cy.get(`#${verb}\\${target}-operation_throttling_policy`).click();
-        cy.get(`#${verb}\\${target}-operation_throttling_policy-${rateLimitName}`).click();
+            cy.get(`#${verb}\\${target}-operation_throttling_policy`).click();
+            cy.get(`#${verb}\\${target}-operation_throttling_policy-${rateLimitName}`).click();
 
-        // Save the resources
-        cy.get('#resources-save-operations').click();
+            // Save the resources
+            cy.get('#resources-save-operations').click();
 
-        cy.get('#resources-save-operations', { timeout: 30000 });
-        cy.get(`#${verb}\\${target}-operation_throttling_policy`)
-            .contains(rateLimitName)
-            .should('be.visible');
+            cy.get('#resources-save-operations', { timeout: 30000 });
+            cy.get(`#${verb}\\${target}-operation_throttling_policy`)
+                .contains(rateLimitName)
+                .should('be.visible');
 
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
-        cy.get(`#itest-id-deleteconf`).click();
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
 
     it.only("Add and assign scopes for API resources", () => {
@@ -163,61 +155,57 @@ describe("Resource add edit operations", () => {
         const scopeName = 'test' + random_number;
         const scopeDescription = 'test scope description';
         const role = 'internal/publisher';
-        const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+        const apiName = Utils.generateName();
         const apiVersion = '1.0.0';
-        
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        addApiAndResource(verb);
+        cy.loginToPublisher(publisher, password);
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            addApiAndResource(verb, apiId);
 
-        // Go to local scope page
-        cy.get('#left-menu-itemLocalScopes').click();
+            // Go to local scope page
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/scopes/create`);
 
-        // Create a local scope
-        cy.get('#create-scope-btn').click();
-        cy.get('#name').click();
-        cy.get('#name').type(scopeName);
+            // Create a local scope
+            cy.get('input#name').click();
+            cy.get('input#name').type(scopeName);
 
-        cy.get('#displayName').click();
-        cy.get('#displayName').type(scopeName);
+            cy.get('#displayName').click();
+            cy.get('#displayName').type(scopeName);
 
-        cy.get('#description').click();
-        cy.get('#description').type(scopeDescription);
+            cy.get('#description').click();
+            cy.get('#description').type(scopeDescription);
 
-        cy.get('#roles-input').click();
-        cy.get('#roles-input').type(`${role}{enter}`);
+            cy.get('#roles-input').click();
+            cy.get('#roles-input').type(`${role}{enter}`);
 
-        cy.get('#scope-save-btn').click();
-        cy
-            .get('tbody')
-            .get('tr')
-            .contains(scopeName).should('be.visible');
+            // Not sure why, but the name becomes empty and we need to type it again
+            cy.get('input#name').click();
+            cy.get('input#name').type(scopeName);
 
-        // Go to resources page
-        cy.get('#left-menu-itemresources').click();
+            cy.get('#scope-save-btn').click();
+            cy
+                .get('tbody')
+                .get('tr')
+                .contains(scopeName).should('be.visible');
 
-        // Open the operation sub section
-        cy.get(`#${verb}\\${target}`).click();
-        cy.get(`#${verb}\\${target}-operation-scope-select`, { timeout: 3000 });
-        cy.get(`#${verb}\\${target}-operation-scope-select`).click();
-        cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).click();
-        cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).type('{esc}');
-        // // Save the resources
-        cy.get('#resources-save-operations').click();
+            // Go to resources page
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/resources`);
 
-        cy.get('#resources-save-operations', { timeout: 30000 });
-        cy.get(`#${verb}\\${target}-operation-scope-select`)
-            .contains(scopeName)
-            .should('be.visible');
+            // Open the operation sub section
+            cy.get(`#${verb}\\${target}`).click();
+            cy.get(`#${verb}\\${target}-operation-scope-select`, { timeout: 3000 });
+            cy.get(`#${verb}\\${target}-operation-scope-select`).click();
+            cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).click();
+            cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).type('{esc}');
+            // // Save the resources
+            cy.get('#resources-save-operations').click();
 
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
-        cy.get(`#itest-id-deleteconf`).click();
+            cy.get('#resources-save-operations', { timeout: 30000 });
+            cy.get(`#${verb}\\${target}-operation-scope-select`)
+                .contains(scopeName)
+                .should('be.visible');
 
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 })

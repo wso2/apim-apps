@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-06-10T10:45:17.977Z",
+    "end": "2022-06-10T10:45:35.344Z",
+    "duration": 17367,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "18ccbfea-421c-4fe8-abf9-dc1abff10c1b",
+      "title": "",
+      "fullFile": "cypress/integration/admin/00-add-edit-delete-microgateway-environments.spec.js",
+      "file": "cypress/integration/admin/00-add-edit-delete-microgateway-environments.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "1380c0a9-37ee-4434-b0cc-a444b82a9a31",
+          "title": "Add Edit Delete Microgateway Environments",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add Edit Delete Microgateway Environments",
+              "fullTitle": "Add Edit Delete Microgateway Environments Add Edit Delete Microgateway Environments",
+              "timedOut": null,
+              "duration": 17355,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('[data-testid=\"Gateways\"]').click();\ncy.get('.MuiButton-label').contains('Add Gateway Environment').click();\ncy.get('input[name=\"name\"]').type('MARKETING_STORE');\ncy.get('input[name=\"displayName\"]').type('MARKETING_STORE');\ncy.get('[data-testid=\"vhost\"]').find('input[name=\"0\"]').type('localhost'); // Wait until the label is saved\ncy.intercept('GET', '**/environments').as('environmentsGet');\ncy.get('button > span').contains('Save').click();\ncy.wait('@environmentsGet', {\n  timeout: 3000\n}).then(function () {\n  cy.get('table tr td').contains('MARKETING_STORE').should('exist');\n}); // editing\ncy.get('[data-testid=\"MuiDataTableBodyCell-5-1\"] div > div > button:first-child').click();\ncy.get('textarea[name=\"description\"]').type('marketing store'); // Wait until the label is saved\ncy.intercept('GET', '**/environments').as('environmentsGet');\ncy.get('button > span').contains('Save').click();\ncy.wait('@environmentsGet', {\n  timeout: 3000\n}).then(function () {\n  cy.get('table tr td').contains('marketing store').should('exist');\n}); // deleting\ncy.get('[data-testid=\"MuiDataTableBodyCell-5-1\"] div > div > button:nth-child(2)').click();\ncy.get('button > span').contains('Delete').click();\ncy.get('div[role=\"status\"]').should('have.text', 'Gateway Environment deleted successfully');",
+              "err": {},
+              "uuid": "925f691b-a9b4-4fc3-9a0a-3c667937963c",
+              "parentUUID": "1380c0a9-37ee-4434-b0cc-a444b82a9a31",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "925f691b-a9b4-4fc3-9a0a-3c667937963c"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 17355,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.1"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

@@ -19,26 +19,35 @@
 import Utils from "@support/utils";
 
 describe("Deploy sample api", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, password} = Utils.getUserInfo();
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it.only("Deploy sample api", () => {
-        cy.deploySampleAPI();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.intercept(
+            {
+                method: 'GET',
+                path: '**/apis?limit=10&offset=0',
+            },
+            {
+                body: { "count": 0, "list": [], "pagination": { "offset": 0, "limit": 10, "total": 0, "next": "", "previous": "" } },
+            },
+        ).as('apiGet');
+        cy.wait("@apiGet", { timeout: 180000 }).then((interceptions) => {
+            console.log(interceptions);
+            cy.get('#itest-rest-api-create-menu').click();
+            cy.get('#itest-id-deploy-sample').click();
+            cy.get('#itest-api-name-version', { timeout: 50000 }).should('be.visible');
+            cy.url().should('contains', '/overview');
+            cy.get("#itest-api-name-version").contains('PizzaShackAPI');
+        });
     });
 
     after(function () {
         // Test is done. Now delete the api
         cy.deleteApi('PizzaShackAPI', '1.0.0');
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
     })
 });

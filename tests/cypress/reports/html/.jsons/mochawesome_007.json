@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-06-10T10:47:30.396Z",
+    "end": "2022-06-10T10:47:42.787Z",
+    "duration": 12391,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "42bf7b9e-8779-43f5-bb8d-aff0bfae8831",
+      "title": "",
+      "fullFile": "cypress/integration/admin/07-add-scope-mapping.spec.js",
+      "file": "cypress/integration/admin/07-add-scope-mapping.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "8ec7a943-0b78-4b18-ad5e-2f2f0ceae30f",
+          "title": "Add scope mapping",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add scope mapping",
+              "fullTitle": "Add scope mapping Add scope mapping",
+              "timedOut": null,
+              "duration": 12340,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var roleName = 'creator';\ncy.get('[data-testid=\"Scope Assignments-child-link\"]').click();\ncy.get('.MuiButton-label').contains('Add scope mappings').click();\ncy.get('#role-input-field-helper-text').type(roleName);\ncy.get('button.MuiButton-containedPrimary span').contains('Next').click();\ncy.get('#role-select-dropdown').click();\ncy.get('#role-select-dropdown-popup li').contains('Internal/creator').click();\ncy.get('button.MuiButton-containedPrimary span').contains('Save').click();\ncy.get('div').contains(roleName).should('exist'); // delete\ncy.get(\"[data-testid=\\\"\".concat(roleName, \"-delete-btn\\\"]\")).click();\ncy.get('[aria-labelledby=\"delete-confirmation\"] button.MuiButton-containedPrimary').click();\ncy.get(\"[data-testid=\\\"\".concat(roleName, \"\\\"]\")).should('not.exist');",
+              "err": {},
+              "uuid": "dc87d97b-0567-4981-ba54-634b3434ead7",
+              "parentUUID": "8ec7a943-0b78-4b18-ad5e-2f2f0ceae30f",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "dc87d97b-0567-4981-ba54-634b3434ead7"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 12340,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.1"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

@@ -19,14 +19,9 @@
 import Utils from "@support/utils";
 
 describe("Endpoint testing", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, password, } = Utils.getUserInfo();
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
@@ -35,57 +30,53 @@ describe("Endpoint testing", () => {
         const testAlias = `endpointCert`;
         const endpoint = `https://petstore.swagger.io/v2/store/inventory/${random_number}`;
 
-        cy.createAPIWithoutEndpoint();
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemendpoints').click();
-        cy.get('[data-testid="http/restendpoint-add-btn"]').click();
+        Utils.addAPI({}).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemendpoints').click();
+            cy.get('[data-testid="http/restendpoint-add-btn"]').click();
 
-        // Add the prod and sandbox endpoints
-        cy.get('#production-endpoint-checkbox').click();
-        cy.get('#production_endpoints').focus().type(endpoint);
+            // Add the prod and sandbox endpoints
+            cy.get('#production-endpoint-checkbox').click();
+            cy.get('#production_endpoints').focus().type(endpoint);
 
-        //Expanding the general config section
-        cy.get('#http-panel1bh-header').trigger('click');
-        cy.get('#certs-add-btn').click();
-
-        cy.get('#endpoint-certificate').click();
-        cy.get(`[data-value="${endpoint}"]`).click();
-
-        cy.get('#certificateAlias').click();
-        cy.get('#certificateAlias').type(testAlias);
-
-        // upload the cert
-        cy.get('[data-testid="cert-upload-btn"]').click();
-        const filepath = 'api_artifacts/sample.crt.pem';
-        cy.get('input[type="file"]').attachFile(filepath);
-        
-        // Click away
-        cy.get('#certificateAlias').click();
-
-        // Save the cert
-        cy.get('#upload-cert-save-btn').type(filepath);
-        cy.wait(1000);
-
-        // Save the endpoint
-        cy.get('#endpoint-save-btn').click();
-        cy.get('#endpoint-save-btn').then(function (el) {
-            // Check the values
+            //Expanding the general config section
             cy.get('#http-panel1bh-header').trigger('click');
-            cy.get('#endpoint-cert-list').contains(testAlias).should('be.visible');
+            cy.get('#certs-add-btn').click();
+
+            cy.get('#endpoint-certificate').click();
+            cy.get(`[data-value="${endpoint}"]`).click();
+
+            cy.get('#certificateAlias').click();
+            cy.get('#certificateAlias').type(testAlias);
+
+            // upload the cert
+            cy.get('[data-testid="cert-upload-btn"]').click();
+            const filepath = 'api_artifacts/sample.crt.pem';
+            cy.get('input[type="file"]').attachFile(filepath);
+
+            // Click away
+            cy.get('#certificateAlias').click();
+
+            // Save the cert
+            cy.get('#upload-cert-save-btn').type(filepath);
+            cy.wait(1000);
+
+            // Save the endpoint
+            cy.get('#endpoint-save-btn').click();
+            cy.get('#endpoint-save-btn').then(function (el) {
+                // Check the values
+                cy.get('#http-panel1bh-header').trigger('click');
+                cy.get('#endpoint-cert-list').contains(testAlias).should('be.visible');
+            });
+
+            cy.get('#http-panel1bh-header').click({ force: true });
+            cy.get('#delete-cert-btn').click({ force: true });
+            cy.get('#delete-cert-confirm-btn').click();
+            cy.get('#endpoint-cert-list').contains(testAlias).should('not.exist');
+
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
         });
-
-        cy.get('#http-panel1bh-header').click({force:true});
-        cy.get('#delete-cert-btn').click({force:true});
-        cy.get('#delete-cert-confirm-btn').click();
-        cy.get('#endpoint-cert-list').contains(testAlias).should('not.exist');
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force:true});
-        cy.get(`#itest-id-deleteconf`).click();
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });
