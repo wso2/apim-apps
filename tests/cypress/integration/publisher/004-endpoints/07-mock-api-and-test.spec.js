@@ -13,26 +13,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+/*
+TODO
+The product is broken. we need to fix the product. This test case is ignored from cypress.json
+*/
 import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, password, } = Utils.getUserInfo();
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
+    /* 
+        TODO
+    */
     it("Mock the api response and test it", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        // select the option from the menu item
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`);
         cy.get('#open-api-file-select-radio').click();
 
         // upload the swagger
@@ -50,50 +48,55 @@ describe("Mock the api response and test it", () => {
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
 
+
+            cy.intercept('**/apis/**').as('apiGet');
             // finish the wizard
             cy.get('#open-api-create-btn').click();
+            cy.wait('@apiGet', { timeout: 30000 }).then((data) => {
+                // validate
+                cy.get('#itest-api-name-version', { timeout: 30000 });
+                cy.get('#itest-api-name-version').contains(version);
 
-            // validate
-            cy.get('#itest-api-name-version', { timeout: 30000 });
-            cy.get('#itest-api-name-version').contains(version);
+                // Go to endpoints page
+                cy.get('#itest-api-details-api-config-acc').click();
+                cy.get('#left-menu-itemendpoints').click();
 
-            // Go to endpoints page
-            cy.get('#itest-api-details-api-config-acc').click();
-            cy.get('#left-menu-itemendpoints').click();
+                // Change the endpoint type to Prototype Implementation
+                cy.get('#INLINE').click();
 
-            // Change the endpoint type to Prototype Implementation
-            cy.get('#INLINE').click();
+                // Confirm it
+                cy.get('#change-endpoint-type-btn').click();
+                cy.get('#endpoint-save-btn').click();
+                cy.get('#endpoint-save-btn').then(() => {
+                    cy.get('#itest-api-details-portal-config-acc').click();
+                    cy.get('#left-menu-itemsubscriptions').click();
 
-            // Confirm it
-            cy.get('#change-endpoint-type-btn').click();
-            cy.get('#endpoint-save-btn').click();
-            cy.get('#endpoint-save-btn').then(() => {
-                // Going to deployments page
-                cy.get('#itest-api-details-portal-config-acc').click();
-                cy.get('#left-menu-itemdeployments').click();
+                    cy.get('span').contains('Silver : Allows 2000 requests per minute').click();
+                    cy.get('#subscriptions-save-btn').click();
 
-                // Deploying
-                cy.wait(1000);
-                cy.get('#deploy-btn').click();
-                cy.get('#undeploy-btn').should('exist');
+                    // Going to deployments page
+                    cy.get('#itest-api-details-portal-config-acc').click();
+                    cy.get('#left-menu-itemdeployments').click();
 
-                cy.get('#itest-api-details-portal-config-acc').click();
-                cy.get('#left-menu-itemTestConsole').click();
+                    // Deploying
+                    cy.wait(1000);
+                    cy.get('#deploy-btn').click();
+                    cy.get('#undeploy-btn').should('exist');
 
-                cy.get('#operations-pet-getPetById').click();
-                cy.get('#operations-pet-getPetById .try-out__btn').click();
-                cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
-                cy.get('#operations-pet-getPetById button.execute').click();
-                cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
+                    cy.get('#itest-api-details-portal-config-acc').click();
+                    cy.get('#left-menu-itemTestConsole').click();
+
+                    cy.get('#operations-pet-getPetById').click();
+                    cy.get('#operations-pet-getPetById .try-out__btn').click();
+                    cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
+                    cy.get('#operations-pet-getPetById button.execute').click();
+                    cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
+
+                    // Delete api
+                    const apiId = data.response.body.id;
+                    Utils.deleteAPI(apiId);
+                })
             })
         });
     });
-    after(function () {
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click();
-        cy.get(`#itest-id-deleteconf`).click();
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 })

@@ -163,20 +163,6 @@ Cypress.Commands.add('deleteAllApis', () => {
     })
 });
 
-Cypress.Commands.add('deploySampleAPI', () => {
-    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
-    cy.get('#itest-rest-api-create-menu').click()
-    cy.get('#itest-id-deploy-sample').click()
-    cy.get('#itest-api-name-version', { timeout: 10000 }).should('be.visible');
-    cy.url().should('contains', '/overview');
-    cy.get("#itest-api-name-version").contains('PizzaShackAPI');
-    cy.intercept('**/apis/**').as('apiGet');
-    cy.wait('@apiGet', {timeout: 3000}).then((res) => {
-        const apiUUID =  res.response.body.id;
-        return { uuid: apiUUID };
-    });
-})
-
 Cypress.Commands.add('createAnAPI', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
     const randomName = `0sample_api_${random_number}`;
@@ -747,10 +733,7 @@ Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
 })
 
 Cypress.Commands.add('logoutFromPublisher', () => {
-
     cy.visit(`${Utils.getAppOrigin()}/publisher/services/logout`);
-    cy.get('#usernameUserInput', { timeout: 30000 }).debug();
-    cy.get('#usernameUserInput', { timeout: 30000 }).should('exist');
 })
 
 Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {

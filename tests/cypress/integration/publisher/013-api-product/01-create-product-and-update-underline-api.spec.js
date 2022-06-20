@@ -17,26 +17,18 @@
 import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const productName = 'petstoreProduct';
-    const apiName = 'SwaggerPetstore-OpenAPI30';
+    const { publisher, password, } = Utils.getUserInfo();
+
+    const productName = Utils.generateName();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.6';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it("Mock the api response and test it", () => {
-
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        // select the option from the menu item
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`, { timeout: 30000 });
         cy.get('#open-api-file-select-radio').click();
 
         // upload the swagger
@@ -61,9 +53,9 @@ describe("Mock the api response and test it", () => {
                 method: "GET",
                 url: `**/apis/**`,
                 times: 1,
-              }).as('apiGet');
-            cy.wait('@apiGet', {timeout: 30000}).then((res) => {
-                
+            }).as('apiGet');
+            cy.wait('@apiGet', { timeout: 30000 }).then((res) => {
+
                 // validate
                 cy.get('#itest-api-name-version', { timeout: 30000 });
                 cy.get('#itest-api-name-version').contains(version);
@@ -91,7 +83,7 @@ describe("Mock the api response and test it", () => {
                 cy.get('#add-all-resources-btn').click();
                 cy.get('#create-api-product-btn').scrollIntoView().click();
 
-                cy.wait('@apiProductsGet', {timeout: 30000}).then((res) => {
+                cy.wait('@apiProductsGet', { timeout: 30000 }).then((res) => {
 
                     cy.get('#itest-api-name-version', { timeout: 30000 });
                     cy.get('#itest-api-name-version').contains(productName);
@@ -146,9 +138,4 @@ describe("Mock the api response and test it", () => {
             });
         });
     });
-
-    after(function () {
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 })

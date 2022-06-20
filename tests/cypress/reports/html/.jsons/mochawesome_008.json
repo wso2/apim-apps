@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-06-10T10:47:46.384Z",
+    "end": "2022-06-10T10:48:20.995Z",
+    "duration": 34611,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "4d82a777-fe61-4850-9cbe-40e0af6cd3b6",
+      "title": "",
+      "fullFile": "cypress/integration/admin/08-add-api-categories.spec.js",
+      "file": "cypress/integration/admin/08-add-api-categories.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "8ca21502-df9e-438f-9ee1-3a1925ca2ad5",
+          "title": "Add API Categories and assign via publisher portal",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Add API Categories and assign via publisher portal",
+              "fullTitle": "Add API Categories and assign via publisher portal Add API Categories and assign via publisher portal",
+              "timedOut": null,
+              "duration": 25569,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var category = _utils[\"default\"].generateName();\nvar categoryDescription = 'Weather related apis';\ncy.get('[data-testid=\"API Categories\"]').click();\ncy.get('.MuiButton-label').contains('Add API Category').click();\ncy.get('input[name=\"name\"]').type(category);\ncy.get('textarea[name=\"description\"]').type(categoryDescription);\ncy.get('button.MuiButton-containedPrimary span').contains('Save').click(); // Go to publisher\ncy.wait(500);\ncy.visit(\"\".concat(_utils[\"default\"].getAppOrigin(), \"/publisher/apis\"));\n_utils[\"default\"].addAPI({}).then(function (apiId) {\n  testApiId = apiId;\n  console.log('We call and got the api id' + apiId);\n  cy.visit(\"\".concat(_utils[\"default\"].getAppOrigin(), \"/publisher/apis/\").concat(apiId, \"/configuration\"));\n  cy.get('#APICategories').click();\n  cy.get('span').contains(category).click();\n  cy.get('#menu-categories').click('topLeft');\n  cy.get('#design-config-save-btn').click();\n});",
+              "err": {},
+              "uuid": "1eee6e22-5be8-4827-9144-21fdeebd1bf1",
+              "parentUUID": "8ca21502-df9e-438f-9ee1-3a1925ca2ad5",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "1eee6e22-5be8-4827-9144-21fdeebd1bf1"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 25569,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.1"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

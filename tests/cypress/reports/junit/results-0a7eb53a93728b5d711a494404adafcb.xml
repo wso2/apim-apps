@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="17.3690" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-06-10T10:48:48" tests="0" file="cypress/integration/admin/10-advanced-configurations.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Advanced Configurations" timestamp="2022-06-10T10:48:48" tests="1" time="17.3170" failures="0">
+    <testcase name="Advanced Configurations Advanced configurations" time="17.3290" classname="Advanced configurations">
+    </testcase>
+  </testsuite>
+</testsuites>

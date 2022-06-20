@@ -19,90 +19,56 @@
 import Utils from "@support/utils";
 
 describe("Subscription blocking", () => {
-    const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
-    const appDescription = 'app description';
-    const developer = 'developer';
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
+
+
+    const { publisher, password, developer } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '2.0.0';
-    const apiContext = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
+    const appName = Utils.generateName();
+    const appDescription = 'app description';
+    const apiContext = apiName;
+    let testApiId;
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
-    
-    it.only("Subscribe and unsubscribe to API from api details page", () => {
+    before(function () {
         cy.loginToPublisher(publisher, password);
-        cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
-        cy.logoutFromPublisher();
-        cy.loginToDevportal(developer, password);
-        cy.createApp(appName, appDescription);
-        cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
-        cy.url().should('contain', '/apis?tenant=carbon.super');
-         // After publishing the api appears in devportal with a delay.
-        // We need to keep refresing and look for the api in the listing page
-        // following waitUntilApiExists function does that recursively.
-        let remainingAttempts = 30;
+    })
 
-        function waitUntilApiExists() {
-            let $apis = Cypress.$(`[title="${apiName}"]`);
-            if ($apis.length) {
-                // At least one with api name was found.
-                // Return a jQuery object.
-                return $apis;
-            }
+    it.only("Subscription blocking", () => {
+        Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
+            testApiId = apiId;
+            Utils.publishAPI(apiId).then((serverResponse) => {
+                console.log(serverResponse);
+                cy.logoutFromPublisher();
+                cy.loginToDevportal(developer, password);
+                cy.createApp(appName, appDescription);
+                cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+                cy.url().should('contain', '/apis?tenant=carbon.super');
+                cy.visit(`${Utils.getAppOrigin()}/devportal/apis/${apiId}/credentials?tenant=carbon.super`);
+                // Click and select the new application
+                cy.get('#application-subscribe', { timeout: 300000 }).should('be.visible');
 
-            if (--remainingAttempts) {
-                cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
+                cy.get('#application-subscribe').click();
+                cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
+                cy.get(`#subscribe-to-api-btn`).click();
+                cy.get(`#subscription-table td`).contains(appName).should('exist');
 
-                // Requesting the page to reload (F5)
-                cy.reload();
+                // Subscription blocking port in the publisher side.
+                cy.logoutFromDevportal();
+                cy.loginToPublisher(publisher, password);
+                cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
 
-                // Wait a second for the server to respond and the DOM to be present.
-                return cy.wait(4000).then(() => {
-                    return waitUntilApiExists();
-                });
-            }
-            throw Error('Table was not found.');
-        }
 
-        waitUntilApiExists().then($apis => {
-            cy.log('apis: ' + $apis.text());
-            cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-            cy.get(`[title="${apiName}"]`).click();
-            cy.get('#left-menu-credentials').click();
-    
-            // Click and select the new application
-            cy.get('#application-subscribe').click();
-            cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
-            cy.get(`#subscribe-to-api-btn`).click();
-            cy.get(`#subscription-table td`).contains(appName).should('exist');
-    
-            // Subscription blocking port in the publisher side.
-            cy.logoutFromDevportal();
-            cy.loginToPublisher(publisher, password);
-            cy.get(`#${apiName}`).click();
-    
-            // wait until page load
-            cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
-            cy.url().should('contain', '/overview');
-            cy.get('#itest-api-name-version').contains(`${apiVersion}`);
-    
-            // click the left menu to go to subscriptions page.
-            cy.get('#itest-api-details-portal-config-acc').click();
-            cy.get('#left-menu-itemsubscriptions').click();
-            cy.get('table tr button span').contains('Block Production Only').click();
-            cy.get('table tr td').contains('PROD_ONLY_BLOCKED').should('exist');
-            cy.get('table tr button span').contains('Block All').click();
-            cy.get('table tr td').contains('BLOCKED').should('exist');
-            cy.logoutFromPublisher();
+                // click the left menu to go to subscriptions page.
+                cy.get('#itest-api-details-portal-config-acc', { timeout: 300000 }).should('be.visible');
+                cy.get('#itest-api-details-portal-config-acc').click();
+                cy.get('#left-menu-itemsubscriptions').click();
+                cy.get('table tr button span').contains('Block Production Only').click();
+                cy.get('table tr td').contains('PROD_ONLY_BLOCKED').should('exist');
+                cy.get('table tr button span').contains('Block All').click();
+                cy.get('table tr td').contains('BLOCKED').should('exist');
+                cy.logoutFromPublisher();
+            })
         });
-       
     })
 
     after(() => {
@@ -113,11 +79,6 @@ describe("Subscription blocking", () => {
         cy.get(`#itest-confirm-application-delete`).click();
         cy.logoutFromDevportal();
         cy.loginToPublisher(publisher, password);
-        cy.deleteApi(apiName, apiVersion);
-
-        // delete users
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(developer);
-        cy.deleteUser(publisher);
+        Utils.deleteAPI(testApiId);
     })
 })

@@ -1,0 +1,108 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2022-06-10T10:48:48.049Z",
+    "end": "2022-06-10T10:49:05.417Z",
+    "duration": 17368,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "78db77b0-c5eb-4ee0-b8ed-ff6d38e8f316",
+      "title": "",
+      "fullFile": "cypress/integration/admin/10-advanced-configurations.spec.js",
+      "file": "cypress/integration/admin/10-advanced-configurations.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "14c56e7d-29c0-4a30-9e46-3f8b7499b34a",
+          "title": "Advanced Configurations",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Advanced configurations",
+              "fullTitle": "Advanced Configurations Advanced configurations",
+              "timedOut": null,
+              "duration": 17329,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('[data-testid=\"Advanced-child-link\"]').click();\ncy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {\n  statusCode: 200,\n  body: _advanceConfigFlase[\"default\"]\n});\ncy.get('[data-testid=\"Scope Assignments-child-link\"]').click();\ncy.get('[data-testid=\"Advanced-child-link\"]').click();\ncy.wait(3000);\ncy.get('[data-testid=\"monaco-editor-save\"]').click();\ncy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {\n  statusCode: 200,\n  body: _advanceConfigTrue[\"default\"]\n});\ncy.get('[data-testid=\"Scope Assignments-child-link\"]').click();\ncy.get('[data-testid=\"Advanced-child-link\"]').click();\ncy.wait(2000);\ncy.get('[data-testid=\"monaco-editor-save\"]').click();",
+              "err": {},
+              "uuid": "0b36ce22-4cfe-4c1a-ab42-81182b6d62b1",
+              "parentUUID": "14c56e7d-29c0-4a30-9e46-3f8b7499b34a",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "0b36ce22-4cfe-4c1a-ab42-81182b6d62b1"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 17329,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.1"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "charts": true,
+        "reportPageTitle": "custom-title",
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/reports/html/.jsons"
+      },
+      "version": "5.2.0"
+    }
+  }
+}

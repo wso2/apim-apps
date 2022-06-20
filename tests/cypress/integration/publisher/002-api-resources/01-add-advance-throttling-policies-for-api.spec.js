@@ -19,41 +19,30 @@
 import Utils from "@support/utils";
 
 describe("Add advanced throttling policies", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    before(function () {
         cy.loginToPublisher(publisher, password);
     })
 
     it.only("Add Authorization Header for the api", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemresources').click();
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/resources`);
 
-        cy.get('#api-rate-limiting-api-level').click();
-        cy.get('#operation_throttling_policy').click();
-        cy.get('#api-rate-limiting-api-level-10KPerMin').then(() => {
-            cy.get('#api-rate-limiting-api-level-10KPerMin').click();
-        })
-        cy.get('#resources-save-operations').click();
+            cy.get('#api-rate-limiting-api-level').click();
+            cy.get('#operation_throttling_policy').click();
+            cy.get('#api-rate-limiting-api-level-10KPerMin').then(() => {
+                cy.get('#api-rate-limiting-api-level-10KPerMin').click();
+            })
+            cy.get('#resources-save-operations').click();
 
-        cy.get('#operation_throttling_policy').scrollIntoView();
-        cy.get('#operation_throttling_policy').contains('10KPerMin').should('be.visible');
+            cy.get('#operation_throttling_policy').scrollIntoView();
+            cy.get('#operation_throttling_policy').contains('10KPerMin').should('be.visible');
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.deleteApi(apiName, apiVersion);
-
-        // delete publisher
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });
