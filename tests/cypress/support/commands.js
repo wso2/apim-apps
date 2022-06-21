@@ -250,7 +250,63 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
     cy.get('#itest-api-name-version').contains(apiVersion);
 })
-  
+
+
+Cypress.Commands.add('createGraphqlAPIfromFile', (name,version,context,filepath)=>{
+
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/graphQL`);
+
+    // upload the graphql file
+    cy.get('[data-testid="browse-to-upload-btn"]',{timeout:6000}).then(function () {
+        cy.get('input[type="file"]').attachFile(filepath)
+    });
+
+    // Wait to upload and go to next page
+    cy.get('[data-testid="uploaded-list-graphql"]', {timeout: 6000}).should('be.visible');
+    cy.get('[data-testid="create-graphql-next-btn"]').click();
+
+    // Filling the form
+    cy.get('#itest-id-apiname-input').type(name);
+    cy.get('#itest-id-apicontext-input').click();
+    cy.get('#itest-id-apicontext-input').type(context);
+    cy.get('#itest-id-apiversion-input').click();
+    cy.get('#itest-id-apiversion-input').type(version);
+    cy.get('#itest-id-apiendpoint-input').click();
+    cy.get('#itest-id-apiendpoint-input').type('http://localhost:8080/graphql');
+    // Saving the form
+    cy.get('[data-testid="itest-create-graphql-api-button"]').click();
+
+    //Checking the version in the overview
+    cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+    cy.get('#itest-api-name-version').contains(version);
+})
+
+
+Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath)=>{
+    
+    //const filename=filepath.split( '/' ).last;
+    var filename = filepath.replace(/^.*[\\\/]/, '');
+    var uploadedDefinitionPanel=null;
+
+    cy.contains('button', 'Import Definition').click();
+    // upload the graphql file
+    cy.get('[data-testid="browse-to-upload-btn"]').then(function () {
+        cy.get('input[type="file"]').attachFile(filepath)
+    });
+
+    cy.contains('h2','Import GraphQL Schema Definition').should('exist');
+    uploadedDefinitionPanel=cy.get('[data-testid="uploaded-list-graphql"]').get('li').get('[data-testid="uploaded-list-content-graphql"]')
+    uploadedDefinitionPanel.contains(`[data-testid="file-input-${filename}"]`,filename).should('be.visible');
+    uploadedDefinitionPanel.get('[data-testid="btn-delete-imported-file"]').should('be.visible');
+    cy.get('#import-open-api-btn').click();
+
+    cy.get('.react-monaco-editor-container',{timeout:3000}).get('.monaco-editor textarea:first')
+    .type('{cmd}f',{force:true});
+    cy.get('.find-part .input').type('modified schema file');
+    cy.contains('.find-actions','1 of').should('be.visible');
+   
+})
+
 
 Cypress.Commands.add('createLocalScope', (name, displayname='sample display name',description='sample description',roles=[]) => {
 
@@ -263,12 +319,14 @@ Cypress.Commands.add('createLocalScope', (name, displayname='sample display name
     });
     cy.get('#scope-save-btn').click();
     
+    //check the table and verify whether entered scope names exist
     cy.get('table').get('tbody').find("tr")
     .then((rows) => {
         var ele=null;
-        rows.toArray().forEach((element) => {
+        rows.toArray().every((element) => {
             if (element.innerHTML.includes(name)) {
               ele=element;
+              return false;
             }
           });
           expect(ele.innerHTML).to.include(name);
@@ -278,7 +336,7 @@ Cypress.Commands.add('createLocalScope', (name, displayname='sample display name
 
 Cypress.Commands.add('addDocument', (name,summary,type,source) => {
     
-    cy.get('[data-testid="add-document-btn"]').click();
+    cy.get('[data-testid="add-document-btn"]',{timeout:3000}).click();
     cy.get('#doc-name',{timeout: 30000}).type(name);
     cy.get('#doc-summary').click();
     cy.get('#doc-summary',{timeout: 30000}).type(summary);
@@ -412,8 +470,27 @@ Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
     cy.get('tr').contains('td',name);
 
     //save the property
-    cy.get('[data-testid="custom-select-save-button"]').click();
-    cy.timeout(3000);
+    cy.get('[data-testid="custom-select-save-button"]',{timeout:3000}).click();
+
+    cy.intercept('PUT','*api/am/publisher/v3/apis',res=>{
+        expect(res).property('status').to.equal(200);
+        cy.get('[data-testid="custom-select-save-button"]').should('not.be.disabled');
+
+        //check the table and verify whether property saved
+        cy.get('table').get('tbody').find("tr")
+        .then((rows) => {
+            var ele=null;
+            rows.toArray().every((element) => {
+                if (element.innerHTML.includes(name)) {
+                    ele=element;
+                    return false;
+                }
+                });
+                expect(ele.innerHTML).to.include(name);
+        });
+
+    }).as("saveProperty");
+
 })
 
 Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {

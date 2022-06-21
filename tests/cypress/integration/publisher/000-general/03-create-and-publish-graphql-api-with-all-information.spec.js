@@ -103,7 +103,7 @@ describe("Create GraphQl API from file", () => {
     })
 
     it("Verify GraphQl API Capabilities", () => {
-  
+
       //create a graphql API
         cy.createGraphqlAPIfromFile(apiName,apiVersion,apiContext,filepath);
 
@@ -122,25 +122,25 @@ describe("Create GraphQl API from file", () => {
         //modify a graphql schema definition
         cy.modifyGraphqlSchemaDefinition(modifiedFilepath);
 
-        cy.timeout(6000);
-
         //localscopes
-        cy.get('#left-menu-itemLocalScopes').should('have.attr', 'href')
+        cy.get('#left-menu-itemLocalScopes',{timeout:6000}).should('have.attr', 'href')
         .then((href) => {
           cy.visit(`${Utils.getAppOrigin()}${href}/create`);
+          cy.get("#scope-save-btn",{timeout:6000});
         })
-        cy.timeout(3000);
+      
         cy.createLocalScope('adminScope','admin scope',"sample description",['admin']);
         
         cy.get('#left-menu-itemLocalScopes').should('have.attr', 'href')
         .then((href) => {
           cy.visit(`${Utils.getAppOrigin()}${href}/create`);
+          cy.get("#scope-save-btn",{timeout:6000});
         })
-        cy.timeout(3000);
+    
         cy.createLocalScope('filmSubscriberScope','filmSubscriber scope',"sample description",['FilmSubscriber']);
 
-        cy.timeout(3000);
-        cy.get('#left-menu-operations').click();
+    
+        cy.get('#left-menu-operations',{timeout:3000}).click();
         
         cy.get('table').get('[data-testid="allCharacters-tbl-row"]').find('td').eq(2).click().get('ul').contains('li','Unlimited').click();
         cy.get('table').get('[data-testid="allCharacters-tbl-row"]').find('td').eq(3).click().get('ul').contains('li','adminScope').click();
@@ -152,28 +152,24 @@ describe("Create GraphQl API from file", () => {
         cy.get("#menu-").click();
         //cy.get('table').get('[data-testid="allDroids-tbl-row"]').find('td').eq(4).get('[data-testid="allDroids-security-btn"').click();
         cy.get('[data-testid="custom-select-save-button"]').click();
-        cy.timeout(6000);
 
         //deployments
-        cy.get('#react-root').scrollTo('top');
+        cy.get('#react-root',{timeout:6000}).scrollTo('top');
         cy.get('#left-menu-itemdeployments').click();
         cy.get('#deploy-btn').click();
-        cy.timeout(6000);
              
         //publish
-        cy.get("#left-menu-overview").click();
+        cy.get("#left-menu-overview",{timeout:6000}).click();
         cy.contains('button','Publish').click();
         
 
         //visit dev portal and view API
         cy.logoutFromPublisher();
         cy.loginToDevportal(username, password);
-        cy.timeout(6000);
-        cy.get('table > tbody > tr').get(`[area-label="Go to ${apiName}"]`).click();
-        cy.timeout(6000);
+        cy.get('table > tbody > tr',{timeout:6000}).get(`[area-label="Go to ${apiName}"]`).click();
 
         //should contain two urls : HTTP URL and Websocket URL
-        cy.get('#gateway-envirounment').get('[data-testid="http-url"]').should('exist');
+        cy.get('#gateway-envirounment',{timeout:6000}).get('[data-testid="http-url"]').should('exist');
         cy.get('#gateway-envirounment').get('[data-testid="websocket-url"]').should('exist');
         
         // Go to application subscription page
@@ -183,17 +179,16 @@ describe("Create GraphQl API from file", () => {
         cy.get('#per-token-quota').click();
         cy.get('ul').find('li').eq(2).click();
         cy.get('#application-description').type("Sample Description");
-        cy.timeout(3000);
-        cy.get('#wizard-next-0-btn').click();
-        cy.timeout(3000);
-        cy.get('#wizard-next-1-btn').click();
-        cy.timeout(3000);
-        cy.get('#wizard-next-2-btn').click();
-        cy.timeout(3000);
-        cy.get('#wizard-next-3-btn').click();
-        cy.timeout(3000);
+        
+        cy.get('#wizard-next-0-btn',{timeout:3000}).click();
+       
+        cy.get('#wizard-next-1-btn',{timeout:3000}).click();
+        
+        cy.get('#wizard-next-2-btn',{timeout:3000}).click();
+     
+        cy.get('#wizard-next-3-btn',{timeout:3000}).click();
    
-        cy.get("#left-menu-test").click();
+        cy.get("#left-menu-test",{timeout:3000}).click();
 
         cy.intercept('**/applications/').as('getApplication');
         cy.wait('@getApplication').then((res) => {
@@ -207,7 +202,6 @@ describe("Create GraphQl API from file", () => {
         cy.get('.topBar').get('.execute-button-wrap').get('button.execute-button').click();
 
         cy.intercept('POST','/swapi/1.0.0',(res) => {
-          console.log(res);
           expect(res.body).to.include(starWarsQueryResponse);
         }).as("queryResponse");
         
@@ -216,7 +210,6 @@ describe("Create GraphQl API from file", () => {
         cy.get('.topBar').get('.execute-button-wrap').get('button.execute-button').click();
         
         cy.intercept('GET','/swapi/1.0.0/*',(res) => {
-          console.log(res);
           expect(res).property('status').to.equal(200);
           expect(res).property('type').to.equal('websocket');
         }).as("switchProtocol");
@@ -234,7 +227,6 @@ describe("Create GraphQl API from file", () => {
             "variables":null
           },
         }).then((resp) => {
-          console.log("resp:",resp.body);
           expect(JSON.stringify(resp.body)).to.include(starWarsSubscriptionResponse);
         });      
 
@@ -242,7 +234,7 @@ describe("Create GraphQl API from file", () => {
     });
 
 
-
+/*
     after(function () {
         // Test is done. Now delete the api
         cy.get(`#itest-id-deleteapi-icon-button`).click();
@@ -250,5 +242,5 @@ describe("Create GraphQl API from file", () => {
 
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(publisher);
-    })
+    })*/
 })
