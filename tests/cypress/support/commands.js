@@ -253,17 +253,27 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
   
 
 Cypress.Commands.add('createLocalScope', (name, displayname='sample display name',description='sample description',roles=[]) => {
-    
-    cy.get('#name').type(name);
+
+    cy.get('#name',{timeout:3000}).type(name,{force:true});
     cy.get('#displayName',{timeout: 30000 }).type(displayname);
     cy.get('#description',{timeout: 30000 }).type(description);
+    cy.get('#name',{timeout:3000}).type(name);
     roles.forEach(role => {
         cy.get('#roles-input',{timeout: 30000 }).type(role+'\n');
     });
     cy.get('#scope-save-btn').click();
     
-    cy.get('[data-testid="MuiDataTableBodyCell-0-0"]', { timeout: 30000 }).should('be.visible');
-    cy.get('[data-testid="MuiDataTableBodyCell-0-0"]').contains(name);
+    cy.get('table').get('tbody').find("tr")
+    .then((rows) => {
+        var ele=null;
+        rows.toArray().forEach((element) => {
+            if (element.innerHTML.includes(name)) {
+              ele=element;
+            }
+          });
+          expect(ele.innerHTML).to.include(name);
+    });
+
 })
 
 Cypress.Commands.add('addDocument', (name,summary,type,source) => {
