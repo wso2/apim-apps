@@ -285,6 +285,12 @@
       "value": "Throttling policies not available. Contact your administrator"
     }
   ],
+  "Apis.Create.Default.APICreateDefault.error.url.not.valid": [
+    {
+      "type": 0,
+      "value": "URL is not valid"
+    }
+  ],
   "Apis.Create.Default.APICreateDefault.success.otherStatus": [
     {
       "type": 0,
@@ -489,6 +495,18 @@
       "value": "Create an API by providing a Name, a Version and a Context"
     }
   ],
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg": [
+    {
+      "type": 0,
+      "value": "This feature is deprecated. Please use the WSO2 Integration Studio as an alternative"
+    }
+  ],
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg": [
+    {
+      "type": 0,
+      "value": "Integration Studio Documentation:"
+    }
+  ],
   "Apis.Create.WSDL.ApiCreateWSDL.error.policies.not.available": [
     {
       "type": 0,
@@ -683,12 +701,6 @@
     {
       "type": 0,
       "value": "Error while updating GraphQL schema"
-    }
-  ],
-  "Apis.Details.APIDefinition.APIDefinition.error.while.parsing.api.definition": [
-    {
-      "type": 0,
-      "value": "Error occurred while updating the API Definition"
     }
   ],
   "Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition": [
@@ -1163,6 +1175,18 @@
     {
       "type": 0,
       "value": "Error while updating WSDL"
+    }
+  ],
+  "Apis.Details.APIDefinition.Linting.APILinting.loading": [
+    {
+      "type": 0,
+      "value": "Linting . . ."
+    }
+  ],
+  "Apis.Details.APIDefinition.SwaggerEditorDrawer.title": [
+    {
+      "type": 0,
+      "value": "Failed to Validate OpenAPI File"
     }
   ],
   "Apis.Details.APIDefinition.WSDL.download.definition": [
@@ -5231,6 +5255,18 @@
       "value": "Blocked"
     }
   ],
+  "Apis.Details.Overview.CustomizedStepper.btn.prototyped": [
+    {
+      "type": 0,
+      "value": "Pre-Released"
+    }
+  ],
+  "Apis.Details.Overview.CustomizedStepper.btn.publish": [
+    {
+      "type": 0,
+      "value": "Publish"
+    }
+  ],
   "Apis.Details.Overview.CustomizedStepper.deprecated": [
     {
       "type": 0,
@@ -5285,7 +5321,13 @@
       "value": "Resources"
     }
   ],
-  "Apis.Details.Policies.AttachedPolicyCard.download.error": [
+  "Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": [
     {
       "type": 0,
       "value": "Something went wrong while downloading the policy"
@@ -5366,7 +5408,7 @@
   "Apis.Details.Policies.DeletePolicy.confirm": [
     {
       "type": 0,
-      "value": "Yes"
+      "value": "Delete"
     }
   ],
   "Apis.Details.Policies.DeletePolicy.delete.confirm": [
@@ -5410,7 +5452,7 @@
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": [
     {
       "type": 0,
-      "value": "Changing the gateway type will remove all existing policies added to the API."
+      "value": "Changing the gateway type will remove all existing policies added to the API"
     }
   ],
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": [
@@ -5707,16 +5749,22 @@
       "value": "Done"
     }
   ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.description": [
     {
       "type": 0,
       "value": "Define the Gateway (s) that will be supporting this policy. Based off of this selection, you can upload the relevant business logic inclusive policy file."
-    }
-  ],
-  "Apis.Details.Policies.PolicyForm.SourceDetails.download.error": [
-    {
-      "type": 0,
-      "value": "Something went wrong while downloading the policy"
     }
   ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description": [
@@ -5734,7 +5782,7 @@
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": [
     {
       "type": 0,
-      "value": "Policy File"
+      "value": "Policy File(s)"
     }
   ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": [
@@ -5764,7 +5812,11 @@
   "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": [
     {
       "type": 0,
-      "value": "Upload Policy File"
+      "value": "Upload Policy File for "
+    },
+    {
+      "type": 1,
+      "value": "gateway"
     }
   ],
   "Apis.Details.Policies.PolicyList.add.new.policy": [

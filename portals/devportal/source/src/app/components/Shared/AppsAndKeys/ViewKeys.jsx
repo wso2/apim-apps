@@ -20,7 +20,6 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import Alert1 from 'AppComponents/Shared/Alert';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
@@ -291,11 +290,11 @@ class ViewKeys extends React.Component {
                 if (status === 404) {
                     this.setState({ notFound: true });
                 } else if (status === 400) {
-                    Alert1.error(error.description
-                         || intl.formatMessage({
-                             id: 'Shared.AppsAndKeys.TokenManager.key.generate.bad.request.error',
-                             defaultMessage: 'Error occurred when generating Access Token',
-                         }));
+                    Alert.error(error.description
+                        || intl.formatMessage({
+                            id: 'Shared.AppsAndKeys.TokenManager.key.generate.bad.request.error',
+                            defaultMessage: 'Error occurred when generating Access Token',
+                        }));
                 }
                 this.setState({ isUpdating: false });
                 const { response } = error;
@@ -350,7 +349,7 @@ class ViewKeys extends React.Component {
                                                 classes={{ root: classes.iconButton }}
                                             >
                                                 <IconButton aria-label='Copy to clipboard'
-                                                            classes={{root: classes.iconButton}}>
+                                                    classes={{ root: classes.iconButton }}>
                                                     <Icon color='secondary'>
                                                         file_copy
                                                     </Icon>
@@ -395,11 +394,22 @@ class ViewKeys extends React.Component {
                                                 classes={{ root: classes.iconButton }}
                                                 onClick={() => this.handleShowHidden('showCS')}
                                                 onMouseDown={this.handleMouseDownGeneric}
+                                                id='visibility-toggle-btn'
                                             >
                                                 {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
                                             </IconButton>
                                             <Tooltip
-                                                title={secretCopied ? 'Copied' : 'Copy to clipboard'}
+                                                title={
+                                                    secretCopied
+                                                        ? intl.formatMessage({
+                                                            defaultMessage: 'Copied',
+                                                            id: 'Shared.AppsAndKeys.ViewKeys.copied',
+                                                        })
+                                                        : intl.formatMessage({
+                                                            defaultMessage: 'Copy to clipboard',
+                                                            id: 'Shared.AppsAndKeys.ViewKeys.copy.to.clipboard',
+                                                        })
+                                                }
                                                 placement='right'
                                             >
                                                 <CopyToClipboard
@@ -457,7 +467,7 @@ class ViewKeys extends React.Component {
         } = this.state;
         const {
             intl, keyType, classes, fullScreen, keys, selectedApp: { tokenType }, selectedGrantTypes, isUserOwner, summary,
-            selectedTab, hashEnabled, keyManagerConfig, initialToken, initialValidityTime, initialScopes,
+            selectedTab, hashEnabled, keyManagerConfig, initialToken, initialValidityTime, initialScopes, mode,
         } = this.props;
 
         if (notFound) {
@@ -578,14 +588,23 @@ class ViewKeys extends React.Component {
                             <DialogActions>
                                 {isUpdating && <CircularProgress size={24} />}
                                 {!showToken && !showCurl && !isKeyJWT && !showSecretGen && (
-                                    <Button onClick={this.generateAccessToken} color='primary' disabled={isUpdating}>
+                                    <Button
+                                        onClick={this.generateAccessToken}
+                                        color='primary'
+                                        id='generate-access-token-generate-btn'
+                                        disabled={isUpdating}
+                                    >
                                         <FormattedMessage
                                             id='Shared.AppsAndKeys.ViewKeys.consumer.generate.btn'
                                             defaultMessage='Generate'
                                         />
                                     </Button>
                                 )}
-                                <Button onClick={this.handleClose} color='primary' autoFocus>
+                                <Button 
+                                onClick={this.handleClose} 
+                                id='generate-access-token-close-btn'
+                                color='primary' 
+                                autoFocus>
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ViewKeys.consumer.close.btn'
                                         defaultMessage='Close'
@@ -597,8 +616,10 @@ class ViewKeys extends React.Component {
                             <div className={classes.tokenSection}>
                                 {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
                                     && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
+                                    && mode !== 'MAPPED'
                                     && (
                                         <Button
+                                            id='generate-access-token-oauth2'
                                             variant='outlined'
                                             size='small'
                                             color='primary'
@@ -645,6 +666,7 @@ class ViewKeys extends React.Component {
 ViewKeys.defaultProps = {
     fullScreen: false,
     summary: false,
+    mode: null,
 };
 ViewKeys.propTypes = {
     classes: PropTypes.shape({}).isRequired,
@@ -652,6 +674,7 @@ ViewKeys.propTypes = {
     isKeyJWT: PropTypes.bool.isRequired,
     isUserOwner: PropTypes.bool.isRequired,
     summary: PropTypes.bool,
+    mode: PropTypes.string,
 };
 
 export default injectIntl(withStyles(styles)(ViewKeys));

@@ -29,6 +29,8 @@ import Button from '@material-ui/core/Button';
 import { Link } from 'react-router-dom';
 import Wsdl from 'AppData/Wsdl';
 import Alert from 'AppComponents/Shared/Alert';
+import { Link as MUILink } from '@material-ui/core';
+import { Alert as MUIAlert, AlertTitle } from '@material-ui/lab';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
@@ -172,6 +174,28 @@ export default function ApiCreateWSDL(props) {
         <APICreateBase
             title={(
                 <>
+                    <Box mb={2}>
+                        <MUIAlert severity='warning'>
+                            <AlertTitle>
+                                <FormattedMessage
+                                    id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg'
+                                    defaultMessage='This feature is deprecated. 
+                                    Please use the WSO2 Integration Studio as an alternative'
+                                />
+                            </AlertTitle>
+                            <FormattedMessage
+                                id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg'
+                                defaultMessage='Integration Studio Documentation: '
+                            />
+                            <MUILink
+                                // eslint-disable-next-line
+                                href={`https://apim.docs.wso2.com/en/4.1.0/integrate/develop/creating-artifacts/creating-an-api/`}
+                                target='_blank'>
+                                https://apim.docs.wso2.com/en/4.1.0/integrate/develop/
+                                creating-artifacts/creating-an-api/
+                            </MUILink>
+                        </MUIAlert>
+                    </Box>
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.WSDL.ApiCreateWSDL.heading'

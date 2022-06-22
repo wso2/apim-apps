@@ -323,6 +323,15 @@ export default function Environments() {
     const maxCommentLength = '255';
     const intl = useIntl();
     const { api, updateAPI } = useContext(APIContext);
+    const securityScheme = [...api.securityScheme];
+    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
+    && securityScheme.includes('mutualssl_mandatory');
+    const isEndpointAvailable = api.endpointConfig !== null;
+    const isTierAvailable = api.policies.length !== 0;
+
+    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
+    || (!isMutualSslOnly && !isTierAvailable)
+    || api.workflowStatus === 'CREATED');
     const history = useHistory();
     const { data: settings, isLoading } = usePublisherSettings();
     const {
@@ -381,44 +390,52 @@ export default function Environments() {
     useEffect(() => {
         const promise = restApi.getAsyncAPIDefinition(api.id);
         promise.then(async (response) => {
-            const doc = await parse(response.data);
-            const protocolBindings = [];
-            // eslint-disable-next-line array-callback-return
-            doc.channelNames().map((channelName) => {
-                if (doc.channel(channelName).hasPublish()) {
-                    // eslint-disable-next-line array-callback-return
-                    doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
-                        if (!protocolBindings.includes(protocol)) {
-                            protocolBindings.push(protocol);
-                        }
-                    });
+            if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
+                let doc;
+                try {
+                    doc = await parse(response.data);
+                } catch (err) {
+                    console.warn("Async API does not found");
+                    return;
                 }
-                if (doc.channel(channelName).hasSubscribe()) {
-                    // eslint-disable-next-line array-callback-return
-                    doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
-                        if (!protocolBindings.includes(protocol)) {
-                            protocolBindings.push(protocol);
-                        }
-                    });
-                }
-            });
-            // eslint-disable-next-line array-callback-return
-            allExternalGateways.map((env) => {
-                const endpoints = [];
+                const protocolBindings = [];
                 // eslint-disable-next-line array-callback-return
-                env.endpointURIs.map((endpoint) => {
-                    // eslint-disable-next-line array-callback-return
-                    protocolBindings.map((protocol) => {
-                        if (protocol === endpoint.protocol) {
-                            const uri = endpoint.endpointURI;
-                            endpoints.push({ protocol, uri });
-                        }
-                    });
+                doc.channelNames().map((channelName) => {
+                    if (doc.channel(channelName).hasPublish()) {
+                        // eslint-disable-next-line array-callback-return
+                        doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
+                            if (!protocolBindings.includes(protocol)) {
+                                protocolBindings.push(protocol);
+                            }
+                        });
+                    }
+                    if (doc.channel(channelName).hasSubscribe()) {
+                        // eslint-disable-next-line array-callback-return
+                        doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
+                            if (!protocolBindings.includes(protocol)) {
+                                protocolBindings.push(protocol);
+                            }
+                        });
+                    }
                 });
-                externalEnvWithEndpoints[env.name] = endpoints;
-            });
-            setExternalEnvEndpoints(externalEnvWithEndpoints);
-        });
+                // eslint-disable-next-line array-callback-return
+                allExternalGateways.map((env) => {
+                    const endpoints = [];
+                    // eslint-disable-next-line array-callback-return
+                    env.endpointURIs.map((endpoint) => {
+                        // eslint-disable-next-line array-callback-return
+                        protocolBindings.map((protocol) => {
+                            if (protocol === endpoint.protocol) {
+                                const uri = endpoint.endpointURI;
+                                endpoints.push({ protocol, uri });
+                            }
+                        });
+                    });
+                    externalEnvWithEndpoints[env.name] = endpoints;
+                });
+                setExternalEnvEndpoints(externalEnvWithEndpoints);
+            }
+        })
     }, [api.id]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
@@ -1074,7 +1091,7 @@ export default function Environments() {
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <AddIcon className={classes.plusIconStyle} />
+                        <AddIcon className={classes.plusIconStyle}  data-testid='new-revision-icon-btn'/>
                     </Grid>
                 )}
 
@@ -1421,7 +1438,7 @@ export default function Environments() {
         <>
             {api.advertiseInfo && api.advertiseInfo.advertised && (
                 <MuiAlert severity='info' className={classes.infoAlert}>
-                    <Typography variant='body' align='left'>
+                    <Typography variant='body' align='left' data-testid='third-party-api-deployment-dialog'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.advertise.only.warning'
                             defaultMessage={'This API is marked as a third party API. The requests are not proxied'
@@ -1463,7 +1480,7 @@ export default function Environments() {
                     <Button
                         onClick={toggleDeployRevisionPopup}
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                    || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                    || (api.advertiseInfo && api.advertiseInfo.advertised) || isDeployButtonDisabled}
                         variant='contained'
                         color='primary'
                         size='large'
@@ -1844,7 +1861,8 @@ export default function Environments() {
                             disabled={SelectedEnvironment.length === 0
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
                                 || isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                || isDeployButtonDisabled}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Environments.Environments.deploy.deploy'
@@ -2215,6 +2233,7 @@ export default function Environments() {
                                                                 allEnvDeployments[row.name].revision.id, row.name,
                                                             )}
                                                             size='small'
+                                                            id='undeploy-btn'
                                                         >
                                                             <FormattedMessage
                                                                 id='Apis.Details.Environments.Environments.undeploy.btn'
@@ -2266,7 +2285,8 @@ export default function Environments() {
                                                                 (r) => r.env === row.name && r.revision,
                                                             ) || !selectedVhosts.some(
                                                                 (v) => v.env === row.name && v.vhost,
-                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                                            || isDeployButtonDisabled}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,
@@ -2482,7 +2502,8 @@ export default function Environments() {
                                                             className={classes.button2}
                                                             disabled={api.isRevision || !selectedRevision.some(
                                                                 (r) => r.env === row.name && r.revision,
-                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)}
+                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                                            || isDeployButtonDisabled}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(
                                                                 (r) => r.env === row.name,

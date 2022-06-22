@@ -218,6 +218,7 @@ function NewEndpointCreate(props) {
                                         color='primary'
                                         className={classes.button}
                                         onClick={() => generateEndpointConfig(type.type, endpointImplType)}
+                                        data-testid={type.name.replace(/\s/g, '').toLowerCase() + '-add-btn'}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Endpoints.NewEndpointCreate.create.button'

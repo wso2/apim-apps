@@ -132,10 +132,11 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                         id={'delete-' + policyId}
                         onClick={handleDelete}
                         color='primary'
+                        variant='outlined'
                     >
                         <FormattedMessage
                             id='Apis.Details.Policies.DeletePolicy.confirm'
-                            defaultMessage='Yes'
+                            defaultMessage='Delete'
                         />
                     </Button>
                 </DialogActions>

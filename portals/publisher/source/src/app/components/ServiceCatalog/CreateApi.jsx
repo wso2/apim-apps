@@ -169,17 +169,24 @@ function CreateApi(props) {
      * @returns {string} The url or the pathname of the url
      */
     function getContextFromServiceUrl(url) {
-        if (url && url !== '') {
-            const urlObject = url.split('://').length > 1 ? new URL(url) : null;
-            if (urlObject) {
-                let path = urlObject.pathname;
-                if (path.endsWith('/')) {
-                    path = path.slice(0, -1); // Remove leading `/` because of context validation failure
+        try{
+            if (url && url !== '') {
+                const urlObject = url.split('://').length > 1 ? new URL(url) : null;
+                if (urlObject) {
+                    let path = urlObject.pathname;
+                    if (path.endsWith('/')) {
+                        path = path.slice(0, -1); // Remove leading `/` because of context validation failure
+                    }
+                    return path;
+                } else {
+                    return url.replace(/[^a-zA-Z ]/g, ''); // we need to remove the special chars from context.
                 }
-                return path;
-            } else {
-                return url.replace(/[^a-zA-Z ]/g, ''); // we need to remove the special chars from context.
             }
+        } catch (e) {
+            console.log(`${url} - ${intl.formatMessage({
+                id: 'Apis.Create.Default.APICreateDefault.error.url.not.valid',
+                defaultMessage: 'URL is not valid',
+            })}`);
         }
         return url;
     }

@@ -188,7 +188,7 @@ export default function ProvideOpenAPI(props) {
             );
         } else {
             urlStateEndAdornment = (
-                <InputAdornment position='end'>
+                <InputAdornment position='end' id='url-validated'>
                     <CheckIcon fontSize='large' color='primary' />
                 </InputAdornment>
             );
@@ -219,12 +219,14 @@ export default function ProvideOpenAPI(props) {
                                 value={ProvideOpenAPI.INPUT_TYPES.URL}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI URL'
+                                id='open-api-url-select-radio'
                             />
                             <FormControlLabel
                                 value={ProvideOpenAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI File/Archive'
                                 aria-label='OpenAPI File/Archive'
+                                id='open-api-file-select-radio'
                             />
                         </RadioGroup>
                     </FormControl>
@@ -289,6 +291,7 @@ export default function ProvideOpenAPI(props) {
                                             <Button
                                                 color='primary'
                                                 variant='contained'
+                                                id='browse-to-upload-btn'
                                             >
                                                 <FormattedMessage
                                                     id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.upload'
@@ -323,6 +326,7 @@ export default function ProvideOpenAPI(props) {
                             // 'Give the URL of OpenAPI endpoint'
                             helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
                             error={isInvalidURL}
+                            data-testid='swagger-url-endpoint'
                         />
                     )}
                 </Grid>

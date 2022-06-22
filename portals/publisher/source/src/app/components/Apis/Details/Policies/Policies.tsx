@@ -61,28 +61,23 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-interface PoliciesProps {
-    disableUpdate: any;
-}
-
 /**
  * Renders the policy management page.
- * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policy management page to render.
  */
-const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
+const Policies: React.FC = () => {
     const classes = useStyles();
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const [isChoreoConnectEnabled, getChoreoConnectEnabled] = useState(false);
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
-    const getGatewayType = (isCCEnabled: boolean) => {
-        getChoreoConnectEnabled(isCCEnabled)
+    const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
+        setIsChoreoConnectEnabled(isCCEnabled);
     }
 
     /**
@@ -161,6 +156,26 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
             console.error(error);
             Alert.error('Error occurred while retrieving the policy list');
         });
+    }
+
+    const removeAPIPoliciesForGatewayChange = () => {
+        const newApiOperations: any = cloneDeep(apiOperations);
+        // Set operation policies to the API object
+        newApiOperations.forEach((operation: any) => {
+            if (operation.operationPolicies) {
+                const { operationPolicies } = operation;
+
+                // Iterating through the policy list of request flow, response flow and fault flow
+                for (const flow in operationPolicies) {
+                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+
+                        operationPolicies[flow] = [];
+
+                    }
+                }
+            }
+        });
+        setApiOperations(newApiOperations);
     }
 
     useEffect(() => {
@@ -303,14 +318,26 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
     }
 
     /**
-     * To update the API object with the attached policies on Save
+     * To update the API object with the attached policies on Save.
      */
     const saveApi = () => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
+        let getewayTypeForPolicies = "wso2/synapse";
+        const getewayVendorForPolicies = "wso2";
+        // holds previous target name to handle resource level policies for CC
+        let previousPolicyTargetForCC =  "";
+        // holds previous policies common to a given resource
+        let previousPoliciesForCC: any; 
 
         // Set operation policies to the API object
-        newApiOperations.forEach((operation: any) => {
+        newApiOperations.forEach((operation: any, index: any, array: any) => {
+
+            // handles CC related policies commonly in
+            if(previousPolicyTargetForCC === operation.target && isChoreoConnectEnabled) {
+                array[index].operationPolicies = previousPoliciesForCC;
+            }
+
             if (operation.operationPolicies) {
                 const { operationPolicies } = operation;
 
@@ -326,30 +353,53 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                         });
                     }
                 }
+                previousPoliciesForCC = operationPolicies;
             }
+            previousPolicyTargetForCC = operation.target;
         });
 
-        const updatePromise = updateAPI({ operations: newApiOperations });
+        // Handles normal policy savings for choreo connect gateway type.
+        if(isChoreoConnectEnabled) {
+            getewayTypeForPolicies = "wso2/choreo-connect";
+        }
+
+        const updatePromise = updateAPI({ 
+            operations: newApiOperations, 
+            gatewayVendor: getewayVendorForPolicies, 
+            gatewayType: getewayTypeForPolicies});
         updatePromise
             .finally(() => {
                 setUpdating(false);
             });
     }
 
+    // handles operations (verbs) for CC policy expansion.
+    const handleVerbsForCC = (verbObject: any) => {
+        const array = Object.entries(verbObject).map(([verb]) => {
+            return verb;
+        })
+        // returns the first element since CC handles resource level policies only.
+        // therefore returning only the first verb (operation) here for the resource.
+        return array[0]
+    }
+
+    /**
+     * To memoize the value passed into ApiOperationContextProvider
+     */
+    const providerValue = useMemo(() => ({
+        apiOperations,
+        updateApiOperations,
+        updateAllApiOperations,
+        deleteApiOperation,
+        rearrangeApiOperations,
+    }), [apiOperations, updateApiOperations, updateAllApiOperations, deleteApiOperation, rearrangeApiOperations])
+
     if (!policies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
     }
 
     return (
-        <ApiOperationContextProvider
-            value={{
-                apiOperations,
-                updateApiOperations,
-                updateAllApiOperations,
-                deleteApiOperation,
-                rearrangeApiOperations,
-            }}
-        >
+        <ApiOperationContextProvider value={providerValue}>
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
@@ -361,8 +411,9 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                 </Box>
                 <Box mb={4} px={1}>
                     <GatewaySelector
-                        getGatewayType={getGatewayType}
+                        setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
                         isChoreoConnectEnabled={isChoreoConnectEnabled}
+                        removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                     />
                 </Box>
                 {isChoreoConnectEnabled ?
@@ -401,7 +452,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                             >
                                                 <PoliciesExpansion
                                                     target={target}
-                                                    verb='get'
+                                                    verb={handleVerbsForCC(verbObject)}
                                                     allPolicies={allPolicies}
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                                                     policyList={policies}
@@ -452,10 +503,7 @@ const Policies: React.FC<PoliciesProps> = ({ disableUpdate }) => {
                                                                 highlight
                                                                 operation={operation}
                                                                 api={localAPI}
-                                                                disableUpdate={
-                                                                    disableUpdate ||
-                                                                    isRestricted(['apim:api_create'], api)
-                                                                }
+                                                                disableUpdate={isRestricted(['apim:api_create'], api)}
                                                                 expandedResource={expandedResource}
                                                                 setExpandedResource={setExpandedResource}
                                                                 policyList={policies}

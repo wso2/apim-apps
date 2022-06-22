@@ -503,6 +503,7 @@ class CreateScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <ChipInput
                                         label='Roles'
+                                        id='roles-input'
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
@@ -551,6 +552,7 @@ class CreateScope extends React.Component {
                                 </FormControl>
                                 <div className={classes.addNewOther}>
                                     <Button
+                                        id='scope-save-btn'
                                         variant='contained'
                                         color='primary'
                                         onClick={this.addScope}

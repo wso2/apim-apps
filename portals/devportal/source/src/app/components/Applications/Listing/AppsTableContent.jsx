@@ -146,14 +146,18 @@ class AppsTableContent extends Component {
                                     )}
                                     {app.status === this.APPLICATION_STATES.CREATED && (
                                         <>
-                                            <Typography variant='subtitle1' component='label' gutterBottom>
+                                            <Typography
+                                                variant='subtitle1'
+                                                component='label'
+                                                gutterBottom
+                                            >
                                                 <FormattedMessage
                                                     id='Applications.Listing.AppsTableContent.inactive'
                                                     defaultMessage='INACTIVE'
                                                 />
 
                                             </Typography>
-                                            <Typography variant='caption'>
+                                            <Typography variant='caption' style={{ textIndent: '10px', display: 'inline-block' }}>
                                                 <FormattedMessage
                                                     id='Applications.Listing.AppsTableContent.wait.approval'
                                                     defaultMessage='waiting for approval'
@@ -229,6 +233,7 @@ class AppsTableContent extends Component {
                                                     onClick={toggleDeleteConfirmation}
                                                     color='default'
                                                     aria-label={'Delete' + app.name}
+                                                    id={'delete-' + app.name + '-btn'}
                                                 >
                                                     <Icon>delete</Icon>
                                                 </IconButton>

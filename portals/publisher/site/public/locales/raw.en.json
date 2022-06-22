@@ -134,6 +134,9 @@
   "Apis.Create.Default.APICreateDefault.error.policies.not.available": {
     "defaultMessage": "Throttling policies not available. Contact your administrator"
   },
+  "Apis.Create.Default.APICreateDefault.error.url.not.valid": {
+    "defaultMessage": "URL is not valid"
+  },
   "Apis.Create.Default.APICreateDefault.success.otherStatus": {
     "defaultMessage": "API updated successfully"
   },
@@ -211,6 +214,12 @@
   },
   "Apis.Create.StreamingAPI.APICreateStreamingAPI.websub.api.sub.heading": {
     "defaultMessage": "Create an API by providing a Name, a Version and a Context"
+  },
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg": {
+    "defaultMessage": "This feature is deprecated. Please use the WSO2 Integration Studio as an alternative"
+  },
+  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg": {
+    "defaultMessage": "Integration Studio Documentation:"
   },
   "Apis.Create.WSDL.ApiCreateWSDL.error.policies.not.available": {
     "defaultMessage": "Throttling policies not available. Contact your administrator"
@@ -301,9 +310,6 @@
   },
   "Apis.Details.APIDefinition.APIDefinition.error.updating.graphQL.schema": {
     "defaultMessage": "Error while updating GraphQL schema"
-  },
-  "Apis.Details.APIDefinition.APIDefinition.error.while.parsing.api.definition": {
-    "defaultMessage": "Error occurred while updating the API Definition"
   },
   "Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition": {
     "defaultMessage": "Error occurred while updating the API Definition"
@@ -488,6 +494,12 @@
   },
   "Apis.Details.APIDefinition.ImportDefinition.error.updating.WSDL": {
     "defaultMessage": "Error while updating WSDL"
+  },
+  "Apis.Details.APIDefinition.Linting.APILinting.loading": {
+    "defaultMessage": "Linting . . ."
+  },
+  "Apis.Details.APIDefinition.SwaggerEditorDrawer.title": {
+    "defaultMessage": "Failed to Validate OpenAPI File"
   },
   "Apis.Details.APIDefinition.WSDL.download.definition": {
     "defaultMessage": "Download WSDL"
@@ -2484,6 +2496,12 @@
   "Apis.Details.Overview.CustomizedStepper.blocked": {
     "defaultMessage": "Blocked"
   },
+  "Apis.Details.Overview.CustomizedStepper.btn.prototyped": {
+    "defaultMessage": "Pre-Released"
+  },
+  "Apis.Details.Overview.CustomizedStepper.btn.publish": {
+    "defaultMessage": "Publish"
+  },
   "Apis.Details.Overview.CustomizedStepper.deprecated": {
     "defaultMessage": "Deprecated"
   },
@@ -2511,7 +2529,10 @@
   "Apis.Details.Overview.ProductResources.resources": {
     "defaultMessage": "Resources"
   },
-  "Apis.Details.Policies.AttachedPolicyCard.download.error": {
+  "Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": {
     "defaultMessage": "Something went wrong while downloading the policy"
   },
   "Apis.Details.Policies.AttachedPolicyForm.General.apply.to.all.resources": {
@@ -2551,7 +2572,7 @@
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Policies.DeletePolicy.confirm": {
-    "defaultMessage": "Yes"
+    "defaultMessage": "Delete"
   },
   "Apis.Details.Policies.DeletePolicy.delete.confirm": {
     "defaultMessage": "Confirm Delete"
@@ -2569,7 +2590,7 @@
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": {
-    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API."
+    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API"
   },
   "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": {
     "defaultMessage": "Proceed"
@@ -2706,11 +2727,14 @@
   "Apis.Details.Policies.PolicyForm.PolicyViewForm.done": {
     "defaultMessage": "Done"
   },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
   "Apis.Details.Policies.PolicyForm.SourceDetails.description": {
     "defaultMessage": "Define the Gateway (s) that will be supporting this policy. Based off of this selection, you can upload the relevant business logic inclusive policy file."
-  },
-  "Apis.Details.Policies.PolicyForm.SourceDetails.download.error": {
-    "defaultMessage": "Something went wrong while downloading the policy"
   },
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description": {
     "defaultMessage": "Policy file contains the business logic of the policy"
@@ -2719,7 +2743,7 @@
     "defaultMessage": "Download Policy"
   },
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": {
-    "defaultMessage": "Policy File"
+    "defaultMessage": "Policy File(s)"
   },
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": {
     "defaultMessage": "Supported Gateways"
@@ -2734,7 +2758,7 @@
     "defaultMessage": "Click or drag the policy file to upload"
   },
   "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": {
-    "defaultMessage": "Upload Policy File"
+    "defaultMessage": "Upload Policy File for {gateway}"
   },
   "Apis.Details.Policies.PolicyList.add.new.policy": {
     "defaultMessage": "Add New Policy"

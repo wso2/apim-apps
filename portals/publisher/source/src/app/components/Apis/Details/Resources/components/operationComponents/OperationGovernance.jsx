@@ -82,6 +82,7 @@ export default function OperationGovernance(props) {
                     <FormControlLabel
                         control={(
                             <Switch
+                                data-testid={'security-'+verb+''+target}
                                 checked={operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none'}
                                 onChange={({ target: { checked } }) => operationsDispatcher({
                                     action: 'authType',
@@ -206,9 +207,14 @@ export default function OperationGovernance(props) {
                         }
                         margin='dense'
                         variant='outlined'
+                        id={verb + target + '-operation_throttling_policy'}
                     >
                         {operationRateLimits.map((rateLimit) => (
-                            <MenuItem key={rateLimit.name} value={rateLimit.name}>
+                            <MenuItem
+                                key={rateLimit.name}
+                                value={rateLimit.name}
+                                id={verb + target + '-operation_throttling_policy-' + rateLimit.name}
+                            >
                                 {rateLimit.displayName}
                             </MenuItem>
                         ))}
@@ -262,6 +268,7 @@ export default function OperationGovernance(props) {
                         )}
                         margin='dense'
                         variant='outlined'
+                        id={verb + target + '-operation-scope-select'}
                     >
                         <ListSubheader>
                             <FormattedMessage
@@ -272,6 +279,7 @@ export default function OperationGovernance(props) {
                         </ListSubheader>
                         {filteredApiScopes.length !== 0 ? filteredApiScopes.map((apiScope) => (
                             <MenuItem
+                                id={verb + target + '-operation-scope-' + apiScope.scope.name}
                                 key={apiScope.scope.name}
                                 value={apiScope.scope.name}
                                 dense

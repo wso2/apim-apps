@@ -79,6 +79,11 @@ function Navigator(props) {
         routeMenuMapping = RouteMenuMapping(intl).filter((menu) => menu.id !== 'Manage Alerts');
     }
 
+    const hasWorkflowViewPermission = _scopes.includes('apim:api_workflow_view');
+    if (!hasWorkflowViewPermission) {
+        routeMenuMapping = RouteMenuMapping(intl).filter((menu) => menu.id !== 'Tasks');
+    }
+
     const isWorkflowManager = _scopes.includes('apim:api_workflow_view')
     && _scopes.includes('apim:api_workflow_approve')
     && _scopes.includes('apim:tenantInfo')
@@ -156,7 +161,12 @@ function Navigator(props) {
                 }) => (
                     <>
                         {!children && (
-                            <Link component={RouterLink} to={parentPath} style={{ textDecoration: 'none' }}>
+                            <Link
+                                component={RouterLink}
+                                to={parentPath}
+                                style={{ textDecoration: 'none' }}
+                                data-testid={id}
+                            >
                                 <ListItem
                                     className={clsx(
                                         classes.item,

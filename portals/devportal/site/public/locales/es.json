@@ -294,6 +294,7 @@
  "Applications.Listing.DeleteConfirmation.dialog.text.description": "La aplicación será eliminada",
  "Applications.Listing.Listing.applications.no.search.results.title": "No hay aplicaciones coincidentes",
  "Base.Errors.ResourceNotfound.default_tittle": "Página no encontrada",
+ "Base.Errors.SubscriptionNotFound.default_title": "La página de información de Solace no se muestra sin suscripciones a la API. Suscríbase a la API",
  "Applications.Listing.Listing.clear.search": "Borrar búsqueda",
  "Applications.Listing.Listing.noapps.display.link.text": "Agregar nueva aplicación",
  "Applications.Listing.Listing.applications.search": "Buscar",

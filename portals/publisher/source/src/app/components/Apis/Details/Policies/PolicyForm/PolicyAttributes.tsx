@@ -246,6 +246,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                     <Button
                                         color='primary'
                                         variant='outlined'
+                                        id='add-policy-attributes-btn'
                                         onClick={addNewPolicyAttribute}
                                     >
                                         <AddCircle className={classes.buttonIcon} />
@@ -298,6 +299,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             error={getAttributeFormError(attribute, 'name') !== ''}
                                             margin='dense'
                                             value={attribute.name}
+                                            data-testid='add-policy-attribute-name-btn'
                                             helperText={
                                                 getAttributeFormError(
                                                     attribute,
@@ -337,6 +339,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             error={getAttributeFormError(attribute, 'displayName') !== ''}
                                             margin='dense'
                                             value={attribute.displayName}
+                                            data-testid='add-policy-attribute-display-name-btn'
                                             helperText={
                                                 getAttributeFormError(
                                                     attribute,
@@ -378,6 +381,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                 <ToggleButton
                                                     name='required'
                                                     value='required'
+                                                    id='attribute-require-btn'
                                                     selected={attribute.required}
                                                     className={classes.requiredToggleButton}
                                                     onChange={() => handleToggle(attribute.required, attribute.id)}

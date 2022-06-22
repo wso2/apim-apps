@@ -15,6 +15,7 @@
  */
 import React, { useReducer, useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import Grid from '@material-ui/core/Grid';
@@ -31,7 +32,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import Banner from 'AppComponents/Shared/Banner';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import AuthManager from 'AppData/AuthManager';
 
 const useStyles = makeStyles((theme) => ({
@@ -44,8 +45,13 @@ const useStyles = makeStyles((theme) => ({
 const APICreateStreamingAPI = (props) => {
     const { history } = props;
     const intl = useIntl();
-    const { settings } = useAppContext();
+    const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
     const [pageError, setPageError] = useState(null);
+    useEffect(() => {
+        if (settingsError) {
+            setPageError(settingsError.message);
+        }
+    }, [settingsError]);
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
     const [isRevisioning, setIsRevisioning] = useState(false);
@@ -375,6 +381,14 @@ const APICreateStreamingAPI = (props) => {
                     </Grid>
                 )}
                 {/* end of Page error banner */}
+                <Grid item xs={12}>
+                    {/* This -2 is to counter act with Grid container spacing 3 */}
+                    {isLoading && (
+                        <Box mt={-2}>
+                            <CircularProgress data-testid='loading-publisher-settings' />
+                        </Box>
+                    )}
+                </Grid>
                 <Grid item xs={12} />
                 <Grid item md={1} xs={0} />
                 <Grid item md={11} xs={12}>
@@ -435,6 +449,7 @@ const APICreateStreamingAPI = (props) => {
                                 color='primary'
                                 disabled={!(isAPICreatable && apiInputs.isFormValid)}
                                 onClick={createAPIOnly}
+                                data-testid='itest-create-streaming-api-button'
                             >
                                 Create
                                 {' '}

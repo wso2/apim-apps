@@ -260,6 +260,7 @@ class SubscriptionTableData extends React.Component {
                         onClick={this.handleRequestOpenEditMenu}
                         startIcon={<Icon>edit</Icon>}
                         disabled={tiers.length === 0}
+                        id={'edit-api-subscription-' + apiInfo.name}
                     >
                         <FormattedMessage
                             id='Applications.Details.SubscriptionTableData.edit.text'
@@ -308,53 +309,63 @@ class SubscriptionTableData extends React.Component {
                                                         + ' You need to get approval to the subscription before editing the tier'}
                                                     />
                                                 )
-                                                : (
-                                                    <div>
-                                                        <TextField
-                                                            required
-                                                            fullWidth
-                                                            id='outlined-select-currency'
-                                                            select
-                                                            label={(
-                                                                <FormattedMessage
-                                                                    defaultMessage='Business Plan'
-                                                                    id={'Applications.Details.SubscriptionTableData.'
-                                                                    + 'update.business.plan.name'}
-                                                                />
-                                                            )}
-                                                            value={selectedTier}
-                                                            name='throttlingPolicy'
-                                                            onChange={(e) => this.setSelectedTier(e.target.value)}
-                                                            helperText={(
-                                                                <FormattedMessage
-                                                                    defaultMessage={'Assign a new Business plan to the '
-                                                                    + 'existing subscription'}
-                                                                    id={'Applications.Details.SubscriptionTableData.'
-                                                                    + 'update.throttling.policy.helper'}
-                                                                />
-                                                            )}
-                                                            margin='normal'
-                                                            variant='outlined'
-                                                        >
-                                                            {this.state.tiers.map((tier) => (
-                                                                <MenuItem key={tier.value} value={tier.value}>
-                                                                    {tier.label}
-                                                                </MenuItem>
-                                                            ))}
-                                                        </TextField>
-                                                        { (status === 'TIER_UPDATE_PENDING')
-                                                    && (
+                                                : (status === 'TIER_UPDATE_PENDING')
+                                                    ? (
+                                                        <FormattedMessage
+                                                            id={'Applications.Details.SubscriptionTableData.update.'
+                                                            + 'throttling.policy.tierUpdatePending'}
+                                                            defaultMessage={'Subscription is currently TIER_UPDATE_PENDING state.'
+                                                            + ' You need to get approval to the existing subscription edit request'
+                                                            + ' before editing the tier'}
+                                                        />
+                                                    )
+                                                    : (
                                                         <div>
-                                                            <FormattedMessage
-                                                                id={'Applications.Details.SubscriptionTableData.update.'
-                                                                + 'throttling.policy.tier.update'}
-                                                                defaultMessage='Pending Tier Update : '
-                                                            />
-                                                            {requestedThrottlingPolicy}
+                                                            <TextField
+                                                                required
+                                                                fullWidth
+                                                                id='outlined-select-currency'
+                                                                select
+                                                                label={(
+                                                                    <FormattedMessage
+                                                                        defaultMessage='Business Plan'
+                                                                        id={'Applications.Details.SubscriptionTableData.'
+                                                                        + 'update.business.plan.name'}
+                                                                    />
+                                                                )}
+                                                                value={selectedTier}
+                                                                name='throttlingPolicy'
+                                                                onChange={(e) => this.setSelectedTier(e.target.value)}
+                                                                helperText={(
+                                                                    <FormattedMessage
+                                                                        defaultMessage={'Assign a new Business plan to the '
+                                                                        + 'existing subscription'}
+                                                                        id={'Applications.Details.SubscriptionTableData.'
+                                                                        + 'update.throttling.policy.helper'}
+                                                                    />
+                                                                )}
+                                                                margin='normal'
+                                                                variant='outlined'
+                                                            >
+                                                                {this.state.tiers.map((tier) => (
+                                                                    <MenuItem key={tier.value} value={tier.value} id={tier.value}>
+                                                                        {tier.label}
+                                                                    </MenuItem>
+                                                                ))}
+                                                            </TextField>
+                                                            { (status === 'TIER_UPDATE_PENDING')
+                                                        && (
+                                                            <div>
+                                                                <FormattedMessage
+                                                                    id={'Applications.Details.SubscriptionTableData.update.'
+                                                                    + 'throttling.policy.tier.update'}
+                                                                    defaultMessage='Pending Tier Update : '
+                                                                />
+                                                                {requestedThrottlingPolicy}
+                                                            </div>
+                                                        )}
                                                         </div>
                                                     )}
-                                                    </div>
-                                                )}
                                 </div>
                             </DialogContentText>
                         </DialogContent>
@@ -367,7 +378,8 @@ class SubscriptionTableData extends React.Component {
                             </Button>
                             <Button
                                 variant='contained'
-                                disabled={(status === 'BLOCKED' || status === 'ON_HOLD' || status === 'REJECTED')}
+                                disabled={(status === 'BLOCKED' || status === 'ON_HOLD' || status === 'REJECTED'
+                                || status === 'TIER_UPDATE_PENDING')}
                                 dense
                                 color='primary'
                                 onClick={() => this.handleSubscriptionTierUpdate(apiId,
@@ -389,6 +401,7 @@ class SubscriptionTableData extends React.Component {
                             onClick={this.handleRequestOpen}
                             startIcon={<Icon>delete</Icon>}
                             disabled={tiers.length === 0}
+                            id={'delete-api-subscription-' + apiInfo.name}
                         >
                             <FormattedMessage
                                 id='Applications.Details.SubscriptionTableData.delete.text'
@@ -398,7 +411,12 @@ class SubscriptionTableData extends React.Component {
                     </ScopeValidation>
 
                     <Dialog open={openMenu} transition={Slide}>
-                        <DialogTitle>Confirm</DialogTitle>
+                        <DialogTitle>
+                            <FormattedMessage
+                                id='Applications.Details.SubscriptionTableData.delete.subscription.confirmation.dialog.title'
+                                defaultMessage='Confirm'
+                            />
+                        </DialogTitle>
                         <DialogContent>
                             <DialogContentText>
                                 <FormattedMessage
@@ -414,7 +432,13 @@ class SubscriptionTableData extends React.Component {
                                     defaultMessage='Cancel'
                                 />
                             </Button>
-                            <Button dense variant='contained' color='primary' onClick={() => this.handleRequestDelete(subscriptionId)}>
+                            <Button
+                                dense
+                                variant='contained'
+                                color='primary'
+                                onClick={() => this.handleRequestDelete(subscriptionId)}
+                                id='delete-api-subscription-confirm-btn'
+                            >
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.delete'
                                     defaultMessage='Delete'

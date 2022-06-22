@@ -186,6 +186,7 @@ function Certificates(props) {
                         disabled={(isRestricted(['apim:api_create'], apiFromContext))}
                         className={classes.addCertificateBtn}
                         onClick={() => setUploadCertificateOpen(true)}
+                        id='certs-add-btn'
                     >
                         <ListItemAvatar>
                             <IconButton>
@@ -199,7 +200,7 @@ function Certificates(props) {
                     {certificateList.length > 0 ? (
                         certificateList.map((cert) => {
                             return (
-                                <ListItem>
+                                <ListItem id='endpoint-cert-list'>
                                     <ListItemAvatar>
                                         <Icon>lock</Icon>
                                     </ListItemAvatar>
@@ -217,6 +218,7 @@ function Certificates(props) {
                                         <IconButton
                                             disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                             onClick={() => setCertificateToDelete({ open: true, alias: cert.alias })}
+                                            id='delete-cert-btn'
                                         >
                                             <Icon className={isRestricted(['apim:api_create'], apiFromContext)
                                                 ? classes.deleteIconDisable : classes.deleteIcon}
@@ -265,6 +267,7 @@ function Certificates(props) {
                         color='primary'
                         disabled={isDeleting}
                         autoFocus
+                        id='delete-cert-confirm-btn'
                     >
                         <FormattedMessage
                             id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.delete.ok.button'

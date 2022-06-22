@@ -176,6 +176,7 @@ class CommentAdd extends React.Component {
                         </InputLabel>
                         <TextField
                             id='standard-multiline-flexible'
+                            data-testid='new-comment-field'
                             autoFocus
                             multiline
                             disabled={api.isRevision 
@@ -205,6 +206,7 @@ class CommentAdd extends React.Component {
                                 || currentLength === 0}
                                 onClick={() => this.handleClickAddComment()}
                                 className={classes.commentAddButton}
+                                id='add-comment-btn'
                             >
                                 <FormattedMessage
                                     id='Apis.Details.Comments.CommentAdd.btn.add.comment'

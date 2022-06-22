@@ -114,7 +114,7 @@ function LeftMenuItem(props) {
     const [selected, setSelected] = useState(false);
 
     const {
-        classes, theme, Icon, to, history, text, route, submenu, open
+        classes, theme, Icon, to, history, text, route, submenu, open, id,
     } = props;
     const routeToCheck = route || text;
     const { leftMenu } = theme.custom;
@@ -157,12 +157,14 @@ function LeftMenuItem(props) {
                     {
                         [classes.leftLink_IconLeft]: leftMenu === 'icon left',
                         [classes.submenu]: submenu,
+                        'selected': selected,
                     },
                     'leftLInk',
                 )}
                 to={to}
                 style={{ backgroundColor: activeBackground }}
                 title={text}
+                id={id}
             >
                 {
                     // If the icon pro ( which is coming from the React Material library )
@@ -253,5 +255,6 @@ LeftMenuItem.propTypes = {
         location: PropTypes.shape({}).isRequired,
     }).isRequired,
     submenu: PropTypes.bool,
+    id: PropTypes.string.isRequired,
 };
 export default withRouter(withStyles(styles, { withTheme: true })(LeftMenuItem));

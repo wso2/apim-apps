@@ -297,6 +297,17 @@ class Credentials extends React.Component {
     };
 
     /**
+     * used to check if key manager is in the allowed list for an API
+     * @param {*} name name of the key manager
+     * @memberof Credentials
+     */
+    isKeyManagerAllowed = (name) => {
+        const { api } = this.context;
+        return api && ((api.keyManagers && api.keyManagers.includes('all'))
+        || (api.keyManagers && api.keyManagers.includes(name)));
+    };
+
+    /**
      * Update subscription Request state
      * @param {Object} subscriptionRequest parameters requried for subscription
      */
@@ -466,6 +477,7 @@ class Credentials extends React.Component {
                                                 className={classes.buttonElm}
                                                 onClick={() => this.handleSubscribe()}
                                                 disabled={!api.isSubscriptionAvailable || isSubscribing}
+                                                id='subscribe-to-api-btn'
                                             >
                                                 <FormattedMessage
                                                     id={'Apis.Details.Credentials.'
@@ -501,7 +513,7 @@ class Credentials extends React.Component {
                                     />
                                 </Typography>
                                 <div className={classes.tableMain}>
-                                    <table>
+                                    <table id='subscription-table'>
                                         <tr>
                                             <th className={classes.th}>
                                                 <FormattedMessage
@@ -536,6 +548,7 @@ class Credentials extends React.Component {
                                             <SubscriptionTableRow
                                                 key={app.id}
                                                 loadInfo={this.loadInfo}
+                                                isKeyManagerAllowed={this.isKeyManagerAllowed}
                                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                                 selectedAppId={selectedAppId}
                                                 updateSubscriptionData={updateSubscriptionData}
@@ -563,7 +576,7 @@ class Credentials extends React.Component {
                                 && api.advertiseInfo.originalDevPortalUrl && (
                                 <OriginalDevportalDetails
                                     classes={classes}
-                                    originalDevportalUrl={api.advertiseInfo.originalDevPortalUrl}
+                                    originalDevPortalUrl={api.advertiseInfo.originalDevPortalUrl}
                                 />
                             )}
                             {api.tiers.length > 0 ? (
@@ -590,6 +603,7 @@ class Credentials extends React.Component {
                                                     || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers}
                                                     size='small'
+                                                    id='start-key-gen-wizard-btn'
                                                 >
                                                     <Icon>add_circle_outline</Icon>
                                                     <FormattedMessage
@@ -617,7 +631,7 @@ class Credentials extends React.Component {
                             ) : (
                                 <Paper elevation={0} className={classes.paper}>
                                     <InlineMessage type='info' className={classes.dialogContainer}>
-                                        <Typography component='p'>
+                                        <Typography component='p' data-testid='itest-no-tier-dialog'>
                                             <FormattedMessage
                                                 id='Apis.Details.Creadentials.credetials.no.tiers'
                                                 defaultMessage='No tiers are available for the API.'

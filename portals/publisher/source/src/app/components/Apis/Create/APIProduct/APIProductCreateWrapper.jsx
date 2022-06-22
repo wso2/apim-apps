@@ -409,6 +409,7 @@ export default function ApiProductCreateWrapper(props) {
                                         disabled={!apiInputs.isFormValid || isCreating || (apiResources.length === 0)
                                                     || isPublishButtonClicked}
                                         onClick={createAPIProductOnly}
+                                        id='create-api-product-btn'
                                     >
                                         <FormattedMessage
                                             id='Apis.Create.APIProduct.APIProductCreateWrapper.create'
@@ -423,6 +424,7 @@ export default function ApiProductCreateWrapper(props) {
                                         variant='contained'
                                         color='primary'
                                         disabled={!apiInputs.isFormValid}
+                                        id='api-product-next-btn'
                                     >
                                         <FormattedMessage
                                             id='Apis.Create.APIProduct.APIProductCreateWrapper.next'
@@ -436,6 +438,7 @@ export default function ApiProductCreateWrapper(props) {
                                     <Button
                                         variant='contained'
                                         color='primary'
+                                        id='create-and-publish-api-product-btn'
                                         disabled={
                                             !apiInputs.isFormValid || isCreating || (apiResources.length === 0)
                                             || isDeploying || isRevisioning || !apiInputs.isFormValid

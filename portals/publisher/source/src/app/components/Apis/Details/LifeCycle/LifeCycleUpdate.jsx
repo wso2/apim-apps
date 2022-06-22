@@ -202,7 +202,7 @@ class LifeCycleUpdate extends Component {
         const {
             api: { id: apiUUID, advertiseInfo },
         } = this.props;
-        if (action === 'Publish' && !deploymentsAvailable && !advertiseInfo.advertised) {
+        if (action === 'Publish' && !deploymentsAvailable && advertiseInfo && !advertiseInfo.advertised) {
             this.setIsOpen(true);
         } else {
             this.updateLCStateOfAPI(apiUUID, action);
@@ -235,30 +235,30 @@ class LifeCycleUpdate extends Component {
         const isBusinessPlanAvailable = api.policies.length !== 0;
         const lifeCycleStatus = isAPIProduct ? api.state : api.lifeCycleStatus;
         const lifecycleButtons = lifecycleStates.map((item) => {
-            const state = { ...item, displayName: item.event };
-            if (state.event === 'Deploy as a Prototype') {
-                if (state.displayName === 'Deploy as a Prototype') {
-                    state.displayName = 'Pre-Release';
+            const lifecycleState = { ...item, displayName: item.event };
+            if (lifecycleState.event === 'Deploy as a Prototype') {
+                if (lifecycleState.displayName === 'Deploy as a Prototype') {
+                    lifecycleState.displayName = 'Pre-Release';
                 }
                 return {
-                    ...state,
+                    ...lifecycleState,
                     disabled:
                         (api.type !== 'WEBSUB' && api.endpointConfig == null && !isAPIProduct),
                 };
             }
-            if (state.event === 'Publish') {
+            if (lifecycleState.event === 'Publish') {
+                const buttonDisabled = (isMutualSSLEnabled && !isCertAvailable)
+                                    || (deploymentsAvailable && !isBusinessPlanAvailable)
+                                    || (isAPIProduct && !isBusinessPlanAvailable);
+                // When business plans are not assigned and deployments available
+
                 return {
-                    ...state,
-                    disabled:
-                        (((isMutualSSLEnabled && !isCertAvailable)
-                        || (api.type !== 'WEBSUB' && api.endpointConfig != null
-                            && api.endpointConfig.implementation_status === 'prototyped'))
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised))
-                        || (deploymentsAvailable && (!isBusinessPlanAvailable || api.endpointConfig == null)),
+                    ...lifecycleState,
+                    disabled: buttonDisabled,
                 };
             }
             return {
-                ...state,
+                ...lifecycleState,
                 disabled: false,
             };
         });
@@ -333,6 +333,7 @@ class LifeCycleUpdate extends Component {
                                         key={transitionState.event}
                                         data-value={transitionState.event}
                                         onClick={this.updateLifeCycleState}
+                                        data-testid={transitionState.event + '-btn'}
                                     >
                                         {transitionState.displayName}
                                         {this.state.isUpdating === transitionState.event && (

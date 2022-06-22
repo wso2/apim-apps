@@ -43,8 +43,9 @@ import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import TrendingDown from '@material-ui/icons/TrendingDown';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
-import CONST from 'AppData/Constants';
+import CONSTS from 'AppData/Constants';
 import Delete from './DeletePolicy';
+import CommonPolicyGatewaySelector from './CommonPolicyGatewaySelector';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -98,6 +99,15 @@ const Listing = () => {
     const [policies, setPolicies] = useState(null);
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
+    const [isAllowedToFilterCCPolicies, setIsAllowedToFilterCCPolicies] = useState(false);
+
+    /**
+     * 
+     * @param {boolean} isCCEnabled : Indicates whether Choreo Connect is selected or not.
+     */
+    const handleGatewayTypeSelection = (isCCEnabled) => {
+        setIsAllowedToFilterCCPolicies(isCCEnabled);
+    } 
 
     const fetchCommonPolicies = () => {
         setLoading(true);
@@ -115,6 +125,29 @@ const Listing = () => {
             });
     };
 
+    // Provides the gateway specific policies list.
+    const getPoliciesList = () => {
+        let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
+        if (isAllowedToFilterCCPolicies) {
+            gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
+        }
+        // removes irrelevant policies for the selected gateway type
+        return policies?.filter((policy) => {
+            return policy.supportedGateways.includes(gatewayType)
+        }).map((policyObj) => {
+            const policy = [];
+            policyObj.supportedGateways.forEach((policyGateway) => {
+                if (gatewayType === policyGateway) {
+                    policy.push(policyObj.id);
+                    policy.push(policyObj.displayName);
+                    policy.push(policyObj.description);
+                    policy.push(policyObj.applicableFlows);
+                }
+            });
+            return policy;
+        });
+    }
+
     useEffect(() => {
         fetchCommonPolicies();
     }, []);
@@ -125,14 +158,7 @@ const Listing = () => {
 
     policies?.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
-    const policiesList = policies?.map((policyObj) => {
-        const policy = [];
-        policy.push(policyObj.id);
-        policy.push(policyObj.displayName);
-        policy.push(policyObj.description);
-        policy.push(policyObj.applicableFlows);
-        return policy;
-    });
+    const policiesList = getPoliciesList();
 
     const columns = [
         {
@@ -306,7 +332,7 @@ const Listing = () => {
                 }
             >
                 <OnboardingMenuCard
-                    to={CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE}
+                    to={CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE}
                     name='Policies'
                     iconName={commonPolicyAddIcon}
                     disabled={isRestricted([
@@ -371,6 +397,7 @@ const Listing = () => {
                         color='primary'
                         variant='outlined'
                         size='small'
+                        data-testid='add-new-common-policy'
                         disabled={isRestricted([
                             'apim:api_create',
                             'apim:api_manage',
@@ -386,7 +413,7 @@ const Listing = () => {
                                 'apim:mediation_policy_create',
                                 'apim:mediation_policy_manage',
                                 'apim:api_mediation_policy_manage',
-                            ]) && CONST.PATH_TEMPLATES.COMMON_POLICY_CREATE
+                            ]) && CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE
                         }
                     >
                         <AddCircle className={classes.buttonIcon} />
@@ -424,6 +451,12 @@ const Listing = () => {
                 lg={11}
                 item
             >
+                <Box>
+                    <CommonPolicyGatewaySelector
+                        handleGatewayTypeSelection={handleGatewayTypeSelection}
+                        isAllowedToFilterCCPolicies={isAllowedToFilterCCPolicies}
+                    />
+                </Box>
                 <MUIDataTable
                     title={false}
                     data={policiesList}

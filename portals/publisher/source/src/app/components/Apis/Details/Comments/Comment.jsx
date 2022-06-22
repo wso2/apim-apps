@@ -411,7 +411,7 @@ class Comment extends React.Component {
         const { editIndex, openDialog, replyId } = this.state;
         return (
             <>
-                <div className={classes.paper}>
+                <div className={classes.paper} id='comment-list'>
                     {comments
                         && comments
                             .slice(0)

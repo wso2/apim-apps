@@ -241,7 +241,7 @@ export default function ListMG() {
     =========== */
     const addButtonOverride = (
         <RouterLink to='/throttling/advanced/create'>
-            <Button variant='contained' color='primary' size='small'>
+            <Button variant='contained' color='primary' size='small' data-testid='Add New Policy-btn'>
                 <FormattedMessage
                     id='Throttling.Advanced.List.add.new.polcy'
                     defaultMessage='Add New Policy'

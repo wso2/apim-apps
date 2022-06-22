@@ -88,7 +88,10 @@ const tokens = (props) => {
                         value={accessTokenRequest.timeout}
                         color='primary'
                     />}
-                    label='API Key with infinite validity period'
+                    label={intl.formatMessage({
+                        defaultMessage: 'API Key with infinite validity period',
+                        id: 'Shared.AppsAndKeys.Tokens.apikey.validity.period.label',
+                    })}
                 />
                 {!infiniteValidity && <TextField
                     required

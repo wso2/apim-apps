@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import IconButton from '@material-ui/core/IconButton';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import InlineMessage from '../InlineMessage';
 import ViewSecret from './ViewSecret';
 /**
@@ -135,11 +135,11 @@ class ViewToken extends React.Component {
      */
     render() {
         const {
-            classes, token, consumerSecret, isTokenExchange
+            classes, token, consumerSecret, isTokenExchange, intl, isResidenceTokenAvailable,
         } = this.props;
         const { tokenCopied } = this.state;
 
-        if (isTokenExchange && consumerSecret == null) {
+        if (isTokenExchange && !isResidenceTokenAvailable) {
             return (
                 <Typography>
                     <FormattedMessage
@@ -214,9 +214,22 @@ class ViewToken extends React.Component {
                             className: classes.bootstrapFormLabel,
                         }}
                     />
-                    <Tooltip title={tokenCopied ? 'Copied' : 'Copy to clipboard'} placement='right'>
+                    <Tooltip
+                        title={
+                            tokenCopied
+                                ? intl.formatMessage({
+                                    defaultMessage: 'Copied',
+                                    id: 'Shared.AppsAndKeys.ViewToken.copied',
+                                })
+                                : intl.formatMessage({
+                                    defaultMessage: 'Copy to clipboard',
+                                    id: 'Shared.AppsAndKeys.ViewToken.copy.to.clipboard',
+                                })
+                        }
+                        placement='right'
+                    >
                         <CopyToClipboard text={token.accessToken} onCopy={this.onCopy('tokenCopied')}>
-                            <IconButton aria-label='Copy to clipboard'>
+                            <IconButton id = 'copy-to-clipbord-icon' aria-label='Copy to clipboard'>
                                 <FileCopy color='secondary'>file_copy</FileCopy>
                             </IconButton>
                         </CopyToClipboard>
@@ -266,4 +279,4 @@ ViewToken.propTypes = {
     consumerSecret: PropTypes.string,
 };
 
-export default withStyles(styles)(ViewToken);
+export default injectIntl(withStyles(styles)(ViewToken));

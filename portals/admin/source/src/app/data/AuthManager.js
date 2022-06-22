@@ -142,11 +142,20 @@ class AuthManager {
     }
 
     static hasBasicLoginPermission(scopes) {
-        return (scopes.includes('apim:admin')
-        || (scopes.includes('apim:api_workflow_view')
-        && scopes.includes('apim:api_workflow_approve')
-        && scopes.includes('apim:tenantInfo')
-        && scopes.includes('apim:admin_settings')));
+        if (scopes.includes('apim:admin')) {
+            return true;
+        } else {
+            let { minScopesToLogin } = Configurations.app;
+            if (!minScopesToLogin) {
+                minScopesToLogin = CONSTS.DEFAULT_MIN_SCOPES_TO_LOGIN;
+            }
+            for (let i = 0; i < minScopesToLogin.length; i++) {
+                if (!scopes.includes(minScopesToLogin[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     /**

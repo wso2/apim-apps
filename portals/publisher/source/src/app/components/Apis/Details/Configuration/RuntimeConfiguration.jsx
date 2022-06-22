@@ -570,7 +570,7 @@ export default function RuntimeConfiguration() {
                 )}
                 <Grid container>
                     <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 20 }}>
-                        <Grid item>
+                        <Grid item id='save-runtime-configurations'>
                             {api.isRevision
                                 || ((apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0)
                                 || isRestricted(['apim:api_create'], api)) || saveButtonDisabled ? (
@@ -578,7 +578,7 @@ export default function RuntimeConfiguration() {
                                         disabled
                                         type='submit'
                                         variant='contained'
-                                        color='primary'
+                                        color='primary'                     
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Configuration.Configuration.save'
@@ -588,9 +588,11 @@ export default function RuntimeConfiguration() {
                                 ) : (
                                     <CustomSplitButton
                                         advertiseInfo={api.advertiseInfo}
+                                        api={api}
                                         handleSave={handleSave}
                                         handleSaveAndDeploy={handleSaveAndDeploy}
                                         isUpdating={isUpdating}
+                                        id = 'runtime-config-save-button'
                                     />
                                 )}
                         </Grid>

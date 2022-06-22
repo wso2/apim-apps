@@ -378,6 +378,7 @@ class Details extends Component {
                 route='api definition'
                 to={pathPrefix + 'api definition'}
                 Icon={<CodeIcon />}
+                id='left-menu-itemAPIdefinition'
             />
         );
 
@@ -483,6 +484,7 @@ class Details extends Component {
                             })}
                             to={pathPrefix + 'resources'}
                             Icon={<ResourcesIcon />}
+                            id='left-menu-itemresources'
                         />
                     </>
                 );
@@ -739,6 +741,7 @@ class Details extends Component {
                                         route='deployments'
                                         to={pathPrefix + 'deployments'}
                                         Icon={<PersonPinCircleOutlinedIcon />}
+                                        id='left-menu-itemdeployments'
                                     />
                                 </>
                             )}
@@ -753,6 +756,7 @@ class Details extends Component {
                                         route='deployments'
                                         to={pathPrefix + 'deployments'}
                                         Icon={<PersonPinCircleOutlinedIcon />}
+                                        id='left-menu-itemdeployments'
                                     />
                                 </>
                             )}
@@ -769,6 +773,7 @@ class Details extends Component {
                                         })}
                                         to={pathPrefix + 'test-console'}
                                         iconText='test'
+                                        id='left-menu-itemTestConsole'
                                     />
                                 </div>
                             )}
@@ -783,6 +788,7 @@ class Details extends Component {
                                         })}
                                         to={pathPrefix + 'lifecycle'}
                                         Icon={<LifeCycleIcon />}
+                                        id='left-menu-itemlifecycle'
                                     />
                                 </div>
                             )}

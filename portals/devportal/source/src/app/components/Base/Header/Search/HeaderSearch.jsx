@@ -18,6 +18,7 @@
 
 import React from 'react';
 import { withRouter } from 'react-router-dom';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
 import { withStyles } from '@material-ui/core/styles';
@@ -385,7 +386,7 @@ class HeaderSearch extends React.Component {
                          </>
                      )}
                  >
-                     <IconButton className={classes.infoButton} aria-label='Search Options'>
+                     <IconButton className={classNames(classes.infoButton, 'search-tips-icon')} aria-label='Search Options'>
                          <InfoIcon />
                      </IconButton>
                  </Tooltip>

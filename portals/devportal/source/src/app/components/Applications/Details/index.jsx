@@ -361,6 +361,7 @@ class Details extends Component {
                         submenu
                         Icon={<ScreenLockLandscapeIcon />}
                         open
+                        id='production-keys-oauth'
                     />
                     <LeftMenuItem
                         text={(
@@ -374,6 +375,7 @@ class Details extends Component {
                         submenu
                         Icon={<VpnKeyIcon />}
                         open
+                        id='production-keys-apikey'
                     />
                     <LeftMenuItem
                         text={(
@@ -386,6 +388,7 @@ class Details extends Component {
                         route='sandboxkeys'
                         to={pathPrefix + '/sandboxkeys/oauth'}
                         open
+                        id='sandbox-keys'
                     />
                     <LeftMenuItem
                         text={(
@@ -399,6 +402,7 @@ class Details extends Component {
                         submenu
                         Icon={<ScreenLockLandscapeIcon />}
                         open
+                        id='sandbox-keys-oauth'
                     />
                     <LeftMenuItem
                         text={(
@@ -412,6 +416,7 @@ class Details extends Component {
                         submenu
                         Icon={<VpnKeyIcon />}
                         open
+                        id='sandbox-keys-apikey'
                     />
                     <LeftMenuItem
                         text={(
@@ -424,6 +429,7 @@ class Details extends Component {
                         route='subscriptions'
                         to={pathPrefix + '/subscriptions'}
                         open
+                        id='left-menu-subscriptions'
                     />
                 </nav>
                 <div className={classes.content}>

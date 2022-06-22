@@ -135,7 +135,7 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                 >
                     <Box display='flex'>
                         <Typography variant='h4' component='h2'>
-                            {policyObj.displayName} Policy
+                            {policyObj.displayName}
                         </Typography>
                     </Box>
                     <Box display='flex'>

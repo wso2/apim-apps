@@ -541,6 +541,20 @@ class ApiTableView extends React.Component {
                         defaultMessage: 'Items per page',
                     }),
                 },
+                toolbar: {
+                    downloadCsv: intl.formatMessage({
+                        id: 'Apis.Listing.ApiTableView.download.csv',
+                        defaultMessage: 'Download CSV',
+                    }),
+                    print: intl.formatMessage({
+                        id: 'Apis.Listing.ApiTableView.print',
+                        defaultMessage: 'Print',
+                    }),
+                    viewColumns: intl.formatMessage({
+                        id: 'Apis.Listing.ApiTableView.view.columns',
+                        defaultMessage: 'View Columns',
+                    }),
+                },
             },
         };
         if (gridView) {

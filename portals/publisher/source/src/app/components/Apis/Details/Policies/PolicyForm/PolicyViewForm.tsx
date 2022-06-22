@@ -76,6 +76,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                 supportedGateways={policySpec.supportedGateways}
                 isViewMode
                 policyId={policySpec.id}
+                isAPISpecific={policySpec.isAPISpecific}
             />
             <Divider light />
             {/* Attributes of policy */}
@@ -84,7 +85,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                 isViewMode
             />
             <Box>
-                <Button variant='contained' color='primary' onClick={onDone}>
+                <Button variant='contained' color='primary' data-testid='done-view-policy-file' onClick={onDone}>
                     <FormattedMessage
                         id='Apis.Details.Policies.PolicyForm.PolicyViewForm.done'
                         defaultMessage='Done'

@@ -29,7 +29,8 @@ const AppConfig = {
             // from the App when logged out from the IDP (eg: SSO logout from a different App).
             timeout: 2000, // Defines the timeout for the above periodical session status check
         },
-        docUrl: 'https://apim.docs.wso2.com/en/4.0.0/',
+        docUrl: 'https://apim.docs.wso2.com/en/4.1.0/',
+        minScopesToLogin: ['apim:api_workflow_view','apim:api_workflow_approve','apim:tenantInfo','apim:admin_settings'],
     },
 };
 

@@ -38,6 +38,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Alert from 'AppComponents/Shared/Alert';
 import Joi from '@hapi/joi';
+import Collapse from '@material-ui/core/Collapse';
 
 const styles = (theme) => ({
     root: {
@@ -198,13 +199,15 @@ export default function PublishWithoutDeploy(props) {
                         </Typography>
                     </DialogContentText>
                 </Box>
-                {isExpanded && (
-                    <>
+                <Collapse in={isExpanded}>
+                    <Box>
                         <Box my={1}>
                             <DialogContentText id='itest-confirm-publish-text'>
-                                <Typography variant='subtitle1' display='block' gutterBottom>
+                                <Typography variant='body1' display='block' gutterBottom>
                                     <FormattedMessage
+                                        // eslint-disable-next-line max-len
                                         id='Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only'
+                                        // eslint-disable-next-line max-len
                                         defaultMessage={'If you want to publish as a third party API, please provide '
                                         + 'the external endpoint and press "Publish".'}
                                     />
@@ -238,8 +241,8 @@ export default function PublishWithoutDeploy(props) {
                                 variant='outlined'
                             />
                         </Box>
-                    </>
-                )}
+                    </Box>
+                </Collapse>
             </DialogContent>
             <DialogActions>
                 {!isExpanded && (
@@ -284,6 +287,7 @@ export default function PublishWithoutDeploy(props) {
                     color='primary'
                     component={RouterLink}
                     to={'/apis/' + api.id + '/deployments'}
+                    id='deployments-btn'
                 >
                     <Box fontSize='button.fontSize' alignItems='center' display='flex' fontFamily='fontFamily'>
                         <FormattedMessage

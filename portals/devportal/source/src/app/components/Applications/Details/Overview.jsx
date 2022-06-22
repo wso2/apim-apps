@@ -8,7 +8,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Icon from '@material-ui/core/Icon';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { app } from 'Settings';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import API from 'AppData/api';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
@@ -47,16 +46,6 @@ const useStyles = makeStyles((theme) => ({
     iconOdd: {
         color: theme.custom.infoBar.iconOddColor,
         width: theme.spacing(3),
-    },
-    noKeysRoot: {
-        backgroundImage: `url(${app.context + theme.custom.overviewPage.keysBackground})`,
-        height: '100%',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        minHeight: 192,
-        display: 'flex',
-        alignItems: 'center',
     },
     heading: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
@@ -164,7 +153,7 @@ function Overview(props) {
                 promisedTier.then((tierResponse) => {
                     setTierDescription(tierResponse.obj.description);
                     setApplication(appInner);
-                    if (appInner.solaceDeployedEnvironments !== null) {
+                    if (appInner.solaceDeployedEnvironments) {
                         setEnvironment(appInner.solaceDeployedEnvironments[0]);
                         setSelectedProtocol(appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol);
                         setSelectedEndpoint(appInner.solaceDeployedEnvironments[0].solaceURLs[0].endpointURL);

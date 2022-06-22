@@ -96,7 +96,7 @@ function GoToEdit(props) {
                     </Button>
                 </Link>)}
                 <Link to={listingPath}>
-                    <Button color='primary' autoFocus>
+                    <Button color='primary' autoFocus id='add-content-back-to-listing-btn'>
                         <FormattedMessage
                             id='Apis.Details.Documents.GoToEdit.back.to.listing'
                             defaultMessage='Back to Listing'

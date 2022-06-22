@@ -34,6 +34,7 @@ import DocumentsIcon from '@material-ui/icons/LibraryBooks';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import classNames from 'classnames';
 
 import API from 'AppData/api';
 /* Utility methods defined here are described in
@@ -64,7 +65,7 @@ function renderInput(inputProps) {
                 <NativeSelect
                     id='searchEnvironment'
                     onChange={onDropDownChange}
-                    className={classes.selectRoot}
+                    className={classNames(classes.selectRoot, 'api-filter-dropdown')}
                 >
                     <FormattedMessage
                         id='Base.Header.headersearch.SearchUtils.lcState.all'
@@ -85,10 +86,9 @@ function renderInput(inputProps) {
                         {(placeholder) => <option value='PROTOTYPED'>{placeholder}</option>}
                     </FormattedMessage>
                 </NativeSelect>
-                <InputLabel className={classes.ariaLabel} htmlFor='searchQuery'>Search APIs</InputLabel>
                 <TextField
                     id='searchQuery'
-                    classes={{ root: classes.inputRoot }}
+                    classes={{ root: classNames(classes.inputRoot, 'api-search-textbox') }}
                     InputProps={{
                         inputRef: ref,
                         className: classes.input,

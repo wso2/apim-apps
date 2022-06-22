@@ -51,6 +51,7 @@ import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import APISecurityAudit from './APISecurityAudit';
 import ImportDefinition from './ImportDefinition';
 import DefinitionOutdated from './DefinitionOutdated';
+import APILinting from './Linting/APILinting';
 
 const EditorDialog = lazy(() => import('./SwaggerEditorDrawer' /* webpackChunkName: "EditorDialog" */));
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
@@ -131,6 +132,7 @@ class APIDefinition extends React.Component {
             asyncAPI: null,
             asyncAPIModified: null,
             isAsyncAPIValid: true,
+            errors: [],
         };
         this.handleNo = this.handleNo.bind(this);
         this.handleSave = this.handleSave.bind(this);
@@ -145,10 +147,10 @@ class APIDefinition extends React.Component {
         this.openUpdateConfirmation = this.openUpdateConfirmation.bind(this);
         this.updateSwaggerDefinition = this.updateSwaggerDefinition.bind(this);
         this.updateAsyncAPIDefinitionAndDeploy = this.updateAsyncAPIDefinitionAndDeploy.bind(this);
-        this.updateSwaggerDefinitionAndDeploy = this.updateSwaggerDefinitionAndDeploy.bind(this);
         this.onChangeSwaggerContent = this.onChangeSwaggerContent.bind(this);
         this.updateAsyncAPIDefinition = this.updateAsyncAPIDefinition.bind(this);
         this.onChangeAsyncAPIContent = this.onChangeAsyncAPIContent.bind(this);
+        this.setErrors = this.setErrors.bind(this);
     }
 
     /**
@@ -292,6 +294,13 @@ class APIDefinition extends React.Component {
         }
     }
 
+    /**
+     * @param {Array} errors list of errors to be set
+     */
+    setErrors(errors) {
+        this.setState({ errors });
+    }
+
     setSchemaDefinition = (schemaContent, contentType) => {
         const { api } = this.props;
         const isGraphql = api.isGraphql();
@@ -344,6 +353,9 @@ class APIDefinition extends React.Component {
         }
     }
 
+    /**
+     * Handle save and deploy
+     * */
     handleSaveAndDeploy() {
         const { swaggerModified, asyncAPIModified } = this.state;
         const { api, history } = this.props;
@@ -355,7 +367,7 @@ class APIDefinition extends React.Component {
                 state: 'deploy',
             });
         } else {
-            this.updateSwaggerDefinitionAndDeploy(swaggerModified, '', '');
+            this.updateSwaggerDefinition(swaggerModified, '', '');
             history.push({
                 pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                     : `/apis/${api.id}/deployments`,
@@ -431,116 +443,77 @@ class APIDefinition extends React.Component {
         const { api, intl, updateAPI } = this.props;
         this.setState({ isUpdating: true });
         let parsedContent = {};
-        if (this.hasJsonStructure(swaggerContent)) {
-            parsedContent = JSON.parse(swaggerContent);
-        } else {
-            try {
+        let swaggerFile = null;
+
+        try {
+            if (this.hasJsonStructure(swaggerContent)) {
+                parsedContent = JSON.parse(swaggerContent);
+                const blob = new Blob([swaggerContent], { type: 'text/json' });
+                swaggerFile = new File([blob], 'swagger.json', { type: 'text/json;charset=utf-8' });
+            } else {
                 parsedContent = YAML.load(swaggerContent);
-            } catch (err) {
-                console.log(err);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.APIDefinition.APIDefinition.error.while.parsing.api.definition',
-                    defaultMessage: 'Error occurred while updating the API Definition',
-                }));
-                return;
+                const blobYaml = new Blob([swaggerContent], { type: 'text/yaml' });
+                swaggerFile = new File([blobYaml], 'swagger.yaml', { type: 'text/yaml;charset=utf-8' });
             }
-        }
-        const promise = api.updateSwagger(parsedContent);
-        promise
-            .then((response) => {
-                const { endpointImplementationType } = api;
-                if (endpointImplementationType === 'INLINE') {
-                    api.generateMockScripts(api.id);
-                }
-                if (response) {
-                    Alert.success(intl.formatMessage({
-                        id: 'Apis.Details.APIDefinition.APIDefinition.api.definition.updated.successfully',
-                        defaultMessage: 'API Definition updated successfully',
-                    }));
-                    if (specFormat && toFormat) {
-                        this.setState({ swagger: swaggerContent, format: specFormat, convertTo: toFormat });
-                    } else {
-                        this.setState({ swagger: swaggerContent });
-                    }
-                }
-                /*
-                 *updateAPI() will make a /GET call to get the latest api once the swagger definition is updated.
-                 *Otherwise, we need to refresh the page to get changes.
-                 */
-                updateAPI();
-                this.setState({ isUpdating: false });
-            })
-            .catch((err) => {
-                console.log(err);
-                const { response: { body: { description, message } } } = err;
-                if (description && message) {
-                    Alert.error(`${message} ${description}`);
-                } else {
+            const promiseValidation = api.validateSwagger(swaggerFile);
+            promiseValidation.then((ValidationResponse) => {
+                const { isValid, errors } = ValidationResponse.body;
+                // if isValid = true/false the error always returned as an array
+                this.setState({ errors });
+                if (!isValid) {
+                    console.log(ValidationResponse);
                     Alert.error(intl.formatMessage({
                         id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
                         defaultMessage: 'Error occurred while updating the API Definition',
                     }));
-                }
-
-                this.setState({ isUpdating: false });
-            });
-    }
-
-    /**
-     * Updates swagger definition of the api.
-     * @param {string} swaggerContent The swagger file that needs to be updated.
-     * @param {string} specFormat The current format of the definition
-     * @param {string} toFormat The format it can be converted to.
-     * */
-    updateSwaggerDefinitionAndDeploy(swaggerContent, specFormat, toFormat) {
-        const { api, intl } = this.props;
-        this.setState({ isUpdating: true });
-        let parsedContent = {};
-        if (this.hasJsonStructure(swaggerContent)) {
-            parsedContent = JSON.parse(swaggerContent);
-        } else {
-            try {
-                parsedContent = YAML.load(swaggerContent);
-            } catch (err) {
-                console.log(err);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.APIDefinition.APIDefinition.error.while.parsing.api.definition',
-                    defaultMessage: 'Error occurred while updating the API Definition',
-                }));
-                return;
-            }
-        }
-        const promise = api.updateSwagger(parsedContent);
-        promise
-            .then((response) => {
-                const { endpointImplementationType } = api;
-                if (endpointImplementationType === 'INLINE') {
-                    api.generateMockScripts(api.id);
-                }
-                if (response) {
-                    Alert.success(intl.formatMessage({
-                        id: 'Apis.Details.APIDefinition.APIDefinition.api.definition.updated.successfully',
-                        defaultMessage: 'API Definition updated successfully',
-                    }));
-                    if (specFormat && toFormat) {
-                        this.setState({ swagger: swaggerContent, format: specFormat, convertTo: toFormat });
-                    } else {
-                        this.setState({ swagger: swaggerContent });
-                    }
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                const { response: { body: { description, message } } } = err;
-                if (description && message) {
-                    Alert.error(`${message} ${description}`);
+                    this.setState({ isUpdating: false });
                 } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
-                        defaultMessage: 'Error occurred while updating the API Definition',
-                    }));
+                    const promise = api.updateSwagger(parsedContent);
+                    promise
+                        .then((response) => {
+                            const { endpointImplementationType } = api;
+                            if (endpointImplementationType === 'INLINE') {
+                                api.generateMockScripts(api.id);
+                            }
+                            if (response) {
+                                Alert.success(intl.formatMessage({
+                                    id: 'Apis.Details.APIDefinition.APIDefinition.api.definition.updated.successfully',
+                                    defaultMessage: 'API Definition updated successfully',
+                                }));
+                                if (specFormat && toFormat) {
+                                    this.setState({ swagger: swaggerContent, format: specFormat, convertTo: toFormat });
+                                } else {
+                                    this.setState({ swagger: swaggerContent });
+                                }
+                            }
+                            /*
+                             *updateAPI() will make a /GET call to get the latest api once the swagger
+                             definition is updated.
+                             *Otherwise, we need to refresh the page to get changes.
+                             */
+                            updateAPI();
+                            this.setState({ isUpdating: false });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
+                                defaultMessage: 'Error occurred while updating the API Definition',
+                            }));
+                            this.setState({ isUpdating: false });
+                        });
                 }
+            }).catch((validateErr) => {
+                console.log(validateErr);
+                Alert.error(validateErr);
             });
+        } catch (err) {
+            console.log(err);
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
+                defaultMessage: 'Error occurred while updating the API Definition',
+            }));
+        }
     }
 
 
@@ -674,7 +647,7 @@ class APIDefinition extends React.Component {
         const {
             swagger, graphQL, openEditor, openDialog, format, convertTo, notFound, isAuditApiClicked,
             securityAuditProperties, isSwaggerValid, swaggerModified, isUpdating,
-            asyncAPI, asyncAPIModified, isAsyncAPIValid,
+            asyncAPI, asyncAPIModified, isAsyncAPIValid, errors,
         } = this.state;
 
         const {
@@ -712,6 +685,7 @@ class APIDefinition extends React.Component {
 
         return (
             <>
+                {/* TODO tmkasun: use <Box> component for alignment  */}
                 <div className={classes.topBar}>
                     <div className={classes.titleWrapper}>
                         <Typography id='itest-api-details-api-definition-head' variant='h4' component='h2'>
@@ -777,6 +751,7 @@ class APIDefinition extends React.Component {
                             component={Link}
                             download={fileName}
                             href={downloadLink}
+                            id='download-definition-btn'
                         >
                             <CloudDownloadRounded className={classes.buttonIcon} />
                             <FormattedMessage
@@ -784,7 +759,6 @@ class APIDefinition extends React.Component {
                                 defaultMessage='Download Definition'
                             />
                         </Button>
-
                         {(securityAuditProperties.apiToken && securityAuditProperties.collectionId
                         && api.type !== 'GRAPHQL' && !asyncAPI)
                             && (
@@ -810,6 +784,7 @@ class APIDefinition extends React.Component {
                             </Button>
                         </div>
                     )}
+                    <APILinting document={swagger} />
                 </div>
                 <div>
                     <Suspense fallback={<Progress />}>
@@ -868,6 +843,8 @@ class APIDefinition extends React.Component {
                                 swagger={swaggerModified}
                                 language={format}
                                 onEditContent={this.onChangeSwaggerContent}
+                                errors={errors}
+                                setErrors={this.setErrors}  
                             />
                         ) : (
                             <AsyncAPIEditor
@@ -921,6 +898,7 @@ class APIDefinition extends React.Component {
                             <Grid item>
                                 <CustomSplitButton
                                     advertiseInfo={api.advertiseInfo}
+                                    api={api}
                                     handleSave={this.handleSave}
                                     handleSaveAndDeploy={this.handleSaveAndDeploy}
                                     isUpdating={isUpdating}

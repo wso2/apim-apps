@@ -29,6 +29,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import InfoIcon from '@material-ui/icons/Info';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
+import { orange, green } from '@material-ui/core/colors';
 import { withRouter } from 'react-router';
 import Fade from '@material-ui/core/Fade';
 
@@ -36,6 +37,15 @@ import Fade from '@material-ui/core/Fade';
 const useStyles = makeStyles((theme) => ({
     xLarge: {
         fontSize: theme.typography.pxToRem(64),
+    },
+    warningIcon : {
+        color: orange[500],
+    },
+    checkCircleIcon: {
+        color: green[800],
+    },
+    infoIcon: {
+        color: theme.palette.primary.dark,
     },
 }));
 /**
@@ -77,16 +87,16 @@ function Banner(props) {
             bannerIcon = <ErrorIcon color='error' {...iconProps} />;
             break;
         case 'warning':
-            bannerIcon = <WarningIcon color='error' {...iconProps} />;
+            bannerIcon = <WarningIcon className={classes.warningIcon} {...iconProps} />;
             break;
         case 'successes':
-            bannerIcon = <CheckCircleIcon color='error' {...iconProps} />;
+            bannerIcon = <CheckCircleIcon className={classes.checkCircleIcon} {...iconProps} />;
             break;
         case 'info':
-            bannerIcon = <InfoIcon color='error' {...iconProps} />;
+            bannerIcon = <InfoIcon className={classes.infoIcon} {...iconProps} />;
             break;
         default:
-            bannerIcon = <InfoIcon color='error' {...iconProps} />;
+            bannerIcon = <InfoIcon className={classes.infoIcon} {...iconProps} />;
             break;
     }
     return (

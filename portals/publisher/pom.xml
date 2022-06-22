@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.apimgt.ui</groupId>
         <artifactId>apim.ui.apps</artifactId>
-        <version>9.0.272-SNAPSHOT</version>
+        <version>9.0.325-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -131,7 +131,7 @@
                     <include>publisher/.npmrc</include>
                     <include>publisher/babel.config.js</include>
                     <include>publisher/jest.config.js</include>
-                    <include>publisher/jsconfig.json</include>
+                    <include>publisher/tsconfig.json</include>
                     <include>publisher/loader.js</include>
                     <include>publisher/package-lock.json</include>
                     <include>publisher/package.json</include>

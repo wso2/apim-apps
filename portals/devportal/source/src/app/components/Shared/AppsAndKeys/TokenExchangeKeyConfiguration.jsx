@@ -40,7 +40,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "@material-ui/core/Button";
 import Application from "AppData/Application";
 import Loading from "AppComponents/Base/Loading/Loading";
-import Alert1 from "AppComponents/Shared/Alert";
 import Alert from "AppComponents/Shared/Alert";
 import Tokens from "AppComponents/Shared/AppsAndKeys/Tokens";
 import {TableBody, TableCell, TableRow} from "@material-ui/core";
@@ -326,7 +325,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                 if (status === 404) {
                     setNotFound(true)
                 } else if (status === 400) {
-                    Alert1.error(error.description
+                    Alert.error(error.description
                         || intl.formatMessage({
                             id: 'Shared.AppsAndKeys.TokenManager.key.generate.bad.request.error',
                             defaultMessage: 'Error occurred when generating Access Token',
@@ -413,8 +412,6 @@ const TokenExchangeKeyConfiguration = (props) => {
      * */
     const handleClickOpen = () => {
             setOpen(true);
-            setShowToken(true);
-            setIsResidenceTokenAvailable(false);
     };
     /**
      * Handle on open of dialog for generating access token and get curl
@@ -429,7 +426,6 @@ const TokenExchangeKeyConfiguration = (props) => {
         && keys.get("Resident Key Manager") || false;
     const consumerKey = csCkKeys && csCkKeys.consumerKey;
     const consumerSecret = csCkKeys && csCkKeys.consumerSecret;
-
     return (
         <>
                     <Box display='flex' alignItems='center'>
@@ -591,7 +587,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                                         </React.Fragment>
                                                     )}
                                                     {showToken &&
-                                                    <ViewToken token={{...tokenResponse, isOauth: true}} isTokenExchange />}
+                                                    <ViewToken token={{...tokenResponse, isOauth: true}} isResidenceTokenAvailable={isResidenceTokenAvailable} isTokenExchange />}
                                                 </DialogContentText>
                                             )}
                                             {showCurl && (

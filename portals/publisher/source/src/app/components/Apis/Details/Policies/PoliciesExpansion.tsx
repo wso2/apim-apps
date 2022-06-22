@@ -37,6 +37,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
+const defaultPolicyForMigration = {
+    id: '',
+    category: 'Mediation',
+    name: '',
+    displayName: '',
+    description: '',
+    applicableFlows: [],
+    supportedGateways: ['Synapse'],
+    supportedApiTypes: ['HTTP'],
+    policyAttributes: [],
+    isAPISpecific: true,
+};
+
 interface PoliciesExpansionProps {
     target: any;
     verb: string;
@@ -44,7 +57,6 @@ interface PoliciesExpansionProps {
     isChoreoConnectEnabled: boolean;
     policyList: Policy[];
 }
-
 
 const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     target,
@@ -108,25 +120,36 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             for (const requestFlowAttachedPolicy of requestFlow) {
                 const { policyId, policyName, uuid } =
                     requestFlowAttachedPolicy;
-                const policyObj = allPolicies?.find(
-                    (policy: PolicySpec) => policy.name === policyName,
-                );
-                if (policyObj) {
-                    requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+                if (policyId === null) {
+                    // Handling migration flow
+                    requestFlowList.push({
+                        ...defaultPolicyForMigration,
+                        name: policyName,
+                        displayName: policyName,
+                        applicableFlows: ['request'],
+                        uniqueKey: uuid,
+                    });
                 } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(
-                            policyId,
-                            api.id,
-                        );
-                        if (policyResponse)
-                            requestFlowList.push({
-                                ...policyResponse.body,
-                                uniqueKey: uuid,
-                            });
-                    } catch (error) {
-                        console.error(error);
+                    const policyObj = allPolicies?.find(
+                        (policy: PolicySpec) => policy.name === policyName,
+                    );
+                    if (policyObj) {
+                        requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+                    } else {
+                        try {
+                            // eslint-disable-next-line no-await-in-loop
+                            const policyResponse = await API.getOperationPolicy(
+                                policyId,
+                                api.id,
+                            );
+                            if (policyResponse)
+                                requestFlowList.push({
+                                    ...policyResponse.body,
+                                    uniqueKey: uuid,
+                                });
+                        } catch (error) {
+                            console.error(error);
+                        }
                     }
                 }
             }
@@ -138,26 +161,37 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             for (const responseFlowAttachedPolicy of responseFlow) {
                 const { policyId, policyName, uuid } =
                     responseFlowAttachedPolicy;
-                const policyObj = allPolicies?.find(
-                    (policy: PolicySpec) => policy.name === policyName,
-                );
-                if (policyObj) {
-                    responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+                if (policyId === null) {
+                    // Handling migration flow
+                    responseFlowList.push({
+                        ...defaultPolicyForMigration,
+                        name: policyName,
+                        displayName: policyName,
+                        applicableFlows: ['response'],
+                        uniqueKey: uuid,
+                    });
                 } else {
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        const policyResponse = await API.getOperationPolicy(
-                            policyId,
-                            api.id,
-                        );
-                        if (policyResponse)
-                            responseFlowList.push({
-                                ...policyResponse.body,
-                                uniqueKey: uuid,
-                            });
-                    } catch (error) {
-                        console.error(error);
-                    }
+                    const policyObj = allPolicies?.find(
+                        (policy: PolicySpec) => policy.name === policyName,
+                    );
+                    if (policyObj) {
+                        responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+                    } else {
+                        try {
+                            // eslint-disable-next-line no-await-in-loop
+                            const policyResponse = await API.getOperationPolicy(
+                                policyId,
+                                api.id,
+                            );
+                            if (policyResponse)
+                                responseFlowList.push({
+                                    ...policyResponse.body,
+                                    uniqueKey: uuid,
+                                });
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }   
                 }
             }
             setResponseFlowPolicyList(responseFlowList);
@@ -169,25 +203,36 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 for (const faultFlowAttachedPolicy of faultFlow) {
                     const { policyId, policyName, uuid } =
                         faultFlowAttachedPolicy;
-                    const policyObj = allPolicies?.find(
-                        (policy: PolicySpec) => policy.name === policyName,
-                    );
-                    if (policyObj) {
-                        faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                    if (policyId === null) {
+                        // Handling migration flow
+                        faultFlowList.push({
+                            ...defaultPolicyForMigration,
+                            name: policyName,
+                            displayName: policyName,
+                            applicableFlows: ['fault'],
+                            uniqueKey: uuid,
+                        });
                     } else {
-                        try {
-                            // eslint-disable-next-line no-await-in-loop
-                            const policyResponse = await API.getOperationPolicy(
-                                policyId,
-                                api.id,
-                            );
-                            if (policyResponse)
-                                faultFlowList.push({
-                                    ...policyResponse.body,
-                                    uniqueKey: uuid,
-                                });
-                        } catch (error) {
-                            console.error(error);
+                        const policyObj = allPolicies?.find(
+                            (policy: PolicySpec) => policy.name === policyName,
+                        );
+                        if (policyObj) {
+                            faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                        } else {
+                            try {
+                                // eslint-disable-next-line no-await-in-loop
+                                const policyResponse = await API.getOperationPolicy(
+                                    policyId,
+                                    api.id,
+                                );
+                                if (policyResponse)
+                                    faultFlowList.push({
+                                        ...policyResponse.body,
+                                        uniqueKey: uuid,
+                                    });
+                            } catch (error) {
+                                console.error(error);
+                            }
                         }
                     }
                 }
@@ -206,7 +251,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 alignItems='flex-start'
             >
                 <Grid item xs={12} md={12}>
-                    <Box className={classes.flowSpecificPolicyAttachGrid}>
+                    <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-request'>
                         <Typography variant='subtitle2' align='left'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.PoliciesExpansion.request.flow.title'
@@ -225,7 +270,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                             allPolicies={allPolicies}
                         />
                     </Box>
-                    <Box className={classes.flowSpecificPolicyAttachGrid}>
+                    <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-response'>
                         <Typography variant='subtitle2' align='left'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.PoliciesExpansion.response.flow.title'

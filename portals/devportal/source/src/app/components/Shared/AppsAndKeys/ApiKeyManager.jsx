@@ -217,8 +217,11 @@ class ApiKeyManager extends React.Component {
               color="primary"
               onClick={this.handleClickOpen}
               className={classes.generateKey}
+              id='generate-key-btn'
             >
-              {"Generate Key"}
+              {this.props.intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyManager.generate.key.btn',
+                defaultMessage: 'Generate Key'})}
             </Button>
             <Typography
               component="div"
@@ -238,7 +241,9 @@ class ApiKeyManager extends React.Component {
             className={classes.dialog}
           >
             <DialogTitle id="responsive-dialog-title" className={classes.dialogTitle}>
-              {"Generate API Key"}
+              {this.props.intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyManager.generate.api.key.btn',
+                defaultMessage: 'Generate API Key'})}
             </DialogTitle>
             <DialogContent className={classes.dialogContent}>
               <DialogContentText>
@@ -259,6 +264,7 @@ class ApiKeyManager extends React.Component {
                   color="primary"
                   variant='contained'
                   className={classes.button}
+                  id='generate-api-keys-btn'
                 >
                   <FormattedMessage
                     id="Shared.AppsAndKeys.ViewKeys.consumer.generate.btn"
@@ -267,7 +273,7 @@ class ApiKeyManager extends React.Component {
                    {isGenerating && <CircularProgress size={24} />}
                 </Button>
               )}
-              <Button onClick={this.handleClose} color="primary" autoFocus>
+              <Button onClick={this.handleClose} color="primary" autoFocus id='generate-api-keys-close-btn'>
                 <FormattedMessage
                   id="Shared.AppsAndKeys.ViewKeys.consumer.close.btn"
                   defaultMessage="Close"
