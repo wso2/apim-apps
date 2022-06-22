@@ -18,10 +18,7 @@ import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
     const { publisher, password, } = Utils.getUserInfo();
-
     const productName = Utils.generateName();
-    const apiName = Utils.generateName();
-    const apiVersion = '1.0.6';
 
     before(function () {
         cy.loginToPublisher(publisher, password);

@@ -43,11 +43,8 @@ describe("Deploy sample api", () => {
             cy.get('#itest-api-name-version', { timeout: 50000 }).should('be.visible');
             cy.url().should('contains', '/overview');
             cy.get("#itest-api-name-version").contains('PizzaShackAPI');
+            cy.get('#itest-id-deleteapi-icon-button', {timeout: 30000}).click();
+            cy.get('#itest-id-deleteconf', {timeout: 30000}).click();
         });
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.deleteApi('PizzaShackAPI', '1.0.0');
-    })
 });

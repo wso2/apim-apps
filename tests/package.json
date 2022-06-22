@@ -4,7 +4,7 @@
   "description": "Integration tests written in cypress.io for WSO2 API Manager 4.x versions",
   "main": "index.js",
   "scripts": {
-    "test": "cypress run",
+    "test": "cypress run --spec **/*.spec.js",
     "test:local": "./test.local.sh",
     "test:gui": "cypress run --headed",
     "test:dev": "cypress open",

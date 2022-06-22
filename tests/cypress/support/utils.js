@@ -42,6 +42,34 @@ export default class Utils {
             }
         })
     }
+
+    static addAPIfromSwagger(data) {
+        let { type, name, version, context, payload } = data;
+        type = type || 'rest';
+        name = name || Utils.generateName();
+        context = context || name.replace(/[^A-Z0-9]/ig, "_");
+        version = version || '1.0.0';
+
+        const newPayload = payload || `{"name":"${name}","version":"${version}","context":"${context}","policies":["Unlimited"]}`;
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken()
+                    .then((token) => {
+                        const curl = `curl -k -X POST \
+                        -H "Content-Type: application/json" \
+                        -d '${newPayload}' \
+                        -H "Authorization: Bearer ${token}"  "https://localhost:9443/api/am/publisher/v2/apis/import-openapi"`;
+                        cy.exec(curl).then(result => {
+                            const apiId = JSON.parse(result.stdout);
+                            resolve(apiId.id);
+                        })
+                    })
+            } catch (e) {
+                reject('Error while creating api');
+            }
+        })
+    };
+
     static addAPI(data) {
         let { type, name, version, context, payload } = data;
         type = type || 'rest';

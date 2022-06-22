@@ -19,15 +19,9 @@
 import Utils from "@support/utils";
 
 describe("Common Policies", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const regrex = '^([a-zA-Z\\d_][a-zA-Z\\d_\\-\\ ]*)$'
+    const { publisher, password, } = Utils.getUserInfo();
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    before(function () {
         cy.loginToPublisher(publisher, password);
     })
 
@@ -69,10 +63,4 @@ describe("Common Policies", () => {
         cy.logoutFromPublisher();
 
     });
-
-    after(function () {
-        //Delete User
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 })

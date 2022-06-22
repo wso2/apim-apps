@@ -19,28 +19,16 @@
 import Utils from "@support/utils";
 
 describe("Common Policies", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
-    const apiVersion = '2.0.0';
-    const apiContext = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
+    const { publisher, password, } = Utils.getUserInfo();
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+    before(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it("Api Specific Policy", () => {
-         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
 
-         //Get the api id
-         cy.location('pathname').then((pathName) => {
-            const pathSegments = pathName.split('/');
-            const uuid = pathSegments[pathSegments.length - 2];
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
+    it("Api Specific Policy", () => {
+        Utils.addAPI({}).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/policies`);
             //Create API Specific Policy
             cy.get('[data-testid="add-new-api-specific-policy"]').click();
             cy.get('#name').type('Add Header sample test');
@@ -66,40 +54,28 @@ describe("Common Policies", () => {
             cy.get('[aria-label="view-AddHeadersampletest"]').click();
             //Download file
             cy.get('[data-testid="download-policy-file"]').click();
-                const downloadsFolder = Cypress.config('downloadsFolder')
-                const downloadedFilename = `${downloadsFolder}/swagger.yaml`;
-            
             cy.wait(2000);
-
             cy.get('[data-testid="done-view-policy-file"]').click();
 
             //Drag and Drop Policy
             const dataTransfer = new DataTransfer();
-            cy.contains('Add Header sample test').trigger('dragstart',{
+            cy.contains('Add Header sample test').trigger('dragstart', {
                 dataTransfer
             });
-            
+
             cy.contains('Drag and drop policies here').trigger('drop', {
-            // cy.('[data-testid="drop-policy-zone-request"]').trigger('drop', {
+                // cy.('[data-testid="drop-policy-zone-request"]').trigger('drop', {
                 dataTransfer
             });
             cy.get('#headerName').type('Testing');
             cy.get('[data-testid="policy-attached-details-save"]').click();
             cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/scopes`);
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/scopes`);
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/policies`);
             cy.wait(2000);
 
             //Delete API
-            cy.deleteApi(apiName, apiVersion);
-
-         });
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-        //Delete User
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-        
-    })
 })
