@@ -10177,32 +10177,32 @@
         "paths": [
           {
             "react-quill > lodash": {
-              "patched": "2022-06-22T06:52:45.019Z"
+              "patched": "2022-06-22T06:53:39.726Z"
             }
           },
           {
             "swagger-ui-react > react-redux > lodash": {
-              "patched": "2022-06-22T06:52:45.019Z"
+              "patched": "2022-06-22T06:53:39.726Z"
             }
           },
           {
             "swagger-ui-react > redux > lodash": {
-              "patched": "2022-06-22T06:52:45.019Z"
+              "patched": "2022-06-22T06:53:39.726Z"
             }
           },
           {
             "babel-plugin-formatjs > @types/babel__core > @types/babel__generator > @babel/types > lodash": {
-              "patched": "2022-06-22T06:52:45.019Z"
+              "patched": "2022-06-22T06:53:39.726Z"
             }
           },
           {
             "babel-plugin-formatjs > @types/babel__core > @types/babel__template > @babel/types > lodash": {
-              "patched": "2022-06-22T06:52:45.019Z"
+              "patched": "2022-06-22T06:53:39.726Z"
             }
           },
           {
             "babel-plugin-formatjs > @types/babel__core > @types/babel__traverse > @babel/types > lodash": {
-              "patched": "2022-06-22T06:52:45.019Z"
+              "patched": "2022-06-22T06:53:39.726Z"
             }
           }
         ]
