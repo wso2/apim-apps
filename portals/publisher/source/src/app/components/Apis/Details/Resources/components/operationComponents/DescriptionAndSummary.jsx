@@ -57,6 +57,7 @@ export default function DescriptionAndSummary(props) {
                     rows='4'
                     value={operation.description}
                     variant='outlined'
+                    data-testid={'description-'+verb+''+target}
                     onChange={
                         ({ target: { value } }) => operationsDispatcher(
                             { action: 'description', data: { target, verb, value } },
@@ -74,6 +75,7 @@ export default function DescriptionAndSummary(props) {
                     multiline
                     rows='4'
                     value={operation.summary}
+                    data-testid={'summary-'+verb+''+target}
                     onChange={({ target: { value } }) => operationsDispatcher(
                         { action: 'summary', data: { target, verb, value } },
                     )}

@@ -326,6 +326,7 @@ function AddParameter(props) {
                         className={classes.checkBox}
                         control={(
                             <Checkbox
+                                data-testid={'required-' + verb + target}
                                 checked={newParameter.required}
                                 onChange={
                                     ({

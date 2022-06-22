@@ -82,6 +82,7 @@ export default function OperationGovernance(props) {
                     <FormControlLabel
                         control={(
                             <Switch
+                                data-testid={'security-'+verb+''+target}
                                 checked={operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none'}
                                 onChange={({ target: { checked } }) => operationsDispatcher({
                                     action: 'authType',
