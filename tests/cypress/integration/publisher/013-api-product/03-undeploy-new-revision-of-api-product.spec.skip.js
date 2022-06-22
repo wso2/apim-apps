@@ -17,26 +17,15 @@
 import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const productName = 'petstoreProduct';
-    const apiName = 'SwaggerPetstore-OpenAPI30';
-    const apiVersion = '1.0.6';
+    const { publisher, password, } = Utils.getUserInfo();
+    const productName = Utils.generateName();
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it("Mock the api response and test it", () => {
-
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        // select the option from the menu item
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`, { timeout: 30000 });
         cy.get('#open-api-file-select-radio').click();
 
         // upload the swagger
@@ -57,7 +46,11 @@ describe("Mock the api response and test it", () => {
             // finish the wizard
             cy.get('#open-api-create-btn').click();
 
-            cy.intercept('**/apis/**').as('apiGet');
+            cy.intercept({
+                method: "GET",
+                url: `**/apis/**`,
+                times: 1,
+              }).as('apiGet');
             cy.wait('@apiGet', {timeout: 30000}).then((res) => {
                 
                 //Get the api id
@@ -66,7 +59,7 @@ describe("Mock the api response and test it", () => {
                 // validate
                 cy.get('#itest-api-name-version', { timeout: 30000 });
                 cy.get('#itest-api-name-version').contains(version);
-
+                
                 // Go to api product create page
                 cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/create`);
 
@@ -81,42 +74,43 @@ describe("Mock the api response and test it", () => {
                 cy.get('#resource-wrapper', { timeout: 30000 });
                 cy.get('#resource-wrapper').click();
 
+                cy.intercept("POST", `**/api-products`).as('apiProductsGet');
+
                 // add all resources
                 cy.get('#add-all-resources-btn').click();
                 cy.get('#create-api-product-btn').scrollIntoView().dblclick();
 
-                cy.get('#itest-api-name-version', { timeout: 30000 });
-                cy.get('#itest-api-name-version').contains(productName);
+                cy.wait('@apiProductsGet', {timeout: 30000}).then((res) => {
 
-                // Going to deployments page
-                cy.get('#left-menu-itemdeployments').click();
-
-                // Deploying
-                cy.get('#deploy-btn').click({"force":true});
-                cy.get('#undeploy-btn').should('exist');
-
-                // Going to lifecycle page
-                cy.get('#left-menu-itemlifecycle').click();
-
-                // Publishing
-                cy.wait(2000);
-                cy.get('[data-testid="Publish-btn"]').click();
-
-                cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
-
-                cy.get(`#itest-id-deleteapi-icon-button`).click();
-                cy.get(`#itest-id-deleteconf`).click();
-
-                cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
                     cy.get('#itest-api-name-version', { timeout: 30000 });
-                     cy.get(`#itest-id-deleteapi-icon-button`).click();
-                     cy.get(`#itest-id-deleteconf`).click();
-            });
+                    cy.get('#itest-api-name-version').contains(productName);
+
+                    // Going to deployments page
+                    cy.get('#left-menu-itemdeployments').click();
+
+                    // Deploying
+                    cy.get('#deploy-btn').click({"force":true});
+                    cy.get('#undeploy-btn').should('exist');
+                    cy.get('#undeploy-btn').click();
+                    cy.get('#revision-selector').should('exist');
+
+                    //Get the api product id
+                    const uuidProduct = res.response.body.id;
+
+                    cy.log(uuid, uuidProduct);
+
+                    // Deleting the api and api product
+                    cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/${uuidProduct}/overview`);
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                    cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
+                    cy.get(`#itest-id-deleteconf`).click();
+
+                    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
+                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                    cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
+                    cy.get(`#itest-id-deleteconf`).click();
+                })
+            });    
         });
     });
-
-    after(function () {
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-     })
 })

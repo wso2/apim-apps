@@ -17,24 +17,17 @@
 import Utils from "@support/utils";
 
 describe("Life cycle support for API Products", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const productName = 'pizzaShackProduct';
+    const { publisher, password, } = Utils.getUserInfo();
+    const productName = Utils.generateName();
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it("Life cycle support for API Products", () => {
-
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`, { timeout: 30000 });
         cy.get('#open-api-file-select-radio').click();
+
 
         // upload the swagger
         cy.get('#browse-to-upload-btn').then(function () {
@@ -123,11 +116,4 @@ describe("Life cycle support for API Products", () => {
             });
         });
     });
-
-    after(function () {
-
-        //Delete Users
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 })

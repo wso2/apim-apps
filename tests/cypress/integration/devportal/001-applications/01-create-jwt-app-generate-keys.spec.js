@@ -17,31 +17,18 @@
 import Utils from "@support/utils";
 
 describe("Application tests", () => {
-    const appName = 'jwtapplication' + Math.floor(Date.now() / 1000);
-    const appDescription = 'JWT application description';
-    const developer = 'developer';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { developer, password } = Utils.getUserInfo();
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-    })
+    const appName = Utils.generateName();
+    const appDescription = 'JWT application description';
+
     it.only("Add Applications for JWT token Type", () => {
         cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);
     })
 
     after(() => {
-        cy.visit(`${Utils.getAppOrigin()}/devportal/applications?tenant=carbon.super`);
-        cy.get(`#delete-${appName}-btn`, {timeout: 30000});
-        cy.get(`#delete-${appName}-btn`).click();
-        cy.get('#itest-confirm-application-delete').click();
+        cy.deleteApp(appName);
     })
 
-    after(() => {
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(developer);
-    })
 })
