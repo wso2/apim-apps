@@ -84,6 +84,7 @@ class LifeCycleUpdate extends Component {
         this.WORKFLOW_STATUS = {
             CREATED: 'CREATED',
             APPROVED: 'APPROVED',
+            REJECTED: 'REJECTED'
         };
         this.state = {
             newState: null,
@@ -149,6 +150,11 @@ class LifeCycleUpdate extends Component {
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.LifeCycle.LifeCycleUpdate.success.createStatus',
                         defaultMessage: 'Lifecycle state change request has been sent',
+                    }));
+                } if (workflowStatus === this.WORKFLOW_STATUS.REJECTED) {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.LifeCycle.LifeCycleUpdate.reject.rejectStatus',
+                        defaultMessage: 'Lifecycle state change action rejected due to validation failure',
                     }));
                 } else {
                     Alert.info(intl.formatMessage({
