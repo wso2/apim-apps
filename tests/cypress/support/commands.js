@@ -469,7 +469,7 @@ Cypress.Commands.add('createLocalScope', (name, displayname='sample display name
     cy.get('#name',{timeout:3000}).type(name,{force:true});
     cy.get('#displayName',{timeout: 30000 }).type(displayname);
     cy.get('#description',{timeout: 30000 }).type(description);
-    cy.get('#name',{timeout:3000}).type(name);
+
     roles.forEach(role => {
         cy.get('#roles-input',{timeout: 30000 }).type(role+'\n');
     });

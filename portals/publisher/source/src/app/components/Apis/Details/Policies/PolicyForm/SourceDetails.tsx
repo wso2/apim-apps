@@ -222,7 +222,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
     }
 
     return (
-        <Box display='flex' flexDirection='row' mt={1}>
+        <Box display='flex' flexDirection='row' mt={1} data-testid='gateway-details-panel'>
             <Box width='40%' pt={3} mb={2}>
                 <Box width='90%'>
                     <Typography
@@ -248,7 +248,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                 </Box>
             </Box>
             <Box width='60%'>
-                <Box display='flex' flexDirection='row' alignItems='center'>
+                <Box display='flex' flexDirection='row' alignItems='center' data-testid='supported-gateways-form'>
                     <Typography color='inherit' variant='body1' component='div'>
                         <FormattedMessage
                             id='Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label'
@@ -282,6 +282,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                         />
                                     }
                                     label={GATEWAY_TYPE_LABELS.SYNAPSE}
+                                    data-testid='regular-gateway-label'
                                 />
                                 <FormControlLabel
                                     control={
@@ -295,6 +296,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                         />
                                     }
                                     label={GATEWAY_TYPE_LABELS.CC}
+                                    data-testid='choreo-connect-label'
                                 />
                             </FormGroup>
                             <FormHelperText>
