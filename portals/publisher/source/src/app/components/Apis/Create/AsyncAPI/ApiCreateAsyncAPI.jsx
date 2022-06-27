@@ -429,6 +429,7 @@ export default function ApiCreateAsyncAPI(props) {
                         <Grid item>
                             {wizardStep === 0 && (
                                 <Button
+                                    data-testid= 'next-btn'
                                     onClick={() => setWizardStep((step) => step + 1)}
                                     variant='contained'
                                     color='primary'
@@ -439,6 +440,7 @@ export default function ApiCreateAsyncAPI(props) {
                             )}
                             {wizardStep === 1 && (
                                 <Button
+                                    data-testid='asyncapi-create-btn'
                                     variant='contained'
                                     color='primary'
                                     disabled={!apiInputs.isFormValid || isCreating || !isValidExternalEndpoint}

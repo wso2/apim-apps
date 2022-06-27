@@ -377,7 +377,7 @@ Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {
 
     //select rest-api option from the menu item
     cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
-    cy.get('#itest-rest-api-create-menu').click();;
+    cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-landing-rest-create-default').click();
     cy.get('#itest-id-apiname-input').type('ThirdPartyApi');
     cy.get('#itest-id-apicontext-input').type('/thirdpartyapi');
@@ -458,4 +458,40 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
 
 })
 
+Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
 
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+
+    //select streaming-api option from the menu item
+    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
+    cy.get('#itest-streaming-api-create-menu').click();
+    cy.get('#itest-id-create-streaming-api-import').click();
+    cy.get('[data-testid="input-asyncapi-file"]').click();
+    
+    //upload the solace api definition
+    cy.get('[data-testid="upload-api-file"]').then(function () {
+        const filepath = 'api_artifacts/solaceApiDefinition.yml'
+        cy.get('input[type="file"]').attachFile(filepath)
+    });
+
+    // ???This should be checked ???
+    // cy.get('[data-testid="solace-api-label"] span');
+    // cy.get('[data-testid="solace-api-label"]').should('contains','Identified as Solace Event Portal API');
+    cy.get('[data-testid="next-btn"]').should('not.be.disabled');
+    cy.get('[data-testid="next-btn"]').click();
+
+    //create the asyncapi
+    cy.get('#itest-id-apiname-input').should('contains','APIConsumption');
+    cy.get('#itest-id-apicontext-input').type('/solaceapi');
+    cy.get('#itest-id-apiversion-input').should('contains','0.0.1');
+    //MQTT and HTTP tags should be shown???
+    cy.get('[data-testid="asyncapi-create-btn"]').click();
+    cy.wait(5000);
+    
+    //Go to the topics section and check the topics???
+
+    //Check asyncapi definition???
+
+
+
+})
