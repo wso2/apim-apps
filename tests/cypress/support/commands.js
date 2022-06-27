@@ -487,10 +487,32 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     //MQTT and HTTP tags should be shown???
     cy.get('[data-testid="asyncapi-create-btn"]').click();
     cy.wait(5000);
-    
-    //Go to the topics section and check the topics???
 
+    //Go to the topics section and check the topics???
+    cy.get('#panel2a-header h6').contains('apim/car-co/api/V1/json/{region_id}/{make}/{model}/{vin}/{event_type}').should('exist');
+    
     //Check asyncapi definition???
+
+    //Check solace deployments and deploy
+    cy.get('#left-menu-itemdeployments').click();
+
+    cy.get('[data-testid="solace"]').should('exist');
+    cy.get('[data-testid="solace-api-name"]').contains('AWS APIM-GW-DEV FRANKFURT').should('exist');
+    cy.get('[data-testid="api-env-name"] input').contains('apim-gw-dev').should('exist');
+    cy.get('[data-testid="api-org-name"] input').contains('wso2dev').should('exist');
+    cy.get('#deploy-btn-solace').click();
+
+    //Should you check after deployed???
+
+    //Publish the solace api
+    cy.get('#left-menu-itemlifecycle').click();
+    cy.get('[data-testid="business-plan-req"]').should('exist');
+    cy.get('[data-testid="endpoint-req"]').should('not.exist');
+    cy.get('[data-testid="Publish-btn"]').click();
+
+    
+
+
 
 
 
