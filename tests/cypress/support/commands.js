@@ -649,17 +649,14 @@ Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
 
 })
 
-Cypress.Commands.add('createAPIWithoutEndpoint', (name=null, type = 'REST') => {
+Cypress.Commands.add('createAPIWithoutEndpoint', (name, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
-    var apiName = `0sample_api_${random_number}`;
-    if(name){
-        apiName=name;
-    }
-    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-    cy.get('#itest-create-api-menu-button', { timeout: 30000 });
-    cy.get('#itest-create-api-menu-button').click();
+    const randomName = `0sample_api_${random_number}`;
+    cy.visit(`${Utils.getAppOrigin()}/publisher/apis`)
+    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
+    cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-landing-rest-create-default').click();
-    cy.get('#itest-id-apiname-input').type(name || apiName);
+    cy.get('#itest-id-apiname-input').type(name || randomName);
     cy.get('#itest-id-apicontext-input').click();
     cy.get('#itest-id-apicontext-input').type(`/sample_context_${random_number}`);
     cy.get('#itest-id-apiversion-input').click();
@@ -668,7 +665,7 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name=null, type = 'REST') => {
     cy.get('#itest-create-default-api-button').click();
     cy.wait(500);
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/`);
-    cy.get(`#${apiName}`).click();
+    cy.get(`#sample_api_${random_number}`).click();
 
 
     cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
