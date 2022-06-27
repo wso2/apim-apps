@@ -337,6 +337,7 @@ export default function ApiCreateAsyncAPI(props) {
                                         <Grid item xs={12} md={6} lg={9}>
                                             {apiInputs.asyncTransportProtocols.map((protocol) => (
                                                 <Chip
+                                                    data-testid={upperCaseString(protocol) + '-label'}
                                                     key={protocol}
                                                     label={upperCaseString(protocol)}
                                                     style={{
