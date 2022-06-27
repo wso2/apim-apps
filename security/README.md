@@ -18,23 +18,25 @@ Security Vulnerability Analyzer is a web application which allows developers to 
 
 2.  Open the terminal,checkout to security/security-backend folder, run `mvn clean install -Dmaven.test.skip=true`
 
-### Run
+# Running the Shell Script to get JSON Files
 
-3. Checkout to security/security-backend/resources folder,run the command `java -jar ../target/security-backend-0.0.1-SNAPSHOT/security-backend-0.0.1-SNAPSHOT.jar`(make sure you are in the main branch of the local repository)
+If you are not running the application for the first time or have the JSON files related to the portal and branch you are going to analyze.Skip this step
 
-# Running Shell Script to get JSON Files
-
-If you are running the application for the first time or do not have the json file related to the portal and branch you are going to analyze, you need to run the shell script to get the relavant JSON file.Before running the shell script,make sure you are in the main branch of the local repository.
+You need to run the shell script to get the relavant JSON file.Before running the shell script,make sure you are in the main branch of the local repository.
 
 For example,
 
 1. Checkout to security folder
 
-1. If we need to analyze publisher portal of main branch need to run `./scan.sh publisher`(Second argument is the branch.By default it will be main).
+2. If we need to analyze publisher portal of main branch need to run `./scan.sh publisher`(Second argument is the branch.By default it will be main).
 
-1. If we want to analyze publisher portal of branch 3.2.0,need to run `./scan.sh publisher 3.2.0`.
+3. If we want to analyze publisher portal of branch 3.2.0,need to run `./scan.sh publisher 3.2.0`.
 
 Now you can analyze the portal of the branch you want if you have the required JSON file.(After running the shell script,before running the application make sure you are in the main branch of the local repository.)
+
+### Run
+
+1. Checkout to security/security-backend/resources folder,run the command `java -jar ../target/security-backend-0.0.1-SNAPSHOT/security-backend-0.0.1-SNAPSHOT.jar`(make sure you are in the main branch of the local repository)
 
 # Support
 
