@@ -234,7 +234,7 @@ describe("Create GraphQl API from file", () => {
     });
 
 
-/*
+
     after(function () {
         // Test is done. Now delete the api
         cy.get(`#itest-id-deleteapi-icon-button`).click();
@@ -242,5 +242,5 @@ describe("Create GraphQl API from file", () => {
 
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(publisher);
-    })*/
+    })
 })
