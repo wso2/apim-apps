@@ -20,11 +20,11 @@ Security Vulnerability Analyzer is a web application which allows developers to 
 
 ### Run
 
-3. Checkout to security/security-backend/resources folder,run the command `java -jar ../target/security-backend-0.0.1-SNAPSHOT/security-backend-0.0.1-SNAPSHOT.jar`
+3. Checkout to security/security-backend/resources folder,run the command `java -jar ../target/security-backend-0.0.1-SNAPSHOT/security-backend-0.0.1-SNAPSHOT.jar`(make sure you are in the main branch of the local repository)
 
 # Running Shell Script to get JSON Files
 
-If you are running the application for the first time or do not the json file related to the portal and branch you are going to analyze, you need to run the shell script to get the relavant JSON file.Before running shell script,make sure you are in the main branch of the local repository.
+If you are running the application for the first time or do not have the json file related to the portal and branch you are going to analyze, you need to run the shell script to get the relavant JSON file.Before running the shell script,make sure you are in the main branch of the local repository.
 
 For example,
 
