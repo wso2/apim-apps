@@ -341,6 +341,7 @@ class ApiThumbClassic extends React.Component {
                                 className={classes.chipWrapper2}
                             >
                                 <Chip
+                                    data-testid='solace-label'
                                     label='SOLACE'
                                     color='primary'
                                 />

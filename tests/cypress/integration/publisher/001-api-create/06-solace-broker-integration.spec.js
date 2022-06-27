@@ -35,7 +35,10 @@ describe("Publish thirdparty api", () => {
 
     it.only("Solace broker integration", () => {
         cy.publishSolaceApi();
-        
+        cy.logoutFromPublisher();
+        cy.loginToDevportal(subscriber, subscriberPassword);
+        cy.viewSolaceApi();
+        cy.logoutFromDevportal();
 
     });
 

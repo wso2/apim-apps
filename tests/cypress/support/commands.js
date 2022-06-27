@@ -474,35 +474,32 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
         cy.get('input[type="file"]').attachFile(filepath)
     });
 
-    // ???This should be checked ???
-    // cy.get('[data-testid="solace-api-label"] span');
-    // cy.get('[data-testid="solace-api-label"]').should('contains','Identified as Solace Event Portal API');
+    //Check whether the api provider is solace
+    cy.get('[data-testid="solace-api-label"] span').contains('Identified as Solace Event Portal API').should('exist');
     cy.get('[data-testid="next-btn"]').should('not.be.disabled');
     cy.get('[data-testid="next-btn"]').click();
 
     //create the asyncapi
-    cy.get('#itest-id-apiname-input').should('contains','APIConsumption');
+    cy.get('#itest-id-apiname-input').should('have.value','APIConsumption');
     cy.get('#itest-id-apicontext-input').type('/solaceapi');
-    cy.get('#itest-id-apiversion-input').should('contains','0.0.1');
+    cy.get('#itest-id-apiversion-input').should('have.value','0.0.1');
+    cy.get('#itest-id-apiversion-input').click()
     //MQTT and HTTP tags should be shown???
     cy.get('[data-testid="asyncapi-create-btn"]').click();
-    cy.wait(5000);
 
-    //Go to the topics section and check the topics???
+    //Go to the topics section and check the topics
+    cy.get('[data-testid="itest-api-config"]', { timeout: 30000 }).click();
+    cy.get('#left-menu-itemtopics').click();
     cy.get('#panel2a-header h6').contains('apim/car-co/api/V1/json/{region_id}/{make}/{model}/{vin}/{event_type}').should('exist');
-    
-    //Check asyncapi definition???
+    cy.get('[data-testid="itest-api-config"]').click();
 
     //Check solace deployments and deploy
     cy.get('#left-menu-itemdeployments').click();
-
     cy.get('[data-testid="solace"]').should('exist');
     cy.get('[data-testid="solace-api-name"]').contains('AWS APIM-GW-DEV FRANKFURT').should('exist');
-    cy.get('[data-testid="api-env-name"] input').contains('apim-gw-dev').should('exist');
-    cy.get('[data-testid="api-org-name"] input').contains('wso2dev').should('exist');
+    cy.get('[data-testid="api-env-name"] input').should('have.value','apim-gw-dev');
+    cy.get('[data-testid="api-org-name"] input').should('have.value','wso2dev');
     cy.get('#deploy-btn-solace').click();
-
-    //Should you check after deployed???
 
     //Publish the solace api
     cy.get('#left-menu-itemlifecycle').click();
@@ -510,10 +507,20 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get('[data-testid="endpoint-req"]').should('not.exist');
     cy.get('[data-testid="Publish-btn"]').click();
 
+})
+
+Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
+    cy.get('[data-testid="solace-label"]').should('exist');
+    cy.get('[area-label="Go to APIConsumption"]').click();
+    cy.get('[data-testid="business-plan-req"]').should('exist');
+
+    cy.get('#left-menu-overview').click();
+    cy.get('[data-testid="MQTT-label"]').should('exist');
+    cy.get('[data-testid="HTTP-label"]').should('exist');
+    cy.get('#left-menu-credentials').click();
+    cy.get('#subscribe-to-api-btn').click();
+    cy.get('#DefaultApplication-PK', { timeout: 30000 }).click();
+    cy.get('#generate-keys', { timeout: 30000 }).click();
     
-
-
-
-
 
 })
