@@ -18,10 +18,9 @@ Security Vulnerability Analyzer is a web application which allows developers to 
 
 2.  Open the terminal,checkout to security/security-backend folder, run `mvn clean install -Dmaven.test.skip=true`
 
-# Running the Shell Script to get JSON Files
+### Running the Shell Script to get JSON Files
 
-If you are not running the application for the first time or have the JSON files related to the portal and branch you are going to analyze.Skip this step
-
+(Skip this step if you are not running the application for the first time or have the JSON files related to the portal and branch you are going to analyze).
 You need to run the shell script to get the relavant JSON file.Before running the shell script,make sure you are in the main branch of the local repository.
 
 For example,
