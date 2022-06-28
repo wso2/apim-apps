@@ -106,11 +106,6 @@ const styles = (theme) => ({
     warningIconStyle: {
         color: theme.custom.serviceCatalog.onboarding.buttonText,
     },
-    popupTopBar: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
 });
 /**
  * This component holds the functionality of viewing the api definition content of an api. The initial view is a
@@ -814,7 +809,7 @@ class APIDefinition extends React.Component {
                 </div>
                 <Dialog fullScreen open={openEditor} onClose={this.closeEditor} TransitionComponent={this.transition}>
                     <Paper square className={classes.popupHeader}>
-                        <Box className={classes.popupTopBar}>
+                        <Box display='flex' flexDirection='row' justifyContent='space-between'>
                             <Box>
                                 <IconButton
                                     className={classes.button}
