@@ -82,7 +82,6 @@ export default function OperationsSelector(props) {
                                     onClick={enableSecurity}
                                     aria-label='enable security for all'
                                     size='large'
-                                    data-testid='enable-disable-security'
                                 >
                                     <LockOpenIcon />
                                 </IconButton>

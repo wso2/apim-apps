@@ -1635,6 +1635,7 @@ export default function Environments() {
                                                                 icon={<RadioButtonUncheckedIcon />}
                                                                 checkedIcon={<CheckCircleIcon color='primary' />}
                                                                 inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                                data-testid={row.displayName+'gateway-select-btn'}
                                                             />
                                                         )}
                                                         title={(
@@ -1854,6 +1855,7 @@ export default function Environments() {
                         <Button
                             type='submit'
                             variant='contained'
+                            data-testid='btn-deploy'
                             onClick={
                                 () => handleCreateAndDeployRevision(SelectedEnvironment, selectedVhostDeploy)
                             }
