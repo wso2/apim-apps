@@ -864,4 +864,38 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
 
 })
 
+/**
+ * create application in DevPortal
+ * @method createApplication create application in DevPortal
+ * @param {string} applicationName  name of the application
+ * @param {string} perTokenQuota 10PerMin | 20OPerMin | 50PerMin | Unlimited
+ * @param {string} appDescription description about application
+ */
+Cypress.Commands.add('createApplication', (applicationName,perTokenQuota,applicationDescription=null) => {
+    cy.get("#itest-link-to-applications").click();
+    cy.get("#itest-application-create-link",{timeout:3000}).click();
+    cy.get('#application-name').type(applicationName);
+    cy.get('#per-token-quota').click();
+    cy.get('ul').contains('li',perTokenQuota).click();
+
+    if(applicationDescription){
+        cy.get('#application-description').type(applicationDescription);
+    }
+    cy.get("#itest-application-create-save").click();
+
+    cy.get("#itest-info-bar-application-name",{timeout:3000}).contains(applicationName).should('exist');
+    cy.get("#production-keys").click();
+    cy.get("#ResidentKeyManager",{timeout:3000}).click();
+    cy.get("#generate-keys").click();
+
+    cy.get("#sandbox-keys").click();
+    cy.get("#generate-keys",{timeout:3000}).click();
+
+});
+
+Cypress.Commands.add('deleteApplication', (applicationName) => {
+    cy.get("#itest-link-to-applications").click();
+    cy.get('table').get('tbody').get(`[data-testid="row-${applicationName}"]`).find('td').eq(5).get(`[id="delete-${applicationName}-btn"]`).click();
+    cy.get("#itest-confirm-application-delete").click();
+});
 

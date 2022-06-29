@@ -125,7 +125,7 @@ class AppsTableContent extends Component {
                     .map((app) => {
                         const isAppOwner = app.owner.toLowerCase() === AuthManager.getUser().name.toLowerCase();
                         return (
-                            <StyledTableRow className={classes.tableRow} key={app.applicationId}>
+                            <StyledTableRow className={classes.tableRow} key={app.applicationId} data-testid={'row-' + app.name}>
                                 <StyledTableCell align='left' className={classes.appName}>
                                     {app.status === this.APPLICATION_STATES.APPROVED ? (
                                         <Link to={'/applications/' + app.applicationId}>{app.name}</Link>
