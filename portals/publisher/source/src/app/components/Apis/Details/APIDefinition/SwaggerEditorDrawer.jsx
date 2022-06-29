@@ -25,17 +25,28 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage } from 'react-intl';
 import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
+import { orange } from '@material-ui/core/colors';
+import differenceBy from 'lodash/differenceBy'
 import SwaggerUI from './swaggerUI/SwaggerUI';
+import LinterUI from './LinterUI/LinterUI';
+
 
 const styles = () => ({
     editorPane: {
         width: '50%',
         height: '100%',
-        overflow: 'scroll',
+        overflow: 'auto',
     },
     editorRoot: {
         height: '100%',
     },
+    glyphMargin: {
+        background: orange[900],
+        width: '5px !important'
+    },
+    noGlyphMargin: {
+        background: 'none',
+    }
 });
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
@@ -53,22 +64,80 @@ class SwaggerEditorDrawer extends React.Component {
     constructor(props) {
         super(props);
         this.onContentChange = this.onContentChange.bind(this);
+        this.editorDidMount = this.editorDidMount.bind(this);
+        this.editor = null;
+        this.monaco = null;
     }
 
     /**
      * Method to handle the change event of the editor.
      * @param {string} content : The edited content.
      * */
+    componentDidUpdate(prevProps) {
+        const { classes, linterResults } = this.props;
+        const linterDifferences = differenceBy(prevProps.linterResults, linterResults, 'range.start.line');
+
+        for (let i=0; i < linterDifferences.length; i++) {
+            const {line} = linterDifferences[i].range.start;
+            this.editor.deltaDecorations(
+                [
+                    {
+                        range: new this.monaco.Range(line, 1, line, 1),
+                        options: {
+                            isWholeLine: false,
+                            glyphMarginClassName: classes.glyphMargin,
+                        }
+                    }
+                ],
+                [
+                    {
+                        range: new this.monaco.Range(line, 1, line, 1),
+                        options: {
+                            isWholeLine: false,
+                            glyphMarginClassName: classes.noGlyphMargin,
+                        }
+                    }
+                ]
+            );
+        }
+    }
+
+    handleRowClick(line) {
+        const { classes } = this.props;
+        const columnIndex = this.editor.getModel().getLineLastNonWhitespaceColumn(line);
+        this.editor.revealLinesInCenter(line, line, 0);
+        this.editor.setPosition({column: columnIndex, lineNumber: line});
+        this.editor.focus();
+
+        this.editor.deltaDecorations(
+            [],
+            [
+                {
+                    range: new this.monaco.Range(line, 1, line, 1),
+                    options: {
+                        isWholeLine: false,
+                        glyphMarginClassName: classes.glyphMargin,
+                    }
+                }
+            ]
+        );
+    }
+
     onContentChange(content) {
-        const { onEditContent } = this.props;
+        const {onEditContent} = this.props;
         onEditContent(content);
+    }
+
+    editorDidMount(editor, monaco) {
+        this.editor = editor;
+        this.monaco = monaco;
     }
 
     /**
      * @inheritDoc
      */
     render() {
-        const { classes, language, swagger, errors, setErrors } = this.props;
+        const { classes, language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap } = this.props;
         const swaggerUrl = 'data:text/' + language + ',' + encodeURIComponent(swagger);
         return (
             <>
@@ -82,6 +151,7 @@ class SwaggerEditorDrawer extends React.Component {
                             value={swagger}
                             onChange={this.onContentChange}
                             options={{ glyphMargin: true }}
+                            editorDidMount={this.editorDidMount}
                         />
                     </Grid>
                     <Grid item className={classes.editorPane}>
@@ -113,7 +183,15 @@ class SwaggerEditorDrawer extends React.Component {
                                 </InlineMessage>
                             </Box>
                         )}
-                        <SwaggerUI url={swaggerUrl} />
+                        { isSwaggerUI ? (
+                            <SwaggerUI url={swaggerUrl}/>
+                        ) : (
+                            <LinterUI
+                                linterResults={linterResults}
+                                severityMap={severityMap}
+                                handleRowClick={(line) => {this.handleRowClick(line)}}
+                            />
+                        )}
                     </Grid>
                 </Grid>
             </>
