@@ -52,8 +52,8 @@ const uploadFile = (fileName) => {
       });
 
       var mailOptions = {
-          from: "TestGrid Team <testgrid@gmail.com>",
-          to: "prasanna@wso2.com,vimukthi@wso2.com,rosens@wso2.com,nandika@wso2.com",
+          from: "TestGrid Team <testgrid@wso2.com>",
+          to: "prasanna@wso2.com,vimukthi@wso2.com,rosens@wso2.com,nandika@wso2.com,integration-builder@wso2.com",
           subject: `WSO2 APIM 3.2.0 UI TESTS ${testPlanId}`,
           html: content
       }
