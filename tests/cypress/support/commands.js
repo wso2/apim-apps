@@ -255,20 +255,6 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
 })
   
 
-Cypress.Commands.add('createLocalScope', (name, displayname='sample display name',description='sample description',roles=[]) => {
-    
-    cy.get('#name').type(name);
-    cy.get('#displayName',{timeout: 30000 }).type(displayname);
-    cy.get('#description',{timeout: 30000 }).type(description);
-    roles.forEach(role => {
-        cy.get('#roles-input',{timeout: 30000 }).type(role+'\n');
-    });
-    cy.get('#scope-save-btn').click();
-    
-    cy.get('[data-testid="MuiDataTableBodyCell-0-0"]', { timeout: 30000 }).should('be.visible');
-    cy.get('[data-testid="MuiDataTableBodyCell-0-0"]').contains(name);
-})
-
 Cypress.Commands.add('addDocument', (name,summary,type,source) => {
     
     cy.get('[data-testid="add-document-btn"]').click();
@@ -392,7 +378,7 @@ Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel,httpverb,u
 
 
 Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
-    cy.get('#add-new-property',{ timeout: 30000 }).click();
+    cy.get('#add-new-property',{ timeout: 60000 }).click();
     cy.get('#property-name').type(name);
     cy.get('#property-value').type(value);
 
@@ -443,7 +429,6 @@ Cypress.Commands.add('createGraphqlAPIfromFile', (name,version,context,filepath)
 
 Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath)=>{
     
-    //const filename=filepath.split( '/' ).last;
     var filename = filepath.replace(/^.*[\\\/]/, '');
     var uploadedDefinitionPanel=null;
 
@@ -469,15 +454,19 @@ Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath)=>{
 
 Cypress.Commands.add('createLocalScope', (name, displayname='sample display name',description='sample description',roles=[]) => {
 
-    cy.get('#name',{timeout:3000}).type(name,{force:true});
+    cy.get('#name',{timeout:5000}).type(name,{force:true});
     cy.get('#displayName',{timeout: 30000 }).type(displayname);
     cy.get('#description',{timeout: 30000 }).type(description);
+    cy.get('#name',{timeout:3000}).clear().type(name);
 
     roles.forEach(role => {
         cy.get('#roles-input',{timeout: 30000 }).type(role+'\n');
     });
     cy.get('#scope-save-btn').click();
-    
+
+    //it randomly causes an error in verification step when removed the wait
+    cy.wait(3000);
+
     //check the table and verify whether entered scope names exist
     cy.get('table').get('tbody').find("tr")
     .then((rows) => {
@@ -488,7 +477,9 @@ Cypress.Commands.add('createLocalScope', (name, displayname='sample display name
               return false;
             }
           });
-          expect(ele.innerHTML).to.include(name);
+          if(ele){
+            expect(ele.innerHTML).to.include(name);
+          }
     });
 
 })
@@ -749,11 +740,8 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
 })
 
 Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
-    //cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
-    //cy.wait(2000);
     cy.get('#userToggleButton').click();
     cy.get("#userPopup").get("#menu-list-grow").get('ul').contains('li','Logout').click();
-    //cy.get('#logout-link').click();
     cy.url().should('contain', '/devportal/logout');
     cy.url().should('contain', referer);
 })
@@ -885,7 +873,6 @@ Cypress.Commands.add('createApplication', (applicationName,perTokenQuota,applica
 
     cy.get("#itest-info-bar-application-name",{timeout:3000}).contains(applicationName).should('exist');
     cy.get("#production-keys").click();
-    cy.get("#ResidentKeyManager",{timeout:3000}).click();
     cy.get("#generate-keys").click();
 
     cy.get("#sandbox-keys").click();
@@ -898,4 +885,3 @@ Cypress.Commands.add('deleteApplication', (applicationName) => {
     cy.get('table').get('tbody').get(`[data-testid="row-${applicationName}"]`).find('td').eq(5).get(`[id="delete-${applicationName}-btn"]`).click();
     cy.get("#itest-confirm-application-delete").click();
 });
-
