@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("Publish thirdparty api", () => {
+describe("Publish solace api", () => {
     const publisher = 'publisher';
     const publisherPassword = 'test123';
     const subscriber = 'subscriber';
@@ -46,10 +46,10 @@ describe("Publish thirdparty api", () => {
         // Test is done. Now delete the api
         cy.loginToPublisher(publisher, publisherPassword);
         cy.deleteApi('SolaceAPI', '1.0.0');
-
+        cy.logoutFromPublisher();
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-        cy.deleteUser(subscriber);
+        // cy.deleteUser(publisher);
+        // cy.deleteUser(subscriber);
 
     })
 });

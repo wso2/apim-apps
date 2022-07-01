@@ -1,0 +1,84 @@
+{
+    "id": "639208a7-503a-4ca7-a42c-9e0757a657b6",
+    "name": "APIConsumption",
+    "description": null,
+    "context": "/solaceapi/0.0.1",
+    "version": "0.0.1",
+    "provider": "publisher",
+    "apiDefinition": "{\"components\":{\"parameters\":{\"region_id\":{\"schema\":{\"type\":\"string\",\"enum\":[\"fr\",\"de\",\"it\"]}},\"make\":{\"schema\":{\"type\":\"string\",\"enum\":[108,2008]}},\"model\":{\"schema\":{\"type\":\"string\",\"enum\":[\"M2018\",\"MTPA\"]}},\"vin\":{\"schema\":{\"type\":\"string\"}},\"event_type\":{\"schema\":{\"type\":\"string\",\"enum\":[\"consumption\"]}}},\"schemas\":{\"consumption\":{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false,\"title\":\"Car Co consumption event payload\",\"required\":[\"header\",\"body\"],\"properties\":{\"header\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"timestamp\"],\"properties\":{\"timestamp\":{\"type\":\"string\"}}},\"body\":{\"type\":\"object\",\"additionalProperties\":false,\"required\":[\"fuel\",\"tyre\",\"battery\",\"oil\"],\"properties\":{\"fuel\":{\"title\":\"fuel\",\"type\":\"integer\"},\"tyre\":{\"title\":\"tyre\",\"type\":\"number\"},\"battery\":{\"title\":\"battery\",\"type\":\"number\"},\"oil\":{\"title\":\"oil\",\"type\":\"integer\"}}}},\"$id\":\"http://eventportal.solace.cloud/apim/car-co/consumption/consumption.json\"}},\"messages\":{\"consumption\":{\"payload\":{\"$ref\":\"#/components/schemas/consumption\"},\"schemaFormat\":\"application/vnd.aai.asyncapi+json;version=2.0.0\",\"contentType\":\"application/json\",\"examples\":[{\"payload\":{\"header\":{\"timestamp\":\"2021-04-20-11:28:47-UTC\"},\"body\":{\"fuel\":10,\"tyre\":1.8,\"battery\":2.4,\"oil\":90}}},{\"payload\":{\"header\":{\"timestamp\":\"2021-04-20-11:28:49-UTC\"},\"body\":{\"fuel\":10,\"tyre\":1.8,\"battery\":2.4,\"oil\":90}}}]}}},\"channels\":{\"apim/car-co/api/V1/json/{region_id}/{make}/{model}/{vin}/{event_type}\":{\"publish\":{\"summary\":\"subscribe to consumption events from vehicle\",\"description\":\"Consumption events are sent periodically.\\n\",\"operationId\":\"onConsumption\",\"bindings\":{\"mqtt\":{\"bindingVersion\":\"‘0.1.0’\",\"qos\":1},\"http\":{\"bindingVersion\":\"‘0.1.0’\",\"type\":\"request\",\"method\":\"POST\"}},\"message\":{\"$ref\":\"#/components/messages/consumption\"}},\"parameters\":{\"region_id\":{\"$ref\":\"#/components/parameters/region_id\"},\"make\":{\"$ref\":\"#/components/parameters/make\"},\"model\":{\"$ref\":\"#/components/parameters/model\"},\"vin\":{\"$ref\":\"#/components/parameters/vin\"},\"event_type\":{\"$ref\":\"#/components/parameters/event_type\"}}}},\"asyncapi\":\"2.0.0\",\"info\":{\"title\":\"API:Consumption\",\"description\":\"Subscribe to vehicle consumption event streams.\",\"x-view\":\"provider\",\"version\":\"0.0.1\",\"x-origin\":{\"vendor\":\"solace\",\"name\":\"apim-connector\"}}}",
+    "wsdlUri": null,
+    "lifeCycleStatus": "PUBLISHED",
+    "isDefaultVersion": false,
+    "type": "WEBSUB",
+    "transport": [
+        "http",
+        "https"
+    ],
+    "operations": [],
+    "authorizationHeader": "Authorization",
+    "securityScheme": [
+        "oauth2",
+        "oauth_basic_auth_api_key_mandatory"
+    ],
+    "tags": [],
+    "tiers": [
+        {
+            "tierName": "AsyncUnlimited",
+            "tierPlan": "FREE",
+            "monetizationAttributes": null
+        }
+    ],
+    "hasThumbnail": false,
+    "additionalProperties": [],
+    "monetization": {
+        "enabled": false
+    },
+    "endpointURLs": [
+        {
+            "environmentName": "apim-gw-dev",
+            "environmentDisplayName": "AWS APIM-GW-DEV FRANKFURT",
+            "environmentType": "hybrid",
+            "URLs": {
+                "http": "http:// /solaceapi/0.0.1",
+                "https": "https:// /solaceapi/0.0.1",
+                "ws": null,
+                "wss": null
+            },
+            "defaultVersionURLs": {
+                "http": null,
+                "https": null,
+                "ws": null,
+                "wss": null
+            }
+        }
+    ],
+    "businessInformation": {
+        "businessOwner": null,
+        "businessOwnerEmail": null,
+        "technicalOwner": null,
+        "technicalOwnerEmail": null
+    },
+    "environmentList": [],
+    "scopes": [],
+    "avgRating": "0.0",
+    "advertiseInfo": {
+        "advertised": false,
+        "apiExternalProductionEndpoint": null,
+        "apiExternalSandboxEndpoint": null,
+        "originalDevPortalUrl": null,
+        "apiOwner": "publisher",
+        "vendor": "WSO2"
+    },
+    "isSubscriptionAvailable": true,
+    "categories": [],
+    "keyManagers": [
+        "all"
+    ],
+    "createdTime": "2022-06-29 11:52:46.656",
+    "lastUpdatedTime": null,
+    "gatewayVendor": "solace",
+    "asyncTransportProtocols": [
+        "{\"protocol\":\"mqtt\",\"endPointUrl\":\"tcp://mr1j7v403y2qa9.messaging.solace.cloud:1883\"}",
+        "{\"protocol\":\"http\",\"endPointUrl\":\"http://mr1j7v403y2qa9.messaging.solace.cloud:9000\"}"
+    ]
+}

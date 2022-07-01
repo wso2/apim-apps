@@ -1,0 +1,17 @@
+{
+    "count": 2,
+    "list": [
+        {
+            "previousState": null,
+            "postState": "CREATED",
+            "user": "admin",
+            "updatedTime": "2022-07-01T10:58:46.156+05:30"
+        },
+        {
+            "previousState": "CREATED",
+            "postState": "PUBLISHED",
+            "user": "admin",
+            "updatedTime": "2022-07-01T10:59:12.521+05:30"
+        }
+    ]
+}

@@ -461,6 +461,7 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
 Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
 
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+    // cy.get('[aria-label="APIConsumption Thumbnail"]').click(); //delete this line after use
 
     //select streaming-api option from the menu item
     cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
@@ -488,43 +489,75 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get('[data-testid="HTTP-label"]').should('exist');
     cy.get('[data-testid="asyncapi-create-btn"]').click();
 
-    //Go to the topics section and check the topics
+    cy.intercept('GET','/api/am/publisher/v3/settings',{fixture : 'solaceEnvironmentResponse.json'}).as('getSettings');
+
+    //Check if runtime,resources,endpoints,localscopes,policies,monetization does not exist
     cy.get('[data-testid="itest-api-config"]', { timeout: 30000 }).click();
+    cy.get('#left-menu-itemRuntimeConfigurations').should('not.exist');
+    cy.get('#left-menu-itemresources').should('not.exist');
+    cy.get('#left-menu-itemendpoints').should('not.exist');
+    cy.get('#left-menu-itemLocalScopes').should('not.exist');
+    cy.get('#left-menu-itemPolicies').should('not.exist');
+    cy.get('#left-menu-itemMonetization').should('not.exist');
+
+    cy.get('#resources').should('not.exist');
+    cy.get('[data-testid="endpoints"]').should('not.exist');
+
+    //Go to the topics section and check the topics
     cy.get('#left-menu-itemtopics').click();
     cy.get('#panel2a-header h6').contains('apim/car-co/api/V1/json/{region_id}/{make}/{model}/{vin}/{event_type}').should('exist');
     cy.get('[data-testid="itest-api-config"]').click();
 
     //Check solace deployments and deploy
     cy.get('#left-menu-itemdeployments').click();
-    cy.get('[data-testid="solace"]').should('exist');
-    cy.get('[data-testid="solace-api-name"]').contains('AWS APIM-GW-DEV FRANKFURT').should('exist');
-    cy.get('[data-testid="api-env-name"] input').should('have.value','apim-gw-dev');
-    cy.get('[data-testid="api-org-name"] input').should('have.value','wso2dev');
-    cy.get('#deploy-btn-solace').click();
-    cy.wait(5000);
+    cy.wait('@getSettings', {timeout: 10000}).then(() => {
+        cy.get('[data-testid="solace"]').should('exist');
+        cy.get('[data-testid="solace-api-name"]').contains('AWS APIM-GW-DEV FRANKFURT').should('exist');
+        cy.get('[data-testid="api-env-name"] input').should('have.value','apim-gw-dev');
+        cy.get('[data-testid="api-org-name"] input').should('have.value','wso2dev');
+        cy.get('#deploy-btn-solace').click();
+    });
     
-    //Publish the solace api
+    cy.intercept('**/deploy-revision**',{statusCode:201,fixture : 'api_artifacts/solaceDeployedStatus.json'}).as('deployedStatus');
+    cy.intercept('/api/am/publisher/v3/apis/*/revisions**',{statusCode:200,fixture : 'api_artifacts/solaceDeployedQuery.json'}).as('deployedRevision');
+    cy.wait('@deployedStatus');
+    cy.wait('@deployedRevision');
+
+    //Check if requirements are correct
     cy.get('#left-menu-itemlifecycle').click();
     cy.get('[data-testid="business-plan-req"]').should('exist');
     cy.get('[data-testid="endpoint-req"]').should('not.exist');
-    cy.wait(5000);
-    cy.get('[data-testid="Publish-btn"]').click();
-
 })
 
 Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
-    cy.get('[data-testid="solace-label"]').should('exist');
-    cy.get('[area-label="Go to APIConsumption"]').click();
 
-    cy.get('#left-menu-overview').click();
-    cy.get('[data-testid="MQTT-label"]').should('exist');
-    cy.get('[data-testid="HTTP-label"]').should('exist');
-    cy.get('#left-menu-credentials').click();
-    cy.get('#subscribe-to-api-btn').click();
-    cy.get('#DefaultApplication-PK', { timeout: 30000 }).click();
-    cy.get('#generate-keys', { timeout: 30000 }).click();
+    cy.intercept('GET','/api/am/devportal/v2/apis?limit=10&offset=0',{fixture:'api_artifacts/publishedApis.json'}).as('publishedApis');
+    cy.intercept('GET','/api/am/devportal/v2/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e',{fixture:'api_artifacts/mockSolaceApi.json'}).as('mockSolaceApi');
+    cy.intercept('GET','/api/am/devportal/v2/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/ratings',{statusCode:200,fixture:'api_artifacts/solaceApiRatings.json'});
+    cy.intercept('GET','/api/am/devportal/v2/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/thumbnail',{statusCode:204});
+    cy.intercept('GET','/api/am/devportal/v2/subscriptions**',{fixture:'api_artifacts/solaceApiSubscriptionsOverview.json'}).as('solaceApiSubscriptionsOverview');
+    cy.intercept('GET','/api/am/devportal/v2/subscriptions?apiId=27dea111-28a9-44a5-a14d-87f6ca61bd2e&limit=25',{fixture:'api_artifacts/solaceApiSubscriptionsLimit25.json'}).as('solaceApiSubscriptionsLimit25');
+    cy.intercept('GET','/api/am/devportal/v2/subscriptions?apiId=27dea111-28a9-44a5-a14d-87f6ca61bd2e&limit=5000',{fixture:'api_artifacts/solaceApiSubscriptionsLimit5000.json'}).as('solaceApiSubscriptionsLimit5000');
+    cy.intercept('GET','/api/am/devportal/v2/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/comments**',{statusCode:200});
+    cy.intercept('GET','/api/am/devportal/v2/applications?limit=5000',{fixture:'api_artifacts/solaceApiApplications.json'});
+    cy.intercept('GET','/api/am/devportal/v2/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/documents',{fixture:'api_artifacts/solaceApiDocuments.json'});
+    cy.intercept('GET','/api/am/devportal/v2/settings',{fixture:'api_artifacts/solaceApiSettings.json'}).as('solaceApiSettings');
+    cy.intercept('GET','/api/am/devportal/v2/throttling-policies/subscription',{fixture:'api_artifacts/solaceApiThrottling.json'}).as('solaceApiThrottling');
 
-    
-    
+    cy.wait('@publishedApis',{ timeout:10000}).then(()=> {
+        cy.get('[data-testid="solace-label"]').should('exist');
+        cy.get('[area-label="Go to APIConsumption"]').click();
+    });
+    cy.wait('@mockSolaceApi',{ timeout:10000}).then(()=> {
+        cy.get('#left-menu-overview').click();
+        cy.get('[data-testid="MQTT-label"]').should('exist');
+        cy.get('[data-testid="HTTP-label"]').should('exist');
+    });
+
+    //Check if solace info menu exists
+    cy.get('#left-menu-solace-info').should('exist');
+    cy.get('#left-menu-definition').should('exist');
+    cy.get('#left-menu-test').should('not.exist');
+
 
 })

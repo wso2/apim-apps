@@ -1,0 +1,23 @@
+{
+    "count": 1,
+    "list": [
+        {
+            "applicationId": "5d277149-d777-4e61-a3bd-37cc9606c772",
+            "name": "DefaultApplication",
+            "throttlingPolicy": "Unlimited",
+            "description": "This is the default application",
+            "status": "APPROVED",
+            "groups": [],
+            "subscriptionCount": 1,
+            "attributes": {},
+            "owner": "admin"
+        }
+    ],
+    "pagination": {
+        "offset": 0,
+        "limit": 5000,
+        "total": 1,
+        "next": "",
+        "previous": ""
+    }
+}

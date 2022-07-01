@@ -1,0 +1,65 @@
+{
+    "count": 1,
+    "list": [
+        {
+            "subscriptionId": "86384697-c308-4796-84b6-9758f8b4760e",
+            "applicationId": "5d277149-d777-4e61-a3bd-37cc9606c772",
+            "apiId": "639208a7-503a-4ca7-a42c-9e0757a657b6",
+            "apiInfo": {
+                "id": "639208a7-503a-4ca7-a42c-9e0757a657b6",
+                "name": "APIConsumption",
+                "description": null,
+                "context": "/solaceapi",
+                "version": "0.0.1",
+                "type": "WEBSUB",
+                "createdTime": "1656483766656",
+                "provider": "publisher",
+                "lifeCycleStatus": "PUBLISHED",
+                "thumbnailUri": null,
+                "avgRating": "0.0",
+                "throttlingPolicies": [
+                    "AsyncUnlimited"
+                ],
+                "advertiseInfo": {
+                    "advertised": false,
+                    "apiExternalProductionEndpoint": null,
+                    "apiExternalSandboxEndpoint": null,
+                    "originalDevPortalUrl": null,
+                    "apiOwner": "publisher",
+                    "vendor": "WSO2"
+                },
+                "businessInformation": {
+                    "businessOwner": null,
+                    "businessOwnerEmail": null,
+                    "technicalOwner": null,
+                    "technicalOwnerEmail": null
+                },
+                "isSubscriptionAvailable": true,
+                "monetizationLabel": "FREE",
+                "gatewayVendor": "solace"
+            },
+            "applicationInfo": {
+                "applicationId": "5d277149-d777-4e61-a3bd-37cc9606c772",
+                "name": "DefaultApplication",
+                "throttlingPolicy": "Unlimited",
+                "description": "This is the default application",
+                "status": "APPROVED",
+                "groups": [],
+                "subscriptionCount": 0,
+                "attributes": {},
+                "owner": "admin"
+            },
+            "throttlingPolicy": "AsyncUnlimited",
+            "requestedThrottlingPolicy": "AsyncUnlimited",
+            "status": "UNBLOCKED",
+            "redirectionParams": null
+        }
+    ],
+    "pagination": {
+        "offset": 0,
+        "limit": 5000,
+        "total": 1,
+        "next": "",
+        "previous": ""
+    }
+}
