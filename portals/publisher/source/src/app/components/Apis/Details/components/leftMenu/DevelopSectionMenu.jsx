@@ -323,7 +323,7 @@ export default function DevelopSectionMenu(props) {
                                 route='policies'
                                 to={pathPrefix + 'policies'}
                                 Icon={<PoliciesIcon />}
-                                id='left-menu-itemPolicies'
+                                id='left-menu-policies'
                             />
                         )}
 

@@ -496,7 +496,7 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get('#left-menu-itemresources').should('not.exist');
     cy.get('#left-menu-itemendpoints').should('not.exist');
     cy.get('#left-menu-itemLocalScopes').should('not.exist');
-    cy.get('#left-menu-itemPolicies').should('not.exist');
+    cy.get('#left-menu-policies').should('not.exist');
     cy.get('#left-menu-itemMonetization').should('not.exist');
 
     cy.get('#resources').should('not.exist');
