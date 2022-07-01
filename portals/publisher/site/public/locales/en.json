@@ -4787,6 +4787,18 @@
       "value": "Production Endpoint"
     }
   ],
+  "Apis.Details.NewOverview.Endpoints.production.endpoint.security": [
+    {
+      "type": 0,
+      "value": "Production Endpoint Security"
+    }
+  ],
+  "Apis.Details.NewOverview.Endpoints.production.security.not.set": [
+    {
+      "type": 0,
+      "value": "-"
+    }
+  ],
   "Apis.Details.NewOverview.Endpoints.prototype.endpoint": [
     {
       "type": 0,
@@ -4799,7 +4811,19 @@
       "value": "Sandbox Endpoint"
     }
   ],
+  "Apis.Details.NewOverview.Endpoints.sandbox.endpoint.security": [
+    {
+      "type": 0,
+      "value": "Sandbox Endpoint Security"
+    }
+  ],
   "Apis.Details.NewOverview.Endpoints.sandbox.not.set": [
+    {
+      "type": 0,
+      "value": "-"
+    }
+  ],
+  "Apis.Details.NewOverview.Endpoints.sandbox.security.not.set": [
     {
       "type": 0,
       "value": "-"

@@ -54,6 +54,16 @@ function Endpoints(props) {
     const { parentClasses, api } = props;
     const isPrototypedAvailable = api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
+    const productionEndpointSecurity = api.endpointConfig && api.endpointConfig.endpoint_security
+        && api.endpointConfig.endpoint_security.production.type;
+    const sandboxEndpointSecurity = api.endpointConfig && api.endpointConfig.endpoint_security
+        && api.endpointConfig.endpoint_security.sandbox.type;
+    const authTypes = {
+        NONE: 'None',
+        BASIC: 'Basic Auth',
+        DIGEST: 'Digest Auth',
+        OAUTH: 'OAuth2',
+    };
 
     return (
         <>
@@ -161,32 +171,87 @@ function Endpoints(props) {
                                 </Typography>
                             </Grid>
                         )}
-                        <Grid item xs={12} md={6} lg={4}>
-                            {/* Sandbox Endpoint (TODO) fix the endpoint info when
-                                                it's available with the api object */}
-                            <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.NewOverview.Endpoints.endpoint.security'
-                                    defaultMessage='Endpoint Security'
-                                />
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={6} lg={8}>
-                            <Typography component='p' variant='body1'>
-                                {api.endpointSecurity && <>{api.endpointSecurity.type}</>}
-                            </Typography>
-                            <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
-                                {!api.endpointSecurity
-                                && (
-                                    <>
+                        {isPrototypedAvailable ? (
+                            <>
+                                <Grid item xs={12} md={6} lg={4}>
+                                    {/* Sandbox Endpoint (TODO) fix the endpoint info when
+                                                        it's available with the api object */}
+                                    <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                         <FormattedMessage
-                                            id='Apis.Details.NewOverview.Endpoints.security.not.set'
-                                            defaultMessage='-'
+                                            id='Apis.Details.NewOverview.Endpoints.endpoint.security'
+                                            defaultMessage='Endpoint Security'
                                         />
-                                    </>
-                                )}
-                            </Typography>
-                        </Grid>
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={8}>
+                                    <Typography component='p' variant='body1'>
+                                        {productionEndpointSecurity && <>{authTypes[productionEndpointSecurity]}</>}
+                                    </Typography>
+                                    <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
+                                        {!productionEndpointSecurity
+                                        && (
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Details.NewOverview.Endpoints.security.not.set'
+                                                    defaultMessage='-'
+                                                />
+                                            </>
+                                        )}
+                                    </Typography>
+                                </Grid>
+                            </>
+                        ) : (
+                            <>
+                                <Grid item xs={12} md={6} lg={4}>
+                                    <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                                        <FormattedMessage
+                                            id='Apis.Details.NewOverview.Endpoints.production.endpoint.security'
+                                            defaultMessage='Production Endpoint Security'
+                                        />
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={8}>
+                                    <Typography component='p' variant='body1'>
+                                        {productionEndpointSecurity && <>{authTypes[productionEndpointSecurity]}</>}
+                                    </Typography>
+                                    <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
+                                        {!productionEndpointSecurity
+                                        && (
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Details.NewOverview.Endpoints.production.security.not.set'
+                                                    defaultMessage='-'
+                                                />
+                                            </>
+                                        )}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={4}>
+                                    <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                                        <FormattedMessage
+                                            id='Apis.Details.NewOverview.Endpoints.sandbox.endpoint.security'
+                                            defaultMessage='Sandbox Endpoint Security'
+                                        />
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} md={6} lg={8}>
+                                    <Typography component='p' variant='body1'>
+                                        {sandboxEndpointSecurity && <>{authTypes[sandboxEndpointSecurity]}</>}
+                                    </Typography>
+                                    <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
+                                        {!sandboxEndpointSecurity
+                                        && (
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Details.NewOverview.Endpoints.sandbox.security.not.set'
+                                                    defaultMessage='-'
+                                                />
+                                            </>
+                                        )}
+                                    </Typography>
+                                </Grid>
+                            </>
+                        )}
                     </Grid>
                 )}
                 {api.advertiseInfo && api.advertiseInfo.advertised && (

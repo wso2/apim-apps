@@ -117,6 +117,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                                     isDragAccept ? classes.acceptDrop : null,
                                     isDragReject ? classes.rejectDrop : null,
                                 )}
+                                data-testid='file-drop-zone'
                             >
                                 {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                                 <input {...getInputProps()} />

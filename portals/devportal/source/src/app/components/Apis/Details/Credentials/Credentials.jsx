@@ -576,7 +576,7 @@ class Credentials extends React.Component {
                                 && api.advertiseInfo.originalDevPortalUrl && (
                                 <OriginalDevportalDetails
                                     classes={classes}
-                                    originalDevportalUrl={api.advertiseInfo.originalDevPortalUrl}
+                                    originalDevPortalUrl={api.advertiseInfo.originalDevPortalUrl}
                                 />
                             )}
                             {api.tiers.length > 0 ? (
