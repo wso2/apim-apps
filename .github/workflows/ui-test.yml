@@ -48,8 +48,8 @@ jobs:
       - name: Checkout Product-APIM
         uses: actions/checkout@v2
         with: 
-          repository: ${{ github.event.inputs.product_repo }}
-          ref: refs/heads/${{ github.event.inputs.product_branch }}
+          repository: wso2/product-apim
+          ref: refs/heads/master
           path: product-apim
       - name: Build Product-Apim with Maven
         run: mvn clean install -Dcarbon.apimgt.ui.version=$(cat ../APIM_APPS_VERSION_FILE) -fae --file product-apim/pom.xml -DskipBenchMarkTest=true -DskipIntegrationTests=true
