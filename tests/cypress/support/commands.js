@@ -461,7 +461,6 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
 Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
 
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-    // cy.get('[aria-label="APIConsumption Thumbnail"]').click(); //delete this line after use
 
     //select streaming-api option from the menu item
     cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
@@ -554,7 +553,8 @@ Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
         cy.get('[data-testid="HTTP-label"]').should('exist');
     });
 
-    //Check if solace info menu exists
+    //Check if solace info menu and definition menu exists
+    //Check if tryout does not exist
     cy.get('#left-menu-solace-info').should('exist');
     cy.get('#left-menu-definition').should('exist');
     cy.get('#left-menu-test').should('not.exist');
