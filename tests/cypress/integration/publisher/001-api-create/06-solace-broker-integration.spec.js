@@ -27,11 +27,11 @@ describe("Publish solace api", () => {
     const carbonPassword = 'admin';
 
     before(function () {
-        // cy.carbonLogin(carbonUsername, carbonPassword);
-        // cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], publisherPassword);
-        // cy.addNewUser(subscriber, ['Internal/subscriber','Internal/everyone'], subscriberPassword);
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], publisherPassword);
+        cy.addNewUser(subscriber, ['Internal/subscriber','Internal/everyone'], subscriberPassword);
         cy.loginToPublisher(publisher, publisherPassword);
-    })
+    });
 
     it.only("Solace broker integration", () => {
         cy.publishSolaceApi();
@@ -45,12 +45,13 @@ describe("Publish solace api", () => {
     after(function () {
         // Test is done. Now delete the api
         cy.loginToPublisher(publisher, publisherPassword);
-        cy.deleteApi('SolaceAPI', '1.0.0');
+        cy.deleteApi('APIConsumption', '0.0.1');
         cy.logoutFromPublisher();
+        cy.carbonLogin(carbonUsername, carbonPassword);
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        // cy.deleteUser(publisher);
-        // cy.deleteUser(subscriber);
+        cy.deleteUser(publisher);
+        cy.deleteUser(subscriber);
 
-    })
+    });
 });
 
