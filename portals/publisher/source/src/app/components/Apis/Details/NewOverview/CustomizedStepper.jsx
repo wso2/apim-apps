@@ -367,6 +367,7 @@ export default function CustomizedStepper() {
                                 size='small'
                                 variant='contained'
                                 color='primary'
+                                data-testid='publish-state-button'
                                 onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
                                 disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
                                     || (!isMutualSslOnly && !isTierAvailable))
