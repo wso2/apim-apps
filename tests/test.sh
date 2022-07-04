@@ -141,6 +141,7 @@ npm run delete:reportFolderHTML
 npm run delete:reportFolderJUnit
 npm run delete:reportFolderReport
 npm run pre-test
+sleep 5000
 npm run test
 npm run report:merge
 npm run report:generate
