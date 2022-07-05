@@ -86,4 +86,4 @@ jobs:
         if: always()
         with:
           name: server-logs
-          path: wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/repository/logs
+          path: wso2am-*/repository/logs
