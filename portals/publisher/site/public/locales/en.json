@@ -3237,6 +3237,12 @@
       "value": "Using stored AWS credentials"
     }
   ],
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.enableSTSAssumeRole": [
+    {
+      "type": 0,
+      "value": "Enable STS AssumeRole"
+    }
+  ],
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.linkToResources": [
     {
       "type": 0,
@@ -3249,6 +3255,24 @@
       "value": "Region"
     }
   ],
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.roleArn": [
+    {
+      "type": 0,
+      "value": "Role ARN"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.roleRegion": [
+    {
+      "type": 0,
+      "value": "Region"
+    }
+  ],
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.roleSessionName": [
+    {
+      "type": 0,
+      "value": "Role Session Name"
+    }
+  ],
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.secretKey": [
     {
       "type": 0,
@@ -3258,7 +3282,7 @@
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.tooltip": [
     {
       "type": 0,
-      "value": "You can and should use an IAM role to manage temporary credentials for applications that run on an EC2 instance"
+      "value": "You can and should use an IAM role to manage temporary credentials for applications that run on an AWS instance"
     }
   ],
   "Apis.Details.Endpoints.EndpointOverview.change.type.cancel": [
@@ -3403,6 +3427,12 @@
     {
       "type": 0,
       "value": "Endpoint Security User Name/ Password should not be empty"
+    }
+  ],
+  "Apis.Details.Endpoints.Endpoints.missing.stsAssumeRole.config": [
+    {
+      "type": 0,
+      "value": "Role ARN, Role Session Name and Region should not be empty"
     }
   ],
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.certificate.add.success": [
@@ -4569,6 +4599,12 @@
     {
       "type": 0,
       "value": "Error while retrieving certificates"
+    }
+  ],
+  "Apis.Details.LifeCycle.LifeCycleUpdate.reject.rejectStatus": [
+    {
+      "type": 0,
+      "value": "Lifecycle state change action rejected due to validation failure"
     }
   ],
   "Apis.Details.LifeCycle.LifeCycleUpdate.success.createStatus": [
