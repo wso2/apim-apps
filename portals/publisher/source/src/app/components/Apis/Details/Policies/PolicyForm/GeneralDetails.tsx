@@ -118,6 +118,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                     <TextField
                         fullWidth
                         id='name'
+                        data-testid='displayname'
                         name='displayName'
                         required
                         label={
@@ -150,6 +151,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                     />
                     <TextField
                         id='name'
+                        data-testid='description'
                         name='description'
                         label={
                             <>
@@ -213,6 +215,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             />
                                         }
                                         label='Request'
+                                        data-testid='request-flow'
                                     />
                                     <FormControlLabel
                                         control={
@@ -226,6 +229,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             />
                                         }
                                         label='Response'
+                                        data-testid='response-flow'
                                     />
                                     <FormControlLabel
                                         control={
@@ -240,6 +244,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             />
                                         }
                                         label='Fault'
+                                        data-testid='fault-flow'
                                     />
                                 </FormGroup>
                                 <FormHelperText>

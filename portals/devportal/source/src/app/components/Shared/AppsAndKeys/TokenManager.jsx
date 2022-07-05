@@ -340,7 +340,7 @@ class TokenManager extends React.Component {
      * load application key generation ui
      */
     loadApplication = () => {
-        const { keyType } = this.props;
+        const { keyType, intl } = this.props;
         if (this.appId) {
             const api = new API();
             const promisedKeyManagers = api.getKeyManagers();

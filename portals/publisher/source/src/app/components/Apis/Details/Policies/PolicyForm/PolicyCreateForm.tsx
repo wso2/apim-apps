@@ -254,7 +254,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     };
 
     return (
-        <Paper elevation={0} className={classes.root}>
+        <Paper elevation={0} className={classes.root} data-testid='create-policy-form'>
             {/* General details of policy */}
             <GeneralDetails
                 displayName={state.displayName}
@@ -280,7 +280,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 dispatch={dispatch}
                 isViewMode={false}
             />
-            <Box>
+            <Box data-testid='policy-add-btn-panel'>
                 <Button
                     variant='contained'
                     color='primary'

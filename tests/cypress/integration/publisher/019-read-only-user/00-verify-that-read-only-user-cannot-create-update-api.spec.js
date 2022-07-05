@@ -67,24 +67,27 @@ describe("Publisher Read-Only Mode", () => {
         cy.createResource('api','20KPerMin',"POST",'testuri','sampledesc','sample summary',false,'creatorscope','tname','Query','Number',true);
 
         //set policy
-        cy.get('#left-menu-policies',{timeout: 30000}).scrollIntoView().click(); 
-        const dataTransfer = new DataTransfer();
-        cy.contains('Add Header').trigger('dragstart',{
-            dataTransfer
-        });
-        cy.contains('Drag and drop policies here').trigger('drop', {
-            dataTransfer
-        });
-        cy.get('#headerName').type('Testing');
-        cy.get('#headerValue').type('abc');
-        cy.get('[data-testid="policy-attached-details-save"]').click();
-        cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
-        cy.timeout(3000);
+        cy.location('pathname').then((pathName) => {
+            const pathSegments = pathName.split('/');
+            const uuid = pathSegments[pathSegments.length - 2];
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
 
-        //add property
-        cy.get('#left-menu-itemproperties',{timeout: 30000}).scrollIntoView().click();
-        cy.addProperty("property1","value1",true);
-
+            const dataTransfer = new DataTransfer();
+            cy.contains('Add Header').trigger('dragstart',{
+                dataTransfer
+            });
+            cy.contains('Drag and drop policies here').trigger('drop', {
+                dataTransfer
+            });
+            cy.get('#headerName').type('Testing');
+            cy.get('#headerValue').type('abc');
+            cy.get('[data-testid="policy-attached-details-save"]').click();
+            cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
+            
+            //add property
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/properties`);
+            cy.addProperty("property1","value1",true);
+        });
         cy.logoutFromPublisher();
 
         //login to dev portal as Developer
@@ -233,7 +236,15 @@ describe("Publisher Read-Only Mode", () => {
         cy.get('table').get('tbody').get('[data-testid="MUIDataTableBodyRow-0"]').get('[data-testid="MuiDataTableBodyCell-4-0"]').get('[aria-label="Edit creatorscope"]').get('[aria-disabled="true"]').should('exist');
         cy.get('table').get('tbody').get('[data-testid="MUIDataTableBodyRow-0"]').get('[data-testid="MuiDataTableBodyCell-4-0"]').contains('button','Delete').should('be.disabled');
 
-        //12. Policies should be checked. for now cannot due to a UI bug
+        //12. Policies should be checked. (UI issue fixed by PR #11297 in carbon-apimgt)
+        cy.get("#left-menu-policies").click();
+        cy.get('[data-testid="add-new-api-specific-policy"]').click();
+        cy.get('[data-testid="create-policy-form"]').get('[data-testid="displayname"]').type("test name");
+        cy.get('[data-testid="create-policy-form"]').get('[data-testid="gateway-details-panel"]').get('[data-testid="file-drop-zone"]').then(function () {
+            cy.get('input[type="file"]').attachFile('api_artifacts/sampleAddHeader.j2');
+        });
+        cy.get('[data-testid="create-policy-form"]').get('[data-testid="policy-add-btn-panel"]').get('[data-testid="policy-create-save-btn"]').should('be.disabled');
+        cy.get('[data-testid="create-policy-form"]').get('[aria-label="Close"]').click();
 
         //13. monetization ,lifecycle menus are not visible to observer
         cy.get('[data-testid="left-menu-itemlifecycle"]').should('not.exist');
