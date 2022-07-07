@@ -19,6 +19,18 @@
 import Utils from "@support/utils";
 import 'cypress-file-upload';
 
+import AddNewRoleEnterDetailsPage from "./pages/carbon/AddNewRoleEnterDetailsPage";
+import AddNewRoleSelectPermissionPage from "./pages/carbon/AddNewRoleSelectPermissionPage";
+import ScopeAssignmentsPage from "./pages/adminPortal/ScopeAssignmentsPage";
+import UsersManagementPage from "./pages/carbon/UsersManagementPage";
+import RolesManagementPage from "./pages/carbon/RolesManagementPage";
+
+const usersManagementPage = new UsersManagementPage();
+const rolesManagementPage = new RolesManagementPage();
+const addNewRolePage = new AddNewRoleEnterDetailsPage();
+const selectPermission = new AddNewRoleSelectPermissionPage();
+const scopeAssignmentsPage = new ScopeAssignmentsPage();
+
 Cypress.Commands.add('carbonLogin', (username, password) => {
     Cypress.log({
         name: 'carbonLogin',
@@ -104,6 +116,8 @@ Cypress.Commands.add('addNewUser', (name = 'newuser', roles = [], password = 'te
     // Go to step 2 where add roles
     cy.url().should('contains', `${Utils.getAppOrigin()}/carbon/user/add-step2.jsp`);
     roles.forEach(role => {
+        cy.get('input[name="org.wso2.carbon.user.assign.filter"]').clear().type(role)
+        cy.get('input[value="Search Roles"]').click()
         cy.get(`input[value="${role}"][type="checkbox"]`).check();
     });
     // Finish wizard
@@ -885,3 +899,118 @@ Cypress.Commands.add('deleteApplication', (applicationName) => {
     cy.get('table').get('tbody').get(`[data-testid="row-${applicationName}"]`).find('td').eq(5).get(`[id="delete-${applicationName}-btn"]`).click();
     cy.get("#itest-confirm-application-delete").click();
 });
+
+Cypress.Commands.add('addNewRole', (roleName = 'newrole', domain = "PRIMARY", permissions = []) => {
+    cy.visit(`${Utils.getAppOrigin()}` + addNewRolePage.getUrl())
+
+    addNewRolePage.getDomainDropdown().select(domain)
+    addNewRolePage.getRoleNameTextBox().type(roleName)
+    addNewRolePage.getNextButton().click();
+
+    permissions.forEach(permission => {
+        selectPermission.getpermissionCheckboxOf(permission).click();
+    });
+
+    selectPermission.getFinishButton().click()
+    selectPermission.getMessageBoxInfo().should('have.text', `Role PRIMARY/${roleName} is added successfully.`)
+    selectPermission.getMessageBoxOkButton().click()
+})
+
+Cypress.Commands.add('deleteRole', (roleName) => {
+
+    cy.log(`Delete role ${roleName} ...`)
+    cy.visit(`${Utils.getAppOrigin()}` + rolesManagementPage.getUrl())
+
+    rolesManagementPage.getRoleNameTextBox().clear().type(roleName);
+    rolesManagementPage.getSearchRolesButton().click();
+    rolesManagementPage.getDeleteButtonOfRole(roleName).click()
+    rolesManagementPage.getDialogYesButton().click();
+    cy.wait(3000)
+    rolesManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
+    //cy.get('#messagebox-info p').contains(`User ${userNametoDelete} is deleted successfully.`).should('exist');
+    rolesManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
+})
+
+Cypress.Commands.add('searchAndDeleteRoleIfExist', (roleNameToDelete) => {
+    cy.visit(`${Utils.getAppOrigin()}` + rolesManagementPage.getUrl())
+    const WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR = 3000;
+    rolesManagementPage.getRoleNameTextBox().clear().type(roleNameToDelete);
+    rolesManagementPage.getSearchRolesButton().click();
+    var deleteMessageLog = "NA"
+    cy.wait(WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR)
+
+    cy.get("body").then(($body) => {
+        if ($body.find(rolesManagementPage.getNoMatchingRolesFoundDialogBox_MessageInfoDivSelectorOnly()).length > 0) {
+            deleteMessageLog = `User "${roleNameToDelete}" not exists may be already deleted`
+            cy.log(deleteMessageLog).then(() => {
+                return deleteMessageLog;
+            })
+        } else {
+            cy.deleteRole(roleNameToDelete)
+            deleteMessageLog = `User "${roleNameToDelete}" Deleted Successfully .... !`
+            cy.log(deleteMessageLog).then(() => {
+                return deleteMessageLog;
+            })
+        }
+        //customDeleteLog = "Whatx going on"
+    })
+})
+
+Cypress.Commands.add('addScopeMappingFromAPIMAdminPortal', (roleName, roleAlias) => {
+
+    cy.log(`Adding scope mapping ${roleName} ...`)
+    cy.visit(`${Utils.getAppOrigin()}` + scopeAssignmentsPage.getUrl())
+
+    scopeAssignmentsPage.getAddScopeMappingButton().should('have.text', "Add scope mappings").click()
+    scopeAssignmentsPage.getAddNewScopeRoleNameTextBox().type(roleName)
+    scopeAssignmentsPage.getAddNewScopeNextButton().should('have.text', "Next").click()
+
+    scopeAssignmentsPage.selectRoleAlias(roleAlias)
+    scopeAssignmentsPage.getAddNewScopeSavetButton().click()
+
+    scopeAssignmentsPage.getSearchTextBox().type(roleName)
+    // e.g. apicreatorInternal/creator
+    scopeAssignmentsPage.getRolesRecordOfTableRow(0).should('have.text', `${roleName}${roleAlias}`).click()
+
+})
+
+Cypress.Commands.add('deleteScopeMappingFromAPIMAdminPortal', (roleName) => {
+
+    cy.log(`Delete scope mapping ${roleName} ...`)
+    cy.visit(`${Utils.getAppOrigin()}` + scopeAssignmentsPage.getUrl())
+
+    scopeAssignmentsPage.getSearchTextBox().type(roleName)
+    cy.wait(1000)
+    scopeAssignmentsPage.getDeleteButtonOfTableRow(0).should('have.text', "Delete").click()
+    scopeAssignmentsPage.getDeleteButtonOfScopeAssignmentDialogOfRole(roleName).click()
+    // verify the delete either assert deelete tooltip or search and verify 0 result
+})
+
+Cypress.Commands.add('searchAndDeleteUserIfExist', (userNametoDelete) => {
+    cy.visit(`${Utils.getAppOrigin()}` + usersManagementPage.getUrl())
+    const WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR = 3000;
+    usersManagementPage.getEnterUsernameTextBox().clear().type(userNametoDelete)
+    usersManagementPage.getSearchUsershButton().click()
+    var deleteMessageLog = "NA"
+    cy.wait(WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR)
+
+    cy.get("body").then(($body) => {
+        if ($body.find(usersManagementPage.getNoMatchingUsersFoundDialogBox_MessageInfoDivSelectorOnly()).length > 0) {
+            deleteMessageLog = `User "${userNametoDelete}" not exists may be already deleted`
+            cy.log(deleteMessageLog).then(() => {
+                return deleteMessageLog;
+            })
+        } else {
+            usersManagementPage.getDeleteButtonOfUser(userNametoDelete).click();
+            usersManagementPage.getDeleteDialogYesButton().click();
+            cy.wait(WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR)
+            usersManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
+            //cy.get('#messagebox-info p').contains(`User ${userNametoDelete} is deleted successfully.`).should('exist');
+            usersManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
+            deleteMessageLog = `User "${userNametoDelete}" Deleted Successfully .... !`
+            cy.log(deleteMessageLog).then(() => {
+                return deleteMessageLog;
+            })
+        }
+    })
+})
