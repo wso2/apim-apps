@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="34.6120" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-06-10T10:47:46" tests="0" file="cypress/integration/admin/08-add-api-categories.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add API Categories and assign via publisher portal" timestamp="2022-06-10T10:47:46" tests="1" time="34.5660" failures="0">
-    <testcase name="Add API Categories and assign via publisher portal Add API Categories and assign via publisher portal" time="25.5690" classname="Add API Categories and assign via publisher portal">
-    </testcase>
-  </testsuite>
-</testsuites>

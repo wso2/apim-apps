@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="12.7750" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-06-10T10:47:14" tests="0" file="cypress/integration/admin/06-add-delete-black-list-policies.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add deny policies" timestamp="2022-06-10T10:47:14" tests="1" time="12.6970" failures="0">
-    <testcase name="Add deny policies Add deny policies" time="12.7040" classname="Add deny policies">
-    </testcase>
-  </testsuite>
-</testsuites>

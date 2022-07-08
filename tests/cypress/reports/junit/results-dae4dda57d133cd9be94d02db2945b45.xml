@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="12.3940" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-06-10T10:47:30" tests="0" file="cypress/integration/admin/07-add-scope-mapping.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add scope mapping" timestamp="2022-06-10T10:47:30" tests="1" time="12.3380" failures="0">
-    <testcase name="Add scope mapping Add scope mapping" time="12.3400" classname="Add scope mapping">
-    </testcase>
-  </testsuite>
-</testsuites>

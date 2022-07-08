@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="17.2480" tests="1" failures="0">
-  <testsuite name="Root Suite" timestamp="2022-06-10T10:46:53" tests="0" file="cypress/integration/admin/05-add-custom-throttle-policies.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Add custom throttle policies" timestamp="2022-06-10T10:46:53" tests="1" time="17.1900" failures="0">
-    <testcase name="Add custom throttle policies Add custom throttle policies" time="17.1940" classname="Add custom throttle policies">
-    </testcase>
-  </testsuite>
-</testsuites>
