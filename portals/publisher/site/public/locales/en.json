@@ -4571,6 +4571,12 @@
       "value": "Error while retrieving certificates"
     }
   ],
+  "Apis.Details.LifeCycle.LifeCycleUpdate.reject.rejectStatus": [
+    {
+      "type": 0,
+      "value": "Lifecycle state change action rejected due to validation failure"
+    }
+  ],
   "Apis.Details.LifeCycle.LifeCycleUpdate.success.createStatus": [
     {
       "type": 0,
