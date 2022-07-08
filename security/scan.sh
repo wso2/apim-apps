@@ -12,10 +12,11 @@
           git pull https://github.com/wso2/apim-apps.git
           echo "Done Pulling"
           snyk test --json-file-output="../../security/security-backend/resources/$1".json
-          git add "../../security/security-backend/resources/$1".json
-          git commit -m "Adding $1.json"
-          git push -u origin main
+          mkdir ../../temp/
+          cp ../../security/security-backend/resources/$1.json  ../../temp/
           git stash pop
+          cp ../../temp/$1.json ../../security/security-backend/resources/
+          rm -r  ../../temp
 
       else
           git stash
