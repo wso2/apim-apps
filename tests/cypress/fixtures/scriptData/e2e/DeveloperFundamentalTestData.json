@@ -5,5 +5,11 @@
   "newUserPublisher": "publisher",
   "newUserSubscriber": "subscriber",
   "newUserMike": "mike",
-  "newUserPassword": "password"
+  "newUserPassword": "password",
+  "PizzaShackApi": {
+    "name": "PizzaShack",
+    "context": "/pizzashack",
+    "version": "1.0.0",
+    "endpoint": "https://localhost:9443/am/sample/pizzashack/v1/api/"
+  }
 }
