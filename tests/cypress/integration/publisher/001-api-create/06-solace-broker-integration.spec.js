@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("Publish thirdparty api", () => {
+describe("Publish solace api", () => {
     const publisher = 'publisher';
     const publisherPassword = 'test123';
     const subscriber = 'subscriber';
@@ -31,13 +31,13 @@ describe("Publish thirdparty api", () => {
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], publisherPassword);
         cy.addNewUser(subscriber, ['Internal/subscriber','Internal/everyone'], subscriberPassword);
         cy.loginToPublisher(publisher, publisherPassword);
-    })
+    });
 
-    it.only("Publish thirdparty api", () => {
-        cy.publishThirdPartyApi();
+    it.only("Solace broker integration", () => {
+        cy.publishSolaceApi();
         cy.logoutFromPublisher();
         cy.loginToDevportal(subscriber, subscriberPassword);
-        cy.viewThirdPartyApi();
+        cy.viewSolaceApi();
         cy.logoutFromDevportal();
 
     });
@@ -45,13 +45,13 @@ describe("Publish thirdparty api", () => {
     after(function () {
         // Test is done. Now delete the api
         cy.loginToPublisher(publisher, publisherPassword);
-        cy.deleteApi('ThirdPartyAPI', '1.0.0');
+        cy.deleteApi('APIConsumption', '0.0.1');
         cy.logoutFromPublisher();
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(publisher);
         cy.deleteUser(subscriber);
 
-    })
+    });
 });
 

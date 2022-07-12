@@ -337,6 +337,7 @@ export default function ApiCreateAsyncAPI(props) {
                                         <Grid item xs={12} md={6} lg={9}>
                                             {apiInputs.asyncTransportProtocols.map((protocol) => (
                                                 <Chip
+                                                    data-testid={upperCaseString(protocol) + '-label'}
                                                     key={protocol}
                                                     label={upperCaseString(protocol)}
                                                     style={{
@@ -429,6 +430,7 @@ export default function ApiCreateAsyncAPI(props) {
                         <Grid item>
                             {wizardStep === 0 && (
                                 <Button
+                                    data-testid= 'next-btn'
                                     onClick={() => setWizardStep((step) => step + 1)}
                                     variant='contained'
                                     color='primary'
@@ -439,6 +441,7 @@ export default function ApiCreateAsyncAPI(props) {
                             )}
                             {wizardStep === 1 && (
                                 <Button
+                                    data-testid='asyncapi-create-btn'
                                     variant='contained'
                                     color='primary'
                                     disabled={!apiInputs.isFormValid || isCreating || !isValidExternalEndpoint}

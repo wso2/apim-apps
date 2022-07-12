@@ -1,0 +1,10 @@
+[
+	{
+		"revisionUuid":"6ae68c3a-53fe-496d-a936-47e86c25244a",
+		"name":"apim-gw-dev",
+		"vhost":" ",
+		"displayOnDevportal":true,
+		"deployedTime":1656330164000,
+		"successDeployedTime":null
+	}
+]
