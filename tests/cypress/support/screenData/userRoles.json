@@ -1,0 +1,10 @@
+{
+    "admin": "admin",
+    "Internal_creator": "Internal/creator",
+    "Internal_publisher": "Internal/publisher",
+    "Internal_integration_dev": "Internal/integration_dev",
+    "Internal_subscriber": "Internal/subscriber",
+    "Internal_devops": "Internal/devops",
+    "Internal_analytics": "Internal/analytics",
+    "Internal_observer": "Internal/observer"
+}

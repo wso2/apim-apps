@@ -1,0 +1,9 @@
+{
+  "apiCreatorUserRole": "apicreator",
+  "apiPublisherUserRole": "apipublisher",
+  "newUserCreator": "creator",
+  "newUserPublisher": "publisher",
+  "newUserSubscriber": "subscriber",
+  "newUserMike": "mike",
+  "newUserPassword": "password"
+}

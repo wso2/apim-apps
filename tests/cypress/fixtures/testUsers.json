@@ -1,0 +1,14 @@
+{
+    "carbonAdmin": {
+      "username": "admin",
+      "password": "admin"
+    },
+    "publisherAdmin": {
+      "username": "admin",
+      "password": "admin123"
+    },
+    "adminPortalAdmin": {
+      "username": "admin",
+      "password": "admin"
+    }
+  }
