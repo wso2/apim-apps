@@ -43,43 +43,15 @@ describe("Introduction : Defining Users and Roles", () => {
         cy.addNewRole(testData.apiPublisherUserRole,"PRIMARY",[permissions.AdminPermissions_Manage_API_Publish])
         cy.carbonLogout()
         cy.wait(1000)
-
-        // cy.log("##### Add Role Mapping in API Manager Admin #####")
-
-        // cy.log("Log into API Manager Admin portal ...")
-        // cy.loginToAdmin(testUsers.adminPortalAdmin.username,testUsers.adminPortalAdmin.password)
-
-        // cy.log(`Adding scope mapping ${apiCreaterUserRole} ...`)
-        // cy.addScopeMappingFromAPIMAdminPortal(apiCreaterUserRole,userRoles.Internal_creator)
-        
-        // cy.log(`Adding scope mapping ${apiPublisherUserRole} ...`)
-        // cy.addScopeMappingFromAPIMAdminPortal(apiPublisherUserRole,userRoles.Internal_publisher)
-
-        // cy.log("##### Define Users via the Carbon Admin Console #####")
-
-        // cy.carbonLogin(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
-        // cy.addNewUser(userCreater,["apicreator"],newUserPassword)
-        // cy.addNewUser(userPublisher,["apipublisher"],newUserPassword)
-        // cy.addNewUser(newUserSubscriber,[userRoles.Internal_subscriber],newUserPassword)
-        // cy.addNewUser(newUserMike,[],newUserPassword)
-        // cy.carbonLogout()
     })
 
     it("Add Role Mapping from APIM Admin", () => {
-       
-        //cy.log("Log into API Manager Admin portal ...")
         cy.loginToAdmin(testUsers.adminPortalAdmin.username,testUsers.adminPortalAdmin.password)
-
-        //cy.log(`Adding scope mapping ${testData.apiCreatorUserRole} ...`)
         cy.addScopeMappingFromAPIMAdminPortal(testData.apiCreatorUserRole,userRoles.Internal_creator)
-        
-        //cy.log(`Adding scope mapping ${testData.apiPublisherUserRole} ...`)
         cy.addScopeMappingFromAPIMAdminPortal(testData.apiPublisherUserRole,userRoles.Internal_publisher)
-
     })
 
     it("Define Users via the Carbon Admin Console", () => {
-
         cy.carbonLogin(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.addNewUser(testData.newUserCreator,[testData.apiCreatorUserRole],testData.newUserPassword)
         cy.addNewUser(testData.newUserPublisher,[testData.apiPublisherUserRole],testData.newUserPassword)
@@ -87,10 +59,7 @@ describe("Introduction : Defining Users and Roles", () => {
         cy.addNewUser(testData.newUserMike,[],testData.newUserPassword)
     })
 
-
     after("end of the script", () =>{
-        // delte 
         cy.log("End of the script")
-        //cy.log(testData.userCreater)
     })
 })
