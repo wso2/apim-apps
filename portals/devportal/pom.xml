@@ -26,6 +26,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <artifactId>org.wso2.carbon.apimgt.ui.devportal</artifactId>
+    <packaging>war</packaging>
     <name>WSO2 API Manager - Developer portal UI</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core UI components of API Manager Developer UI</description>
