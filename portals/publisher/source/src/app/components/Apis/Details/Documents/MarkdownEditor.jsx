@@ -33,6 +33,10 @@ import Api from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus , vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Configurations from 'Config';
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "MDMonacoEditor" */));
 const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
@@ -71,11 +75,16 @@ function Transition(props) {
 }
 
 function MarkdownEditor(props) {
+    const skipHtml = Configurations.app.markdown ? Configurations.app.markdown.skipHtml : true;
+    const markdownSyntaxHighlighterProps = Configurations.app.markdown ?
+        Configurations.app.markdown.syntaxHighlighterProps: {};
+    const syntaxHighlighterDarkTheme = Configurations.app.markdown ? 
+        Configurations.app.markdown.syntaxHighlighterDarkTheme: false;
     const { intl, showAtOnce, history } = props;
     const { api, isAPIProduct } = useContext(APIContext);
     const [isUpdating, setIsUpdating] = useState(false);
     const [open, setOpen] = useState(showAtOnce);
-    const [code, setCode] = useState(
+    const [docContent, setDocContent] = useState(
         intl.formatMessage({
             id: 'documents.markdown.editor.default',
             defaultMessage: '#Enter your markdown content',
@@ -90,16 +99,13 @@ function MarkdownEditor(props) {
         }
         setOpen(!open);
     };
-    const updateCode = newCode => {
-        setCode(newCode);
-    };
     const editorDidMount = (editor, monaco) => {
         editor.focus();
     };
     const addContentToDoc = () => {
         const restAPI = new Api();
         setIsUpdating(true);
-        const docPromise = restAPI.addInlineContentToDocument(api.id, props.docId, 'MARKDOWN', code);
+        const docPromise = restAPI.addInlineContentToDocument(api.id, props.docId, 'MARKDOWN', docContent);
         docPromise
             .then(doc => {
                 Alert.info(
@@ -128,7 +134,7 @@ function MarkdownEditor(props) {
         const docPromise = restAPI.getInlineContentOfDocument(api.id, props.docId);
         docPromise
             .then(doc => {
-                setCode(doc.text);
+                setDocContent(doc.text);
             })
             .catch(error => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -140,6 +146,20 @@ function MarkdownEditor(props) {
                 }
             });
     };
+    const addApiContent = (originalMarkdown) => {
+        if(originalMarkdown) {
+            let newMarkdown = originalMarkdown;
+            Object.keys(api).forEach((fieldName) => {
+                const regex = new RegExp('___' + fieldName + '___', 'g');
+                newMarkdown = newMarkdown.replace(regex, api[fieldName]);
+            });
+            return newMarkdown;
+        } else {
+            return '';
+        }
+    }
+
+    const markdownWithApiData = addApiContent(docContent);
 
     const { classes, docName } = props;
     return (
@@ -179,24 +199,47 @@ function MarkdownEditor(props) {
                 </Paper>
                 <div className={classes.splitWrapper}>
                     <Grid container spacing={7}>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} className='markdown-content-wrapper'>
                             <Suspense fallback={<CircularProgress />}>
                                 <MonacoEditor
                                     width="100%"
                                     height="100vh"
                                     language="markdown"
                                     theme="vs-dark"
-                                    value={code}
+                                    value={docContent}
                                     options={{ selectOnLineNumbers: true }}
-                                    onChange={updateCode}
+                                    onChange={setDocContent}
                                     editorDidMount={editorDidMount}
                                 />
                             </Suspense>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} className='markdown-content-wrapper'>
                             <div className={classes.markdownViewWrapper}>
                                 <Suspense fallback={<CircularProgress />}>
-                                    <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
+                                    <ReactMarkdown
+                                        skipHtml={skipHtml}
+                                        children={markdownWithApiData}
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            code({ node, inline, className, children, ...props }) {
+                                                const match = /language-(\w+)/.exec(className || '')
+                                                return !inline && match ? (
+                                                    <SyntaxHighlighter
+                                                        children={String(children).replace(/\n$/, '')}
+                                                        style={syntaxHighlighterDarkTheme ? vscDarkPlus : vs}
+                                                        language={match[1]}
+                                                        PreTag="div"
+                                                        {...props}
+                                                        {...markdownSyntaxHighlighterProps}
+                                                    />
+                                                ) : (
+                                                    <code className={className} {...props}>
+                                                        {children}
+                                                    </code>
+                                                )
+                                            }
+                                        }}
+                                    />                                
                                 </Suspense>
                             </div>
                         </Grid>

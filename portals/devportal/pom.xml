@@ -19,10 +19,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.wso2.carbon.apimgt.ui</groupId>
-    <artifactId>devportal</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <parent>
+        <groupId>org.wso2.carbon.apimgt.ui</groupId>
+        <artifactId>apim.ui.apps</artifactId>
+        <version>9.0.338-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
     <name>WSO2 API Manager - Developer portal UI</name>
     <url>http://wso2.org</url>

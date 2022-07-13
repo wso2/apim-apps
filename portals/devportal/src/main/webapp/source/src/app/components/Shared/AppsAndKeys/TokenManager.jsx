@@ -291,7 +291,7 @@ class TokenManager extends React.Component {
                 }
             });
         }
-        return isEnabled; 
+        return isEnabled;
     }
 
     handleTabChange = (event, newSelectedTab) => {
@@ -316,9 +316,9 @@ class TokenManager extends React.Component {
                     || selectedGrantsByDefault,
                 additionalProperties: additionalProperties || this.getDefaultAdditionalProperties(selectedKM),
             };
-            this.setState({ 
-                keyRequest: newRequest, 
-                selectedTab: newSelectedTab, 
+            this.setState({
+                keyRequest: newRequest,
+                selectedTab: newSelectedTab,
                 mode,
                 importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
             });
@@ -340,7 +340,7 @@ class TokenManager extends React.Component {
      * load application key generation ui
      */
     loadApplication = () => {
-        const { keyType } = this.props;
+        const { keyType, intl } = this.props;
         if (this.appId) {
             const api = new API();
             const promisedKeyManagers = api.getKeyManagers();
@@ -583,13 +583,13 @@ class TokenManager extends React.Component {
                 const { status } = error;
                 if (status === 404) {
                     this.setState({ notFound: true });
-                } 
+                }
                 Alert.error(error.description || intl.formatMessage({
                     id: 'Shared.AppsAndKeys.TokenManager.key.cleanup.error',
                     defaultMessage: 'Error occurred while cleaning up application keys',
                 }));
-                
-                
+
+
             });
     }
 
@@ -625,14 +625,18 @@ class TokenManager extends React.Component {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(error);
                 }
-                const { status } = error;
+                const { status, response } = error;
                 if (status === 404) {
                     this.setState({ notFound: true });
                 }
-                Alert.error(error.description || intl.formatMessage({
-                    id: 'Shared.AppsAndKeys.TokenManager.key.provide.error',
-                    defaultMessage: 'Error occurred when providing application keys',
-                }));
+                if (response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(error.description || intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.TokenManager.key.provide.error',
+                        defaultMessage: 'Error occurred when providing application keys',
+                    }));
+                }
             });
     }
 
@@ -919,7 +923,7 @@ class TokenManager extends React.Component {
                                                             onClick={
                                                                 key ? this.updateKeys : this.generateKeys
                                                             }
-                                                            disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation 
+                                                            disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation
                                                                 || (isKeyManagerAllowed
                                                                     && !isKeyManagerAllowed(keymanager.name)
                                                                     && ((keymanager.name !== 'Resident Key Manager')
@@ -1140,7 +1144,7 @@ class TokenManager extends React.Component {
                                                                     onClick={
                                                                         key ? this.updateKeys : this.generateKeys
                                                                     }
-                                                                 
+
                                                                 >
                                                                     {key ? 'Update keys' : 'Generate Keys'}
                                                                     {isLoading && <CircularProgress size={20}/>}
@@ -1160,7 +1164,7 @@ class TokenManager extends React.Component {
                                                                     color='primary'
                                                                     className={classes.button}
                                                                     onClick={key ? this.updateKeys : this.generateKeys}
-                        
+
                                                                 >
                                                                     {key ? 'Update' : 'Generate Keys'}
                                                                     {isLoading && <CircularProgress size={20}/>}

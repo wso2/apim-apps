@@ -19,68 +19,48 @@
 import Utils from "@support/utils";
 
 describe("Generate keys from api details page", () => {
-    const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
-    const developer = 'developer';
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
+    const { publisher, developer, password, } = Utils.getUserInfo();
+
     const apiVersion = '2.0.0';
-    const apiContext = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
-
-    before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
+    const apiName = Utils.generateName();
+    const apiContext = apiName;
+    let testApiId;
+    const appName = Utils.generateName();
     it.only("Generate keys from api details page", () => {
-
         cy.loginToPublisher(publisher, password);
-        cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
-        // TODO: Proper error handling here instead of cypress wait
-        cy.wait(3000);
-        cy.logoutFromPublisher();
-        cy.loginToDevportal(developer, password);
+        Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
+            testApiId = apiId;
+            Utils.publishAPI(apiId).then(() => {
+                // TODO: Proper error handling here instead of cypress wait
+                cy.logoutFromPublisher();
+                cy.loginToDevportal(developer, password);
 
-        // Create an app and subscribe
-        cy.createApp(appName, 'application description');
-        cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
-        cy.url().should('contain', '/apis?tenant=carbon.super');
-        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-        cy.get(`[title="${apiName}"]`).click();
-        cy.get('#left-menu-credentials').click();
+                // Create an app and subscribe
+                cy.createApp(appName, 'application description');
+                cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+                cy.url().should('contain', '/apis?tenant=carbon.super');
+                cy.get(`[title="${apiName}"]`, { timeout: 30000 });
+                cy.get(`[title="${apiName}"]`).click();
+                cy.get('#left-menu-credentials').click();
 
-        // Click and select the new application
-        cy.get('#application-subscribe').click();
-        cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
-        cy.get(`#subscribe-to-api-btn`).click();
-        cy.get(`#subscription-table td`).contains(appName).should('exist');
+                // Click and select the new application
+                cy.get('#application-subscribe').click();
+                cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
+                cy.get(`#subscribe-to-api-btn`).click();
+                cy.get(`#subscription-table td`).contains(appName).should('exist');
 
-        // Generate prod keys
-        cy.get(`#${appName}-PK`).click();
-        cy.get('#generate-keys').click();
-        cy.get('#consumer-key', {timeout: 30000});
-        cy.get('#consumer-key').should('exist');
+                // Generate prod keys
+                cy.get(`#${appName}-PK`).click();
+                cy.get('#generate-keys').click();
+                cy.get('#consumer-key', { timeout: 30000 });
+                cy.get('#consumer-key').should('exist');
+            })
+        })
 
-        
     })
 
     after(() => {
-        cy.get(`#${appName}-UN`).click();
-        cy.visit(`${Utils.getAppOrigin()}/devportal/applications?tenant=carbon.super`);
-        cy.get(`#delete-${appName}-btn`, {timeout: 30000});
-        cy.get(`#delete-${appName}-btn`).click();
-        cy.get(`#itest-confirm-application-delete`).click();
-
-        // Delete api
-        cy.logoutFromDevportal();
-        cy.loginToPublisher(publisher, password);
-        cy.deleteApi(apiName, apiVersion);
-
-         // delete users
-         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-         cy.deleteUser(developer);
-         cy.deleteUser(publisher);
+        cy.deleteApp(appName);
+        Utils.deleteAPI(testApiId);
     })
 })

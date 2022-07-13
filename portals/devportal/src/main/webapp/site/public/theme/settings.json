@@ -16,6 +16,13 @@
             "timeout": 4000
         },
         "propertyDisplaySuffix": "__display",
+        "markdown": {
+            "skipHtml": true,
+            "syntaxHighlighterProps": {
+                "showLineNumbers": false
+            },
+            "syntaxHighlighterDarkTheme": false
+        },
         "sanitizeHtml": {
             "allowedTags": false,
             "allowedAttributes": false

@@ -19,48 +19,35 @@
 import Utils from "@support/utils";
 
 describe("Add business information", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
-    const apiVersion = '1.0.0';
-
+    const { publisher, password, } = Utils.getUserInfo();
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
-
     it.only("Add business information", () => {
         const ownerName = 'Raccoon Panda';
         const ownerEmail = 'raccoon@wso2.com';
         const techOwnerName = 'Big Cat';
         const techOwnerEmail = 'bigcat@wso2.com';
 
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-portal-config-acc').click();
-        cy.get('#left-menu-itembusinessinfo').click();
-        cy.get('#name').click().type(ownerName);
-        cy.get('#Email').click().type(ownerEmail);
-        cy.get('#TOname').click().type(techOwnerName);
-        cy.get('#TOemail').click().type(techOwnerEmail);
+        Utils.addAPI({}).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-portal-config-acc').click();
+            cy.get('#left-menu-itembusinessinfo').click();
+            cy.get('#name').click().type(ownerName);
+            cy.get('#Email').click().type(ownerEmail);
+            cy.get('#TOname').click().type(techOwnerName);
+            cy.get('#TOemail').click().type(techOwnerEmail);
 
-        cy.get('#business-info-save').click();
+            cy.get('#business-info-save').click();
 
-        cy.get('#business-info-save').then(function () {
-            cy.get('#name').should('have.value', ownerName);
-            cy.get('#Email').should('have.value', ownerEmail);
-            cy.get('#TOname').should('have.value', techOwnerName);
-            cy.get('#TOemail').should('have.value', techOwnerEmail);
+            cy.get('#business-info-save').then(function () {
+                cy.get('#name').should('have.value', ownerName);
+                cy.get('#Email').should('have.value', ownerEmail);
+                cy.get('#TOname').should('have.value', techOwnerName);
+                cy.get('#TOemail').should('have.value', techOwnerEmail);
+            });
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
         });
     });
-
-    after(function () {
-          // Test is done. Now delete the api
-          cy.deleteApi(apiName, apiVersion);
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

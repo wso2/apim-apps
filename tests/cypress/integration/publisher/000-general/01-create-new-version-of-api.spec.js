@@ -19,39 +19,33 @@
 import Utils from "@support/utils";
 
 describe("Create a new version of API", () => {
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
     const newVersion = '2.0.0';
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, password} = Utils.getUserInfo();
+    let testApiId;
 
-    before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
     it.only("Create a new version of API", () => {
         cy.loginToPublisher(publisher, password);
-
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-
-        cy.get('#create-new-version-btn').click();
-        cy.get('#newVersion').type(newVersion);
-        cy.get('#createBtn').click();
-
-        // Validate
-        cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
-        cy.get('#itest-api-name-version').contains(`${apiName} :${apiVersion}`);
+        Utils.addAPI({name: apiName, version: apiVersion}).then((apiId) => {
+            testApiId = apiId;
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#create-new-version-btn').click();
+            cy.get('#newVersion').type(newVersion);
+            cy.intercept('**/apis/**').as('apiGet');
+            cy.get('#createBtn').click();
+            cy.wait('@apiGet', { timeout: 30000 }).then(() => {
+                // Validate
+                cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+                cy.get('#itest-api-name-version').contains(`${apiName} :${newVersion}`);
+            })
+        });
     });
 
     after(function () {
         // Test is done. Now delete the api
-        cy.deleteApi(apiName, apiVersion);
-        cy.deleteApi(apiName, newVersion);
-
-        // delete publisher user.
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
+        if (testApiId) {
+            Utils.deleteAPI(testApiId);
+        }
     })
 });

@@ -2154,6 +2154,9 @@
   "Apis.Details.LifeCycle.LifeCycleUpdate.error.certs": {
     "defaultMessage": "Error while retrieving certificates"
   },
+  "Apis.Details.LifeCycle.LifeCycleUpdate.reject.rejectStatus": {
+    "defaultMessage": "Lifecycle state change action rejected due to validation failure"
+  },
   "Apis.Details.LifeCycle.LifeCycleUpdate.success.createStatus": {
     "defaultMessage": "Lifecycle state change request has been sent"
   },
@@ -2262,13 +2265,25 @@
   "Apis.Details.NewOverview.Endpoints.production.endpoint": {
     "defaultMessage": "Production Endpoint"
   },
+  "Apis.Details.NewOverview.Endpoints.production.endpoint.security": {
+    "defaultMessage": "Production Endpoint Security"
+  },
+  "Apis.Details.NewOverview.Endpoints.production.security.not.set": {
+    "defaultMessage": "-"
+  },
   "Apis.Details.NewOverview.Endpoints.prototype.endpoint": {
     "defaultMessage": "Prototype Endpoint"
   },
   "Apis.Details.NewOverview.Endpoints.sandbox.endpoint": {
     "defaultMessage": "Sandbox Endpoint"
   },
+  "Apis.Details.NewOverview.Endpoints.sandbox.endpoint.security": {
+    "defaultMessage": "Sandbox Endpoint Security"
+  },
   "Apis.Details.NewOverview.Endpoints.sandbox.not.set": {
+    "defaultMessage": "-"
+  },
+  "Apis.Details.NewOverview.Endpoints.sandbox.security.not.set": {
     "defaultMessage": "-"
   },
   "Apis.Details.NewOverview.Endpoints.security.not.set": {

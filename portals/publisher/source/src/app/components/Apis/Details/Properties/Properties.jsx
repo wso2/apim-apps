@@ -773,6 +773,7 @@ function Properties(props) {
                                             || isRestricted(['apim:api_create', 'apim:api_publish'], api) ? (
                                                 <Button
                                                     id='save-api-properties'
+                                                    data-testid='save-api-properties-btn'
                                                     disabled
                                                     type='submit'
                                                     variant='contained'

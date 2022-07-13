@@ -1,0 +1,53 @@
+{
+    "subscriptionId": "86384697-c308-4796-84b6-9758f8b4760e",
+    "applicationId": "5d277149-d777-4e61-a3bd-37cc9606c772",
+    "apiId": "27dea111-28a9-44a5-a14d-87f6ca61bd2e",
+    "apiInfo": {
+        "id": "27dea111-28a9-44a5-a14d-87f6ca61bd2e",
+        "name": "APIConsumption",
+        "description": null,
+        "context": "/solaceapi",
+        "version": "0.0.1",
+        "type": "WEBSUB",
+        "createdTime": "1656483766656",
+        "provider": "publisher",
+        "lifeCycleStatus": "PUBLISHED",
+        "thumbnailUri": null,
+        "avgRating": "0.0",
+        "throttlingPolicies": [
+            "AsyncUnlimited"
+        ],
+        "advertiseInfo": {
+            "advertised": false,
+            "apiExternalProductionEndpoint": null,
+            "apiExternalSandboxEndpoint": null,
+            "originalDevPortalUrl": null,
+            "apiOwner": "publisher",
+            "vendor": "WSO2"
+        },
+        "businessInformation": {
+            "businessOwner": null,
+            "businessOwnerEmail": null,
+            "technicalOwner": null,
+            "technicalOwnerEmail": null
+        },
+        "isSubscriptionAvailable": true,
+        "monetizationLabel": "FREE",
+        "gatewayVendor": "solace"
+    },
+    "applicationInfo": {
+        "applicationId": "5d277149-d777-4e61-a3bd-37cc9606c772",
+        "name": "DefaultApplication",
+        "throttlingPolicy": "Unlimited",
+        "description": "This is the default application",
+        "status": "APPROVED",
+        "groups": [],
+        "subscriptionCount": 1,
+        "attributes": {},
+        "owner": "admin"
+    },
+    "throttlingPolicy": "AsyncUnlimited",
+    "requestedThrottlingPolicy": "AsyncUnlimited",
+    "status": "UNBLOCKED",
+    "redirectionParams": null
+}
