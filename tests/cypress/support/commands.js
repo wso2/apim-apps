@@ -116,8 +116,6 @@ Cypress.Commands.add('addNewUser', (name = 'newuser', roles = [], password = 'te
     // Go to step 2 where add roles
     cy.url().should('contains', `${Utils.getAppOrigin()}/carbon/user/add-step2.jsp`);
     roles.forEach(role => {
-        cy.get('input[name="org.wso2.carbon.user.assign.filter"]').clear().type(role)
-        cy.get('input[value="Search Roles"]').click()
         cy.get(`input[value="${role}"][type="checkbox"]`).check();
     });
     // Finish wizard
@@ -1114,4 +1112,24 @@ Cypress.Commands.add('searchAndDeleteUserIfExist', (userNametoDelete) => {
             })
         }
     })
+})
+
+Cypress.Commands.add('searchRolesAndAddNewUser', (name = 'newuser', roles = [], password = 'test123') => {
+    // Visit the add user page
+    cy.visit(`${Utils.getAppOrigin()}/carbon/user/add-step1.jsp`);
+    cy.get('input[name="username"]').type(name);
+    cy.get('#password').type(password);
+    cy.get('#password-repeat').type(password);
+    cy.get('.buttonRow input:first-child').click();
+
+    // Go to step 2 where add roles
+    cy.url().should('contains', `${Utils.getAppOrigin()}/carbon/user/add-step2.jsp`);
+    roles.forEach(role => {
+        cy.get('input[name="org.wso2.carbon.user.assign.filter"]').clear().type(role)
+        cy.get('input[value="Search Roles"]').click()
+        cy.get(`input[value="${role}"][type="checkbox"]`).check();
+    });
+    // Finish wizard
+    cy.get('.buttonRow input:first-child').click();
+    // cy.get('#messagebox-info p').contains(`User PRIMARY/${name} is added successfully.`).should('exist');
 })
