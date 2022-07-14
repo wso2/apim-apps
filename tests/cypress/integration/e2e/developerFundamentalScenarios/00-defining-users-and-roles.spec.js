@@ -53,10 +53,10 @@ describe("Introduction : Defining Users and Roles", () => {
 
     it("Define Users via the Carbon Admin Console", () => {
         cy.carbonLogin(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
-        cy.addNewUser(testData.newUserCreator,[testData.apiCreatorUserRole],testData.newUserPassword)
-        cy.addNewUser(testData.newUserPublisher,[testData.apiPublisherUserRole],testData.newUserPassword)
-        cy.addNewUser(testData.newUserSubscriber,[userRoles.Internal_subscriber],testData.newUserPassword)
-        cy.addNewUser(testData.newUserMike,[],testData.newUserPassword)
+        cy.searchRolesAndAddNewUser(testData.newUserCreator,[testData.apiCreatorUserRole],testData.newUserPassword)
+        cy.searchRolesAndAddNewUser(testData.newUserPublisher,[testData.apiPublisherUserRole],testData.newUserPassword)
+        cy.searchRolesAndAddNewUser(testData.newUserSubscriber,[userRoles.Internal_subscriber],testData.newUserPassword)
+        cy.searchRolesAndAddNewUser(testData.newUserMike,[],testData.newUserPassword)
     })
 
     after("end of the script", () =>{
