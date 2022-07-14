@@ -1,10 +1,10 @@
 {
-  "apiCreatorUserRole": "apicreator",
-  "apiPublisherUserRole": "apipublisher",
-  "newUserCreator": "creator",
-  "newUserPublisher": "publisher",
-  "newUserSubscriber": "subscriber",
-  "newUserMike": "mike",
+  "apiCreatorUserRole": "apicreatore2e",
+  "apiPublisherUserRole": "apipublishere2e",
+  "newUserCreator": "creatore2e",
+  "newUserPublisher": "publishere2e",
+  "newUserSubscriber": "subscribere2e",
+  "newUserMike": "mikee2e",
   "newUserPassword": "password",
   "PizzaShackApi": {
     "name": "PizzaShack",
