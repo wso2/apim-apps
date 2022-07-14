@@ -15,9 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import Utils from "@support/utils";
 class CreateRestAPIPage {
     getUrl(){
         return "/publisher/apis/create/rest";
+    }
+    visitAPIsPage(){
+        cy.visit(`${Utils.getAppOrigin()}` + this.getUrl())
     }
     getAPINameTextBox(){
         return cy.get('#itest-id-apiname-input')

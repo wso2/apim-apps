@@ -67,8 +67,10 @@ describe("Introduction : Create API from scratch and publish", () => {
         publisherApisPage.waitUntillPublisherLoadingSpinnerExit()
 
         // ### Adding the PizzaShack API to the Publisher
-        publisherApisPage.getCreateAPIButton().click()
-        publisherApisPage.getCreateAPIDialog_StartFromScratchLink().click()
+        // publisherApisPage.getCreateAPIButton().click()
+        // publisherApisPage.getCreateAPIDialog_StartFromScratchLink().click()
+        createRestAPIPage.visitAPIsPage()
+        cy.wait(5000)
 
         createRestAPIPage.getAPINameTextBox().type(testData.PizzaShackApi.name)
         createRestAPIPage.getAPIContextTextBox().type(testData.PizzaShackApi.context)
