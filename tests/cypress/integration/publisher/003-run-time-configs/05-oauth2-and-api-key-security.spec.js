@@ -15,47 +15,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import Utils from "@support/utils";
 
 describe("Runtime configuration", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
     beforeEach(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
-
     it.only("OAuth2 and api key security spec", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemRuntimeConfigurations').click();
-        cy.get('#applicationLevel').click();
-        // Checking the two options
-        cy.get('#api-security-basic-auth-checkbox').click();
-        cy.get('#api-security-api-key-checkbox').click();
-
-        cy.get('#save-runtime-configurations').click();
-        cy.get('#save-runtime-configurations').then(() => {
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemRuntimeConfigurations').click();
             cy.get('#applicationLevel').click();
-            cy.get('#api-security-basic-auth-checkbox').should('be.checked');
-            cy.get('#api-security-api-key-checkbox').should('be.checked');
-        })
+            // Checking the two options
+            cy.get('#api-security-basic-auth-checkbox').click();
+            cy.get('#api-security-api-key-checkbox').click();
+
+            cy.get('#save-runtime-configurations').click();
+            cy.get('#save-runtime-configurations').then(() => {
+                cy.get('#applicationLevel').click();
+                cy.get('#api-security-basic-auth-checkbox').should('be.checked');
+                cy.get('#api-security-api-key-checkbox').should('be.checked');
+            })
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-
-    after(function () {
-          // Test is done. Now delete the api
-          cy.deleteApi(apiName, apiVersion);
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

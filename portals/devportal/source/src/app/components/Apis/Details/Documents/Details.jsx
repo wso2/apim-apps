@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         position: 'fixed',
         width: '100%',
+        background: theme.palette.background.paper,
     },
     viewWrapper: {
         padding: theme.spacing(2),

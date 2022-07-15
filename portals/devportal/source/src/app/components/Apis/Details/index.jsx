@@ -518,6 +518,7 @@ class Details extends React.Component {
                                 iconText='test'
                                 to={pathPrefix + 'solaceTopicsInfo'}
                                 open={open}
+                                id='left-menu-solace-info'
                             />
                         )}
                         {isAsyncApi && showAsyncSpecification && (
@@ -532,6 +533,7 @@ class Details extends React.Component {
                                 iconText='Definition'
                                 to={pathPrefix + 'definition'}
                                 open={open}
+                                id='left-menu-definition'
                             />
                         )}
                         {showComments && (

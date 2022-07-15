@@ -19,56 +19,48 @@
 import Utils from "@support/utils";
 
 describe("Endpoint testing", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, password, } = Utils.getUserInfo();
+    const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
-        const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
-        cy.createAPIWithoutEndpoint();
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemendpoints').click();
-        cy.get('[data-testid="http/restendpoint-add-btn"]').click();
+        Utils.addAPI({}).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemendpoints').click();
+            cy.get('[data-testid="http/restendpoint-add-btn"]').click();
 
-        // Add the prod and sandbox endpoints
-        cy.get('#production-endpoint-checkbox').click();
-        cy.get('#sandbox-endpoint-checkbox').click();
-        cy.get('#production_endpoints').focus().type(endpoint);
-        cy.get('#sandbox_endpoints').focus().type(endpoint);
+            // Add the prod and sandbox endpoints
+            cy.get('#production-endpoint-checkbox').click();
+            cy.get('#sandbox-endpoint-checkbox').click();
+            cy.get('#production_endpoints').focus().type(endpoint);
+            cy.get('#sandbox_endpoints').focus().type(endpoint);
 
-        // failover
-        cy.get('#panel1bh-header').click();
-        cy.get('#certificateEndpoint').click();
-        cy.get('#config-type-failover').click();
-        
-        // add prod endpoints for failover
-        cy.get('#production_endpoints-failover').focus().type(endpoint);
-        cy.get('#production_endpoints-failover-add-btn').click();
+            // failover
+            cy.get('#panel1bh-header').click();
+            cy.get('#certificateEndpoint').click();
+            cy.get('#config-type-failover').click();
 
-        // add sandbox endpoints for failover
-        cy.get('#sandbox_endpoints-failover').focus().type(endpoint);
-        cy.get('#sandbox_endpoints-failover-add-btn').click();
-        // Save
-        cy.get('#endpoint-save-btn').click();
+            // add prod endpoints for failover
+            cy.get('#production_endpoints-failover').focus().type(endpoint);
+            cy.get('#production_endpoints-failover-add-btn').click();
 
-        // Check the values
-        cy.get('#production_endpoints').should('have.value', endpoint);
-        cy.get('#sandbox_endpoints').should('have.value', endpoint);
+            // add sandbox endpoints for failover
+            cy.get('#sandbox_endpoints-failover').focus().type(endpoint);
+            cy.get('#sandbox_endpoints-failover-add-btn').click();
+            // Save
+            cy.get('#endpoint-save-btn').click();
+
+            // Check the values
+            cy.get('#production_endpoints').should('have.value', endpoint);
+            cy.get('#sandbox_endpoints').should('have.value', endpoint);
+
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
+
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force:true});
-        cy.get(`#itest-id-deleteconf`).click();
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

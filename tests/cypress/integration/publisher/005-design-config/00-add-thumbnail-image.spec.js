@@ -15,51 +15,46 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+/*
+TODO
+The product is broken. we need to fix the product. This test case is ignored from cypress.json
+*/
 import Utils from "@support/utils";
 
 describe("Upload thumbnail", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
     it.only("Upload thumbnail", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-portal-config-acc').click();
-        cy.get('#left-menu-itemDesignConfigurations').click();
-        cy.get('#edit-api-thumbnail-btn').click();
-        cy.get('#edit-api-thumbnail-upload').click();
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
 
-        // upload the image
-        const filepath = 'api_artifacts/api-pic.jpg';
-        cy.get('input[type="file"]').attachFile(filepath);
-        cy.get('#edit-api-thumbnail-upload-btn').click();
+            cy.get('#itest-api-details-portal-config-acc').click();
+            cy.get('#left-menu-itemDesignConfigurations').click();
+            cy.get('#edit-api-thumbnail-btn').click();
+            cy.get('#edit-api-thumbnail-upload').click();
 
-        // Save
-        cy.get('#design-config-save-btn').click({force:true});
+            // upload the image
+            const filepath = 'api_artifacts/api-pic.jpg';
+            cy.get('input[type="file"]').attachFile(filepath);
+            cy.get('#edit-api-thumbnail-upload-btn').click();
 
-        // Validate
-        cy.get('[alt="API Thumbnail"]', { timeout: 30000 })
-            .should('be.visible')
-            .and(($img) => {
-                // "naturalWidth" and "naturalHeight" are set when the image loads
-                expect($img[0].naturalWidth).to.be.greaterThan(0)
-            })
+            // Save
+            cy.get('#design-config-save-btn').click({ force: true });
+
+            // Validate
+            cy.get('[alt="API Thumbnail"]', { timeout: 30000 })
+                .should('be.visible')
+                .and(($img) => {
+                    // "naturalWidth" and "naturalHeight" are set when the image loads
+                    expect($img[0].naturalWidth).to.be.greaterThan(0)
+                })
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-          // Test is done. Now delete the api
-          cy.deleteApi(apiName, apiVersion);
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

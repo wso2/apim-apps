@@ -17,26 +17,12 @@
 import Utils from "@support/utils";
 
 describe("Create websocket api - super tenant", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`
-
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.reload();
-        cy.carbonLogout();
-    })
-
+    const { publisher, password, tenantUser, tenant, } = Utils.getUserInfo();
+    
     const websocketApiCreate = () => {
         const random_number = Math.floor(Date.now() / 1000);
-        const randomName = `sample_api_${random_number}`;
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        // select the option from the menu item
-        cy.get('#itest-streaming-api-create-menu').click();
-        cy.get('#itest-id-create-streaming-api-ws').click();
+        const randomName = Utils.generateName();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/streamingapi/ws`);
 
         // Filling the form
         cy.get('#itest-id-apiname-input').type(randomName);
@@ -47,15 +33,23 @@ describe("Create websocket api - super tenant", () => {
         cy.get('#itest-id-apiendpoint-input').click();
         cy.get('#itest-id-apiendpoint-input').type('wss://www.example.com/socketserver');
         // Saving the form
+
+
+        cy.intercept('**/apis/**').as('apiGet');
+        // finish the wizard
         cy.get('[data-testid="itest-create-streaming-api-button"]').click();
+        cy.wait('@apiGet', { timeout: 30000 }).then((data) => {
+            // validate
+            //Checking the version in the overview
+            cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+            cy.get('#itest-api-name-version').contains(`v${random_number}`);
 
-        //Checking the version in the overview
-        cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
-        cy.get('#itest-api-name-version').contains(`v${random_number}`);
+            // Test is done. Now delete the api
+            const apiId = data.response.body.id;
+            Utils.deleteAPI(apiId);
+        });
 
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force: true});
-        cy.get(`#itest-id-deleteconf`).click();
+
     }
     it("Create websocket API from url", () => {
         cy.loginToPublisher(publisher, password);
@@ -63,19 +57,8 @@ describe("Create websocket api - super tenant", () => {
     });
 
     it("Create websocket API from url - tenant user", () => {
-        const tenant = 'wso2.com';
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewTenantUser(tenantUser);
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
         websocketApiCreate();
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(tenantUser);
-        cy.carbonLogout();
     });
 
-    after(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 })

@@ -1,0 +1,7 @@
+{
+    "AdminPermissions_Configure_Governance": "td[id=\"ygtvcheck34\"] div.ygtvspacer",
+    "AdminPermissions_Configure_Login": "td[id=\"ygtvcheck48\"] div.ygtvspacer",
+    "AdminPermissions_Manage_API_Create": "td[id=\"ygtvcheck265\"] div.ygtvspacer",
+    "AdminPermissions_Manage_API_Publish": "td[id=\"ygtvcheck266\"] div.ygtvspacer",
+    "AdminPermissions_Manage_Resource_Govern": "td[id=\"ygtvcheck85\"] div.ygtvspacer"
+}

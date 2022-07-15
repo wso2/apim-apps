@@ -362,7 +362,7 @@ function Overview() {
     if (overviewDocOverride) {
         return (
             <>
-                <Paper className={classes.paperWithDoc}>
+                <Paper className={classes.paperWithDoc} elevation={0}>
                     <View doc={overviewDocOverride} apiId={api.id} fullScreen dontShowName />
                 </Paper>
             </>

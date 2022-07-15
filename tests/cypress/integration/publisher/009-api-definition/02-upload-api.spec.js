@@ -17,52 +17,42 @@
 import Utils from "@support/utils";
 
 describe("Upload api spec from the api definition page", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
-
     it.only("Upload api spec from the api definition page", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemAPIdefinition').click();
-        cy.get('#import-definition-btn').click();
-        cy.get('#open-api-file-select-radio').click();
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemAPIdefinition').click();
+            cy.get('#import-definition-btn').click();
+            cy.get('#open-api-file-select-radio').click();
 
-        // upload the swagger
-        cy.get('#browse-to-upload-btn').then(function () {
-            const filepath = 'api_artifacts/petstore_open_api_3.json'
-            cy.get('input[type="file"]').attachFile(filepath);
-        });
+            // upload the swagger
+            cy.get('#browse-to-upload-btn').then(function () {
+                const filepath = 'api_artifacts/petstore_open_api_3.json'
+                cy.get('input[type="file"]').attachFile(filepath);
+            });
 
-        // provide the swagger url
-        cy.get('#import-open-api-btn').click();
+            // provide the swagger url
+            cy.get('#import-open-api-btn').click();
 
-        // Wait until the api is saved
-        cy.intercept('**/apis/**').as('apiGet');
-        cy.wait('@apiGet', {timeout: 3000}).then((res) => {
-            // Check the resource exists
-            const uuid =  res.response.body.id
-            
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/resources`, {timeout: 30000});
-            cy.get('#\\/pets\\/\\{petId\\}', { timeout: 30000 }).scrollIntoView();
-            cy.get('#\\/pets\\/\\{petId\\}').should('be.visible');
+            // Wait until the api is saved
+            cy.intercept('**/apis/**').as('apiGet');
+            cy.wait('@apiGet', { timeout: 3000 }).then((res) => {
+                // Check the resource exists
+                const uuid = res.response.body.id
+
+                cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/resources`, { timeout: 30000 });
+                cy.get('#\\/pets\\/\\{petId\\}', { timeout: 30000 }).scrollIntoView();
+                cy.get('#\\/pets\\/\\{petId\\}').should('be.visible');
+            });
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
         });
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.deleteApi(apiName, apiVersion);
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

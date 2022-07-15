@@ -1,0 +1,22 @@
+{
+    "state": "Published",
+    "checkItems": [],
+    "availableTransitions": [
+        {
+            "event": "Block",
+            "targetState": ""
+        },
+        {
+            "event": "Deploy as a Prototype",
+            "targetState": ""
+        },
+        {
+            "event": "Demote to Created",
+            "targetState": ""
+        },
+        {
+            "event": "Deprecate",
+            "targetState": ""
+        }
+    ]
+}

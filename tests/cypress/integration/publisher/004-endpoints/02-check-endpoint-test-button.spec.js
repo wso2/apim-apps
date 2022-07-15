@@ -19,14 +19,9 @@
 import Utils from "@support/utils";
 
 describe("Check endpoint test button", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, password, } = Utils.getUserInfo();
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
@@ -35,40 +30,36 @@ describe("Check endpoint test button", () => {
         const endpoint400 = 'https://petstore.swagger.io/v2/store/inventory/7777777'; //404 Not Found
         const endpointUnknown = 'http://bull-8772776363-url.foo123'; // Unknown Host
         const endpointNoProtocol = 'bullproto://'; // unknown protocol: bullproto
-        cy.createAPIWithoutEndpoint();
+        Utils.addAPI({}).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
 
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemendpoints').click();
-        cy.get('[data-testid="http/restendpoint-add-btn"]').click();
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemendpoints').click();
+            cy.get('[data-testid="http/restendpoint-add-btn"]').click();
 
-        // Add the prod and sandbox endpoints
-        cy.get('#production-endpoint-checkbox').click();
+            // Add the prod and sandbox endpoints
+            cy.get('#production-endpoint-checkbox').click();
 
-        // endpoint-test-icon
-        cy.get('#production_endpoints').focus().type(endpoint200);
-        cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
-        cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', '200 OK');
+            // endpoint-test-icon
+            cy.get('#production_endpoints').focus().type(endpoint200);
+            cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
+            cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', '200 OK');
 
-         // endpoint-test-icon
-         cy.get('#production_endpoints').focus().clear().type(endpoint400);
-         cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
-         cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', '404 Not Found');
- 
-        cy.get('#production_endpoints').focus().clear().type(endpointUnknown);
-        cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
-        cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', 'Unknown Host');
+            // endpoint-test-icon
+            cy.get('#production_endpoints').focus().clear().type(endpoint400);
+            cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
+            cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', '404 Not Found');
 
-        cy.get('#production_endpoints').focus().clear().type(endpointNoProtocol);
-        cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
-        cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', 'unknown protocol: bullproto');
+            cy.get('#production_endpoints').focus().clear().type(endpointUnknown);
+            cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
+            cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', 'Unknown Host');
+
+            cy.get('#production_endpoints').focus().clear().type(endpointNoProtocol);
+            cy.get('#production_endpoints-endpoint-test-icon-btn').trigger("click");
+            cy.get('#production_endpoints-endpoint-test-status', { timeout: 30000 }).should('have.text', 'unknown protocol: bullproto');
+
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force:true});
-        cy.get(`#itest-id-deleteconf`).click();
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

@@ -209,11 +209,13 @@ export default function ProvideAsyncAPI(props) {
                             onChange={(event) => inputsDispatcher({ action: 'inputType', value: event.target.value })}
                         >
                             <FormControlLabel
+                                data-testid='input-asyncapi-url'
                                 value={ProvideAsyncAPI.INPUT_TYPES.URL}
                                 control={<Radio color='primary' />}
                                 label='AsyncAPI URL'
                             />
                             <FormControlLabel
+                                data-testid='input-asyncapi-file'
                                 value={ProvideAsyncAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
                                 label='AsyncAPI File'
@@ -280,6 +282,7 @@ export default function ProvideAsyncAPI(props) {
                                                 values={{ break: <br /> }}
                                             />,
                                             <Button
+                                                data-testid='upload-api-file'
                                                 color='primary'
                                                 variant='contained'
                                             >
@@ -322,6 +325,7 @@ export default function ProvideAsyncAPI(props) {
                 { gatewayVendor === 'solace' && (
                     <Grid item xs={10} md={11}>
                         <Chip
+                            data-testid='solace-api-label'
                             label='Identified as Solace Event Portal API'
                             icon={<CheckCircleSharpIcon style={{ color: 'green' }} />}
                             variant='outlined'

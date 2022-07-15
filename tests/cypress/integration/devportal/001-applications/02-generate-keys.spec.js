@@ -17,35 +17,14 @@
 import Utils from "@support/utils";
 
 describe("Application tests", () => {
-    const appName = 'keygenapplication' + Math.floor(Date.now() / 1000);
-    const appDescription = 'Key gen application description';
-    const developer = 'developer';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { developer, password } = Utils.getUserInfo();
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-    })
-   
+    const appName = Utils.generateName();
+    const appDescription = 'Key gen application description';
+
     it.only("Generate and update application production and sandbox keys, show hide keys", () => {
         cy.loginToDevportal(developer, password);
-        cy.visit(`${Utils.getAppOrigin()}/devportal/applications/create?tenant=carbon.super`);
-
-        // Filling the form
-        cy.get('#application-name')
-            .dblclick()
-            .type(appName);
-        cy.get('#application-description')
-            .click()
-            .type('{backspace}')
-            .type(appDescription);
-        cy.get('#itest-application-create-save').click();
-
-        // Checking the app name exists in the overview page.
-        cy.url().should('contain', '/overview');
-        cy.get('#itest-info-bar-application-name').contains(appName).should('exist');
+        cy.createApp(appName, appDescription);
 
         // Generating keys production
         cy.get('#production-keys-oauth').click();
@@ -90,16 +69,9 @@ describe("Application tests", () => {
         cy.get('#visibility-toggle-btn').click();
         cy.get('#consumer-secret').should('have.attr', 'type', 'text');
         cy.contains('visibility_off').should('be.visible');
-
     })
 
     after(() => {
-        cy.visit(`${Utils.getAppOrigin()}/devportal/applications?tenant=carbon.super`);
-        cy.get(`#delete-${appName}-btn`, {timeout: 30000});
-        cy.get(`#delete-${appName}-btn`).click();
-        cy.get(`#itest-confirm-application-delete`).click();
-        // delete developer
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(developer);
+       cy.deleteApp(appName);
     })
 })

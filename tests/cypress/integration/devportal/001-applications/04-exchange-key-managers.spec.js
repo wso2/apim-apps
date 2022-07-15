@@ -17,13 +17,11 @@
 import Utils from "@support/utils";
 
 describe("Developer portal smoke tests", () => {
-    const username = 'admin'
-    const password = 'admin'
-    beforeEach(function () {
-        // login before each test
-        cy.loginToDevportal(username, password)
-    })
+    const { carbonUsername, carbonPassword } = Utils.getUserInfo();
+
     it.only("Exchange grant UI Test", () => {
+        cy.loginToDevportal(carbonUsername, carbonPassword)
+
         cy.intercept("GET", "/api/am/devportal/v2/applications?sortBy=name&sortOrder=asc&limit=10&offset=0",
             {fixture: 'applicationsList.json'});
         cy.visit(`${Utils.getAppOrigin()}/devportal`);

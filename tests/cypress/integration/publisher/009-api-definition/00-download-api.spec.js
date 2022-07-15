@@ -19,40 +19,30 @@
 import Utils from "@support/utils";
 
 describe("Api Definition", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'definitionApi';
-    const apiVersion = '1.0';
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
+    const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it.only("Download api", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemAPIdefinition').click();
-        cy.get('#download-api-btn').click();
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemAPIdefinition').click();
+            cy.get('#download-api-btn').click();
 
-        // Downloading API
-        const fileName = `${publisher}-${apiName}-${apiVersion}`;
-        const downloadsFolder = Cypress.config('downloadsFolder')
-        const downloadedFilename = `${downloadsFolder}/${fileName}.zip`;
+            // Downloading API
+            const fileName = `${publisher}-${apiName}-${apiVersion}`;
+            const downloadsFolder = Cypress.config('downloadsFolder')
+            const downloadedFilename = `${downloadsFolder}/${fileName}.zip`;
 
-        cy.readFile(downloadedFilename, 'binary', { timeout: 15000 })
-            .should(buffer => expect(buffer.length).to.be.gt(100));
+            cy.readFile(downloadedFilename, 'binary', { timeout: 15000 })
+                .should(buffer => expect(buffer.length).to.be.gt(100));
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click();
-        cy.get(`#itest-id-deleteconf`).click();
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

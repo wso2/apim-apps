@@ -1,0 +1,24 @@
+{
+	"count":1,
+	"list":[
+		{
+			"displayName":"Revision 1",
+			"id":"e1e98989-e6c2-4fb1-9887-a1973dd3a7d5",
+			"description":"",
+			"createdTime":1656398683000,
+			"apiInfo":{
+				"id":"fb95da9d-cad1-4253-9273-84ed09587212"
+			},
+			"deploymentInfo":[
+				{
+					"revisionUuid":"e1e98989-e6c2-4fb1-9887-a1973dd3a7d5",
+					"name":"apim-gw-dev",
+					"vhost":" ",
+					"displayOnDevportal":true,
+					"deployedTime":1656398683000,
+					"successDeployedTime":null
+				}
+			]
+		}
+	]
+}

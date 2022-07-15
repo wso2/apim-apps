@@ -2154,6 +2154,9 @@
   "Apis.Details.LifeCycle.LifeCycleUpdate.error.certs": {
     "defaultMessage": "Error while retrieving certificates"
   },
+  "Apis.Details.LifeCycle.LifeCycleUpdate.reject.rejectStatus": {
+    "defaultMessage": "Lifecycle state change action rejected due to validation failure"
+  },
   "Apis.Details.LifeCycle.LifeCycleUpdate.success.createStatus": {
     "defaultMessage": "Lifecycle state change request has been sent"
   },

@@ -19,14 +19,9 @@
 import Utils from "@support/utils";
 
 describe("Add security to the endpoint", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, password, } = Utils.getUserInfo();
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
@@ -34,44 +29,37 @@ describe("Add security to the endpoint", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         const usernameLocal = 'admin';
         const passwordLocal = 'admin';
-        cy.createAPIWithoutEndpoint();
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemendpoints').click();
-        cy.get('[data-testid="http/restendpoint-add-btn"]').click();
+        Utils.addAPI({}).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemendpoints').click();
+            cy.get('[data-testid="http/restendpoint-add-btn"]').click();
 
-        // Add the prod and sandbox endpoints
-        cy.get('#production-endpoint-checkbox').click();
-        cy.get('#production_endpoints').focus().type(endpoint);
-
-
-        cy.get('#production_endpoints-endpoint-security-icon-btn').trigger('click');
-        cy.get('#mui-component-select-key').click();
-        cy.get('#auth-type-BASIC').click();
-        cy.get('#auth-userName').click();
-        cy.get('#auth-userName').type(usernameLocal);
-        cy.get('#auth-password').click();
-        cy.get('#auth-password').type(passwordLocal);
-
-        // Save the security form
-        cy.get('#endpoint-security-submit-btn').click();
-
-        // Save the endpoint
-        cy.get('#endpoint-save-btn').click();
-
-        // Check the values
-        cy.get('#production_endpoints-endpoint-security-icon-btn').trigger('click');
-        cy.get('#auth-userName').should('have.value', usernameLocal);
-        cy.get('#auth-password').should('have.value', passwordLocal);
+            // Add the prod and sandbox endpoints
+            cy.get('#production-endpoint-checkbox').click();
+            cy.get('#production_endpoints').focus().type(endpoint);
 
 
+            cy.get('#production_endpoints-endpoint-security-icon-btn').trigger('click');
+            cy.get('#mui-component-select-key').click();
+            cy.get('#auth-type-BASIC').click();
+            cy.get('#auth-userName').click();
+            cy.get('#auth-userName').type(usernameLocal);
+            cy.get('#auth-password').click();
+            cy.get('#auth-password').type(passwordLocal);
+
+            // Save the security form
+            cy.get('#endpoint-security-submit-btn').click();
+
+            // Save the endpoint
+            cy.get('#endpoint-save-btn').click();
+
+            // Check the values
+            cy.get('#production_endpoints-endpoint-security-icon-btn').trigger('click');
+            cy.get('#auth-userName').should('have.value', usernameLocal);
+            cy.get('#auth-password').should('have.value', passwordLocal);
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-        // Test is done. Now delete the api
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force:true});
-        cy.get(`#itest-id-deleteconf`).click();
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

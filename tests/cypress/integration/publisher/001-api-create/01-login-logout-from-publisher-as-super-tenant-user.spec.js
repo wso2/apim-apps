@@ -19,9 +19,7 @@
 import Utils from "@support/utils";
 
 describe("Login logout from publisher as supper tenant", () => {
-    const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`
-    const carbonUsername = 'admin'
-    const carbonPassword = 'admin'
+    const { password, carbonUsername, carbonPassword, tenantUser, tenant, } = Utils.getUserInfo();
 
     it.only("Login and logout from publisher", () => {
         cy.loginToPublisher(carbonUsername, carbonPassword);
@@ -33,25 +31,11 @@ describe("Login logout from publisher as supper tenant", () => {
     })
 
     it.only("Login and logout from publisher - tenant user", () => {
-        const tenant = 'wso2.com';
-        const tenantAdminUsername = 'admin';
-        const tenantAdminPassword = 'admin';
-
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewTenant(tenant, tenantAdminUsername, tenantAdminPassword);
-        cy.visit(`${Utils.getAppOrigin()}/carbon/tenant-mgt/add_tenant.jsp?region=region1&item=govern_add_tenants_menu`);
-        cy.carbonLogout();
-        cy.carbonLogin(`${tenantAdminUsername}@${tenant}`, tenantAdminPassword);
-        cy.addNewUser(tenantUser, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], 'test123');
-        cy.loginToPublisher(`${tenantUser}@${tenant}`, 'test123');
+        cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`).then(() => {
             cy.get('#profile-menu-btn').click();
             cy.get('#itest-logout').click();
             cy.get('#usernameUserInput').should('exist');
         })
-    })
-    after(() => {
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(tenantUser);
     })
 })

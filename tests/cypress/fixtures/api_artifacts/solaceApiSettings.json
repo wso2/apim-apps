@@ -1,0 +1,39 @@
+{
+    "grantTypes": [
+        "refresh_token",
+        "urn:ietf:params:oauth:grant-type:saml2-bearer",
+        "implicit",
+        "password",
+        "client_credentials",
+        "iwa:ntlm",
+        "authorization_code",
+        "urn:ietf:params:oauth:grant-type:token-exchange",
+        "urn:ietf:params:oauth:grant-type:jwt-bearer"
+    ],
+    "scopes": [
+        "apim:admin",
+        "apim:api_key",
+        "apim:app_import_export",
+        "apim:app_manage",
+        "apim:store_settings",
+        "apim:sub_alert_manage",
+        "apim:sub_manage",
+        "apim:subscribe",
+        "openid"
+    ],
+    "applicationSharingEnabled": false,
+    "mapExistingAuthApps": false,
+    "apiGatewayEndpoint": "https://localhost:8243,http://localhost:8280",
+    "monetizationEnabled": false,
+    "recommendationEnabled": false,
+    "IsUnlimitedTierPaid": false,
+    "identityProvider": {
+        "external": false
+    },
+    "IsAnonymousModeEnabled": true,
+    "IsPasswordChangeEnabled": true,
+    "userStorePasswordPattern": "^[\\S]{5,30}$",
+    "passwordPolicyPattern": null,
+    "passwordPolicyMinLength": -1,
+    "passwordPolicyMaxLength": -1
+}

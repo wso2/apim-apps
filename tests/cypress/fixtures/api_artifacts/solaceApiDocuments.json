@@ -1,0 +1,11 @@
+{
+    "count": 0,
+    "list": [],
+    "pagination": {
+        "offset": 0,
+        "limit": 25,
+        "total": 0,
+        "next": "",
+        "previous": ""
+    }
+}

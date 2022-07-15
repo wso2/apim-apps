@@ -19,54 +19,46 @@
 import Utils from "@support/utils";
 
 describe("Save and publish API", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it.only("Save and publish API", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-portal-config-acc').click();
-        cy.get('#left-menu-itemsubscriptions').click();
-        cy.get('[data-testid="policy-checkbox-silver"]').click();
-        cy.get('#subscriptions-save-btn').click();
+        Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-portal-config-acc').click();
+            cy.get('#left-menu-itemsubscriptions').click();
+            cy.get('[data-testid="policy-checkbox-silver"]').click();
+            cy.get('#subscriptions-save-btn').click();
 
-        // Going to deployments page
-        cy.get('#left-menu-itemdeployments').click();
+            // Going to deployments page
+            cy.get('#left-menu-itemdeployments').click();
 
-        // Deploying
-        cy.wait(2000);
-        cy.get('#add-description-btn').click();
-        cy.get('#add-description').click();
-        cy.get('#add-description').type('test');
-        cy.get('#deploy-btn').click();
-        cy.get('#undeploy-btn').should('exist');
+            // Deploying
+            cy.wait(2000);
+            cy.get('#add-description-btn').click();
+            cy.get('#add-description').click();
+            cy.get('#add-description').type('test');
+            cy.get('#deploy-btn').click();
+            cy.get('#undeploy-btn').should('exist');
 
-        // Going to lifecycle page
-        cy.get('#left-menu-itemlifecycle').click();
+            // Going to lifecycle page
+            cy.get('#left-menu-itemlifecycle').click();
 
 
-        // Publishing
-        cy.wait(2000);
-        cy.get('[data-testid="Publish-btn"]').click();
+            // Publishing
+            cy.wait(2000);
+            cy.get('[data-testid="Publish-btn"]').click();
 
-        // Validate
-        cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
+            // Validate
+            cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
+
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-          // Test is done. Now delete the api
-          cy.deleteApi(apiName, apiVersion);
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

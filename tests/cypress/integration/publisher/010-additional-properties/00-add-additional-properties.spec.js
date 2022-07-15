@@ -19,16 +19,11 @@
 import Utils from "@support/utils";
 
 describe("Add additional properties", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
@@ -36,34 +31,30 @@ describe("Add additional properties", () => {
         const prop = 'prop1';
         const propVal = 'prop1-val';
 
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemproperties').click();
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemproperties').click();
 
-        // Click the add property button
-        cy.get('#add-new-property').click();
+            // Click the add property button
+            cy.get('#add-new-property').click();
 
-        // Fill the form
-        cy.get('#property-name').click().type(prop);
-        cy.get('#property-value').click().type(propVal);
-        // Add them
-        cy.get('#properties-add-btn').click();
+            // Fill the form
+            cy.get('#property-name').click().type(prop);
+            cy.get('#property-value').click().type(propVal);
+            // Add them
+            cy.get('#properties-add-btn').click();
 
-        // Save the api
-        cy.get('#save-api-properties').click();
+            // Save the api
+            cy.get('#save-api-properties').click();
 
-        // Checking the values exists
-        cy.get('#save-api-properties').then(function () {
-            cy.contains(prop).should('exist');
-            cy.contains(propVal).should('exist');
+            // Checking the values exists
+            cy.get('#save-api-properties').then(function () {
+                cy.contains(prop).should('exist');
+                cy.contains(propVal).should('exist');
+            });
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
         });
     });
-
-    after(function () {
-          // Test is done. Now delete the api
-          cy.deleteApi(apiName, apiVersion);
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

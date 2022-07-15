@@ -4,12 +4,12 @@ import Utils from "@support/utils";
 
 const CARBON_ORIGIN = Utils.getAppOrigin();
 describe("Service catalog create flow", () => {
-    const username = 'admin'
-    const password = 'admin'
+    const { publisher, password, } = Utils.getUserInfo();
+
     beforeEach(function () {
         // login before each test
         cy.viewport(1920, 980)
-        cy.loginToPublisher(username, password)
+        cy.loginToPublisher(publisher, password)
     })
     it.skip("Deploy sample service", () => {
         cy.visit(`${CARBON_ORIGIN}/publisher/service-catalog`);

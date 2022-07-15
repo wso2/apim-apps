@@ -17,62 +17,15 @@
 import Utils from "@support/utils";
 
 describe("Create api with swagger file super tenant", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`;
-    const tenant = 'wso2.com';
-    
 
-    before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.addNewTenantUser(tenantUser);
-        cy.reload();
-        cy.carbonLogout();
-    })
-    const openApi2Create = () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+    const { publisher, password, tenantUser, tenant, } = Utils.getUserInfo();
+
+    const openApiCreate = (url) => {
         // select the option from the menu item
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
-        cy.get('#open-api-url-select-radio').click();
-
-        // provide the swagger url
-        cy.get('[data-testid="swagger-url-endpoint"]').type('https://petstore.swagger.io/v2/swagger.json');
-        // go to the next step
-        cy.get('#url-validated', { timeout: 30000 });
-        cy.get('#open-api-create-next-btn').click();
-        cy.get('#itest-id-apiversion-input', { timeout: 30000 });
-        cy.document().then((doc) => {
-            const version = doc.querySelector('#itest-id-apiversion-input').value;
-            cy.get('#itest-id-apiversion-input').click();
-            cy.get('#itest-id-apiendpoint-input').clear();
-            cy.get('#itest-id-apiendpoint-input').type('https://petstore.swagger.io');
-
-            // finish the wizard
-            cy.get('#open-api-create-btn').click();
-
-            // validate
-            cy.get('#itest-api-name-version', { timeout: 30000 }).contains(version);
-
-            // Test is done. Now delete the api
-            cy.get(`#itest-id-deleteapi-icon-button`).click();
-            cy.get(`#itest-id-deleteconf`).click();
-            cy.logoutFromPublisher();
-        });
-    }
-
-    const openApi3Create = () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        // select the option from the menu item
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
-        cy.get('#open-api-url-select-radio').click();
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`);
 
         // upload the swagger
-        cy.get('[data-testid="swagger-url-endpoint"]').type('https://petstore3.swagger.io/api/v3/openapi.json');
+        cy.get('[data-testid="swagger-url-endpoint"]').type(url);
         // go to the next step
         cy.get('#url-validated', { timeout: 30000 });
         cy.get('#open-api-create-next-btn').click();
@@ -83,51 +36,42 @@ describe("Create api with swagger file super tenant", () => {
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
             cy.get('#itest-id-apiendpoint-input').clear();
-            cy.get('#itest-id-apiendpoint-input').type('https://petstore3.swagger.io/api/v3');
+            cy.get('#itest-id-apiendpoint-input').type(url);
+
+            cy.intercept('**/apis/**').as('apiGet');
 
             // finish the wizard
             cy.get('#open-api-create-btn').click();
 
-            // validate
-            cy.get('#itest-api-name-version', { timeout: 30000 });
-            cy.get('#itest-api-name-version').contains(version);
+            cy.wait('@apiGet', { timeout: 30000 }).then((data) => {
+                // validate
+                cy.get('#itest-api-name-version', { timeout: 30000 });
+                cy.get('#itest-api-name-version').contains(version);
 
-            // Test is done. Now delete the api
-            cy.get(`#itest-id-deleteapi-icon-button`).click();
-            cy.get(`#itest-id-deleteconf`).click();
-            cy.logoutFromPublisher();
+                // Test is done. Now delete the api
+                const apiId = data.response.body.id;
+                Utils.deleteAPI(apiId);
+            });
         });
     }
     it("Create API from swagger from file openapi 2", () => {
         cy.loginToPublisher(publisher, password);
-        openApi2Create();
+        openApiCreate('https://petstore.swagger.io/v2/swagger.json');
     });
 
     it("Create API from swagger from file openapi 3", () => {
         cy.loginToPublisher(publisher, password);
-        openApi3Create();
+        openApiCreate('https://petstore3.swagger.io/api/v3/openapi.json');
     });
 
     it("Create API from swagger from file openapi 2 - tenant user", () => {
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
-        openApi2Create();
+        openApiCreate('https://petstore.swagger.io/v2/swagger.json');
     });
 
     it("Create API from swagger from file openapi 3 - tenant user", () => {
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
-        openApi3Create();
+        openApiCreate('https://petstore3.swagger.io/api/v3/openapi.json');
     });
 
-    after(function () {
-        // delete tenant user
-        cy.carbonLogin(`admin@${tenant}`, 'admin');
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(tenantUser);
-        cy.carbonLogout();
-
-        // delete other user
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 })

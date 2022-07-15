@@ -1,0 +1,348 @@
+{
+    "count": 12,
+    "list": [
+        {
+            "name": "AsyncBronze",
+            "description": "Allows 5000 events per day",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 5000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "days",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "AsyncGold",
+            "description": "Allows 50000 events per day",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 50000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "days",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "AsyncSilver",
+            "description": "Allows 25000 events per day",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 25000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "days",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "AsyncUnlimited",
+            "description": "Allows unlimited events",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 2147483647,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "days",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "AsyncWHBronze",
+            "description": "Allows 1000 events per month and 500 active subscriptions",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 1000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "months",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "AsyncWHGold",
+            "description": "Allows 10000 events per month and 1000 active subscriptions",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 10000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "months",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "AsyncWHSilver",
+            "description": "Allows 5000 events per month and 500 active subscriptions",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 5000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "months",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "AsyncWHUnlimited",
+            "description": "Allows unlimited events and unlimited active subscriptions",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 2147483647,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "months",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "Bronze",
+            "description": "Allows 1000 requests per minute",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 1000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "min",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": "REQUESTCOUNT",
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "Gold",
+            "description": "Allows 5000 requests per minute",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 5000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "min",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": "REQUESTCOUNT",
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "Silver",
+            "description": "Allows 2000 requests per minute",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 2000,
+            "dataUnit": null,
+            "unitTime": 1,
+            "timeUnit": "min",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": "REQUESTCOUNT",
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        },
+        {
+            "name": "Unlimited",
+            "description": "Allows unlimited requests",
+            "policyLevel": "SUBSCRIPTION",
+            "attributes": {},
+            "requestCount": 2147483647,
+            "dataUnit": null,
+            "unitTime": 0,
+            "timeUnit": "ms",
+            "rateLimitCount": 0,
+            "rateLimitTimeUnit": null,
+            "quotaPolicyType": null,
+            "tierPlan": "FREE",
+            "stopOnQuotaReach": true,
+            "monetizationAttributes": {
+                "billingType": null,
+                "billingCycle": null,
+                "fixedPrice": null,
+                "pricePerRequest": null,
+                "currencyType": null
+            },
+            "throttlingPolicyPermissions": {
+                "type": "ALLOW",
+                "roles": [
+                    "Internal/everyone"
+                ]
+            }
+        }
+    ],
+    "pagination": {
+        "offset": 0,
+        "limit": 25,
+        "total": 12,
+        "next": "",
+        "previous": ""
+    }
+}

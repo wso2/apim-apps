@@ -404,6 +404,7 @@ export default function DeploymentOnboarding(props) {
                                                     variant='outlined'
                                                 >
                                                     <CardHeader
+                                                        data-testid='solace-api-name'
                                                         action={(
                                                             <Checkbox
                                                                 id={row.name.split(' ').join('')}
@@ -425,6 +426,7 @@ export default function DeploymentOnboarding(props) {
                                                         )}
                                                         subheader={(
                                                             <Typography
+                                                                data-testid={row.provider.toString()}
                                                                 variant='body2'
                                                                 color='textSecondary'
                                                                 gutterBottom
@@ -441,6 +443,7 @@ export default function DeploymentOnboarding(props) {
                                                         >
                                                             <Grid item xs={12}>
                                                                 <TextField
+                                                                    data-testid='api-env-name'
                                                                     id='Api.Details.Third.party.environment.name'
                                                                     label='Environment'
                                                                     variant='outlined'
@@ -450,6 +453,7 @@ export default function DeploymentOnboarding(props) {
                                                                     value={row.name}
                                                                 />
                                                                 <TextField
+                                                                    data-testid='api-org-name'
                                                                     id='Api.Details.
                                                                         Third.party.environment.organization'
                                                                     label='Organization'
@@ -510,6 +514,7 @@ export default function DeploymentOnboarding(props) {
                                 </Box>
                                 <Box mt={3}>
                                     <Button
+                                        id='deploy-btn-solace'
                                         type='submit'
                                         variant='contained'
                                         onClick={

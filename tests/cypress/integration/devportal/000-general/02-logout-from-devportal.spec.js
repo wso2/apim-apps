@@ -19,22 +19,10 @@
 import Utils from "@support/utils";
 
 describe("Login logout from devportal", () => {
-    const developer = 'developer';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { developer, password } = Utils.getUserInfo();
 
-    before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-    })
     it.only("Login logout from devportal", () => {
         cy.loginToDevportal(developer, password);
         cy.logoutFromDevportal();
     });
-
-    after(() => {
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(developer);
-    })
 })

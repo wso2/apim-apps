@@ -46,7 +46,8 @@ describe("Publish thirdparty api", () => {
         // Test is done. Now delete the api
         cy.loginToPublisher(publisher, publisherPassword);
         cy.deleteApi('ThirdPartyAPI', '1.0.0');
-
+        cy.logoutFromPublisher();
+        cy.carbonLogin(carbonUsername, carbonPassword);
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(publisher);
         cy.deleteUser(subscriber);

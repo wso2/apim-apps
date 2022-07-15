@@ -167,6 +167,7 @@ function SolaceEndpoints() {
                                         >
                                             <Chip
                                                 label={upperCaseString(p.protocol)}
+                                                data-testid={upperCaseString(p.protocol) + '-label'}
                                                 color='primary'
                                                 style={{
                                                     width: '70px',

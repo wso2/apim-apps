@@ -15,38 +15,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import Utils from "@support/utils";
 
 describe("Runtime configuration", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
-
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
     it.only("Add Authorization Header for the api", () => {
-        const customAuthHeader = '-custom';
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemRuntimeConfigurations').click();
-        cy.get('#response-caching-switch').click();
-        cy.get('#save-runtime-configurations').click();
-        cy.get('#response-caching-switch').should('be.checked');
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemRuntimeConfigurations').click();
+            cy.get('#response-caching-switch').click();
+            cy.get('#save-runtime-configurations').click();
+            cy.get('#response-caching-switch').should('be.checked');
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
+        });
     });
-
-    after(function () {
-          // Test is done. Now delete the api
-          cy.deleteApi(apiName, apiVersion);
-
-        // delete publisher
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

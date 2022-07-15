@@ -21,14 +21,13 @@ import Utils from "@support/utils";
 describe("Add API Categories and assign via publisher portal", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
-    const apiVersion = '1.0.0';
+    let testApiId;
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
     it("Add API Categories and assign via publisher portal", () => {
-        const category = 'Weather';
+        const category = Utils.generateName();
         const categoryDescription = 'Weather related apis';
 
         cy.get('[data-testid="API Categories"]').click();
@@ -40,26 +39,27 @@ describe("Add API Categories and assign via publisher portal", () => {
         // Go to publisher
         cy.wait(500);
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-portal-config-acc').click();
-        cy.get('#left-menu-itemDesignConfigurations').click();
-        cy.get('#APICategories').click();
-        cy.get('span').contains(category).click();
-        cy.get('#menu-categories').click('topLeft');
-        cy.get('#design-config-save-btn').click();
-        
+        Utils.addAPI({}).then((apiId) => {
+            testApiId = apiId;
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/configuration`);
+            cy.get('#APICategories').click();
+            cy.get('span').contains(category).click();
+            cy.get('#menu-categories').click('topLeft');
+            cy.get('#design-config-save-btn').click();
+        })
     });
 
-    after(function() {
-        cy.get(`#itest-id-deleteapi-icon-button`).click({force:true});
-        cy.get(`#itest-id-deleteconf`).click();
-
-        // Delete
-        cy.visit(`${Utils.getAppOrigin()}/admin/settings/api-categories`);
-        cy.wait(4000);
-        cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)').click();
-        cy.get('[data-testid="Delete-btn"]').click();
-        cy.get('div[role="status"]').should('have.text','API Category deleted successfully');
+    after(function () {
+        if (testApiId) {
+            Utils.deleteAPI(testApiId).then(() => {
+                // Delete
+                cy.visit(`${Utils.getAppOrigin()}/admin/settings/api-categories`);
+                cy.wait(4000);
+                cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)').click();
+                cy.get('[data-testid="Delete-btn"]').click();
+                cy.get('div[role="status"]').should('have.text', 'API Category deleted successfully');
+            });
+        }
     })
 
 })

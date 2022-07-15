@@ -234,7 +234,9 @@ export default function DevelopSectionMenu(props) {
                 <AccordianSummary
                     expandIcon={<ExpandMoreIcon className={classes.expandIconColor} />}
                 >
-                    <Typography className={classes.leftLInkText}>
+                    <Typography 
+                        className={classes.leftLInkText} 
+                        data-testid='itest-api-config'>
                         API Configurations
                     </Typography>
                     <Tooltip
