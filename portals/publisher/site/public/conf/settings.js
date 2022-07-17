@@ -33,6 +33,13 @@ const AppConfig = {
         throttlingPolicyLimit: 80,
         operationPolicyCount: 500,
         propertyDisplaySuffix: '__display',
+        markdown: {
+            skipHtml: true,
+            syntaxHighlighterProps: {
+                showLineNumbers: false,
+            },
+            syntaxHighlighterDarkTheme: false,
+        },
         loadDefaultLocales: true, // If false, Default en.json file will not be used/loaded in app.
         // loadDefaultLocales = false is good for performance but text overrides using the locale file will not work
         supportedDocTypes: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document,'

@@ -387,6 +387,7 @@ class ApiThumbClassic extends React.Component {
                     return (
                         <div className='api-thumb-chip-main'>
                             <Chip
+                                data-testid='solace-label'
                                 label='SOLACE'
                                 color='primary'
                             />

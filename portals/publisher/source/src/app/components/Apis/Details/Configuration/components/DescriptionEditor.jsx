@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -39,6 +40,10 @@ import FormControl from '@material-ui/core/FormControl';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus , vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Configurations from 'Config';
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "MDMonacoEditor" */));
 const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
@@ -82,6 +87,11 @@ function Transition(props) {
  * @returns {*} DescriptionEditor component
  */
 export default function DescriptionEditor(props) {
+    const skipHtml = Configurations.app.markdown ? Configurations.app.markdown.skipHtml : true;
+    const markdownSyntaxHighlighterProps = Configurations.app.markdown ?
+        Configurations.app.markdown.syntaxHighlighterProps: {};
+    const syntaxHighlighterDarkTheme = Configurations.app.markdown ? 
+        Configurations.app.markdown.syntaxHighlighterDarkTheme: false;
     const classes = useStyles();
     const {
         api,
@@ -121,6 +131,21 @@ export default function DescriptionEditor(props) {
     const editorDidMount = (editor) => {
         editor.focus();
     };
+
+    const addApiContent = (originalMarkdown) => {
+        if(originalMarkdown) {
+            let newMarkdown = originalMarkdown;
+            Object.keys(api).forEach((fieldName) => {
+                const regex = new RegExp('___' + fieldName + '___', 'g');
+                newMarkdown = newMarkdown.replace(regex, api[fieldName]);
+            });
+            return newMarkdown;
+        } else {
+            return '';
+        }
+    }
+
+    const markdownWithApiData = addApiContent(content);
 
     return (
         <>
@@ -250,10 +275,36 @@ export default function DescriptionEditor(props) {
                                             />
                                         </Suspense>
                                     </Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={6} className='markdown-content-wrapper'>
                                         <div className={classes.markdownViewWrapper}>
                                             <Suspense fallback={<CircularProgress />}>
-                                                <ReactMarkdown escapeHtml>{content}</ReactMarkdown>
+                                                <ReactMarkdown
+                                                    skipHtml={skipHtml}
+                                                    // eslint-disable-next-line react/no-children-prop
+                                                    children={markdownWithApiData}
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        code({ node, inline, className, children, ...propsInner }) {
+                                                            const match = /language-(\w+)/.exec(className || '')
+                                                            return !inline && match ? (
+                                                                <SyntaxHighlighter
+                                                                    // eslint-disable-next-line react/no-children-prop
+                                                                    children={String(children).replace(/\n$/, '')}
+                                                                    style={syntaxHighlighterDarkTheme ? 
+                                                                        vscDarkPlus : vs}
+                                                                    language={match[1]}
+                                                                    PreTag='div'
+                                                                    {...propsInner}
+                                                                    {...markdownSyntaxHighlighterProps}
+                                                                />
+                                                            ) : (
+                                                                <code className={className} {...propsInner}>
+                                                                    {children}
+                                                                </code>
+                                                            )
+                                                        }
+                                                    }}
+                                                />                                                
                                             </Suspense>
                                         </div>
                                     </Grid>

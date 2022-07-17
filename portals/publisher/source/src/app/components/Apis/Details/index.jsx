@@ -466,6 +466,7 @@ class Details extends Component {
                 return (
                     <>
                         <LeftMenuItem
+                            id='left-menu-itemtopics'
                             text={intl.formatMessage({
                                 id: 'Apis.Details.index.topics',
                                 defaultMessage: 'topics',

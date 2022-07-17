@@ -122,6 +122,7 @@ export default function CheckboxLabels(props) {
                                 )}
                                 <Typography>
                                     <FormattedMessage
+                                        data-testid='endpoint-req'
                                         id='Apis.Details.LifeCycle.CheckboxLabels.endpoints.provided'
                                         defaultMessage='Endpoint provided'
                                     />
@@ -139,7 +140,7 @@ export default function CheckboxLabels(props) {
                                     ) : (
                                         <CloseIcon className={classes.iconFalse} />
                                     )}
-                                    <Typography>
+                                    <Typography data-testid='business-plan-req'>
                                         <FormattedMessage
                                             id='Apis.Details.LifeCycle.CheckboxLabels.business.plans.selected'
                                             defaultMessage='Business Plan(s) selected'

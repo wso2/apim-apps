@@ -19,109 +19,91 @@
 import Utils from "@support/utils";
 
 describe("Anonymous view apis", () => {
-    const appName = 'subscribeapp' + Math.floor(Date.now() / 1000);
-    const developer = 'developer';
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
+    const { publisher, developer, password, } = Utils.getUserInfo();
+
     const apiVersion = '2.0.0';
-    const apiContext = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
-
-    before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-    })
-
+    const apiName = Utils.generateName();
+    const apiContext = apiName;
+    let testApiId;
+    const appName = Utils.generateName();
 
     it.only("Subscribe to API", () => {
         cy.loginToPublisher(publisher, password);
-        cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
-        cy.logoutFromPublisher();
-        cy.loginToDevportal(developer, password);
-        cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
-        cy.url().should('contain', '/apis?tenant=carbon.super');
-         // After publishing the api appears in devportal with a delay.
-        // We need to keep refresing and look for the api in the listing page
-        // following waitUntilApiExists function does that recursively.
-        let remainingAttempts = 30;
-
-        function waitUntilApiExists() {
-            let $apis = Cypress.$(`[title="${apiName}"]`);
-            if ($apis.length) {
-                // At least one with api name was found.
-                // Return a jQuery object.
-                return $apis;
-            }
-
-            if (--remainingAttempts) {
-                cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
-
-                // Requesting the page to reload (F5)
-                cy.reload();
-
-                // Wait a second for the server to respond and the DOM to be present.
-                return cy.wait(4000).then(() => {
-                    return waitUntilApiExists();
-                });
-            }
-            throw Error('Table was not found.');
-        }
-
-        waitUntilApiExists().then($apis => {
-            cy.log('apis: ' + $apis.text());
-            cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-            cy.get(`[title="${apiName}"]`).click();
-            cy.get('#left-menu-credentials').click();
-    
-            // Go through the wizard
-            cy.get('#start-key-gen-wizard-btn').click();
-            cy.get('#application-name').type(appName);
-            cy.get('#wizard-next-0-btn').click();
-    
-            cy.get('#wizard-next-1-btn', { timeout: 30000 })
-            cy.get('#wizard-next-1-btn').click();
-    
-            cy.get('#wizard-next-2-btn', { timeout: 30000 });
-            cy.get('#wizard-next-2-btn').click();
-    
-            cy.intercept('GET','**/oauth-keys').as('oauthKeys');
-            cy.wait('@oauthKeys', {timeout: 4000}).then(() => {
-                cy.get('#wizard-next-3-btn', { timeout: 30000 });
-                cy.get('#wizard-next-3-btn').click();
-            });
-    
-            /*
-            Rest of the test we need to skip for now. Cypress is failing the token gen request but the actual one is not
-            */
-            // cy.intercept('POST','**/generate-token').as('generateToken');
-            // cy.wait('@generateToken', {timeout: 4000}).then(() => {
-            //     cy.get('#access-token').should('not.be.empty');
-            //     cy.get('#wizard-next-4-btn').click();
+        Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
+            testApiId = apiId;
+            Utils.publishAPI(apiId).then(() => {
+                cy.logoutFromPublisher();
+                cy.loginToDevportal(developer, password);
+                cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+                cy.url().should('contain', '/apis?tenant=carbon.super');
+                 // After publishing the api appears in devportal with a delay.
+                // We need to keep refresing and look for the api in the listing page
+                // following waitUntilApiExists function does that recursively.
+                let remainingAttempts = 30;
+        
+                function waitUntilApiExists() {
+                    let $apis = Cypress.$(`[title="${apiName}"]`);
+                    if ($apis.length) {
+                        // At least one with api name was found.
+                        // Return a jQuery object.
+                        return $apis;
+                    }
+        
+                    if (--remainingAttempts) {
+                        cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
+        
+                        // Requesting the page to reload (F5)
+                        cy.reload();
+        
+                        // Wait a second for the server to respond and the DOM to be present.
+                        return cy.wait(4000).then(() => {
+                            return waitUntilApiExists();
+                        });
+                    }
+                    throw Error('Table was not found.');
+                }
+        
+                waitUntilApiExists().then($apis => {
+                    cy.log('apis: ' + $apis.text());
+                    cy.get(`[title="${apiName}"]`, { timeout: 30000 });
+                    cy.get(`[title="${apiName}"]`).click();
+                    cy.get('#left-menu-credentials').click();
             
-            //     cy.get('#left-menu-credentials').click();
-            //     // Click and select the new application
-            //     cy.get(`#subscription-table td`).contains(appName).should('exist');
-            // });
-        });
+                    // Go through the wizard
+                    cy.get('#start-key-gen-wizard-btn').click();
+                    cy.get('#application-name').type(appName);
+                    cy.get('#wizard-next-0-btn').click();
+            
+                    cy.get('#wizard-next-1-btn', { timeout: 30000 })
+                    cy.get('#wizard-next-1-btn').click();
+            
+                    cy.get('#wizard-next-2-btn', { timeout: 30000 });
+                    cy.get('#wizard-next-2-btn').click();
+            
+                    cy.intercept('GET','**/oauth-keys').as('oauthKeys');
+                    cy.wait('@oauthKeys', {timeout: 4000}).then(() => {
+                        cy.get('#wizard-next-3-btn', { timeout: 30000 });
+                        cy.get('#wizard-next-3-btn').click();
+                    });
+            
+                    /*
+                    Rest of the test we need to skip for now. Cypress is failing the token gen request but the actual one is not
+                    */
+                    // cy.intercept('POST','**/generate-token').as('generateToken');
+                    // cy.wait('@generateToken', {timeout: 4000}).then(() => {
+                    //     cy.get('#access-token').should('not.be.empty');
+                    //     cy.get('#wizard-next-4-btn').click();
+                    
+                    //     cy.get('#left-menu-credentials').click();
+                    //     // Click and select the new application
+                    //     cy.get(`#subscription-table td`).contains(appName).should('exist');
+                    // });
+                });
+            })
+        })
     })
-
     after(() => {
-        cy.visit(`${Utils.getAppOrigin()}/devportal/applications?tenant=carbon.super`);
-        cy.get(`#delete-${appName}-btn`, { timeout: 30000 });
-        cy.get(`#delete-${appName}-btn`).click();
-        cy.get(`#itest-confirm-application-delete`).click();
-
-        // Delete api
-        cy.logoutFromDevportal();
-        cy.loginToPublisher(publisher, password);
-        cy.deleteApi(apiName, apiVersion);
-
-        // delete developer
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(developer);
-        cy.deleteUser(publisher);
+        cy.deleteApp(appName);
+        Utils.deleteAPI(testApiId);
     })
 })

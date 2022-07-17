@@ -68,7 +68,7 @@ function Endpoints(props) {
     return (
         <>
             <div>
-                <Typography variant='h5' component='h2' className={parentClasses.title}>
+                <Typography variant='h5' component='h2' className={parentClasses.title} data-testid='endpoints'>
                     <FormattedMessage
                         id='Apis.Details.NewOverview.Endpoints.endpoints'
                         defaultMessage='Endpoints'
@@ -86,6 +86,7 @@ function Endpoints(props) {
                                     <FormattedMessage
                                         id='Apis.Details.NewOverview.Endpoints.production.endpoint'
                                         defaultMessage='Production Endpoint'
+                                        data-testid='production-endpoint'
                                     />
                                 </Typography>
                             )
@@ -134,6 +135,7 @@ function Endpoints(props) {
                                     <FormattedMessage
                                         id='Apis.Details.NewOverview.Endpoints.sandbox.endpoint'
                                         defaultMessage='Sandbox Endpoint'
+                                        data-testid='sandbox-endpoint'
                                     />
                                 </Typography>
                             </Grid>

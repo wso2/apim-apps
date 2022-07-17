@@ -19,57 +19,46 @@
 import Utils from "@support/utils";
 
 describe("Runtime configuration", () => {
-    const publisher = 'publisher';
-    const password = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
+    const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
     beforeEach(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
     it.only("Enable mutual ssl and upload cert", () => {
         const random_number = Math.floor(Date.now() / 1000);
         const alias = `alias${random_number}`;
+        Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc').click();
+            cy.get('#left-menu-itemRuntimeConfigurations').click();
+            cy.get('h4').contains('Transport Level Security').click();
+            cy.get('#mutual-ssl-checkbox').click();
 
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemRuntimeConfigurations').click();
-        cy.get('#transportLevel').click();
-        cy.get('#mutual-ssl-checkbox').click();
+            // uploading the cert
+            cy.get('#certs-add-btn').click();
+            cy.get('#mui-component-select-policies').click();
+            cy.get('#Bronze').click();
+            cy.get('#certificateAlias').click().type(alias);
 
-        // uploading the cert
-        cy.get('#certs-add-btn').click();
-        cy.get('#mui-component-select-policies').click();
-        cy.get('#Bronze').click();
-        cy.get('#certificateAlias').click().type(alias);
+            // upload the cert
+            const filepath = 'api_artifacts/sample.crt.pem';
+            cy.get('input[type="file"]').attachFile(filepath);
 
-        // upload the cert
-        const filepath = 'api_artifacts/sample.crt.pem';
-        cy.get('input[type="file"]').attachFile(filepath);
-
-        // Click away
-        cy.get('#upload-cert-save-btn').click();
-        cy.get('#upload-cert-save-btn').then(() => {
-            cy.get('#save-runtime-configurations').click();
-        })
-        cy.get('#save-runtime-configurations').get(() => {
-            cy.get('#transportLevel').click();
-            cy.get('#mutual-ssl-checkbox').should('be.checked');
-            cy.get('#endpoint-cert-list').contains(alias).should('be.visible');
-        })
+            // Click away
+            cy.get('#upload-cert-save-btn').click();
+            cy.get('#upload-cert-save-btn').then(() => {
+                cy.get('#save-runtime-configurations').click();
+            })
+            cy.get('#save-runtime-configurations').get(() => {
+                cy.get('h4').contains('Transport Level Security').click();
+                cy.get('#mutual-ssl-checkbox').should('be.checked');
+                cy.get('#endpoint-cert-list').contains(alias).should('be.visible');
+                // Test is done. Now delete the api
+                Utils.deleteAPI(apiId);
+            })
+        });
     });
-
-
-    after(function () {
-         // Test is done. Now delete the api
-         cy.deleteApi(apiName, apiVersion);
-
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-    })
 });

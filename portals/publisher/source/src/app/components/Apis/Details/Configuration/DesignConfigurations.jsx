@@ -300,11 +300,7 @@ export default function DesignConfigurations() {
         const docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
         docPromise
             .then((doc) => {
-                let { text } = doc;
-                Object.keys(api).forEach((fieldName) => {
-                    const regex = new RegExp('___' + fieldName + '___', 'g');
-                    text = text.replace(regex, api[fieldName]);
-                });
+                const { text } = doc;
                 setOverview(text);
             });
     };
