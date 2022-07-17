@@ -38,6 +38,7 @@ import {
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import UploadCertificate from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/UploadCertificate';
+import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage";
 import API from '../../../../../data/api';
 
 const useStyles = makeStyles((theme) => ({
@@ -241,8 +242,10 @@ function Certificates(props) {
                                         : <ListItemText primary={cert.alias} secondary={cert.endpoint} />}
 
                                     <ListItemSecondaryAction>
+                                        <IconButton edge='end'>
+                                            <CertificateUsage certAlias={cert.alias}/>
+                                        </IconButton>
                                         <IconButton
-                                            edge='end'
                                             onClick={(event) => showCertificateDetails(event, cert.alias)}
                                         >
                                             <Icon>info</Icon>
