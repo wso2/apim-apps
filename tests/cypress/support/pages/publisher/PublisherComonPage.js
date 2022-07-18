@@ -23,7 +23,7 @@ class PublisherComonPage {
         return cy.get('div[role="status"][aria-live="polite"]')
     }
     waitUntillPublisherLoadingSpinnerExit(){
-        cy.get('#apim-loader > span').should('not.exist');
+        cy.get('#apim-loader > span',{timeout:15000}).should('not.exist');
     }
 
 }

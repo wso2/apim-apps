@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+import Utils from "@support/utils";
 import ApisHomePage from "../../../support/pages/publisher/ApisHomePage";
 import CreateRestAPIPage from "../../../support/pages/publisher/CreateRestAPIPage";
 import APIMenuPage from "../../../support/pages/publisher/APIMenuPage";
@@ -60,7 +60,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         return false;
       });
 
-    it("Add the PizzaShack API to the Publisher", () => {
+    it("Add the PizzaShackE2E API to the Publisher", () => {
         const thumbnailImagePath = `scriptData/e2e/shack-logo.png`
 
         cy.loginToPublisher(testData.newUserCreator, testData.newUserPassword);
@@ -87,7 +87,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         cy.location('pathname', {timeout: 60000}).should('include', '/configuration');
         cy.wait(5000)
 
-        publisherApisPage.getApiNameVersionH1().should("have.text","PizzaShack :1.0.0")
+        publisherApisPage.getApiNameVersionH1().should("have.text",`${testData.PizzaShackApi.name} :${testData.PizzaShackApi.version}`)
         publisherApisPage.getApiStateDiv().should("have.text","CREATED")
 
         apiBasicInfoPage.getEditDescriptionButton().should('be.visible').should("have.text","Edit description").click({force: true})
@@ -105,7 +105,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         cy.contains("Thumbnail uploaded successfully")
 
         apiBasicInfoPage.getSaveButton().should('be.visible').click()
-        cy.contains("PizzaShack API updated successfully")
+        cy.contains(`${testData.PizzaShackApi.name} API updated successfully`)
 
         // Fill Runtime Page
         //TODO : by default all set, need to verify
@@ -122,7 +122,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         resourcesPage.selectAndAddNewOperation("PUT","order/{orderid}")
 
         resourcesPage.getSaveRerouceButton().click()
-        cy.contains("PizzaShack API updated successfully")
+        cy.contains(`${testData.PizzaShackApi.name} API updated successfully`)
 
         //Fill Local Scopes Page
         apiMenuPage.getAPIConfigurationsMenu_LocalScopesMenu().click({force: true})
@@ -150,7 +150,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         resourcesPage.getSummaryTextAreaOfResource("post/order").type("Order Pizza")
         resourcesPage.selectOperationScopeOfResource("post/order","order_pizza")
         resourcesPage.getSaveButton().click()
-        cy.contains("PizzaShack API updated successfully")
+        cy.contains(`${testData.PizzaShackApi.name} API updated successfully`)
 
         // Fill Documentation Page
         apiMenuPage.getAPIConfigurationsMenu_DocumentsMenu().click({force: true})
@@ -162,7 +162,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         documentsPage.getType_HowToCheckBox().check()
         documentsPage.getSource_InLineCheckBox().check()
         documentsPage.getAddDocumentButton().click()
-        cy.contains("PizzaShack added successfully")
+        cy.contains(`${testData.PizzaShackApi.name} added successfully`)
         documentsPage.getBackToListiningButton().click()
         documentsPage.getDocumentNameOfTableRow(0).contains(testData.PizzaShackApi.name)
 
@@ -198,7 +198,8 @@ describe("Introduction : Create API from scratch and publish", () => {
     })
 
     it("Verify API available in the API Devportal" , () => {      
-        devPortalApisPage.visitAPIsPage()
+        cy.visit(`${Utils.getAppOrigin()}${devPortalApisPage.getUrl()}?tenant=carbon.super`)
+        //https://localhost:9443/devportal/apis?tenant=carbon.super
         devPortalApisPage.waitUntillDevportalLoaderSpinnerExit()
         cy.wait(5000)
         devPortalApisPage.getApiLinkOfAPI(testData.PizzaShackApi.name).should('be.visible');

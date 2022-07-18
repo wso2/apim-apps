@@ -7,7 +7,7 @@
   "newUserMike": "mikee2e",
   "newUserPassword": "password",
   "PizzaShackApi": {
-    "name": "PizzaShack",
+    "name": "PizzaShackE2E",
     "context": "/pizzashack",
     "version": "1.0.0",
     "endpoint": "https://localhost:9443/am/sample/pizzashack/v1/api/"

@@ -24,6 +24,7 @@ describe("Deploy sample api", () => {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        Cypress.config('pageLoadTimeout', 20000);// sometime new tenant landing page takes more laoding time than expected
         cy.addNewTenant('wso2.com', 'admin');
         cy.addNewTenantUser(tenantUser);
     });
