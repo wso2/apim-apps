@@ -16,10 +16,12 @@
   ~ under the License.
 --%>
 
+<%@page import="java.net.http.HttpResponse"%>
+<%@page import="java.net.http.HttpRequest"%>
+<%@page import="java.net.http.HttpClient"%>
 <%@page import="org.apache.commons.logging.LogFactory"%>
 <%@page import="org.apache.commons.logging.Log"%>
 <%@page import="java.net.URI"%>
-<%@page import="java.net.http.*"%>
 <%@page import="org.apache.axiom.om.util.Base64"%>
 <%@page import="org.wso2.carbon.apimgt.impl.dto.SystemApplicationDTO"%>
 <%@page import="org.wso2.carbon.apimgt.impl.dao.SystemApplicationDAO"%>
@@ -32,8 +34,7 @@
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%
-    Log log = LogFactory.getLog(this.getClass());
+<%    Log log = LogFactory.getLog(this.getClass());
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
     String context = Util.getTenantBaseStoreContext(request, (String) Util.readJsonObj(settings, "app.context"));
     String tenantDomain = Util.getServiceProviderTenantDomain(request);
