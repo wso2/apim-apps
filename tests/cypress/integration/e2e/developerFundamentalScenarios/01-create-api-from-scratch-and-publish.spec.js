@@ -185,6 +185,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         cy.wait(5000)
 
         publisherApisPage.getApiLinkOfAPI(testData.PizzaShackApi.name).click()
+        publisherApisPage.waitUntillPublisherLoadingSpinnerExit()
         apiMenuPage.getPublish_LifecycleMenu().click({force: true})
         cy.wait(5000)
         lifecyclePage.getLifecycleHeader().contains("Lifecycle")
