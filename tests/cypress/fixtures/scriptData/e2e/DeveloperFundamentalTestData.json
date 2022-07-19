@@ -8,8 +8,9 @@
   "newUserPassword": "password",
   "PizzaShackApi": {
     "name": "PizzaShackE2E",
-    "context": "/pizzashack",
+    "context": "/pizzashacke2e",
     "version": "1.0.0",
-    "endpoint": "https://localhost:9443/am/sample/pizzashack/v1/api/"
+    "endpoint": "https://localhost:9443/am/sample/pizzashack/v1/api/",
+    "scopeName": "order_pizza-e2e"
   }
 }

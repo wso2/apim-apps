@@ -130,7 +130,7 @@ describe("Introduction : Create API from scratch and publish", () => {
 
         localScopesPage.getLocalScopesHeader().should("have.text", "Local Scopes")
         localScopesPage.getCreateScopesButton().click()
-        localScopesPage.getScopeNameTextBox().type("order_pizza")
+        localScopesPage.getScopeNameTextBox().type(testData.PizzaShackApi.scopeName)
         localScopesPage.getScopeDisplayNameTextBox().type("Order Pizza")
         localScopesPage.getScopeDescriptionTextBox().type("Only users with admin role and internal/subscriber role can order")
         localScopesPage.getRolesTextBox().type("admin").type('{enter}') 
@@ -148,7 +148,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         resourcesPage.getRowOfResource("/order").click()
         resourcesPage.getDescriptionTextAreaOfResource("post/order").type("Create a new Order")
         resourcesPage.getSummaryTextAreaOfResource("post/order").type("Order Pizza")
-        resourcesPage.selectOperationScopeOfResource("post/order","order_pizza")
+        resourcesPage.selectOperationScopeOfResource("post/order",testData.PizzaShackApi.scopeName)
         resourcesPage.getSaveButton().click()
         cy.contains(`${testData.PizzaShackApi.name} API updated successfully`)
 
