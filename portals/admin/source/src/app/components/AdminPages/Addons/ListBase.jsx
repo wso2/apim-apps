@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
@@ -140,6 +140,19 @@ function ListBase(props) {
     useEffect(() => {
         fetchData();
     }, []);
+
+    useLayoutEffect(() => {
+        let i;
+        const sortButtonList = document.getElementsByClassName('MuiTableSortLabel-root');
+        const footerList = document.getElementsByClassName('MuiTable-root');
+
+        for (i = 0; i < sortButtonList.length; i++) {
+            sortButtonList[i].setAttribute('aria-label', `sort-icon-button-${i}`);
+        }
+
+        if (footerList.length > 1) footerList[1].setAttribute('role', 'presentation');
+    });
+
     let columns = [];
     if (columProps) {
         columns = [
@@ -164,7 +177,7 @@ function ListBase(props) {
                                     <div data-testid={`${itemName}-actions`}>
                                         <RouterLink to={editComponentProps.routeTo + artifactId}>
                                             <IconButton color='primary' component='span'>
-                                                <EditIcon />
+                                                <EditIcon aria-label={`edit-policies+${artifactId}`} />
                                             </IconButton>
                                         </RouterLink>
                                         {DeleteComponent && (
@@ -288,6 +301,10 @@ function ListBase(props) {
                                                 disableUnderline: true,
                                                 className: classes.searchInput,
                                             }}
+                                            // eslint-disable-next-line react/jsx-no-duplicate-props
+                                            inputProps={{
+                                                'aria-label': 'search-by-policy',
+                                            }}
                                             onChange={filterData}
                                             value={searchText}
                                         />
@@ -310,7 +327,11 @@ function ListBase(props) {
                                     )}
                                     >
                                         <IconButton onClick={fetchData}>
-                                            <RefreshIcon className={classes.block} color='inherit' />
+                                            <RefreshIcon
+                                                aria-label='refresh-advanced-policies'
+                                                className={classes.block}
+                                                color='inherit'
+                                            />
                                         </IconButton>
                                     </Tooltip>
                                 </Grid>

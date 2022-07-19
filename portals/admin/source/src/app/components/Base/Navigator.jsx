@@ -143,11 +143,11 @@ function Navigator(props) {
     return (
         // eslint-disable-next-line react/jsx-props-no-spreading
         <Drawer variant='permanent' {...other}>
-            <List disablePadding>
+            <List disablePadding role='list'>
                 <ListItem className={clsx(classes.firebase, classes.item, 'itemCategory', classes.logoWrapper)}>
                     <Link component={RouterLink} to='/'>
                         <img
-                            alt='logo'
+                            alt='logo APIM admin portal'
                             src={Configurations.app.context
                                 + logoUrl}
                             width={logoWidth}
@@ -167,29 +167,36 @@ function Navigator(props) {
                                 style={{ textDecoration: 'none' }}
                                 data-testid={id}
                             >
-                                <ListItem
-                                    className={clsx(
-                                        classes.item,
-                                        'itemCategory',
-                                        parentActive && classes.itemActiveItem,
-                                    )}
-                                >
-                                    <ListItemIcon className={classes.itemIcon}>
-                                        {parentIcon}
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        classes={{
-                                            primary: classes.itemPrimary,
-                                        }}
+                                <List disablePadding role='list'>
+                                    <ListItem
+                                        className={clsx(
+                                            classes.item,
+                                            'itemCategory',
+                                            parentActive && classes.itemActiveItem,
+                                        )}
                                     >
-                                        {id}
-                                    </ListItemText>
-                                </ListItem>
+                                        <ListItemIcon className={classes.itemIcon}>
+                                            {parentIcon}
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            classes={{
+                                                primary: classes.itemPrimary,
+                                            }}
+                                        >
+                                            {id}
+                                        </ListItemText>
+                                    </ListItem>
+                                </List>
                             </Link>
                         )}
                         {children && (
-                            <React.Fragment key={id}>
-                                <NavigatorChildren navChildren={children} navId={id} classes={classes} />
+                            <React.Fragment key={id} role='listitem'>
+                                <NavigatorChildren
+                                    navChildren={children}
+                                    navId={id}
+                                    classes={classes}
+                                    role='listitem'
+                                />
                             </React.Fragment>
                         )}
 

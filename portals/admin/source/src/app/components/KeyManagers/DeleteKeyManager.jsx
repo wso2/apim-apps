@@ -60,7 +60,7 @@ function Delete({ updateList, dataRow }) {
         <FormDialogBase
             title='Delete KeyManager ?'
             saveButtonText='Delete'
-            icon={<DeleteForeverIcon />}
+            icon={<DeleteForeverIcon aria-label='key-manager-delete-icon' />}
             formSaveCallback={formSaveCallback}
             triggerIconProps={{
                 color: 'primary',

@@ -102,7 +102,7 @@ export default function APICategoriesCard() {
      + 'customize-api-listing/categorizing-and-grouping-apis/'
      + 'api-category-based-grouping'}
     >
-        Learn More
+        Go to Category Documentation
         <LaunchIcon fontSize='inherit' />
     </a>,
                         }}
