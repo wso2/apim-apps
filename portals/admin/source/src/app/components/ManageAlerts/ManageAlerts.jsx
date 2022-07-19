@@ -449,7 +449,7 @@ const ManageAlerts = (props) => {
                                                                 value={alert.id}
                                                                 checked={isAlertSubscribed(alert.id)}
                                                                 onChange={() => handleCheckAlert(alert)}
-                                                                inputProps={{ 'aria-labelledby': alert.name }}
+                                                                inputProps={{ 'aria-labelledby': alert.id }}
                                                                 color='primary'
                                                             />
                                                         </ListItemIcon>
@@ -465,6 +465,7 @@ const ManageAlerts = (props) => {
                                         </List>
                                         <ChipInput
                                             label='Emails'
+                                            id='email-input'
                                             variant='outlined'
                                             className={classes.chipInput}
                                             placeholder={emails.length === 0
@@ -516,6 +517,7 @@ const ManageAlerts = (props) => {
                                                             disabled={isInProgress.subscribing}
                                                             variant='contained'
                                                             color='default'
+                                                            role='button'
                                                         >
                                                             {isInProgress.unSubscribing
                                                             && <CircularProgress size={15} />}

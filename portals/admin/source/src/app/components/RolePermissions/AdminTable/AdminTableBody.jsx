@@ -149,7 +149,7 @@ function AdminTableBody(props) {
                             {row.map((column, index) => (
                                 <TableCell
                                     component='th'
-                                    id={labelId}
+                                    label={labelId}
                                     scope='row'
                                     padding={multiSelect ? 'none' : 'default'}
                                     align={index === 0 ? 'left' : 'right'}
