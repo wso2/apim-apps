@@ -20,7 +20,7 @@ import React, {useEffect, useState} from 'react';
 import {FormattedMessage, injectIntl} from 'react-intl';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { Typography } from '@material-ui/core';
+import {Typography} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import UsageIcon from '@material-ui/icons/List';
 import Dialog from '@material-ui/core/Dialog';
@@ -28,7 +28,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import API from 'AppData/api';
-import CertificateUsageViewAPI from './CertificateUsageViewAPI';
+import MUIDataTable from "mui-datatables";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const styles = {
     appBar: {
@@ -77,17 +78,56 @@ const useStyles = makeStyles(() => ({
  * @returns {any} Returns the rendered UI for scope usage.
  */
 function CertificateUsage(props) {
+    const { certAlias } = props;
     const classes = useStyles();
     const [open, setOpen] = useState(false);
-    const [usage, setUsage] = useState( []);
-    const { certAlias } = props;
+    const [usageData, setUsageData] = useState( []);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [count, setCount] = useState(-1);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchUsage = (alias, limit, offset) => {
+        setIsLoading( true);
+        API.getEndpointCertificateUsage(alias,limit,offset).then((response) => {
+            const {list} = response.body;
+            const {pagination} = response.body;
+            const usageList = list.map((api) => {
+                const usageListItem = [];
+                usageListItem.push(api.name);
+                usageListItem.push(api.context);
+                usageListItem.push(api.version);
+                usageListItem.push(api.provider);
+                return usageListItem;
+            });
+            setUsageData(usageList);
+            setIsLoading(false);
+            setCount(pagination.total);
+        });
+    }
 
     useEffect(() => {
-        API.getEndpointCertificateUsage(certAlias).then((response) => {
-            setUsage(response.body.list);
-            console.log(response.body.list);
-        });
+        fetchUsage(certAlias,5,0);
     }, []);
+
+    const changePage = (newPage) => {
+        const offset = rowsPerPage * newPage;
+        fetchUsage(certAlias, rowsPerPage, offset);
+        setPage(newPage);
+    };
+
+    const changeRowsPerPage = (newRowsPerPage) => {
+        let offset = newRowsPerPage * page;
+        let newPage;
+        if (offset > count) {
+            newPage = 0;
+        } else if (count - 1 === offset && page !== 0) {
+            newPage = page - 1;
+        }
+        offset = newRowsPerPage * newPage;
+        fetchUsage(certAlias, newRowsPerPage, offset);
+        setRowsPerPage(newRowsPerPage);
+    };
 
     const handleUsageOpen = () => {
         setOpen(true);
@@ -97,31 +137,60 @@ function CertificateUsage(props) {
         setOpen(false);
     };
 
+    const columns = [
+        'API Name',
+        'Context',
+        'Version',
+        'Provider',
+    ];
+
+    const options = {
+        filterType: 'multiselect',
+        selectableRows: 'none',
+        title: false,
+        filter: false,
+        sort: false,
+        print: false,
+        download: false,
+        viewColumns: false,
+        customToolbar: false,
+        search: false,
+        paginated: true,
+        rowsPerPageOptions: [5, 10, 15],
+        serverSide: true,
+        rowsPerPage,
+        count,
+        page,
+        onChangePage: changePage,
+        onChangeRowsPerPage: changeRowsPerPage
+    };
+
     const dialogTitle = (
         <div className={classes.root}>
             <Typography compnent='div' variant='h5' className={classes.usageDialogHeader}>
                 <FormattedMessage
-                    id='Scopes.Usage.Usage.usage'
+                    id='APIs.details.endpoints.certificate.usage'
                     defaultMessage='Usages of certificate - '
                 />
-            </Typography>
-            <Typography compnent='div' variant='h5' className={classes.usageDialogHeader}>
                 {certAlias}
+                {isLoading && (
+                    <CircularProgress
+                        size={24}
+                        style={{ marginLeft: 15, position: "relative", top: 4 }}
+                    />
+                )}
             </Typography>
         </div>
     );
+
     const dialogContent = (
-        <CertificateUsageViewAPI certUsage={usage} />
+        <MUIDataTable title={false} data={usageData} columns={columns} options={options} />
     );
 
     return (
         <div>
             <Button onClick={handleUsageOpen} >
                 <UsageIcon />
-                <FormattedMessage
-                    id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.usage'
-                    defaultMessage='Usage'
-                />
             </Button>
             <Dialog onBackdropClick={setOpen} open={open} maxWidth='xl'>
                 <DialogTitle>
@@ -135,7 +204,7 @@ function CertificateUsage(props) {
                 <DialogActions>
                     <Button onClick={handleUsageCancel}>
                         <FormattedMessage
-                            id='Scopes.Usage.Usage.usage.cancel'
+                            id='APIs.details.endpoints.certificate.usage.cancel'
                             defaultMessage='Cancel'
                         />
                     </Button>
