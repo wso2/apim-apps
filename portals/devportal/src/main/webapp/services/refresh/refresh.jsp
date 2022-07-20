@@ -34,8 +34,7 @@
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%
-    Log log = LogFactory.getLog(this.getClass());
+<%    Log log = LogFactory.getLog(this.getClass());
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
     String context = Util.getTenantBaseStoreContext(request, (String) Util.readJsonObj(settings, "app.context"));
     String tenantDomain = Util.getServiceProviderTenantDomain(request);

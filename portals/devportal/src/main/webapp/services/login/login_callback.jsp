@@ -37,8 +37,7 @@
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%
-    Log log = LogFactory.getLog(this.getClass());
+<%    Log log = LogFactory.getLog(this.getClass());
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
     Map userTheme = Util.readJsonFile("/site/public/theme/userTheme.json", request.getServletContext());
     Gson gson = new GsonBuilder().setPrettyPrinting().create();

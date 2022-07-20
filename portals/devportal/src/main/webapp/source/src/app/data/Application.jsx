@@ -384,7 +384,7 @@ export default class Application extends Resource {
                 this._requestMetaData(),
             );
         });
-        return promisedDelete.then((response) => response.ok);
+        return promisedDelete.then((response) => response.status);
     }
 }
 

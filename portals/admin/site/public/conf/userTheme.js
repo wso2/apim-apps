@@ -8,7 +8,7 @@ const AppThemes = {
         palette: {
             primary: {
                 light: '#63ccff',
-                main: '#009be5',
+                main: '#1978D2',
                 dark: '#006db3',
             },
             secondary: {

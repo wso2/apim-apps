@@ -53,6 +53,11 @@
         </div>
         <script type="text/javascript" src="<%= context%>/site/public/theme/userTheme.js"></script>
         <script type="text/javascript" src="<%= context%>/services/settings/settings.js"></script>
+        <script type="text/javascript">
+            if (typeof module !== 'undefined') {
+                module.exports = Settings; // For Jest unit tests
+            }
+        </script>
         <script src="<%= context%>/site/public/fonts/iconfont/MaterialIcons.js"></script>
         <script src="<%= context%>/site/public/dist/<%= indexBundle%>"></script>
         <link rel="stylesheet" href="<%= context%>/site/public/fonts/iconfont/material-icons.css">

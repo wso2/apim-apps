@@ -227,7 +227,7 @@ export default function ListSubscriptionThrottlingPolicies() {
 
     const addButtonOverride = (
         <RouterLink to='/throttling/subscription/add'>
-            <Button variant='contained' color='primary'>
+            <Button variant='contained' color='primary' role='button'>
                 <FormattedMessage
                     id='Throttling.Subscription.Policy.List.addButtonProps.title'
                     defaultMessage='Add Policy'
