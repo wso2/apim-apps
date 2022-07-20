@@ -65,19 +65,20 @@ public class Util {
      * @return Map<String, Object>
      */
     public static Object readJsonObj(Map json, String path) {
-        try {
-            String[] pathStrings = path.split("\\.");
-            Map nestedJson = json;
+        String[] pathStrings = path.split("\\.");
+        Map nestedJson = json;
 
-            for (String pathString : Arrays.copyOfRange(pathStrings, 0, pathStrings.length - 1)) {
-                nestedJson = (Map) nestedJson.get(pathString);
+        for (String pathString : Arrays.copyOfRange(pathStrings, 0, pathStrings.length - 1)) {
+            if (!nestedJson.containsKey(pathString)) {
+                return null;
             }
+            nestedJson = (Map) nestedJson.get(pathString);
+        }
 
-            return nestedJson.get(pathStrings[pathStrings.length - 1]);
-
-        } catch (Exception e) {
+        if (!nestedJson.containsKey(pathStrings[pathStrings.length - 1])) {
             return null;
         }
+        return nestedJson.get(pathStrings[pathStrings.length - 1]);
     }
 
     public static String getLoopbackOrigin(String host) {
@@ -186,10 +187,10 @@ public class Util {
      *     context: '/devportal'
      *     proxy_context_path: '/apim',
      * </pre>
+     *
      * @param proxyContext required parameter
      * @param context      required parameter
      * @return String
-     *
      */
     public static String getAppContextForServerUrl(String context, String proxyContext) {
         String appContext = context;
