@@ -10,6 +10,7 @@ target
 *.war
 node_modules
 wso2carbon.log
+
 # Compiled class file
 *.class
 
@@ -40,3 +41,6 @@ nb-configuration.xml
 
 # WSO2 license file
 license-wso2.txt 
+
+# VS code configs
+.vscode

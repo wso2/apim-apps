@@ -16,6 +16,7 @@
   ~ under the License.
 --%>
 
+<%@page import="java.util.Base64"%>
 <%@page import="org.apache.commons.logging.LogFactory"%>
 <%@page import="org.apache.commons.logging.Log"%>
 <%@page import="org.wso2.carbon.apimgt.impl.dto.SystemApplicationDTO"%>
@@ -24,8 +25,9 @@
 <%@page import="com.google.gson.Gson"%>
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="java.net.URI"%>
-<%@page import="java.net.http.*"%>
-<%@page import="org.apache.axiom.om.util.Base64"%>
+<%@page import="java.net.http.HttpResponse"%>
+<%@page import="java.net.http.HttpRequest"%>
+<%@page import="java.net.http.HttpClient"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="org.wso2.carbon.apimgt.impl.dao.SystemApplicationDAO"%>
 <%@page import="org.wso2.carbon.apimgt.impl.utils.APIUtil"%>
@@ -82,8 +84,8 @@
     if (postLogoutRedirectURI == null) {
         postLogoutRedirectURI = serverUrl + appContext + LOGOUT_CALLBACK_URL_SUFFIX;
     }
-
-    if (request.getParameter("error") == "login_required") {
+    String error = request.getParameter("error");
+    if (error != null && error.equals("login_required")) {
         response.sendRedirect(postLogoutRedirectURI + "?referrer=" + referrer);
     } else if (request.getParameter("code") != null) {
         String loginCallbackUrl = Util.getTenantBasedLoginCallBack(request, LOGIN_CALLBACK_URL_SUFFIX);
@@ -108,7 +110,7 @@
         String clientSecret = systemApplicationDTO.getConsumerSecret();
         String concatenatedCredential = clientId + ":" + clientSecret;
         byte[] byteValue = concatenatedCredential.getBytes();
-        String base64encoded = Base64.encode(byteValue);
+        String base64encoded = Base64.getEncoder().encodeToString(byteValue);
         String tokenEndpoint = Util.getLoopbackOrigin((String) Util.readJsonObj(settings, "app.origin.host")) + TOKEN_URL_SUFFIX;
         String data = "code=" + request.getParameter("code") + "&grant_type=authorization_code&redirect_uri=" + loginCallbackUrl;
         HttpClient client = HttpClient.newHttpClient();

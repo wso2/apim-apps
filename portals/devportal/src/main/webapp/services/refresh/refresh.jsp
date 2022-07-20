@@ -16,11 +16,13 @@
   ~ under the License.
 --%>
 
+<%@page import="java.util.Base64"%>
+<%@page import="java.net.http.HttpResponse"%>
+<%@page import="java.net.http.HttpRequest"%>
+<%@page import="java.net.http.HttpClient"%>
 <%@page import="org.apache.commons.logging.LogFactory"%>
 <%@page import="org.apache.commons.logging.Log"%>
 <%@page import="java.net.URI"%>
-<%@page import="java.net.http.*"%>
-<%@page import="org.apache.axiom.om.util.Base64"%>
 <%@page import="org.wso2.carbon.apimgt.impl.dto.SystemApplicationDTO"%>
 <%@page import="org.wso2.carbon.apimgt.impl.dao.SystemApplicationDAO"%>
 <%@page import="java.util.HashMap"%>
@@ -80,7 +82,7 @@
             String clientSecret = systemApplicationDTO.getConsumerSecret();
             String concatenatedCredential = clientId + ":" + clientSecret;
             byte[] byteValue = concatenatedCredential.getBytes();
-            String base64encoded = Base64.encode(byteValue);
+            String base64encoded = Base64.getEncoder().encodeToString(byteValue);
             String tokenEndpoint = Util.getLoopbackOrigin((String) Util.readJsonObj(settings, "app.origin.host")) + TOKEN_URL_SUFFIX;
 
             HttpClient client = HttpClient.newHttpClient();

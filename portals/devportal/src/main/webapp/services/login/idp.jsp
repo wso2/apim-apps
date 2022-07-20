@@ -40,8 +40,8 @@
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%
-    Log log = LogFactory.getLog(this.getClass());
+<%    Log log = LogFactory.getLog(this.getClass());
+    log.debug("Services login DCR request");
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
     String context = Util.getTenantBaseStoreContext(request, (String) Util.readJsonObj(settings, "app.context"));
     String appContext = Util.getAppContextForServerUrl(context, (String) Util.readJsonObj(settings, "app.proxy_context_path"));
@@ -153,7 +153,8 @@
     }
 
     String authRequestParams = "?response_type=code&client_id=" + clientId + "&scope=" + scopes + "&state=" + state + "&redirect_uri=" + loginCallbackUrl;
-    if (request.getParameter("loginPrompt") == "false") {
+    String loginPrompt = request.getParameter("loginPrompt");
+    if (loginPrompt != null && loginPrompt.equals("false")) {
         authRequestParams += "&prompt=none";
     }
     log.debug("Redirecting to = " + authorizeEndpoint + authRequestParams);
