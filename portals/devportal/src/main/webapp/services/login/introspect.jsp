@@ -24,15 +24,16 @@
 <%@page import="java.util.HashMap"%>
 <%@page import="org.wso2.carbon.apimgt.impl.utils.APIUtil"%>
 <%@page import="java.net.URI"%>
-<%@page import="java.net.http.*"%>
+<%@page import="java.net.http.HttpResponse"%>
+<%@page import="java.net.http.HttpRequest"%>
+<%@page import="java.net.http.HttpClient"%>
 <%@page import="java.util.Map"%>
 <%@page import="org.wso2.carbon.apimgt.ui.devportal.Util"%>
 <%@include file="../constants.jsp" %>
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%
-    Log log = LogFactory.getLog(this.getClass());
+<%    Log log = LogFactory.getLog(this.getClass());
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
     String userInfoEndpoint = Util.getLoopbackOrigin((String) Util.readJsonObj(settings, "app.origin.host")) + "/oauth2/userinfo";

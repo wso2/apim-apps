@@ -24,7 +24,9 @@
 <%@page import="com.google.gson.Gson"%>
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="java.net.URI"%>
-<%@page import="java.net.http.*"%>
+<%@page import="java.net.http.HttpResponse"%>
+<%@page import="java.net.http.HttpRequest"%>
+<%@page import="java.net.http.HttpClient"%>
 <%@page import="org.apache.axiom.om.util.Base64"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="org.wso2.carbon.apimgt.impl.dao.SystemApplicationDAO"%>
@@ -35,8 +37,7 @@
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%
-    Log log = LogFactory.getLog(this.getClass());
+<%    Log log = LogFactory.getLog(this.getClass());
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
     Map userTheme = Util.readJsonFile("/site/public/theme/userTheme.json", request.getServletContext());
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
