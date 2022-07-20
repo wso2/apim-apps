@@ -235,7 +235,7 @@ export default function ListApplications() {
                             page={page}
                             rowsPerPage={rowsPerPage}
                             editComponentProps={{
-                                icon: <EditIcon />,
+                                icon: <EditIcon aria-label='edit-application-settings' />,
                                 title: 'Change Application Owner',
                                 applicationList,
                             }}

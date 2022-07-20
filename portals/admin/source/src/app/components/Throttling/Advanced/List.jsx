@@ -76,7 +76,14 @@ export default function ListMG() {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
                         const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
-                        return <RouterLink to={`/throttling/advanced/${artifactId}`}>{value}</RouterLink>;
+                        return (
+                            <RouterLink
+                                to={`/throttling/advanced/${artifactId}`}
+                                aria-label={`advanced-policies+${artifactId}`}
+                            >
+                                {value}
+                            </RouterLink>
+                        );
                     } else {
                         return <div />;
                     }

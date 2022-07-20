@@ -95,6 +95,7 @@ class AppsTableContent extends Component {
             CREATED: 'CREATED',
             APPROVED: 'APPROVED',
             REJECTED: 'REJECTED',
+            DELETE_PENDING: 'DELETE_PENDING',
         };
     }
 
@@ -127,11 +128,12 @@ class AppsTableContent extends Component {
                         return (
                             <StyledTableRow className={classes.tableRow} key={app.applicationId} data-testid={'row-' + app.name}>
                                 <StyledTableCell align='left' className={classes.appName}>
-                                    {app.status === this.APPLICATION_STATES.APPROVED ? (
-                                        <Link to={'/applications/' + app.applicationId}>{app.name}</Link>
-                                    ) : (
-                                        app.name
-                                    )}
+                                    {app.status === this.APPLICATION_STATES.APPROVED
+                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING ? (
+                                            <Link to={'/applications/' + app.applicationId}>{app.name}</Link>
+                                        ) : (
+                                            app.name
+                                        )}
                                 </StyledTableCell>
                                 <StyledTableCell align='left'>{app.owner.toLowerCase()}</StyledTableCell>
                                 <StyledTableCell align='left'>{app.throttlingPolicy}</StyledTableCell>
@@ -173,6 +175,14 @@ class AppsTableContent extends Component {
                                             />
                                         </Typography>
                                     )}
+                                    {app.status === this.APPLICATION_STATES.DELETE_PENDING && (
+                                        <Typography variant='subtitle1' component='label' gutterBottom>
+                                            <FormattedMessage
+                                                id='Applications.Listing.AppsTableContent.deletePending'
+                                                defaultMessage='DELETE PENDING'
+                                            />
+                                        </Typography>
+                                    )}
                                 </StyledTableCell>
                                 <StyledTableCell align='left'>{app.subscriptionCount}</StyledTableCell>
                                 <StyledTableCell align='left'>
@@ -180,7 +190,8 @@ class AppsTableContent extends Component {
                                         resourcePath={resourcePaths.SINGLE_APPLICATION}
                                         resourceMethod={resourceMethods.PUT}
                                     >
-                                        {app.status === this.APPLICATION_STATES.APPROVED && (
+                                        {(app.status === this.APPLICATION_STATES.APPROVED
+                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING) && (
                                             <Tooltip title={isAppOwner
                                                 ? (
                                                     <FormattedMessage
@@ -228,7 +239,8 @@ class AppsTableContent extends Component {
                                             <span>
                                                 <IconButton
                                                     className='itest-application-delete-button'
-                                                    disabled={app.deleting || !isAppOwner}
+                                                    disabled={app.deleting || !isAppOwner
+                                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING}
                                                     data-appid={app.applicationId}
                                                     onClick={toggleDeleteConfirmation}
                                                     color='default'

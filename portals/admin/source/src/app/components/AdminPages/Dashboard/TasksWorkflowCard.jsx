@@ -95,26 +95,32 @@ export default function TasksWorkflowCard() {
         const promiseStateChange = restApi.workflowsGet('AM_API_STATE');
         const promiseApiProductStateChange = restApi.workflowsGet('AM_API_PRODUCT_STATE');
         const promiseAppCreation = restApi.workflowsGet('AM_APPLICATION_CREATION');
+        const promiseAppDeletion = restApi.workflowsGet('AM_APPLICATION_DELETION');
         const promiseSubCreation = restApi.workflowsGet('AM_SUBSCRIPTION_CREATION');
+        const promiseSubDeletion = restApi.workflowsGet('AM_SUBSCRIPTION_DELETION');
         const promiseSubUpdate = restApi.workflowsGet('AM_SUBSCRIPTION_UPDATE');
         const promiseRegProd = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_PRODUCTION');
         const promiseRegSb = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_SANDBOX');
-        Promise.all([promiseUserSign, promiseStateChange, promiseAppCreation, promiseSubCreation,
-            promiseSubUpdate, promiseRegProd, promiseRegSb, promiseApiProductStateChange])
-            .then(([resultUserSign, resultStateChange, resultAppCreation, resultSubCreation,
-                resultSubUpdate, resultRegProd, resultRegSb, resultApiProductStateChange]) => {
+        Promise.all([promiseUserSign, promiseStateChange, promiseAppCreation, promiseAppDeletion, promiseSubCreation,
+            promiseSubDeletion, promiseSubUpdate, promiseRegProd, promiseRegSb, promiseApiProductStateChange])
+            .then(([resultUserSign, resultStateChange, resultAppCreation, resultAppDeletion, resultSubCreation,
+                resultSubDeletion, resultSubUpdate, resultRegProd, resultRegSb, resultApiProductStateChange]) => {
                 const userCreation = resultUserSign.body.list;
                 const stateChange = resultStateChange.body.list;
                 const productStateChange = resultApiProductStateChange.body.list;
                 const applicationCreation = resultAppCreation.body.list;
+                const applicationDeletion = resultAppDeletion.body.list;
                 const subscriptionCreation = resultSubCreation.body.list;
+                const subscriptionDeletion = resultSubDeletion.body.list;
                 const subscriptionUpdate = resultSubUpdate.body.list;
                 const registration = resultRegProd.body.list.concat(resultRegSb.body.list);
                 setAllTasksSet({
                     userCreation,
                     stateChange,
                     applicationCreation,
+                    applicationDeletion,
                     subscriptionCreation,
+                    subscriptionDeletion,
                     subscriptionUpdate,
                     registration,
                     productStateChange,
@@ -212,6 +218,15 @@ export default function TasksWorkflowCard() {
                 count: allTasksSet.applicationCreation.length,
             },
             {
+                icon: DnsRoundedIcon,
+                path: '/tasks/application-deletion',
+                name: intl.formatMessage({
+                    id: 'Dashboard.tasksWorkflow.compactTasks.applicationDeletion.name',
+                    defaultMessage: 'Application Deletion',
+                }),
+                count: allTasksSet.applicationDeletion.length,
+            },
+            {
                 icon: PermMediaOutlinedIcon,
                 path: '/tasks/subscription-creation',
                 name: intl.formatMessage({
@@ -219,6 +234,15 @@ export default function TasksWorkflowCard() {
                     defaultMessage: 'Subscription Creation',
                 }),
                 count: allTasksSet.subscriptionCreation.length,
+            },
+            {
+                icon: PermMediaOutlinedIcon,
+                path: '/tasks/subscription-deletion',
+                name: intl.formatMessage({
+                    id: 'Dashboard.tasksWorkflow.compactTasks.subscriptionDeletion.name',
+                    defaultMessage: 'Subscription Deletion',
+                }),
+                count: allTasksSet.subscriptionDeletion.length,
             },
             {
                 icon: PermMediaOutlinedIcon,
@@ -384,6 +408,38 @@ export default function TasksWorkflowCard() {
         });
     };
 
+    const getApplicationDeletionFewerTaskComponent = () => {
+        // Application Creation tasks related component generation
+        return allTasksSet.applicationDeletion.map((task) => {
+            return (
+                <Box display='flex' alignItems='center' mt={1}>
+                    <Box flexGrow={1}>
+                        <Typography variant='subtitle2'>
+                            {task.properties.applicationName}
+                        </Typography>
+                        <Box display='flex'>
+                            <Typography variant='body2'>
+                                <FormattedMessage
+                                    id='Dashboard.tasksWorkflow.fewerTasks.card.application.deletedBy.prefix'
+                                    defaultMessage='Application Deleted by '
+                                />
+                            </Typography>
+                            <Typography style={{ 'font-weight': 'bold' }} variant='body2'>
+                                &nbsp;
+                                {task.properties.userName}
+                                &nbsp;
+                            </Typography>
+                            <Typography variant='body2'>
+                                {moment(task.createdTime).fromNow()}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    {getApproveRejectButtons(task.referenceId)}
+                </Box>
+            );
+        });
+    };
+
     // Fewer task component's user creation task element
     const getUserCreationFewerTaskComponent = () => {
         // User Creation tasks related component generation
@@ -436,6 +492,43 @@ export default function TasksWorkflowCard() {
                                 <FormattedMessage
                                     id='Dashboard.tasksWorkflow.fewerTasks.card.subscription.subscribedBy'
                                     defaultMessage='Subscribed by'
+                                />
+                            </Typography>
+                            <Typography style={{ 'font-weight': 'bold' }} variant='body2'>
+                                &nbsp;
+                                {task.properties.subscriber}
+                                &nbsp;
+                            </Typography>
+                            <Typography variant='body2'>
+                                {moment(task.createdTime).fromNow()}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    {getApproveRejectButtons(task.referenceId)}
+                </Box>
+            );
+        });
+    };
+
+    // Fewer task component's subscription creation task element
+    const getSubscriptionDeletionFewerTaskComponent = () => {
+        // Subscription Update tasks related component generation
+        return allTasksSet.subscriptionDeletion.map((task) => {
+            return (
+                <Box display='flex' alignItems='center' mt={1}>
+                    <Box flexGrow={1}>
+                        <Typography variant='subtitle2'>
+                            {task.properties.apiName + '-' + task.properties.apiVersion}
+                        </Typography>
+                        <Box display='flex'>
+                            <Typography style={{ 'font-weight': 'bold' }} variant='body2'>
+                                {task.properties.applicationName + ','}
+                                &nbsp;
+                            </Typography>
+                            <Typography variant='body2'>
+                                <FormattedMessage
+                                    id='Dashboard.tasksWorkflow.fewerTasks.card.subscription.deletedBy'
+                                    defaultMessage='Subscription Deleted by'
                                 />
                             </Typography>
                             <Typography style={{ 'font-weight': 'bold' }} variant='body2'>
@@ -635,8 +728,10 @@ export default function TasksWorkflowCard() {
 
                     <Divider light />
                     {getApplicationCreationFewerTaskComponent()}
+                    {getApplicationDeletionFewerTaskComponent()}
                     {getUserCreationFewerTaskComponent()}
                     {getSubscriptionCreationFewerTaskComponent()}
+                    {getSubscriptionDeletionFewerTaskComponent()}
                     {getSubscriptionUpdateFewerTaskComponent()}
                     {getRegistrationCreationFewerTaskComponent()}
                     {getStateChangeFewerTaskComponent()}
