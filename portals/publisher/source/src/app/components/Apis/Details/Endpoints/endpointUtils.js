@@ -189,9 +189,13 @@ function createEndpointConfig(endpointType) {
         case 'awslambda':
             tmpEndpointConfig.endpoint_type = 'awslambda';
             tmpEndpointConfig.access_method = 'role-supplied';
+            tmpEndpointConfig.assume_role = false;
             tmpEndpointConfig.amznAccessKey = '';
             tmpEndpointConfig.amznSecretKey = '';
             tmpEndpointConfig.amznRegion = '';
+            tmpEndpointConfig.amznRoleArn = '';
+            tmpEndpointConfig.amznRoleSessionName = '';
+            tmpEndpointConfig.amznRoleRegion = '';
             break;
         default:
             tmpEndpointConfig.endpoint_type = 'default';
