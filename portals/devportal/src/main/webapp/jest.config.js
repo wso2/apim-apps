@@ -31,7 +31,7 @@ module.exports = {
             '<rootDir>/source/Tests/Unit/__mocks__/fileMock.js',
         '\\.(css|less)$': '<rootDir>/source/Tests/Unit/__mocks__/styleMock.js',
         Config: '<rootDir>/source/src/app/data/defaultTheme.js',
-        Settings: '<rootDir>/site/public/theme/settings.js',
+        Settings: '<rootDir>/site/public/theme/settings.json',
         '^MaterialIcons$': '<rootDir>/site/public/fonts/iconfont/MaterialIcons.js',
         'monaco-editor': '<rootDir>/node_modules/react-monaco-editor',
     },
