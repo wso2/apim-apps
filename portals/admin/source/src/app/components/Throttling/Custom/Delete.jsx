@@ -64,7 +64,7 @@ function Delete(props) {
         <FormDialogBase
             title='Delete Custom Policy?'
             saveButtonText='Delete'
-            icon={<DeleteForeverIcon />}
+            icon={<DeleteForeverIcon aria-label='delete-custom-policies' />}
             formSaveCallback={formSaveCallback}
         >
             <DialogContentText>
