@@ -234,6 +234,16 @@ class Subscriptions extends React.Component {
 
         promisedDelete
             .then((response) => {
+                if (response.status === 201) {
+                    console.log(response);
+                    Alert.info(intl.formatMessage({
+                        defaultMessage: 'Subscription Deletion Request Created!',
+                        id: 'Applications.Details.Subscriptions.request.created',
+                    }));
+                    const { applicationId } = this.props.application;
+                    this.updateSubscriptions(applicationId);
+                    return;
+                }
                 if (response.status !== 200) {
                     console.log(response);
                     Alert.info(intl.formatMessage({
@@ -441,7 +451,6 @@ class Subscriptions extends React.Component {
                             className={classes.buttonElm}
                             size='small'
                             onClick={this.handleOpenDialog}
-                            id='subscribe-api-btn'
                         >
                             <Icon>add_circle_outline</Icon>
                             <FormattedMessage
@@ -476,7 +485,7 @@ class Subscriptions extends React.Component {
                                         {subscriptionsNotFound ? (
                                             <ResourceNotFound />
                                         ) : (
-                                            <Table className={classes.subsTable} id='subscriptions-table'>
+                                            <Table className={classes.subsTable}>
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell className={classes.firstCell}>
@@ -605,12 +614,7 @@ class Subscriptions extends React.Component {
 
                             </Box>
 
-                            <IconButton
-                                aria-label='close'
-                                className={classes.closeButton}
-                                onClick={this.handleOpenDialog}
-                                id='close-btn'
-                            >
+                            <IconButton aria-label='close' className={classes.closeButton} onClick={this.handleOpenDialog}>
                                 <Icon>cancel</Icon>
                             </IconButton>
                         </MuiDialogTitle>
