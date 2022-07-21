@@ -16,15 +16,15 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
+    
     <parent>
         <groupId>org.wso2.carbon.apimgt.ui</groupId>
         <artifactId>apim.ui.apps</artifactId>
         <version>9.0.340-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-
+    
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.apimgt.ui.devportal</artifactId>
     <packaging>war</packaging>
     <name>WSO2 API Manager - Developer portal UI</name>
@@ -32,17 +32,13 @@
     <description>This feature contains the core UI components of API Manager Developer UI</description>
 
     <properties>
-        <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <!-- APIM UI Component Version -->
         <carbon.apimgt.ui.version>${project.version}</carbon.apimgt.ui.version>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.test.skip>true</maven.test.skip>
-        <npm.build.skip>true</npm.build.skip>
+        <maven.test.skip>false</maven.test.skip>
+        <npm.build.skip>false</npm.build.skip>
         <npm.executable>npm</npm.executable>
         <npm.build.command>build:prod</npm.build.command>
         <npm.test.command>test:ci</npm.test.command>
-        <npm.working.dir>./</npm.working.dir>
+        <npm.working.dir>./src/main/webapp/</npm.working.dir>
     </properties>
 
     <dependencies>
@@ -69,6 +65,7 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.9.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.apimgt</groupId>
@@ -83,11 +80,6 @@
             <version>1.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-api</artifactId>
-            <version>1.4.0</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -95,11 +87,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
-                <version>2.3.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
