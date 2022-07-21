@@ -118,13 +118,11 @@ function CertificateUsage(props) {
 
     const changeRowsPerPage = (newRowsPerPage) => {
         let offset = newRowsPerPage * page;
-        let newPage;
         if (offset > count) {
-            newPage = 0;
+            offset = newRowsPerPage * 0;
         } else if (count - 1 === offset && page !== 0) {
-            newPage = page - 1;
+            offset = newRowsPerPage * page - 1;
         }
-        offset = newRowsPerPage * newPage;
         fetchUsage(certAlias, newRowsPerPage, offset);
         setRowsPerPage(newRowsPerPage);
     };
