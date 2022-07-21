@@ -3919,7 +3919,7 @@
     "defaultMessage": "Page Not Found"
   },
   "Base.Footer.Footer.product_details": {
-    "defaultMessage": "WSO2 API-M v4.1.0 | © 2022 WSO2 Inc"
+    "defaultMessage": "WSO2 API-M v4.1.0 | © 2022 WSO2 LLC"
   },
   "Base.Header.avatar.Avatar.logout": {
     "defaultMessage": "Logout"
