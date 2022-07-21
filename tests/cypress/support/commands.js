@@ -1066,8 +1066,10 @@ Cypress.Commands.add('addScopeMappingFromAPIMAdminPortal', (roleName, roleAlias)
 
     scopeAssignmentsPage.selectRoleAlias(roleAlias)
     scopeAssignmentsPage.getAddNewScopeSavetButton().click()
+    cy.contains(`Add new alias for ${roleName} successfully`)
 
     scopeAssignmentsPage.getSearchTextBox().type(roleName)
+    cy.wait(3000)
     // e.g. apicreatorInternal/creator
     scopeAssignmentsPage.getRolesRecordOfTableRow(0).should('have.text', `${roleName}${roleAlias}`).click()
 
