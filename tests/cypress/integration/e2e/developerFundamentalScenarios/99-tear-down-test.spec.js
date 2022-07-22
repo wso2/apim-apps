@@ -53,7 +53,7 @@ describe("Tear down Developer Fundemental TestS cenarios", () => {
                 // element exisit to delte assert to verify if exact element
                 scopeAssignmentsPage.getRolesRecordOfTableRow(0).should('have.text', `${testData.apiCreatorUserRole}${userRoles.Internal_creator}`).click()
                 cy.deleteScopeMappingFromAPIMAdminPortal(testData.apiCreatorUserRole)
-                cy.wait(1000)
+                cy.wait(3000)
                 apiCreatorScopeMappingDeleteLog = `${testData.apiCreatorUserRole} Deleted Successfully .... !`
 
                 // apicreator scoping mapping exist AND trying for apipublisher scope mapping

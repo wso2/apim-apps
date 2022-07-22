@@ -17,6 +17,9 @@
  */
 
 import Utils from "@support/utils";
+import PublisherComonPage from "../../../support/pages/publisher/PublisherComonPage";
+
+const publisherComonPage = new PublisherComonPage();
 
 describe("Anonymous view apis", () => {
     const { publisher, developer, password, tenantUser, tenant, } = Utils.getUserInfo();
@@ -28,11 +31,11 @@ describe("Anonymous view apis", () => {
 
     it.only("Anonymous view apis", () => {
         cy.loginToPublisher(publisher, password);
-
+        publisherComonPage.waitUntillPublisherLoadingSpinnerExit()
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then((serverResponse) => {
-                console.log(serverResponse);
+                cy.log(serverResponse);
                 cy.logoutFromPublisher();
                 cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
 
@@ -46,7 +49,8 @@ describe("Anonymous view apis", () => {
                     if ($apis.length) {
                         // At least one with api name was found.
                         // Return a jQuery object.
-                        return $apis;
+                        cy.log("chekc 1")
+                        return Promise.resolve($apis);
                     }
 
                     if (--remainingAttempts) {
