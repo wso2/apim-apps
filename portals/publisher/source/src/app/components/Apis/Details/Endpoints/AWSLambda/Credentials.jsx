@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
     Grid,
@@ -25,14 +25,14 @@ import {
     Typography,
     Tooltip,
     RadioGroup,
-    FormControl,
     FormControlLabel,
     MenuItem,
-    InputLabel,
-    Select,
+    Collapse,
     Radio,
 } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import HelpOutline from '@material-ui/icons/HelpOutline';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -54,6 +54,10 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(1),
         width: 300,
     },
+    helpButton: {
+        padding: 0,
+        minWidth: 20,
+    },
     helpIcon: {
         fontSize: 20,
     },
@@ -62,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(1),
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
+    },
+    contentWrapper: {
+        paddingLeft: theme.spacing(2),
     },
 }));
 
@@ -78,7 +85,6 @@ export default function Credentials(props) {
     } = props;
     const classes = useStyles();
     const [pageError, setPageError] = useState(null);
-    const inputLabel = useRef(null);
     const handleChange = (event) => {
         const newEndpointConfig = { ...endpointConfig };
         newEndpointConfig.access_method = event.target.value;
@@ -87,6 +93,14 @@ export default function Credentials(props) {
         newEndpointConfig.amznRegion = '';
         endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
         setPageError(null);
+    };
+    const handleEnableSTSAssumeRoleChange = (event) => {
+        const newEndpointConfig = { ...endpointConfig };
+        newEndpointConfig.assume_role = event.target.checked;
+        newEndpointConfig.amznRoleArn = '';
+        newEndpointConfig.amznRoleSessionName = '';
+        newEndpointConfig.amznRoleRegion = '';
+        endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
     };
     const { regions } = Configurations.apis.endpoint.aws;
     useEffect(() => {
@@ -97,147 +111,137 @@ export default function Credentials(props) {
     }, []);
     return (
         <>
-            <Typography className={classes.typography}>
-                <FormattedMessage
-                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                    + '.endpoint.accessMethod'}
-                    defaultMessage='Access Method'
-                />
-            </Typography>
-            <RadioGroup
-                aria-label='accessMethod'
-                name='accessMethod'
-                value={endpointConfig.access_method}
-                onChange={handleChange}
-            >
-                <div>
-                    <FormControlLabel
-                        value='role-supplied'
-                        control={<Radio color='primary' />}
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.accessMethod.roleSupplied'}
-                                    defaultMessage='Using IAM role-supplied temporary AWS credentials'
-                                />
-                            )
-                        }
+            <Grid item md={12} xs={12}>
+                <Typography className={classes.typography}>
+                    <FormattedMessage
+                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                        + '.endpoint.accessMethod'}
+                        defaultMessage='Access Method'
                     />
-                    <Tooltip
-                        title={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.tooltip'}
-                                    defaultMessage={'You can and should use an IAM role to manage temporary '
-                                    + 'credentials for applications that run on an EC2 instance'}
-                                />
-                            )
-                        }
-                    >
-                        <Icon className={classes.helpIcon}>help_outline</Icon>
-                    </Tooltip>
-                </div>
-                <div>
-                    <FormControlLabel
-                        value='stored'
-                        control={<Radio color='primary' />}
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.accessMethod.stored'}
-                                    defaultMessage='Using stored AWS credentials'
-                                />
-                            )
-                        }
-                    />
-                </div>
-            </RadioGroup>
-            <Grid item>
-                <TextField
-                    required
-                    disabled={endpointConfig.access_method === 'role-supplied'}
-                    id='outlined-required'
-                    label={
-                        (
-                            <FormattedMessage
-                                id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                + '.endpoint.accessKey'}
-                                defaultMessage='Access Key'
-                            />
-                        )
-                    }
-                    margin='normal'
-                    variant='outlined'
-                    className={classes.textField}
-                    value={endpointConfig.amznAccessKey}
-                    onChange={(event) => {
-                        const newEndpointConfig = { ...endpointConfig };
-                        newEndpointConfig.amznAccessKey = event.target.value;
-                        endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                    }}
-                />
-                <TextField
-                    required
-                    disabled={endpointConfig.access_method === 'role-supplied'}
-                    id='outlined-password-input-required'
-                    label={
-                        (
-                            <FormattedMessage
-                                id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                + '.endpoint.secretKey'}
-                                defaultMessage='Secret Key'
-                            />
-                        )
-                    }
-                    type='password'
-                    margin='normal'
-                    variant='outlined'
-                    className={classes.textField}
-                    value={endpointConfig.amznSecretKey}
-                    onChange={(event) => {
-                        const newEndpointConfig = { ...endpointConfig };
-                        newEndpointConfig.amznSecretKey = event.target.value;
-                        endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                    }}
-                />
-                <FormControl
-                    required
-                    margin='normal'
-                    variant='outlined'
-                    disabled={endpointConfig.access_method === 'role-supplied'}
+                </Typography>
+            </Grid>
+            <Grid item className={classes.contentWrapper}>
+                <RadioGroup
+                    aria-label='accessMethod'
+                    name='accessMethod'
+                    value={endpointConfig.access_method}
+                    onChange={handleChange}
                 >
-                    <InputLabel ref={inputLabel}>
-                        <FormattedMessage
-                            id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                            + '.endpoint.region'}
-                            defaultMessage='Region'
+                    <div>
+                        <FormControlLabel
+                            value='role-supplied'
+                            control={<Radio color='primary' />}
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.accessMethod.roleSupplied'}
+                                        defaultMessage='Using IAM role-supplied temporary AWS credentials'
+                                    />
+                                )
+                            }
                         />
-                    </InputLabel>
-                    <Select
-                        labelId='region-label'
-                        autoWidth={false}
-                        className={classes.selectField}
+                        <Tooltip
+                            title={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.tooltip'}
+                                        defaultMessage={'You can and should use an IAM role to manage temporary '
+                                        + 'credentials for applications that run on an AWS instance'}
+                                    />
+                                )
+                            }
+                        >
+                            <Button className={classes.helpButton}>
+                                <HelpOutline className={classes.helpIcon}/>
+                            </Button>
+                        </Tooltip>
+                    </div>
+                    <div>
+                        <FormControlLabel
+                            value='stored'
+                            control={<Radio color='primary' />}
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.accessMethod.stored'}
+                                        defaultMessage='Using stored AWS credentials'
+                                    />
+                                )
+                            }
+                        />
+                    </div>
+                </RadioGroup>
+            </Grid>
+            <Grid item className={classes.contentWrapper}>
+                <Collapse in={endpointConfig.access_method === 'stored'}>
+                    <TextField
+                        required
+                        id='outlined-required'
+                        label={
+                            (
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                    + '.endpoint.accessKey'}
+                                    defaultMessage='Access Key'
+                                />
+                            )
+                        }
+                        margin='normal'
+                        variant='outlined'
+                        className={classes.textField}
+                        value={endpointConfig.amznAccessKey}
+                        onChange={(event) => {
+                            const newEndpointConfig = { ...endpointConfig };
+                            newEndpointConfig.amznAccessKey = event.target.value;
+                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                        }}
+                    />
+                    <TextField
+                        required
+                        id='outlined-password-input-required'
+                        label={
+                            (
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                    + '.endpoint.secretKey'}
+                                    defaultMessage='Secret Key'
+                                />
+                            )
+                        }
+                        type='password'
+                        margin='normal'
+                        variant='outlined'
+                        className={classes.textField}
+                        value={endpointConfig.amznSecretKey}
+                        onChange={(event) => {
+                            const newEndpointConfig = { ...endpointConfig };
+                            newEndpointConfig.amznSecretKey = event.target.value;
+                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                        }}
+                    />
+                    <TextField
+                        select
+                        required
+                        label={
+                            (
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                    + '.endpoint.region'}
+                                    defaultMessage='Region'
+                                />
+                            )
+                        }
+                        margin='normal'
+                        variant='outlined'
+                        className={classes.textField}
+                        value={endpointConfig.amznRegion}
                         onChange={(event) => {
                             const newEndpointConfig = { ...endpointConfig };
                             newEndpointConfig.amznRegion = event.target.value;
                             endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                        }}
-                        value={endpointConfig.amznRegion}
-                        MenuProps={{
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            },
-                            getContentAnchorEl: null,
-                            keepMounted: true,
-                            PaperProps: {
-                                style: {
-                                    maxHeight: 300,
-                                },
-                            },
                         }}
                     >
                         {Object.entries(regions).map(([key, value]) => ((
@@ -245,9 +249,104 @@ export default function Credentials(props) {
                                 {value}
                             </MenuItem>
                         )))}
-                    </Select>
-                </FormControl>
+                    </TextField>
+                </Collapse>
             </Grid>
+            <br/>
+            <Grid item className={classes.contentWrapper}>
+                <FormControlLabel
+                    control={(
+                        <Checkbox
+                            color='primary'
+                            checked={endpointConfig.assume_role}
+                            onChange={handleEnableSTSAssumeRoleChange}
+                            name='enableSTSAssumeRole'
+                        />
+                    )}
+                    label={
+                        (
+                            <FormattedMessage
+                                id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                + '.endpoint.enableSTSAssumeRole'}
+                                defaultMessage='Enable STS AssumeRole'
+                            />
+                        )
+                    }
+                />
+                <Collapse in={endpointConfig.assume_role}>
+                    <TextField
+                        required
+                        label={
+                            (
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                    + '.endpoint.roleArn'}
+                                    defaultMessage='Role ARN'
+                                />
+                            )
+                        }
+                        margin='normal'
+                        variant='outlined'
+                        className={classes.textField}
+                        value={endpointConfig.amznRoleArn}
+                        onChange={(event) => {
+                            const newEndpointConfig = { ...endpointConfig };
+                            newEndpointConfig.amznRoleArn = event.target.value;
+                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                        }}
+                    />
+                    <TextField
+                        required
+                        label={
+                            (
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                    + '.endpoint.roleSessionName'}
+                                    defaultMessage='Role Session Name'
+                                />
+                            )
+                        }
+                        margin='normal'
+                        variant='outlined'
+                        className={classes.textField}
+                        value={endpointConfig.amznRoleSessionName}
+                        onChange={(event) => {
+                            const newEndpointConfig = { ...endpointConfig };
+                            newEndpointConfig.amznRoleSessionName = event.target.value;
+                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                        }}
+                    />
+                    <TextField
+                        select
+                        required
+                        label={
+                            (
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                    + '.endpoint.roleRegion'}
+                                    defaultMessage='Region'
+                                />
+                            )
+                        }
+                        margin='normal'
+                        variant='outlined'
+                        className={classes.textField}
+                        value={endpointConfig.amznRoleRegion}
+                        onChange={(event) => {
+                            const newEndpointConfig = { ...endpointConfig };
+                            newEndpointConfig.amznRoleRegion = event.target.value;
+                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                        }}
+                    >
+                        {Object.entries(regions).map(([key, value]) => ((
+                            <MenuItem key={key} value={key}>
+                                {value}
+                            </MenuItem>
+                        )))}
+                    </TextField>
+                </Collapse>
+            </Grid>
+            <br/>
             <Grid item>
                 <Link to={`/apis/${apiId}/resources`}>
                     <Typography style={{ marginLeft: '10px' }} color='primary' display='inline' variant='caption'>

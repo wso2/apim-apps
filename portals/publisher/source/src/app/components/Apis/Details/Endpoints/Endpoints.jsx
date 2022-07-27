@@ -351,13 +351,22 @@ function Endpoints(props) {
                             defaultMessage: 'Access Key, Secret Key and Region should not be empty',
                         }),
                     };
+                } else if (endpointConfig.amznAccessKey !== '' && endpointConfig.amznSecretKey === 'AWS_SECRET_KEY') {
+                    return {
+                        isValid: false,
+                        message: '',
+                    };
                 }
             }
-            if (endpointConfig.amznAccessKey !== '' && endpointConfig.amznSecretKey === 'AWS_SECRET_KEY') {
+            if (endpointConfig.assume_role && !(endpointConfig.amznRoleArn !== '' 
+            && endpointConfig.amznRoleSessionName !== '' && endpointConfig.amznRoleRegion !== '')) {
                 return {
                     isValid: false,
-                    message: '',
-                };
+                    message: intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.missing.stsAssumeRole.config',
+                        defaultMessage: 'Role ARN, Role Session Name and Region should not be empty',
+                    }),
+                }
             }
         } else if (endpointType === 'load_balance') {
             /**
