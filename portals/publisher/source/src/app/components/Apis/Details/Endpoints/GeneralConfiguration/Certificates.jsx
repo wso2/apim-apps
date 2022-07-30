@@ -38,7 +38,7 @@ import {
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import UploadCertificate from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/UploadCertificate';
-import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage";
+import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage.tsx";
 import API from '../../../../../data/api';
 
 const useStyles = makeStyles((theme) => ({
@@ -290,7 +290,7 @@ function Certificates(props) {
                         { certificateUsageDetails.count > 1 ? getWarningMessage() : ''}
                         <FormattedMessage
                             id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete'
-                            defaultMessage='Do you want to delete '
+                            defaultMessage='Are you sure you want to delete '
                         />
                         {' '}
                         { certificateToDelete.alias + '?'}

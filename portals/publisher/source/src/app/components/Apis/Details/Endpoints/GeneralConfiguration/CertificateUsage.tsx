@@ -17,8 +17,8 @@
  */
 
 import React, {useEffect, useState} from 'react';
-import {FormattedMessage, injectIntl} from 'react-intl';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
+import {FormattedMessage} from 'react-intl';
+import {makeStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {Typography} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -31,31 +31,19 @@ import API from 'AppData/api';
 import MUIDataTable from "mui-datatables";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-const styles = {
-    appBar: {
-        position: 'relative',
-    },
-    flex: {
-        flex: 1,
-    },
-    popupHeader: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    splitWrapper: {
-        padding: 0,
-    },
-    docName: {
-        alignItems: 'center',
-        display: 'flex',
-    },
-    button: {
-        height: 30,
-        marginLeft: 30,
-    },
+type CertificateUsageProps = {
+    certAlias: string
 };
 
+type APIMetaData = {
+    id: string,
+    name: string,
+    context: string,
+    version: string,
+    provider: string
+}
+
+// @ts-ignore
 const useStyles = makeStyles(() => ({
     root: {
         width: '100%',
@@ -77,22 +65,22 @@ const useStyles = makeStyles(() => ({
  * @param {any} props Props for usage function.
  * @returns {any} Returns the rendered UI for scope usage.
  */
-function CertificateUsage(props) {
+export const CertificateUsage = (props: CertificateUsageProps) => {
     const { certAlias } = props;
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
-    const [usageData, setUsageData] = useState( []);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [count, setCount] = useState(-1);
-    const [isLoading, setIsLoading] = useState(false);
+    const [open, setOpen] = useState<boolean>(false);
+    const [usageData, setUsageData] = useState<any>( []);
+    const [page, setPage] = useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+    const [count, setCount] = useState<number>(-1);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const fetchUsage = (alias, limit, offset) => {
+    const fetchUsage = (alias: string, limit: number, offset: number) => {
         setIsLoading( true);
-        API.getEndpointCertificateUsage(alias,limit,offset).then((response) => {
+        API.getEndpointCertificateUsage(alias, String(limit), String(offset)).then((response: any) => {
             const {list} = response.body;
             const {pagination} = response.body;
-            const usageList = list.map((api) => {
+            const usageList = list.map((api: APIMetaData) => {
                 const usageListItem = [];
                 usageListItem.push(api.name);
                 usageListItem.push(api.context);
@@ -110,16 +98,16 @@ function CertificateUsage(props) {
         fetchUsage(certAlias,5,0);
     }, []);
 
-    const changePage = (newPage) => {
+    const changePage = (newPage: number) => {
         const offset = rowsPerPage * newPage;
         fetchUsage(certAlias, rowsPerPage, offset);
         setPage(newPage);
     };
 
-    const changeRowsPerPage = (newRowsPerPage) => {
+    const changeRowsPerPage = (newRowsPerPage: number) => {
         let offset = newRowsPerPage * page;
         if (offset > count) {
-            offset = newRowsPerPage * 0;
+            offset = 0;
         } else if (count - 1 === offset && page !== 0) {
             offset = newRowsPerPage * page - 1;
         }
@@ -163,9 +151,10 @@ function CertificateUsage(props) {
         onChangeRowsPerPage: changeRowsPerPage
     };
 
+
     const dialogTitle = (
         <div className={classes.root}>
-            <Typography compnent='div' variant='h5' className={classes.usageDialogHeader}>
+            <Typography className={classes.usageDialogHeader}>
                 <FormattedMessage
                     id='APIs.details.endpoints.certificate.usage'
                     defaultMessage='Usages of certificate - '
@@ -182,7 +171,10 @@ function CertificateUsage(props) {
     );
 
     const dialogContent = (
-        <MUIDataTable title={false} data={usageData} columns={columns} options={options} />
+        <div>
+            {/* @ts-ignore */}
+            <MUIDataTable title={false} data={usageData} columns={columns} options={options} />
+        </div>
     );
 
     return (
@@ -190,7 +182,7 @@ function CertificateUsage(props) {
             <Button onClick={handleUsageOpen} >
                 <UsageIcon />
             </Button>
-            <Dialog onBackdropClick={setOpen} open={open} maxWidth='xl'>
+            <Dialog open={open} maxWidth='xl'>
                 <DialogTitle>
                     <Typography className={classes.usageDialogHeader}>
                         {dialogTitle}
@@ -212,9 +204,7 @@ function CertificateUsage(props) {
     );
 }
 CertificateUsage.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     certAlias: PropTypes.string.isRequired,
-    intl: PropTypes.shape({}).isRequired
 };
 
-export default injectIntl(withStyles(styles)(CertificateUsage));
+export default CertificateUsage;
