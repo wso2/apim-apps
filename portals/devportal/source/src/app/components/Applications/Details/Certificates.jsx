@@ -126,7 +126,6 @@ function Certificates(props) {
         const client = new API();
         client.getClientCertificateByUUID(applicationId, UUID)
             .then((response) => {
-                console.log(response);
                 setOpenCertificateDetails({
                     details: response.body,
                     open: true,
@@ -143,7 +142,6 @@ function Certificates(props) {
         const client = new API();
         return client.addClientCertificate(applicationId, certificate.content, name, keyType)
             .then((response) => {
-                console.log(response);
                 const tmpCertificates = [...certificateList];
                 tmpCertificates.push(response.body);
                 setCertificateList(tmpCertificates);
@@ -174,7 +172,6 @@ function Certificates(props) {
         const client = new API();
         client.deleteClientCertificateByUUID(applicationId, UUID)
             .then((response) => {
-                console.log(response);
                 setCertificateList(() => {
                     return certificateList.filter((cert) => {
                         return cert.UUID !== UUID;
