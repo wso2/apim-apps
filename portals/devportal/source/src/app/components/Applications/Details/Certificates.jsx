@@ -123,7 +123,6 @@ function Certificates(props) {
      * @param {string} UUID  The UUID of the certificate which information is required.
      * */
     const showCertificateDetails = (event, name, UUID) => {
-        console.log(UUID);
         const client = new API();
         client.getClientCertificateByUUID(applicationId, UUID)
             .then((response) => {
@@ -153,7 +152,7 @@ function Certificates(props) {
                     defaultMessage: 'Certificate added successfully',
                 }));
             }).catch((error) => {
-                console.log(error.response);
+                console.error(error);
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
