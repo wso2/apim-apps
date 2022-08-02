@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -105,6 +105,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * Uploads certificates
+ *
+ * @param {int} props The first number.
+ */
 function Certificates(props) {
     const {
         certificates, applicationId, nameList, intl, keyType,
@@ -171,7 +176,7 @@ function Certificates(props) {
         setDeleting(true);
         const client = new API();
         client.deleteClientCertificateByUUID(applicationId, UUID)
-            .then((response) => {
+            .then(() => {
                 setCertificateList(() => {
                     return certificateList.filter((cert) => {
                         return cert.UUID !== UUID;

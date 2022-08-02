@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -90,6 +90,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * Uploads certificates
+ *
+ * @param {int} props The first number.
+ */
 function UploadCertificate(props) {
     const {
 

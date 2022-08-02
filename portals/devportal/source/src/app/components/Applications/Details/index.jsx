@@ -155,8 +155,6 @@ class Details extends Component {
         super(props);
         this.state = {
             application: null,
-            active: 'overview',
-            open: true,
         };
         this.getApplication = this.getApplication.bind(this);
     }
@@ -199,7 +197,6 @@ class Details extends Component {
     handleMenuSelect = (menuLink) => {
         const { history, match } = this.props;
         history.push({ pathname: '/applications/' + match.params.application_uuid + '/' + menuLink });
-        this.setState({ active: menuLink });
     };
 
     toTitleCase = (str) => {

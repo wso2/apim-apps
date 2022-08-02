@@ -99,7 +99,6 @@ class MutualTLS extends React.Component {
             // openDialog: false,
             nameList: [],
             application: null,
-            isUpdating: false,
         };
     }
 
@@ -129,27 +128,21 @@ class MutualTLS extends React.Component {
     }
 
     saveEdit = () => {
-        this.setState({
-            isUpdating: true,
-        });
         const {
             intl,
         } = this.props;
-        const oldApplication = this.state.application;
+        const { application: { oldApplication } } = this.state;
         this.setState({
             application: oldApplication,
         }, () => {
             const api = new API();
             const updatedApplication = api.updateApplication(this.state.application, null);
-            updatedApplication.then((response) => {
+            updatedApplication.then(() => {
                 // const appId = response.body.applicationId;
                 Alert.info(intl.formatMessage({
                     id: 'Applications.ApplicationFormHandler.app.updated.success',
                     defaultMessage: 'Application updated successfully',
                 }));
-                this.setState({
-                    isUpdating: false,
-                });
             })
                 .catch((error) => {
                     const { response } = error;
