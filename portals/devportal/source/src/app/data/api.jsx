@@ -355,7 +355,7 @@ export default class API extends Resource {
             return promise;
         }
     }
-    
+
     /**
      * Get all replies for a particular comment
      * @param {string} apiId api id of the api for which the comment is added
@@ -811,7 +811,7 @@ export default class API extends Resource {
      */
     getAsyncAPIByAPIIdAndEnvironment(apiId, environmentName, callback = null) {
         const promiseGet = this.client.then((client) => {
-            return client.apis.APIs.get_apis__apiId__asyncapi({apiId, environmentName}, this._requestMetaData());
+            return client.apis.APIs.get_apis__apiId__asyncapi({ apiId, environmentName }, this._requestMetaData());
         });
         if (callback) {
             return promiseGet.then(callback);
@@ -821,12 +821,99 @@ export default class API extends Resource {
     }
 
     /**
+     * Upload Client certificate.
+     *
+     * @param {string} applicationId Application UUID
+     * @param {any} certificateFile The certificate file to be uploaded.
+     * @param {string} name The certificate display name.
+     * */
+    addClientCertificate(applicationId, certificateFile, name, type) {
+        return this.client.then(
+            client => {
+                return client.apis['Client Certificates'].applicationsApplicationIdClientCertificatesPost(
+                    {
+                        applicationId,
+                    },
+                    {
+                        requestBody: {
+                            certificate: certificateFile,
+                            name: name,
+                            type: type
+
+                        }
+                    }
+                );
+            },
+            this._requestMetaData({
+                'Content-Type': 'multipart/form-data',
+            }),
+        );
+    }
+    /**
+     * Get all certificates for a particular Application.
+     *
+     * @param applicationId application id of the api to which the certificate is added
+     */
+    getAllClientCertificates(applicationId) {
+
+
+        return this.client.then(
+            client => {
+                return client.apis['Client Certificates'].applicationsApplicationIdClientCertificatesGet(
+                    { applicationId: applicationId },
+                    this._requestMetaData(),
+                );
+            },
+            this._requestMetaData({
+                'Content-Type': 'multipart/form-data',
+            }),
+        );
+    }
+
+    /**
+     *
+     * @param {*} applicationId application id of the application to which the certificate belong
+     * @param {string} UUID
+     */
+    getClientCertificateByUUID(applicationId, UUID) {
+        return this.client.then(
+            client => {
+                return client.apis['Client Certificates'].applicationsApplicationIdClientCertificateIdGet(
+                    {
+                        applicationId: applicationId,
+                        UUID: UUID
+                    },
+                    this._requestMetaData(),
+                );
+            },
+            this._requestMetaData({
+                'Content-Type': 'multipart/form-data',
+            }),
+        );
+    }
+
+    deleteClientCertificateByUUID(applicationId, UUID) {
+        return this.client.then(
+            client => {
+                return client.apis['Client Certificates'].applicationsApplicationIdClientCertificateIdDelete(
+                    {
+                        applicationId: applicationId,
+                        certificateId: UUID
+                    },
+                    this._requestMetaData(),
+                );
+            },
+            this._requestMetaData()
+        );
+    }
+
+    /**
      * Get the additional information of subscriptions attched to an API
      * @param apiId {String} UUID of the API in which the additional information of subscriptions is needed
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     getSubscriptionAdditionalInfo(apiId) {
-        const payload = {apiId};
+        const payload = { apiId };
         const promiseAdditionalInfo = this.client.then((client) => {
             return client.apis.Subscriptions.getAdditionalInfoOfAPISubscriptions(payload, this._requestMetaData());
         });

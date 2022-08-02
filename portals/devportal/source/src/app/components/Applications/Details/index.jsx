@@ -23,10 +23,11 @@ import {
     Route, Switch, Redirect, Link,
 } from 'react-router-dom';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import CertifiacteIcon from '@material-ui/icons/CardMembership';
 import ScreenLockLandscapeIcon from '@material-ui/icons/ScreenLockLandscape';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import { app } from 'Settings';
 import Loading from 'AppComponents/Base/Loading/Loading';
@@ -42,6 +43,7 @@ import Subscriptions from './Subscriptions';
 import InfoBar from './InfoBar';
 import Overview from './Overview';
 import WebHookDetails from './WebHookDetails';
+import MutualTLS from './MutualTLS';
 
 /**
  *
@@ -82,9 +84,6 @@ const styles = (theme) => {
             top: 0,
             left: 0,
             overflowY: 'auto',
-            [theme.breakpoints.down('sm')]: {
-                width: 50,
-            },
         },
         leftMenuVerticalRight: {
             width: theme.custom.leftMenu.width,
@@ -121,10 +120,6 @@ const styles = (theme) => {
             marginRight: shiftToRight,
             paddingBottom: theme.spacing(3),
             overflowX: 'hidden',
-            [theme.breakpoints.down('sm')]: {
-                marginLeft: shiftToLeft !== 0 && 50,
-                marginRight: shiftToRight !== 0 && 50,
-            },
         },
         contentLoader: {
             paddingTop: theme.spacing(3),
@@ -254,6 +249,13 @@ class Details extends Component {
                         </div>
                     </div>
                 )}
+                {secScheme === 'mutualtls' && (
+                    <MutualTLS
+                        keyType={keyType}
+                        applicationId={application.applicationId}
+                        application={application}
+                    />
+                )}
             </Paper>
         );
     }
@@ -266,7 +268,7 @@ class Details extends Component {
      */
     render() {
         const {
-            classes, match, theme, intl,
+            classes, match, theme,
         } = this.props;
         const { notFound, application } = this.state;
         const pathPrefix = '/applications/' + match.params.application_uuid;
@@ -291,12 +293,7 @@ class Details extends Component {
                 <Helmet>
                     <title>{`${prefix} ${application.name}${sufix}`}</title>
                 </Helmet>
-                <nav
-                    role='navigation'
-                    aria-label={intl.formatMessage({
-                        id: 'Applications.Details.index.secondary.navigation',
-                        defaultMessage: 'Secondary Navigation',
-                    })}
+                <div
                     className={classNames(
                         classes.LeftMenu,
                         {
@@ -380,6 +377,20 @@ class Details extends Component {
                     <LeftMenuItem
                         text={(
                             <FormattedMessage
+                                id='Applications.Details.menu.mutual.tls'
+                                defaultMessage='Mutual TLS'
+                            />
+                        )}
+                        route='productionkeys/mutualtls'
+                        to={pathPrefix + '/productionkeys/mutualtls'}
+                        submenu
+                        Icon={<CertifiacteIcon />}
+                        open
+                        id='production-keys-mutualtls'
+                    />
+                    <LeftMenuItem
+                        text={(
+                            <FormattedMessage
                                 id='Applications.Details.menu.sandbox.keys'
                                 defaultMessage='Sandbox Keys'
                             />
@@ -421,6 +432,20 @@ class Details extends Component {
                     <LeftMenuItem
                         text={(
                             <FormattedMessage
+                                id='Applications.Details.menu.mutual.tls'
+                                defaultMessage='Mutual TLS'
+                            />
+                        )}
+                        route='sandboxkeys/mutualtls'
+                        to={pathPrefix + '/sandboxkeys/mutualtls'}
+                        submenu
+                        Icon={<CertifiacteIcon />}
+                        open
+                        id='sandbox-keys-mutualtls'
+                    />
+                    <LeftMenuItem
+                        text={(
+                            <FormattedMessage
                                 id='Applications.Details.menu.subscriptions'
                                 defaultMessage='Subscriptions'
                             />
@@ -431,7 +456,7 @@ class Details extends Component {
                         open
                         id='left-menu-subscriptions'
                     />
-                </nav>
+                </div>
                 <div className={classes.content}>
                     <InfoBar
                         application={application}
@@ -463,12 +488,20 @@ class Details extends Component {
                                 component={() => (this.renderManager(application, 'PRODUCTION', 'apikey'))}
                             />
                             <Route
+                                path='/applications/:applicationId/productionkeys/mutualtls'
+                                component={() => (this.renderManager(application, 'PRODUCTION', 'mutualtls'))}
+                            />
+                            <Route
                                 path='/applications/:applicationId/sandboxkeys/oauth'
                                 component={() => (this.renderManager(application, 'SANDBOX', 'oauth'))}
                             />
                             <Route
                                 path='/applications/:applicationId/sandboxkeys/apikey'
                                 component={() => (this.renderManager(application, 'SANDBOX', 'apikey'))}
+                            />
+                            <Route
+                                path='/applications/:applicationId/sandboxkeys/mutualtls'
+                                component={() => (this.renderManager(application, 'SANDBOX', 'mutualtls'))}
                             />
                             <Route
                                 path='/applications/:applicationId/subscriptions'
@@ -496,9 +529,6 @@ Details.propTypes = {
     history: PropTypes.shape({
         push: PropTypes.func.isRequired,
     }).isRequired,
-    intl: PropTypes.shape({
-        formatMessage: PropTypes.func,
-    }).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(injectIntl(Details));
+export default withStyles(styles, { withTheme: true })((Details));
