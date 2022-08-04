@@ -1515,17 +1515,29 @@
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.accessMethod.stored": {
     "defaultMessage": "Using stored AWS credentials"
   },
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.enableSTSAssumeRole": {
+    "defaultMessage": "Enable STS AssumeRole"
+  },
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.linkToResources": {
     "defaultMessage": "Go to Resources to map ARNs"
   },
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.region": {
     "defaultMessage": "Region"
   },
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.roleArn": {
+    "defaultMessage": "Role ARN"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.roleRegion": {
+    "defaultMessage": "Region"
+  },
+  "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.roleSessionName": {
+    "defaultMessage": "Role Session Name"
+  },
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.secretKey": {
     "defaultMessage": "Secret Key"
   },
   "Apis.Details.Endpoints.EndpointOverview.awslambda.endpoint.tooltip": {
-    "defaultMessage": "You can and should use an IAM role to manage temporary credentials for applications that run on an EC2 instance"
+    "defaultMessage": "You can and should use an IAM role to manage temporary credentials for applications that run on an AWS instance"
   },
   "Apis.Details.Endpoints.EndpointOverview.change.type.cancel": {
     "defaultMessage": "Cancel"
@@ -1598,6 +1610,9 @@
   },
   "Apis.Details.Endpoints.Endpoints.missing.security.username.error": {
     "defaultMessage": "Endpoint Security User Name/ Password should not be empty"
+  },
+  "Apis.Details.Endpoints.Endpoints.missing.stsAssumeRole.config": {
+    "defaultMessage": "Role ARN, Role Session Name and Region should not be empty"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.certificate.add.success": {
     "defaultMessage": "Certificate added successfully"
@@ -3919,7 +3934,7 @@
     "defaultMessage": "Page Not Found"
   },
   "Base.Footer.Footer.product_details": {
-    "defaultMessage": "WSO2 API-M v4.1.0 | © 2022 WSO2 Inc"
+    "defaultMessage": "WSO2 API-M v4.1.0 | © 2022 WSO2 LLC"
   },
   "Base.Header.avatar.Avatar.logout": {
     "defaultMessage": "Logout"
