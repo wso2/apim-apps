@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2010-2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~ Copyright (c) 2017-2022, WSO2 LLC (http://www.wso2.org) All Rights Reserved.
  ~
  ~ Licensed under the Apache License, Version 2.0 (the "License");
  ~ you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <parent>
         <groupId>org.wso2.carbon.apimgt.ui</groupId>
         <artifactId>apim.ui.apps</artifactId>
         <version>9.0.343-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    
+
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.apimgt.ui.devportal</artifactId>
     <packaging>war</packaging>
@@ -100,6 +100,7 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warSourceExcludes>/node_modules/**</warSourceExcludes>
+                    <packagingExcludes>node_modules/**</packagingExcludes>
                     <warName>devportal</warName>
                 </configuration>
             </plugin>
@@ -129,7 +130,7 @@
                         <phase>compile</phase>
                         <configuration>
                             <skip>${npm.build.skip}</skip>
-                            <workingDirectory>./</workingDirectory>
+                            <workingDirectory>${npm.working.dir}</workingDirectory>
                             <executable>${npm.executable}</executable>
                             <arguments>
                                 <argument>run</argument>
@@ -145,7 +146,7 @@
                         <phase>test</phase>
                         <configuration>
                             <skip>${maven.test.skip}</skip>
-                            <workingDirectory>./</workingDirectory>
+                            <workingDirectory>${npm.working.dir}</workingDirectory>
                             <executable>${npm.executable}</executable>
                             <arguments>
                                 <argument>run</argument>
@@ -155,8 +156,81 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <workingDirectory>src/main/webapp</workingDirectory>
+                    <workingDirectory>${npm.working.dir}</workingDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <!-- Copying files for p2 feature generation -->
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src/main/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/webapp/build/</directory>
+                                </resource>
+                                <resource>
+                                    <directory>target/</directory>
+                                    <includes>
+                                        <include>devportal.war</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.wso2.maven</groupId>
+                <artifactId>carbon-p2-plugin</artifactId>
+                <version>${carbon.p2.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>p2-feature-generation</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>p2-feature-gen</goal>
+                        </goals>
+                        <configuration>
+                            <id>org.wso2.carbon.apimgt.ui.devportal</id>
+                            <propertiesFile>../build/etc/feature.properties</propertiesFile>
+                            <adviceFile>
+                                <properties>
+                                    <propertyDef>org.wso2.carbon.p2.category.type:server
+                                    </propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:false
+                                    </propertyDef>
+                                </properties>
+                            </adviceFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Deleting the temporary resource directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>clean_target</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="src/main/resources" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
