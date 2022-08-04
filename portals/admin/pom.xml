@@ -99,7 +99,7 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
-                        <id>npm install (initialize devportal)</id>
+                        <id>npm install (initialize admin)</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
