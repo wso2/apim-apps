@@ -1,2 +1,2 @@
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.apimgt.ui.devportal_${feature.version}/devportal/,target:${installFolder}/../../deployment/server/jaggeryapps/devportal,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.apimgt.ui.devportal_${feature.version}/devportal.war,target:${installFolder}/../../deployment/server/webapps/devportal.war,overwrite:true);\
