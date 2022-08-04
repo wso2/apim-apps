@@ -30,8 +30,7 @@
     Log log = LogFactory.getLog(this.getClass());
     log.debug("Logout Request Function");
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
-    String context = Util.getTenantBaseStoreContext(request, (String) Util.readJsonObj(settings, "app.context"));
-    String appContext = Util.getAppContextForServerUrl(context, (String) Util.readJsonObj(settings, "app.proxy_context_path"));
+    String appContext = Util.getAppContextForServerUrl((String) Util.readJsonObj(settings, "app.context"), (String) Util.readJsonObj(settings, "app.proxy_context_path"));
 
     String idTokenP1Cookie = "";
     String idTokenP2Cookie = "";

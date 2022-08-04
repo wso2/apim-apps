@@ -126,7 +126,7 @@
             }
             if (systemApplicationDTO == null) {
                 HashMap<String, Object> dcrRequestData = new HashMap();
-                dcrRequestData.put("callbackUrl", "authorization_code");
+                dcrRequestData.put("callbackUrl", callbackUrl);
                 dcrRequestData.put("clientName", STORE_CLIENT_APP_NAME);
                 dcrRequestData.put("owner", (String) APIUtil.getTenantAdminUserName(serviceProviderTenantDomain));
                 dcrRequestData.put("grantType", "authorization_code refresh_token");

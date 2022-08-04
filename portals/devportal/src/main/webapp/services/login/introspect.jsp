@@ -57,7 +57,7 @@
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest getReq = HttpRequest.newBuilder()
             .uri(URI.create(userInfoEndpoint))
-            .header("Authorization", "Basic " + token)
+            .header("Authorization", "Bearer " + token)
             .build();
     HttpResponse<String> userResult = client.send(getReq, HttpResponse.BodyHandlers.ofString());
 
@@ -86,10 +86,9 @@
         out.println(gson.toJson(introspect));
     } else {
         log.warn("Something went wrong while introspecting the token " + tokenP1 + tokenP2);
-        log.error(introspectResult);
+        log.error(introspectResult.body());
         response.setStatus(500);
         response.setContentType("text/plain");
         out.println("Something went wrong while introspecting the token!!");
     }
-
 %>
