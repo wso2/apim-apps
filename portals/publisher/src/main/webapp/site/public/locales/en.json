@@ -7045,6 +7045,12 @@
       "value": "Attach business plans to API"
     }
   ],
+  "Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.migrated": [
+    {
+      "type": 0,
+      "value": "Following policies are migrated from an old version of APIM. You can uncheck and select a different policy. Note that this is an irreversible operation."
+    }
+  ],
   "Apis.Details.Subscriptions.Subscriptions.cancel": [
     {
       "type": 0,
