@@ -1,7 +1,7 @@
 <!--
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 LLC (http://www.wso2.org) All Rights Reserved.
  * 
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,6 @@
  */
 -->
 
-# index.jag vs index.jag.hbs
+# index.jsp vs index.jsp.hbs
 
-`index.jag` is generated using `index.jag.hbs` in the build time of the React app, So do not make any changes to index.jag file directly, If you want to modify the index.jag behavior use it's templated file `index.jag.hbs`.
+`index.jsp` is generated using `index.jsp.hbs` in the build time of the React app, So do not make any changes to index.jsp file directly, If you want to modify the index.jsp behavior use it's templated file `index.jsp.hbs`.

@@ -9,8 +9,8 @@ You do not have to copy the entire directory, only copy the desired file/files.
 
 3. Site folder - Includes the configuration and public folders of the project.
 
-4. jaggery.conf file - The file that is responsible to fetch the paths and handle server-side routing.
+4. WEB-INF/web.xml file - The file that is responsible to fetch the paths and handle server-side routing.
 
-Note : Only the Services and Site folders along with the jaggery.conf file is required at the runtime.
+Note : Only the Services and Site folders along with the web.xml file is required at the runtime.
 
 5. Source and other files - Includes the react files (source code) of the Admin Portal React Application.
