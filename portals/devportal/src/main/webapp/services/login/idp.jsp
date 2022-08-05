@@ -1,7 +1,7 @@
 <%--
-  ~ Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2017, WSO2 LLC (http://www.wso2.org) All Rights Reserved.
   ~
-  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ WSO2 LLC licenses this file to you under the Apache License,
   ~ Version 2.0 (the "License"); you may not use this file except
   ~ in compliance with the License.
   ~ You may obtain a copy of the License at
@@ -140,8 +140,8 @@
                         .build();
                 HttpResponse<String> dcrResult = client.send(postReq, HttpResponse.BodyHandlers.ofString());
                 Map dcrResponse = gson.fromJson(dcrResult.body(), Map.class);
-                clientId = (String) dcrResponse.get("data.clientId");
-                String clientSecret = (String) dcrResponse.get("data.clientSecret");
+                clientId = (String) dcrResponse.get("clientId");
+                String clientSecret = (String) dcrResponse.get("clientSecret");
 
                 log.debug("Client ID = " + clientId);
                 boolean addApplicationKey = systemApplicationDAO.addApplicationKey(STORE_CLIENT_APP_NAME, clientId, clientSecret, serviceProviderTenantDomain);
