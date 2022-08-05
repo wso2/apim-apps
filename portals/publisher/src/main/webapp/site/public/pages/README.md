@@ -17,6 +17,6 @@
  */
 -->
 
-# index.jag vs index.jag.hbs
+# index.jsp vs index.jsp.hbs
 
-`index.jag` is generated using `index.jag.hbs` in the build time of the React app, So do not make any changes to index.jag file directly, If you want to modify the index.jag behavior use it's templated file `index.jag.hbs`.
+`index.jsp` is generated using `index.jsp.hbs` in the build time of the React app, So do not make any changes to index.jsp file directly, If you want to modify the index.jsp behavior use it's templated file `index.jsp.hbs`.
