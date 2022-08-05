@@ -128,8 +128,8 @@
                         .build();
                 HttpResponse<String> dcrResult = client.send(postReq, HttpResponse.BodyHandlers.ofString());
                 Map dcrResponse = gson.fromJson(dcrResult.body(), Map.class);
-                clientId = (String) dcrResponse.get("data.clientId");
-                String clientSecret = (String) dcrResponse.get("data.clientSecret");
+                clientId = (String) dcrResponse.get("clientId");
+                String clientSecret = (String) dcrResponse.get("clientSecret");
 
                 log.debug("Client ID = " + clientId);
                 boolean addApplicationKey = systemApplicationDAO.addApplicationKey(ADMIN_CLIENT_APP_NAME, clientId, clientSecret, SUPER_TENANT_DOMAIN);
