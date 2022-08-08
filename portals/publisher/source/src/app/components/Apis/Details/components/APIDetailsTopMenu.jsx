@@ -125,7 +125,7 @@ const styles = (theme) => ({
 
 const APIDetailsTopMenu = (props) => {
     const {
-        classes, theme, api, isAPIProduct, imageUpdate, intl, openPageSearch, setOpenPageSearch,
+        classes, theme, api, isAPIProduct, imageUpdate, intl, openPageSearch, setOpenPageSearch, updateAPI
     } = props;
     const history = useHistory();
     const prevLocation = history.location.pathname;
@@ -205,7 +205,8 @@ const APIDetailsTopMenu = (props) => {
                 className={classes.backLink}
             >
                 <Box width={70} height={50} marginLeft={1}>
-                    <ThumbnailView api={api} width={70} height={50} imageUpdate={imageUpdate} />
+                    <ThumbnailView api={api} width={70} height={50} imageUpdate={imageUpdate} 
+                        updateAPI={updateAPI} />
                 </Box>
                 <div style={{ marginLeft: theme.spacing(1), maxWidth: 500 }}>
                     <Link

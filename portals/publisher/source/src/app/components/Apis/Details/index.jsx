@@ -826,6 +826,7 @@ class Details extends Component {
                                 api={api}
                                 isAPIProduct={isAPIProduct}
                                 imageUpdate={imageUpdate}
+                                updateAPI={this.updateAPI}
                             />
                             <div className={classes.contentInside}>
                                 <LastUpdatedTime lastUpdatedTime={api.lastUpdatedTime} />
@@ -880,7 +881,7 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION}
-                                        component={() => <DesignConfigurations api={api} />}
+                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION}
@@ -896,7 +897,7 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION_PRODUCT}
-                                        component={() => <DesignConfigurations api={api} />}
+                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION_PRODUCT}
