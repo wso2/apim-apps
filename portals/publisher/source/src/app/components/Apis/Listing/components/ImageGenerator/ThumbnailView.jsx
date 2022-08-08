@@ -301,6 +301,7 @@ class ThumbnailView extends Component {
                     defaultMessage: 'Thumbnail uploaded successfully',
                 }));
                 if (selectedTab === 'upload') {
+                    this.props.updateAPI({hasThumbnail: true});
                     this.setState({ open: false, thumbnail: windowURL.createObjectURL(file) });
                 } else {
                     this.setState((cState) => ({
