@@ -256,6 +256,7 @@ class SubscriptionTableData extends React.Component {
                 <TableCell>{status}</TableCell>
                 <TableCell>
                     <Button
+                        id={'edit-api-subscription-' + apiId}
                         color='default'
                         onClick={this.handleRequestOpenEditMenu}
                         startIcon={<Icon>edit</Icon>}
@@ -396,6 +397,7 @@ class SubscriptionTableData extends React.Component {
                         resourceMethod={resourceMethods.DELETE}
                     >
                         <Button
+                            id={'delete-api-subscription-' + apiId}
                             color='default'
                             onClick={this.handleRequestOpen}
                             startIcon={<Icon>delete</Icon>}
@@ -430,7 +432,13 @@ class SubscriptionTableData extends React.Component {
                                     defaultMessage='Cancel'
                                 />
                             </Button>
-                            <Button dense variant='contained' color='primary' onClick={() => this.handleRequestDelete(subscriptionId)}>
+                            <Button
+                                id='delete-api-subscription-confirm-btn'
+                                dense
+                                variant='contained'
+                                color='primary'
+                                onClick={() => this.handleRequestDelete(subscriptionId)}
+                            >
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.delete'
                                     defaultMessage='Delete'
