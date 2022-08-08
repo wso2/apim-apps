@@ -501,6 +501,7 @@ export default function DesignConfigurations() {
                                                     api={api}
                                                     width={100}
                                                     height={100}
+                                                    updateAPI={updateAPI}
                                                     isEditable={!isRestricted(['apim:api_publish',
                                                         'apim:api_create'], api)}
                                                 />

@@ -378,6 +378,7 @@ class InfoBar extends React.Component {
                             <Grid item xs={1} m={1} className={classes.editButton}>
                                 <Link to={`/applications/${applicationId}/edit/fromView`} className={classes.editButton}>
                                     <Button
+                                        id='edit-application'
                                         style={{ padding: '4px' }}
                                         color='default'
                                         classes={{ label: classes.iconButton }}
@@ -401,6 +402,7 @@ class InfoBar extends React.Component {
                             <VerticalDivider height={70} />
                             <Grid item xs={1} m={1} className={classes.button}>
                                 <Button
+                                    id='delete-application'
                                     onClick={this.handleDeleteConfimation}
                                     disabled={AuthManager.getUser().name !== applicationOwner
                                         || this.props.application.status === 'DELETE_PENDING'}
