@@ -200,7 +200,7 @@ function AddEdit(props) {
                         id: 'Throttling.Application.Policy.policy.unit.time.empty',
                         defaultMessage: 'Unit Time is Empty',
                     });
-                } else if (parseInt(value, 10) < 0) {
+                } else if (parseInt(value, 10) <= 0) {
                     error = intl.formatMessage({
                         id: 'Throttling.Application.Policy.policy.unit.time.negative',
                         defaultMessage: 'Invalid Time Value',
