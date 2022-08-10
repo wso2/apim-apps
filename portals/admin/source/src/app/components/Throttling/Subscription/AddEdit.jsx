@@ -376,10 +376,10 @@ function AddEdit(props) {
                         defaultMessage: 'Unit Time is Empty',
                     });
                 } else if (parseInt(value, 10) < 0) {
-                      error = intl.formatMessage({
-                          id: 'Throttling.Subscription.Policy.policy.unit.time.negative.error.msg',
-                          defaultMessage: 'Unit Time is Negative',
-                      });
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.unit.time.negative.error.msg',
+                        defaultMessage: 'Unit Time is Negative',
+                    });
                 } else {
                     error = '';
                 }
