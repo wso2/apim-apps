@@ -370,10 +370,19 @@ function AddEdit(props) {
                 setValidationError({ dataAmount: error });
                 break;
             case 'unitTime':
-                error = value === '' ? intl.formatMessage({
-                    id: 'Throttling.Subscription.Policy.policy.unit.time.empty.error.msg',
-                    defaultMessage: 'Unit Time is Empty',
-                }) : '';
+                if (value === '') {
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.unit.time.empty.error.msg',
+                        defaultMessage: 'Unit Time is Empty',
+                    });
+                } else if (parseInt(value, 10) < 0) {
+                      error = intl.formatMessage({
+                          id: 'Throttling.Subscription.Policy.policy.unit.time.negative.error.msg',
+                          defaultMessage: 'Unit Time is Negative',
+                      });
+                } else {
+                    error = '';
+                }
                 setValidationError({ unitTime: error });
                 break;
             default:
