@@ -728,7 +728,7 @@ export default class API extends Resource {
      * */
     getKeyManagers() {
         return this.client.then((client) => {
-            return client.apis['Key Managers (Collection)'].get_key_managers(this._requestMetaData());
+            return client.apis['Key Managers'].get_key_managers(this._requestMetaData());
         });
     }
 
@@ -739,7 +739,7 @@ export default class API extends Resource {
      * */
     apiCategories(params) {
         return this.client.then((client) => {
-            return client.apis['API Category (Collection)'].get_api_categories(
+            return client.apis['API Categories'].get_api_categories(
                 params, this._requestMetaData());
         });
     }
