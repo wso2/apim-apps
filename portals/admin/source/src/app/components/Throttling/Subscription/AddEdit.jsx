@@ -378,7 +378,7 @@ function AddEdit(props) {
                 } else if (parseInt(value, 10) < 0) {
                     error = intl.formatMessage({
                         id: 'Throttling.Subscription.Policy.policy.unit.time.negative.error.msg',
-                        defaultMessage: 'Unit Time is Negative',
+                        defaultMessage: 'Invalid Time Value',
                     });
                 } else {
                     error = '';
