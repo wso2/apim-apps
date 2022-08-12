@@ -22,7 +22,7 @@ describe("Create websocket api - super tenant", () => {
     const websocketApiCreate = () => {
         const random_number = Math.floor(Date.now() / 1000);
         const randomName = Utils.generateName();
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/streamingapi/ws`);
+        cy.visit(`/publisher/apis/create/streamingapi/ws`);
 
         // Filling the form
         cy.get('#itest-id-apiname-input').type(randomName);

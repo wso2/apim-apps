@@ -45,6 +45,12 @@ class ApisHomePage extends PublisherComonPage {
     getApiLinkOfAPI(apiName){
         return cy.get(`a[aria-label="${apiName} Thumbnail"]`)
     }
+    getSearchTestBox(){
+        return cy.get("#searchQuery")
+    }
+    getAllVisibleAPIs_divList(){
+        return cy.get('div[class^="MuiPaper-root"][data-testid^="card-"]')
+    }
 }
 
 export default ApisHomePage;

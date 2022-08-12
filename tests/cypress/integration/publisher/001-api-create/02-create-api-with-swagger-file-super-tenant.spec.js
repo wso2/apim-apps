@@ -22,7 +22,7 @@ describe("Create api with swagger file super tenant", () => {
     const createApiFromSwagger = (usernameLocal, passwordLocal) => {
         cy.loginToPublisher(usernameLocal, passwordLocal);
         // select the option from the menu item
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`);
+        cy.visit(`/publisher/apis/create/openapi`);
         cy.get('#open-api-file-select-radio').click();
         // upload the swagger
         cy.get('#browse-to-upload-btn').then(function () {

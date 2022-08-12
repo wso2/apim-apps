@@ -1,6 +1,5 @@
 import Utils from "@support/utils";
 
-const CARBON_ORIGIN = Utils.getAppOrigin();
 describe("Service catalog delete flow", () => {
     const username = 'admin'
     const password = 'admin'
@@ -10,7 +9,7 @@ describe("Service catalog delete flow", () => {
     })
 
     it("Delete all APIs", () => {
-        cy.visit(`${CARBON_ORIGIN}/publisher/service-catalog`);
+        cy.visit(`${Cypress.config().baseUrl}/publisher/service-catalog`);
         cy.get('#itest-services-listing-total')
             .then(
                 (countElement) => {

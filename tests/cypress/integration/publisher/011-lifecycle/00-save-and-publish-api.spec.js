@@ -29,7 +29,7 @@ describe("Save and publish API", () => {
 
     it.only("Save and publish API", () => {
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemsubscriptions').click();
             cy.get('[data-testid="policy-checkbox-silver"]').click();
@@ -43,8 +43,8 @@ describe("Save and publish API", () => {
             cy.get('#add-description-btn').click();
             cy.get('#add-description').click();
             cy.get('#add-description').type('test');
-            cy.get('#deploy-btn').click();
-            cy.get('#undeploy-btn').should('exist');
+            cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
+            cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
 
             // Going to lifecycle page
             cy.get('#left-menu-itemlifecycle').click();

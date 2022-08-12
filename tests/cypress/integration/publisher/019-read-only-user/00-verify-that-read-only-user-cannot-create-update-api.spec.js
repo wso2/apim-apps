@@ -21,7 +21,7 @@ import Utils from "@support/utils";
 describe("Publisher Read-Only Mode", () => {
     const apiName = 'checkreadonlyapi' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.0';
-    const apiContext = '/readonlycheck';
+    const apiContext = '/readonlycheck' + Math.floor(Date.now() / 1000);;
     const readOnlyUser = 'internalDeveloper';
     const readOnlyUserPassword = 'test123';
     const creatorPublisher='creatorPublisher';
@@ -73,7 +73,7 @@ describe("Publisher Read-Only Mode", () => {
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
 
             const dataTransfer = new DataTransfer();
-            cy.contains('Add Header').trigger('dragstart',{
+            cy.contains('Add Header', {timeout: Cypress.config().largeTimeout}).trigger('dragstart',{
                 dataTransfer
             });
             cy.contains('Drag and drop policies here').trigger('drop', {
@@ -98,16 +98,17 @@ describe("Publisher Read-Only Mode", () => {
     it("Verify Configurations are in Read only mode", () => {
         
         //1. should not be able to create APIS
-        cy.get('#itest-create-api-menu-button', { timeout: 30000 }).should('not.exist');
+        cy.get('#itest-create-api-menu-button', {timeout: Cypress.config().largeTimeout}).should('not.exist');
 
         //2. click on API tile and select design config (basic info)
-        cy.get('a').get(`[aria-label="${apiName} Thumbnail"]`, { timeout: 30000 }).click();
+        cy.wait(2000);
+        cy.get('a').get(`[aria-label="${apiName} Thumbnail"]`, {timeout: Cypress.config().largeTimeout}).click();
         cy.get('#itest-api-details-portal-config-acc').click();
         cy.get('#left-menu-itemDesignConfigurations').click();
 
         //2 -a. should not be able to update thumbnail
         cy.get('#edit-api-thumbnail-btn').click();
-        cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+        cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout}).should('be.visible');
         cy.get('#itest-api-name-version').contains(apiVersion);
         
         //2 -b. rest of the form field should not be editable
@@ -142,13 +143,13 @@ describe("Publisher Read-Only Mode", () => {
 
         //5. should not be able to add documents
         cy.get('#left-menu-itemdocuments').click();
-        cy.get('[data-testid="add-document-btn"]',{timeout: 30000 }).get('[aria-disabled="true"]').should('exist');        
+        cy.get('[data-testid="add-document-btn"]',{timeout: Cypress.config().largeTimeout}).get('[aria-disabled="true"]').should('exist');        
 
         //6. should not be able to comments
         cy.get('#left-menu-itemcomments').click();
-        cy.get('#standard-multiline-flexible',{timeout: 30000 }).should('be.disabled');
+        cy.get('#standard-multiline-flexible',{timeout: Cypress.config().largeTimeout}).should('be.disabled');
         cy.contains('button','Reply').click();
-        cy.get('#standard-multiline-flexible',{timeout: 30000 }).should('be.disabled');
+        cy.get('#standard-multiline-flexible',{timeout: Cypress.config().largeTimeout}).should('be.disabled');
 
         //7. Runtime Configurations
         cy.get('#itest-api-details-api-config-acc').click();
@@ -161,7 +162,7 @@ describe("Publisher Read-Only Mode", () => {
         cy.get('#mutual-ssl-checkbox').should('be.disabled');
 
         //7-b. application level
-        cy.get('#applicationLevel').click();
+        cy.get('#applicationLevel').children('[role="button"]').click();
         cy.get('[value="oauth2"]').should('be.disabled');
         cy.get('#api-security-basic-auth-checkbox').should('be.disabled');
         cy.get('#api-security-api-key-checkbox').should('be.disabled');
@@ -238,7 +239,7 @@ describe("Publisher Read-Only Mode", () => {
 
         //12. Policies should be checked. (UI issue fixed by PR #11297 in carbon-apimgt)
         cy.get("#left-menu-policies").click();
-        cy.get('[data-testid="add-new-api-specific-policy"]').click();
+        cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.config().largeTimeout}).click();
         cy.get('[data-testid="create-policy-form"]').get('[data-testid="displayname"]').type("test name");
         cy.get('[data-testid="create-policy-form"]').get('[data-testid="gateway-details-panel"]').get('[data-testid="file-drop-zone"]').then(function () {
             cy.get('input[type="file"]').attachFile('api_artifacts/sampleAddHeader.j2');
@@ -252,7 +253,7 @@ describe("Publisher Read-Only Mode", () => {
 
         //14. Properties
         cy.get('#left-menu-itemproperties').click();
-        cy.get('#add-new-property').should('be.disabled');
+        cy.get('#add-new-property', {timeout: Cypress.config().largeTimeout}).should('be.disabled');
         cy.get('table').get('tbody').get('tr').contains('td','property1').should('be.visible');
         cy.get('table').get('tbody').get('tr').get('[aria-label="Edit property1"]').should('be.disabled');
         cy.get('table').get('tbody').get('tr').get('[aria-label="Remove property1"]').should('be.disabled');

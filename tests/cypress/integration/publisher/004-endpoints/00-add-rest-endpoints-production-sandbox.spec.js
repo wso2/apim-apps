@@ -27,10 +27,10 @@ describe("Add production and sandbox endpoints for an API", () => {
     })
     it.only("Add production and sandbox endpoints for an API", () => {
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
-            cy.get('[data-testid="http/restendpoint-add-btn"]').click();
+            cy.get('[data-testid="http/restendpoint-add-btn"]').click({force:true});
 
             // Add the prod and sandbox endpoints
             cy.get('#production-endpoint-checkbox').click();

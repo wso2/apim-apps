@@ -20,17 +20,24 @@ import Utils from "@support/utils";
 
 describe("Common Policies", () => {
     const { publisher, password, } = Utils.getUserInfo();
+    let apiTestId;
 
-    before(function () {
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
 
-    it("Api Specific Policy", () => {
+    it("Api Specific Policy", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/policies`);
+            apiTestId = apiId;
+            cy.visit(`/publisher/apis/${apiId}/policies`);
             //Create API Specific Policy
-            cy.get('[data-testid="add-new-api-specific-policy"]').click();
+            cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#name').type('Add Header sample test');
             cy.get('input[name="description"]').type('Sample add header policy description');
             cy.get('#fault-select-check-box').uncheck()
@@ -51,7 +58,7 @@ describe("Common Policies", () => {
 
             //View API Specific Policy
             cy.contains('Add Header sample test').trigger('mouseover');
-            cy.get('[aria-label="view-AddHeadersampletest"]').click();
+            cy.get('[aria-label="view-AddHeadersampletest"]').click({force:true});
             //Download file
             cy.get('[data-testid="download-policy-file"]').click();
             cy.wait(2000);
@@ -70,12 +77,15 @@ describe("Common Policies", () => {
             cy.get('#headerName').type('Testing');
             cy.get('[data-testid="policy-attached-details-save"]').click();
             cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/scopes`);
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/policies`);
+            cy.visit(`/publisher/apis/${apiId}/scopes`);
+            cy.visit(`/publisher/apis/${apiId}/policies`);
             cy.wait(2000);
 
-            //Delete API
-            Utils.deleteAPI(apiId);
         });
     });
+    afterEach(function () {
+        //Delete API
+        Utils.deleteAPI(apiTestId);
+    })
+
 })

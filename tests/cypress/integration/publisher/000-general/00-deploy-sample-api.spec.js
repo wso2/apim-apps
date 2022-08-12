@@ -21,30 +21,33 @@ import Utils from "@support/utils";
 describe("Deploy sample api", () => {
     const { publisher, password} = Utils.getUserInfo();
 
-    before(function () {
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Deploy sample api", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        cy.intercept(
-            {
-                method: 'GET',
-                path: '**/apis?limit=10&offset=0',
-            },
-            {
-                body: { "count": 0, "list": [], "pagination": { "offset": 0, "limit": 10, "total": 0, "next": "", "previous": "" } },
-            },
-        ).as('apiGet');
-        cy.wait("@apiGet", { timeout: 180000 }).then((interceptions) => {
-            console.log(interceptions);
-            cy.get('#itest-rest-api-create-menu').click();
-            cy.get('#itest-id-deploy-sample').click();
-            cy.get('#itest-api-name-version', { timeout: 50000 }).should('be.visible');
-            cy.url().should('contains', '/overview');
-            cy.get("#itest-api-name-version").contains('PizzaShackAPI');
-            cy.get('#itest-id-deleteapi-icon-button', {timeout: 30000}).click();
-            cy.get('#itest-id-deleteconf', {timeout: 30000}).click();
+    it.only("Deploy sample api", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        cy.visit(`/publisher/apis`);
+        cy.contains('WSO2 API-M v4.1.0');
+        cy.wait(5000);
+        cy.get("body").then($body => {
+            if ($body.find("#itest-apis-welcome-msg").length > 0) {
+                cy.log("Init page");
+                cy.get('#itest-rest-api-create-menu').click();
+            } else {
+                cy.log("API availble");
+                cy.get('#itest-create-api-menu-button').click();
+            }
         });
+    cy.get('#itest-id-deploy-sample').click();
+    cy.get('#itest-api-name-version').should('be.visible');
+    cy.url().should('contains', '/overview');
+    cy.get("#itest-api-name-version").contains('PizzaShackAPI');
+    cy.get('#itest-id-deleteapi-icon-button').click();
+    cy.get('#itest-id-deleteconf').click();
     });
 });

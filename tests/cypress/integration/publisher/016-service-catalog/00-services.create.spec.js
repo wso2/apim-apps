@@ -2,7 +2,6 @@ import { getSampleServiceMeta, getSampleOpenAPI } from '../../../support/mockDat
 import Utils from "@support/utils";
 
 
-const CARBON_ORIGIN = Utils.getAppOrigin();
 describe("Service catalog create flow", () => {
     const { publisher, password, } = Utils.getUserInfo();
 
@@ -12,7 +11,7 @@ describe("Service catalog create flow", () => {
         cy.loginToPublisher(publisher, password)
     })
     it.skip("Deploy sample service", () => {
-        cy.visit(`${CARBON_ORIGIN}/publisher/service-catalog`);
+        cy.visit(`/publisher/service-catalog`);
         cy.get('#itest-service-catalog-onboarding').should('be.visible')
         cy.get('#itest-services-landing-deploy-sample').click()
 
@@ -45,7 +44,7 @@ describe("Service catalog create flow", () => {
                     formData.append('definitionFile', definitionFile);
 
                     const tokenP1 = cookies.find(c => c.name === "WSO2_AM_TOKEN_1_Default");
-                    fetch(CARBON_ORIGIN + '/api/am/service-catalog/v1/services', {
+                    fetch(`${Cypress.config().baseUrl}/api/am/service-catalog/v1/services`, {
                         method: 'POST',
                         body: formData,
                         headers: {
@@ -57,7 +56,7 @@ describe("Service catalog create flow", () => {
                 }
 
             })
-        cy.visit(`${CARBON_ORIGIN}/publisher/service-catalog`);
+        cy.visit(`/publisher/service-catalog`);
 
     });
 
