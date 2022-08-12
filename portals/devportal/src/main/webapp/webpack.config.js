@@ -1,8 +1,8 @@
 /* eslint-disable */
 /**
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 LLC (http://www.wso2.org) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,8 +20,8 @@
 var path = require('path');
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ManifestPlugin = require('webpack-manifest-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/webpack/auth_login.js');
 
 module.exports = function (env, argv) {
@@ -135,6 +135,18 @@ module.exports = function (env, argv) {
                     test: /\.(woff|woff2|eot|ttf|svg)$/,
                     loader: 'url-loader?limit=100000',
                 },
+                // Until we migrate to webpack 5 https://github.com/jantimon/html-webpack-plugin/issues/1483 ~tmkb
+                // This is added to generate the index.jsp from a hbs template file including the hashed bundle file
+                {
+                    test: /\.jsp\.hbs$/,
+                    loader: 'underscore-template-loader',
+                    query: {
+                        engine: 'lodash',
+                        interpolate: '\\{\\[(.+?)\\]\\}',
+                        evaluate: '\\{%([\\s\\S]+?)%\\}',
+                        escape: '\\{\\{(.+?)\\}\\}',
+                    },
+                },
             ],
         },
         externals: {
@@ -144,7 +156,12 @@ module.exports = function (env, argv) {
         },
         plugins: [
             new CleanWebpackPlugin(),
-            new ManifestPlugin(),
+            new HtmlWebpackPlugin({
+                inject: false,
+                template: path.resolve(__dirname, 'site/public/pages/index.jsp.hbs'),
+                filename: path.resolve(__dirname, 'site/public/pages/index.jsp'),
+                minify: false, // Make this true to get exploded, formatted index.jsp file
+            }),
             new ESLintPlugin({
                 extensions: ['js', 'ts', 'jsx'],
                 failOnError: true,

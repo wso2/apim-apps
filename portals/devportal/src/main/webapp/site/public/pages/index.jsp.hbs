@@ -30,10 +30,6 @@
         Log log = LogFactory.getLog(this.getClass());
         Map settings = Util.readJsonFile("/site/public/theme/settings.json", request.getServletContext());
         String context = Util.getTenantBaseStoreContext(request, (String) Util.readJsonObj(settings, "app.context"));
-        Map manifest = Util.readJsonFile("/site/public/dist/manifest.json", request.getServletContext());
-        String indexKey = "index.js";
-        String indexBundlePath = (String) manifest.get(indexKey);
-        String indexBundle = indexBundlePath.split("dist/")[1];
     %>
     <head>
         <base href="<%= context%>/" />
@@ -41,7 +37,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-        <title>devportal</title>
+        <title>[DevPortal]WSO2 APIM</title>
 
         <link rel="shortcut icon" href="<%= context%>/site/public/images/favicon.ico">
         <link rel="icon" type="image/x-icon" href="<%= context%>/site/public/images/_favicon.ico">
@@ -58,8 +54,11 @@
                 module.exports = Settings; // For Jest unit tests
             }
         </script>
+        <script type="text/javascript">
+            Settings.app.customUrl.tenantDomain = '<%=Util.getCustomUrlEnabledDomain(request)%>';
+        </script>
         <script src="<%= context%>/site/public/fonts/iconfont/MaterialIcons.js"></script>
-        <script src="<%= context%>/site/public/dist/<%= indexBundle%>"></script>
+        <script src="<%= context%>/{{ htmlWebpackPlugin.files.js[0] }}"></script>
         <link rel="stylesheet" href="<%= context%>/site/public/fonts/iconfont/material-icons.css">
         <link rel="stylesheet" href="<%= context%>/site/public/css/overrides.css">
     </body>
