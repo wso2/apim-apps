@@ -24,6 +24,8 @@ import AddNewRoleSelectPermissionPage from "./pages/carbon/AddNewRoleSelectPermi
 import ScopeAssignmentsPage from "./pages/adminPortal/ScopeAssignmentsPage";
 import UsersManagementPage from "./pages/carbon/UsersManagementPage";
 import RolesManagementPage from "./pages/carbon/RolesManagementPage";
+import selfSignupDisabledAdvanceConfigJson from "../fixtures/api_artifacts/selfSignupDisabledAdvanceConfig.json";
+import selfSignupEnabledAdvanceConfigJson from "../fixtures/api_artifacts/selfSignupEnabledAdvanceConfig.json";
 
 const usersManagementPage = new UsersManagementPage();
 const rolesManagementPage = new RolesManagementPage();
@@ -47,7 +49,7 @@ Cypress.Commands.add('carbonLogout', () => {
     cy.get('[href="../admin/logout_action.jsp"]').click();
 })
 
-Cypress.Commands.add('portalLogin', (username, password, portal) => {
+Cypress.Commands.add('portalLogin', (username, password, portal, tenant='carbon.super') => {
     Cypress.log({
         name: 'portalLogin',
         message: `${username} | ${password}`,
@@ -55,7 +57,7 @@ Cypress.Commands.add('portalLogin', (username, password, portal) => {
 
     cy.visit(`${Utils.getAppOrigin()}/${portal}`);
     if (portal === 'devportal') {
-        cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+        cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
         cy.get('#itest-devportal-sign-in').click();
     }
     cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
@@ -762,6 +764,10 @@ Cypress.Commands.add('logoutFromPublisher', () => {
     cy.visit(`${Utils.getAppOrigin()}/publisher/services/logout`);
 })
 
+Cypress.Commands.add('logoutFromAdminPortal', () => {
+    cy.visit(`${Utils.getAppOrigin()}/admin/services/logout`);
+})
+
 Cypress.Commands.add('publishThirdPartyApi', (apiName = null) => {
 
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
@@ -1132,4 +1138,129 @@ Cypress.Commands.add('searchRolesAndAddNewUser', (name = 'newuser', roles = [], 
     // Finish wizard
     cy.get('.buttonRow input:first-child').click();
     // cy.get('#messagebox-info p').contains(`User PRIMARY/${name} is added successfully.`).should('exist');
+})
+
+Cypress.Commands.add('addNewUserUsingSelfSignUp', (username, password, firstName, lastName, email, tenant) => {
+    Cypress.log({
+        name: 'Add New User Using Self SignUp ',
+        message: ' for ' + tenant
+    })
+
+    cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
+    cy.get('#itest-devportal-sign-in').click();
+    cy.get('#registerLink').click();
+    cy.get('#username').type(username);
+    cy.get('#registrationSubmit').click();
+
+    // Uncaught ReferenceError: Handlebars is not defined
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+    });
+
+    cy.get('[name="http://wso2.org/claims/givenname"]').type(firstName);
+    cy.get('[name="http://wso2.org/claims/lastname"]').type(lastName);
+    cy.get('#password').type(password);
+    cy.get('#password2').type(password);
+    cy.get('[name="http://wso2.org/claims/emailaddress"]').type(email);
+    cy.get('#termsCheckbox').check();
+    cy.get('#registrationSubmit').click();
+    cy.contains('User registration completed successfully').should('exist');
+    cy.get('[type="button"]').click();
+})
+
+Cypress.Commands.add('addExistingUserUsingSelfSignUp', (username, tenant) => {
+    Cypress.log({
+        name: 'Add Existing User Using Self SignUp ',
+        message: ' for ' + tenant
+    })
+
+    cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
+    cy.get('#itest-devportal-sign-in').click();
+    cy.get('#registerLink').click();
+    cy.get('#username').type(username);
+    cy.get('#registrationSubmit').click();
+    cy.contains('Username \'' + username + '\' is already taken. Please pick a different username').should('exist');
+})
+
+Cypress.Commands.add('removeSelfSignUpConfig', (username, password, tenant) => {
+    Cypress.log({
+        name: 'Remove Self SignUp Config ',
+        message: ' for ' + tenant
+    })
+
+    cy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {
+        statusCode: 200,
+        body: selfSignupDisabledAdvanceConfigJson
+    });
+
+    cy.loginToAdmin(username, password)
+    cy.get('[data-testid="Advanced-child-link"]').click();
+    cy.wait(2000);
+    cy.get('[data-testid="monaco-editor-save"]').click();
+    cy.logoutFromAdminPortal();
+})
+
+Cypress.Commands.add('addSelfSignUpConfig', (username, password, tenant) => {
+    Cypress.log({
+        name: 'Add Self SignUp Config ',
+        message: ' for ' + tenant
+    })
+
+    cy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {
+        statusCode: 200,
+        body: selfSignupEnabledAdvanceConfigJson
+    });
+
+    cy.loginToAdmin(username, password)
+    cy.get('[data-testid="Advanced-child-link"]').click();
+    cy.wait(2000);
+    cy.get('[data-testid="monaco-editor-save"]').click();
+    cy.logoutFromAdminPortal();
+})
+
+Cypress.Commands.add('portalLoginUsingIncorrectUserCredentials', (username, password, portal, tenant = 'carbon.super') => {
+    Cypress.log({
+        name: 'Portal Login Using Incorrect User Credentials ',
+        message: `${username} | ${password}`,
+    })
+
+    cy.visit(`${Utils.getAppOrigin()}/${portal}`);
+    if (portal === 'devportal') {
+        cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
+        cy.get('#itest-devportal-sign-in').click();
+    }
+    cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
+    cy.get('[data-testid=login-page-username-input]').click();
+    cy.get('[data-testid=login-page-username-input]').type(username);
+    cy.get('[data-testid=login-page-password-input]').type(password);
+    cy.get('#loginForm').submit();
+    cy.contains('Login failed! Please recheck the username and password and try again.').should('exist');
+})
+
+Cypress.Commands.add('disableSelfSignUpInCarbonPortal', (username, password, tenant = 'carbon.super') => {
+    Cypress.log({
+        name: 'Disable Self Signup In Carbon Portal',
+        message: ' for ' + tenant
+    })
+
+    cy.carbonLogin(username, password);
+    cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').click();
+    cy.get('[value="SelfRegistration.Enable"]').uncheck({force: true});
+    cy.get('#idp-mgt-edit-local-form').submit();
+    cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
+    cy.carbonLogout();
+})
+
+Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, portal, tenant = 'carbon.super') => {
+    Cypress.log({
+        name: 'Enable Self Signup In Carbon Portal',
+        message: ' for ' + tenant
+    })
+
+    cy.carbonLogin(username, password);
+    cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').click();
+    cy.get('[value="SelfRegistration.Enable"]').check({force: true});
+    cy.get('#idp-mgt-edit-local-form').submit();
+    cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
+    cy.carbonLogout();
 })
