@@ -27,14 +27,14 @@ describe("Endpoint testing", () => {
 
     it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
         const random_number = Math.floor(Date.now() / 1000);
-        const testAlias = `endpointCert`;
+        const testAlias = Utils.generateName();
         const endpoint = `https://petstore.swagger.io/v2/store/inventory/${random_number}`;
 
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-api-config-acc').click();
+            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#left-menu-itemendpoints').click();
-            cy.get('[data-testid="http/restendpoint-add-btn"]').click();
+            cy.get('[data-testid="http/restendpoint-add-btn"]', {timeout: Cypress.config().largeTimeout}).click();
 
             // Add the prod and sandbox endpoints
             cy.get('#production-endpoint-checkbox').click();
@@ -65,18 +65,22 @@ describe("Endpoint testing", () => {
             // Save the endpoint
             cy.get('#endpoint-save-btn').click();
             cy.get('#endpoint-save-btn').then(function (el) {
+                cy.contains('API updated successfully');
+                // Need to wait until certificate added into the store
+                cy.reload();
                 // Check the values
-                cy.get('#http-panel1bh-header').trigger('click');
-                cy.get('#endpoint-cert-list').contains(testAlias).should('be.visible');
+                cy.contains('Certificates: 1');
+                cy.get('#http-panel1bh-header').click({force:true});
+                cy.get('#endpoint-cert-list').contains(testAlias).scrollIntoView().should('be.visible');
+                cy.get('#http-panel1bh-header').click({ force: true });
+                cy.get('#delete-cert-btn').click({ force: true });
+                cy.get('#delete-cert-confirm-btn').click({ force: true });
+                cy.reload();
+                cy.contains('Certificates: 0');
+
+                // Test is done. Now delete the api
+                Utils.deleteAPI(apiId);
             });
-
-            cy.get('#http-panel1bh-header').click({ force: true });
-            cy.get('#delete-cert-btn').click({ force: true });
-            cy.get('#delete-cert-confirm-btn').click();
-            cy.get('#endpoint-cert-list').contains(testAlias).should('not.exist');
-
-            // Test is done. Now delete the api
-            Utils.deleteAPI(apiId);
         });
     });
 });

@@ -30,7 +30,7 @@ describe("Set publisher access control and visibility by roles", () => {
     it.only("Set role based API Store visibility and access control for the api", () => {
         const role = 'internal/everyone';
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemDesignConfigurations').click();
 

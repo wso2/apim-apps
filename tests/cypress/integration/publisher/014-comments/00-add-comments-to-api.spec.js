@@ -21,15 +21,20 @@ import Utils from "@support/utils";
 describe("adding comment", () => {
     const { publisher, password, } = Utils.getUserInfo();
 
-    before(function () {
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Adding comments per API", () => {
+    it.only("Adding comments per API",{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
         const comment = 'test api';
         Utils.addAPI({}).then((apiId) => {
             cy.intercept('**/comments?limit=5&offset=0').as('commentsGet');
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/comments`);
+            cy.visit(`/publisher/apis/${apiId}/comments`);
             cy.wait('@commentsGet', {timeout: 30000}).then(() => {
                 cy.get('#standard-multiline-flexible').click();
                 cy.get('#standard-multiline-flexible').type(comment);
@@ -37,9 +42,11 @@ describe("adding comment", () => {
     
                 // Checking it's existence
                 cy.get('#comment-list').contains(comment).should('be.visible');
-                // Test is done. Now delete the api
-                Utils.deleteAPI(apiId);
             })
         });
     });
+    afterEach(function () {
+        // Test is done. Now delete the api
+        Utils.deleteAPI(apiId);
+    })
 });

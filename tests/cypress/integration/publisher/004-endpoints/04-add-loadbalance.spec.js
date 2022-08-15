@@ -22,13 +22,18 @@ describe("Endpoint testing", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
-    before(function () {
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced", () => {
+    it.only("Add REST endpoints for production and sandbox endpoints with LOAD balanced", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click();
