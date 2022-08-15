@@ -119,7 +119,7 @@ function AddEdit(props) {
         if (NameErrors) {
             errorText += NameErrors + '\n';
         }
-        if (description != undefined) {
+        if (description !== undefined) {
             DescriptionErrors = hasErrors('description', description);
         }
         if (DescriptionErrors) {
