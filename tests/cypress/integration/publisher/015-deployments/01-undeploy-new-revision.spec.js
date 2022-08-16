@@ -21,13 +21,18 @@ import Utils from "@support/utils";
 describe("Undeploy new revision", () => {
     const { publisher, password, } = Utils.getUserInfo();
 
-    before(function () {
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Create new revision and undeploy", () => {
+    it.only("Create new revision and undeploy", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
         Utils.addAPIWithEndpoints({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             // Going to deployments page
             cy.get('#left-menu-itemdeployments').click();
 
@@ -37,9 +42,9 @@ describe("Undeploy new revision", () => {
                 .click();
             cy.get('#add-description').click();
             cy.get('#add-description').type('test');
-            cy.get('#deploy-btn').click();
-            cy.get('#undeploy-btn').should('exist');
-            cy.get('#undeploy-btn').click();
+            cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
+            cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
+            cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').click();
             cy.get('#revision-selector').should('exist');
             Utils.deleteAPI(apiId);
         });

@@ -23,7 +23,7 @@ describe("Login logout from publisher as supper tenant", () => {
 
     it.only("Login and logout from publisher", () => {
         cy.loginToPublisher(carbonUsername, carbonPassword);
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`).then(() => {
+        cy.visit(`/publisher/apis`).then(() => {
             cy.get('#profile-menu-btn').click();
             cy.get('#itest-logout').click();
             cy.get('#usernameUserInput').should('exist');
@@ -32,7 +32,7 @@ describe("Login logout from publisher as supper tenant", () => {
 
     it.only("Login and logout from publisher - tenant user", () => {
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`).then(() => {
+        cy.visit(`/publisher/apis`).then(() => {
             cy.get('#profile-menu-btn').click();
             cy.get('#itest-logout').click();
             cy.get('#usernameUserInput').should('exist');

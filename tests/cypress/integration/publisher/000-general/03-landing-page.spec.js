@@ -26,7 +26,7 @@ describe("Landing page", () => {
     })
 
     it.only("Click and check all cards", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.visit(`/publisher/apis`);
         cy.intercept(
             {
                 method: 'GET',

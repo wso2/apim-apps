@@ -26,9 +26,13 @@ describe("Tryout API invocations", () => {
     const appName = Utils.generateName();
     it.only("Tryout API invocations from swagger console", () => {
         cy.loginToPublisher(publisher, password);
-        Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
+        Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext, endpoint: 'https://petstore.swagger.io/v2/swagger.json' }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
+                cy.visit(`publisher/apis/${apiId}/deployments`);
+                cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+                cy.wait(3000);
+                cy.contains('Deployments');
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
 
@@ -36,7 +40,7 @@ describe("Tryout API invocations", () => {
 
                 // Create an app and subscribe
                 cy.createApp(appName, 'application description');
-                cy.visit(`${Utils.getAppOrigin()}/devportal/apis/${apiId}/credentials?tenant=carbon.super`);
+                cy.visit(`/devportal/apis/${apiId}/credentials?tenant=carbon.super`);
 
                 // Click and select the new application
                 cy.get('#application-subscribe', {timeout: 30000});
@@ -56,20 +60,20 @@ describe("Tryout API invocations", () => {
 
                 // cy.intercept('**/oauth-keys').as('oauthKeys');
                 // cy.wait('@oauthKeys');
-
+                cy.intercept('**/generate-token').as('genToken');
                 cy.get('#gen-test-key').should('not.have.attr', 'disabled', { timeout: 30000 });
                 // Generate token and wait for response
-                cy.get('#gen-test-key').click();
+                cy.wait(2000);
+                cy.get('#gen-test-key').click({force:true});
 
-                cy.intercept('**/generate-token').as('genToken');
-                cy.wait('@genToken');
-
-                // Test the console
-                cy.get('#operations-pet-getPetById').click();
-                cy.get('#operations-pet-getPetById .try-out__btn').click();
-                cy.get('#operations-pet-getPetById [placeholder="petId"]').type('1');
-                cy.get('#operations-pet-getPetById button.execute').click();
-                cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
+                cy.wait('@genToken', {timeout: Cypress.config().largeTimeout}).then(()=> {
+                    cy.get('#accessTokenInput').invoke('val').should('not.be.empty');;
+                    // Test the console
+                    cy.get('#operations-default-get__').find('.opblock-summary-control').click();
+                    cy.get('#operations-default-get__').find('.try-out__btn').click();
+                    cy.get('#operations-default-get__').find('.execute').click();
+                    cy.get('#operations-default-get__').find('.response-col_status').contains('200').should('exist');
+                });
             })
         });
     });

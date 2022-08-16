@@ -37,7 +37,7 @@ describe("Generate keys from api details page", () => {
 
                 // Create an app and subscribe
                 cy.createApp(appName, 'application description');
-                cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+                cy.visit(`/devportal/apis?tenant=carbon.super`);
                 cy.url().should('contain', '/apis?tenant=carbon.super');
                 cy.get(`[title="${apiName}"]`, { timeout: 30000 });
                 cy.get(`[title="${apiName}"]`).click();

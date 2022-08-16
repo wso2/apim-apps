@@ -26,7 +26,7 @@ describe("Upload api spec from the api definition page", () => {
     })
     it.only("Upload api spec from the api definition page", () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemAPIdefinition').click();
             cy.get('#import-definition-btn').click();
@@ -47,7 +47,7 @@ describe("Upload api spec from the api definition page", () => {
                 // Check the resource exists
                 const uuid = res.response.body.id
 
-                cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/resources`, { timeout: 30000 });
+                cy.visit(`/publisher/apis/${uuid}/resources`, { timeout: 30000 });
                 cy.get('#\\/pets\\/\\{petId\\}', { timeout: 30000 }).scrollIntoView();
                 cy.get('#\\/pets\\/\\{petId\\}').should('be.visible');
             });

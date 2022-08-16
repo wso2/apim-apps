@@ -30,8 +30,8 @@ describe("Add business information", () => {
         const techOwnerEmail = 'bigcat@wso2.com';
 
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-portal-config-acc').click();
+            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#left-menu-itembusinessinfo').click();
             cy.get('#name').click().type(ownerName);
             cy.get('#Email').click().type(ownerEmail);
