@@ -71,7 +71,7 @@
             response.setContentType("application/json");
             HashMap<String, Object> res = new HashMap();
             res.put("error", true);
-            res.put("message", "Oauth application details not found for 'devportal'");
+            res.put("message", "Oauth application details not found for 'admin portal'");
             out.println(gson.toJson(res));
         } else {
             String clientId = systemApplicationDTO.getConsumerKey();
