@@ -19,39 +19,30 @@
 import Utils from "@support/utils";
 
 describe("Publish solace api", () => {
-    const publisher = 'publisher';
-    const publisherPassword = 'test123';
-    const subscriber = 'subscriber';
-    const subscriberPassword = 'test123';
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+    const { publisher, developer, password} = Utils.getUserInfo();
 
-    before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], publisherPassword);
-        cy.addNewUser(subscriber, ['Internal/subscriber','Internal/everyone'], subscriberPassword);
-        cy.loginToPublisher(publisher, publisherPassword);
-    });
-
-    it.only("Solace broker integration", () => {
-        cy.publishSolaceApi();
+    let apiName;
+    it.only("Solace broker integration", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        apiName = Utils.generateName().replace('-', '_');
+        cy.loginToPublisher(publisher, password);
+        cy.publishSolaceApi(apiName);
         cy.logoutFromPublisher();
-        cy.loginToDevportal(subscriber, subscriberPassword);
-        cy.viewSolaceApi();
+        cy.loginToDevportal(developer, password);
+        cy.viewSolaceApi(apiName);
         cy.logoutFromDevportal();
 
     });
 
-    after(function () {
+    afterEach(function () {
         // Test is done. Now delete the api
-        cy.loginToPublisher(publisher, publisherPassword);
-        cy.deleteApi('APIConsumption', '0.0.1');
+        cy.loginToPublisher(publisher, password);
+        cy.deleteApi(apiName, '0.0.1');
         cy.logoutFromPublisher();
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(publisher);
-        cy.deleteUser(subscriber);
-
     });
 });
 
