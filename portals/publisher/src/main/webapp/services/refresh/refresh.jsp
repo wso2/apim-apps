@@ -69,12 +69,12 @@
             systemApplicationDTO = systemApplicationDAO.getClientCredentialsForApplication(PUBLISHER_CLIENT_APP_NAME_OLD, tenantDomain);
         }
         if (systemApplicationDTO == null) {
-            log.error("Oauth application details not found for 'publisher'");
+            log.error("Oauth application details not found for 'publisher portal'");
             response.setStatus(401);
             response.setContentType("application/json");
             HashMap<String, Object> res = new HashMap();
             res.put("error", true);
-            res.put("message", "Oauth application details not found for 'devportal'");
+            res.put("message", "Oauth application details not found for 'publisher portal'");
             out.println(gson.toJson(res));
         } else {
             String clientId = systemApplicationDTO.getConsumerKey();
