@@ -29,7 +29,7 @@ describe("Create a new version of API", () => {
         cy.loginToPublisher(publisher, password);
         Utils.addAPI({name: apiName, version: apiVersion}).then((apiId) => {
             testApiId = apiId;
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#create-new-version-btn').click();
             cy.get('#newVersion').type(newVersion);
             cy.intercept('**/apis/**').as('apiGet');

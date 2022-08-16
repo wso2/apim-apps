@@ -31,7 +31,7 @@ describe("Runtime configuration", () => {
         const random_number = Math.floor(Date.now() / 1000);
         const alias = `alias${random_number}`;
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemRuntimeConfigurations').click();
             cy.get('h4').contains('Transport Level Security').click();

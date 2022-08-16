@@ -27,64 +27,41 @@ describe("Anonymous view apis", () => {
     let testApiId;
     const appName = Utils.generateName();
 
-    it.only("Subscribe to API", () => {
+    it.only("Subscribe to API", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
         cy.loginToPublisher(publisher, password);
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
-                cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+                cy.visit(`/devportal/apis?tenant=carbon.super`);
                 cy.url().should('contain', '/apis?tenant=carbon.super');
-                 // After publishing the api appears in devportal with a delay.
-                // We need to keep refresing and look for the api in the listing page
-                // following waitUntilApiExists function does that recursively.
-                let remainingAttempts = 30;
-        
-                function waitUntilApiExists() {
-                    let $apis = Cypress.$(`[title="${apiName}"]`);
-                    if ($apis.length) {
-                        // At least one with api name was found.
-                        // Return a jQuery object.
-                        return $apis;
-                    }
-        
-                    if (--remainingAttempts) {
-                        cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
-        
-                        // Requesting the page to reload (F5)
-                        cy.reload();
-        
-                        // Wait a second for the server to respond and the DOM to be present.
-                        return cy.wait(4000).then(() => {
-                            return waitUntilApiExists();
-                        });
-                    }
-                    throw Error('Table was not found.');
-                }
-        
-                waitUntilApiExists().then($apis => {
-                    cy.log('apis: ' + $apis.text());
-                    cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-                    cy.get(`[title="${apiName}"]`).click();
-                    cy.get('#left-menu-credentials').click();
+                 
+
+                cy.visit(`/devportal/apis/${apiId}/overview?tenant=carbon.super`);
+                cy.get('#left-menu-credentials').click();
             
-                    // Go through the wizard
-                    cy.get('#start-key-gen-wizard-btn').click();
-                    cy.get('#application-name').type(appName);
-                    cy.get('#wizard-next-0-btn').click();
+                // Go through the wizard
+                cy.get('#start-key-gen-wizard-btn').click();
+                cy.get('#application-name').type(appName);
+                cy.get('#wizard-next-0-btn').click();
             
-                    cy.get('#wizard-next-1-btn', { timeout: 30000 })
-                    cy.get('#wizard-next-1-btn').click();
+                cy.get('#wizard-next-1-btn', {timeout: Cypress.config().largeTimeout})
+                cy.get('#wizard-next-1-btn').click();
             
-                    cy.get('#wizard-next-2-btn', { timeout: 30000 });
-                    cy.get('#wizard-next-2-btn').click();
+                cy.get('#wizard-next-2-btn', {timeout: Cypress.config().largeTimeout});
+                cy.get('#wizard-next-2-btn').click();
             
-                    cy.intercept('GET','**/oauth-keys').as('oauthKeys');
-                    cy.wait('@oauthKeys', {timeout: 4000}).then(() => {
-                        cy.get('#wizard-next-3-btn', { timeout: 30000 });
-                        cy.get('#wizard-next-3-btn').click();
-                    });
+                cy.intercept('GET','**/oauth-keys').as('oauthKeys');
+                cy.wait('@oauthKeys', {timeout: Cypress.config().largeTimeout}).then(() => {
+                    cy.get('#wizard-next-3-btn', {timeout: Cypress.config().largeTimeout});
+                    cy.get('#wizard-next-3-btn').click();
+                });
             
                     /*
                     Rest of the test we need to skip for now. Cypress is failing the token gen request but the actual one is not
@@ -98,11 +75,11 @@ describe("Anonymous view apis", () => {
                     //     // Click and select the new application
                     //     cy.get(`#subscription-table td`).contains(appName).should('exist');
                     // });
-                });
+
             })
         })
     })
-    after(() => {
+    afterEach(() => {
         cy.deleteApp(appName);
         Utils.deleteAPI(testApiId);
     })

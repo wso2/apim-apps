@@ -26,7 +26,7 @@ describe("Common Policies", () => {
     })
 
     it("Common Policy", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/policies`);
+        cy.visit(`/publisher/policies`);
         cy.get('[data-testid="add-new-common-policy"]').click();
         cy.get('#name').type('Add Header sample test');
         cy.get('input[name="description"]').type('Sample add header policy description');
