@@ -172,10 +172,10 @@ function Certificates(props) {
      * @param {string} certAlias  The alias of the certificate which information is required.
      * */
     const getCertificateUsage = async (certAlias) => {
-        try{
+        try {
             const response = await API.getEndpointCertificateUsage(certAlias);
             setCertificateUsageDetails({count: response.body.count, apiList: response.body.list});
-        }catch(err) {
+        } catch(err) {
             console.error(err);
         }
     }
