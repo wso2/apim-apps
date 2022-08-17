@@ -24,8 +24,6 @@ import AddNewRoleSelectPermissionPage from "./pages/carbon/AddNewRoleSelectPermi
 import ScopeAssignmentsPage from "./pages/adminPortal/ScopeAssignmentsPage";
 import UsersManagementPage from "./pages/carbon/UsersManagementPage";
 import RolesManagementPage from "./pages/carbon/RolesManagementPage";
-import selfSignupDisabledAdvanceConfigJson from "../fixtures/api_artifacts/selfSignupDisabledAdvanceConfig.json";
-import selfSignupEnabledAdvanceConfigJson from "../fixtures/api_artifacts/selfSignupEnabledAdvanceConfig.json";
 
 const usersManagementPage = new UsersManagementPage();
 const rolesManagementPage = new RolesManagementPage();
@@ -959,33 +957,16 @@ Cypress.Commands.add('addExistingUserUsingSelfSignUp', (username, tenant) => {
     cy.contains('Username \'' + username + '\' is already taken. Please pick a different username').should('exist');
 })
 
-Cypress.Commands.add('removeSelfSignUpConfig', (username, password, tenant) => {
+Cypress.Commands.add('updateTenantConfig', (username, password, tenant, config) => {
     Cypress.log({
-        name: 'Remove Self SignUp Config ',
+        name: 'Update Tenant Config ',
         message: ' for ' + tenant
     })
-
+    // Try to improve this
+    // Better to modify the API response accordingly instead of mocking the entire API call
     cy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {
         statusCode: 200,
-        body: selfSignupDisabledAdvanceConfigJson
-    });
-
-    cy.loginToAdmin(username, password)
-    cy.get('[data-testid="Advanced-child-link"]').click();
-    cy.wait(2000);
-    cy.get('[data-testid="monaco-editor-save"]').click();
-    cy.logoutFromAdminPortal();
-})
-
-Cypress.Commands.add('addSelfSignUpConfig', (username, password, tenant) => {
-    Cypress.log({
-        name: 'Add Self SignUp Config ',
-        message: ' for ' + tenant
-    })
-
-    cy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {
-        statusCode: 200,
-        body: selfSignupEnabledAdvanceConfigJson
+        body: config
     });
 
     cy.loginToAdmin(username, password)
@@ -1030,7 +1011,7 @@ Cypress.Commands.add('disableSelfSignUpInCarbonPortal', (username, password, ten
     cy.carbonLogout();
 })
 
-Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, portal, tenant = 'carbon.super') => {
+Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, tenant = 'carbon.super') => {
     Cypress.log({
         name: 'Enable Self Signup In Carbon Portal',
         message: ' for ' + tenant
@@ -1043,5 +1024,54 @@ Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, port
     cy.get('[value="SelfRegistration.Enable"]').check({force: true});
     cy.get('#idp-mgt-edit-local-form').submit();
     cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
+    cy.carbonLogout();
+})
+
+Cypress.Commands.add('createNewUserRole', (username, password, tenant = 'carbon.super', domain, userRole) => {
+    Cypress.log({
+        name: 'Create a new user role ',
+        message: `Tenant-${tenant}, Domain-${domain}, User Role-${userRole}`
+    })
+
+    cy.carbonLogin(username, password);
+    cy.get('[href="../userstore/add-user-role.jsp?region=region1&item=user_mgt_menu_add"]').click();
+    cy.get('[href="../role/add-step1.jsp"]').click();
+    cy.get('#domain').select(domain); // values PRIMARY/INTERNAL/Application
+    cy.get('[name="roleName"]').type(userRole);
+    cy.get('[value="Finish"]').click();
+    cy.get('[type="button"]').contains('OK').click();
+    cy.carbonLogout();
+})
+
+Cypress.Commands.add('removeUserRole', (username, password, tenant = 'carbon.super', userRole) => {
+    Cypress.log({
+        name: 'Remove a user role ',
+        message: `Tenant-${tenant}, User Role-${userRole}`
+    })
+
+    cy.carbonLogin(username, password);
+    cy.get('[href="../userstore/index.jsp?region=region1&item=user_mgt_menu_list"]').click();
+    cy.get('[href="../role/role-mgt.jsp"]').click();
+    cy.contains(userRole).should('exist');
+    cy.get(`[onclick="deleteUserGroup(\'${userRole}\')"]`).click();
+    cy.contains('Yes').click();
+    cy.contains(`Role ${userRole} is deleted successfully.`).should('exist');
+    cy.contains('OK').click();
+    cy.carbonLogout();
+})
+
+Cypress.Commands.add('checkUserHasGivenRoles', (username, password, tenant = 'carbon.super', user, userRoles = []) => {
+    Cypress.log({
+        name: 'Check user has given roles ',
+        message: `Tenant-${tenant}, User-${user}, User Roles-${userRoles}`
+    })
+
+    cy.carbonLogin(username, password);
+    cy.get('[href="../userstore/index.jsp?region=region1&item=user_mgt_menu_list"]').click();
+    cy.get('[href="../user/user-mgt.jsp"]').click();
+    cy.get(`[href="view-roles.jsp?username=${user}&displayName=${user}"]`).click();
+    for (var i = 0; i < userRoles.length; i++) {
+        cy.contains(userRoles[i]).should('exist');
+    }
     cy.carbonLogout();
 })
