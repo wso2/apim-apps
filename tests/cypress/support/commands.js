@@ -792,7 +792,7 @@ Cypress.Commands.add('addNewRole', (roleName = 'newrole', domain = "PRIMARY", pe
     });
 
     selectPermission.getFinishButton().click()
-    selectPermission.getMessageBoxInfo().should('have.text', `Role PRIMARY/${roleName} is added successfully.`)
+    selectPermission.getMessageBoxInfo().should('have.text', `Role ${domain}/${roleName} is added successfully.`)
     selectPermission.getMessageBoxOkButton().click()
 })
 
@@ -1024,39 +1024,6 @@ Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, tena
     cy.get('[value="SelfRegistration.Enable"]').check({force: true});
     cy.get('#idp-mgt-edit-local-form').submit();
     cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
-    cy.carbonLogout();
-})
-
-Cypress.Commands.add('createNewUserRole', (username, password, tenant = 'carbon.super', domain, userRole) => {
-    Cypress.log({
-        name: 'Create a new user role ',
-        message: `Tenant-${tenant}, Domain-${domain}, User Role-${userRole}`
-    })
-
-    cy.carbonLogin(username, password);
-    cy.get('[href="../userstore/add-user-role.jsp?region=region1&item=user_mgt_menu_add"]').click();
-    cy.get('[href="../role/add-step1.jsp"]').click();
-    cy.get('#domain').select(domain); // values PRIMARY/INTERNAL/Application
-    cy.get('[name="roleName"]').type(userRole);
-    cy.get('[value="Finish"]').click();
-    cy.get('[type="button"]').contains('OK').click();
-    cy.carbonLogout();
-})
-
-Cypress.Commands.add('removeUserRole', (username, password, tenant = 'carbon.super', userRole) => {
-    Cypress.log({
-        name: 'Remove a user role ',
-        message: `Tenant-${tenant}, User Role-${userRole}`
-    })
-
-    cy.carbonLogin(username, password);
-    cy.get('[href="../userstore/index.jsp?region=region1&item=user_mgt_menu_list"]').click();
-    cy.get('[href="../role/role-mgt.jsp"]').click();
-    cy.contains(userRole).should('exist');
-    cy.get(`[onclick="deleteUserGroup(\'${userRole}\')"]`).click();
-    cy.contains('Yes').click();
-    cy.contains(`Role ${userRole} is deleted successfully.`).should('exist');
-    cy.contains('OK').click();
     cy.carbonLogout();
 })
 

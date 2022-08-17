@@ -159,20 +159,24 @@ describe("Self SignUp", () => {
     });
 
     it.only("Test - Assign custom user roles to a super tenant user", () => {
-        cy.createNewUserRole(carbonUsername, carbonPassword, superTenant, domain, userRole);
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.addNewRole(userRole,domain);
+        cy.carbonLogout();
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, customUserRoleAddedConfigJson);
         cy.addNewUserUsingSelfSignUp(superTenant5Username, password, firstName, lastName, getSuperTenantEmail(superTenant5Username), superTenant);
         cy.checkUserHasGivenRoles(carbonUsername, carbonPassword, superTenant, superTenant5Username, [internalSubscriberRole, internalTestRole]);
     });
 
     it.only("Test - Assign custom user roles to a tenant user", () => {
-        cy.createNewUserRole(tenantAdminUsername, tenantAdminPassword, testTenant, domain, userRole);
+        cy.carbonLogin(tenantAdminUsername, tenantAdminPassword);
+        cy.addNewRole(userRole,domain);
+        cy.carbonLogout();
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, customUserRoleAddedConfigJson);
         cy.addNewUserUsingSelfSignUp(Utils.getTenentUser(tenant5Username, testTenant), password, firstName, lastName, Utils.getTenentUser(tenant5Username, testTenant), testTenant);
         cy.checkUserHasGivenRoles(tenantAdminUsername, tenantAdminPassword, testTenant, tenant5Username, [internalSubscriberRole, internalTestRole]);
     });
 
-    it.only("Test - Create a user for a tenant who is not created", () => {
+    it.only("Test - Create a user for a unregistered tenant", () => {
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${testTenant}`);
         cy.get('#itest-devportal-sign-in').click();
         cy.get('#registerLink').click();
@@ -182,26 +186,27 @@ describe("Self SignUp", () => {
     });
 
     after(function () {
-        //delete all the created users
         cy.carbonLogin(carbonUsername, carbonPassword);
+        // delete all the created users for super tenant
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(superTenant1Username);
         cy.deleteUser(superTenant2Username);
         cy.deleteUser(superTenant4Username);
         cy.deleteUser(superTenant5Username);
+        // Remove created user roles
+        cy.deleteRole(internalTestRole);
         cy.carbonLogout();
 
         cy.carbonLogin(tenantAdminUsername, tenantAdminPassword);
+        // delete all the created users for tenant
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(tenant1Username);
         cy.deleteUser(tenant2Username);
         cy.deleteUser(tenant4Username);
         cy.deleteUser(tenant5Username);
-        cy.carbonLogout();
-
         // Remove created user roles
-        cy.removeUserRole(carbonUsername, carbonPassword, superTenant, internalTestRole);
-        cy.removeUserRole(tenantAdminUsername, tenantAdminPassword, testTenant, internalTestRole);
+        cy.deleteRole(internalTestRole);
+        cy.carbonLogout();
 
         // Reset all the configs back to ensure default behaviour
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, tenantConfigJson);
