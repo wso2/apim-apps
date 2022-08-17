@@ -1245,6 +1245,8 @@ Cypress.Commands.add('disableSelfSignUpInCarbonPortal', (username, password, ten
 
     cy.carbonLogin(username, password);
     cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').click();
+    cy.contains('User Onboarding').click();
+    cy.contains('Self Registration').click();
     cy.get('[value="SelfRegistration.Enable"]').uncheck({force: true});
     cy.get('#idp-mgt-edit-local-form').submit();
     cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
@@ -1259,6 +1261,8 @@ Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, port
 
     cy.carbonLogin(username, password);
     cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').click();
+    cy.contains('User Onboarding').click();
+    cy.contains('Self Registration').click();
     cy.get('[value="SelfRegistration.Enable"]').check({force: true});
     cy.get('#idp-mgt-edit-local-form').submit();
     cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
