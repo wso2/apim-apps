@@ -110,7 +110,7 @@
     String state = "";
     // Get the pathname from query param 'referrer'
     if (referer != null) {
-        String contextRef = appContext.charAt(0) == '/' ? appContext.substring(1) : appContext;
+        String contextRef = !appContext.isEmpty() && appContext.charAt(0) == '/' ? appContext.substring(1) : appContext;
         String hostnamePattern = "(https?:\\/\\/.*):?(\\d*)\\/?(" + contextRef + ")";
         Pattern regPattern = Pattern.compile(hostnamePattern);
         String replaced = regPattern.matcher(referer).replaceAll("");
