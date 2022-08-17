@@ -258,7 +258,7 @@ function AddEditConditionPolicyIP(props) {
                     defaultMessage: 'Add New IP Condition Policy',
                 })
                 : intl.formatMessage({
-                    id: 'Throttling.Advanced.AddEditConditionPolicy.dialog.tilte.edit',
+                    id: 'Throttling.Advanced.AddEditConditionPolicyIP.dialog.title.edit',
                     defaultMessage: 'Edit IP Condition Policy',
                 })}
             saveButtonText={intl.formatMessage({
