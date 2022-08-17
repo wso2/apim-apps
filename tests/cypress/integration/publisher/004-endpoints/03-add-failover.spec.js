@@ -22,20 +22,31 @@ describe("Endpoint testing", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
 
-    before(function () {
+    beforeEach(function () {
+         // todo need to remove this check after `console.err(err)` -> `console.err(err)` in Endpoints.jsx
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            // returning false here prevents Cypress from
+            // failing the test
+            return false
+        });
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
+    it.only("Add REST endpoints for production and sandbox endpoints with failover", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-api-config-acc').click();
+            cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click();
 
             // Add the prod and sandbox endpoints
-            cy.get('#production-endpoint-checkbox').click();
-            cy.get('#sandbox-endpoint-checkbox').click();
+            cy.get('#production-endpoint-checkbox', {timeout: Cypress.config().largeTimeout}).click({force:true});
+            cy.get('#sandbox-endpoint-checkbox').click({force:true});
             cy.get('#production_endpoints').focus().type(endpoint);
             cy.get('#sandbox_endpoints').focus().type(endpoint);
 

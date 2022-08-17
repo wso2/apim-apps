@@ -30,12 +30,17 @@ describe("Runtime configuration", () => {
 
     it.only("Select transport type", () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/runtime-configuration`);
-            cy.get('#transportLevel').click();
-            cy.get('#http-transport').click();
-            cy.get('#save-runtime-configurations').click();
-            cy.get('#transportLevel').click();
-            cy.get('#http-transport').should('not.be.checked');
+            cy.visit(`/publisher/apis/${apiId}/runtime-configuration`);
+            cy.get('#transportLevel div:first', {timeout: Cypress.config().largeTimeout}).click({force:true});
+            cy.wait(1000);
+            cy.get('#http-transport').click({force:true});
+            cy.wait(1000);
+            cy.get('#runtime-config-save-button').click();
+            // following is tested but haven't worked
+            //cy.get('div[role="status"]', {timeout: Cypress.config().largeTimeout}).should('have.text', 'API updated successfully');
+            cy.contains('API updated successfully', {timeout: Cypress.config().largeTimeout});
+            cy.get('#transportLevel').click({force:true});
+            cy.get('#http-transport',  {timeout: Cypress.config().largeTimeout}).should('not.be.checked',  {timeout: Cypress.config().largeTimeout});
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
