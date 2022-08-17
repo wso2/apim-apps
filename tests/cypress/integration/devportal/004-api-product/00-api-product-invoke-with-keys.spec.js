@@ -23,14 +23,20 @@ describe("Invoke API Product", () => {
     const apiName = Utils.generateName();
     const apiContext = apiName;
     let testApiId;
+    let testProductId;
     const appName = Utils.generateName();
     const appDescription = 'Testing app ';
     const productName = Utils.generateName();
-    it("Invoke API Product using Oauth 2 and API Key", () => {
+    it("Invoke API Product using Oauth 2 and API Key", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
         cy.loginToPublisher(publisher, password);
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.visit(`/publisher/apis`);
         // cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`);
+        cy.visit(`/publisher/apis/create/openapi`);
         cy.get('#open-api-file-select-radio').click();
 
         // upload the swagger
@@ -59,9 +65,11 @@ describe("Invoke API Product", () => {
             cy.location('pathname').then((pathName) => {
                 const pathSegments = pathName.split('/');
                 const uuid = pathSegments[pathSegments.length - 2];
+                testApiId = uuid;
+
 
                 // Go to api product create page
-                cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/create`);
+                cy.visit(`/publisher/api-products/create`);
 
                 // fill the form
                 cy.get('#itest-id-apiname-input').type(productName);
@@ -85,21 +93,22 @@ describe("Invoke API Product", () => {
                     cy.location('pathname').then((pathName) => {
                         const pathSegments = pathName.split('/');
                         const uuidProduct = pathSegments[pathSegments.length - 2];
-
+                        testProductId = uuidProduct;
                         cy.log(uuid, uuidProduct);
 
                         cy.get('#left-menu-itemdeployments').click();
 
                         // Deploying
-                        cy.get('#deploy-btn', { timeout: 30000 }).click({ force: true });
+                        cy.get('#deploy-btn', { timeout: 30000 }).should('not.have.class', 'Mui-disabled').click({ force: true });
 
                         cy.get('#left-menu-itemlifecycle').click();
 
                         // Publishing api product
                         cy.wait(2000);
-                        cy.get('[data-testid="Publish-btn"]').click();
-                        cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/${uuidProduct}/runtime-configuration`);
-                        cy.get('#applicationLevel').click();
+                        cy.get('[data-testid="Publish-btn"]').click({force:true});
+                        cy.get('[data-testid="itest-api-state"]').contains('PUBLISHED');
+                        cy.visit(`/publisher/api-products/${uuidProduct}/runtime-configuration`);
+                        cy.get('#applicationLevel', {timeout: Cypress.config().largeTimeout}).children('[role="button"]').click({force:true});
                         cy.wait(2000);
                         cy.get('#api-security-api-key-checkbox').check().should('be.checked');
 
@@ -111,7 +120,7 @@ describe("Invoke API Product", () => {
                         cy.loginToDevportal(developer, password);
 
                         //Test with Oath2 Token
-                        cy.visit(`${Utils.getAppOrigin()}/devportal/applications/create?tenant=carbon.super`);
+                        cy.visit(`/devportal/applications/create?tenant=carbon.super`);
                         cy.createApp(appName, appDescription);
 
                         cy.get('#production-keys-oauth').click();
@@ -123,15 +132,18 @@ describe("Invoke API Product", () => {
 
                         //Subscription of APi Product
                         cy.get('#left-menu-subscriptions').click();
-                        cy.get('#subscribe-api-btn').click();
+                        cy.contains('Subscribe APIs').click();
+
+                        cy.get('#pagination-rows').click();
+                        cy.get('[data-value="100"]').click();
 
                         cy.get(`#policy-subscribe-btn-${uuidProduct}`).click();
-                        cy.get('#close-btn').click();
+                        cy.get('[aria-label="close"]').click();
                         cy.location('pathname').then((pathName) => {
                             const pathSegments = pathName.split('/');
                             const uuidApp = pathSegments[pathSegments.length - 2];
 
-                            cy.visit(`${Utils.getAppOrigin()}/devportal/apis/${uuidProduct}/test`);
+                            cy.visit(`/devportal/apis/${uuidProduct}/test`);
 
                             //test
                             cy.get('#gen-test-key').should('not.have.attr', 'disabled', { timeout: 30000 });
@@ -140,13 +152,13 @@ describe("Invoke API Product", () => {
                             cy.wait('@genToken');
 
                             // Test console with Oath2 token
-                            cy.get('#operations-default-get_menu').click();
-                            cy.get('#operations-default-get_menu .try-out__btn').click();
-                            cy.get('#operations-default-get_menu button.execute').click();
+                            cy.get('#operations-default-get__').find('.opblock-summary-control').click();
+                            cy.get('#operations-default-get__').find('.try-out__btn').click();
+                            cy.get('#operations-default-get__').find('.execute').click();
                             cy.wait(3000);
-                            cy.get('#operations-default-get_menu  td.response-col_status').contains('200').should('exist');
+                            cy.get('#operations-default-get__').find('.response-col_status').contains('200').should('exist');
 
-                            cy.visit(`${Utils.getAppOrigin()}/devportal/applications`);
+                            cy.visit(`/devportal/applications`);
                             cy.get(`#delete-${appName}-btn`, { timeout: 30000 });
                             cy.get(`#delete-${appName}-btn`).click();
                             cy.get(`#itest-confirm-application-delete`).click();
@@ -154,7 +166,8 @@ describe("Invoke API Product", () => {
                         });
 
                         //Test with API Key
-                        cy.createApp(appName, appDescription);
+                        const appName2 = Utils.generateName();
+                        cy.createApp(appName2, appDescription);
                         cy.location('pathname').then((pathName) => {
                             const pathSegments = pathName.split('/');
                             const uuidApp = pathSegments[pathSegments.length - 2];
@@ -166,14 +179,14 @@ describe("Invoke API Product", () => {
                             cy.wait(2000);
 
                             //Subscription of APi Product
-                            cy.visit(`${Utils.getAppOrigin()}/devportal/applications/${uuidApp}/subscriptions`);
+                            cy.visit(`/devportal/applications/${uuidApp}/subscriptions`);
                             cy.get('#left-menu-subscriptions').click();
-                            cy.get('#subscribe-api-btn').click();
+                            cy.contains('Subscribe APIs').click();
 
                             cy.get(`#policy-subscribe-btn-${uuidProduct}`).click();
-                            cy.get('#close-btn').click();
+                            cy.get('[aria-label="close"]').click();
 
-                            cy.visit(`${Utils.getAppOrigin()}/devportal/apis/${uuidProduct}/test`);
+                            cy.visit(`/devportal/apis/${uuidProduct}/test`);
                             cy.wait(2000);
                             cy.get('#api-key-select-radio-button').click();
 
@@ -185,15 +198,15 @@ describe("Invoke API Product", () => {
                             //cy.wait('@genToken');
 
                             // Test console with api key
-                            cy.get('#operations-default-get_menu').click();
-                            cy.get('#operations-default-get_menu .try-out__btn').click();
-                            cy.get('#operations-default-get_menu button.execute').click();
+                            cy.get('#operations-default-get__').find('.opblock-summary-control').click();
+                            cy.get('#operations-default-get__').find('.try-out__btn').click();
+                            cy.get('#operations-default-get__').find('.execute').click();
                             cy.wait(3000);
-                            cy.get('#operations-default-get_menu  td.response-col_status').contains('200').should('exist');
+                            cy.get('#operations-default-get__').find('.response-col_status').contains('200').should('exist');
 
-                            cy.visit(`${Utils.getAppOrigin()}/devportal/applications`);
-                            cy.get(`#delete-${appName}-btn`, { timeout: 30000 });
-                            cy.get(`#delete-${appName}-btn`).click();
+                            cy.visit(`/devportal/applications`);
+                            cy.get(`#delete-${appName2}-btn`, { timeout: 30000 });
+                            cy.get(`#delete-${appName2}-btn`).click();
                             cy.get(`#itest-confirm-application-delete`).click();
 
                         });
@@ -204,11 +217,11 @@ describe("Invoke API Product", () => {
                         cy.loginToPublisher(publisher, password);
 
                         // Deleting the api and api product
-                        cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/${uuidProduct}/overview`);
+                        cy.visit(`/publisher/api-products/${uuidProduct}/overview`);
                         cy.get('#itest-id-deleteapi-icon-button').click();
                         cy.get('#itest-id-deleteconf').click();
 
-                        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
+                        cy.visit(`/publisher/apis/${uuid}/overview`);
                         cy.get('#itest-api-name-version', { timeout: 30000 });
                         cy.get(`#itest-id-deleteapi-icon-button`).click();
                         cy.get(`#itest-id-deleteconf`).click();
@@ -219,4 +232,8 @@ describe("Invoke API Product", () => {
         });
 
     });
+    after(() => {
+        Utils.deleteAPIProduct(testProductId);
+        Utils.deleteAPI(testApiId);
+    })
 })

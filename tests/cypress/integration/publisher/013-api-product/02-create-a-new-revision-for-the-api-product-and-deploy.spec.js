@@ -19,13 +19,19 @@ import Utils from "@support/utils";
 describe("Mock the api response and test it", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const productName = Utils.generateName();
-
-    before(function () {
+    const apiName = Utils.generateName();
+    let testApiID;
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it("Mock the api response and test it", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`, { timeout: 30000 });
+    it("Mock the api response and test it", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
+        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout});
         cy.get('#open-api-file-select-radio').click();
         // upload the swagger
         cy.get('#browse-to-upload-btn').then(function () {
@@ -35,28 +41,25 @@ describe("Mock the api response and test it", () => {
 
         cy.get('#open-api-create-next-btn').click();
 
-        cy.get('#itest-id-apiversion-input', { timeout: 30000 });
+        cy.get('#itest-id-apiversion-input', {timeout: Cypress.config().largeTimeout});
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
-            cy.get('#itest-id-apicontext-input').type('petstore3');
+            cy.get('#itest-id-apicontext-input').type(apiName);
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
-
             // finish the wizard
-            cy.get('#open-api-create-btn').click();
+            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({force:true});
 
-            cy.intercept('**/apis/**').as('apiGet');
-            cy.wait('@apiGet', { timeout: 30000 }).then((res) => {
-
-                //Get the api id
-                const uuid = res.response.body.id;
+            cy.url().should('contains', 'overview').then(url => {
+                testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
+                cy.log("API ID", testApiID);
 
                 // validate
-                cy.get('#itest-api-name-version', { timeout: 30000 });
+                cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout});
                 cy.get('#itest-api-name-version').contains(version);
 
                 // Go to api product create page
-                cy.visit(`${Utils.getAppOrigin()}/publisher/api-products/create`);
+                cy.visit(`/publisher/api-products/create`);
 
                 // fill the form
                 cy.get('#itest-id-apiname-input').type(productName);
@@ -66,21 +69,27 @@ describe("Mock the api response and test it", () => {
                 cy.intercept('**/swagger').as('swaggerGet');
 
                 cy.get('#api-product-next-btn').click();
-                cy.wait('@swaggerGet', { timeout: 3000 }).then(() => {
-                    // add all resources
-                    cy.get('#add-all-resources-btn', { timeout: 30000 }).click();
-                    cy.get('span').contains('Define API Product').click();
-                    cy.get('#create-api-product-btn').scrollIntoView().dblclick();
+                cy.wait('@swaggerGet', { timeout: Cypress.config().largeTimeout }).then(() => {
 
-                    cy.get('#itest-api-name-version', { timeout: 30000 });
+                    cy.intercept('GET', '**/swagger').as('getSwagger');
+                    cy.get(`#checkbox-list-label-${testApiID}`).click();
+                    cy.wait('@getSwagger');
+
+                    cy.get('#resource-wrapper').children().should('have.length.gte', 1);
+                    // add all resources
+                    cy.get('#add-all-resources-btn', { timeout: Cypress.config().largeTimeout }).click();
+                    cy.get('span').contains('Define API Product').click();
+                    cy.get('#create-api-product-btn').scrollIntoView().dblclick({ force: true });
+
+                    cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
                     cy.get('#itest-api-name-version').contains(productName);
 
                     // Going to deployments page
                     cy.get('#left-menu-itemdeployments').click();
 
                     // Deploying
-                    cy.get('#deploy-btn').click({ "force": true });
-                    cy.get('#undeploy-btn').should('exist');
+                    cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({ "force": true });
+                    cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
 
                     // Going to lifecycle page
                     cy.get('#left-menu-itemlifecycle').click();
@@ -93,14 +102,12 @@ describe("Mock the api response and test it", () => {
 
                     cy.get(`#itest-id-deleteapi-icon-button`).click();
                     cy.get(`#itest-id-deleteconf`).click();
-
-                    cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/overview`);
-                    cy.get('#itest-api-name-version', { timeout: 30000 });
-                    cy.get(`#itest-id-deleteapi-icon-button`).click();
-                    cy.get(`#itest-id-deleteconf`).click();
                 })
 
             });
         });
     });
+    afterEach(() => {
+        Utils.deleteAPI(testApiID);
+    })
 })

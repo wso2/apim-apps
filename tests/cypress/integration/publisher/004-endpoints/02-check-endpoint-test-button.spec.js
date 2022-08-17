@@ -31,7 +31,7 @@ describe("Check endpoint test button", () => {
         const endpointUnknown = 'http://bull-8772776363-url.foo123'; // Unknown Host
         const endpointNoProtocol = 'bullproto://'; // unknown protocol: bullproto
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
 
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
