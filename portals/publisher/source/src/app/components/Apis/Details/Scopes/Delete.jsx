@@ -143,6 +143,7 @@ function Delete(props) {
         </div>
     );
 }
+
 Delete.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     scopeName: PropTypes.string.isRequired,

@@ -16,11 +16,13 @@
  * under the License.
  */
 
-import React, { Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import DescriptionIcon from '@material-ui/icons/Description';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';
@@ -39,6 +41,7 @@ import Edit from './Edit';
 import Delete from './Delete';
 import DeleteMultiple from './DeleteMultiple';
 import Download from './Download';
+import { ToggleButton } from '@material-ui/lab';
 
 const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "ListingTextEditor" */));
 
@@ -102,6 +105,7 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
     },
 });
+
 function LinkGenerator(props) {
     return props.apiType === 'APIProduct' ? (
         <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
@@ -128,6 +132,8 @@ class Listing extends React.Component {
     componentDidMount() {
         this.getDocumentsList();
     }
+
+    // const [selected, setSelected] = useState(false);
 
     /*
      Get the document list attached to current API and set it to the state
@@ -167,6 +173,18 @@ class Listing extends React.Component {
             docs.then((response) => {
                 const documentList = response.body.list.filter((item) => item.otherTypeName !== '_overview');
                 documentList.sort(getSortOrder('name'));
+                console.log(documentList);
+                console.log(this.props.api);
+                if(this.props.api.type=='HTTP' || this.props.api.type=='HTTPS'){
+                    let generatedDocument = { 
+                        'documentId': "17928123-e3ca-4d21-943f-a88cfe1f91ca",
+                        'name': this.props.api.name + '_SwaggerDoc',
+                        'sourceType': "GENERATED",
+                        'type' : "HOWTO",
+                        'visibility' : "API_LEVEL",
+                    };
+                    documentList.unshift(generatedDocument);
+                }
                 this.setState({ docs: documentList });
             }).catch((errorResponse) => {
                 const errorData = JSON.parse(errorResponse.message);
@@ -185,6 +203,7 @@ class Listing extends React.Component {
             return { showAddDocs: !oldState.showAddDocs };
         });
     }
+
     render() {
         const { classes, api, isAPIProduct } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
@@ -427,6 +446,31 @@ class Listing extends React.Component {
                                         </tr>
                                     </table>
                                 );
+                            } else if (sourceType === 'GENERATED') {
+                                return (
+                                    <table className={classes.actionTable}>
+                                        <tr>
+                                            <td>
+                                                <Button aria-label={'View ' + docName}>
+                                                    <DescriptionIcon/>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Documents.view.swagger.documentation.btn'
+                                                        defaultMessage='View'
+                                                    />
+                                                </Button>
+                                            </td>
+                                            <td>
+                                                <Button aria-label={'Hide ' + docName}>
+                                                    <VisibilityIcon/>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Documents.hide.swagger.documentation.btn'
+                                                        defaultMessage='Hide'
+                                                    />
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                );
                             } else {
                                 return <span />;
                             }
@@ -443,6 +487,50 @@ class Listing extends React.Component {
         }
         return (
             <React.Fragment>
+
+                {/* View or Hide the generated document from OAS specification
+                <InlineMessage type='info' height={140}>
+                    <div className={classes.contentWrapper}>
+                        <Typography component='p' className={classes.content}>
+                            <FormattedMessage
+                                defaultMessage={
+                                    'The uploaded OAS specification document can be viewed' +
+                                    ' from this generated documentation.'
+                                }
+                            />
+                        </Typography>
+                        <div className={classes.actions}>
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                // component={Link}
+                                className={classes.button}
+                            >
+                                <FormattedMessage
+                                    defaultMessage='View Document'
+                                />
+                            </Button>
+                            <Typography component='p' className={classes.content}>
+                            <FormattedMessage
+                                defaultMessage={
+                                    'Hide Generated Document'
+                                }
+                            />
+                            </Typography>
+                            <ToggleButton
+                                value="check"
+                                selected={true}
+                                className={classes.button}
+                                onChange={() => {
+                                    setSelected(!selected);
+                                }}
+                            >
+                            <CheckIcon />
+                            </ToggleButton>
+                        </div>
+                    </div>
+                </InlineMessage> */}
+
                 {docsToDelete && (
                     <DeleteMultiple getDocumentsList={this.getDocumentsList} docsToDelete={docsToDelete} docs={docs} />
                 )}

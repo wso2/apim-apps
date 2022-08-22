@@ -26,6 +26,7 @@ import View from './View';
 import Edit from './Edit';
 import EditContent from './EditContent';
 import DocCreate from './Create';
+import GenerateDocument from './GenerateDocument';
 
 const Documents = (props) => {
     const { isAPIProduct } = useContext(APIContext);
@@ -33,7 +34,7 @@ const Documents = (props) => {
     return (
         <div>
             <Switch>
-                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents'} component={Listing} />
+                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents'} component={GenerateDocument} />
                 <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/:documentId/details'} component={View} />
                 <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/:documentId/edit'} component={Edit} />
                 <Route

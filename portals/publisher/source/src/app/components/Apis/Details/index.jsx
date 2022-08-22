@@ -79,6 +79,7 @@ import { APIProvider } from './components/ApiContext';
 import CreateNewVersion from './NewVersion/NewVersion';
 import TryOutConsole from './TryOut/TryOutConsole';
 
+
 const styles = (theme) => ({
     LeftMenu: {
         backgroundColor: theme.palette.background.leftMenu,
