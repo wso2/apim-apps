@@ -186,6 +186,7 @@ export default function ExternalStores() {
                                 <TableRow key={row.id}>
                                     <TableCell padding='checkbox'>
                                         <Checkbox
+                                            data-testid={'portal-checkbox-' + row.id}
                                             checked={publishedExternalStores.includes(row.id)}
                                             disabled={api.lifeCycleStatus !== 'PUBLISHED'
                                                 || isRestricted(['apim:api_publish'], api)}
@@ -251,6 +252,7 @@ export default function ExternalStores() {
                                 disabled={isUpdating || api.lifeCycleStatus !== 'PUBLISHED'
                                     || isRestricted(['apim:api_publish'], api)}
                                 onClick={updateStores}
+                                id='stores-save-btn'
                             >
                                 <FormattedMessage
                                     id='Apis.Details.ExternalStores.ExternalStores.save'
