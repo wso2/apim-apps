@@ -1,0 +1,167 @@
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import React, {useState, useRef, useContext} from 'react';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Slide from '@material-ui/core/Slide';
+import Icon from '@material-ui/core/Icon';
+import Paper from '@material-ui/core/Paper';
+import Alert from 'AppComponents/Shared/Alert';
+import CreateEditForm from './CreateEditForm';
+import Api from 'AppData/api';
+import { isRestricted } from 'AppData/AuthManager';
+import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import DescriptionIcon from '@material-ui/icons/Description';
+import GenerateDocument from './GenerateDocument';
+
+
+const styles = {
+    appBar: {
+        position: 'relative',
+    },
+    flex: {
+        flex: 1,
+    },
+    popupHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    splitWrapper: {
+        padding: 0,
+    },
+    docName: {
+        alignItems: 'center',
+        display: 'flex',
+    },
+    button: {
+        height: 30,
+        marginLeft: 30,
+    },
+    editMetaButton: {
+        whiteSpace: 'nowrap',
+    },
+};
+
+function Transition(props) {
+    return <Slide direction='up' {...props} />;
+}
+
+function ViewDocument(props) {
+    const restAPI = new Api();
+
+    const { intl, apiType } = props;
+    const [open, setOpen] = useState(false);
+    const [saveDisabled, setSaveDisabled] = useState(false);
+    let createEditForm = useRef(null);
+    const { api } = useContext(APIContext);
+
+    const toggleOpen = () => {
+        setOpen(!open);
+    };
+
+    const { classes, apiId, docName } = props;
+    return (
+        <div>
+            <Button
+                onClick={toggleOpen}
+                // className={classes.viewButton}
+                aria-label={'View Content of ' + docName}
+            >
+                <DescriptionIcon/>
+                <FormattedMessage
+                    id='Apis.Details.Documents.ViewDocument.view.document'
+                    defaultMessage='View Document'
+                />
+            </Button>
+            <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen> 
+                <Paper square>
+                        <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                            <Icon>close</Icon>
+                        </IconButton>
+                        <Typography variant='h4'>
+                            <FormattedMessage
+                                id='Apis.Details.Documents.Edit.documents.text.editor.edit.content'
+                                defaultMessage='Edit '
+                            />
+                            {` ${props.docName}`}
+                        </Typography>
+                </Paper>
+                <GenerateDocument />
+            </Dialog>
+
+            {/* <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen>
+                <Paper square className={classes.popupHeader}>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                        <Icon>close</Icon>
+                    </IconButton>
+                    <Typography variant='h4' className={classes.docName}>
+                        <FormattedMessage
+                            id='Apis.Details.Documents.Edit.documents.text.editor.edit.content'
+                            defaultMessage='Edit '
+                        />
+                        {` ${props.docName}`}
+                    </Typography>
+                    <Button className={classes.button} variant='contained' color='primary' onClick={updateDoc} disabled={saveDisabled}>
+                        <FormattedMessage
+                            id='Apis.Details.Documents.Edit.documents.text.editor.update.content'
+                            defaultMessage='Save'
+                        />
+                    </Button>
+                    <Button className={classes.button} onClick={toggleOpen}>
+                        <FormattedMessage
+                            id='Apis.Details.Documents.Edit.documents.text.editor.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                </Paper>
+                <div className={classes.splitWrapper}>
+                    <CreateEditForm
+                        innerRef={(node) => {
+                            createEditForm = node;
+                        }}
+                        docId={docId}
+                        apiId={apiId}
+                        apiType={apiType}
+                        saveDisabled={saveDisabled}
+                        setSaveDisabled={setSaveDisabled}
+                    />
+                </div>
+            </Dialog> */}
+        </div>
+    );
+}
+ViewDocument.propTypes = {
+    classes: PropTypes.shape({}).isRequired,
+    apiId: PropTypes.shape({}).isRequired,
+    // docId: PropTypes.shape({}).isRequired,
+    // getDocumentsList: PropTypes.shape({}).isRequired,
+    intl: PropTypes.shape({}).isRequired,
+    // api: PropTypes.shape({
+    //     id: PropTypes.string,
+    //     apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]),
+    // }).isRequired,
+};
+
+export default ViewDocument;

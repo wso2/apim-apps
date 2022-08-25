@@ -25,7 +25,13 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';
 
-  
+
+const styles = theme =>({
+    // a[href*="stoplight.io"] : {
+    //     visibility: hidden,
+    // },
+});
+
 function GenerateDocument(){
     const [api, updateAPI] = useAPI();
     const [swagger, updateSwagger] = useState("");
@@ -57,8 +63,9 @@ function GenerateDocument(){
                 hideTryIt="true"
             />
         </div>
+        
     );
 }
 
-export default GenerateDocument;
+export default injectIntl(withStyles(styles)(GenerateDocument));
 //  injectIntl(withStyles(styles)(GenerateDocument));

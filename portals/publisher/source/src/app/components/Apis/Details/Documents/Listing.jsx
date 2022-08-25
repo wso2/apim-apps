@@ -19,7 +19,7 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -41,7 +41,7 @@ import Edit from './Edit';
 import Delete from './Delete';
 import DeleteMultiple from './DeleteMultiple';
 import Download from './Download';
-import { ToggleButton } from '@material-ui/lab';
+import ViewDocument from './ViewDocument';
 
 const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "ListingTextEditor" */));
 
@@ -105,6 +105,7 @@ const styles = theme => ({
         marginRight: theme.spacing(1),
     },
 });
+ 
 
 function LinkGenerator(props) {
     return props.apiType === 'APIProduct' ? (
@@ -124,7 +125,9 @@ class Listing extends React.Component {
         this.apiId = props.api.id;
         this.toggleAddDocs = this.toggleAddDocs.bind(this);
         this.getDocumentsList = this.getDocumentsList.bind(this);
+        this.navigateToSwaggerDoc = this.navigateToSwaggerDoc.bind(this);
     }
+
     /**
      * @inheritDoc
      * @memberof Listing
@@ -132,6 +135,15 @@ class Listing extends React.Component {
     componentDidMount() {
         this.getDocumentsList();
     }
+
+
+    navigateToSwaggerDoc() {
+        this.props.history.push('/apis/' + this.props.api.id + '/documents/swaggerdoc');
+    }
+
+    // navigateToSwaggerDoc = () => {
+    //     navigate('/apis/' + props.apiId + '/documents/swaggerdoc');
+    // }
 
     // const [selected, setSelected] = useState(false);
 
@@ -169,7 +181,7 @@ class Listing extends React.Component {
             });
         } else {
             const newApi = new API();
-            const docs = newApi.getDocuments(this.props.api.id);
+            const docs = newApi.getDocuments(api.id);
             docs.then((response) => {
                 const documentList = response.body.list.filter((item) => item.otherTypeName !== '_overview');
                 documentList.sort(getSortOrder('name'));
@@ -177,7 +189,7 @@ class Listing extends React.Component {
                 console.log(this.props.api);
                 if(this.props.api.type=='HTTP' || this.props.api.type=='HTTPS'){
                     let generatedDocument = { 
-                        'documentId': "17928123-e3ca-4d21-943f-a88cfe1f91ca",
+                        // 'documentId': "17928123-e3ca-4d21-943f-a88cfe1f91ca",
                         'name': this.props.api.name + '_SwaggerDoc',
                         'sourceType': "GENERATED",
                         'type' : "HOWTO",
@@ -204,7 +216,9 @@ class Listing extends React.Component {
         });
     }
 
+
     render() {
+        // const useHistory = useHistory();
         const { classes, api, isAPIProduct } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
         const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
@@ -451,7 +465,18 @@ class Listing extends React.Component {
                                     <table className={classes.actionTable}>
                                         <tr>
                                             <td>
-                                                <Button aria-label={'View ' + docName}>
+                                                <ViewDocument
+                                                    cla
+                                                    docName={docName}
+                                                    apiType={api.apiType}
+                                                    apiId={this.apiId}
+                                                    api
+                                                />
+                                            </td>
+                                            {/* <td>
+                                                <Button 
+                                                    onClick={this.navigateToSwaggerDoc}
+                                                    aria-label={'View ' + docName}>
                                                     <DescriptionIcon/>
                                                     <FormattedMessage
                                                         id='Apis.Details.Documents.view.swagger.documentation.btn'
@@ -467,7 +492,7 @@ class Listing extends React.Component {
                                                         defaultMessage='Hide'
                                                     />
                                                 </Button>
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     </table>
                                 );
@@ -487,49 +512,6 @@ class Listing extends React.Component {
         }
         return (
             <React.Fragment>
-
-                {/* View or Hide the generated document from OAS specification
-                <InlineMessage type='info' height={140}>
-                    <div className={classes.contentWrapper}>
-                        <Typography component='p' className={classes.content}>
-                            <FormattedMessage
-                                defaultMessage={
-                                    'The uploaded OAS specification document can be viewed' +
-                                    ' from this generated documentation.'
-                                }
-                            />
-                        </Typography>
-                        <div className={classes.actions}>
-                            <Button
-                                variant='contained'
-                                color='primary'
-                                // component={Link}
-                                className={classes.button}
-                            >
-                                <FormattedMessage
-                                    defaultMessage='View Document'
-                                />
-                            </Button>
-                            <Typography component='p' className={classes.content}>
-                            <FormattedMessage
-                                defaultMessage={
-                                    'Hide Generated Document'
-                                }
-                            />
-                            </Typography>
-                            <ToggleButton
-                                value="check"
-                                selected={true}
-                                className={classes.button}
-                                onChange={() => {
-                                    setSelected(!selected);
-                                }}
-                            >
-                            <CheckIcon />
-                            </ToggleButton>
-                        </div>
-                    </div>
-                </InlineMessage> */}
 
                 {docsToDelete && (
                     <DeleteMultiple getDocumentsList={this.getDocumentsList} docsToDelete={docsToDelete} docs={docs} />
@@ -637,4 +619,4 @@ Listing.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withAPI(withStyles(styles)(Listing)));
+export default withRouter(injectIntl(withAPI(withStyles(styles)(Listing))));
