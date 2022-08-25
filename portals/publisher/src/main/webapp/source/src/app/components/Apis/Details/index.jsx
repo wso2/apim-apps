@@ -805,6 +805,7 @@ class Details extends Component {
                                         })}
                                         to={pathPrefix + 'external-devportals'}
                                         Icon={<StoreIcon />}
+                                        id='left-menu-itemstores'
                                     />
                                 </>
                             )}
