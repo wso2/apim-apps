@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -18,8 +18,9 @@
 
 import Utils from "@support/utils";
 import APIMenuPage from "../../../support/pages/publisher/APIMenuPage";
+import UsersAndRoles from "../../../support/functions/carbon/UsersAndRoles";
 
-describe("Publisher Read-Only Mode", () => {
+describe("publisher-019-00 : Verify that read only user cannot create updte api", () => {
     const apiName = 'checkreadonlyapi' + Math.floor(Date.now() / 1000);
     const apiVersion = '1.0.0';
     const apiContext = '/readonlycheck' + Math.floor(Date.now() / 1000);;
@@ -33,8 +34,11 @@ describe("Publisher Read-Only Mode", () => {
     before(function () {
       //create developer user
         cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
-        cy.addNewUser(creatorPublisher,  ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], creatorpublisherPassword);
+        //cy.addNewUser(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
+        //cy.addNewUser(creatorPublisher,  ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], creatorpublisherPassword);
+
+        UsersAndRoles.addNewUserAndUpdateRoles(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
+        UsersAndRoles.addNewUserAndUpdateRoles(creatorPublisher,  ['Internal/publisher', 'Internal/creator'], creatorpublisherPassword);
 
         //create an API from publisher portal
         cy.loginToPublisher(creatorPublisher, creatorpublisherPassword);
