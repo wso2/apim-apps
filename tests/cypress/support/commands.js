@@ -863,26 +863,26 @@ Cypress.Commands.add('deleteScopeMappingFromAPIMAdminPortal', (roleName) => {
 })
 
 Cypress.Commands.add('searchAndDeleteUserIfExist', (userNametoDelete) => {
-    cy.visit(`${Utils.getAppOrigin()}` + usersManagementPage.getUrl())
+    cy.visit(`${Utils.getAppOrigin()}` + UsersManagementPage.getUrl())
     const WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR = 3000;
-    usersManagementPage.getEnterUsernameTextBox().clear().type(userNametoDelete)
-    usersManagementPage.getSearchUsershButton().click()
+    UsersManagementPage.getEnterUsernameTextBox().clear().type(userNametoDelete)
+    UsersManagementPage.getSearchUsershButton().click()
     var deleteMessageLog = "NA"
     cy.wait(WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR)
 
     cy.get("body").then(($body) => {
-        if ($body.find(usersManagementPage.getNoMatchingUsersFoundDialogBox_MessageInfoDivSelectorOnly()).length > 0) {
+        if ($body.find(UsersManagementPage.getNoMatchingUsersFoundDialogBox_MessageInfoDivSelectorOnly()).length > 0) {
             deleteMessageLog = `User "${userNametoDelete}" not exists may be already deleted`
             cy.log(deleteMessageLog).then(() => {
                 return deleteMessageLog;
             })
         } else {
-            usersManagementPage.getDeleteButtonOfUser(userNametoDelete).click();
-            usersManagementPage.getDeleteDialogYesButton().click();
+            UsersManagementPage.getDeleteButtonOfUser(userNametoDelete).click();
+            UsersManagementPage.getDeleteDialogYesButton().click();
             cy.wait(WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR)
-            usersManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
+            UsersManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
             //cy.get('#messagebox-info p').contains(`User ${userNametoDelete} is deleted successfully.`).should('exist');
-            usersManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
+            UsersManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
             deleteMessageLog = `User "${userNametoDelete}" Deleted Successfully .... !`
             cy.log(deleteMessageLog).then(() => {
                 return deleteMessageLog;
