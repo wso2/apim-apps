@@ -96,6 +96,11 @@ function AddEdit(props) {
                     error = false;
                 }
                 break;
+            case 'description':
+                if (value.length > 1024) {
+                    error = 'API Category description is too long';
+                }
+                break;
             default:
                 break;
         }
@@ -104,6 +109,7 @@ function AddEdit(props) {
     const getAllFormErrors = () => {
         let errorText = '';
         let NameErrors;
+        let DescriptionErrors;
         if (name === undefined) {
             dispatch({ field: 'name', value: '' });
             NameErrors = hasErrors('name', '');
@@ -112,6 +118,12 @@ function AddEdit(props) {
         }
         if (NameErrors) {
             errorText += NameErrors + '\n';
+        }
+        if (description !== undefined) {
+            DescriptionErrors = hasErrors('description', description);
+        }
+        if (DescriptionErrors) {
+            errorText += DescriptionErrors + '\n';
         }
         return errorText;
     };
@@ -201,7 +213,8 @@ function AddEdit(props) {
                 label='Description'
                 fullWidth
                 multiline
-                helperText='Description of the API category'
+                error={hasErrors('description', description)}
+                helperText={hasErrors('description', description) || 'Description of the API category'}
                 variant='outlined'
             />
         </FormDialogBase>
