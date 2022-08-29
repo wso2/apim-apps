@@ -25,6 +25,8 @@ class PublisherComonPage {
     waitUntillPublisherLoadingSpinnerExit(){
         cy.get('#apim-loader > span').should('not.exist');
     }
-
+    static waitUntillLoadingComponentsExit(){
+        cy.get('#apim-loader > span',{timeout:25000}).should('not.exist');
+    }
 }
 export default PublisherComonPage;

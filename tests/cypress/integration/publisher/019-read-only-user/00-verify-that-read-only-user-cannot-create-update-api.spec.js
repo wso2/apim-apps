@@ -17,6 +17,7 @@
  */
 
 import Utils from "@support/utils";
+import APIMenuPage from "../../../support/pages/publisher/APIMenuPage";
 
 describe("Publisher Read-Only Mode", () => {
     const apiName = 'checkreadonlyapi' + Math.floor(Date.now() / 1000);
@@ -83,9 +84,12 @@ describe("Publisher Read-Only Mode", () => {
             cy.get('#headerValue').type('abc');
             cy.get('[data-testid="policy-attached-details-save"]').click();
             cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
-            
+            APIMenuPage.waitUntillLoadingComponentsExit()
+
             //add property
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/properties`);
+            //cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/properties`);
+            APIMenuPage.getAPIConfigurationsMenu_Properties().click({force: true})
+            APIMenuPage.waitUntillLoadingComponentsExit()
             cy.addProperty("property1","value1",true);
         });
         cy.logoutFromPublisher();
