@@ -23,6 +23,7 @@ const publisherComonPage = new PublisherComonPage();
 const devportalComonPage = new PublisherComonPage();
 
 let apiId ;
+let apiName;
 
 describe("Publish thirdparty api", () => {
     const { publisher, developer, password, } = Utils.getUserInfo();
@@ -46,10 +47,11 @@ describe("Publish thirdparty api", () => {
             // cy.get('#other').should('exist');
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/rest`);
             publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
-            cy.get('#itest-id-apiname-input', {timeout: Cypress.config().largeTimeout}).type('ThirdPartyApi');
-            cy.get('#itest-id-apicontext-input').type('/thirdpartyapi');
+            apiName = Utils.generateName().replace('-', '_');
+            cy.get('#itest-id-apiname-input', {timeout: Cypress.config().largeTimeout}).type(apiName);
+            cy.get('#itest-id-apicontext-input').type('/' + apiName);
             cy.get('#itest-id-apiversion-input').type('1.0.0');
-            cy.get('#itest-id-apiendpoint-input').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/api`);
+            cy.get('#itest-id-apiendpoint-input').type(`${Utils.getAppOrigin()}/am/sample/${apiName}/v1/api`);
             cy.get('#itest-id-apiversion-input').click()
             cy.get('body').click(0,0);
             cy.get('#itest-create-default-api-button').click();
@@ -60,8 +62,8 @@ describe("Publish thirdparty api", () => {
                 cy.get('#left-menu-itemDesignConfigurations').click();
                 cy.wait(5000);
                 cy.get('[name="advertised"]:first').click();
-                cy.get('[name="apiExternalProductionEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/externalapi`, {force:true, timeout:30000});
-                cy.get('[name="apiExternalSandboxEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/thirdpartyapi/v1/externalapi`, {force:true});
+                cy.get('[name="apiExternalProductionEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/${apiName}/v1/externalapi`, {force:true, timeout:30000});
+                cy.get('[name="apiExternalSandboxEndpoint"]').type(`${Utils.getAppOrigin()}/am/sample/${apiName}/v1/externalapi`, {force:true});
                 cy.get('[name="originalDevPortalUrl"]').type('http://www.mocky.io/v2/5ec501532f00009700dc2dc1', {force:true});
                 cy.get('#design-config-save-btn').click({force:true});
                 cy.get('#itest-api-details-portal-config-acc').click();
@@ -89,7 +91,7 @@ describe("Publish thirdparty api", () => {
                 cy.get('#left-menu-itemRuntimeConfigurations').should('exist');
                 cy.get('#left-menu-itemresources').should('exist');
                 cy.get('#left-menu-itemLocalScopes').should('exist');
-                cy.get('#left-menu-monetization-prod').should('exist');
+                cy.get('#left-menu-itemMonetization').should('exist');
                 cy.get('#itest-api-details-api-config-acc').click();
                 cy.get('#left-menu-itemTestConsole').should('exist');
         
@@ -107,20 +109,20 @@ describe("Publish thirdparty api", () => {
                 cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
                 cy.wait(10000)
                 publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
-                cy.get("#searchQuery").type("ThirdPartyApi").type('{enter}')
+                cy.get("#searchQuery").type(apiName).type('{enter}')
                 cy.wait(10000)
-                cy.get('div[data-testid="card-action-ThirdPartyApi1.0.0"]', {timeout: Cypress.config().largeTimeout}).click();
+                cy.get(`div[data-testid="card-action-${apiName}1.0.0"]`, {timeout: Cypress.config().largeTimeout}).click();
                 cy.wait(3000)
-                cy.get('div[data-testid="card-action-ThirdPartyApi1.0.0"]>div>span', {timeout: Cypress.config().largeTimeout}).contains('PUBLISHED').should('exist');
+                cy.get(`div[data-testid="card-action-${apiName}1.0.0"]>div>span`, {timeout: Cypress.config().largeTimeout}).contains('PUBLISHED').should('exist');
                 
                 
-                cy.get('a[aria-label="ThirdPartyApi Thumbnail"]', {timeout: Cypress.config().largeTimeout})
+                cy.get(`a[aria-label="${apiName} Thumbnail"]`, {timeout: Cypress.config().largeTimeout})
                     .should('exist', {timeout: Cypress.config().largeTimeout});
                     
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
                 devportalComonPage.waitUntillPublisherLoadingSpinnerExit();
-                cy.viewThirdPartyApi();
+                cy.viewThirdPartyApi(apiName);
                 cy.logoutFromDevportal();
 
             });
