@@ -1,0 +1,2 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.apimgt.ui.admin_${feature.version}/admin.war,target:${installFolder}/../../deployment/server/webapps/admin.war,overwrite:true);\
