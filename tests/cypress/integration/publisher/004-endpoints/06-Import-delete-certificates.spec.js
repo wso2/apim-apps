@@ -21,11 +21,16 @@ import Utils from "@support/utils";
 describe("Endpoint testing", () => {
     const { publisher, password, } = Utils.getUserInfo();
 
-    before(function () {
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Add REST endpoints for production and sandbox endpoints with failover", () => {
+    it.only("Add REST endpoints for production and sandbox endpoints with failover", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
         const random_number = Math.floor(Date.now() / 1000);
         const testAlias = Utils.generateName();
         const endpoint = `https://petstore.swagger.io/v2/store/inventory/${random_number}`;

@@ -20,6 +20,7 @@ import Utils from "@support/utils";
 
 describe("adding comment", () => {
     const { publisher, password, } = Utils.getUserInfo();
+    let testApiId;
 
     beforeEach(function () {
         cy.loginToPublisher(publisher, password);
@@ -33,6 +34,7 @@ describe("adding comment", () => {
       }, () => {
         const comment = 'test api';
         Utils.addAPI({}).then((apiId) => {
+            testApiId = apiId;
             cy.intercept('**/comments?limit=5&offset=0').as('commentsGet');
             cy.visit(`/publisher/apis/${apiId}/comments`);
             cy.wait('@commentsGet', {timeout: 30000}).then(() => {
@@ -47,6 +49,6 @@ describe("adding comment", () => {
     });
     afterEach(function () {
         // Test is done. Now delete the api
-        Utils.deleteAPI(apiId);
+        Utils.deleteAPI(testApiId);
     })
 });

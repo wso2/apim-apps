@@ -123,7 +123,7 @@
 				"Name": "apim:api_manage"
 			},
 			{
-				"Roles": "admin,Internal/creator,Internal/publisher",
+				"Roles": "admin,Internal/creator,Internal/publisher,Internal/observer",
 				"Name": "apim:common_operation_policy_view"
 			},
 			{
@@ -383,5 +383,10 @@
 				"Name": "apim:throttling_policy_manage"
 			}
 		]
+	},
+	"SelfSignUp": {
+	  "SignUpRoles": [
+		"Internal/subscriber"
+	  ]
 	}
 }

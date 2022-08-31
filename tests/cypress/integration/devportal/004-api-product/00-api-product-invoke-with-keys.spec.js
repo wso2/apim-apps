@@ -85,7 +85,7 @@ describe("Invoke API Product", () => {
                     cy.get('#add-all-resources-btn', { timeout: 30000 }).click();
 
 
-                    cy.get('#create-api-product-btn').scrollIntoView().click();
+                    cy.get('#create-api-product-btn').scrollIntoView().click({force:true});
                     cy.get('#itest-api-name-version', { timeout: 30000 });
                     cy.get('#itest-api-name-version').contains(productName);
 
@@ -137,7 +137,9 @@ describe("Invoke API Product", () => {
                         cy.get('#pagination-rows').click();
                         cy.get('[data-value="100"]').click();
 
-                        cy.get(`#policy-subscribe-btn-${uuidProduct}`).click();
+                        cy.get('[aria-labelledby="simple-dialog-title"]').find('input[placeholder="Search APIs"]').click().type(productName + "{enter}");
+
+                        cy.get(`#policy-subscribe-btn-${uuidProduct}`).click({force: true});
                         cy.get('[aria-label="close"]').click();
                         cy.location('pathname').then((pathName) => {
                             const pathSegments = pathName.split('/');
@@ -183,6 +185,8 @@ describe("Invoke API Product", () => {
                             cy.get('#left-menu-subscriptions').click();
                             cy.contains('Subscribe APIs').click();
 
+                            cy.get('[aria-labelledby="simple-dialog-title"]').find('input[placeholder="Search APIs"]').click().type(productName + "{enter}");
+                            
                             cy.get(`#policy-subscribe-btn-${uuidProduct}`).click();
                             cy.get('[aria-label="close"]').click();
 

@@ -23,18 +23,18 @@ application_sharing_type = "default"
 import Utils from "@support/utils";
 
 describe("Invoke API Product", () => {
-    const user1 = 'user1';
-    const user2 = 'user2';
+    let user1;
+    let user2;
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
-    const appName = 'App_A1';
+    let appName;
     const appDescription = 'Testing sharing app ';
     const groupId = 'org1';
-    const apiName = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
+    let apiName;
     const apiVersion = '2.0.0';
-    const apiContext = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
+    let apiContext;
     let apiId;
 
     beforeEach(function () {
@@ -48,12 +48,16 @@ describe("Invoke API Product", () => {
             openMode: 0,
         },
     }, () => {
-
+        apiName = `anonymous${Utils.generateRandomNumber()}`;
+        apiContext = `anonymous${Utils.generateRandomNumber()}`;
+        user1 = `user1_${Utils.generateRandomNumber()}`;
+        user2 = `user2_${Utils.generateRandomNumber()}`;
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.location('pathname').then((pathName) => {
             const pathSegments = pathName.split('/');
             const uuid = pathSegments[pathSegments.length - 2];
             apiId = uuid;
+            appName = `App_${Utils.generateRandomNumber()}`;
             cy.logoutFromPublisher();
 
             //Create Users in Devportal
@@ -84,7 +88,7 @@ describe("Invoke API Product", () => {
             cy.get('#registerLink').click();
             cy.get('#username', {timeout: Cypress.config().largeTimeout}).type(user2);
             cy.get('#registrationSubmit').click();
-            cy.get('input[name="http://wso2.org/claims/givenname"]').type('user2');
+            cy.get('input[name="http://wso2.org/claims/givenname"]').type(user2);
             cy.get('input[name="http://wso2.org/claims/lastname"]').type('test');
             cy.get('#password').type(password);
             cy.get('#password2').type(password);
@@ -114,7 +118,7 @@ describe("Invoke API Product", () => {
             //Log into developer portal as user 2
             cy.loginToDevportal(user2, password);
             cy.visit(`/devportal/applications`);
-            cy.contains('App_A1', {timeout: Cypress.config().largeTimeout}).click();
+            cy.contains(appName, {timeout: Cypress.config().largeTimeout}).click();
 
             cy.location('pathname').then((pathName) => {
                 const pathSegments = pathName.split('/');
@@ -131,17 +135,17 @@ describe("Invoke API Product", () => {
                 //Log into developer portal as user 1
                 cy.loginToDevportal(user1, password);
                 cy.visit(`/devportal/applications/${uuidApp}/subscriptions`);
+                cy.visit(`/devportal/applications`);
+                cy.get(`#delete-${appName}-btn`, {timeout: Cypress.config().largeTimeout});
+                cy.get(`#delete-${appName}-btn`).click();
+                cy.get(`#itest-confirm-application-delete`).click();
+                cy.logoutFromDevportal();
             });
         });
  
     });
 
     afterEach(function () {
-        cy.visit(`/devportal/applications`);
-        cy.get(`#delete-${appName}-btn`, {timeout: Cypress.config().largeTimeout});
-        cy.get(`#delete-${appName}-btn`).click();
-        cy.get(`#itest-confirm-application-delete`).click();
-        cy.logoutFromDevportal();
 
         //Delete Users
         cy.loginToPublisher(publisher, password);
