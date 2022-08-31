@@ -20,14 +20,22 @@ describe("Tryout API invocations", () => {
     const { publisher, developer, password, } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
-    const apiName = Utils.generateName();
-    const apiContext = apiName;
+    let apiName;
+    let apiContext;
     let testApiId;
-    const appName = Utils.generateName();
-    it.only("Tryout API invocations from swagger console", () => {
+    let appName;
+    it.only("Tryout API invocations from swagger console" ,{
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
         cy.loginToPublisher(publisher, password);
+        apiName = Utils.generateName();
+
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext, endpoint: 'https://petstore.swagger.io/v2/swagger.json' }).then((apiId) => {
             testApiId = apiId;
+            apiContext = apiName;
             Utils.publishAPI(apiId).then(() => {
                 cy.visit(`publisher/apis/${apiId}/deployments`);
                 cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({force:true});
@@ -38,6 +46,7 @@ describe("Tryout API invocations", () => {
 
                 Cypress.on('uncaught:exception', () => false);
 
+                appName = Utils.generateName();
                 // Create an app and subscribe
                 cy.createApp(appName, 'application description');
                 cy.visit(`/devportal/apis/${apiId}/credentials?tenant=carbon.super`);
@@ -65,20 +74,21 @@ describe("Tryout API invocations", () => {
                 // Generate token and wait for response
                 cy.wait(2000);
                 cy.get('#gen-test-key').click({force:true});
+                cy.wait(5000);
+                cy.get('#gen-test-key').click({force:true});
+                cy.wait('@genToken', {timeout: Cypress.config().largeTimeout})
+                cy.get('#accessTokenInput').invoke('val').should('not.be.empty');;
+                // Test the console
+                cy.get('#operations-default-get__').find('.opblock-summary-control').click();
+                cy.get('#operations-default-get__').find('.try-out__btn').click();
+                cy.get('#operations-default-get__').find('.execute').click();
+                cy.get('#operations-default-get__').find('.response-col_status').contains('200').should('exist');
 
-                cy.wait('@genToken', {timeout: Cypress.config().largeTimeout}).then(()=> {
-                    cy.get('#accessTokenInput').invoke('val').should('not.be.empty');;
-                    // Test the console
-                    cy.get('#operations-default-get__').find('.opblock-summary-control').click();
-                    cy.get('#operations-default-get__').find('.try-out__btn').click();
-                    cy.get('#operations-default-get__').find('.execute').click();
-                    cy.get('#operations-default-get__').find('.response-col_status').contains('200').should('exist');
-                });
             })
         });
     });
 
-    after(() => {
+    afterEach(() => {
         cy.deleteApp(appName);
         Utils.deleteAPI(testApiId);
     })
