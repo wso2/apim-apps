@@ -385,7 +385,9 @@ Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel,httpverb,u
 
 Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
     cy.wait(4000);
-    cy.get('#add-new-property',{ timeout: 60000 }).click({force:true});
+    cy.get('button#add-new-property').click({force:true});
+    cy.contains('Property Name');
+    cy.wait(2000);
     cy.get('#property-name', {timeout: Cypress.config().largeTimeout}).focus().type(name);
     cy.get('#property-value').focus().type(value);
 
@@ -617,7 +619,7 @@ Cypress.Commands.add('logoutFromPublisher', () => {
 })
 
 Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
-    cy.get('[area-label="Go to ThirdPartyApi"]', {timeout: Cypress.config().largeTimeout}).click();
+    cy.get(`[area-label="Go to ${apiName}"]`, {timeout: Cypress.config().largeTimeout}).click();
 
     //Check if the subscriptions, tryout, comments and SDKs sections are present
     cy.get('#left-menu-credentials').should('exist');
@@ -641,9 +643,20 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
 
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
 
+    cy.contains('WSO2 API-M v4.1.0');
+        cy.wait(5000);
+        cy.get("body").then($body => {
+            if ($body.find("#itest-apis-welcome-msg").length > 0) {
+                cy.log("Init page");
+                cy.get('#itest-rest-api-create-menu').click();
+                cy.get('#itest-streaming-api-create-menu').click();
+            } else {
+                cy.log("API availble");
+                cy.get('#itest-create-api-menu-button').click();
+            }
+        });
     //select streaming-api option from the menu item
-    cy.get('#itest-rest-api-create-menu', { timeout: 30000 });
-    cy.get('#itest-streaming-api-create-menu').click();
+
     cy.get('#itest-id-create-streaming-api-import').click();
     cy.get('[data-testid="input-asyncapi-file"]').click();
     
@@ -659,15 +672,14 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get('[data-testid="next-btn"]').click();
 
     //create the asyncapi
-    cy.get('#itest-id-apiname-input').should('have.value','APIConsumption');
-    cy.get('#itest-id-apicontext-input').type('/solaceapi');
+    cy.get('#itest-id-apiname-input').clear().type(apiName);
+    cy.get('#itest-id-apicontext-input').clear().type('/' + apiName);
     cy.get('#itest-id-apiversion-input').should('have.value','0.0.1');
     cy.get('#itest-id-apiversion-input').click()
     cy.get('[data-testid="MQTT-label"]').should('exist');
     cy.get('[data-testid="HTTP-label"]').should('exist');
     cy.get('[data-testid="asyncapi-create-btn"]').click();
 
-    cy.intercept('GET','/api/am/publisher/v3/settings',{fixture : 'solaceEnvironmentResponse.json'}).as('getSettings');
 
     //Check if runtime,resources,endpoints,localscopes,policies,monetization does not exist
     cy.get('[data-testid="itest-api-config"]', { timeout: 30000 }).click();
@@ -686,6 +698,8 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get('#panel2a-header h6').contains('apim/car-co/api/V1/json/{region_id}/{make}/{model}/{vin}/{event_type}').should('exist');
     cy.get('[data-testid="itest-api-config"]').click();
 
+    cy.intercept('GET','/api/am/publisher/v3/settings',{fixture : 'solaceEnvironmentResponse.json'}).as('getSettings');
+    cy.reload();
     //Check solace deployments and deploy
     cy.get('#left-menu-itemdeployments').click();
     cy.wait('@getSettings', {timeout: 10000}).then(() => {
@@ -693,18 +707,19 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
         cy.get('[data-testid="solace-api-name"]').contains('AWS APIM-GW-DEV FRANKFURT').should('exist');
         cy.get('[data-testid="api-env-name"] input').should('have.value','apim-gw-dev');
         cy.get('[data-testid="api-org-name"] input').should('have.value','wso2dev');
-        cy.get('#deploy-btn-solace').click();
+        cy.get('#deploy-btn-solace').click({force:true});
+        cy.intercept('**/deploy-revision**', { statusCode: 201, fixture: 'api_artifacts/solaceDeployedStatus.json' }).as('deployedStatus');
+        cy.intercept('/api/am/publisher/v3/apis/*/revisions**', { statusCode: 200, fixture: 'api_artifacts/solaceDeployedQuery.json' }).as('deployedRevision');
+        cy.wait('@deployedStatus');
+        cy.wait('@deployedRevision');
+
+        //Check if requirements are correct
+        cy.get('#left-menu-itemlifecycle').click();
+        cy.get('[data-testid="business-plan-req"]').should('exist');
+        cy.get('[data-testid="endpoint-req"]').should('not.exist');
     });
     
-    cy.intercept('**/deploy-revision**',{statusCode:201,fixture : 'api_artifacts/solaceDeployedStatus.json'}).as('deployedStatus');
-    cy.intercept('/api/am/publisher/v3/apis/*/revisions**',{statusCode:200,fixture : 'api_artifacts/solaceDeployedQuery.json'}).as('deployedRevision');
-    cy.wait('@deployedStatus');
-    cy.wait('@deployedRevision');
 
-    //Check if requirements are correct
-    cy.get('#left-menu-itemlifecycle').click();
-    cy.get('[data-testid="business-plan-req"]').should('exist');
-    cy.get('[data-testid="endpoint-req"]').should('not.exist');
 });
 
 Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
@@ -837,7 +852,7 @@ Cypress.Commands.add('addScopeMappingFromAPIMAdminPortal', (roleName, roleAlias)
     cy.log(`Adding scope mapping ${roleName} ...`)
     cy.visit(`${Utils.getAppOrigin()}` + scopeAssignmentsPage.getUrl())
 
-    scopeAssignmentsPage.getAddScopeMappingButton().should('have.text', "Add scope mappings").click()
+    scopeAssignmentsPage.getAddScopeMappingButton().contains("Add scope mappings").click()
     scopeAssignmentsPage.getAddNewScopeRoleNameTextBox().type(roleName)
     scopeAssignmentsPage.getAddNewScopeNextButton().should('have.text', "Next").click()
 
@@ -863,26 +878,26 @@ Cypress.Commands.add('deleteScopeMappingFromAPIMAdminPortal', (roleName) => {
 })
 
 Cypress.Commands.add('searchAndDeleteUserIfExist', (userNametoDelete) => {
-    cy.visit(`${Utils.getAppOrigin()}` + usersManagementPage.getUrl())
+    cy.visit(`${Utils.getAppOrigin()}` + UsersManagementPage.getUrl())
     const WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR = 3000;
-    usersManagementPage.getEnterUsernameTextBox().clear().type(userNametoDelete)
-    usersManagementPage.getSearchUsershButton().click()
+    UsersManagementPage.getEnterUsernameTextBox().clear().type(userNametoDelete)
+    UsersManagementPage.getSearchUsershButton().click()
     var deleteMessageLog = "NA"
     cy.wait(WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR)
 
     cy.get("body").then(($body) => {
-        if ($body.find(usersManagementPage.getNoMatchingUsersFoundDialogBox_MessageInfoDivSelectorOnly()).length > 0) {
+        if ($body.find(UsersManagementPage.getNoMatchingUsersFoundDialogBox_MessageInfoDivSelectorOnly()).length > 0) {
             deleteMessageLog = `User "${userNametoDelete}" not exists may be already deleted`
             cy.log(deleteMessageLog).then(() => {
                 return deleteMessageLog;
             })
         } else {
-            usersManagementPage.getDeleteButtonOfUser(userNametoDelete).click();
-            usersManagementPage.getDeleteDialogYesButton().click();
+            UsersManagementPage.getDeleteButtonOfUser(userNametoDelete).click();
+            UsersManagementPage.getDeleteDialogYesButton().click();
             cy.wait(WAIT_TIME_FOR_DILAOG_BOX_TO_APEAR)
-            usersManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
+            UsersManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
             //cy.get('#messagebox-info p').contains(`User ${userNametoDelete} is deleted successfully.`).should('exist');
-            usersManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
+            UsersManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
             deleteMessageLog = `User "${userNametoDelete}" Deleted Successfully .... !`
             cy.log(deleteMessageLog).then(() => {
                 return deleteMessageLog;

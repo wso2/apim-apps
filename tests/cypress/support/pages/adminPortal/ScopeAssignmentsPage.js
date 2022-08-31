@@ -73,11 +73,11 @@ class ScopeAssignmentsPage{
 
     // row index start from 0
     getRolesRecordOfTableRow(rowIndex){
-        return cy.get(`#enhanced-table-checkbox-${rowIndex}`).eq(0);
+        return cy.get(`[label="enhanced-table-checkbox-${rowIndex}"]`).eq(0);
     }
 
     getDeleteButtonOfTableRow(rowIndex){
-        return cy.get(`#enhanced-table-checkbox-${rowIndex}`).get("span > div > button");
+        return cy.get(`[label="enhanced-table-checkbox-${rowIndex}"]`).eq(0).get("span > div > button");
     }
 
     getDeleteButtonOfScopeAssignmentDialogOfRole(roleName){

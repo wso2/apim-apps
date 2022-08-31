@@ -22,8 +22,8 @@ describe("Create GraphQl API from file", () => {
     const filepath = 'api_artifacts/schema_graphql.graphql';
     const modifiedFilepath = 'api_artifacts/modified_schema_graphql.graphql';
     const apiVersion='1.0.0';
-    const apiContext="/swapi";
-    const apiName='StarWarsAPIGQL';
+    const apiContext=`/swapi${Utils.generateRandomNumber()}`;
+    const apiName=`StarWarsAPIGQL${Utils.generateRandomNumber()}`;
     const applicationName='Graphql Client App';
     const starWarsQueryRequest=`query{
       human(id:1000){\n
@@ -141,22 +141,24 @@ describe("Create GraphQl API from file", () => {
         cy.get('#left-menu-itemLocalScopes',{timeout: Cypress.config().largeTimeout}).should('have.attr', 'href')
         .then((href) => {
           cy.visit(`${Utils.getAppOrigin()}${href}/create`);
-          cy.createLocalScope('adminScope','admin scope',"sample description",['admin']);
+          let adminScope = `adminScope${Utils.generateRandomNumber()}`
+          cy.createLocalScope(adminScope,'admin scope',"sample description",['admin']);
           cy.get('#left-menu-itemLocalScopes').should('have.attr', 'href')
         .then((href) => {
+          let filmSubscriberScope = `filmSubscriberScope${Utils.generateRandomNumber()}`
           cy.visit(`${Utils.getAppOrigin()}${href}/create`);
-          cy.createLocalScope('filmSubscriberScope','filmSubscriber scope',"sample description",['FilmSubscriber']);
+          cy.createLocalScope(filmSubscriberScope,'filmSubscriber scope',"sample description",['FilmSubscriber']);
 
     
         cy.get('#left-menu-operations',{timeout: Cypress.config().largeTimeout}).click();
         
         cy.get('table').get('[data-testid="allCharacters-tbl-row"]').find('td').eq(2).click().get('ul').contains('li','Unlimited').click();
-        cy.get('table').get('[data-testid="allCharacters-tbl-row"]').find('td').eq(3).click().get('ul').contains('li','adminScope').click();
+        cy.get('table').get('[data-testid="allCharacters-tbl-row"]').find('td').eq(3).click().get('ul').contains('li',adminScope).click();
         cy.get("#menu-").click();
         cy.get('table').get('[data-testid="allCharacters-tbl-row"]').find('td').eq(4).get('[data-testid="allCharacters-security-btn"]').click();
         
         cy.get('table').get('[data-testid="allDroids-tbl-row"]').find('td').eq(2).click().get('ul').contains('li','Unlimited').click();
-        cy.get('table').get('[data-testid="allDroids-tbl-row"]').find('td').eq(3).click().get('ul').contains('li','filmSubscriberScope').click();
+        cy.get('table').get('[data-testid="allDroids-tbl-row"]').find('td').eq(3).click().get('ul').contains('li',filmSubscriberScope).click();
         cy.get("#menu-").click();
         cy.get('[data-testid="custom-select-save-button"]').click();
 
@@ -182,7 +184,7 @@ describe("Create GraphQl API from file", () => {
           //go to apis
           cy.get('[data-testid="itest-link-to-apis"]', {timeout: Cypress.config().largeTimeout}).click();
 
-          cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).click();
+          cy.visit(`/devportal/apis/${apiId}/overview`)
 
           //should contain two urls : HTTP URL and Websocket URL
           cy.get('#gateway-envirounment', {timeout: Cypress.config().largeTimeout}).get('[data-testid="http-url"]').should('exist');
@@ -208,7 +210,7 @@ describe("Create GraphQl API from file", () => {
           cy.get('[aria-label="Query Editor"]').type(starWarsQueryRequest);
           cy.get('.topBar').get('.execute-button-wrap').get('button.execute-button').click();
 
-          cy.intercept('POST','/swapi/1.0.0',(res) => {
+          cy.intercept('POST',`${apiContext}/1.0.0`,(res) => {
             expect(res.body).to.include(starWarsQueryResponse);
           }).as("queryResponse");
           
@@ -225,7 +227,7 @@ describe("Create GraphQl API from file", () => {
           cy.get('[aria-label="Query Editor"]').type('{backspace}'+starWarsSubscriptionRequest);
           cy.get('.topBar').get('.execute-button-wrap').get('button.execute-button').click();
           
-          cy.intercept('GET','/swapi/1.0.0/*',(res) => {
+          cy.intercept('GET',`${apiContext}/1.0.0/*`,(res) => {
             expect(res).property('status').to.equal(200);
             expect(res).property('type').to.equal('websocket');
           }).as("switchProtocol");

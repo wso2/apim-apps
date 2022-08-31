@@ -79,6 +79,7 @@ describe("prototype apis with security enabled", () => {
                     cy.createApplication(applicationName,"50PerMin","Sample Description");
                     cy.get('[data-testid="itest-link-to-apis"]',{timeout: Cypress.config().largeTimeout}).click();
         
+                    cy.get('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
                     cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).contains('.api-thumb-chip-main','PRE-RELEASED').should('exist');
                     cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).click();
         

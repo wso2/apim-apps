@@ -87,6 +87,8 @@ export default class Utils {
                         -d '${newPayload}' \
                         -H "Authorization: Bearer ${token}"  "${Cypress.config().baseUrl}/api/am/publisher/v3/apis"`;
                         cy.exec(curl).then(result => {
+                            cy.log(result.stdout);
+                            cy.log(result.stderr);
                             const apiId = JSON.parse(result.stdout);
                             resolve(apiId.id);
                         })
@@ -184,5 +186,9 @@ export default class Utils {
             tenantUser: 'tenantUser',
             tenant: 'wso2.com',
         }
+    }
+
+    static generateRandomNumber() {
+        return Math.floor(Math.random() * (100000 - 1 + 1) + 1);
     }
 }
