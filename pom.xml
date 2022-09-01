@@ -193,7 +193,7 @@
         <javax.servlet.jsp-api.version>2.3.1</javax.servlet.jsp-api.version>
         <javaee-web-api.version>7.0</javaee-web-api.version>
         <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
-        <carbon.apimgt.imp.pkg.version.range>[9.0.0, 10.0.0)</carbon.apimgt.imp.pkg.version.range>
+        <carbon.apimgt.imp.pkg.version.range>9.22.32</carbon.apimgt.imp.pkg.version.range>
         <commons-logging.version>1.2</commons-logging.version>
     </properties>
 </project>
