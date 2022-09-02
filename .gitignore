@@ -11,6 +11,7 @@ resources
 *.war
 node_modules
 wso2carbon.log
+
 # Compiled class file
 *.class
 
@@ -35,3 +36,12 @@ wso2carbon.log
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 npm/
+
+#netbeans config files
+nb-configuration.xml
+
+# WSO2 license file
+license-wso2.txt 
+
+# VS code configs
+.vscode

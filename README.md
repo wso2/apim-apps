@@ -46,11 +46,11 @@ If you are planning to fix an issue in a specific web application, you don't nee
 
 2. Execute api-manager.sh (For unix environment) or api-manager.bat (For windows environment) file from the bin directory to run WSO2 API Manager Server.
 
-3. Goto `portals/publisher` directory in the `apim-apps` repository
+3. Goto `portals/publisher` directory in the `apim-apps` repository.
 
-4. You can either run `mvn clean install` or `npm ci`. Note that the `npm ci` will be faster since `mvn clean install` command is executing production build and UI tests.
+4. You can either run `mvn clean install` from root directory or `npm ci` from `src/main/webapp` directory. Note that the `npm ci` will be faster since `mvn clean install` command is executing production build and UI tests.
 
-5. Run `npm start` to start publisher portal in development mode.
+5. Run `npm start` from `src/main/webapp` to start publisher portal in development mode.
 
 Now you can update the code to view the changes in the development server. Once you are done with the fixes,
 you can run `npm run build:prod` to check for errors before committing. Also refer to 'Running Tests' section and run test if the tests are effected. At the moment these tests are valid for only publisher app.
@@ -58,7 +58,7 @@ you can run `npm run build:prod` to check for errors before committing. Also ref
 ### Adding or updating a new dependency
 1. Setup the development environment by following the steps given above.
 
-2. Run the npm command from the web application root folder. ( Ex: For publisher web app, it's portals/publisher ).
+2. Run the npm command from the web application root folder. ( Ex: For publisher web app, it's `portals/publisher/src/main/webapp` ).
    - Adding a dependency `npm i <package-name>`. (Ex: `npm i base64url`)
    - Removing a dependency `npm uninstall <package-name>`. (Ex: `npm uninstall base64url`)
    - Updating a version or specifying version when installing `npm i <package-name>@<version>`. (Ex: `npm i base64url@3.0.1`).
@@ -97,9 +97,9 @@ Product Unit tests have been implemented using [Jest](https://jestjs.io/) along 
 
 ### Run Tests for individual module
 
-- Go to the respective individual portals directory
+- Go to the webapp directory in the respective individual portals directory
 
-  i:e `/portals/publisher/`
+  i:e `/portals/publisher/src/main/webapp`
 - and run
 
   ```
