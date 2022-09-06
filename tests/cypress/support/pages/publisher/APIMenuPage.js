@@ -41,6 +41,9 @@ class APIMenuPage extends PublisherComonPage{
     getAPIConfigurationsMenu_DocumentsMenu(){
         return cy.get('#left-menu-itemdocuments')
     }
+    static getAPIConfigurationsMenu_Properties(){
+        return cy.get('#left-menu-itemproperties')
+    }
     getDeploy_DeployementsMenu(){
         return cy.get('#left-menu-itemdeployments')
     }

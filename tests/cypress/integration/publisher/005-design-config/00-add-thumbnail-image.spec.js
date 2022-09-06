@@ -25,17 +25,23 @@ describe("Upload thumbnail", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
+    let testApiID;
 
-    before(function () {
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
-    it.only("Upload thumbnail", () => {
+    it.only("Upload thumbnail",{
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
-
-            cy.get('#itest-api-details-portal-config-acc').click();
+            cy.visit(`/publisher/apis/${apiId}/overview`);
+            testApiID = apiId;
+            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#left-menu-itemDesignConfigurations').click();
-            cy.get('#edit-api-thumbnail-btn').click();
+            cy.get('#edit-api-thumbnail-btn').children('button').click({force:true});
             cy.get('#edit-api-thumbnail-upload').click();
 
             // upload the image
@@ -46,15 +52,18 @@ describe("Upload thumbnail", () => {
             // Save
             cy.get('#design-config-save-btn').click({ force: true });
 
+            cy.wait(5000);
             // Validate
-            cy.get('[alt="API Thumbnail"]', { timeout: 30000 })
+            cy.get('[alt="API Thumbnail"]')
                 .should('be.visible')
                 .and(($img) => {
                     // "naturalWidth" and "naturalHeight" are set when the image loads
                     expect($img[0].naturalWidth).to.be.greaterThan(0)
                 })
-            // Test is done. Now delete the api
-            Utils.deleteAPI(apiId);
         });
     });
+    afterEach(() => {
+        Utils.deleteAPI(testApiID);
+
+    })
 });

@@ -27,7 +27,7 @@ describe("Landing page", () => {
     })
 
     it.only("Click and check all cards", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.visit(`/publisher/apis`);
         Utils.addAPI({}).then((apiId) => {
             testApiId = apiId;
             cy.get('#itest-create-api-menu-button', { timeout: 30000 }).should('be.visible').click();

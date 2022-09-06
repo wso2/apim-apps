@@ -29,7 +29,7 @@ describe("Runtime configuration", () => {
 
     it.only("Add Authorization Header for the api", () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemRuntimeConfigurations').click();
             cy.get('#schema-validation-switch').click();

@@ -28,62 +28,39 @@ describe("Subscribe unsubscribe to application from api details page", () => {
     const appName = Utils.generateName();
     const appDescription = 'app description';
 
-    it.only("Subscribe and unsubscribe to API from api details page", () => {
+    it.only("Subscribe and unsubscribe to API from api details page", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
 
         cy.loginToPublisher(publisher, password);
 
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
+            cy.log("API created " + apiName);
             testApiId = apiId;
-            Utils.publishAPI(apiId).then(() => {
+            Utils.publishAPI(apiId).then((result) => {
+                cy.log("API published " + result)
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
                 cy.createApp(appName, appDescription);
-                cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=carbon.super`);
+                cy.visit(`/devportal/apis?tenant=carbon.super`);
                 cy.url().should('contain', '/apis?tenant=carbon.super');
-                 // After publishing the api appears in devportal with a delay.
-                // We need to keep refresing and look for the api in the listing page
-                // following waitUntilApiExists function does that recursively.
-                let remainingAttempts = 30;
-        
-                function waitUntilApiExists() {
-                    let $apis = Cypress.$(`[title="${apiName}"]`);
-                    if ($apis.length) {
-                        // At least one with api name was found.
-                        // Return a jQuery object.
-                        return $apis;
-                    }
-        
-                    if (--remainingAttempts) {
-                        cy.log('Table not found yet. Remaining attempts: ' + remainingAttempts);
-        
-                        // Requesting the page to reload (F5)
-                        cy.reload();
-        
-                        // Wait a second for the server to respond and the DOM to be present.
-                        return cy.wait(4000).then(() => {
-                            return waitUntilApiExists();
-                        });
-                    }
-                    throw Error('Table was not found.');
-                }
-        
-                waitUntilApiExists().then($apis => {
-                    cy.log('apis: ' + $apis.text());
-                    cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-                    cy.get(`[title="${apiName}"]`).click();
-                    cy.get('#left-menu-credentials').click();
+                cy.visit(`/devportal/apis/${apiId}/overview?tenant=carbon.super`);
+                cy.get('#left-menu-credentials').click();
             
-                    // Click and select the new application
-                    cy.get('#application-subscribe').click();
-                    cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
-                    cy.get(`#subscribe-to-api-btn`).click();
-                    cy.get(`#subscription-table td`).contains(appName).should('exist');
-                });
+                // Click and select the new application
+                cy.get('#application-subscribe').click();
+                cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
+                cy.get(`#subscribe-to-api-btn`).click();
+                cy.get(`#subscription-table td`).contains(appName).should('exist');
+            
             });
         });
     })
 
-    after(() => {
+    afterEach(() => {
         cy.deleteApp(appName);
         Utils.deleteAPI(testApiId);
     })

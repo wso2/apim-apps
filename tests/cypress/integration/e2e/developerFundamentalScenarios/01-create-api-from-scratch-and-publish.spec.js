@@ -190,7 +190,6 @@ describe("Introduction : Create API from scratch and publish", () => {
         lifecyclePage.getLifecycleHeader().contains("Lifecycle")
         lifecyclePage.getPublishButton().click()
         cy.contains("Lifecycle state updated successfully")
-        cy.wait(5000)
         publisherApisPage.getApiStateDiv().contains("PUBLISHED")
 
         cy.logoutFromPublisher()

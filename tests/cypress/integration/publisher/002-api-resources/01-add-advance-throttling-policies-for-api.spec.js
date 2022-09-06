@@ -30,7 +30,7 @@ describe("Add advanced throttling policies", () => {
 
     it.only("Add Authorization Header for the api", () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/resources`);
+            cy.visit(`/publisher/apis/${apiId}/resources`);
 
             cy.get('#api-rate-limiting-api-level').click();
             cy.get('#operation_throttling_policy').click();

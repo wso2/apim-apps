@@ -30,7 +30,7 @@ describe("Select subscription tiers for the API", () => {
 
     it.only("Select subscription tiers for the API", () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemsubscriptions').click();
             cy.get('[data-testid="policy-checkbox-silver"]').click();

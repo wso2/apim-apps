@@ -26,9 +26,14 @@ describe("Runtime configuration", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("OAuth2 and api key security spec", () => {
+    it.only("OAuth2 and api key security spec", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemRuntimeConfigurations').click();
             cy.get('#applicationLevel').click();

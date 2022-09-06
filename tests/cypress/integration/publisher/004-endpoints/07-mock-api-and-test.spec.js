@@ -21,16 +21,22 @@ import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
     const { publisher, password, } = Utils.getUserInfo();
-
+    let testApiID;
     before(function () {
-        cy.loginToPublisher(publisher, password);
+        
     })
 
     /* 
         TODO
     */
-    it("Mock the api response and test it", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`);
+    it("Mock the api response and test it", {
+        retries: {
+          runMode: 3,
+          openMode: 0,
+        },
+      }, () => {
+        cy.loginToPublisher(publisher, password);
+        cy.visit(`/publisher/apis/create/openapi`);
         cy.get('#open-api-file-select-radio').click();
 
         // upload the swagger
@@ -49,12 +55,13 @@ describe("Mock the api response and test it", () => {
             const version = doc.querySelector('#itest-id-apiversion-input').value;
 
 
-            cy.intercept('**/apis/**').as('apiGet');
             // finish the wizard
             cy.get('#open-api-create-btn').click();
-            cy.wait('@apiGet', { timeout: 30000 }).then((data) => {
+            cy.url().should('contains', 'overview').then(url => {
+                testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
+                cy.log("API ID", testApiID);
                 // validate
-                cy.get('#itest-api-name-version', { timeout: 30000 });
+                cy.get('#itest-api-name-version');
                 cy.get('#itest-api-name-version').contains(version);
 
                 // Go to endpoints page
@@ -71,7 +78,7 @@ describe("Mock the api response and test it", () => {
                     cy.get('#itest-api-details-portal-config-acc').click();
                     cy.get('#left-menu-itemsubscriptions').click();
 
-                    cy.get('span').contains('Silver : Allows 2000 requests per minute').click();
+                    cy.get('[data-testid="policy-checkbox-silver"]').children().eq(1).contains('Silver : Allows 2000 requests per minute').click();
                     cy.get('#subscriptions-save-btn').click();
 
                     // Going to deployments page
@@ -80,23 +87,23 @@ describe("Mock the api response and test it", () => {
 
                     // Deploying
                     cy.wait(1000);
-                    cy.get('#deploy-btn').click();
-                    cy.get('#undeploy-btn').should('exist');
+                    cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+                    cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
 
                     cy.get('#itest-api-details-portal-config-acc').click();
                     cy.get('#left-menu-itemTestConsole').click();
 
                     cy.get('#operations-pet-getPetById').click();
                     cy.get('#operations-pet-getPetById .try-out__btn').click();
-                    cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
+                    cy.get('#operations-pet-getPetById [placeholder="petId"]').type('1');
                     cy.get('#operations-pet-getPetById button.execute').click();
                     cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
-
-                    // Delete api
-                    const apiId = data.response.body.id;
-                    Utils.deleteAPI(apiId);
                 })
             })
         });
     });
+    afterEach(() => {
+        Utils.deleteAPI(testApiID);
+
+    })
 })

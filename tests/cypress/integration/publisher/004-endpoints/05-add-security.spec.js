@@ -20,17 +20,20 @@ import Utils from "@support/utils";
 
 describe("Add security to the endpoint", () => {
     const { publisher, password, } = Utils.getUserInfo();
-
-    before(function () {
-        cy.loginToPublisher(publisher, password);
-    })
-
-    it.only("Add security to the endpoint", () => {
+    let testApiId;
+    it.only("Add security to the endpoint", {
+        retries: {
+            runMode: 3,
+            openMode: 0,
+        },
+    }, () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         const usernameLocal = 'admin';
         const passwordLocal = 'admin';
+        cy.loginToPublisher(publisher, password);
         Utils.addAPI({}).then((apiId) => {
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${apiId}/overview`);
+            testApiId = apiId;
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click();
@@ -40,7 +43,8 @@ describe("Add security to the endpoint", () => {
             cy.get('#production_endpoints').focus().type(endpoint);
 
 
-            cy.get('#production_endpoints-endpoint-security-icon-btn').trigger('click');
+            cy.wait(2000);
+            cy.get('#production_endpoints-endpoint-security-icon-btn').click({force:true});
             cy.get('#mui-component-select-key').click();
             cy.get('#auth-type-BASIC').click();
             cy.get('#auth-userName').click();
@@ -55,11 +59,13 @@ describe("Add security to the endpoint", () => {
             cy.get('#endpoint-save-btn').click();
 
             // Check the values
-            cy.get('#production_endpoints-endpoint-security-icon-btn').trigger('click');
+            cy.wait(2000);
+            cy.get('#production_endpoints-endpoint-security-icon-btn').click({force:true});
             cy.get('#auth-userName').should('have.value', usernameLocal);
-            cy.get('#auth-password').should('have.value', passwordLocal);
-            // Test is done. Now delete the api
-            Utils.deleteAPI(apiId);
         });
+    });
+    afterEach(function () {
+            // Test is done. Now delete the api
+            Utils.deleteAPI(testApiId);
     });
 });
