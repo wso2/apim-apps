@@ -53,7 +53,7 @@ const useStyles = makeStyles(() => ({
  * @returns
  */
 export default function ImportDefinition(props) {
-    const { setSchemaDefinition } = props;
+    const { setSchemaDefinition, editAndImport } = props;
     const classes = useStyles();
     const [openAPIDefinitionImport, setOpenAPIDefinitionImport] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
@@ -65,18 +65,6 @@ export default function ImportDefinition(props) {
     // const isWebSub = api.isWebSub();
     const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE');
     const [asyncAPIDefinitionImport, setAsyncAPIDefinitionImport] = useState(false);
-
-    const handleAPIDefinitionImportOpen = () => {
-        // eslint-disable-next-line no-unused-expressions
-        isAsyncAPI ? setAsyncAPIDefinitionImport(true) : setOpenAPIDefinitionImport(true);
-        // isWebSocket || isWebSub ? setAsyncAPIDefinitionImport(true) : setOpenAPIDefinitionImport(true);
-    };
-
-    const handleAPIDefinitionImportCancel = () => {
-        // eslint-disable-next-line no-unused-expressions
-        isAsyncAPI ? setAsyncAPIDefinitionImport(false) : setOpenAPIDefinitionImport(false);
-        // isWebSocket || isWebSub ? setAsyncAPIDefinitionImport(false) : setOpenAPIDefinitionImport(false);
-    };
 
     function apiInputsReducer(currentState, inputAction) {
         const { action, value } = inputAction;
@@ -91,6 +79,8 @@ export default function ImportDefinition(props) {
                     ...currentState,
                     content: value.content,
                 };
+            case 'importingContent':
+                return { ...currentState, [action]: value };
             default:
                 return currentState;
         }
@@ -102,7 +92,37 @@ export default function ImportDefinition(props) {
         inputValue: '',
         formValidity: false,
         mode: 'update',
+        importingContent: null
     });
+
+    const handleAPIDefinitionImportOpen = () => {
+        // eslint-disable-next-line no-unused-expressions
+        isAsyncAPI ? setAsyncAPIDefinitionImport(true) : setOpenAPIDefinitionImport(true);
+        // isWebSocket || isWebSub ? setAsyncAPIDefinitionImport(true) : setOpenAPIDefinitionImport(true);
+    };
+
+    const handleAPIDefinitionImportCancel = () => {
+        // eslint-disable-next-line no-unused-expressions
+        isAsyncAPI ? setAsyncAPIDefinitionImport(false) : setOpenAPIDefinitionImport(false);
+        inputsDispatcher({ action: 'inputValue', value: null });
+        // isWebSocket || isWebSub ? setAsyncAPIDefinitionImport(false) : setOpenAPIDefinitionImport(false);
+    };
+
+    const handleAPIDefinitionEditAndImport = () => {
+        const {
+            importingContent,
+        } = apiInputs;
+        // eslint-disable-next-line no-unused-expressions
+        editAndImport(importingContent, null);
+    };
+
+    const handleAPIDefinitionEditAndImportGotoLine = (line) => {
+        const {
+            importingContent,
+        } = apiInputs;
+        // eslint-disable-next-line no-unused-expressions
+        editAndImport(importingContent, line);
+    }
 
     /**
      * Updates OpenAPI definition
@@ -315,6 +335,7 @@ export default function ImportDefinition(props) {
             onValidate={handleOnValidate}
             apiInputs={apiInputs}
             inputsDispatcher={inputsDispatcher}
+            onLinterLineSelect={handleAPIDefinitionEditAndImportGotoLine}
         />
     );
     let btnText = (
@@ -414,6 +435,18 @@ export default function ImportDefinition(props) {
                         <FormattedMessage
                             id='Apis.Details.APIDefinition.APIDefinition.import.definition.cancel'
                             defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button 
+                        onClick={handleAPIDefinitionEditAndImport}
+                        id='import-before-edit-btn'
+                        variant='contained'
+                        color='primary'
+                        disabled={apiInputs.importingContent==null}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.APIDefinition.APIDefinition.import.definition.edit'
+                            defaultMessage='Edit and Import'
                         />
                     </Button>
                     <Button

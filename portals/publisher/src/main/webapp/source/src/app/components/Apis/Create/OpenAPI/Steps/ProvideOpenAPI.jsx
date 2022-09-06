@@ -19,7 +19,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -37,22 +36,29 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
+import { ExpandMore } from '@material-ui/icons';
+import { Accordion, AccordionDetails, AccordionSummary, Box, ListItemIcon, Typography } from '@material-ui/core';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
 
-import Banner from 'AppComponents/Shared/Banner';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
+import LinterUI from 'AppComponents/Apis/Details/APIDefinition/LinterUI/LinterUI';
+import APILintingSummary from 'AppComponents/Apis/Details/APIDefinition/Linting/APILintingSummary';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
-import SpecErrors from 'AppComponents/Apis/Details/Resources/components/SpecErrors';
-
+import {  
+    getLinterResultsFromContent,
+    spectralSeverityMap as severityMap } from "../../../Details/APIDefinition/Linting/Linting";
 
 const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
         color: theme.palette.error.main,
+    },
+    importDefinitionDialogHeader: {
+        fontWeight: '600',
     },
 }));
 
@@ -64,17 +70,41 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component} @inheritdoc
  */
 export default function ProvideOpenAPI(props) {
-    const { apiInputs, inputsDispatcher, onValidate } = props;
+    const { apiInputs, inputsDispatcher, onValidate, onLinterLineSelect } = props;
     const isFileInput = apiInputs.inputType === 'file';
     const { inputType, inputValue } = apiInputs;
     const classes = useStyles();
     // If valid value is `null`,that means valid, else an error object will be there
     const [isValid, setValidity] = useState({});
-    const [validationErrors, setValidationErrors] = useState(null);
+    const [linterResults, setLinterResults] = useState ([]);
+    const [validationErrors, setValidationErrors] = useState([]);
     const [isValidating, setIsValidating] = useState(false);
-    useEffect(() => {
-        setValidationErrors(null);
-    }, [apiInputs.inputType]);
+    const [isLinting, setIsLinting] = useState(false);
+    const [linterSelectedSeverity, setLinterSelectedSeverity] = useState(null);
+    const [expandLinter, setExpandLinter] = useState(false);
+    const [expandValidationErrors, setExpandValidationErrors] = useState(true);
+    
+    function lint(content) {
+        // Validate and linting
+        setIsLinting(true);
+        getLinterResultsFromContent(content).then((results)=>{
+            if (results) {
+                setLinterResults(results);
+            } else {
+                setLinterResults([]);
+            }
+        }).finally(()=>{setIsLinting(false);});
+    }
+
+    function reset() {
+        setIsLinting(false);
+        setLinterResults([]);
+        setValidationErrors([]);
+        inputsDispatcher({ action: 'importingContent', value: null });
+        inputsDispatcher({ action: 'inputValue', value: null });
+        inputsDispatcher({ action: 'isFormValid', value: false });
+    }
+
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
             API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
@@ -83,6 +113,9 @@ export default function ProvideOpenAPI(props) {
                         isValid: isValidURL, info, content, errors,
                     },
                 } = response;
+                const formattedConent = JSON.stringify(JSON.parse(content), null, 2);
+                lint(formattedConent);
+                inputsDispatcher({ action: 'importingContent', value: formattedConent });
                 if (isValidURL) {
                     info.content = content;
                     inputsDispatcher({ action: 'preSetAPI', value: info });
@@ -137,8 +170,18 @@ export default function ProvideOpenAPI(props) {
                 setIsValidating(false); // Stop the loading animation
                 onValidate(validFile !== null); // If there is a valid file then validation has passed
                 // If the given file is valid , we set it as the inputValue else set `null`
-                inputsDispatcher({ action: 'inputValue', value: validFile });
+                inputsDispatcher({ action: 'inputValue', value: file });
             });
+
+        if (!file.path.endsWith(".zip")){
+            const read = new FileReader();
+            read.readAsText(file);
+            read.onloadend = function(){
+                const content = read.result?.toString();
+                inputsDispatcher({ action: 'importingContent', value: content });
+                lint(content);
+            }
+        }
     }
 
     /**
@@ -159,6 +202,10 @@ export default function ProvideOpenAPI(props) {
             onValidate(false);
         }
     }
+
+    useEffect(() => {
+        reset();
+    }, [inputType]);
 
     useEffect(() => {
         if (inputValue) {
@@ -197,7 +244,7 @@ export default function ProvideOpenAPI(props) {
 
     return (
         <>
-            <Grid container spacing={5}>
+            <Grid container spacing={2}>
                 <Grid item xs={12} md={12}>
                     <FormControl component='fieldset'>
                         <FormLabel component='legend'>
@@ -211,17 +258,20 @@ export default function ProvideOpenAPI(props) {
                             </>
                         </FormLabel>
                         <RadioGroup
-                            aria-label='Input type'
+                            aria-label='Input Source'
                             value={apiInputs.inputType}
-                            onChange={(event) => inputsDispatcher({ action: 'inputType', value: event.target.value })}
+                            onChange={(event) => inputsDispatcher({ action: 'inputType', 
+                                value: event.target.value })}
                         >
                             <FormControlLabel
+                                disabled={isLinting || isValidating}
                                 value={ProvideOpenAPI.INPUT_TYPES.URL}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI URL'
                                 id='open-api-url-select-radio'
                             />
                             <FormControlLabel
+                                disabled={isLinting || isValidating}
                                 value={ProvideOpenAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI File/Archive'
@@ -231,19 +281,6 @@ export default function ProvideOpenAPI(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                {isValid.file
-                    && (
-                        <Grid item md={11}>
-                            <Banner
-                                onClose={() => setValidity({ file: null })}
-                                disableActions
-                                dense
-                                paperProps={{ elevation: 1 }}
-                                type='error'
-                                message={isValid.file.message}
-                            />
-                        </Grid>
-                    )}
                 <Grid item xs={10} md={11}>
                     {isFileInput ? (
                         <>
@@ -263,10 +300,7 @@ export default function ProvideOpenAPI(props) {
                                             <IconButton
                                                 edge='end'
                                                 aria-label='delete'
-                                                onClick={() => {
-                                                    inputsDispatcher({ action: 'inputValue', value: null });
-                                                    inputsDispatcher({ action: 'isFormValid', value: false });
-                                                }}
+                                                onClick={reset}
                                             >
                                                 <DeleteIcon />
                                             </IconButton>
@@ -292,6 +326,7 @@ export default function ProvideOpenAPI(props) {
                                                 color='primary'
                                                 variant='contained'
                                                 id='browse-to-upload-btn'
+                                                onClick={ reset }
                                             >
                                                 <FormattedMessage
                                                     id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.upload'
@@ -330,12 +365,112 @@ export default function ProvideOpenAPI(props) {
                         />
                     )}
                 </Grid>
-                {validationErrors && (
+                <Grid item xs={10} md={11}>
+                    <List>
+                        {inputValue && isValidating && (
+                            <ListItem>
+                                <ListItemIcon><CircularProgress /></ListItemIcon>
+                                <ListItemText>Validating API definition</ListItemText>
+                            </ListItem>
+                        )}
+                        {inputValue && !isValidating && isLinting && (
+                            <ListItem>
+                                <ListItemIcon><CircularProgress /></ListItemIcon>
+                                <ListItemText>Generating Linter Results</ListItemText>
+                            </ListItem>
+                        )}
+                    </List>
+                </Grid>
+                {!isValidating && validationErrors.length>0 && (
                     <Grid item xs={10} md={11}>
-                        <Box display='flex' justifyContent='right' alignItems='center'>
-                            Show Errors
-                            <SpecErrors specErrors={validationErrors} />
-                        </Box>
+                        <Accordion
+                            expanded={expandValidationErrors}
+                            onChange={()=>{}}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMore/>}
+                                aria-controls='panel1bh-content'
+                                id='panel1bh-header'
+                                IconButtonProps={{onClick:()=>{setExpandValidationErrors((prev)=>!prev)}}}>
+                                <Grid container direction='row' 
+                                    justifyContent='space-between' alignItems='center'>
+                                    <Typography className={classes.importDefinitionDialogHeader}>
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.APIDefinition.import.
+                                                validation.title'
+                                            defaultMessage='Validation Errors'
+                                        />
+                                    </Typography>
+                                </Grid>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <List>
+                                    {validationErrors.map((error)=>(
+                                        <ListItem>
+                                            <ListItemIcon>
+                                                {severityMap[0]}
+                                            </ListItemIcon>
+                                            <ListItemText>
+                                                <Typography>
+                                                    <Box sx={{ fontWeight: 'bold' }}>{error.message}</Box>
+                                                </Typography>
+                                                <Typography>{error.description}</Typography>
+                                            </ListItemText>
+                                        </ListItem>
+                                        
+                                    ))}
+                                </List>
+                                
+                            </AccordionDetails>
+                            
+                        </Accordion>
+                    </Grid>
+                )}
+                {!isLinting && linterResults.length>0 && (
+                    <Grid item xs={10} md={11}
+                        data-testid='itest-id-linter-results'>
+                        <Accordion
+                            expanded={expandLinter}
+                            onChange={()=>{}}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMore />}
+                                aria-controls='panel1bh-content'
+                                id='panel1bh-header'
+                                IconButtonProps={{onClick:()=>{setExpandLinter((prev)=>!prev)}}}>
+                                <Grid container direction='row' 
+                                    justifyContent='space-between' alignItems='center'>
+                                    <Typography className={classes.importDefinitionDialogHeader}>
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.APIDefinition.import.
+                                                validation.title'
+                                            defaultMessage='Linter Results'
+                                        />
+                                    </Typography>
+                                    <APILintingSummary
+                                        linterResults={ linterResults }
+                                        handleChange = { (value)=>{
+                                            setLinterSelectedSeverity(value);
+                                            setExpandLinter(true);
+                                        } }
+                                    />
+                                </Grid>
+                            </AccordionSummary>
+                            <AccordionDetails
+                                style={{padding:0}}>
+                                <div style={{width:'100%'}}>
+                                    <LinterUI
+                                        linterResults={ linterResults.filter(
+                                            (item)=> linterSelectedSeverity===null||
+                                                item.severity===Number(linterSelectedSeverity))
+                                        }
+                                        severityMap={ severityMap }
+                                        handleRowClick={ (line) => { 
+                                            if(onLinterLineSelect) onLinterLineSelect(line);
+                                        } }
+                                    />
+                                </div>
+                            </AccordionDetails>
+                            
+                        </Accordion>
                     </Grid>
                 )}
                 <Grid item xs={2} md={5} />

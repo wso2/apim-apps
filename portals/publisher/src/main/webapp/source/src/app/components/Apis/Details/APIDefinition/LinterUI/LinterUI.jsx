@@ -1,3 +1,16 @@
+/* eslint-disable */
+/*
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses.
+ * For specific language governing the permissions and limitations under
+ * this license, please see the license as well as any agreement you’ve
+ * entered into with WSO2 governing the purchase of this software and any
+ * associated services.
+ */
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,8 +21,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { spectralSeverityMap as severityMap} from '../Linting/APILinting'
-
+import { spectralSeverityMap as severityMap} from '../Linting/Linting'
 
 const useStyles = makeStyles((theme) => ({
 
@@ -49,8 +61,8 @@ export default function LinterUI(props) {
     const { linterResults, handleRowClick } = props;
     const classes = useStyles();
 
-    function getData(type, line, message) {
-        return { type, line, message};
+    function getData(type, line, message, code) {
+        return { type, line, message, code};
     }
 
     const columns = [
@@ -70,11 +82,12 @@ export default function LinterUI(props) {
         },
     ];
 
-    const  rows = linterResults.map((item) => getData(
-        severityMap[item.severity],
-        item.range.start.line, 
-        item.message
-    ))
+    const  rows = linterResults.map((item, index) => getData(
+            severityMap[item.severity],
+            item.range.start.line + 1, 
+            item.message,
+            index,
+    ));
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);

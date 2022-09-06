@@ -48,11 +48,13 @@ import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import { withRouter } from 'react-router';
 import { isRestricted } from 'AppData/AuthManager';
 import Box from '@material-ui/core/Box';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import APISecurityAudit from './APISecurityAudit';
 import ImportDefinition from './ImportDefinition';
 import DefinitionOutdated from './DefinitionOutdated';
-import APILinting from './Linting/APILinting';
+import { getLinterResultsFromContent } from "./Linting/Linting";
+import APILintingSummary from './Linting/APILintingSummary';
 
 const EditorDialog = lazy(() => import('./SwaggerEditorDrawer' /* webpackChunkName: "EditorDialog" */));
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
@@ -106,6 +108,11 @@ const styles = (theme) => ({
     warningIconStyle: {
         color: theme.custom.serviceCatalog.onboarding.buttonText,
     },
+    activeButton: {
+        "&:selected": {
+            backgroundColor: theme.palette.background.default,
+        }
+    }
 });
 /**
  * This component holds the functionality of viewing the api definition content of an api. The initial view is a
@@ -123,6 +130,7 @@ class APIDefinition extends React.Component {
             openEditor: false,
             swagger: null,
             swaggerModified: null,
+            swaggerImporting: null,
             graphQL: null,
             format: null,
             convertTo: null,
@@ -136,11 +144,15 @@ class APIDefinition extends React.Component {
             errors: [],
             isSwaggerUI: true,
             linterResults: [],
+            linterSelectedSeverity: null,
+            linterSelectedLine: null,
+            isImporting: false,
         };
         this.handleNo = this.handleNo.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleSaveAndDeploy = this.handleSaveAndDeploy.bind(this);
         this.openEditor = this.openEditor.bind(this);
+        this.openEditorToImport = this.openEditorToImport.bind(this);
         this.transition = this.transition.bind(this);
         this.closeEditor = this.closeEditor.bind(this);
         this.hasJsonStructure = this.hasJsonStructure.bind(this);
@@ -291,10 +303,23 @@ class APIDefinition extends React.Component {
             } else {
                 YAML.load(modifiedContent);
             }
-            this.setState({ isSwaggerValid: true, swaggerModified: modifiedContent });
+            if (this.state.isImporting) {
+                this.setState({ isSwaggerValid: true, swaggerImporting: modifiedContent });
+            } else {
+                this.setState({ isSwaggerValid: true, swaggerModified: modifiedContent });
+            }
+            
         } catch (e) {
-            this.setState({ isSwaggerValid: false, swaggerModified: modifiedContent });
+            if (this.state.isImporting) {
+                this.setState({ isSwaggerValid: false, swaggerImporting: modifiedContent });
+            } else {
+                this.setState({ isSwaggerValid: false, swaggerModified: modifiedContent });
+            }
         }
+
+        getLinterResultsFromContent(modifiedContent).then((results) => {
+            this.setState({ linterResults: results });
+        });
     }
 
     /**
@@ -400,6 +425,22 @@ class APIDefinition extends React.Component {
      * local storage.
      * */
     openEditor() {
+        this.setState({ isImporting: false });
+        this.setState({ linterSelectedLine: null });
+        getLinterResultsFromContent(this.state.swaggerModified).then((results) => {
+            this.setState({ linterResults: results });
+        });
+        this.setState({ openEditor: true });
+    }
+
+    openEditorToImport(importingSwagger, linterSelectedLine) {
+        this.setState({ isImporting: true });
+        this.setState({ swaggerImporting: importingSwagger });
+        this.setState({ linterSelectedLine });
+        this.setState({ isSwaggerUI: false });
+        getLinterResultsFromContent(importingSwagger).then((results) => {
+            this.setState({ linterResults: results });
+        });
         this.setState({ openEditor: true });
     }
 
@@ -650,7 +691,8 @@ class APIDefinition extends React.Component {
         const {
             swagger, graphQL, openEditor, openDialog, format, convertTo, notFound, isAuditApiClicked,
             securityAuditProperties, isSwaggerValid, swaggerModified, isUpdating,
-            asyncAPI, asyncAPIModified, isAsyncAPIValid, errors, isSwaggerUI, linterResults,
+            asyncAPI, asyncAPIModified, isAsyncAPIValid, errors, isSwaggerUI, linterResults, linterSelectedSeverity, 
+            linterSelectedLine, isImporting, swaggerImporting
         } = this.state;
 
         const {
@@ -732,6 +774,7 @@ class APIDefinition extends React.Component {
                                     className={classes.button}
                                     onClick={this.openEditor}
                                     disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
+                                    id='edit-definition-btn'
                                 >
                                     <EditRounded className={classes.buttonIcon} />
                                     <FormattedMessage
@@ -742,7 +785,8 @@ class APIDefinition extends React.Component {
                             )
                         )}
                         {api.type !== API.CONSTS.APIProduct && (
-                            <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} />
+                            <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
+                                editAndImport={this.openEditorToImport}/>
                         )}
                         {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
                             <DefinitionOutdated
@@ -832,20 +876,56 @@ class APIDefinition extends React.Component {
                                     onClick={this.openUpdateConfirmation}
                                     disabled={(!isSwaggerValid || isUpdating) || (!isAsyncAPIValid || isUpdating)}
                                 >
-                                    <FormattedMessage
-                                        id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
-                                            + 'update.content'}
-                                        defaultMessage='Update Content'
-                                    />
+                                    {isImporting? (
+                                        <FormattedMessage
+                                            id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
+                                                + 'update.content'}
+                                            defaultMessage='Import Content'
+                                        />
+                                    ):(
+                                        <FormattedMessage
+                                            id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
+                                                + 'update.content'}
+                                            defaultMessage='Update Content'
+                                        />
+                                    )}
                                     {isUpdating && <CircularProgress className={classes.progressLoader} size={24}/>}
                                 </Button>
                             </Box>
                             <Box margin='3px'>
-                                <APILinting document={ swaggerModified }
-                                    setIsSwaggerUI={ (open) => { this.setState({ isSwaggerUI: open }) }}
-                                    linterResults={ linterResults }
-                                    setLinterResults={ (data) => { this.setState({ linterResults: data })}}
-                                />
+                                <ToggleButtonGroup
+                                    data-testid='editor-drawe-toggle'
+                                    exclusive
+                                    aria-label='toggle'
+                                    size='small'
+                                    onChange={(event, value) => {
+                                        this.setState({ isSwaggerUI: value === "swagger" })
+                                    }}
+                                >
+                                    <ToggleButton
+                                        className={classes.activeButton}
+                                        value='swagger'
+                                        aria-label='swagger'
+                                        selected={this.state.isSwaggerUI}
+                                    >
+                                        Swagger
+                                    </ToggleButton>
+                                    <ToggleButton
+                                        className={classes.activeButton}
+                                        value='linter'
+                                        aria-label='linter'
+                                        selected={!this.state.isSwaggerUI}
+                                    >
+                                        Linter
+                                    </ToggleButton>
+                                    <APILintingSummary 
+                                        linterResults={linterResults}
+                                        handleChange = { (value)=> {
+                                            this.setState({linterSelectedSeverity: value});
+                                            this.setState({ isSwaggerUI: false }) }}
+                                    />
+                                </ToggleButtonGroup>
+                                
                             </Box>
                         </Box>
                     </Paper>
@@ -856,13 +936,18 @@ class APIDefinition extends React.Component {
                     >
                         {swagger ? (
                             <EditorDialog
-                                swagger={swaggerModified}
+                                swagger={isImporting? swaggerImporting : swaggerModified}
                                 language={format}
                                 onEditContent={this.onChangeSwaggerContent}
                                 errors={errors}
                                 setErrors={this.setErrors}
                                 isSwaggerUI={ isSwaggerUI }
-                                linterResults={ linterResults }
+                                linterResults={ linterResults.filter((item)=> 
+                                    linterSelectedSeverity===null||
+                                    item.severity===Number(linterSelectedSeverity))
+                                }
+                                linterSelectedSeverity={linterSelectedSeverity}
+                                linterSelectedLine={linterSelectedLine}
                             />
                         ) : (
                             <AsyncAPIEditor

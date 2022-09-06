@@ -25,11 +25,12 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage } from 'react-intl';
 import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
+import { ThumbUp } from '@material-ui/icons';
 import { orange } from '@material-ui/core/colors';
 import differenceBy from 'lodash/differenceBy'
 import SwaggerUI from './swaggerUI/SwaggerUI';
 import LinterUI from './LinterUI/LinterUI';
-
+import { spectralSeverityNames } from "./Linting/Linting"
 
 const styles = () => ({
     editorPane: {
@@ -129,15 +130,20 @@ class SwaggerEditorDrawer extends React.Component {
     }
 
     editorDidMount(editor, monaco) {
+        const { linterSelectedLine } = this.props;
         this.editor = editor;
         this.monaco = monaco;
+        if (linterSelectedLine) {
+            this.handleRowClick(linterSelectedLine);
+        }
     }
 
     /**
      * @inheritDoc
      */
     render() {
-        const { classes, language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap } = this.props;
+        const { classes, language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap, 
+            linterSelectedSeverity } = this.props;
         const swaggerUrl = 'data:text/' + language + ',' + encodeURIComponent(swagger);
         return (
             <>
@@ -183,14 +189,27 @@ class SwaggerEditorDrawer extends React.Component {
                                 </InlineMessage>
                             </Box>
                         )}
-                        { isSwaggerUI ? (
+                        { isSwaggerUI && (
                             <SwaggerUI url={swaggerUrl}/>
-                        ) : (
-                            <LinterUI
-                                linterResults={linterResults}
-                                severityMap={severityMap}
-                                handleRowClick={(line) => {this.handleRowClick(line)}}
-                            />
+                        )}
+                        { !isSwaggerUI && linterResults.length > 0 && (
+                            <div data-testid='testid-linter-ui'>
+                                <LinterUI
+                                    linterResults={linterResults}
+                                    severityMap={severityMap}
+                                    handleRowClick={(line) => {this.handleRowClick(line)}}
+                                />
+                            </div>
+                        )}
+                        { !isSwaggerUI && linterResults.length === 0 && (
+                            <Grid container direction='column' justifyContent='center' alignItems='center'
+                                style={{padding:'25%'}}>
+                                <ThumbUp fontSize='large'/>
+                                <Typography variant='h4'>Good to go !</Typography>
+                                <Typography variant='h6'>No Linter Results ({
+                                    linterSelectedSeverity? spectralSeverityNames[linterSelectedSeverity] : ''
+                                }) found</Typography>
+                            </Grid>
                         )}
                     </Grid>
                 </Grid>
