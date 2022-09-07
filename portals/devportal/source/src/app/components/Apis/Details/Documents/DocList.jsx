@@ -20,6 +20,8 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
+// useContext
+// import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
@@ -32,7 +34,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import useWindowSize from 'AppComponents/Shared/UseWindowSize';
-import Details from 'AppComponents/Apis/Details/Documents/Details';
+// import Details from 'AppComponents/Apis/Details/Documents/Details';
+import GenerateDocument from './GenerateDocument';
 
 const styles = (theme) => ({
     paper: {
@@ -142,6 +145,7 @@ const styles = (theme) => ({
  * @returns {JSX} The sum of the two numbers.
  */
 function DocList(props) {
+    // const { api } = useContext(ApiContext);
     const {
         classes, documentList, apiId, selectedDoc,
     } = props;
@@ -266,13 +270,14 @@ function DocList(props) {
                     </Button>
                 </div>
                 <div className={classes.docView}>
-                    {selectedDoc && (
+                    { selectedDoc && <GenerateDocument /> }
+                    {/* api.type=='HTTP' ? <GenerateDocument/> : (
                         <Details
                             documentList={documentList}
                             selectedDoc={selectedDoc}
                             apiId={apiId}
                         />
-                    )}
+                    )} */}
                 </div>
             </div>
         </>

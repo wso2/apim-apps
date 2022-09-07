@@ -35,26 +35,22 @@ const styles = theme =>({
 function GenerateDocument(){
     const [api, updateAPI] = useAPI();
     const [swagger, updateSwagger] = useState("");
-
-        console.log(api);
-        let promisedApi = api.getSwagger(api.id);
-        promisedApi
-            .then((response) => {
-                console.log(response.body);
-                updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
-                console.log(swagger);
-            })
-            .catch((error) => {
-                if(process.env.NODE_ENV !== 'production'){
-                    console.log(error);
-                }
-                const {status} = error;
-                if(status==404){
-                    this.setState({notFound:true});
-                }else if(status==401){
-                    doRedirectToLogin();
-                }
-            });
+    let promisedApi = api.getSwagger(api.id);
+    promisedApi
+        .then((response) => {
+            updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
+        })
+        .catch((error) => {
+            if(process.env.NODE_ENV !== 'production'){
+                console.log(error);
+            }
+            const {status} = error;
+            if(status==404){
+                this.setState({notFound:true});
+            }else if(status==401){
+                doRedirectToLogin();
+            }
+        });
 
     return(
         <div>

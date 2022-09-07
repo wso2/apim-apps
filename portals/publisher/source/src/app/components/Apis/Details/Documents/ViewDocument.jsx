@@ -59,7 +59,7 @@ const styles = {
         height: 30,
         marginLeft: 30,
     },
-    editMetaButton: {
+    viewButton: {
         whiteSpace: 'nowrap',
     },
 };
@@ -83,29 +83,33 @@ function ViewDocument(props) {
 
     const { classes, apiId, docName } = props;
     return (
-        <div>
+        <React.Fragment>
             <Button
+                id='view-generated-document-btn'
+                data-testid='view-generated-document-btn'
+                variant='contained'
+                color='primary'
                 onClick={toggleOpen}
-                // className={classes.viewButton}
+                className={classes.viewButton}
                 aria-label={'View Content of ' + docName}
             >
-                <DescriptionIcon/>
+                {/* <DescriptionIcon/> */}
                 <FormattedMessage
                     id='Apis.Details.Documents.ViewDocument.view.document'
                     defaultMessage='View Document'
                 />
             </Button>
             <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen> 
-                <Paper square>
+                <Paper square className={classes.popupHeader}>
                         <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
                             <Icon>close</Icon>
                         </IconButton>
                         <Typography variant='h4'>
                             <FormattedMessage
-                                id='Apis.Details.Documents.Edit.documents.text.editor.edit.content'
-                                defaultMessage='Edit '
+                                id='Apis.Details.Documents.view.generated.document'
+                                defaultMessage={props.docName}
                             />
-                            {` ${props.docName}`}
+                            {/* {` ${props.docName}`} */}
                         </Typography>
                 </Paper>
                 <GenerateDocument />
@@ -149,7 +153,7 @@ function ViewDocument(props) {
                     />
                 </div>
             </Dialog> */}
-        </div>
+        </React.Fragment>
     );
 }
 ViewDocument.propTypes = {
@@ -164,4 +168,4 @@ ViewDocument.propTypes = {
     // }).isRequired,
 };
 
-export default ViewDocument;
+export default injectIntl(withStyles(styles)(ViewDocument));

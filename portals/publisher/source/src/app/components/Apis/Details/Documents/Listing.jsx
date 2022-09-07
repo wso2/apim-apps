@@ -30,6 +30,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddCircle from '@material-ui/icons/AddCircle';
 import Icon from '@material-ui/core/Icon';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import Alert from 'AppComponents/Shared/Alert';
 import Progress from 'AppComponents/Shared/Progress';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -42,6 +44,7 @@ import Delete from './Delete';
 import DeleteMultiple from './DeleteMultiple';
 import Download from './Download';
 import ViewDocument from './ViewDocument';
+
 
 const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "ListingTextEditor" */));
 
@@ -101,6 +104,12 @@ const styles = theme => ({
         fontWeight: 200,
         marginBottom: 20,
     },
+    subtitle: {
+        fontWeight: 200,
+    },
+    genDocumentButton:{
+        marginRight:10,
+    },
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
@@ -141,12 +150,7 @@ class Listing extends React.Component {
         this.props.history.push('/apis/' + this.props.api.id + '/documents/swaggerdoc');
     }
 
-    // navigateToSwaggerDoc = () => {
-    //     navigate('/apis/' + props.apiId + '/documents/swaggerdoc');
-    // }
-
-    // const [selected, setSelected] = useState(false);
-
+    
     /*
      Get the document list attached to current API and set it to the state
      */
@@ -187,16 +191,16 @@ class Listing extends React.Component {
                 documentList.sort(getSortOrder('name'));
                 console.log(documentList);
                 console.log(this.props.api);
-                if(this.props.api.type=='HTTP' || this.props.api.type=='HTTPS'){
-                    let generatedDocument = { 
-                        // 'documentId': "17928123-e3ca-4d21-943f-a88cfe1f91ca",
-                        'name': this.props.api.name + '_SwaggerDoc',
-                        'sourceType': "GENERATED",
-                        'type' : "HOWTO",
-                        'visibility' : "API_LEVEL",
-                    };
-                    documentList.unshift(generatedDocument);
-                }
+                // if(this.props.api.type=='HTTP' || this.props.api.type=='HTTPS'){
+                //     let generatedDocument = { 
+                //         // 'documentId': "17928123-e3ca-4d21-943f-a88cfe1f91ca",
+                //         'name': this.props.api.name + '_SwaggerDoc',
+                //         'sourceType': "GENERATED",
+                //         'type' : "HOWTO",
+                //         'visibility' : "API_LEVEL",
+                //     };
+                //     documentList.unshift(generatedDocument);
+                // }
                 this.setState({ docs: documentList });
             }).catch((errorResponse) => {
                 const errorData = JSON.parse(errorResponse.message);
@@ -512,7 +516,6 @@ class Listing extends React.Component {
         }
         return (
             <React.Fragment>
-
                 {docsToDelete && (
                     <DeleteMultiple getDocumentsList={this.getDocumentsList} docsToDelete={docsToDelete} docs={docs} />
                 )}
@@ -523,7 +526,7 @@ class Listing extends React.Component {
                             defaultMessage='Documents'
                         />
                     </Typography>
-                    {docs && docs.length > 0 && (
+                    {((docs && docs.length > 0) || (api.type=='HTTP')) && (
                         <Button
                             size='small'
                             data-testid='add-document-btn'
@@ -549,9 +552,57 @@ class Listing extends React.Component {
                         />
                     )}
 
-                    {docs && docs.length > 0 ? (
+                    {api.type=='HTTP' && (
+                        <React.Fragment>
+                            <Typography id='itest-api-details-documents-generated-title' variant='h5' component='h3' className={classes.subtitle}>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.Listing.documents.generated.title'
+                                    defaultMessage='Generated Document'
+                                />
+                            </Typography>
+
+                            <div className={classes.actions}>
+                                <ViewDocument
+                                    cla
+                                    docName={api.name+'_doc'}
+                                    apiType={api.apiType}
+                                    apiId={this.apiId}
+                                    api
+                                    className={classes.genDocumentButton}
+                                />
+
+                                <FormControlLabel
+                                    control={
+                                    <Switch
+                                        checked='true'
+                                        // onChange={handleChange}
+                                        name="showGeneratedDocument"
+                                        color="Primary"
+                                    />
+                                    }
+                                    label="Show in DevPortal"
+                                />
+                            </div>
+                        </React.Fragment>
+                    )}
+
+                    {api.type=='HTTP' && docs && docs.length > 0 && (
+                        <React.Fragment>
+                            <Typography id='itest-api-details-documents-uploaded-title' variant='h5' component='h3' className={classes.head}>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.Listing.documents.uploaded.title'
+                                    defaultMessage='Uploaded Documents'
+                                />
+                            </Typography>
+                            <MUIDataTable title='' data={docs} columns={columns} options={options} />
+                        </React.Fragment>
+                    )}
+                    
+                    {docs && docs.length > 0 && api.type!='HTTP' && (
                         <MUIDataTable title='' data={docs} columns={columns} options={options} />
-                    ) : (
+                    )}
+                    
+                    {docs && docs.length < 1 && api.type!='HTTP' && (
                         <InlineMessage type='info' height={140}>
                             <div className={classes.contentWrapper}>
                                 <Typography variant='h5' component='h3' className={classes.head}>
@@ -604,6 +655,7 @@ class Listing extends React.Component {
                             </div>
                         </InlineMessage>
                     )}
+                    
                 </div>
             </React.Fragment>
         );

@@ -33,6 +33,7 @@
         "@material-ui/lab": "^4.0.0-alpha.57",
         "@mdi/js": "^6.5.95",
         "@mdi/react": "^1.5.0",
+        "@stoplight/elements": "^7.6.4",
         "@ui5/webcomponents-icons": "^1.1.2",
         "async-mutex": "^0.3.2",
         "autosuggest-highlight": "^3.2.0",

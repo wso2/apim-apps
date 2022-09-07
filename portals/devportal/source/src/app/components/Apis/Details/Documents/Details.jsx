@@ -80,6 +80,17 @@ export default function Details(props) {
                         </Icon>
                     </IconButton>
                 )}
+                {(selectedDoc.sourceType === 'GENERATED' && (
+                    <IconButton
+                        onClick={toggleOpen}
+                        aria-label={'View ' + selectedDoc.name + ' document in full screen'}
+                        className={classes.fullView}
+                    >
+                        <Icon>
+                            launch
+                        </Icon>
+                    </IconButton>
+                ))}
                 <View doc={selectedDoc} apiId={apiId} fullScreen={open} />
             </div>
             <Dialog fullScreen open={open} onClose={toggleOpen}>
