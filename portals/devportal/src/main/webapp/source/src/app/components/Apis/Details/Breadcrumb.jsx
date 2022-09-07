@@ -125,7 +125,7 @@ export default function Breadcrumb() {
                 <Typography color='textPrimary' component='h1' variant='h6'>{selected.text}</Typography>
                 <VerticalDivider height={15} />
                 <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-                    <MUILink color='inherit' to={'/apis/' + api.id + '/overview'} component={Link}>
+                    <MUILink color='textPrimary' to={'/apis/' + api.id + '/overview'} component={Link}>
                         {api.name}
                     </MUILink>
                     <Typography color='textPrimary'>{selected.text}</Typography>
