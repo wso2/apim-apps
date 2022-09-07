@@ -38,6 +38,7 @@ import {
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import UploadCertificate from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/UploadCertificate';
+import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage.tsx";
 import API from '../../../../../data/api';
 
 const useStyles = makeStyles((theme) => ({
@@ -111,6 +112,7 @@ function Certificates(props) {
     const [certificateList, setCertificateList] = useState([]);
     const [openCertificateDetails, setOpenCertificateDetails] = useState({ open: false, anchor: null, details: {} });
     const [certificateToDelete, setCertificateToDelete] = useState({ open: false, alias: '' });
+    const [certificateUsageDetails, setCertificateUsageDetails] = useState({ count: 0, apiList: [] });
     const [isDeleting, setDeleting] = useState(false);
     const [uploadCertificateOpen, setUploadCertificateOpen] = useState(false);
     const classes = useStyles();
@@ -164,6 +166,37 @@ function Certificates(props) {
             .finally(() => setDeleting(false));
     };
 
+    /**
+     * Retrieve certificate usage details by alias.
+     *
+     * @param {string} certAlias  The alias of the certificate which information is required.
+     * */
+    const getCertificateUsage = async (certAlias) => {
+        try {
+            const response = await API.getEndpointCertificateUsage(certAlias);
+            setCertificateUsageDetails({count: response.body.count, apiList: response.body.list});
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    /**
+     * Show certificate deletion dialog box.
+     *
+     * @param {any} event The button click event.
+     * @param {string} certAlias  The alias of the certificate which information is required.
+     * */
+    const showCertificateDeleteDialog = async (event, certAlias) => {
+        setCertificateToDelete({ open: false, alias: '' });
+        await getCertificateUsage(certAlias);
+        setCertificateToDelete({ open: true, alias: certAlias });
+    };
+
+    const getWarningMessage = () => {
+        return certificateToDelete.alias + ' is used by ' +
+            certificateUsageDetails.count + ' other APIs. ';
+    }
+
     useEffect(() => {
         setCertificateList(certificates);
     }, [certificates]);
@@ -209,15 +242,17 @@ function Certificates(props) {
                                         : <ListItemText primary={cert.alias} secondary={cert.endpoint} />}
 
                                     <ListItemSecondaryAction>
+                                        <IconButton edge='end'>
+                                            <CertificateUsage certAlias={cert.alias}/>
+                                        </IconButton>
                                         <IconButton
-                                            edge='end'
                                             onClick={(event) => showCertificateDetails(event, cert.alias)}
                                         >
                                             <Icon>info</Icon>
                                         </IconButton>
                                         <IconButton
                                             disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                            onClick={() => setCertificateToDelete({ open: true, alias: cert.alias })}
+                                            onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
                                             id='delete-cert-btn'
                                         >
                                             <Icon className={isRestricted(['apim:api_create'], apiFromContext)
@@ -246,15 +281,16 @@ function Certificates(props) {
                     <Typography className={classes.uploadCertDialogHeader}>
                         <FormattedMessage
                             id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.deleteCertificate'
-                            defaultMessage='Delete Certificate'
+                            defaultMessage='Delete with caution!'
                         />
                     </Typography>
                 </DialogTitle>
                 <DialogContent className={classes.alertWrapper}>
                     <Typography>
+                        { certificateUsageDetails.count > 1 ? getWarningMessage() : ''}
                         <FormattedMessage
                             id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete'
-                            defaultMessage='Do you want to delete '
+                            defaultMessage='Are you sure you want to delete '
                         />
                         {' '}
                         { certificateToDelete.alias + '?'}

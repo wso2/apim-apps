@@ -2491,6 +2491,24 @@ class API extends Resource {
     }
 
     /**
+     * Get APIs that use a endpoint certificate which represented by the given alias.
+     *
+     * @param {string} alias The alias of the certificate
+     * @param {string} limit number of replies to retrieve
+     * @param {string} offset the starting point of replies
+     * */
+     static getEndpointCertificateUsage(alias, limit=null, offset=null) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis['Endpoint Certificates'].getCertificateUsageByAlias({
+                alias,
+                limit,
+                offset
+            });
+        }, this._requestMetaData());
+    }
+
+    /**
      * @static
      * Get all the external stores configured for the current environment
      * @returns {Promise}
