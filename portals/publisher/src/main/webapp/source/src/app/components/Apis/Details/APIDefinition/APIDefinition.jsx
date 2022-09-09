@@ -49,6 +49,7 @@ import { withRouter } from 'react-router';
 import { isRestricted } from 'AppData/AuthManager';
 import Box from '@material-ui/core/Box';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import APISecurityAudit from './APISecurityAudit';
 import ImportDefinition from './ImportDefinition';
@@ -298,16 +299,35 @@ class APIDefinition extends React.Component {
          * Validate for the basic json/ yaml format.
          * */
         try {
+            let file = null;
             if (format === 'json') {
                 JSON.parse(modifiedContent, null);
+                const blobJson = new Blob([modifiedContent], { type: 'text/json' });
+                file = new File([blobJson], 'modifiedContent.json', { type: 'text/json;charset=utf-8' });
             } else {
                 YAML.load(modifiedContent);
+                const blobYaml = new Blob([modifiedContent], { type: 'text/yaml' });
+                file = new File([blobYaml], 'modifiedContent.yaml', { type: 'text/yaml;charset=utf-8' });
             }
+
             if (this.state.isImporting) {
-                this.setState({ isSwaggerValid: true, swaggerImporting: modifiedContent });
+                this.setState({ swaggerImporting: modifiedContent });
             } else {
-                this.setState({ isSwaggerValid: true, swaggerModified: modifiedContent });
+                this.setState({ swaggerModified: modifiedContent });
             }
+
+            const validateDebounced = debounce(() => {
+                API.validateOpenAPIByFile(file)
+                    .then((response) => {
+                        const {
+                            body: { isValid },
+                        } = response;
+                        this.setState({ isSwaggerValid: isValid });
+                        console.log("isValid:", isValid);
+                    });
+            }, 500);
+
+            validateDebounced();
             
         } catch (e) {
             if (this.state.isImporting) {
@@ -425,23 +445,19 @@ class APIDefinition extends React.Component {
      * local storage.
      * */
     openEditor() {
-        this.setState({ isImporting: false });
-        this.setState({ linterSelectedLine: null });
+        this.setState({ isImporting: false, linterSelectedLine: null });
         getLinterResultsFromContent(this.state.swaggerModified).then((results) => {
-            this.setState({ linterResults: results });
+            this.setState({ linterResults: results, openEditor: true });
         });
-        this.setState({ openEditor: true });
+        
     }
 
     openEditorToImport(importingSwagger, linterSelectedLine) {
-        this.setState({ isImporting: true });
-        this.setState({ swaggerImporting: importingSwagger });
-        this.setState({ linterSelectedLine });
-        this.setState({ isSwaggerUI: false });
+        this.setState({ isImporting: true, swaggerImporting: importingSwagger, 
+            linterSelectedLine, isSwaggerUI: false });
         getLinterResultsFromContent(importingSwagger).then((results) => {
-            this.setState({ linterResults: results });
+            this.setState({ linterResults: results, openEditor: true });
         });
-        this.setState({ openEditor: true });
     }
 
     /**
@@ -908,7 +924,10 @@ class APIDefinition extends React.Component {
                                         aria-label='swagger'
                                         selected={this.state.isSwaggerUI}
                                     >
-                                        Swagger
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger'
+                                            defaultMessage='Swagger'
+                                        />
                                     </ToggleButton>
                                     <ToggleButton
                                         className={classes.activeButton}
@@ -916,7 +935,10 @@ class APIDefinition extends React.Component {
                                         aria-label='linter'
                                         selected={!this.state.isSwaggerUI}
                                     >
-                                        Linter
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter'
+                                            defaultMessage='Linter'
+                                        />
                                     </ToggleButton>
                                     <APILintingSummary 
                                         linterResults={linterResults}

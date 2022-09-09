@@ -202,14 +202,25 @@ class SwaggerEditorDrawer extends React.Component {
                             </div>
                         )}
                         { !isSwaggerUI && linterResults.length === 0 && (
-                            <Grid container direction='column' justifyContent='center' alignItems='center'
-                                style={{padding:'25%'}}>
+                            <Box alignSelf='center' justifySelf='center' flexDirection='column'>
                                 <ThumbUp fontSize='large'/>
-                                <Typography variant='h4'>Good to go !</Typography>
-                                <Typography variant='h6'>No Linter Results ({
-                                    linterSelectedSeverity? spectralSeverityNames[linterSelectedSeverity] : ''
-                                }) found</Typography>
-                            </Grid>
+                                <Typography variant='h4'>
+                                    <FormattedMessage
+                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.good'
+                                            + 'update.content'}
+                                        defaultMessage='Good to go !'
+                                    />
+                                </Typography>
+                                <Typography variant='h6'>
+                                    <FormattedMessage
+                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.results'
+                                            + 'update.content'}
+                                        defaultMessage='No Linter Results{type} found'
+                                        values={{type: linterSelectedSeverity?
+                                            ` (${spectralSeverityNames[linterSelectedSeverity]})`:''}}
+                                    />
+                                </Typography>
+                            </Box>
                         )}
                     </Grid>
                 </Grid>

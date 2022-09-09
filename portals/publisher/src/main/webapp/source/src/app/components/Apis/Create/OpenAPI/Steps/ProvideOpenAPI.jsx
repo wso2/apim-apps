@@ -36,8 +36,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
-import { ExpandMore } from '@material-ui/icons';
-import { Accordion, AccordionDetails, AccordionSummary, Box, ListItemIcon, Typography } from '@material-ui/core';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -46,19 +44,14 @@ import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-data
 
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
-import LinterUI from 'AppComponents/Apis/Details/APIDefinition/LinterUI/LinterUI';
-import APILintingSummary from 'AppComponents/Apis/Details/APIDefinition/Linting/APILintingSummary';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
 import {  
-    getLinterResultsFromContent,
-    spectralSeverityMap as severityMap } from "../../../Details/APIDefinition/Linting/Linting";
+    getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
+import ValidationResults from './ValidationResults';
 
 const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
         color: theme.palette.error.main,
-    },
-    importDefinitionDialogHeader: {
-        fontWeight: '600',
     },
 }));
 
@@ -80,9 +73,6 @@ export default function ProvideOpenAPI(props) {
     const [validationErrors, setValidationErrors] = useState([]);
     const [isValidating, setIsValidating] = useState(false);
     const [isLinting, setIsLinting] = useState(false);
-    const [linterSelectedSeverity, setLinterSelectedSeverity] = useState(null);
-    const [expandLinter, setExpandLinter] = useState(false);
-    const [expandValidationErrors, setExpandValidationErrors] = useState(true);
     
     function lint(content) {
         // Validate and linting
@@ -365,114 +355,14 @@ export default function ProvideOpenAPI(props) {
                         />
                     )}
                 </Grid>
-                <Grid item xs={10} md={11}>
-                    <List>
-                        {inputValue && isValidating && (
-                            <ListItem>
-                                <ListItemIcon><CircularProgress /></ListItemIcon>
-                                <ListItemText>Validating API definition</ListItemText>
-                            </ListItem>
-                        )}
-                        {inputValue && !isValidating && isLinting && (
-                            <ListItem>
-                                <ListItemIcon><CircularProgress /></ListItemIcon>
-                                <ListItemText>Generating Linter Results</ListItemText>
-                            </ListItem>
-                        )}
-                    </List>
-                </Grid>
-                {!isValidating && validationErrors.length>0 && (
-                    <Grid item xs={10} md={11}>
-                        <Accordion
-                            expanded={expandValidationErrors}
-                            onChange={()=>{}}>
-                            <AccordionSummary
-                                expandIcon={<ExpandMore/>}
-                                aria-controls='panel1bh-content'
-                                id='panel1bh-header'
-                                IconButtonProps={{onClick:()=>{setExpandValidationErrors((prev)=>!prev)}}}>
-                                <Grid container direction='row' 
-                                    justifyContent='space-between' alignItems='center'>
-                                    <Typography className={classes.importDefinitionDialogHeader}>
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.import.
-                                                validation.title'
-                                            defaultMessage='Validation Errors'
-                                        />
-                                    </Typography>
-                                </Grid>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <List>
-                                    {validationErrors.map((error)=>(
-                                        <ListItem>
-                                            <ListItemIcon>
-                                                {severityMap[0]}
-                                            </ListItemIcon>
-                                            <ListItemText>
-                                                <Typography>
-                                                    <Box sx={{ fontWeight: 'bold' }}>{error.message}</Box>
-                                                </Typography>
-                                                <Typography>{error.description}</Typography>
-                                            </ListItemText>
-                                        </ListItem>
-                                        
-                                    ))}
-                                </List>
-                                
-                            </AccordionDetails>
-                            
-                        </Accordion>
-                    </Grid>
-                )}
-                {!isLinting && linterResults.length>0 && (
-                    <Grid item xs={10} md={11}
-                        data-testid='itest-id-linter-results'>
-                        <Accordion
-                            expanded={expandLinter}
-                            onChange={()=>{}}>
-                            <AccordionSummary
-                                expandIcon={<ExpandMore />}
-                                aria-controls='panel1bh-content'
-                                id='panel1bh-header'
-                                IconButtonProps={{onClick:()=>{setExpandLinter((prev)=>!prev)}}}>
-                                <Grid container direction='row' 
-                                    justifyContent='space-between' alignItems='center'>
-                                    <Typography className={classes.importDefinitionDialogHeader}>
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.import.
-                                                validation.title'
-                                            defaultMessage='Linter Results'
-                                        />
-                                    </Typography>
-                                    <APILintingSummary
-                                        linterResults={ linterResults }
-                                        handleChange = { (value)=>{
-                                            setLinterSelectedSeverity(value);
-                                            setExpandLinter(true);
-                                        } }
-                                    />
-                                </Grid>
-                            </AccordionSummary>
-                            <AccordionDetails
-                                style={{padding:0}}>
-                                <div style={{width:'100%'}}>
-                                    <LinterUI
-                                        linterResults={ linterResults.filter(
-                                            (item)=> linterSelectedSeverity===null||
-                                                item.severity===Number(linterSelectedSeverity))
-                                        }
-                                        severityMap={ severityMap }
-                                        handleRowClick={ (line) => { 
-                                            if(onLinterLineSelect) onLinterLineSelect(line);
-                                        } }
-                                    />
-                                </div>
-                            </AccordionDetails>
-                            
-                        </Accordion>
-                    </Grid>
-                )}
+                <ValidationResults 
+                    inputValue={inputValue} 
+                    isValidating={isValidating}
+                    isLinting={isLinting}
+                    validationErrors={validationErrors}
+                    linterResults={linterResults}
+                    onLinterLineSelect={onLinterLineSelect}
+                />
                 <Grid item xs={2} md={5} />
             </Grid>
         </>

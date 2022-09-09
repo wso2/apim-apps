@@ -112,7 +112,6 @@ export default function ImportDefinition(props) {
         const {
             importingContent,
         } = apiInputs;
-        // eslint-disable-next-line no-unused-expressions
         editAndImport(importingContent, null);
     };
 
@@ -120,7 +119,6 @@ export default function ImportDefinition(props) {
         const {
             importingContent,
         } = apiInputs;
-        // eslint-disable-next-line no-unused-expressions
         editAndImport(importingContent, line);
     }
 

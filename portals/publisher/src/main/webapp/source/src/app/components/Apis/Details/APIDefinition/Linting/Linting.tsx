@@ -24,6 +24,8 @@ import WarningIcon from '@material-ui/icons/Warning';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import Alert from 'AppComponents/Shared/Alert';
+import { FormattedMessage } from 'react-intl';
 
 /** @type DiagnosticSeverity 
  * 
@@ -70,50 +72,25 @@ export async function getLinterResultsFromContent(swagger: string|undefined) {
     let validationResults: ISpectralDiagnostic[] = [];
     
     if (swagger) {
-        /*
-        // Validate using backend swagger validation API
-        const blobJson = new Blob([swagger], { type: 'text/json' });
-        const swaggerFile = new File([blobJson], 'swagger.json', { type: 'text/json;charset=utf-8' });
-       
-        await API.validateOpenAPIByFile(swaggerFile).then((response: any) => {
-            const {
-                body: { isValidFile, errors },
-            } = response;
-            if (!isValidFile) {
-                // Concatenate validation and linter results
-                if (errors) {
-                    
-                    const results = errors.map((item: any)=>{
-                        return {
-                            severity:0,
-                            range: {
-                                start:{
-                                    line: -2
-                                }
-                            },
-                            message: item.description,
-                        };
-                    });
-                    validationResults = validationResults.concat(results);
-                }
-            }
-        }).catch((error: any)=>{
-            console.error("OpenAPI backend validation failed", error);
-        });
-        */
         // Validate againt default ruleset by Spectral
         let defaultRuleSet = { extends: [oas], rules: {} };
         const linter = new Spectral();
         linter.setRuleset(defaultRuleSet);
         
         try {
+            
             await linter.run(swagger).then((results)=> {
                 if (results) {
                     validationResults = validationResults.concat(results);
                 }
             });
-        } catch (error) {
-            console.error("OpenAPI linter default ruleset validation failed\n", error);
+        } catch (err) {
+            console.error("OpenAPI linter default ruleset validation failed", err);
+            Alert.error(
+            <FormattedMessage
+                id='Apis.Details.APIDefinition.Linting.Linting.default.ruleset.validation.failed'
+                defaultMessage='OpenAPI linter default ruleset validation failed'
+            />);
         }
 
 
@@ -122,6 +99,11 @@ export async function getLinterResultsFromContent(swagger: string|undefined) {
             return LinterCustomRuleset;
         }).catch((error: any) => {
             console.log("Error retrieving custom linter rules", error);
+            Alert.error(
+            <FormattedMessage
+                id='Apis.Details.APIDefinition.Linting.Linting.error.retrieving.custom.rules'
+                defaultMessage='Error retrieving custom linter rules'
+            />);
         });
         if (customRuleset) {
             //Parse JSON to JS object to support spectral
@@ -148,6 +130,11 @@ export async function getLinterResultsFromContent(swagger: string|undefined) {
                 if (error instanceof Error) {
                     console.error("OpenAPI linter custom ruleset validation failed\n", error, error.stack);
                 }
+                Alert.error(
+                    <FormattedMessage
+                        id='Apis.Details.APIDefinition.Linting.Linting.custom.ruleset.validation.failed'
+                        defaultMessage='OpenAPI linter custom ruleset validation failed'
+                    />);
             }
         }
 

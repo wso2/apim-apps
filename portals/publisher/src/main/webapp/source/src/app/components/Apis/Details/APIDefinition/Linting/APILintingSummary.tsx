@@ -69,7 +69,7 @@ export const APILintingSummary = (props: APILintingProps) => {
                         size="small"
                         onChange={(event, value) => { 
                             setSelectedSeverity(value);
-                            handleChange(value) }}>
+                            handleChange(event, value) }}>
                         {Object.entries(spectralSeverityMap).map(([severity, component]) => (
                             <ToggleButton
                                 key={Math.random()}
@@ -78,9 +78,11 @@ export const APILintingSummary = (props: APILintingProps) => {
                                 <Box ml={1} display="flex">
                                     {component}
                                     <Grid item>
-                                        <Typography>
-                                            {severityCounts[Number(severity)] || 0}
-                                        </Typography>
+                                        <Box maxWidth='2rem'>
+                                            <Typography noWrap>
+                                                &nbsp;{severityCounts[Number(severity)] || 0}
+                                            </Typography>
+                                        </Box>
                                     </Grid>
                                 </Box>
                             </ToggleButton>
