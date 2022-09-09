@@ -114,6 +114,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     const apiPolicy: ApiPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
+        policyVersion: policyObj?.version,
         parameters: {},
     };
 
@@ -139,9 +140,9 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                                 <Typography variant='subtitle2'>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.PolicyConfigurationEditDrawer.title'
-                                        defaultMessage='Configure {policy} Policy'
+                                        defaultMessage='Configure {policy}'
                                         values={{
-                                            policy: policyObj?.displayName,
+                                            policy: policyObj?.displayName + ' : ' + policyObj?.version,
                                         }}
                                     />
                                 </Typography>

@@ -2,6 +2,12 @@
   "AApis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": {
     "defaultMessage": "Provided regular expression is invalid"
   },
+  "APIs.details.endpoints.certificate.usage": {
+    "defaultMessage": "Usages of certificate -"
+  },
+  "APIs.details.endpoints.certificate.usage.cancel": {
+    "defaultMessage": "Cancel"
+  },
   "Api.category.dropdown.tooltip": {
     "defaultMessage": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
   },
@@ -1636,7 +1642,7 @@
     "defaultMessage": "Certificates"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete": {
-    "defaultMessage": "Do you want to delete"
+    "defaultMessage": "Are you sure you want to delete"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.delete.cancel.button": {
     "defaultMessage": "Cancel"
@@ -1645,7 +1651,7 @@
     "defaultMessage": "OK"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.deleteCertificate": {
-    "defaultMessage": "Delete Certificate"
+    "defaultMessage": "Delete with caution!"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.details.close.button": {
     "defaultMessage": "Close"
@@ -2635,10 +2641,10 @@
     "defaultMessage": "Response Flow"
   },
   "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": {
-    "defaultMessage": "Configure {policy} Policy"
+    "defaultMessage": "Configure {policy}"
   },
   "Apis.Details.Policies.PolicyConfiguringDrawer.title": {
-    "defaultMessage": "Configure {policy} Policy"
+    "defaultMessage": "Configure {policy}"
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.description": {
     "defaultMessage": "Provide the name, description and applicable flows of the policy."
@@ -2657,6 +2663,12 @@
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.label": {
     "defaultMessage": "Name"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.helperText": {
+    "defaultMessage": "Enter Policy Version ( E.g.: v1 )"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.label": {
+    "defaultMessage": "Version"
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.title": {
     "defaultMessage": "General Details"
@@ -4049,6 +4061,9 @@
   },
   "CommonPolicies.Listing.table.header.policy.name": {
     "defaultMessage": "Policy Name"
+  },
+  "CommonPolicies.Listing.table.header.policy.version": {
+    "defaultMessage": "Policy Version"
   },
   "CommonPolicies.ViewPolicy.policies.title": {
     "defaultMessage": "Policies"

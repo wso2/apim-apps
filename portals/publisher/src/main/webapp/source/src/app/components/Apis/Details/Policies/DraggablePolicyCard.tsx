@@ -135,13 +135,27 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                                 )}
                             </Avatar>
                         </ListItemAvatar>
-                        <ListItemText
-                            id={policyObj.displayName}
-                            primary={policyObj.displayName}
-                            classes={{
-                                primary: classes.policyCardText,
-                            }}
-                        />
+                        <Box
+                            display='flex-inline'
+                            flexDirection='column'
+                            sx={{ flexGrow: 1 }}
+                            className={classes.policyCardText}
+                        >
+                            <ListItemText
+                                id={policyObj.displayName}
+                                primary={policyObj.displayName}
+                                classes={{
+                                    primary: classes.policyCardText,
+                                }}
+                            />
+                            <ListItemText
+                                id={policyObj.version}
+                                secondary={policyObj.version}
+                                classes={{
+                                    secondary: classes.policyCardText,
+                                }}
+                            />
+                        </Box>
                         <Box
                             display='flex'
                             justifyContent='flex-end'

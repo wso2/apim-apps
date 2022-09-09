@@ -185,7 +185,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             >
                 <Tooltip
                     key={policyObj.id}
-                    title={policyObj.displayName}
+                    title={`${policyObj.displayName} : ${policyObj.version}`}
                     placement='top'
                 >
                     <Avatar

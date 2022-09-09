@@ -20,6 +20,7 @@ export type PolicyAttribute = {
     id: string;
     name: string;
     displayName: string;
+    version: string;
     description: string;
     required: boolean;
     type: string;
@@ -30,6 +31,7 @@ export type PolicyAttribute = {
 
 export type NewPolicyState = {
     displayName: string | null;
+    version: string | null;
     description: string;
     applicableFlows: string[];
     supportedGateways: string[];
