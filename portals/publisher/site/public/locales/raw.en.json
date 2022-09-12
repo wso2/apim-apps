@@ -1302,6 +1302,9 @@
   "Apis.Details.Documents.Listing.column.header.type": {
     "defaultMessage": "Type"
   },
+  "Apis.Details.Documents.Listing.documents.generated.title": {
+    "defaultMessage": "Generated Document"
+  },
   "Apis.Details.Documents.Listing.documents.listing.fetching.error.message": {
     "defaultMessage": "Error in fetching documents list of the API"
   },
@@ -1313,6 +1316,9 @@
   },
   "Apis.Details.Documents.Listing.documents.open": {
     "defaultMessage": "Open"
+  },
+  "Apis.Details.Documents.Listing.documents.uploaded.title": {
+    "defaultMessage": "Uploaded Documents"
   },
   "Apis.Details.Documents.Listing.loading": {
     "defaultMessage": "Loading..."
@@ -1370,6 +1376,9 @@
   },
   "Apis.Details.Documents.View.meta.summary": {
     "defaultMessage": "Summary"
+  },
+  "Apis.Details.Documents.ViewDocument.view.document": {
+    "defaultMessage": "View Document"
   },
   "Apis.Details.EditScopes.Roles.Invalid": {
     "defaultMessage": "Role is invalid"

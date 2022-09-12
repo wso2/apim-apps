@@ -17,8 +17,8 @@
  */
 
 import React, { useState, useContext } from 'react';
-// import { injectIntl } from 'react-intl';
-// import { withStyles } from '@material-ui/core/styles';
+import { injectIntl } from 'react-intl';
+import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
 import '@stoplight/elements/styles.min.css';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
@@ -32,7 +32,16 @@ import Api from 'AppData/api';
 //     // },
 // });
 
-function GenerateDocument() {
+const styles = () => ({
+    generatedDocument: {
+        width: '100%',
+        margin: 50,
+    },
+});
+
+function GenerateDocument(props) {
+    // const elementStyles = lazy(()=> import('@stoplight/elements/styles.min.css'));
+    const { classes } = props;
     const { api } = useContext(ApiContext);
     const [swagger, updateSwagger] = useState('');
     // const [notFound, updateNotFound] = useState(false);
@@ -56,8 +65,27 @@ function GenerateDocument() {
             }
         });
 
+    // useEffect(()=> {
+    //     import('@stoplight/elements/styles.min.css');
+    // }, []);
+
+    // useEffect( () => {
+    //     return () => {
+    //         removeImport('@stoplight/elements/styles.min.css');
+    //     }
+    // }, []);
+
+    // componentWillUnmount(){
+    //     removeImport('@stoplight/elements/styles.min.css');
+    // }
+
     return (
-        <div>
+        <div
+            className={classes.generatedDocument}
+            // style={{a[href*="stoplight.io"] : {
+            //     visibility: hidden,
+            // }}}
+        >
             <API
                 apiDescriptionDocument={swagger}
                 hideTryIt='true'
@@ -66,5 +94,4 @@ function GenerateDocument() {
     );
 }
 
-export default GenerateDocument;
-// export default injectIntl(withStyles(styles)(GenerateDocument));
+export default injectIntl(withStyles(styles)(GenerateDocument));

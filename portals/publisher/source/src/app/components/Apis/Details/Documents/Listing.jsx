@@ -16,13 +16,11 @@
  * under the License.
  */
 
-import React, { useState, Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import DescriptionIcon from '@material-ui/icons/Description';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';
@@ -32,6 +30,10 @@ import AddCircle from '@material-ui/icons/AddCircle';
 import Icon from '@material-ui/core/Icon';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import Alert from 'AppComponents/Shared/Alert';
 import Progress from 'AppComponents/Shared/Progress';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -113,6 +115,19 @@ const styles = theme => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
+    expansionPanel: {
+        marginBottom: theme.spacing(1),
+    },
+    expansionPanelDetails: {
+        flexDirection: 'column',
+    },
+    subHeading: {
+        fontSize: '1rem',
+        fontWeight: 400,
+        margin: 0,
+        display: 'inline-flex',
+        lineHeight: 1.5,
+    },
 });
  
 
@@ -134,7 +149,6 @@ class Listing extends React.Component {
         this.apiId = props.api.id;
         this.toggleAddDocs = this.toggleAddDocs.bind(this);
         this.getDocumentsList = this.getDocumentsList.bind(this);
-        this.navigateToSwaggerDoc = this.navigateToSwaggerDoc.bind(this);
     }
 
     /**
@@ -144,12 +158,6 @@ class Listing extends React.Component {
     componentDidMount() {
         this.getDocumentsList();
     }
-
-
-    navigateToSwaggerDoc() {
-        this.props.history.push('/apis/' + this.props.api.id + '/documents/swaggerdoc');
-    }
-
     
     /*
      Get the document list attached to current API and set it to the state
@@ -222,7 +230,6 @@ class Listing extends React.Component {
 
 
     render() {
-        // const useHistory = useHistory();
         const { classes, api, isAPIProduct } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
         const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
@@ -469,34 +476,14 @@ class Listing extends React.Component {
                                     <table className={classes.actionTable}>
                                         <tr>
                                             <td>
-                                                <ViewDocument
+                                                {/* <ViewDocument
                                                     cla
                                                     docName={docName}
                                                     apiType={api.apiType}
                                                     apiId={this.apiId}
                                                     api
-                                                />
+                                                /> */}
                                             </td>
-                                            {/* <td>
-                                                <Button 
-                                                    onClick={this.navigateToSwaggerDoc}
-                                                    aria-label={'View ' + docName}>
-                                                    <DescriptionIcon/>
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Documents.view.swagger.documentation.btn'
-                                                        defaultMessage='View'
-                                                    />
-                                                </Button>
-                                            </td>
-                                            <td>
-                                                <Button aria-label={'Hide ' + docName}>
-                                                    <VisibilityIcon/>
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Documents.hide.swagger.documentation.btn'
-                                                        defaultMessage='Hide'
-                                                    />
-                                                </Button>
-                                            </td> */}
                                         </tr>
                                     </table>
                                 );
@@ -554,47 +541,66 @@ class Listing extends React.Component {
 
                     {api.type=='HTTP' && (
                         <React.Fragment>
-                            <Typography id='itest-api-details-documents-generated-title' variant='h5' component='h3' className={classes.subtitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.Documents.Listing.documents.generated.title'
-                                    defaultMessage='Generated Document'
-                                />
-                            </Typography>
+                            <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded='false'>
+                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography className={classes.subHeading} variant='h6' component='h4'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Documents.Listing.documents.generated.title'
+                                            defaultMessage='Generated Document'
+                                        />
+                                    </Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                                    <div>
+                                        <ViewDocument
+                                            cla
+                                            docName={api.name+'_doc'}
+                                            apiType={api.apiType}
+                                            apiId={this.apiId}
+                                            api
+                                            className={classes.genDocumentButton}
+                                        />
 
-                            <div className={classes.actions}>
-                                <ViewDocument
-                                    cla
-                                    docName={api.name+'_doc'}
-                                    apiType={api.apiType}
-                                    apiId={this.apiId}
-                                    api
-                                    className={classes.genDocumentButton}
-                                />
-
-                                <FormControlLabel
-                                    control={
-                                    <Switch
-                                        checked='true'
-                                        // onChange={handleChange}
-                                        name="showGeneratedDocument"
-                                        color="Primary"
-                                    />
-                                    }
-                                    label="Show in DevPortal"
-                                />
-                            </div>
+                                        <FormControlLabel
+                                            control={
+                                            <Switch
+                                                checked='true'
+                                                // onChange={handleChange}
+                                                name="showGeneratedDocument"
+                                                color="Primary"
+                                            />
+                                            }
+                                            label="Show in DevPortal"
+                                        />
+                                    </div>
+                                </ExpansionPanelDetails>
+                            </WrappedExpansionPanel>
                         </React.Fragment>
                     )}
 
                     {api.type=='HTTP' && docs && docs.length > 0 && (
                         <React.Fragment>
-                            <Typography id='itest-api-details-documents-uploaded-title' variant='h5' component='h3' className={classes.head}>
+                            <WrappedExpansionPanel className={classes.expansionPanel} id='transportLevel'>
+                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography className={classes.subHeading} variant='h6' component='h4'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Documents.Listing.documents.uploaded.title'
+                                            defaultMessage='Uploaded Documents'
+                                        />
+                                    </Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                                    <MUIDataTable title='' data={docs} columns={columns} options={options} />
+                                </ExpansionPanelDetails>
+                            </WrappedExpansionPanel>
+                            
+                            {/* <Typography id='itest-api-details-documents-uploaded-title' variant='h5' component='h3' className={classes.head}>
                                 <FormattedMessage
                                     id='Apis.Details.Documents.Listing.documents.uploaded.title'
                                     defaultMessage='Uploaded Documents'
                                 />
                             </Typography>
-                            <MUIDataTable title='' data={docs} columns={columns} options={options} />
+                            <MUIDataTable title='' data={docs} columns={columns} options={options} /> */}
                         </React.Fragment>
                     )}
                     

@@ -61,6 +61,7 @@ const styles = {
     },
     viewButton: {
         whiteSpace: 'nowrap',
+        marginRight: 50,
     },
 };
 
@@ -93,7 +94,6 @@ function ViewDocument(props) {
                 className={classes.viewButton}
                 aria-label={'View Content of ' + docName}
             >
-                {/* <DescriptionIcon/> */}
                 <FormattedMessage
                     id='Apis.Details.Documents.ViewDocument.view.document'
                     defaultMessage='View Document'
@@ -104,55 +104,17 @@ function ViewDocument(props) {
                         <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
                             <Icon>close</Icon>
                         </IconButton>
-                        <Typography variant='h4'>
+                        {/* <Typography variant='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Documents.view.generated.document'
-                                defaultMessage={props.docName}
+                                defaultMessage={docName}
+                                // {props.docName}
                             />
-                            {/* {` ${props.docName}`} */}
-                        </Typography>
+                        </Typography> */}
                 </Paper>
-                <GenerateDocument />
+                <div className='apim_elements'><GenerateDocument /></div>
+                
             </Dialog>
-
-            {/* <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen>
-                <Paper square className={classes.popupHeader}>
-                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
-                        <Icon>close</Icon>
-                    </IconButton>
-                    <Typography variant='h4' className={classes.docName}>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.Edit.documents.text.editor.edit.content'
-                            defaultMessage='Edit '
-                        />
-                        {` ${props.docName}`}
-                    </Typography>
-                    <Button className={classes.button} variant='contained' color='primary' onClick={updateDoc} disabled={saveDisabled}>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.Edit.documents.text.editor.update.content'
-                            defaultMessage='Save'
-                        />
-                    </Button>
-                    <Button className={classes.button} onClick={toggleOpen}>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.Edit.documents.text.editor.cancel'
-                            defaultMessage='Cancel'
-                        />
-                    </Button>
-                </Paper>
-                <div className={classes.splitWrapper}>
-                    <CreateEditForm
-                        innerRef={(node) => {
-                            createEditForm = node;
-                        }}
-                        docId={docId}
-                        apiId={apiId}
-                        apiType={apiType}
-                        saveDisabled={saveDisabled}
-                        setSaveDisabled={setSaveDisabled}
-                    />
-                </div>
-            </Dialog> */}
         </React.Fragment>
     );
 }
@@ -168,4 +130,5 @@ ViewDocument.propTypes = {
     // }).isRequired,
 };
 
+// export default ViewDocument;
 export default injectIntl(withStyles(styles)(ViewDocument));

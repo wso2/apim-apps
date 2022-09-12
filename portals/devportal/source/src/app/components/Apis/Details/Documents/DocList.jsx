@@ -19,25 +19,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // useContext
 // import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Button from '@material-ui/core/Button';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
-import CustomIcon from 'AppComponents/Shared/CustomIcon';
+// import List from '@material-ui/core/List';
+// import ListItem from '@material-ui/core/ListItem';
+// import Button from '@material-ui/core/Button';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemText from '@material-ui/core/ListItemText';
+// import Icon from '@material-ui/core/Icon';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+// import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import useWindowSize from 'AppComponents/Shared/UseWindowSize';
 // import Details from 'AppComponents/Apis/Details/Documents/Details';
 import GenerateDocument from './GenerateDocument';
 
 const styles = (theme) => ({
+    apiDocTitle: {
+        width: '50%',
+    },
+    autocomplete: {
+        float: 'right',
+        width: 300,
+        paddingBottom: 0,
+        marginRight: 10,
+    },
     paper: {
         padding: theme.spacing(2),
         color: theme.palette.text.secondary,
@@ -86,6 +97,10 @@ const styles = (theme) => ({
         marginLeft: 0,
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
+    },
+    generatedDocument: {
+        // margin: 1,
+        width: '100%',
     },
     genericMessageWrapper: {
         margin: theme.spacing(2),
@@ -137,6 +152,10 @@ const styles = (theme) => ({
     listItemRoot: {
         minWidth: 30,
     },
+    formcontrol: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
 });
 
 /**
@@ -149,136 +168,192 @@ function DocList(props) {
     const {
         classes, documentList, apiId, selectedDoc,
     } = props;
-    const [selectedIndexA, changeSelectedIndexA] = useState(0);
-    const [selectedIndexB, changeSelectedIndexB] = useState(0);
+    console.log(apiId, documentList);
+    // const [selectedIndexA, changeSelectedIndexA] = useState(0);
+    // const [selectedIndexB, changeSelectedIndexB] = useState(0);
     const [width] = useWindowSize();
     const [showDocList, setShowDocList] = useState(!(width < 1400));
-    const toggleDocList = () => {
-        setShowDocList(!showDocList);
-    };
-    const handleListItemClick = (event, doc) => {
-        const path = `/apis/${apiId}/documents/${doc.documentId}`;
-        props.history.push(path);
-    };
-    const makeActive = () => {
-        let iA = 0;
-        for (const type of documentList) {
-            let iB = 0;
-            for (const doc of type.docs) {
-                if (doc.documentId === selectedDoc.documentId) {
-                    changeSelectedIndexA(iA);
-                    changeSelectedIndexB(iB);
-                }
-                iB++;
-            }
-            iA++;
-        }
-    };
-    useEffect(() => {
-        makeActive();
-    }, [selectedDoc]);
-    useEffect(() => {
-        width < 1400 ? setShowDocList(false) : setShowDocList(true);
-    }, [width]);
-
+    console.log(showDocList);
+    // const toggleDocList = () => {
+    //     setShowDocList(!showDocList);
+    // };
+    // const handleListItemClick = (event, doc) => {
+    //     const path = `/apis/${apiId}/documents/${doc.documentId}`;
+    //     props.history.push(path);
+    // };
+    // const makeActive = () => {
+    //     let iA = 0;
+    //     for (const type of documentList) {
+    //         let iB = 0;
+    //         for (const doc of type.docs) {
+    //             if (doc.documentId === selectedDoc.documentId) {
+    //                 changeSelectedIndexA(iA);
+    //                 changeSelectedIndexB(iB);
+    //             }
+    //             iB++;
+    //         }
+    //         iA++;
+    //     }
+    // };
+    // useEffect(() => {
+    //     makeActive();
+    // }, [selectedDoc]);
+    // useEffect(() => {
+    //     width < 1400 ? setShowDocList(false) : setShowDocList(true);
+    // }, [width]);
+    const top100Films = [
+        { title: 'The Shawshank Redemption', year: 1994 },
+        { title: 'The Godfather', year: 1972 },
+        { title: 'The Godfather: Part II', year: 1974 },
+        { title: 'The Dark Knight', year: 2008 },
+        { title: '12 Angry Men', year: 1957 },
+        { title: "Schindler's List", year: 1993 },
+        { title: 'Pulp Fiction', year: 1994 },
+        {
+            title: 'The Lord of the Rings: The Return of the King',
+            year: 2003,
+        },
+        { title: 'The Good, the Bad and the Ugly', year: 1966 },
+        { title: 'Fight Club', year: 1999 },
+        {
+            title: 'The Lord of the Rings: The Fellowship of the Ring',
+            year: 2001,
+        },
+        {
+            title: 'Star Wars: Episode V - The Empire Strikes Back',
+            year: 1980,
+        },
+        { title: 'Forrest Gump', year: 1994 },
+        { title: 'Inception', year: 2010 },
+        {
+            title: 'The Lord of the Rings: The Two Towers',
+            year: 2002,
+        },
+        { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
+        { title: 'Goodfellas', year: 1990 },
+        { title: 'The Matrix', year: 1999 },
+        { title: 'Seven Samurai', year: 1954 },
+        {
+            title: 'Star Wars: Episode IV - A New Hope',
+            year: 1977,
+        },
+        { title: 'City of God', year: 2002 },
+        { title: 'Se7en', year: 1995 },
+        { title: 'The Silence of the Lambs', year: 1991 },
+        { title: "It's a Wonderful Life", year: 1946 },
+        { title: 'Life Is Beautiful', year: 1997 },
+        { title: 'The Usual Suspects', year: 1995 },
+        { title: 'Léon: The Professional', year: 1994 },
+        { title: 'Spirited Away', year: 2001 },
+        { title: 'Saving Private Ryan', year: 1998 },
+        { title: 'Once Upon a Time in the West', year: 1968 },
+        { title: 'American History X', year: 1998 },
+        { title: 'Interstellar', year: 2014 },
+        { title: 'Casablanca', year: 1942 },
+        { title: 'City Lights', year: 1931 },
+        { title: 'Psycho', year: 1960 },
+        { title: 'The Green Mile', year: 1999 },
+        { title: 'The Intouchables', year: 2011 },
+        { title: 'Modern Times', year: 1936 },
+        { title: 'Raiders of the Lost Ark', year: 1981 },
+        { title: 'Rear Window', year: 1954 },
+        { title: 'The Pianist', year: 2002 },
+        { title: 'The Departed', year: 2006 },
+        { title: 'Terminator 2: Judgment Day', year: 1991 },
+        { title: 'Back to the Future', year: 1985 },
+        { title: 'Whiplash', year: 2014 },
+        { title: 'Gladiator', year: 2000 },
+        { title: 'Memento', year: 2000 },
+        { title: 'The Prestige', year: 2006 },
+        { title: 'The Lion King', year: 1994 },
+        { title: 'Apocalypse Now', year: 1979 },
+        { title: 'Alien', year: 1979 },
+        { title: 'Sunset Boulevard', year: 1950 },
+        {
+            title: 'Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb',
+            year: 1964,
+        },
+        { title: 'The Great Dictator', year: 1940 },
+        { title: 'Cinema Paradiso', year: 1988 },
+        { title: 'The Lives of Others', year: 2006 },
+        { title: 'Grave of the Fireflies', year: 1988 },
+        { title: 'Paths of Glory', year: 1957 },
+        { title: 'Django Unchained', year: 2012 },
+        { title: 'The Shining', year: 1980 },
+        { title: 'WALL·E', year: 2008 },
+        { title: 'American Beauty', year: 1999 },
+        { title: 'The Dark Knight Rises', year: 2012 },
+        { title: 'Princess Mononoke', year: 1997 },
+        { title: 'Aliens', year: 1986 },
+        { title: 'Oldboy', year: 2003 },
+        { title: 'Once Upon a Time in America', year: 1984 },
+        { title: 'Witness for the Prosecution', year: 1957 },
+        { title: 'Das Boot', year: 1981 },
+        { title: 'Citizen Kane', year: 1941 },
+        { title: 'North by Northwest', year: 1959 },
+        { title: 'Vertigo', year: 1958 },
+        {
+            title: 'Star Wars: Episode VI - Return of the Jedi',
+            year: 1983,
+        },
+        { title: 'Reservoir Dogs', year: 1992 },
+        { title: 'Braveheart', year: 1995 },
+        { title: 'M', year: 1931 },
+        { title: 'Requiem for a Dream', year: 2000 },
+        { title: 'Amélie', year: 2001 },
+        { title: 'A Clockwork Orange', year: 1971 },
+        { title: 'Like Stars on Earth', year: 2007 },
+        { title: 'Taxi Driver', year: 1976 },
+        { title: 'Lawrence of Arabia', year: 1962 },
+        { title: 'Double Indemnity', year: 1944 },
+        {
+            title: 'Eternal Sunshine of the Spotless Mind',
+            year: 2004,
+        },
+        { title: 'Amadeus', year: 1984 },
+        { title: 'To Kill a Mockingbird', year: 1962 },
+        { title: 'Toy Story 3', year: 2010 },
+        { title: 'Logan', year: 2017 },
+        { title: 'Full Metal Jacket', year: 1987 },
+        { title: 'Dangal', year: 2016 },
+        { title: 'The Sting', year: 1973 },
+        { title: '2001: A Space Odyssey', year: 1968 },
+        { title: "Singin' in the Rain", year: 1952 },
+        { title: 'Toy Story', year: 1995 },
+        { title: 'Bicycle Thieves', year: 1948 },
+        { title: 'The Kid', year: 1921 },
+        { title: 'Inglourious Basterds', year: 2009 },
+        { title: 'Snatch', year: 2000 },
+        { title: '3 Idiots', year: 2009 },
+        { title: 'Monty Python and the Holy Grail', year: 1975 },
+    ];
+    console.log(selectedDoc, setShowDocList);
+    const options = top100Films.map((option) => {
+        const firstLetter = option.title[0].toUpperCase();
+        return {
+            firstLetter: /[0-9]/.test(firstLetter) ? '0-9' : firstLetter,
+            ...option,
+        };
+    });
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
-                <FormattedMessage id='Apis.Details.Documents.Documentation.title' defaultMessage='API Documentation' />
+                <FormattedMessage
+                    className={classes.apiDocTitle}
+                    id='Apis.Details.Documents.Documentation.title'
+                    defaultMessage='API Documentation'
+                />
+                <Autocomplete
+                    id='document-autocomplete'
+                    className={classes.autocomplete}
+                    options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
+                    groupBy={(option) => option.firstLetter}
+                    getOptionLabel={(option) => option.title}
+                    renderInput={(params) => <TextField {...params} label='Select a Document to View' />}
+                />
             </Typography>
-            <div className={classes.docContainer}>
-                {showDocList && (
-                    <div className={classes.docListWrapper}>
-                        <div className={classes.paperMenu}>
-                            <List component='nav' className={classes.listRoot}>
-                                {documentList.map((type, indexA) => (
-                                    <React.Fragment key={indexA}>
-                                        <ListItem component='div' className={classes.parentListItem}>
-                                            <ListItemIcon classes={{ root: classes.listItemRoot }}>
-                                                <CustomIcon strokeColor='#444' width={24} height={24} icon='docs' />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={type.docType}
-                                                classes={{ root: classes.typeText }}
-                                            />
-                                        </ListItem>
-                                        {type.docs.length > 0 && (
-                                            <List component='div' className={classes.childList}>
-                                                {type.docs.map((doc, indexB) => (
-                                                    <ListItem
-                                                        button
-                                                        className={classes.nested}
-                                                        classes={{
-                                                            selected: classes.selected,
-                                                        }}
-                                                        selected={
-                                                            selectedIndexA === indexA && selectedIndexB === indexB
-                                                        }
-                                                        onClick={(event) => handleListItemClick(event, doc)}
-                                                        key={indexB}
-                                                    >
-                                                        <ListItemIcon classes={{ root: classes.listItemRoot }}>
-                                                            <>
-                                                                {doc.sourceType === 'MARKDOWN' && <Icon>code</Icon>}
-                                                                {doc.sourceType === 'INLINE' && (
-                                                                    <Icon>description</Icon>
-                                                                )}
-                                                                {doc.sourceType === 'URL' && <Icon>open_in_new</Icon>}
-                                                                {doc.sourceType === 'FILE' && (
-                                                                    <Icon>arrow_downward</Icon>
-                                                                )}
-                                                            </>
-                                                        </ListItemIcon>
-                                                        <ListItemText
-                                                            inset
-                                                            primary={doc.name}
-                                                            classes={{ root: classes.docLinkRoot }}
-                                                            aria-label={'View ' + doc.name + ' document'}
-                                                        />
-                                                    </ListItem>
-                                                ))}
-                                            </List>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </List>
-                        </div>
-                    </div>
-                )}
-                <div className={classes.toggleWrapper}>
-                    <Button
-                        className={classes.toggler}
-                        onClick={toggleDocList}
-                        aria-label='Toggle the document list'
-                    >
-                        <div className={classes.togglerTextParent}>
-                            <div className={classes.togglerText}>
-                                {showDocList ? (
-                                    <FormattedMessage
-                                        id='Apis.Details.Documents.Documentation.hide'
-                                        defaultMessage='HIDE'
-                                    />
-                                ) : (
-                                    <FormattedMessage
-                                        id='Apis.Details.Documents.Documentation.show'
-                                        defaultMessage='SHOW'
-                                    />
-                                )}
-                            </div>
-                        </div>
-                        {showDocList ? <Icon>keyboard_arrow_left</Icon> : <Icon>keyboard_arrow_right</Icon>}
-                    </Button>
-                </div>
-                <div className={classes.docView}>
-                    { selectedDoc && <GenerateDocument /> }
-                    {/* api.type=='HTTP' ? <GenerateDocument/> : (
-                        <Details
-                            documentList={documentList}
-                            selectedDoc={selectedDoc}
-                            apiId={apiId}
-                        />
-                    )} */}
-                </div>
+            <div className={classes.generatedDocument}>
+                <GenerateDocument />
             </div>
         </>
     );

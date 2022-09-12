@@ -16,11 +16,12 @@
  * under the License.
  */
 
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
-import '@stoplight/elements/styles.min.css';
+//Manually imported.....
+import './elements.css';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';
@@ -32,7 +33,8 @@ const styles = theme =>({
     // },
 });
 
-function GenerateDocument(){
+function GenerateDocument(props){
+    const { classes } = props;
     const [api, updateAPI] = useAPI();
     const [swagger, updateSwagger] = useState("");
     let promisedApi = api.getSwagger(api.id);
@@ -52,11 +54,23 @@ function GenerateDocument(){
             }
         });
 
+    // useEffect(()=> {
+    //     import('@stoplight/elements/styles.min.css');
+    // }, []);
+
+    // useEffect( () => {
+    //     return () => { 
+    //         removeImport('@stoplight/elements/styles.min.css');
+    //     }
+    // }, []);
+
+
     return(
-        <div>
+        <div className={classes.apim_elements}>
             <API
                 apiDescriptionDocument={swagger}
-                hideTryIt="true"
+                hideTryIt='true'
+                router='memory'
             />
         </div>
         
@@ -64,4 +78,3 @@ function GenerateDocument(){
 }
 
 export default injectIntl(withStyles(styles)(GenerateDocument));
-//  injectIntl(withStyles(styles)(GenerateDocument));
