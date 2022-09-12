@@ -66,6 +66,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
             {/* General details of policy */}
             <GeneralDetails
                 displayName={policySpec.displayName}
+                version={policySpec.version}
                 description={policySpec.description}
                 applicableFlows={policySpec.applicableFlows}
                 isViewMode
