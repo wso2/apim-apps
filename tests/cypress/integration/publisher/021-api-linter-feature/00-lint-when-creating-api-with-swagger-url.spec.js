@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("Create api with swagger file super tenant", () => {
+describe("Lint when creating API with swagger URL", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -28,7 +28,7 @@ describe("Create api with swagger file super tenant", () => {
         cy.loginToPublisher(publisher, password);
     });
 
-    it("Import API from swagger url", () => {
+    it("Lint when creating API with swagger URL", () => {
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
         // select the option from the menu item
         cy.get('#itest-rest-api-create-menu').click();

@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("Lint when editing before import", () => {
+describe("Lint when importing API with errounous swagger file", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -30,7 +30,7 @@ describe("Lint when editing before import", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Lint when editing before import", () => {
+    it.only("Lint when importing API with errounous swagger file", () => {
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('#itest-api-details-api-config-acc').click();
         cy.get('#left-menu-itemAPIdefinition').click();
@@ -39,14 +39,12 @@ describe("Lint when editing before import", () => {
 
         // upload the swagger
         cy.get('#browse-to-upload-btn').then(function () {
-            const filepath = 'api_artifacts/petstore_open_api_3.json'
+            const filepath = 'api_artifacts/errornous_petstore_open_api_3.json'
             cy.get('input[type="file"]').attachFile(filepath);
         });
 
         // check linter results
-        cy.get('#import-before-edit-btn').click();
-        cy.get('[data-testid="testid-linter-ui"]').should('be.visible');
-        
+        cy.get('[data-testid="itest-id-linter-results"]').should('be.visible');
 
     });
 

@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("Create api with swagger file super tenant", () => {
+describe("Lint when creating API with swagger file", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -28,7 +28,7 @@ describe("Create api with swagger file super tenant", () => {
         cy.loginToPublisher(publisher, password);
     });
 
-    it("Import API from swagger file", () => {
+    it("Lint when creating API with swagger file", () => {
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
         // select the option from the menu item
         cy.get('#itest-rest-api-create-menu').click();
@@ -37,7 +37,7 @@ describe("Create api with swagger file super tenant", () => {
 
         // upload the swagger
         cy.get('#browse-to-upload-btn').then(function () {
-            const filepath = `api_artifacts/swagger_2.0.json`
+            const filepath = `api_artifacts/petstore_open_api_3.json`
             cy.get('input[type="file"]').attachFile(filepath)            
         });
         

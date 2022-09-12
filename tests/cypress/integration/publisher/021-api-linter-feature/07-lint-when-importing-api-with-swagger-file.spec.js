@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("Upload api spec from the api definition page", () => {
+describe("Lint when importing API with swagger file", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
@@ -30,17 +30,18 @@ describe("Upload api spec from the api definition page", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Upload api spec from the api definition page", () => {
+    it.only("Lint when importing API with swagger file", () => {
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('#itest-api-details-api-config-acc').click();
         cy.get('#left-menu-itemAPIdefinition').click();
         cy.get('#import-definition-btn').click();
-        cy.get('#open-api-url-select-radio').click();
+        cy.get('#open-api-file-select-radio').click();
 
-        // provide the swagger url
-        cy.get('[data-testid="swagger-url-endpoint"]').type('https://petstore3.swagger.io/api/v3/openapi.json');
-        // go to the next step
-        cy.get('#url-validated', { timeout: 30000 });
+        // upload the swagger
+        cy.get('#browse-to-upload-btn').then(function () {
+            const filepath = 'api_artifacts/petstore_open_api_3.json'
+            cy.get('input[type="file"]').attachFile(filepath);
+        });
 
         // check linter results
         cy.get('[data-testid="itest-id-linter-results"]').should('be.visible');

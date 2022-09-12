@@ -16,46 +16,39 @@
 
 import Utils from "@support/utils";
 
-describe("Lint when editing before import", () => {
+describe("Lint when creating API with swagger URL", () => {
     const publisher = 'publisher';
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
-    const apiName = 'newapi' + Math.floor(Date.now() / 1000);
-    const apiVersion = '1.0.0';
-
+    
     before(function () {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
-    })
+    });
 
-    it.only("Lint when editing before import", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
-        cy.get('#itest-api-details-api-config-acc').click();
-        cy.get('#left-menu-itemAPIdefinition').click();
-        cy.get('#import-definition-btn').click();
-        cy.get('#open-api-file-select-radio').click();
+    it("Lint when creating API with swagger URL", () => {
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        // select the option from the menu item
+        cy.get('#itest-rest-api-create-menu').click();
+        cy.get('#itest-id-landing-upload-oas').click();
+        cy.get('#open-api-url-select-radio').click();
 
-        // upload the swagger
-        cy.get('#browse-to-upload-btn').then(function () {
-            const filepath = 'api_artifacts/petstore_open_api_3.json'
-            cy.get('input[type="file"]').attachFile(filepath);
-        });
-
-        // check linter results
-        cy.get('#import-before-edit-btn').click();
-        cy.get('[data-testid="testid-linter-ui"]').should('be.visible');
+        // provide the swagger url
+        cy.get('[data-testid="swagger-url-endpoint"]').type('https://petstore.swagger.io/v2/swagger.json');
+        // go to the next step
+        cy.get('#url-validated', { timeout: 30000 });
         
-
+        // check linter results
+        cy.get('[data-testid="itest-id-linter-results"]').should('be.visible');
+        
     });
 
     after(function () {
         cy.logoutFromPublisher();
-        // Test is done. Now delete the api
-        cy.deleteApi(apiName, apiVersion);
-
+        // delete user
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
         cy.deleteUser(publisher);
     })
-});
+})
