@@ -37,7 +37,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 // import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import useWindowSize from 'AppComponents/Shared/UseWindowSize';
 // import Details from 'AppComponents/Apis/Details/Documents/Details';
-import GenerateDocument from './GenerateDocument';
+// import GenerateDocument from './GenerateDocument';
 
 const styles = (theme) => ({
     apiDocTitle: {
@@ -168,12 +168,12 @@ function DocList(props) {
     const {
         classes, documentList, apiId, selectedDoc,
     } = props;
-    console.log(apiId, documentList);
+    console.log(documentList);
     // const [selectedIndexA, changeSelectedIndexA] = useState(0);
     // const [selectedIndexB, changeSelectedIndexB] = useState(0);
     const [width] = useWindowSize();
     const [showDocList, setShowDocList] = useState(!(width < 1400));
-    console.log(showDocList);
+    console.log(apiId, showDocList);
     // const toggleDocList = () => {
     //     setShowDocList(!showDocList);
     // };
@@ -328,13 +328,31 @@ function DocList(props) {
         { title: 'Monty Python and the Holy Grail', year: 1975 },
     ];
     console.log(selectedDoc, setShowDocList);
-    const options = top100Films.map((option) => {
+    const options2 = top100Films.map((option) => {
         const firstLetter = option.title[0].toUpperCase();
         return {
             firstLetter: /[0-9]/.test(firstLetter) ? '0-9' : firstLetter,
             ...option,
         };
     });
+    console.log(options2);
+    const documents = [];
+    for (let i = 0; i < documentList.length; i++) {
+        for (let j = 0; j < documentList[i].docs.length; j++) {
+            documents.push(documentList[i].docs[j]);
+        }
+    }
+    // const options2 = documentList.map((docTypes) => {
+    //     const docList = [];
+    //     docList.push(docTypes.docs[0]);
+    //     // for (let i = 0; i < docTypes.docs.length; i++) {
+    //     //     docList.push(docTypes.docs[i]);
+    //     // }
+    //     return docList;
+    // });
+    console.log('Hi');
+    console.log(documents);
+
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -346,15 +364,15 @@ function DocList(props) {
                 <Autocomplete
                     id='document-autocomplete'
                     className={classes.autocomplete}
-                    options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
-                    groupBy={(option) => option.firstLetter}
-                    getOptionLabel={(option) => option.title}
-                    renderInput={(params) => <TextField {...params} label='Select a Document to View' />}
+                    options={documents}
+                    groupBy={(option) => option.type}
+                    getOptionLabel={(option) => option.name}
+                    renderInput={(params) => <TextField {...params} label='More Docs...' />}
                 />
             </Typography>
-            <div className={classes.generatedDocument}>
+            {/* <div className={classes.generatedDocument}>
                 <GenerateDocument />
-            </div>
+            </div> */}
         </>
     );
 }

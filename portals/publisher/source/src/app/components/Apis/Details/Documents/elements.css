@@ -2083,7 +2083,7 @@
     border-left-width: 1px
 }
 
-* {
+.apim_elements * {
     --tw-shadow: 0 0 #0000
 }
 

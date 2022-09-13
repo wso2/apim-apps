@@ -65,20 +65,6 @@ function GenerateDocument(props) {
             }
         });
 
-    // useEffect(()=> {
-    //     import('@stoplight/elements/styles.min.css');
-    // }, []);
-
-    // useEffect( () => {
-    //     return () => {
-    //         removeImport('@stoplight/elements/styles.min.css');
-    //     }
-    // }, []);
-
-    // componentWillUnmount(){
-    //     removeImport('@stoplight/elements/styles.min.css');
-    // }
-
     return (
         <div
             className={classes.generatedDocument}
@@ -89,6 +75,7 @@ function GenerateDocument(props) {
             <API
                 apiDescriptionDocument={swagger}
                 hideTryIt='true'
+                router='memory'
             />
         </div>
     );
