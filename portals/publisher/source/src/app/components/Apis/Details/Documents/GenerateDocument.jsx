@@ -53,13 +53,14 @@ function GenerateDocument(props){
                 doRedirectToLogin();
             }
         });
-
+    console.log(api);
     return(
         <div className={classes.apim_elements}>
             <API
                 apiDescriptionDocument={swagger}
                 hideTryIt='true'
                 router='memory'
+                layout='stacked'
             />
         </div>
         

@@ -26,18 +26,11 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import Button from '@material-ui/core/Button';
-// import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import Icon from '@material-ui/core/Icon';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-// import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import useWindowSize from 'AppComponents/Shared/UseWindowSize';
-// import Details from 'AppComponents/Apis/Details/Documents/Details';
-// import GenerateDocument from './GenerateDocument';
+import Details from 'AppComponents/Apis/Details/Documents/Details';
+import GenerateDocument from './GenerateDocument';
 
 const styles = (theme) => ({
     apiDocTitle: {
@@ -173,7 +166,9 @@ function DocList(props) {
     // const [selectedIndexB, changeSelectedIndexB] = useState(0);
     const [width] = useWindowSize();
     const [showDocList, setShowDocList] = useState(!(width < 1400));
-    const [viewDocument, setViewDocument] = useState()
+    const swaggerDoc = { documentId: 'generatedDoc', name: 'Generated Document', type: 'HOME' };
+    const [viewDocument, setViewDocument] = useState(swaggerDoc);
+    // const [viewDocument, setViewDocument] = useState();
     console.log(apiId, showDocList);
     // const toggleDocList = () => {
     //     setShowDocList(!showDocList);
@@ -202,17 +197,20 @@ function DocList(props) {
     // useEffect(() => {
     //     width < 1400 ? setShowDocList(false) : setShowDocList(true);
     // }, [width]);
-    
+    // useEffect(() => {
+    //     const path = `/apis/${apiId}/documents/${viewDocument.documentId}`;
+    //     props.history.push(path);
+    // }, [viewDocument]);
     console.log(selectedDoc, setShowDocList);
 
     const documents = [];
+    documents.push(swaggerDoc);
     for (let i = 0; i < documentList.length; i++) {
         for (let j = 0; j < documentList[i].docs.length; j++) {
             documents.push(documentList[i].docs[j]);
         }
     }
     console.log(documents);
-
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -227,15 +225,29 @@ function DocList(props) {
                     options={documents}
                     groupBy={(document) => document.type}
                     getOptionLabel={(document) => document.name}
+                    disableClearable
                     renderInput={(params) => <TextField {...params} label='More Docs...' />}
-                    onChange={ ( event , newValue ) => {
-                        setValue(newValue);
+                    onChange={(event, doc) => {
+                        setViewDocument(doc);
+                        console.log(viewDocument);
                     }}
                 />
             </Typography>
             {/* <div className={classes.generatedDocument}>
                 <GenerateDocument />
             </div> */}
+            <div className={classes.docView}>
+                { viewDocument.name === 'Generated Document' && <GenerateDocument /> }
+                { viewDocument.name !== 'Generated Document'
+                && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} /> }
+                {/* //{ viewDocument.name !== 'Generated Document'&&
+                (<Details
+                    documentList={documentList}
+                    selectedDoc={viewDocument}
+                    apiId={apiId}
+                />
+                ) } */}
+            </div>
         </>
     );
 }

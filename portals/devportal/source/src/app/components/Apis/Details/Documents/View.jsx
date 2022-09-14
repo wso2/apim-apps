@@ -188,10 +188,11 @@ function View(props) {
                     }));
                 }
             });
+        console.log(fullScreen);
     };
     return (
         <>
-            {!fullScreen && <div className={classes.docBadge}>{doc.type}</div>}
+            {/* {!fullScreen && <div className={classes.docBadge}>{doc.name}</div>} */}
 
             {(doc.summary && doc.otherTypeName !== '_overview') && (
                 <Typography variant='body1' className={classes.docSummary}>

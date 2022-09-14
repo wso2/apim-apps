@@ -44,9 +44,11 @@ function GenerateDocument(props) {
     const { classes } = props;
     const { api } = useContext(ApiContext);
     const [swagger, updateSwagger] = useState('');
+    console.log(swagger);
     // const [notFound, updateNotFound] = useState(false);
     const apiClient = new Api();
     const promisedApi = apiClient.getSwaggerByAPIId(api.id);
+    console.log(api);
     promisedApi
         .then((response) => {
             updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
@@ -76,6 +78,7 @@ function GenerateDocument(props) {
                 apiDescriptionDocument={swagger}
                 hideTryIt='true'
                 router='memory'
+                layout='stacked'
             />
         </div>
     );
