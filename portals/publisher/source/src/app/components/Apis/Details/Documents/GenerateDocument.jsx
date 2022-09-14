@@ -21,7 +21,7 @@ import { injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
 //Manually imported.....
-import './elements2.css';
+import './elements.css';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';
@@ -53,17 +53,6 @@ function GenerateDocument(props){
                 doRedirectToLogin();
             }
         });
-
-    // useEffect(()=> {
-    //     import('@stoplight/elements/styles.min.css');
-    // }, []);
-
-    // useEffect( () => {
-    //     return () => { 
-    //         removeImport('@stoplight/elements/styles.min.css');
-    //     }
-    // }, []);
-
 
     return(
         <div className={classes.apim_elements}>
