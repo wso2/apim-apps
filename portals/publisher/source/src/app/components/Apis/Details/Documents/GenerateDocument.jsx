@@ -21,7 +21,7 @@ import { injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
 //Manually imported.....
-import './elements.css';
+import './elements2.css';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';

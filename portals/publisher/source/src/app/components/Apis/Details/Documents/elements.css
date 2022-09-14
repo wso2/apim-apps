@@ -12240,115 +12240,115 @@
     cursor: not-allowed
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--1>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--1>:not(style)~:not(style) {
     margin-left: 4px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--2>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--2>:not(style)~:not(style) {
     margin-left: 8px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--3>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--3>:not(style)~:not(style) {
     margin-left: 12px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--4>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--4>:not(style)~:not(style) {
     margin-left: 16px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--5>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--5>:not(style)~:not(style) {
     margin-left: 20px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--6>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--6>:not(style)~:not(style) {
     margin-left: 24px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--8>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--8>:not(style)~:not(style) {
     margin-left: 32px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--10>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--10>:not(style)~:not(style) {
     margin-left: 40px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--12>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--12>:not(style)~:not(style) {
     margin-left: 48px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--14>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--14>:not(style)~:not(style) {
     margin-left: 56px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--16>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--16>:not(style)~:not(style) {
     margin-left: 64px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--20>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--20>:not(style)~:not(style) {
     margin-left: 80px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--24>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--24>:not(style)~:not(style) {
     margin-left: 96px
 }
 
-.apim_elements .sl-stack--horizonta .sl-stack--32>:not(style)~:not(style) {
+.apim_elements .sl-stack--horizontal .sl-stack--32>:not(style)~:not(style) {
     margin-left: 128px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--1>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--1>:not(style)~:not(style) {
     margin-top: 4px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--2>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--2>:not(style)~:not(style) {
     margin-top: 8px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--3>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--3>:not(style)~:not(style) {
     margin-top: 12px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--4>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--4>:not(style)~:not(style) {
     margin-top: 16px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--5>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--5>:not(style)~:not(style) {
     margin-top: 20px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--6>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--6>:not(style)~:not(style) {
     margin-top: 24px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--8>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--8>:not(style)~:not(style) {
     margin-top: 32px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--10>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--10>:not(style)~:not(style) {
     margin-top: 40px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--12>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--12>:not(style)~:not(style) {
     margin-top: 48px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--14>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--14>:not(style)~:not(style) {
     margin-top: 56px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--16>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--16>:not(style)~:not(style) {
     margin-top: 64px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--20>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--20>:not(style)~:not(style) {
     margin-top: 80px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--24>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--24>:not(style)~:not(style) {
     margin-top: 96px
 }
 
-.apim_elements .sl-stack--vertica .sl-stack--32>:not(style)~:not(style) {
+.apim_elements .sl-stack--vertical .sl-stack--32>:not(style)~:not(style) {
     margin-top: 128px
 }
 
@@ -12604,9 +12604,9 @@
     color: var(--color-text)
 }
 
-[data-theme=dark],
-[data-theme=dark] .sl-inverted .sl-inverted,
-[data-theme=dark] .sl-inverted .sl-inverted .sl-inverted .sl-inverted {
+.apim_elements [data-theme=dark],
+.apim_elements [data-theme=dark] .sl-inverted .sl-inverted,
+.apim_elements [data-theme=dark] .sl-inverted .sl-inverted .sl-inverted .sl-inverted {
     --text-h: 0;
     --text-s: 0%;
     --text-l: 85%;

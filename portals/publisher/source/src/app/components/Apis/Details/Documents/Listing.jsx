@@ -199,16 +199,6 @@ class Listing extends React.Component {
                 documentList.sort(getSortOrder('name'));
                 console.log(documentList);
                 console.log(this.props.api);
-                // if(this.props.api.type=='HTTP' || this.props.api.type=='HTTPS'){
-                //     let generatedDocument = { 
-                //         // 'documentId': "17928123-e3ca-4d21-943f-a88cfe1f91ca",
-                //         'name': this.props.api.name + '_SwaggerDoc',
-                //         'sourceType': "GENERATED",
-                //         'type' : "HOWTO",
-                //         'visibility' : "API_LEVEL",
-                //     };
-                //     documentList.unshift(generatedDocument);
-                // }
                 this.setState({ docs: documentList });
             }).catch((errorResponse) => {
                 const errorData = JSON.parse(errorResponse.message);
@@ -559,18 +549,6 @@ class Listing extends React.Component {
                                             apiId={this.apiId}
                                             api
                                             className={classes.genDocumentButton}
-                                        />
-
-                                        <FormControlLabel
-                                            control={
-                                            <Switch
-                                                checked='true'
-                                                // onChange={handleChange}
-                                                name="showGeneratedDocument"
-                                                color="Primary"
-                                            />
-                                            }
-                                            label="Show in DevPortal"
                                         />
                                     </div>
                                 </ExpansionPanelDetails>
