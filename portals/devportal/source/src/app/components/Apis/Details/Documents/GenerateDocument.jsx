@@ -29,10 +29,7 @@ const styles = () => ({
     generatedDocument: {
         width: '100%',
         margin: 50,
-        marginRight: 100,
-    },
-    apim_elements: {
-        marginRight: 32,
+        paddingRight: 100,
     },
 });
 

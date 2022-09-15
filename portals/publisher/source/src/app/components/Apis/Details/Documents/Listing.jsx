@@ -512,8 +512,8 @@ class Listing extends React.Component {
 
                     {api.type=='HTTP' && (
                         <React.Fragment>
-                            <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded='false'>
-                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded>
+                                <ExpansionPanelSummary>
                                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                                         <FormattedMessage
                                             id='Apis.Details.Documents.Listing.documents.generated.title'
@@ -540,7 +540,7 @@ class Listing extends React.Component {
                     {api.type=='HTTP' && docs && docs.length > 0 && (
                         <React.Fragment>
                             <WrappedExpansionPanel className={classes.expansionPanel}>
-                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                <ExpansionPanelSummary>
                                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                                         <FormattedMessage
                                             id='Apis.Details.Documents.Listing.documents.uploaded.title'
