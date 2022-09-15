@@ -37,6 +37,9 @@ const styles = () => ({
         width: '100%',
         margin: 50,
     },
+    apim_elements: {
+        marginRight: 32,
+    },
 });
 
 function GenerateDocument(props) {
@@ -75,6 +78,7 @@ function GenerateDocument(props) {
             // }}}
         >
             <API
+                className={classes.apim_elements}
                 apiDescriptionDocument={swagger}
                 hideTryIt='true'
                 router='memory'

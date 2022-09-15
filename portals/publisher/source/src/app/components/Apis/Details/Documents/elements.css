@@ -1,3 +1,7 @@
+.apim_elements {
+    margin: 32px;
+}
+
 .apim_elements blockquote,
 .apim_elements dd,
 .apim_elements dl,
@@ -12832,3 +12836,4 @@
     font-size: 12px;
     line-height: 1.5em
 }
+
