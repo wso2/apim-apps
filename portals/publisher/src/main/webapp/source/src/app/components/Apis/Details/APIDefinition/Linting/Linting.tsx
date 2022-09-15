@@ -12,6 +12,7 @@
  * associated services.
  */
 
+import React from 'react';
 import API from 'AppData/api.js';
 import {
     Spectral,
