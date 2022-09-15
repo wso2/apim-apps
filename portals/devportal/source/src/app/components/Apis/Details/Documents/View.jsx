@@ -192,8 +192,6 @@ function View(props) {
     };
     return (
         <>
-            {/* {!fullScreen && <div className={classes.docBadge}>{doc.name}</div>} */}
-
             {(doc.summary && doc.otherTypeName !== '_overview') && (
                 <Typography variant='body1' className={classes.docSummary}>
                     {doc.summary}

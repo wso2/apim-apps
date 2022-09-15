@@ -537,7 +537,6 @@ class Details extends React.Component {
                             />
                         )}
                         {showComments && (
-
                             <LeftMenuItem
                                 text={(
                                     <FormattedMessage
@@ -554,7 +553,6 @@ class Details extends React.Component {
 
                         )}
                         {showDocuments && (
-
                             <LeftMenuItem
                                 text={(
                                     <FormattedMessage
@@ -570,7 +568,6 @@ class Details extends React.Component {
 
                         )}
                         {!isAsyncApi && showSdks && (
-
                             <LeftMenuItem
                                 text={<FormattedMessage id='Apis.Details.index.sdk' defaultMessage='SDKs' />}
                                 route='sdk'
@@ -606,7 +603,6 @@ class Details extends React.Component {
 
                     </nav>
                 )}
-
                 <div
                     className={classNames(
                         { [classes.content]: open },

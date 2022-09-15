@@ -20,12 +20,11 @@ import React, { useState, useEffect } from 'react';
 import { injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
-//Manually imported.....
+// Manually imported from stoplightio/elements and wrapped in 'apim_elements' class
 import './elements.css';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';
-
 
 const styles = theme =>({
     // a[href*="stoplight.io"] : {
@@ -53,7 +52,6 @@ function GenerateDocument(props){
                 doRedirectToLogin();
             }
         });
-    console.log(api);
     return(
         <div className={classes.apim_elements}>
             <API

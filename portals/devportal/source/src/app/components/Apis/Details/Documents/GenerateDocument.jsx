@@ -22,20 +22,14 @@ import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
 import '@stoplight/elements/styles.min.css';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-// import RedirectToLogin from 'AppComponents/Login/RedirectToLogin';
 import YAML from 'js-yaml';
 import Api from 'AppData/api';
-
-// const styles = theme =>({
-//     // a[href*="stoplight.io"] : {
-//     //     visibility: hidden,
-//     // },
-// });
 
 const styles = () => ({
     generatedDocument: {
         width: '100%',
         margin: 50,
+        marginRight: 100,
     },
     apim_elements: {
         marginRight: 32,
@@ -43,12 +37,10 @@ const styles = () => ({
 });
 
 function GenerateDocument(props) {
-    // const elementStyles = lazy(()=> import('@stoplight/elements/styles.min.css'));
     const { classes } = props;
     const { api } = useContext(ApiContext);
     const [swagger, updateSwagger] = useState('');
     console.log(swagger);
-    // const [notFound, updateNotFound] = useState(false);
     const apiClient = new Api();
     const promisedApi = apiClient.getSwaggerByAPIId(api.id);
     console.log(api);
@@ -62,10 +54,8 @@ function GenerateDocument(props) {
             }
             const { status } = error;
             if (status === 404) {
-                // updateNotFound(true);
                 console.log('Swagger not found');
             } else if (status === 401) {
-                // return <RedirectToLogin {...localProps}
                 console.log('Auth failed');
             }
         });
@@ -73,9 +63,6 @@ function GenerateDocument(props) {
     return (
         <div
             className={classes.generatedDocument}
-            // style={{a[href*="stoplight.io"] : {
-            //     visibility: hidden,
-            // }}}
         >
             <API
                 className={classes.apim_elements}

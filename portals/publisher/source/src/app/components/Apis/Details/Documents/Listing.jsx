@@ -28,8 +28,6 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddCircle from '@material-ui/icons/AddCircle';
 import Icon from '@material-ui/core/Icon';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -46,7 +44,6 @@ import Delete from './Delete';
 import DeleteMultiple from './DeleteMultiple';
 import Download from './Download';
 import ViewDocument from './ViewDocument';
-
 
 const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "ListingTextEditor" */));
 
@@ -130,7 +127,6 @@ const styles = theme => ({
     },
 });
  
-
 function LinkGenerator(props) {
     return props.apiType === 'APIProduct' ? (
         <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
@@ -138,6 +134,7 @@ function LinkGenerator(props) {
         <Link to={'/apis/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
     );
 }
+
 class Listing extends React.Component {
     constructor(props) {
         super(props);
@@ -461,22 +458,6 @@ class Listing extends React.Component {
                                         </tr>
                                     </table>
                                 );
-                            } else if (sourceType === 'GENERATED') {
-                                return (
-                                    <table className={classes.actionTable}>
-                                        <tr>
-                                            <td>
-                                                {/* <ViewDocument
-                                                    cla
-                                                    docName={docName}
-                                                    apiType={api.apiType}
-                                                    apiId={this.apiId}
-                                                    api
-                                                /> */}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                );
                             } else {
                                 return <span />;
                             }
@@ -558,7 +539,7 @@ class Listing extends React.Component {
 
                     {api.type=='HTTP' && docs && docs.length > 0 && (
                         <React.Fragment>
-                            <WrappedExpansionPanel className={classes.expansionPanel} id='transportLevel'>
+                            <WrappedExpansionPanel className={classes.expansionPanel}>
                                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                                         <FormattedMessage
@@ -571,14 +552,6 @@ class Listing extends React.Component {
                                     <MUIDataTable title='' data={docs} columns={columns} options={options} />
                                 </ExpansionPanelDetails>
                             </WrappedExpansionPanel>
-                            
-                            {/* <Typography id='itest-api-details-documents-uploaded-title' variant='h5' component='h3' className={classes.head}>
-                                <FormattedMessage
-                                    id='Apis.Details.Documents.Listing.documents.uploaded.title'
-                                    defaultMessage='Uploaded Documents'
-                                />
-                            </Typography>
-                            <MUIDataTable title='' data={docs} columns={columns} options={options} /> */}
                         </React.Fragment>
                     )}
                     

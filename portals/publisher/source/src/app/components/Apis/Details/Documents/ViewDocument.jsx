@@ -104,13 +104,6 @@ function ViewDocument(props) {
                         <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
                             <Icon>close</Icon>
                         </IconButton>
-                        {/* <Typography variant='h4'>
-                            <FormattedMessage
-                                id='Apis.Details.Documents.view.generated.document'
-                                defaultMessage={docName}
-                                // {props.docName}
-                            />
-                        </Typography> */}
                 </Paper>
                 <div className='apim_elements'><GenerateDocument /></div>
                 
@@ -121,14 +114,7 @@ function ViewDocument(props) {
 ViewDocument.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     apiId: PropTypes.shape({}).isRequired,
-    // docId: PropTypes.shape({}).isRequired,
-    // getDocumentsList: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
-    // api: PropTypes.shape({
-    //     id: PropTypes.string,
-    //     apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]),
-    // }).isRequired,
 };
 
-// export default ViewDocument;
 export default injectIntl(withStyles(styles)(ViewDocument));

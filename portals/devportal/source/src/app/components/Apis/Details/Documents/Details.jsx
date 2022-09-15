@@ -58,11 +58,9 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX} Returning JSX to render.
  */
 export default function Details(props) {
-    // const restApi = new API();
     const { apiId, selectedDoc } = props;
     const classes = useStyles();
     const [open, setOpen] = useState(false);
-    // const [doc, setDoc] = useState(null);
     const toggleOpen = () => {
         setOpen(!open);
     };

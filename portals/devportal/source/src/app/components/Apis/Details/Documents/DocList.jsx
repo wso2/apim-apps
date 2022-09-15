@@ -157,52 +157,16 @@ const styles = (theme) => ({
  * @returns {JSX} The sum of the two numbers.
  */
 function DocList(props) {
-    // const { api } = useContext(ApiContext);
     const {
         classes, documentList, apiId, selectedDoc,
     } = props;
     console.log(documentList);
-    // const [selectedIndexA, changeSelectedIndexA] = useState(0);
-    // const [selectedIndexB, changeSelectedIndexB] = useState(0);
     const [width] = useWindowSize();
     const [showDocList, setShowDocList] = useState(!(width < 1400));
     const swaggerDoc = { documentId: 'generatedDoc', name: 'Generated Document', type: 'HOME' };
     const [viewDocument, setViewDocument] = useState(swaggerDoc);
-    // const [viewDocument, setViewDocument] = useState();
     console.log(apiId, showDocList);
-    // const toggleDocList = () => {
-    //     setShowDocList(!showDocList);
-    // };
-    // const handleListItemClick = (event, doc) => {
-    //     const path = `/apis/${apiId}/documents/${doc.documentId}`;
-    //     props.history.push(path);
-    // };
-    // const makeActive = () => {
-    //     let iA = 0;
-    //     for (const type of documentList) {
-    //         let iB = 0;
-    //         for (const doc of type.docs) {
-    //             if (doc.documentId === selectedDoc.documentId) {
-    //                 changeSelectedIndexA(iA);
-    //                 changeSelectedIndexB(iB);
-    //             }
-    //             iB++;
-    //         }
-    //         iA++;
-    //     }
-    // };
-    // useEffect(() => {
-    //     makeActive();
-    // }, [selectedDoc]);
-    // useEffect(() => {
-    //     width < 1400 ? setShowDocList(false) : setShowDocList(true);
-    // }, [width]);
-    // useEffect(() => {
-    //     const path = `/apis/${apiId}/documents/${viewDocument.documentId}`;
-    //     props.history.push(path);
-    // }, [viewDocument]);
     console.log(selectedDoc, setShowDocList);
-
     const documents = [];
     documents.push(swaggerDoc);
     for (let i = 0; i < documentList.length; i++) {
@@ -233,20 +197,10 @@ function DocList(props) {
                     }}
                 />
             </Typography>
-            {/* <div className={classes.generatedDocument}>
-                <GenerateDocument />
-            </div> */}
             <div className={classes.docView}>
                 { viewDocument.name === 'Generated Document' && <GenerateDocument /> }
                 { viewDocument.name !== 'Generated Document'
                 && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} /> }
-                {/* //{ viewDocument.name !== 'Generated Document'&&
-                (<Details
-                    documentList={documentList}
-                    selectedDoc={viewDocument}
-                    apiId={apiId}
-                />
-                ) } */}
             </div>
         </>
     );

@@ -198,7 +198,7 @@ class Scopes extends React.Component {
                                             </Button>
                                         </td>
                                         <td>
-                                            <Delete scopeName={scopeName}       api={api} isAPIProduct />
+                                            <Delete scopeName={scopeName} api={api} isAPIProduct />
                                         </td>
                                     </tr>
                                 </table>

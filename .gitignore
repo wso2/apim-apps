@@ -5,6 +5,7 @@ target
 .project
 *.iml
 .idea
+.vscode
 .factorypath
 *.DS_Store
 *.war
