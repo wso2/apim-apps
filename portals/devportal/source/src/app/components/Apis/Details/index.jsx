@@ -77,6 +77,7 @@ const LoadableSwitch = withRouter((props) => {
                 <Redirect exact from='/apis/:apiUuid' to={redirectURL} />
                 <Route path='/apis/:apiUuid/overview' render={() => <Overview {...props} />} />
                 <Route path='/apis/:apiUuid/documents' component={Documents} />
+                {/* <Route path='/apis/:apiUuid/documents/:docId?' component={Documents} /> */}
                 <Route path='/apis/:apiUuid/definition' component={AsyncApiDefinition} />
                 <Route path='/apis/:apiUuid/solaceTopicsInfo' component={SolaceTopicsInfo} />
                 <Route exact path='/apis/:apiUuid/credentials/wizard' component={Wizard} />

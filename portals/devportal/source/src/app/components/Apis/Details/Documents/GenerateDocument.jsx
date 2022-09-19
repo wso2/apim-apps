@@ -37,10 +37,8 @@ function GenerateDocument(props) {
     const { classes } = props;
     const { api } = useContext(ApiContext);
     const [swagger, updateSwagger] = useState('');
-    console.log(swagger);
     const apiClient = new Api();
     const promisedApi = apiClient.getSwaggerByAPIId(api.id);
-    console.log(api);
     promisedApi
         .then((response) => {
             updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));

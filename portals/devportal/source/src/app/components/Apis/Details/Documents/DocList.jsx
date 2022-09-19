@@ -19,28 +19,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from 'react';
-// useContext
-// import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import useWindowSize from 'AppComponents/Shared/UseWindowSize';
 import Details from 'AppComponents/Apis/Details/Documents/Details';
 import GenerateDocument from './GenerateDocument';
 
 const styles = (theme) => ({
     apiDocTitle: {
         width: '50%',
+        marginTop: theme.spacing(1),
     },
     autocomplete: {
-        float: 'right',
+        display: 'flex',
         width: 300,
-        paddingBottom: 0,
-        marginRight: 10,
+        padding: 0,
     },
     paper: {
         padding: theme.spacing(2),
@@ -81,6 +79,12 @@ const styles = (theme) => ({
         },
     },
     titleSub: {
+        float: 'left',
+        marginLeft: theme.spacing(2),
+        padding: theme.spacing(2),
+        color: theme.palette.getContrastText(theme.palette.background.default),
+    },
+    selectDocuments: {
         marginLeft: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
@@ -92,7 +96,6 @@ const styles = (theme) => ({
         paddingBottom: theme.spacing(2),
     },
     generatedDocument: {
-        // margin: 1,
         width: '100%',
     },
     genericMessageWrapper: {
@@ -158,15 +161,11 @@ const styles = (theme) => ({
  */
 function DocList(props) {
     const {
-        classes, documentList, apiId, selectedDoc,
+        classes, documentList, apiId,
     } = props;
-    console.log(documentList);
-    const [width] = useWindowSize();
-    const [showDocList, setShowDocList] = useState(!(width < 1400));
-    const swaggerDoc = { documentId: 'generatedDoc', name: 'Generated Document', type: 'HOME' };
+    const { docId } = useParams();
+    const swaggerDoc = { documentId: 'default', name: 'Default', type: '' };
     const [viewDocument, setViewDocument] = useState(swaggerDoc);
-    console.log(apiId, showDocList);
-    console.log(selectedDoc, setShowDocList);
     const documents = [];
     documents.push(swaggerDoc);
     for (let i = 0; i < documentList.length; i++) {
@@ -174,7 +173,18 @@ function DocList(props) {
             documents.push(documentList[i].docs[j]);
         }
     }
-    console.log(documents);
+    console.log(docId);
+    // if (docId !== undefined) {
+    //     for (let i = 0; i < documents.length; i++) {
+    //         if (docId === documents[i].documentId) {
+    //             setViewDocument(documents[i]);
+    //         }
+    //         console.log(docId, documents[i].documentId);
+    //     }
+    // }
+    useEffect(() => {
+        props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
+    }, [viewDocument]);
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
@@ -183,23 +193,25 @@ function DocList(props) {
                     id='Apis.Details.Documents.Documentation.title'
                     defaultMessage='API Documentation'
                 />
-                <Autocomplete
-                    id='document-autocomplete'
-                    className={classes.autocomplete}
-                    options={documents}
-                    groupBy={(document) => document.type}
-                    getOptionLabel={(document) => document.name}
-                    disableClearable
-                    renderInput={(params) => <TextField {...params} label='More Docs...' />}
-                    onChange={(event, doc) => {
-                        setViewDocument(doc);
-                        console.log(viewDocument);
-                    }}
-                />
             </Typography>
+            <Autocomplete
+                autoComplete
+                autoFocus
+                defaultValue={documents[0]}
+                id='document-autocomplete'
+                className={classes.autocomplete}
+                options={documents}
+                groupBy={(document) => document.type}
+                getOptionLabel={(document) => document.name}
+                disableClearable
+                renderInput={(params) => <TextField {...params} label='Select Documents' margin='normal' variant='outlined' />}
+                onChange={(event, doc) => {
+                    setViewDocument(doc);
+                }}
+            />
             <div className={classes.docView}>
-                { viewDocument.name === 'Generated Document' && <GenerateDocument /> }
-                { viewDocument.name !== 'Generated Document'
+                { viewDocument.name === 'Default' && <GenerateDocument /> }
+                { viewDocument.name !== 'Default'
                 && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} /> }
             </div>
         </>
