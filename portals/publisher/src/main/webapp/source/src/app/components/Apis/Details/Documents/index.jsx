@@ -26,6 +26,7 @@ import View from './View';
 import Edit from './Edit';
 import EditContent from './EditContent';
 import DocCreate from './Create';
+import GenerateDocument from './GenerateDocument';
 
 const Documents = (props) => {
     const { isAPIProduct } = useContext(APIContext);
@@ -42,6 +43,7 @@ const Documents = (props) => {
                     component={EditContent} />
                 <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/create'} component={DocCreate} />
                 <Route component={ResourceNotFound} />
+                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/swaggerdoc'} component={GenerateDocument} />
             </Switch>
         </div>
     );

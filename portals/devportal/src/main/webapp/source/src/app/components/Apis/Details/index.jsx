@@ -537,7 +537,6 @@ class Details extends React.Component {
                             />
                         )}
                         {showComments && (
-
                             <LeftMenuItem
                                 text={(
                                     <FormattedMessage
@@ -554,12 +553,11 @@ class Details extends React.Component {
 
                         )}
                         {showDocuments && (
-
                             <LeftMenuItem
                                 text={(
                                     <FormattedMessage
                                         id='Apis.Details.index.documentation'
-                                        defaultMessage='Documentation'
+                                        defaultMessage='Documents'
                                     />
                                 )}
                                 route='documents'
@@ -570,7 +568,6 @@ class Details extends React.Component {
 
                         )}
                         {!isAsyncApi && showSdks && (
-
                             <LeftMenuItem
                                 text={<FormattedMessage id='Apis.Details.index.sdk' defaultMessage='SDKs' />}
                                 route='sdk'

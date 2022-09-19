@@ -87,7 +87,7 @@ const styles = (theme) => ({
  */
 function View(props) {
     const {
-        classes, doc, apiId, fullScreen, intl,
+        classes, doc, apiId, intl,
     } = props;
     const { api } = useContext(ApiContext);
     const [code, setCode] = useState('');
@@ -191,8 +191,6 @@ function View(props) {
     };
     return (
         <>
-            {!fullScreen && <div className={classes.docBadge}>{doc.type}</div>}
-
             {(doc.summary && doc.otherTypeName !== '_overview') && (
                 <Typography variant='body1' className={classes.docSummary}>
                     {doc.summary}
