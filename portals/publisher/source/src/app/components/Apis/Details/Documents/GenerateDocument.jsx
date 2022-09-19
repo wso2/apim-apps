@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
@@ -25,12 +25,6 @@ import './elements.css';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';
-
-const styles = theme =>({
-    // a[href*="stoplight.io"] : {
-    //     visibility: hidden,
-    // },
-});
 
 function GenerateDocument(props){
     const { classes } = props;
@@ -46,9 +40,9 @@ function GenerateDocument(props){
                 console.log(error);
             }
             const {status} = error;
-            if(status==404){
+            if(status === 404){
                 this.setState({notFound:true});
-            }else if(status==401){
+            }else if(status === 401){
                 doRedirectToLogin();
             }
         });
