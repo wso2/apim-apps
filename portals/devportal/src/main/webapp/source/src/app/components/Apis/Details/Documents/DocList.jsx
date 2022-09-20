@@ -19,22 +19,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Button from '@material-ui/core/Button';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
-import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import useWindowSize from 'AppComponents/Shared/UseWindowSize';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Details from 'AppComponents/Apis/Details/Documents/Details';
+import GenerateDocument from './GenerateDocument';
 
 const styles = (theme) => ({
+    apiDocTitle: {
+        width: '50%',
+        marginTop: theme.spacing(1),
+    },
+    autocomplete: {
+        display: 'flex',
+        width: 300,
+        padding: 0,
+    },
     paper: {
         padding: theme.spacing(2),
         color: theme.palette.text.secondary,
@@ -74,6 +79,12 @@ const styles = (theme) => ({
         },
     },
     titleSub: {
+        float: 'left',
+        marginLeft: theme.spacing(2),
+        padding: theme.spacing(2),
+        color: theme.palette.getContrastText(theme.palette.background.default),
+    },
+    selectDocuments: {
         marginLeft: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
@@ -83,6 +94,9 @@ const styles = (theme) => ({
         marginLeft: 0,
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
+    },
+    generatedDocument: {
+        width: '100%',
     },
     genericMessageWrapper: {
         margin: theme.spacing(2),
@@ -134,6 +148,10 @@ const styles = (theme) => ({
     listItemRoot: {
         minWidth: 30,
     },
+    formcontrol: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
 });
 
 /**
@@ -143,137 +161,58 @@ const styles = (theme) => ({
  */
 function DocList(props) {
     const {
-        classes, documentList, apiId, selectedDoc,
+        classes, documentList, apiId,
     } = props;
-    const [selectedIndexA, changeSelectedIndexA] = useState(0);
-    const [selectedIndexB, changeSelectedIndexB] = useState(0);
-    const [width] = useWindowSize();
-    const [showDocList, setShowDocList] = useState(!(width < 1400));
-    const toggleDocList = () => {
-        setShowDocList(!showDocList);
-    };
-    const handleListItemClick = (event, doc) => {
-        const path = `/apis/${apiId}/documents/${doc.documentId}`;
-        props.history.push(path);
-    };
-    const makeActive = () => {
-        let iA = 0;
-        for (const type of documentList) {
-            let iB = 0;
-            for (const doc of type.docs) {
-                if (doc.documentId === selectedDoc.documentId) {
-                    changeSelectedIndexA(iA);
-                    changeSelectedIndexB(iB);
-                }
-                iB++;
-            }
-            iA++;
+    const { docId } = useParams();
+    const swaggerDoc = { documentId: 'default', name: 'Default', type: '' };
+    const [viewDocument, setViewDocument] = useState(swaggerDoc);
+    const documents = [];
+    documents.push(swaggerDoc);
+    for (let i = 0; i < documentList.length; i++) {
+        for (let j = 0; j < documentList[i].docs.length; j++) {
+            documents.push(documentList[i].docs[j]);
         }
-    };
+    }
+    console.log(docId);
+    // if (docId !== undefined) {
+    //     for (let i = 0; i < documents.length; i++) {
+    //         if (docId === documents[i].documentId) {
+    //             setViewDocument(documents[i]);
+    //         }
+    //         console.log(docId, documents[i].documentId);
+    //     }
+    // }
     useEffect(() => {
-        makeActive();
-    }, [selectedDoc]);
-    useEffect(() => {
-        width < 1400 ? setShowDocList(false) : setShowDocList(true);
-    }, [width]);
-
+        props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
+    }, [viewDocument]);
     return (
         <>
             <Typography variant='h4' className={classes.titleSub}>
-                <FormattedMessage id='Apis.Details.Documents.Documentation.title' defaultMessage='API Documentation' />
+                <FormattedMessage
+                    className={classes.apiDocTitle}
+                    id='Apis.Details.Documents.Documentation.title'
+                    defaultMessage='API Documentation'
+                />
             </Typography>
-            <div className={classes.docContainer}>
-                {showDocList && (
-                    <div className={classes.docListWrapper}>
-                        <div className={classes.paperMenu}>
-                            <List component='nav' className={classes.listRoot}>
-                                {documentList.map((type, indexA) => (
-                                    <React.Fragment key={indexA}>
-                                        <ListItem component='div' className={classes.parentListItem}>
-                                            <ListItemIcon classes={{ root: classes.listItemRoot }}>
-                                                <CustomIcon strokeColor='#444' width={24} height={24} icon='docs' />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={type.docType}
-                                                classes={{ root: classes.typeText }}
-                                            />
-                                        </ListItem>
-                                        {type.docs.length > 0 && (
-                                            <List component='div' className={classes.childList}>
-                                                {type.docs.map((doc, indexB) => (
-                                                    <ListItem
-                                                        button
-                                                        className={classes.nested}
-                                                        classes={{
-                                                            selected: classes.selected,
-                                                        }}
-                                                        selected={
-                                                            selectedIndexA === indexA && selectedIndexB === indexB
-                                                        }
-                                                        onClick={(event) => handleListItemClick(event, doc)}
-                                                        key={indexB}
-                                                    >
-                                                        <ListItemIcon classes={{ root: classes.listItemRoot }}>
-                                                            <>
-                                                                {doc.sourceType === 'MARKDOWN' && <Icon>code</Icon>}
-                                                                {doc.sourceType === 'INLINE' && (
-                                                                    <Icon>description</Icon>
-                                                                )}
-                                                                {doc.sourceType === 'URL' && <Icon>open_in_new</Icon>}
-                                                                {doc.sourceType === 'FILE' && (
-                                                                    <Icon>arrow_downward</Icon>
-                                                                )}
-                                                            </>
-                                                        </ListItemIcon>
-                                                        <ListItemText
-                                                            inset
-                                                            primary={doc.name}
-                                                            classes={{ root: classes.docLinkRoot }}
-                                                            aria-label={'View ' + doc.name + ' document'}
-                                                        />
-                                                    </ListItem>
-                                                ))}
-                                            </List>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </List>
-                        </div>
-                    </div>
-                )}
-                <div className={classes.toggleWrapper}>
-                    <Button
-                        className={classes.toggler}
-                        onClick={toggleDocList}
-                        aria-label='Toggle the document list'
-                    >
-                        <div className={classes.togglerTextParent}>
-                            <div className={classes.togglerText}>
-                                {showDocList ? (
-                                    <FormattedMessage
-                                        id='Apis.Details.Documents.Documentation.hide'
-                                        defaultMessage='HIDE'
-                                    />
-                                ) : (
-                                    <FormattedMessage
-                                        id='Apis.Details.Documents.Documentation.show'
-                                        defaultMessage='SHOW'
-                                    />
-                                )}
-                            </div>
-                        </div>
-                        {showDocList ? <Icon>keyboard_arrow_left</Icon> : <Icon>keyboard_arrow_right</Icon>}
-                    </Button>
-                </div>
-                <div className={classes.docView}>
-                    {selectedDoc && (
-                        <Details
-                            documentList={documentList}
-                            selectedDoc={selectedDoc}
-                            apiId={apiId}
-                        />
-                    )}
-                </div>
+            <Autocomplete
+                autoComplete
+                autoFocus
+                defaultValue={documents[0]}
+                id='document-autocomplete'
+                className={classes.autocomplete}
+                options={documents}
+                groupBy={(document) => document.type}
+                getOptionLabel={(document) => document.name}
+                disableClearable
+                renderInput={(params) => <TextField {...params} label='Select Documents' margin='normal' variant='outlined' />}
+                onChange={(event, doc) => {
+                    setViewDocument(doc);
+                }}
+            />
+            <div className={classes.docView}>
+                { viewDocument.name === 'Default' && <GenerateDocument /> }
+                { viewDocument.name !== 'Default'
+                && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} /> }
             </div>
         </>
     );
