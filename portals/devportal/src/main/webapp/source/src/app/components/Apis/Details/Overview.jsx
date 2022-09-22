@@ -673,7 +673,7 @@ function Overview() {
                         </Typography>
                     </Box>
                     {(api.type === 'HTTP' || api.type === 'SOAPTOREST'
-                    || api.type === 'SOAP' || api.type === 'GRAPHQL') && (
+                    || api.type === 'SOAP' || api.type === 'GRAPHQL' || api.type === 'WS') && (
                         <Box mt={2}>
                             <SourceDownload selectedEndpoint={selectedEndpoint} />
                         </Box>

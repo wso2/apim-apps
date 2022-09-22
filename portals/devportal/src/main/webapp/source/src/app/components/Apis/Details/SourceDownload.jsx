@@ -121,6 +121,27 @@ function SourceDownload(props) {
                 }));
             });
     };
+
+    /**
+     * Downloads the async api specification of the api for the provided environment
+     *
+     * @param {string} apiId uuid of the API
+     * @param {string} environment name of the environment
+     */
+    const downloadAsync = (apiId, environment) => {
+        const promiseSwagger = apiClient.getAsyncApiSpecificationByAPIIdAndEnvironment(apiId, environment);
+        promiseSwagger
+            .then((done) => {
+                Utils.downloadFile(done);
+            })
+            .catch((error) => {
+                console.log(error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Environments.download.swagger.error',
+                    defaultMessage: 'Error downloading the Swagger',
+                }));
+            });
+    };
     if (
         api.type === 'SOAP') {
         return (
@@ -162,6 +183,33 @@ function SourceDownload(props) {
                 <MUILink
                     to='#'
                     onClick={() => downloadSwagger(api.id, selectedEndpoint.environmentName)}
+                    className={classes.downloadLink}
+                    id='swagger-download-btn'
+                >
+                    <CloudDownloadRounded className={classes.buttonIcon} />
+                    <FormattedMessage
+                        id='Apis.Details.Environments.download.swagger.text'
+                        defaultMessage='Download Swagger'
+                    />
+                </MUILink>
+            </Tooltip>
+        );
+    }
+    if (api.type === 'WS') {
+        return (
+            <Tooltip
+                title={(
+                    <FormattedMessage
+                        id='Apis.Details.Environments.download.swagger'
+                        defaultMessage='Swagger'
+                    />
+                )}
+                placement='right'
+                className={classes.iconStyle}
+            >
+                <MUILink
+                    to='#'
+                    onClick={() => downloadAsync(api.id, selectedEndpoint.environmentName)}
                     className={classes.downloadLink}
                     id='swagger-download-btn'
                 >
