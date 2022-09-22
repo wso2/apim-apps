@@ -26,6 +26,7 @@ import Box from '@material-ui/core/Box';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { useIntl } from 'react-intl';
+import Api from 'AppData/api';
 
 const useStyles = makeStyles((theme) => {
     const mainBack = theme.custom.infoBar.background || '#ffffff';
@@ -52,6 +53,7 @@ export default function Breadcrumb() {
     const classes = useStyles();
     const history = useHistory();
     const intl = useIntl();
+    const apiClient = new Api();
     const pages = [
         {
             route: 'overview',
@@ -98,6 +100,7 @@ export default function Breadcrumb() {
     ];
 
     const [selected, setSelected] = useState(pages[0]);
+    const [document, setDocument] = useState('');
 
     const detectCurrentMenu = (location = null) => {
         let locationLocal = location;
@@ -111,6 +114,33 @@ export default function Breadcrumb() {
             if (pathname.match(test1) || pathname.match(test2)) {
                 setSelected(pages[i]);
             }
+        }
+        const test3 = new RegExp('/documents/\\w', 'g');
+        if (pathname.match(test3)) {
+            const pathWithDocId = pathname.split('/documents/');
+            // console.log(pathname);
+            // console.log(pathWithDocId);
+            if (pathWithDocId[1] === 'default') {
+                setDocument('Default');
+            } else {
+                const promisedApi = apiClient.getDocumentByDocId(api.id, pathWithDocId[1]);
+                promisedApi
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        if (process.env.NODE_ENV !== 'production') {
+                            console.log(error);
+                        }
+                        const { status } = error;
+                        if (status === 404) {
+                            console.log('Document not found');
+                        } else if (status === 401) {
+                            console.log('Auth failed');
+                        }
+                    });
+            }
+            console.log(document);
         }
     };
     useEffect(() => {
@@ -128,7 +158,18 @@ export default function Breadcrumb() {
                     <MUILink color='textPrimary' to={'/apis/' + api.id + '/overview'} component={Link}>
                         {api.name}
                     </MUILink>
-                    <Typography color='textPrimary'>{selected.text}</Typography>
+                    { (selected.route === 'documents') && (
+                        <MUILink color='textPrimary' to={'/apis/' + api.id + '/' + selected.route} component={Link}>
+                            {selected.text}
+                        </MUILink>
+                    )}
+                    { (selected.route === 'documents') && <Typography color='textPrimary'>{Document}</Typography> }
+                    { (selected.route !== 'documents') && <Typography color='textPrimary'>{selected.text}</Typography> }
+                    {/* <MUILink color='textPrimary' to={'/apis/' + api.id + '/' + selected.route} component={Link}>
+                        {selected.text}
+                    </MUILink>
+                    <Typography color='textPrimary'>{selected.text}</Typography>  */}
+                    {/* {console.log(selected)} */}
                 </Breadcrumbs>
             </Box>
 

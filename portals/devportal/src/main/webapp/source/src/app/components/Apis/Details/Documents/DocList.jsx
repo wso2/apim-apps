@@ -22,7 +22,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -161,27 +160,12 @@ const styles = (theme) => ({
  */
 function DocList(props) {
     const {
-        classes, documentList, apiId,
+        classes, documentList, apiId, selectedDoc,
     } = props;
-    const { docId } = useParams();
-    const swaggerDoc = { documentId: 'default', name: 'Default', type: '' };
-    const [viewDocument, setViewDocument] = useState(swaggerDoc);
-    const documents = [];
-    documents.push(swaggerDoc);
-    for (let i = 0; i < documentList.length; i++) {
-        for (let j = 0; j < documentList[i].docs.length; j++) {
-            documents.push(documentList[i].docs[j]);
-        }
-    }
+    console.log(selectedDoc);
+    const docId = useState(selectedDoc.documentId);
     console.log(docId);
-    // if (docId !== undefined) {
-    //     for (let i = 0; i < documents.length; i++) {
-    //         if (docId === documents[i].documentId) {
-    //             setViewDocument(documents[i]);
-    //         }
-    //         console.log(docId, documents[i].documentId);
-    //     }
-    // }
+    const [viewDocument, setViewDocument] = useState(selectedDoc);
     useEffect(() => {
         props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
     }, [viewDocument]);
@@ -197,10 +181,10 @@ function DocList(props) {
             <Autocomplete
                 autoComplete
                 autoFocus
-                defaultValue={documents[0]}
+                defaultValue={documentList[0]}
                 id='document-autocomplete'
                 className={classes.autocomplete}
-                options={documents}
+                options={documentList}
                 groupBy={(document) => document.type}
                 getOptionLabel={(document) => document.name}
                 disableClearable
