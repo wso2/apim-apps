@@ -118,11 +118,10 @@ export default function Breadcrumb() {
         const test3 = new RegExp('/documents/\\w', 'g');
         if (pathname.match(test3)) {
             const pathWithDocId = pathname.split('/documents/');
-            // console.log(pathname);
-            // console.log(pathWithDocId);
             if (pathWithDocId[1] === 'default') {
                 setDocument('Default');
             } else {
+                console.log(pathWithDocId, api);
                 const promisedApi = apiClient.getDocumentByDocId(api.id, pathWithDocId[1]);
                 promisedApi
                     .then((response) => {
@@ -140,7 +139,8 @@ export default function Breadcrumb() {
                         }
                     });
             }
-            console.log(document);
+        } else {
+            setDocument(null);
         }
     };
     useEffect(() => {
@@ -155,21 +155,18 @@ export default function Breadcrumb() {
                 <Typography color='textPrimary' component='h1' variant='h6'>{selected.text}</Typography>
                 <VerticalDivider height={15} />
                 <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
+                    {/* {console.log(selected)} */}
                     <MUILink color='textPrimary' to={'/apis/' + api.id + '/overview'} component={Link}>
                         {api.name}
                     </MUILink>
-                    { (selected.route === 'documents') && (
+                    { (selected.route === 'documents' && document) && (
                         <MUILink color='textPrimary' to={'/apis/' + api.id + '/' + selected.route} component={Link}>
                             {selected.text}
                         </MUILink>
-                    )}
-                    { (selected.route === 'documents') && <Typography color='textPrimary'>{Document}</Typography> }
+                    ) }
+                    { (selected.route === 'documents' && !document) && <Typography color='textPrimary'>{selected.text}</Typography> }
+                    { (selected.route === 'documents' && document) && <Typography color='textPrimary'>{document}</Typography> }
                     { (selected.route !== 'documents') && <Typography color='textPrimary'>{selected.text}</Typography> }
-                    {/* <MUILink color='textPrimary' to={'/apis/' + api.id + '/' + selected.route} component={Link}>
-                        {selected.text}
-                    </MUILink>
-                    <Typography color='textPrimary'>{selected.text}</Typography>  */}
-                    {/* {console.log(selected)} */}
                 </Breadcrumbs>
             </Box>
 

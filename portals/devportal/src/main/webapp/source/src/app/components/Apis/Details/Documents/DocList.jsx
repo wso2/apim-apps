@@ -162,9 +162,6 @@ function DocList(props) {
     const {
         classes, documentList, apiId, selectedDoc,
     } = props;
-    console.log(selectedDoc);
-    const docId = useState(selectedDoc.documentId);
-    console.log(docId);
     const [viewDocument, setViewDocument] = useState(selectedDoc);
     useEffect(() => {
         props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
@@ -181,7 +178,7 @@ function DocList(props) {
             <Autocomplete
                 autoComplete
                 autoFocus
-                defaultValue={documentList[0]}
+                defaultValue={selectedDoc}
                 id='document-autocomplete'
                 className={classes.autocomplete}
                 options={documentList}
