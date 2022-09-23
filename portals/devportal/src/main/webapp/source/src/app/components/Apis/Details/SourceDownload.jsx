@@ -129,16 +129,16 @@ function SourceDownload(props) {
      * @param {string} environment name of the environment
      */
     const downloadAsync = (apiId, environment) => {
-        const promiseSwagger = apiClient.getAsyncApiSpecificationByAPIIdAndEnvironment(apiId, environment);
-        promiseSwagger
+        const promiseAsync = apiClient.getAsyncApiSpecificationByAPIIdAndEnvironment(apiId, environment);
+        promiseAsync
             .then((done) => {
                 Utils.downloadFile(done);
             })
             .catch((error) => {
                 console.log(error);
                 Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Environments.download.swagger.error',
-                    defaultMessage: 'Error downloading the Swagger',
+                    id: 'Apis.Details.Environments.download.asyncapi.error',
+                    defaultMessage: 'Error downloading the Async API Specification',
                 }));
             });
     };
