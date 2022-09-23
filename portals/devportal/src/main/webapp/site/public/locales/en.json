@@ -151,6 +151,8 @@
   "Apis.Details.Environments.copied": "Copied",
   "Apis.Details.Environments.copy.to.clipboard": "Copy to clipboard",
   "Apis.Details.Environments.default.url": "( Default Version ) ",
+  "Apis.Details.Environments.download.asyncapi": "Async API Specification",
+  "Apis.Details.Environments.download.asyncapi.text": "Download Async API Specification",
   "Apis.Details.Environments.download.graphQL": "GraphQL",
   "Apis.Details.Environments.download.graphql.error": "Error downloading the GraphQL Schema",
   "Apis.Details.Environments.download.graphql.text": "Download GraphQL",

@@ -200,8 +200,8 @@ function SourceDownload(props) {
             <Tooltip
                 title={(
                     <FormattedMessage
-                        id='Apis.Details.Environments.download.swagger'
-                        defaultMessage='Swagger'
+                        id='Apis.Details.Environments.download.asyncapi'
+                        defaultMessage='Async API Specification'
                     />
                 )}
                 placement='right'
@@ -215,8 +215,8 @@ function SourceDownload(props) {
                 >
                     <CloudDownloadRounded className={classes.buttonIcon} />
                     <FormattedMessage
-                        id='Apis.Details.Environments.download.swagger.text'
-                        defaultMessage='Download Swagger'
+                        id='Apis.Details.Environments.download.asyncapi.text'
+                        defaultMessage='Download Async API Specification'
                     />
                 </MUILink>
             </Tooltip>
