@@ -102,6 +102,18 @@ describe("Endpoint certificate usage testing", () => {
         cy.get('#certificate-usage-cancel-btn').click();
     });
 
+    it.only("Has correct warning message", () => {
+        // Expected warning message
+        const expectedMessage = `${alias} is used by ${random_number} other APIs`;
+
+        // Test for correct warning message
+        cy.get('#delete-cert-btn').click({force: true});
+        cy.get('#warning-message>p').should('include.text', expectedMessage);
+
+        // Delete certificate
+        cy.get('#delete-cert-confirm-btn').click({force: true});
+    });
+
     after(function () {
         apiIds.forEach(id => {
             Utils.deleteAPI(id);
