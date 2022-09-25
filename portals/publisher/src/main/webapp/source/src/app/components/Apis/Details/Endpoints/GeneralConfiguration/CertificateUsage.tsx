@@ -171,15 +171,15 @@ export const CertificateUsage = (props: CertificateUsageProps) => {
     );
 
     const dialogContent = (
-        <div>
+        <div id='certificate-usage-table'>
             {/* @ts-ignore */}
-            <MUIDataTable title={false} data={usageData} columns={columns} options={options} />
+            <MUIDataTable options={options} title={false} data={usageData} columns={columns}/>
         </div>
     );
 
     return (
         <div>
-            <Button onClick={handleUsageOpen} >
+            <Button onClick={handleUsageOpen} id='certificate-usage-btn'>
                 <UsageIcon />
             </Button>
             <Dialog open={open} maxWidth='xl'>
@@ -192,7 +192,7 @@ export const CertificateUsage = (props: CertificateUsageProps) => {
                     {dialogContent}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleUsageCancel}>
+                    <Button id='certificate-usage-cancel-btn' onClick={handleUsageCancel}>
                         <FormattedMessage
                             id='APIs.details.endpoints.certificate.usage.cancel'
                             defaultMessage='Cancel'
