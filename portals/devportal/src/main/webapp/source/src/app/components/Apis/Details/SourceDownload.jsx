@@ -195,7 +195,7 @@ function SourceDownload(props) {
             </Tooltip>
         );
     }
-    if (api.type === 'WS') {
+    if (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC') {
         return (
             <Tooltip
                 title={(
