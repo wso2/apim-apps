@@ -167,7 +167,7 @@ function ViewCurl(props) {
                         >
                             <CopyToClipboard
                                 text={`curl -k -X POST ${tokenEndpoint} -d ` +
-                                '"grant_type=client_credentials" -H' +
+                                '"grant_type=client_credentials" -H ' +
                                 `"Authorization: Basic ${bas64Encoded}"`}
                                 onCopy={onCopy}
                             >
