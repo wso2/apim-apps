@@ -26,7 +26,6 @@ import Box from '@material-ui/core/Box';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { useIntl } from 'react-intl';
-import Api from 'AppData/api';
 
 const useStyles = makeStyles((theme) => {
     const mainBack = theme.custom.infoBar.background || '#ffffff';
@@ -48,12 +47,12 @@ const useStyles = makeStyles((theme) => {
 /**
  * @returns {JSX} breadcrumb
  */
-export default function Breadcrumb() {
+export default function Breadcrumb(props) {
     const { api } = useContext(ApiContext);
+    const { breadcrumbDocument } = props;
     const classes = useStyles();
     const history = useHistory();
     const intl = useIntl();
-    const apiClient = new Api();
     const pages = [
         {
             route: 'overview',
@@ -100,7 +99,6 @@ export default function Breadcrumb() {
     ];
 
     const [selected, setSelected] = useState(pages[0]);
-    const [document, setDocument] = useState('');
 
     const detectCurrentMenu = (location = null) => {
         let locationLocal = location;
@@ -115,33 +113,6 @@ export default function Breadcrumb() {
                 setSelected(pages[i]);
             }
         }
-        const test3 = new RegExp('/documents/\\w', 'g');
-        if (pathname.match(test3)) {
-            const pathWithDocId = pathname.split('/documents/');
-            if (pathWithDocId[1] === 'default') {
-                setDocument('Default');
-            } else {
-                console.log(pathWithDocId, api);
-                const promisedApi = apiClient.getDocumentByDocId(api.id, pathWithDocId[1]);
-                promisedApi
-                    .then((response) => {
-                        console.log(response);
-                    })
-                    .catch((error) => {
-                        if (process.env.NODE_ENV !== 'production') {
-                            console.log(error);
-                        }
-                        const { status } = error;
-                        if (status === 404) {
-                            console.log('Document not found');
-                        } else if (status === 401) {
-                            console.log('Auth failed');
-                        }
-                    });
-            }
-        } else {
-            setDocument(null);
-        }
     };
     useEffect(() => {
         detectCurrentMenu();
@@ -155,17 +126,16 @@ export default function Breadcrumb() {
                 <Typography color='textPrimary' component='h1' variant='h6'>{selected.text}</Typography>
                 <VerticalDivider height={15} />
                 <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-                    {/* {console.log(selected)} */}
                     <MUILink color='textPrimary' to={'/apis/' + api.id + '/overview'} component={Link}>
                         {api.name}
                     </MUILink>
                     { (selected.route === 'documents' && document) && (
-                        <MUILink color='textPrimary' to={'/apis/' + api.id + '/' + selected.route} component={Link}>
+                        <MUILink color='textPrimary' to={'/apis/' + api.id + '/documents/default'} component={Link}>
                             {selected.text}
                         </MUILink>
                     ) }
                     { (selected.route === 'documents' && !document) && <Typography color='textPrimary'>{selected.text}</Typography> }
-                    { (selected.route === 'documents' && document) && <Typography color='textPrimary'>{document}</Typography> }
+                    { (selected.route === 'documents' && document) && <Typography color='textPrimary'>{breadcrumbDocument}</Typography> }
                     { (selected.route !== 'documents') && <Typography color='textPrimary'>{selected.text}</Typography> }
                 </Breadcrumbs>
             </Box>

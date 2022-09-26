@@ -137,7 +137,7 @@ const styles = (theme) => ({
  */
 function Documents(props) {
     const { api } = useContext(ApiContext);
-    const { classes, intl } = props;
+    const { classes, intl, setbreadcrumbDocument } = props;
     const { location: { pathname } } = props;
     let match = matchPath(pathname, {
         path: '/apis/:apiUuid/documents/:documentId',
@@ -262,6 +262,7 @@ function Documents(props) {
                             documentList={documentList}
                             selectedDoc={selectedDoc}
                             apiId={apiId}
+                            setbreadcrumbDocument={setbreadcrumbDocument}
                         />
                     )}
                 />

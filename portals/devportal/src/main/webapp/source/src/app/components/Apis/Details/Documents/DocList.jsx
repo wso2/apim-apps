@@ -39,6 +39,10 @@ const styles = (theme) => ({
         width: 300,
         padding: 0,
     },
+    autocompleteText: {
+        paddingTop: 0,
+        paddingBottom : 0,
+    },
     paper: {
         padding: theme.spacing(2),
         color: theme.palette.text.secondary,
@@ -160,11 +164,12 @@ const styles = (theme) => ({
  */
 function DocList(props) {
     const {
-        classes, documentList, apiId, selectedDoc,
+        classes, documentList, apiId, selectedDoc, setbreadcrumbDocument,
     } = props;
     const [viewDocument, setViewDocument] = useState(selectedDoc);
     useEffect(() => {
         props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
+        setbreadcrumbDocument(viewDocument.name);
     }, [viewDocument]);
     return (
         <>
@@ -185,7 +190,15 @@ function DocList(props) {
                 groupBy={(document) => document.type}
                 getOptionLabel={(document) => document.name}
                 disableClearable
-                renderInput={(params) => <TextField {...params} label='Select Documents' margin='normal' variant='outlined' />}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        className={classes.autocompleteText}
+                        label='Select Documents'
+                        margin='normal'
+                        variant='outlined'
+                    />
+                )}
                 onChange={(event, doc) => {
                     setViewDocument(doc);
                 }}
