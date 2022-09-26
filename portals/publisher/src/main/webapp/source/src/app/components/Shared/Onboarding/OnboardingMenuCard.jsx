@@ -11,10 +11,8 @@ import Link from '@material-ui/core/Link';
 const useStyles = makeStyles((theme) => ({
     boxTransition: {
         transition: 'box-shadow 0.9s cubic-bezier(.25,.8,.25,1)',
-        cursor: 'pointer',
     },
     overlayBox: {
-        cursor: 'auto',
         outline: 'none',
         'border-color': '#f9f9f9', // TODO: take from theme ~tmkb
         'box-shadow': '0 0 6px 4px #f9f9f9',
@@ -62,6 +60,7 @@ const RestAPIMenu = (props) => {
             >
                 <Box
                     className={boxTransition}
+                    style={{cursor: disabled ? null : 'pointer'}}
                     onMouseOver={onMouseOver}
                     onMouseOut={onMouseOut}
                     bgcolor='background.paper'
