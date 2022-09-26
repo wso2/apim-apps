@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
 function GlobalNavLinks(props) {
     const publisherUser = !AuthManager.isNotPublisher();
     const readOnlyUser = AuthManager.isReadOnlyUser();
+    const adminUser = AuthManager.isAdminUser();
     const classes = useStyles();
     const { selected } = props;
     const theme = useTheme();
@@ -93,15 +94,18 @@ function GlobalNavLinks(props) {
                             />
                         </GlobalNavLink>
                     )}
-                <GlobalNavLink
-                    id='scope'
-                    to='/scopes'
-                    type='scopes'
-                    title='Scopes'
-                    active={selected === 'scopes'}
-                >
-                    <FormattedMessage id='Base.Header.navbar.GlobalNavBar.scopes' defaultMessage='Scopes' />
-                </GlobalNavLink>
+                {(adminUser)
+                    && (
+                        <GlobalNavLink
+                            id='scope'
+                            to='/scopes'
+                            type='scopes'
+                            title='Scopes'
+                            active={selected === 'scopes'}
+                        >
+                            <FormattedMessage id='Base.Header.navbar.GlobalNavBar.scopes' defaultMessage='Scopes' />
+                        </GlobalNavLink>
+                    )}
                 <GlobalNavLink
                     id='policies'
                     to='/policies'
