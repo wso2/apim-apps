@@ -135,7 +135,7 @@ function SourceDownload(props) {
                 Utils.downloadFile(done);
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.Environments.download.asyncapi.error',
                     defaultMessage: 'Error downloading the AsyncAPI Specification',
