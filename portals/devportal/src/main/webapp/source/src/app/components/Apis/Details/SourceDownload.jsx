@@ -123,7 +123,7 @@ function SourceDownload(props) {
     };
 
     /**
-     * Downloads the async api specification of the api for the provided environment
+     * Downloads the asyncapi specification of the api for the provided environment
      *
      * @param {string} apiId uuid of the API
      * @param {string} environment name of the environment
@@ -138,7 +138,7 @@ function SourceDownload(props) {
                 console.log(error);
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.Environments.download.asyncapi.error',
-                    defaultMessage: 'Error downloading the Async API Specification',
+                    defaultMessage: 'Error downloading the AsyncAPI Specification',
                 }));
             });
     };
@@ -201,7 +201,7 @@ function SourceDownload(props) {
                 title={(
                     <FormattedMessage
                         id='Apis.Details.Environments.download.asyncapi'
-                        defaultMessage='Async API Specification'
+                        defaultMessage='AsyncAPI Specification'
                     />
                 )}
                 placement='right'
@@ -216,7 +216,7 @@ function SourceDownload(props) {
                     <CloudDownloadRounded className={classes.buttonIcon} />
                     <FormattedMessage
                         id='Apis.Details.Environments.download.asyncapi.text'
-                        defaultMessage='Download Async API Specification'
+                        defaultMessage='Download AsyncAPI Specification'
                     />
                 </MUILink>
             </Tooltip>
