@@ -41,7 +41,7 @@ const styles = (theme) => ({
     },
     autocompleteText: {
         paddingTop: 0,
-        paddingBottom : 0,
+        paddingBottom: 0,
     },
     paper: {
         padding: theme.spacing(2),

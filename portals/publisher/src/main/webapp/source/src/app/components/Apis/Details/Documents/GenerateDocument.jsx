@@ -51,7 +51,7 @@ function GenerateDocument(props){
             }
         });
     return(
-        <div className={classes.apim_elements}>
+        <div id='apim_elements'>
             <API
                 apiDescriptionDocument={swagger}
                 hideTryIt='true'
