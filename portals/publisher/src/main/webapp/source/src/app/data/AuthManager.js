@@ -193,12 +193,7 @@ class AuthManager {
      * @memberof AuthManager
      */
     static isAdminUser() {
-        if (AuthManager.getUser() === null) {
-            return false;
-        } else {
-            return AuthManager.getUser().scopes.includes ('apim:admin');
-
-        }
+        return AuthManager.getUser() && AuthManager.getUser().scopes.includes ('apim:admin');
     }
 
     /**
