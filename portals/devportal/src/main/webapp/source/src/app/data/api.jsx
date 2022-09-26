@@ -208,9 +208,8 @@ export default class API extends Resource {
         });
         if (callback) {
             return promiseGet.then(callback);
-        } else {
-            return promiseGet;
         }
+        return promiseGet;
     }
 
     /**
