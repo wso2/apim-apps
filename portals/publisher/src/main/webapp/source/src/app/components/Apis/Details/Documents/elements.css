@@ -23,7 +23,7 @@
     background-image: none
 }
 
-#apim_elements :focus {
+:focus {
     outline: none
 }
 
@@ -90,16 +90,6 @@
     border-collapse: collapse
 }
 
-#apim_elements h1,
-#apim_elements h2,
-#apim_elements h3,
-#apim_elements h4,
-#apim_elements h5,
-#apim_elements h6 {
-    font-size: inherit;
-    font-weight: inherit
-}
-
 #apim_elements a {
     color: inherit;
     text-decoration: inherit
@@ -151,10 +141,6 @@
 
 #apim_elements select::-ms-expand {
     display: none
-}
-
-#apim_elements select {
-    font-size: inherit
 }
 
 #apim_elements iframe {
@@ -2086,7 +2072,7 @@
     border-left-width: 1px
 }
 
-#apim_elements * {
+* {
     --tw-shadow: 0 0 #0000
 }
 
@@ -12446,10 +12432,10 @@
     box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
 }
 
-#apim_elements :root,
-#apim_elements [data-theme=light],
-#apim_elements [data-theme=light] .sl-inverted .sl-inverted,
-#apim_elements [data-theme=light] .sl-inverted .sl-inverted .sl-inverted .sl-inverted {
+:root,
+[data-theme=light],
+[data-theme=light] .sl-inverted .sl-inverted,
+[data-theme=light] .sl-inverted .sl-inverted .sl-inverted .sl-inverted {
     --text-h: 0;
     --text-s: 0%;
     --text-l: 15%;
