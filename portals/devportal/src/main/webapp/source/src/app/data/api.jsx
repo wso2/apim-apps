@@ -196,6 +196,23 @@ export default class API extends Resource {
     }
 
     /**
+     * Get the async api specification of an API
+     * @param apiId {String} UUID of the API in which the async api specification is needed
+     * @param environmentName {String} API environment name
+     * @param callback {function} Function which needs to be called upon success of the API deletion
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    getAsyncApiSpecificationByAPIIdAndEnvironment(apiId, environmentName, callback = null) {
+        const promiseGet = this.client.then((client) => {
+            return client.apis.APIs.get_apis__apiId__async_api_specification({ apiId, environmentName }, this._requestMetaData());
+        });
+        if (callback) {
+            return promiseGet.then(callback);
+        }
+        return promiseGet;
+    }
+
+    /**
      * Get application by id
      * @param id {String} UUID of the application
      * @param callback {function} Function which needs to be called upon success
