@@ -19,7 +19,7 @@
 import React, { Suspense, lazy } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api.js';
@@ -101,9 +101,6 @@ const styles = theme => ({
     head: {
         fontWeight: 200,
         marginBottom: 20,
-    },
-    subtitle: {
-        fontWeight: 200,
     },
     genDocumentButton:{
         marginRight:10,
@@ -470,7 +467,7 @@ class Listing extends React.Component {
             return (<Progress />);
         }
         return (
-            <React.Fragment>
+            <>
                 {docsToDelete && (
                     <DeleteMultiple getDocumentsList={this.getDocumentsList} docsToDelete={docsToDelete} docs={docs} />
                 )}
@@ -611,7 +608,7 @@ class Listing extends React.Component {
                     )}
                     
                 </div>
-            </React.Fragment>
+            </>
         );
     }
 }
@@ -625,4 +622,4 @@ Listing.propTypes = {
     }).isRequired,
 };
 
-export default withRouter(injectIntl(withAPI(withStyles(styles)(Listing))));
+export default injectIntl(withAPI(withStyles(styles)(Listing)));

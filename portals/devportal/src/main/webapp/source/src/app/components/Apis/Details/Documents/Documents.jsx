@@ -227,22 +227,26 @@ function Documents(props) {
                         defaultMessage='API Documentation'
                     />
                 </Typography>
-                <div className={classes.genericMessageWrapper}>
-                    <InlineMessage type='info' className={classes.dialogContainer}>
-                        <Typography variant='h5' component='h3'>
-                            <FormattedMessage
-                                id='Apis.Details.Documents.Documentation.no.docs'
-                                defaultMessage='No Documents Available'
-                            />
-                        </Typography>
-                        <Typography component='p'>
-                            <FormattedMessage
-                                id='Apis.Details.Documents.Documentation.no.docs.content'
-                                defaultMessage='No documents are available for this API'
-                            />
-                        </Typography>
-                    </InlineMessage>
-                </div>
+                {documentId === null ? (
+                    <div className={classes.genericMessageWrapper}>
+                        <InlineMessage type='info' className={classes.dialogContainer}>
+                            <Typography variant='h5' component='h3'>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.Documentation.no.docs'
+                                    defaultMessage='No Documents Available'
+                                />
+                            </Typography>
+                            <Typography component='p'>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.Documentation.no.docs.content'
+                                    defaultMessage='No documents are available for this API'
+                                />
+                            </Typography>
+                        </InlineMessage>
+                    </div>
+                ) : (
+                    <ResourceNotFound />
+                )}
             </>
         );
     }

@@ -16,40 +16,36 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
-import { injectIntl } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react';
 import { API } from '@stoplight/elements';
-// Manually imported from stoplightio/elements and wrapped in 'apim_elements' class
+// Manually imported from stoplightio/elements and wrapped in 'apim_elements' id
 import './elements.css';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';
 
-const styles = {
-
-};
-
-function GenerateDocument(props){
-    const { classes } = props;
+function GenerateDocument(){
     const [api, updateAPI] = useAPI();
     const [swagger, updateSwagger] = useState('');
-    let promisedApi = api.getSwagger(api.id);
-    promisedApi
-        .then((response) => {
-            updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
-        })
-        .catch((error) => {
-            if(process.env.NODE_ENV !== 'production'){
-                console.log(error);
-            }
-            const {status} = error;
-            if(status === 404){
-                this.setState({notFound:true});
-            }else if(status === 401){
-                doRedirectToLogin();
-            }
-        });
+
+    useEffect(() => {
+        let promisedApi = api.getSwagger(api.id);
+        promisedApi
+            .then((response) => {
+                updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
+            })
+            .catch((error) => {
+                if(process.env.NODE_ENV !== 'production'){
+                    console.log(error);
+                }
+                const {status} = error;
+                if(status === 404){
+                    this.setState({notFound:true});
+                }else if(status === 401){
+                    doRedirectToLogin();
+                }
+            });
+    }, [api.id]);
     return(
         <div id='apim_elements'>
             <API
@@ -62,4 +58,4 @@ function GenerateDocument(props){
     );
 }
 
-export default injectIntl(withStyles(styles)(GenerateDocument));
+export default GenerateDocument;

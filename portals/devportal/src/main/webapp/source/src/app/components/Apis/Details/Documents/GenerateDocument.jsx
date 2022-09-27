@@ -16,11 +16,12 @@
  * under the License.
  */
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
 import '@stoplight/elements/styles.min.css';
+// import './elements.css';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import YAML from 'js-yaml';
 import Api from 'AppData/api';
@@ -37,27 +38,31 @@ function GenerateDocument(props) {
     const { classes } = props;
     const { api } = useContext(ApiContext);
     const [swagger, updateSwagger] = useState('');
-    const apiClient = new Api();
-    const promisedApi = apiClient.getSwaggerByAPIId(api.id);
-    promisedApi
-        .then((response) => {
-            updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
-        })
-        .catch((error) => {
-            if (process.env.NODE_ENV !== 'production') {
-                console.log(error);
-            }
-            const { status } = error;
-            if (status === 404) {
-                console.log('Swagger not found');
-            } else if (status === 401) {
-                console.log('Auth failed');
-            }
-        });
+
+    useEffect(() => {
+        const apiClient = new Api();
+        const promisedApi = apiClient.getSwaggerByAPIId(api.id);
+        promisedApi
+            .then((response) => {
+                updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
+            })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+                const { status } = error;
+                if (status === 404) {
+                    console.log('Swagger not found');
+                } else if (status === 401) {
+                    console.log('Auth failed');
+                }
+            });
+    }, [api.id]);
 
     return (
         <div
             className={classes.generatedDocument}
+            id='apim_elements'
         >
             <API
                 apiDescriptionDocument={swagger}

@@ -19,7 +19,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
@@ -81,8 +81,11 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
+    title: {
+        display: 'flex',
+        alignItems: 'flex-start',
+    },
     titleSub: {
-        float: 'left',
         marginLeft: theme.spacing(2),
         padding: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
@@ -168,41 +171,44 @@ function DocList(props) {
     } = props;
     const [viewDocument, setViewDocument] = useState(selectedDoc);
     useEffect(() => {
-        props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
         setbreadcrumbDocument(viewDocument.name);
-    }, [viewDocument]);
+    }, []);
     return (
         <>
-            <Typography variant='h4' className={classes.titleSub}>
-                <FormattedMessage
-                    className={classes.apiDocTitle}
-                    id='Apis.Details.Documents.Documentation.title'
-                    defaultMessage='API Documentation'
-                />
-            </Typography>
-            <Autocomplete
-                autoComplete
-                autoFocus
-                defaultValue={selectedDoc}
-                id='document-autocomplete'
-                className={classes.autocomplete}
-                options={documentList}
-                groupBy={(document) => document.type}
-                getOptionLabel={(document) => document.name}
-                disableClearable
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        className={classes.autocompleteText}
-                        label='Select Documents'
-                        margin='normal'
-                        variant='outlined'
+            <div className={classes.title}>
+                <Typography variant='h4' className={classes.titleSub}>
+                    <FormattedMessage
+                        className={classes.apiDocTitle}
+                        id='Apis.Details.Documents.Documentation.title'
+                        defaultMessage='API Documentation'
                     />
-                )}
-                onChange={(event, doc) => {
-                    setViewDocument(doc);
-                }}
-            />
+                </Typography>
+                <Autocomplete
+                    autoComplete
+                    autoFocus
+                    defaultValue={selectedDoc}
+                    id='document-autocomplete'
+                    className={classes.autocomplete}
+                    options={documentList}
+                    groupBy={(document) => document.type}
+                    getOptionLabel={(document) => document.name}
+                    disableClearable
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            className={classes.autocompleteText}
+                            label='Select Documents'
+                            margin='normal'
+                            variant='outlined'
+                        />
+                    )}
+                    onChange={(event, doc) => {
+                        setViewDocument(doc);
+                        setbreadcrumbDocument(doc.name);
+                        props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
+                    }}
+                />
+            </div>
             <div className={classes.docView}>
                 { viewDocument.name === 'Default' && <GenerateDocument /> }
                 { viewDocument.name !== 'Default'

@@ -574,7 +574,7 @@ class Details extends React.Component {
                                 text={(
                                     <FormattedMessage
                                         id='Apis.Details.index.documentation'
-                                        defaultMessage='Documentation'
+                                        defaultMessage='Documents'
                                     />
                                 )}
                                 route='documents'
