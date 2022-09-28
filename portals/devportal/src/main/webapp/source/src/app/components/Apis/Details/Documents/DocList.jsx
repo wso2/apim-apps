@@ -203,9 +203,9 @@ function DocList(props) {
                         />
                     )}
                     onChange={(event, doc) => {
+                        props.history.push('/apis/' + apiId + '/documents/' + doc.documentId);
                         setViewDocument(doc);
                         setbreadcrumbDocument(doc.name);
-                        props.history.push('/apis/' + apiId + '/documents/' + viewDocument.documentId);
                     }}
                 />
             </div>

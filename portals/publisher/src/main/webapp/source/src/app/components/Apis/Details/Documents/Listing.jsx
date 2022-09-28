@@ -28,9 +28,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import AddCircle from '@material-ui/icons/AddCircle';
 import Icon from '@material-ui/core/Icon';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
+import Paper from '@material-ui/core/Paper';
 import Alert from 'AppComponents/Shared/Alert';
 import Progress from 'AppComponents/Shared/Progress';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -108,18 +106,16 @@ const styles = theme => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
-    expansionPanel: {
-        marginBottom: theme.spacing(1),
-    },
-    expansionPanelDetails: {
-        flexDirection: 'column',
-    },
     subHeading: {
         fontSize: '1rem',
         fontWeight: 400,
-        margin: 0,
+        marginBottom: 10,
         display: 'inline-flex',
         lineHeight: 1.5,
+    },
+    documentsPaper: {
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
     },
 });
  
@@ -506,46 +502,38 @@ class Listing extends React.Component {
 
                     {api.type=='HTTP' && (
                         <React.Fragment>
-                            <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded>
-                                <ExpansionPanelSummary>
-                                    <Typography className={classes.subHeading} variant='h6' component='h4'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Documents.Listing.documents.generated.title'
-                                            defaultMessage='Generated Document'
-                                        />
-                                    </Typography>
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
-                                    <div>
-                                        <ViewDocument
-                                            cla
-                                            docName={api.name+'_doc'}
-                                            apiType={api.apiType}
-                                            apiId={this.apiId}
-                                            api
-                                            className={classes.genDocumentButton}
-                                        />
-                                    </div>
-                                </ExpansionPanelDetails>
-                            </WrappedExpansionPanel>
+                            <Paper className={classes.documentsPaper}>
+                                <Typography className={classes.subHeading} variant='h6' component='h4'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Documents.Listing.documents.generated.title'
+                                        defaultMessage='Generated Document'
+                                    />
+                                </Typography>
+                                <div>
+                                    <ViewDocument
+                                        cla
+                                        docName={api.name+'_doc'}
+                                        apiType={api.apiType}
+                                        apiId={this.apiId}
+                                        api
+                                        className={classes.genDocumentButton}
+                                    />
+                                </div>
+                            </Paper>
                         </React.Fragment>
                     )}
 
                     {api.type=='HTTP' && docs && docs.length > 0 && (
                         <React.Fragment>
-                            <WrappedExpansionPanel className={classes.expansionPanel}>
-                                <ExpansionPanelSummary>
+                            <Paper className={classes.documentsPaper}>
                                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                                         <FormattedMessage
                                             id='Apis.Details.Documents.Listing.documents.uploaded.title'
                                             defaultMessage='Uploaded Documents'
                                         />
                                     </Typography>
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
                                     <MUIDataTable title='' data={docs} columns={columns} options={options} />
-                                </ExpansionPanelDetails>
-                            </WrappedExpansionPanel>
+                            </Paper>
                         </React.Fragment>
                     )}
                     

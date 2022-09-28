@@ -17,7 +17,6 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
-import { injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import { API } from '@stoplight/elements';
 import './elements.css';
@@ -29,7 +28,6 @@ const styles = () => ({
     generatedDocument: {
         width: '100%',
         margin: 50,
-        paddingRight: 100,
     },
 });
 
@@ -73,4 +71,4 @@ function GenerateDocument(props) {
     );
 }
 
-export default injectIntl(withStyles(styles)(GenerateDocument));
+export default withStyles(styles)(GenerateDocument);

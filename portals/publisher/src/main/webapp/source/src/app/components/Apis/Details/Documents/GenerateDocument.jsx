@@ -20,6 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { API } from '@stoplight/elements';
 // Manually imported from stoplightio/elements and wrapped in 'apim_elements' id
 import './elements.css';
+// import '@stoplight/elements/styles.min.css';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import YAML from 'js-yaml';

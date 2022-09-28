@@ -120,6 +120,9 @@ export default function Breadcrumb(props) {
     history.listen((location) => {
         detectCurrentMenu(location);
     });
+    useEffect(() => {
+        detectCurrentMenu();
+    }, [breadcrumbDocument]);
     return (
         <div className={classes.root}>
             <Box display='flex' flexDirection='row' alignItems='center'>
