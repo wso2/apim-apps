@@ -252,6 +252,13 @@ export default class User {
     isAdmin() {
         return this.scopes.includes('apim:admin');
     }
+
+    /**
+     * Check whether the current user has creator role or not
+     */
+    isCreator() {
+        return this.scopes.includes('apim:api_create');
+    }
 }
 
 User.CONST = {
