@@ -17,7 +17,6 @@
  */
 
 import Utils from "@support/utils";
-import { it } from "mocha";
 
 describe("creating document", () => {
     const { publisher, password, } = Utils.getUserInfo();
