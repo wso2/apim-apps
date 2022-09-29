@@ -19,6 +19,9 @@
 import Utils from "@support/utils";
 
 describe("prototype apis with security enabled", () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+      });
     const userName = 'admin';
     const password = 'admin';
     const apiName="Prototyped_sample3";

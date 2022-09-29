@@ -20,6 +20,9 @@ import PublisherComonPage from "../../../support/pages/publisher/PublisherComonP
 const publisherComonPage = new PublisherComonPage();
 
 describe("prototype apis with security disabled", () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+      });
     const userName = 'admin';
     const password = 'admin';
     const apiName="Prototyped_sample1";
