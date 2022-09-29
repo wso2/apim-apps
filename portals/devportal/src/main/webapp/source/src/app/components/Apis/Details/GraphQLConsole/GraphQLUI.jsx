@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import GraphiQLExplorer from 'graphiql-explorer';
 import Collapse from '@material-ui/core/Collapse';
-import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
@@ -105,7 +104,8 @@ export default function GraphQLUI(props) {
         return createGraphiQLFetcher({
             headers,
             url: URLs ? URLs.https : null,
-            legacyWsClient: new SubscriptionClient(wsUrl + '?access_token=' + accessTokenProvider(), { reconnect: false, lazy: true }),
+            subscriptionUrl: wsUrl === null || wsUrl === undefined ? null
+                : wsUrl + '?access_token=' + accessTokenProvider(),
         });
     }
 
