@@ -173,6 +173,10 @@ function DocList(props) {
     useEffect(() => {
         setbreadcrumbDocument(viewDocument.name);
     }, []);
+    useEffect(() => {
+        setbreadcrumbDocument(selectedDoc.name);
+        setViewDocument(selectedDoc);
+    }, [selectedDoc]);
     return (
         <>
             <div className={classes.title}>
@@ -186,7 +190,7 @@ function DocList(props) {
                 <Autocomplete
                     autoComplete
                     autoFocus
-                    defaultValue={selectedDoc}
+                    value={selectedDoc}
                     id='document-autocomplete'
                     className={classes.autocomplete}
                     options={documentList}
