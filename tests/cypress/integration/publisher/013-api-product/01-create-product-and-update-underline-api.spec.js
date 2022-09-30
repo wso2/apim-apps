@@ -17,6 +17,9 @@
 import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+      });
     const { publisher, password, } = Utils.getUserInfo();
     const productName = Utils.generateName();
     const apiName = Utils.generateName();
