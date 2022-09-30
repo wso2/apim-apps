@@ -581,6 +581,7 @@ class Details extends React.Component {
                                 iconText='docs'
                                 to={pathPrefix + 'documents'}
                                 open={open}
+                                id='left-menu-documents'
                             />
 
                         )}

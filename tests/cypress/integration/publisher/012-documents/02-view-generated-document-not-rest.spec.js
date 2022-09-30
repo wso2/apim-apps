@@ -17,23 +17,27 @@
  */
 
 import Utils from "@support/utils";
-import { it } from "mocha";
 
-describe("creating document", () => {
+const genApiId = 'sample-apiid-gendoc';
+const genApiName = 'sample-api-gendoc';
+const documentName = 'api_document';
+const documentSummary = 'api document summery';
+
+describe("View generated document for graphql apis", () => {
     const { publisher, password, } = Utils.getUserInfo();
-
     before(function() {
         cy.loginToPublisher(publisher, password);
     })
     it.only("Creating inline document", () => {
-        const documentName = 'api_document';
-        const documentSummary = 'api document summery';
-        Utils.addAPI({}).then((apiId) => {
+        cy.createGraphqlAPIfromFile(genApiName, '1.0.0', '/genApiName', 'api_artifacts/sample.graphql').then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemdocuments').click();
 
-            cy.get('[data-testid="add-document-btn"]').click();
+            //Checking if the generated document is not rendered
+            cy.get('[data-testid="view-generated-document-btn"]').should('not.exist');
+
+            cy.get('#add-new-document-btn').click();
             cy.get('#doc-name').type(documentName);
             cy.get('#doc-summary').click();
             cy.get('#doc-summary').type(documentSummary);
@@ -44,8 +48,22 @@ describe("creating document", () => {
             // Checking it's existence
             cy.get('table a').contains(documentName).should('be.visible');
 
-            // Test is done. Now delete the api
-            Utils.deleteAPI(apiId);
+            Utils.publishAPI(apiId).then((serverResponse) => {
+                console.log(serverResponse);
+                cy.logoutFromPublisher();
+            });
         });
     });
+    it.only("Viewing generated document in devportal", () => {
+        const { developer, password, } = Utils.getUserInfo();
+        cy.loginToDevportal(developer, password);
+        cy.get(`[area-label="Go to ${genApiName}"]`, { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#left-menu-documents').click();
+        cy.get('#apim_elements').should('not.exist');
+    });
+
+    after(function() {
+        // Test is done. Now delete the api
+        Utils.deleteAPI(genApiId);
+    })
 });

@@ -138,7 +138,9 @@ export default function Breadcrumb(props) {
                         </MUILink>
                     ) }
                     { (selected.route === 'documents' && !document) && <Typography color='textPrimary'>{selected.text}</Typography> }
-                    { (selected.route === 'documents' && document) && <Typography color='textPrimary'>{breadcrumbDocument}</Typography> }
+                    { (selected.route === 'documents' && document) && (
+                        <Typography color='textPrimary' data-testid='breadcrumbDocument'>{breadcrumbDocument}</Typography>
+                    )}
                     { (selected.route !== 'documents') && <Typography color='textPrimary'>{selected.text}</Typography> }
                 </Breadcrumbs>
             </Box>

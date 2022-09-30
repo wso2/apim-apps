@@ -18,19 +18,27 @@
 
 import Utils from "@support/utils";
 
-describe("creating document", () => {
-    const { publisher, password, } = Utils.getUserInfo();
+const genApiId = 'sample-apiid-gendoc';
+const genApiName = 'sample-api-gendoc';
+const documentName = 'api_document';
+const documentSummary = 'api document summery';
 
+describe("View generated document for rest apis", () => {
+    const { publisher, password, } = Utils.getUserInfo();
     before(function() {
         cy.loginToPublisher(publisher, password);
     })
     it.only("Creating inline document", () => {
-        const documentName = 'api_document';
-        const documentSummary = 'api document summery';
-        Utils.addAPI({}).then((apiId) => {
+        Utils.addAPIWithEndpoints({ apiId: genApiId, name: genApiName }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemdocuments').click();
+
+            //Checking if the generated document is rendered
+            cy.get('[data-testid="view-generated-document-btn"]').should('be.visible');
+            cy.get('[data-testid="view-generated-document-btn"]').click();
+            cy.get('h1').contains(genApiName).should('be.visible');
+            cy.get('[aria-label="Close"]').click();
 
             cy.get('[data-testid="add-document-btn"]').click();
             cy.get('#doc-name').type(documentName);
@@ -43,8 +51,17 @@ describe("creating document", () => {
             // Checking it's existence
             cy.get('table a').contains(documentName).should('be.visible');
 
-            // Test is done. Now delete the api
-            Utils.deleteAPI(apiId);
+            Utils.publishAPI(apiId);
         });
+    });
+    it.only("Viewing generated document in devportal", () => {
+        const { developer, password, } = Utils.getUserInfo();
+        cy.loginToDevportal(developer, password);
+        cy.get(`[area-label="Go to ${genApiName}"]`, { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#left-menu-documents').click();
+        cy.get('#apim_elements').should('be.visible');
+        cy.get('#document-autocomplete').should('have.value', 'Default');
+        // Test is done. Now delete the api
+        Utils.deleteAPI(genApiId);
     });
 });
