@@ -88,6 +88,7 @@ const AdvertiseInfo = (props) => {
             endpointConfig,
         },
         setIsOpen,
+        setIsDisabled,
     } = props;
     const {
         allRevisions,
@@ -128,12 +129,21 @@ const AdvertiseInfo = (props) => {
         switch (name) {
             case 'apiExternalProductionEndpoint':
                 setValidApiExternalProductionEndpoint(validateUrl(value, false));
+                setIsDisabled(!(validateUrl(value, false) && 
+                    validateUrl(advertiseInfo.apiExternalSandboxEndpoint) && 
+                    validateUrl(advertiseInfo.originalDevPortalUrl)));
                 break;
             case 'apiExternalSandboxEndpoint':
                 setValidApiExternalSandboxEndpoint(validateUrl(value));
+                setIsDisabled(!(validateUrl(advertiseInfo.apiExternalProductionEndpoint, false) && 
+                    validateUrl(value) && 
+                    validateUrl(advertiseInfo.originalDevPortalUrl)));
                 break;
             default:
                 setValidOriginalDevPortalUrl(validateUrl(value));
+                setIsDisabled(!(validateUrl(advertiseInfo.apiExternalProductionEndpoint, false) && 
+                    validateUrl(advertiseInfo.apiExternalSandboxEndpoint) && 
+                    validateUrl(value)));
                 break;
         }
         configDispatcher({ action: name, value });
@@ -146,6 +156,11 @@ const AdvertiseInfo = (props) => {
         } else if (value === 'true' && lifeCycleStatus === 'PUBLISHED') {
             configDispatcher({ action: 'policies', value: oldPolicies });
             configDispatcher({ action: 'endpointConfig', value: oldEndpointConfig });
+        }
+        if (value === 'true') {
+            setIsDisabled(!(validateUrl(advertiseInfo.apiExternalProductionEndpoint, false) && 
+                validateUrl(advertiseInfo.apiExternalSandboxEndpoint) && 
+                validateUrl(advertiseInfo.originalDevPortalUrl)));
         }
     };
 
