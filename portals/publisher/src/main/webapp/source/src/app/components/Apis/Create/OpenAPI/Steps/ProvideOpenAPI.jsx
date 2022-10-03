@@ -103,10 +103,10 @@ export default function ProvideOpenAPI(props) {
                         isValid: isValidURL, info, content, errors,
                     },
                 } = response;
-                const formattedConent = JSON.stringify(JSON.parse(content), null, 2);
-                lint(formattedConent);
-                inputsDispatcher({ action: 'importingContent', value: formattedConent });
                 if (isValidURL) {
+                    const formattedConent = JSON.stringify(JSON.parse(content), null, 2);
+                    lint(formattedConent);
+                    inputsDispatcher({ action: 'importingContent', value: formattedConent });
                     info.content = content;
                     inputsDispatcher({ action: 'preSetAPI', value: info });
                     setValidity({ ...isValid, url: null });
@@ -121,6 +121,7 @@ export default function ProvideOpenAPI(props) {
                 onValidate(false);
                 setIsValidating(false);
                 console.error(error);
+                
             });
         }, 750),
         [],
