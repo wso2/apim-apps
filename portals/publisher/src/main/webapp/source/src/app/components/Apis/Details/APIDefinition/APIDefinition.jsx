@@ -712,8 +712,10 @@ class APIDefinition extends React.Component {
         } = this.state;
 
         const {
-            classes, resourceNotFountMessage, api,
+            classes, resourceNotFountMessage, api, match,
         } = this.props;
+
+        const isApiProduct = match.path.search('/api-products/') !== -1 ;
 
         let downloadLink;
         let fileName;
@@ -784,7 +786,7 @@ class APIDefinition extends React.Component {
                                 />
                             </Button>
                         ) : (
-                            !(graphQL || api.type === API.CONSTS.APIProduct) && (
+                            !(graphQL || isApiProduct) && (
                                 <Button
                                     size='small'
                                     className={classes.button}
@@ -800,7 +802,7 @@ class APIDefinition extends React.Component {
                                 </Button>
                             )
                         )}
-                        {api.type !== API.CONSTS.APIProduct && (
+                        {!isApiProduct && (
                             <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
                                 editAndImport={this.openEditorToImport}/>
                         )}

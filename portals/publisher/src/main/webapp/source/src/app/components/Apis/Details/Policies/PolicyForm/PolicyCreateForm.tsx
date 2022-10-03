@@ -97,6 +97,7 @@ function policyReducer(state: NewPolicyState, action: any) {
                         id: uuidv4(),
                         name: null,
                         displayName: null,
+                        version: null,
                         description: '',
                         required: false,
                         type: 'String',
@@ -162,6 +163,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     const classes = useStyles();
     const initialState: NewPolicyState = {
         displayName: null,
+        version: null,
         description: '',
         applicableFlows: ['request', 'response', 'fault'],
         supportedGateways: ['Synapse'],
@@ -175,6 +177,9 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
 
         // Display name current state validation
         if (!state.displayName || state.displayName === '') hasError = true;
+
+        // Display name current state validation
+        if (!state.version || state.version === '') hasError = true;
 
         // Applicable flows current state validation
         if (state.applicableFlows.length === 0) hasError = true;
@@ -210,6 +215,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         setIsFormDisabled(hasError);
     }, [
         state.displayName,
+        state.version,
         state.applicableFlows,
         state.supportedGateways,
         state.policyAttributes,
@@ -226,6 +232,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
             return {
                 name: attribute.name,
                 displayName: attribute.displayName,
+                version: attribute.version,
                 description: attribute.description,
                 required: attribute.required,
                 type: attribute.type,
@@ -243,6 +250,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 category: 'Mediation',
                 name: state.displayName.replace(/[^A-Za-z0-9]+/gi, ''),
                 displayName: state.displayName,
+                version: 'v' + state.version,
                 description: state.description,
                 applicableFlows: state.applicableFlows,
                 supportedGateways: state.supportedGateways,
@@ -258,6 +266,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
             {/* General details of policy */}
             <GeneralDetails
                 displayName={state.displayName}
+                version={state.version}
                 description={state.description}
                 applicableFlows={state.applicableFlows}
                 dispatch={dispatch}

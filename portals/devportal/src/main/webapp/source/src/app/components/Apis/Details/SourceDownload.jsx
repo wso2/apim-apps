@@ -121,6 +121,27 @@ function SourceDownload(props) {
                 }));
             });
     };
+
+    /**
+     * Downloads the asyncapi specification of the api for the provided environment
+     *
+     * @param {string} apiId uuid of the API
+     * @param {string} environment name of the environment
+     */
+    const downloadAsync = (apiId, environment) => {
+        const promiseAsync = apiClient.getAsyncApiSpecificationByAPIIdAndEnvironment(apiId, environment);
+        promiseAsync
+            .then((done) => {
+                Utils.downloadFile(done);
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Environments.download.asyncapi.error',
+                    defaultMessage: 'Error downloading the AsyncAPI Specification',
+                }));
+            });
+    };
     if (
         api.type === 'SOAP') {
         return (
@@ -169,6 +190,33 @@ function SourceDownload(props) {
                     <FormattedMessage
                         id='Apis.Details.Environments.download.swagger.text'
                         defaultMessage='Download Swagger'
+                    />
+                </MUILink>
+            </Tooltip>
+        );
+    }
+    if (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC') {
+        return (
+            <Tooltip
+                title={(
+                    <FormattedMessage
+                        id='Apis.Details.Environments.download.asyncapi'
+                        defaultMessage='AsyncAPI Specification'
+                    />
+                )}
+                placement='right'
+                className={classes.iconStyle}
+            >
+                <MUILink
+                    to='#'
+                    onClick={() => downloadAsync(api.id, selectedEndpoint.environmentName)}
+                    className={classes.downloadLink}
+                    id='swagger-download-btn'
+                >
+                    <CloudDownloadRounded className={classes.buttonIcon} />
+                    <FormattedMessage
+                        id='Apis.Details.Environments.download.asyncapi.text'
+                        defaultMessage='Download AsyncAPI Specification'
                     />
                 </MUILink>
             </Tooltip>

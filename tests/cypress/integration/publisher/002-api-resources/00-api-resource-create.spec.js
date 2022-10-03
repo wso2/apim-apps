@@ -19,7 +19,9 @@
 import Utils from "@support/utils";
 
 describe("Resource add edit operations", () => {
-
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+      });
     const { publisher, password, } = Utils.getUserInfo();
     const target = '/test';
     let testApiId;

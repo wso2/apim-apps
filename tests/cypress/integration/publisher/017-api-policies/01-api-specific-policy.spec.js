@@ -39,6 +39,7 @@ describe("Common Policies", () => {
             //Create API Specific Policy
             cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#name').type('Add Header sample test');
+            cy.get('#version').type('1');
             cy.get('input[name="description"]').type('Sample add header policy description');
             cy.get('#fault-select-check-box').uncheck()
 

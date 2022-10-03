@@ -189,11 +189,11 @@ export default function CustomizedStepper() {
         activeStep = 0;
     } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
         && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
-        activeStep = 3;
+        activeStep = steps.length - 1;
     } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
         && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
         && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
-        activeStep = 4;
+        activeStep = steps.length;
     }
 
     useEffect(() => {

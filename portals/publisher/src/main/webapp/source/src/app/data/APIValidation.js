@@ -98,7 +98,7 @@ const apiSchema = Joi.extend((joi) => ({
                 const inputValue = value.trim().toLowerCase();
                 const composeQuery = '?query=' + inputValue;
                 const composeQueryJSON = queryString.parse(composeQuery);
-                composeQueryJSON.limit = 1;
+                composeQueryJSON.limit = 10;
                 composeQueryJSON.offset = 0;
                 return API.search(composeQueryJSON);
             },

@@ -47,7 +47,7 @@ public class Util {
      *
      * @param path    required parameter
      * @param context required parameter
-     * @return Map<String, Object>
+     * @return Map of read json file
      * @throws FileNotFoundException
      */
     public static Map<String, Object> readJsonFile(String path, ServletContext context) throws FileNotFoundException {
@@ -62,7 +62,7 @@ public class Util {
      *
      * @param json required parameter
      * @param path required parameter
-     * @return Map<String, Object>
+     * @return value in the given path of the nested tree map
      */
     public static Object readJsonObj(Map json, String path) {
         String[] pathStrings = path.split("\\.");
