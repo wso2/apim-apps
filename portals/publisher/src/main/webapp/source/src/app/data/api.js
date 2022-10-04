@@ -1976,6 +1976,17 @@ class API extends Resource {
     }
 
     /**
+     * Get settings of an API
+     */
+     static getLinterCustomRules() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const promisedLinterCustomeRules = apiClient.then(client => {
+            return client.apis['Linter Custom Rules'].getLinterCustomRules();
+        });
+        return promisedLinterCustomeRules.then(response => response.body);
+    }
+
+    /**
      *
      * Static method to search apis and documents based on content
      * @static
