@@ -148,22 +148,6 @@ export default class Protected extends Component {
     }
 
     /**
-     * Generate page title from theme config.
-     * @param {object} theme object.
-     * @returns {JSX} link dom tag.
-     */
-    getTitle(localTheme) {
-        const {
-            custom: {
-                title: {
-                    prefix, suffix,
-                },
-            },
-        } = localTheme;
-        return (prefix + suffix);
-    }
-
-    /**
      *
      * @param {any} settings Publisher settings object
      */
