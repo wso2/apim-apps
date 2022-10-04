@@ -187,6 +187,17 @@ class AuthManager {
 
     /**
      *
+     * Check whether user is a admin user
+     * @static
+     * @returns {Boolean} isAdminUser
+     * @memberof AuthManager
+     */
+    static isAdminUser() {
+        return AuthManager.getUser() && AuthManager.getUser().scopes.includes ('apim:admin');
+    }
+
+    /**
+     *
      * @param {*} scopesAllowedToEdit
      * @param {*} api
      */
