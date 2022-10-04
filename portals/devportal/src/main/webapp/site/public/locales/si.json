@@ -316,7 +316,7 @@
  "Base.Errors.ResourceNotFound.more.links": "ඔබට පහත සබැඳි පරීක්ෂා කළ හැකිය",
  "Base.Header.headersearch.SearchUtils.lcState.published": "නිෂ්පාදනය",
  "Base.Header.headersearch.SearchUtils.lcState.all": "සියලුම",
- "Base.index.copyright.text": "WSO2 API-M v3.2.0 | © 2020 WSO2 Inc.",
+ "Base.index.copyright.text": "WSO2 API-M v4.1.0 | © 2022 WSO2 LLC",
  "Base.Header.headersearch.SearchUtils.lcState.prototyped": "මූලාකෘති",
  "Base.Header.headersearch.HeaderSearch.tooltip.option2": "API සපයන්නා විසින් [සින්ටැක්ස් - සැපයුම්කරු: xxxx]",
  "Base.Header.headersearch.HeaderSearch.tooltip.option3": "API අනුවාදය අනුව [සින්ටැක්ස් - අනුවාදය: xxxx]",
