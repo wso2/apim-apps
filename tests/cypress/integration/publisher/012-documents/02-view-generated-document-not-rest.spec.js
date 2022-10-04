@@ -19,7 +19,7 @@
 import Utils from "@support/utils";
 
 const genApiId = 'sample-apiid-gendoc';
-const genApiName = 'sample-api-gendoc';
+const genApiName = 'api-gendoc-other';
 const documentName = 'api_document';
 const documentSummary = 'api document summery';
 
