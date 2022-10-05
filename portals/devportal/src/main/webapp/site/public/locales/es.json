@@ -327,7 +327,7 @@
  "Base.Header.headersearch.SearchUtils.lcState.prototyped": "Prototipo",
  "Base.index.settingsMenu.alertConfiguration": "Configurar alertas",
  "Base.Header.headersearch.HeaderSearch.tooltip.option4": "Por contexto [Sintaxis - contexto: xxxx]",
- "Base.index.copyright.text": "WSO2 API-M v3.2.0 | © 2020 WSO2 Inc",
+ "Base.index.copyright.text": "WSO2 API-M v4.1.0 | © 2022 WSO2 LLC",
  "Base.Header.headersearch.HeaderSearch.tooltip.option9": "Por etiqueta Microgateway [Sintaxis - etiqueta: xxxx]",
  "Base.Header.headersearch.HeaderSearch.tooltip.option7": "Por subcontexto [Sintaxis - subcontexto: xxxx]",
  "Change.Password.current.password.incorrect": "Contraseña actual incorrecta",
