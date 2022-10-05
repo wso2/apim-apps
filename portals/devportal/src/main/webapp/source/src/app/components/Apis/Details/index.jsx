@@ -56,7 +56,7 @@ const Sdk = lazy(() => import('./Sdk' /* webpackChunkName: "APISdk" */));
 const AsyncApiDefinition = lazy(() => import('./Definitions/AsyncApi/AsyncApiDefinitionUI'));
 
 const LoadableSwitch = withRouter((props) => {
-    const { match, api } = props;
+    const { match, api, setbreadcrumbDocument } = props;
     const { apiUuid } = match.params;
     const path = '/apis/';
     const redirectURL = path + apiUuid + '/overview';
@@ -76,7 +76,10 @@ const LoadableSwitch = withRouter((props) => {
             <Switch>
                 <Redirect exact from='/apis/:apiUuid' to={redirectURL} />
                 <Route path='/apis/:apiUuid/overview' render={() => <Overview {...props} />} />
-                <Route path='/apis/:apiUuid/documents' component={Documents} />
+                <Route
+                    path='/apis/:apiUuid/documents'
+                    render={() => <Documents {...props} setbreadcrumbDocument={setbreadcrumbDocument} />}
+                />
                 <Route path='/apis/:apiUuid/definition' component={AsyncApiDefinition} />
                 <Route path='/apis/:apiUuid/solaceTopicsInfo' component={SolaceTopicsInfo} />
                 <Route exact path='/apis/:apiUuid/credentials/wizard' component={Wizard} />
@@ -318,11 +321,13 @@ class Details extends React.Component {
             applicationsAvailable: [],
             item: 1,
             xo: null,
+            breadcrumbDocument: '',
         };
         this.setDetailsAPI = this.setDetailsAPI.bind(this);
         this.api_uuid = this.props.match.params.apiUuid;
         this.handleDrawerClose = this.handleDrawerClose.bind(this);
         this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
+        this.setbreadcrumbDocument = this.setbreadcrumbDocument.bind(this);
     }
 
     /**
@@ -343,6 +348,14 @@ class Details extends React.Component {
             this.api_uuid = newApiUuid;
             this.updateSubscriptionData();
         }
+    }
+
+    /**
+     * @param {string} breadcrumbDocument
+     * @memberof Details
+     */
+    setbreadcrumbDocument(breadcrumbDocument) {
+        this.setState({ breadcrumbDocument });
     }
 
     /**
@@ -399,7 +412,9 @@ class Details extends React.Component {
             classes, theme, intl,
         } = this.props;
         const user = AuthManager.getUser();
-        const { api, notFound, open } = this.state;
+        const {
+            api, notFound, open, breadcrumbDocument,
+        } = this.state;
         const {
             custom: {
                 leftMenu: {
@@ -559,13 +574,14 @@ class Details extends React.Component {
                                 text={(
                                     <FormattedMessage
                                         id='Apis.Details.index.documentation'
-                                        defaultMessage='Documentation'
+                                        defaultMessage='Documents'
                                     />
                                 )}
                                 route='documents'
                                 iconText='docs'
                                 to={pathPrefix + 'documents'}
                                 open={open}
+                                id='left-menu-documents'
                             />
 
                         )}
@@ -613,7 +629,9 @@ class Details extends React.Component {
                         { [classes.contentExpandView]: !open },
                     )}
                 >
-                    <Breadcrumb />
+                    <Breadcrumb
+                        breadcrumbDocument={breadcrumbDocument}
+                    />
                     <div
                         className={classNames(
                             { [classes.contentLoader]: position === 'horizontal' },
@@ -623,6 +641,7 @@ class Details extends React.Component {
                         <LoadableSwitch
                             api={api}
                             updateSubscriptionData={this.updateSubscriptionData}
+                            setbreadcrumbDocument={this.setbreadcrumbDocument}
                         />
                     </div>
                 </div>

@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ResourceNotFound } from 'AppComponents/Base/Errors/index';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -29,6 +29,7 @@ import API from 'AppData/api';
 import Progress from 'AppComponents/Shared/Progress';
 import { matchPath } from 'react-router';
 import DocList from 'AppComponents/Apis/Details/Documents/DocList';
+import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 
 const styles = (theme) => ({
     paper: {
@@ -135,7 +136,8 @@ const styles = (theme) => ({
  * @returns {JSX} Returning JSX to render.
  */
 function Documents(props) {
-    const { classes, intl } = props;
+    const { api } = useContext(ApiContext);
+    const { classes, intl, setbreadcrumbDocument } = props;
     const { location: { pathname } } = props;
     let match = matchPath(pathname, {
         path: '/apis/:apiUuid/documents/:documentId',
@@ -148,42 +150,31 @@ function Documents(props) {
     const [selectedDoc, setSelectedDoc] = useState(null);
 
     useEffect(() => {
+        if (selectedDoc) {
+            documentId = selectedDoc.documentId;
+        }
+    }, [selectedDoc]);
+    useEffect(() => {
         const restApi = new API();
         const promisedApi = restApi.getDocumentsByAPIId(apiId);
         promisedApi
             .then((response) => {
                 const overviewDoc = response.body.list.filter((item) => item.otherTypeName !== '_overview');
-                const types = [];
-                if (overviewDoc.length > 0) {
-                    // Rearanging the response to group them by the sourceType property.
+                if (api.type === 'HTTP') {
+                    const swaggerDoc = { documentId: 'default', name: 'Default', type: '' };
+                    overviewDoc.unshift(swaggerDoc);
+                }
+                if (!documentId && overviewDoc.length > 0) {
+                    setSelectedDoc(overviewDoc[0]);
+                } else if (documentId && overviewDoc.length > 0) {
                     for (let i = 0; i < overviewDoc.length; i++) {
-                        const selectedType = overviewDoc[i].type;
-                        let hasType = false;
-                        for (let j = 0; j < types.length; j++) {
-                            if (selectedType === types[j].docType) {
-                                types[j].docs.push(overviewDoc[i]);
-                                hasType = true;
-                            }
-                        }
-                        if (!hasType) {
-                            // Adding a new type entry
-                            types.push({
-                                docType: selectedType,
-                                docs: [overviewDoc[i]],
-                            });
-                        }
-                        if (overviewDoc[i].documentId === documentId) {
+                        if (documentId === overviewDoc[i].documentId) {
                             setSelectedDoc(overviewDoc[i]);
+                            break;
                         }
                     }
                 }
-                // Sort the documents by name
-                types.forEach((a) => a.docs.sort((b, c) => ((b.name.toUpperCase()
-                    > c.name.toUpperCase()) ? 1 : -1)));
-                changeDocumentList(types);
-                if (!documentId && types.length > 0) {
-                    setSelectedDoc(types[0].docs[0]);
-                }
+                changeDocumentList(overviewDoc);
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -197,7 +188,7 @@ function Documents(props) {
                     }));
                 }
             });
-    }, []);
+    }, [apiId]);
     useEffect(() => {
         if (documentList) {
             match = matchPath(pathname, {
@@ -206,11 +197,10 @@ function Documents(props) {
                 strict: false,
             });
             documentId = match ? match.params.documentId : null;
-            for (const type of documentList) {
-                for (const doc of type.docs) {
-                    if (doc.documentId === documentId) {
-                        setSelectedDoc(doc);
-                    }
+            for (let i = 0; i < documentList.length; i++) {
+                if (documentId === documentList[i].documentId) {
+                    setSelectedDoc(documentList[i]);
+                    break;
                 }
             }
         }
@@ -228,7 +218,7 @@ function Documents(props) {
             </>
         );
     }
-    if (documentList && documentList.length === 0) {
+    if (documentList && documentList.length === 0 && api.type !== 'HTTP') {
         return (
             <>
                 <Typography variant='h4' component='h2' className={classes.titleSub}>
@@ -237,42 +227,50 @@ function Documents(props) {
                         defaultMessage='API Documentation'
                     />
                 </Typography>
-                <div className={classes.genericMessageWrapper}>
-                    <InlineMessage type='info' className={classes.dialogContainer}>
-                        <Typography variant='h5' component='h3'>
-                            <FormattedMessage
-                                id='Apis.Details.Documents.Documentation.no.docs'
-                                defaultMessage='No Documents Available'
-                            />
-                        </Typography>
-                        <Typography component='p'>
-                            <FormattedMessage
-                                id='Apis.Details.Documents.Documentation.no.docs.content'
-                                defaultMessage='No documents are available for this API'
-                            />
-                        </Typography>
-                    </InlineMessage>
-                </div>
+                {documentId === null ? (
+                    <div className={classes.genericMessageWrapper}>
+                        <InlineMessage type='info' className={classes.dialogContainer}>
+                            <Typography variant='h5' component='h3'>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.Documentation.no.docs'
+                                    defaultMessage='No Documents Available'
+                                />
+                            </Typography>
+                            <Typography component='p'>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.Documentation.no.docs.content'
+                                    defaultMessage='No documents are available for this API'
+                                />
+                            </Typography>
+                        </InlineMessage>
+                    </div>
+                ) : (
+                    <ResourceNotFound />
+                )}
             </>
         );
     }
-    if (!selectedDoc) {
+    if (!selectedDoc && api.type !== 'HTTP') {
         return (<Progress />);
     }
+
     return (
         <Switch>
-            <Redirect exact from={`/apis/${apiId}/documents`} to={`/apis/${apiId}/documents/${selectedDoc.documentId}`} />
-            <Route
-                path='/apis/:apiUuid/documents/:documentId'
-                render={() => (
-                    <DocList
-                        {...props}
-                        documentList={documentList}
-                        selectedDoc={selectedDoc}
-                        apiId={apiId}
-                    />
-                )}
-            />
+            { selectedDoc && <Redirect exact from={`/apis/${apiId}/documents`} to={`/apis/${apiId}/documents/${selectedDoc.documentId}`} />}
+            { selectedDoc && (
+                <Route
+                    path='/apis/:apiUuid/documents/:documentId'
+                    render={() => (
+                        <DocList
+                            {...props}
+                            documentList={documentList}
+                            selectedDoc={selectedDoc}
+                            apiId={apiId}
+                            setbreadcrumbDocument={setbreadcrumbDocument}
+                        />
+                    )}
+                />
+            )}
             <Route component={ResourceNotFound} />
         </Switch>
     );

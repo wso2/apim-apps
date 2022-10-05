@@ -47,8 +47,9 @@ const useStyles = makeStyles((theme) => {
 /**
  * @returns {JSX} breadcrumb
  */
-export default function Breadcrumb() {
+export default function Breadcrumb(props) {
     const { api } = useContext(ApiContext);
+    const { breadcrumbDocument } = props;
     const classes = useStyles();
     const history = useHistory();
     const intl = useIntl();
@@ -119,6 +120,9 @@ export default function Breadcrumb() {
     history.listen((location) => {
         detectCurrentMenu(location);
     });
+    useEffect(() => {
+        detectCurrentMenu();
+    }, [breadcrumbDocument]);
     return (
         <div className={classes.root}>
             <Box display='flex' flexDirection='row' alignItems='center'>
@@ -128,7 +132,16 @@ export default function Breadcrumb() {
                     <MUILink color='textPrimary' to={'/apis/' + api.id + '/overview'} component={Link}>
                         {api.name}
                     </MUILink>
-                    <Typography color='textPrimary'>{selected.text}</Typography>
+                    { (selected.route === 'documents' && document) && (
+                        <MUILink color='textPrimary' to={'/apis/' + api.id + '/documents/default'} component={Link}>
+                            {selected.text}
+                        </MUILink>
+                    ) }
+                    { (selected.route === 'documents' && !document) && <Typography color='textPrimary'>{selected.text}</Typography> }
+                    { (selected.route === 'documents' && document) && (
+                        <Typography color='textPrimary' data-testid='breadcrumbDocument'>{breadcrumbDocument}</Typography>
+                    )}
+                    { (selected.route !== 'documents') && <Typography color='textPrimary'>{selected.text}</Typography> }
                 </Breadcrumbs>
             </Box>
 

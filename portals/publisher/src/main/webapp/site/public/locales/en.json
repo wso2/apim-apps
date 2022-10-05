@@ -2823,6 +2823,12 @@
       "value": "Type"
     }
   ],
+  "Apis.Details.Documents.Listing.documents.generated.title": [
+    {
+      "type": 0,
+      "value": "Generated Document"
+    }
+  ],
   "Apis.Details.Documents.Listing.documents.listing.fetching.error.message": [
     {
       "type": 0,
@@ -2845,6 +2851,12 @@
     {
       "type": 0,
       "value": "Open"
+    }
+  ],
+  "Apis.Details.Documents.Listing.documents.uploaded.title": [
+    {
+      "type": 0,
+      "value": "Uploaded Documents"
     }
   ],
   "Apis.Details.Documents.Listing.loading": [
@@ -2959,6 +2971,12 @@
     {
       "type": 0,
       "value": "Summary"
+    }
+  ],
+  "Apis.Details.Documents.ViewDocument.view.document": [
+    {
+      "type": 0,
+      "value": "View Document"
     }
   ],
   "Apis.Details.EditScopes.Roles.Invalid": [
