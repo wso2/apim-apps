@@ -312,14 +312,14 @@ export default function Resources(props) {
      */
     function setSecurityDefScopesFromSpec(spec) {
         const openAPIVersion = getVersion(spec);
-        if (VERSIONS.V3.includes(openAPIVersion)) {
+        if (VERSIONS.V3.test(openAPIVersion)) {
             if (spec.components && spec.components.securitySchemes && spec.components.securitySchemes.default) {
                 const { flows } = spec.components.securitySchemes.default;
                 if (flows.implicit.scopes) {
                     setSecurityDefScopes(cloneDeep(flows.implicit.scopes));
                 }
             }
-        } else if (VERSIONS.V2.includes(openAPIVersion)) {
+        } else if (VERSIONS.V2.test(openAPIVersion)) {
             if (spec.securityDefinitions && spec.securityDefinitions.default) {
                 if (spec.securityDefinitions.default.scopes) {
                     setSecurityDefScopes(cloneDeep(spec.securityDefinitions.default.scopes));
@@ -333,13 +333,13 @@ export default function Resources(props) {
      */
     function setSpecScopesFromSecurityDefScopes() {
         const openAPIVersion = getVersion(openAPISpec);
-        if (VERSIONS.V3.includes(openAPIVersion)) {
+        if (VERSIONS.V3.test(openAPIVersion)) {
             if (openAPISpec.components
                 && openAPISpec.components.securitySchemes
                 && openAPISpec.components.securitySchemes.default) {
                 openAPISpec.components.securitySchemes.default.flows.implicit.scopes = securityDefScopes;
             }
-        } else if (VERSIONS.V2.includes(openAPIVersion)) {
+        } else if (VERSIONS.V2.test(openAPIVersion)) {
             if (openAPISpec.securityDefinitions && openAPISpec.securityDefinitions.default) {
                 openAPISpec.securityDefinitions.default.scopes = securityDefScopes;
             }
