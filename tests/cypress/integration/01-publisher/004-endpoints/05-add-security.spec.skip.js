@@ -15,6 +15,7 @@ describe("Add security to the endpoint", () => {
         const usernameLocal = 'admin';
         const passwordLocal = 'admin';
         cy.loginToPublisher(publisher, password);
+        cy.wait(2000);
         cy.createAPIWithoutEndpoint();
         cy.get('[data-testid="left-menu-itemendpoints"]').click();
         cy.get('[data-testid="http__rest_endpoint-start"]').click();

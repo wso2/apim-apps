@@ -37,7 +37,7 @@ describe("Generate keys from api details page", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();
-        cy.waint(2000);
+        cy.wait(2000);
         cy.loginToDevportal(developer, password);
 
         // Create an app and subscribe

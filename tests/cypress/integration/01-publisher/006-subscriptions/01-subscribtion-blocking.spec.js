@@ -39,6 +39,7 @@ describe("Subscription blocking", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();
+        cy.wait(3000);
         cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);
         cy.visit('/devportal/apis?tenant=carbon.super');
@@ -84,6 +85,7 @@ describe("Subscription blocking", () => {
     
             // Subscription blocking port in the publisher side.
             cy.logoutFromDevportal();
+            cy.wait(3000);
             cy.loginToPublisher(publisher, password);
             cy.get(`#${apiName}`).click();
     
@@ -110,6 +112,7 @@ describe("Subscription blocking", () => {
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
         cy.logoutFromDevportal();
+        cy.wait(2000);
         cy.loginToPublisher(publisher, password);
         cy.deleteApi(apiName, apiVersion);
 

@@ -10,7 +10,7 @@ describe("Runtime configuration", () => {
     before(function () {
         //cy.carbonLogin(carbonUsername, carbonPassword);
         //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.loginToPublisher(publisher, password);
     })
 
     const downloadMediator = (type) => {
@@ -49,17 +49,23 @@ describe("Runtime configuration", () => {
         });
     }
     it.only("Download mediation policies for In Flow, Out Flow, Fault Flow", () => {
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
 
         //Downloading
         downloadMediator('IN');
+        cy.wait(2000);
         downloadMediator('OUT');
+        cy.wait(2000);
         downloadMediator('FAULT');
+        cy.wait(2000);
 
         // Uploading
         uploadMediator('IN');
+        cy.wait(2000);
         uploadMediator('OUT');
+        cy.wait(2000);
         uploadMediator('FAULT');
     });
 

@@ -83,7 +83,7 @@ describe("Anonymous view apis", () => {
     it.only("Download swagger", () => {
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
-        cy.wait(3000);
+        cy.wait(1000);
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         cy.get('[data-testid="left-menu-overview"]').click();
@@ -101,7 +101,6 @@ describe("Anonymous view apis", () => {
         cy.loginToDevportal(developer, password);
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
-        cy.wait(3000);
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         cy.get('[data-testid="left-menu-sdk"]').click();
