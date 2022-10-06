@@ -29,9 +29,9 @@ describe("Anonymous view apis", () => {
     const apiContext = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
 
@@ -39,6 +39,7 @@ describe("Anonymous view apis", () => {
         cy.loginToPublisher(publisher, password);
         cy.createAndPublishAPIByRestAPIDesign(apiName, apiVersion, apiContext);
         cy.logoutFromPublisher();
+        cy.wait(2000);
         cy.loginToDevportal(developer, password);
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
@@ -118,8 +119,8 @@ describe("Anonymous view apis", () => {
         cy.deleteApi(apiName, apiVersion);
 
         // delete developer
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(developer);
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(developer);
+        //cy.deleteUser(publisher);
     })
 })

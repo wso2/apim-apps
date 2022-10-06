@@ -30,9 +30,9 @@ describe("Subscription blocking", () => {
     const apiContext = `anonymous${Math.floor(Math.random() * (100000 - 1 + 1) + 1)}`;
 
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
     
     it.only("Subscribe and unsubscribe to API from api details page", () => {
@@ -114,8 +114,8 @@ describe("Subscription blocking", () => {
         cy.deleteApi(apiName, apiVersion);
 
         // delete users
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(developer);
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(developer);
+        //cy.deleteUser(publisher);
     })
 })

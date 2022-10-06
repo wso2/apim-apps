@@ -8,9 +8,8 @@ describe("Add business information", () => {
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
     it.only("Add business information", () => {
@@ -19,6 +18,8 @@ describe("Add business information", () => {
         const techOwnerName = 'Big Cat';
         const techOwnerEmail = 'bigcat@wso2.com';
 
+        cy.loginToPublisher(publisher, password);
+        cy.wait(3000);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itembusinessinfo"]').click();
         cy.get('[data-testid="business-owner-name"]').click().type(ownerName);
@@ -40,7 +41,7 @@ describe("Add business information", () => {
           // Test is done. Now delete the api
           cy.deleteApi(apiName, apiVersion);
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

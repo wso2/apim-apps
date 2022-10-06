@@ -8,12 +8,12 @@ describe("Runtime configuration", () => {
     const apiVersion = '1.0.0';
 
     beforeEach(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
     it.only("Enable mutual ssl and upload cert", () => {
+        cy.loginToPublisher(publisher, password);
         const random_number = Math.floor(Date.now() / 1000);
         const alias = `alias${random_number}`;
 
@@ -49,7 +49,7 @@ describe("Runtime configuration", () => {
          // Test is done. Now delete the api
          cy.deleteApi(apiName, apiVersion);
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

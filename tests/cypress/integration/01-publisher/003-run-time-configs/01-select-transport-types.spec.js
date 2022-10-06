@@ -8,19 +8,25 @@ describe("Runtime configuration", () => {
     const apiVersion = '1.0.0';
 
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
 
     it.only("Select transport type", () => {
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
+        cy.wait(2000);
         cy.get('[data-testid="left-menu-itemRuntimeConfigurations"]').click();
+        cy.wait(2000);
         cy.get('[data-testid="transport-level-security-head"]').click();
+        cy.wait(2000);
         cy.get('[data-testid="http-transport"]').click();
+        cy.wait(2000);
         cy.get('[data-testid="save-runtime-configurations"]').click();
+        cy.wait(2000);
         cy.get('[data-testid="transport-level-security-head"]').click();
+        cy.wait(2000);
         cy.get('[data-testid="http-transport"] input').should('not.be.checked');
     });
 
@@ -29,7 +35,7 @@ describe("Runtime configuration", () => {
           cy.deleteApi(apiName, apiVersion);
 
         // delete publisher
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

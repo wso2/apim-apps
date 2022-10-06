@@ -29,9 +29,11 @@ describe("Create api with swagger file super tenant", () => {
         cy.reload();
         cy.carbonLogout();
     })
+
     const openApi2Create = () => {
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
+        //cy.wait(3000);
         cy.get('[data-testid="itest-id-createapi"]').click();
         cy.get('[data-testid="create-api-open-api"]').click();
         cy.get('[data-testid="open-api-url-select-radio"]').click();
@@ -61,6 +63,7 @@ describe("Create api with swagger file super tenant", () => {
 
     const openApi3Create = () => {
         cy.visit(`/publisher/apis`);
+        //cy.wait(3000);
         // select the option from the menu item
         cy.get('[data-testid="itest-id-createapi"]').click();
         cy.get('[data-testid="create-api-open-api"]').click();
@@ -91,23 +94,28 @@ describe("Create api with swagger file super tenant", () => {
             cy.logoutFromPublisher();
         });
     }
+
     it("Create API from swagger from file openapi 2", () => {
         cy.loginToPublisher(publisher, password);
+        cy.wait(3000);
         openApi2Create();
     });
 
     it("Create API from swagger from file openapi 3", () => {
         cy.loginToPublisher(publisher, password);
+        cy.wait(3000);
         openApi3Create();
     });
 
     it("Create API from swagger from file openapi 2 - tenant user", () => {
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        cy.wait(3000);
         openApi2Create();
     });
 
     it("Create API from swagger from file openapi 3 - tenant user", () => {
         cy.loginToPublisher(`${tenantUser}@${tenant}`, password);
+        cy.wait(3000);
         openApi3Create();
     });
 
@@ -119,8 +127,8 @@ describe("Create api with swagger file super tenant", () => {
         cy.carbonLogout();
 
         // delete other user
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 })

@@ -8,8 +8,8 @@ describe("Runtime configuration", () => {
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
@@ -41,6 +41,7 @@ describe("Runtime configuration", () => {
         cy.get('[data-testid="select-mediator-from-list"]').click();
         // save runtime configs
         cy.get('[data-testid="save-runtime-configurations"]').click();
+        //cy.wait(5000);
         cy.get(`[data-testid="mediation-edit-${type}"]`).then(() => {
             cy.get(`[data-testid="mediation-edit-${type}"]`).click();
 
@@ -66,7 +67,7 @@ describe("Runtime configuration", () => {
           // Test is done. Now delete the api
           cy.deleteApi(apiName, apiVersion);
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

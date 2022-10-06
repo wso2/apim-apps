@@ -8,15 +8,16 @@ describe("Add additional properties", () => {
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+
     })
 
     it.only("Add additional properties", () => {
         const prop = 'prop1';
         const propVal = 'prop1-val';
 
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemproperties"]').click();
 
@@ -43,7 +44,7 @@ describe("Add additional properties", () => {
           // Test is done. Now delete the api
           cy.deleteApi(apiName, apiVersion);
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

@@ -9,8 +9,8 @@ describe("Create a new version of API", () => {
     const carbonPassword = 'admin';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
     it.only("Create a new version of API", () => {
         cy.loginToPublisher(publisher, password);
@@ -32,7 +32,7 @@ describe("Create a new version of API", () => {
         cy.deleteApi(apiName, newVersion);
 
         // delete publisher user.
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

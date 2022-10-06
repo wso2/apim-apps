@@ -26,9 +26,9 @@ describe("Tryout API invocations", () => {
     const carbonPassword = 'admin';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
     it.only("Tryout API invocations from swagger console", () => {
         cy.loginToPublisher(publisher, password);
@@ -75,7 +75,7 @@ describe("Tryout API invocations", () => {
         // Test the console
         cy.get('#operations-pet-getPetById').click();
         cy.get('#operations-pet-getPetById .try-out__btn').click();
-        cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
+        //cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
         cy.get('#operations-pet-getPetById button.execute').click();
         cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
     });
@@ -93,8 +93,8 @@ describe("Tryout API invocations", () => {
         cy.deleteApi(apiName, apiVersion);
         
         // delete users
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(developer);
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(developer);
+        //cy.deleteUser(publisher);
     })
 });

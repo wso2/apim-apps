@@ -29,12 +29,12 @@ describe("Anonymous view apis", () => {
     let apiContext;
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
-        cy.reload();
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.reload();
-        cy.carbonLogout();
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        //cy.reload();
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.reload();
+        //cy.carbonLogout();
         cy.loginToPublisher(publisher, password);
 
         randomNumber = Math.floor(Math.random() * (100000 - 1 + 1) + 1);
@@ -83,7 +83,7 @@ describe("Anonymous view apis", () => {
     it.only("Download swagger", () => {
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
-
+        cy.wait(3000);
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         cy.get('[data-testid="left-menu-overview"]').click();
@@ -101,6 +101,7 @@ describe("Anonymous view apis", () => {
         cy.loginToDevportal(developer, password);
         cy.visit('/devportal/apis?tenant=carbon.super');
         cy.url().should('contain', '/apis?tenant=carbon.super');
+        cy.wait(3000);
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         cy.get('[data-testid="left-menu-sdk"]').click();
@@ -129,8 +130,8 @@ describe("Anonymous view apis", () => {
         cy.loginToPublisher(publisher, password);
         cy.deleteApi(apiName, apiVersion);
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(developer);
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(developer);
+        //cy.deleteUser(publisher);
     })
 })

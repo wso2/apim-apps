@@ -50,7 +50,7 @@ describe("Login logout from publisher as supper tenant", () => {
         })
     })
     after(() => {
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(tenantUser);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(tenantUser);
     })
 })

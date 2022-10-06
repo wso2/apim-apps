@@ -1,5 +1,7 @@
 import 'cypress-file-upload';
 
+//const commandDelay = 0;
+
 Cypress.Commands.add('carbonLogin', (username, password) => {
     Cypress.log({
         name: 'carbonLogin',
@@ -161,6 +163,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
     cy.visit(`/publisher/apis`);
+    cy.wait(5000);
     cy.get('[data-testid="itest-id-createapi"]', { timeout: 30000 });
     cy.get('[data-testid="itest-id-createapi"]').click();
     cy.get('[data-testid="itest-id-createdefault"]').click();
@@ -193,6 +196,7 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
     cy.visit(`/publisher/apis`);
+    cy.wait(5000);
     cy.get('[data-testid="itest-id-createapi"]', { timeout: 30000 });
     cy.get('[data-testid="itest-id-createapi"]').click();
     cy.get('[data-testid="itest-id-createdefault"]').click();
@@ -308,3 +312,13 @@ Cypress.Commands.add('logoutFromPublisher', () => {
     cy.get('#usernameUserInput').should('exist');
 })
 
+//for (const command of ['visit', 'click']) {
+//    Cypress.Commands.overwrite(command, (originalFn, ...args) => {
+//        const origVal = originalFn(...args);
+//       return new Promise((resolve) => {
+//            setTimeout(() => {
+//                resolve(origVal);
+//            }, commandDelay);
+//        });
+//    });
+//}

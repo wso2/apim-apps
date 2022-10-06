@@ -9,17 +9,18 @@ describe("Resource add edit operations", () => {
     const target = '/test';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
     beforeEach(function () {
-        cy.loginToPublisher(publisher, password);
+        //cy.loginToPublisher(publisher, password);
     })
 
     it.only("Add new resource", () => {
         const apiName = 'newapi' + Math.floor(Date.now() / 1000);
         const apiVersion = '1.0.0';
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         // Typing the resource name
         cy.get('[data-testid="left-menu-itemresources"]').click();
@@ -81,6 +82,7 @@ describe("Resource add edit operations", () => {
         const apiName = 'newapi' + Math.floor(Date.now() / 1000);
         const apiVersion = '1.0.0';
 
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         addApiAndResource(verb);
 
@@ -113,7 +115,7 @@ describe("Resource add edit operations", () => {
         const rateLimitName = '50KPerMin';
         const apiName = 'newapi' + Math.floor(Date.now() / 1000);
         const apiVersion = '1.0.0';
-        
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         addApiAndResource(verb);
         // Click the operation level radio button on the top
@@ -146,7 +148,8 @@ describe("Resource add edit operations", () => {
         const role = 'internal/publisher';
         const apiName = 'newapi' + Math.floor(Date.now() / 1000);
         const apiVersion = '1.0.0';
-        
+
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         addApiAndResource(verb);
 
@@ -191,8 +194,8 @@ describe("Resource add edit operations", () => {
     });
 
     after(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 })

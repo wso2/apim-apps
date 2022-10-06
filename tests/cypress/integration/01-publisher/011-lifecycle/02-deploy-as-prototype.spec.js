@@ -6,13 +6,14 @@ describe("Deploy as prototype", () => {
     const carbonPassword = 'admin';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+
     })
 
     it.only("Deploy as prototype", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
+        cy.loginToPublisher(publisher, password);
         cy.createAPIWithoutEndpoint();
         cy.get('[data-testid="left-menu-itemendpoints"]').click();
         cy.get('[data-testid="Prototype Endpoint"]').click();
@@ -40,7 +41,7 @@ describe("Deploy as prototype", () => {
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

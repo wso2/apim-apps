@@ -20,14 +20,15 @@ describe("Mock the api response and test it", () => {
     const carbonPassword = 'admin';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
     it("Mock the api response and test it", () => {
+        cy.loginToPublisher(publisher, password);
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
+        cy.wait(5000);
         cy.get('[data-testid="itest-id-createapi"]').click();
         cy.get('[data-testid="create-api-open-api"]').click();
         cy.get('[data-testid="open-api-file-select-radio"]').click();
@@ -74,7 +75,7 @@ describe("Mock the api response and test it", () => {
 
                 cy.get('#operations-pet-getPetById').click();
                 cy.get('#operations-pet-getPetById .try-out__btn').click();
-                cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
+                //cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
                 cy.get('#operations-pet-getPetById button.execute').click();
                 cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
             })
@@ -85,7 +86,7 @@ describe("Mock the api response and test it", () => {
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 })

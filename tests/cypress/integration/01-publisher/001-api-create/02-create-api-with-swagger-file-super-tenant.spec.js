@@ -24,6 +24,7 @@ describe("Create api with swagger file super tenant", () => {
         cy.loginToPublisher(username, password);
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
+        cy.wait(5000);
         cy.get('[data-testid="itest-id-createapi"]').click();
         cy.get('[data-testid="create-api-open-api"]').click();
         cy.get('[data-testid="open-api-file-select-radio"]').click();
@@ -66,6 +67,8 @@ describe("Create api with swagger file super tenant", () => {
         // Test is done. Now delete the api
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
+
+        cy.wait(3000);
 
         cy.visit('carbon/user/user-mgt.jsp');
         cy.deleteUser(tenantUser);

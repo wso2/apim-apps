@@ -21,10 +21,10 @@ describe("Create websocket api - super tenant", () => {
     const tenantUser = `tenant${Math.floor(Date.now() / 1000)}`
 
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.reload();
-        cy.carbonLogout();
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.reload();
+        //cy.carbonLogout();
     })
 
     const websocketApiCreate = () => {
@@ -32,6 +32,7 @@ describe("Create websocket api - super tenant", () => {
         const randomName = `sample_api_${random_number}`;
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
+        cy.wait(5000);
         cy.get('[data-testid="itest-id-createapi"]').click();
         cy.get('[data-testid="create-api-websocket"]').click();
 
@@ -71,8 +72,8 @@ describe("Create websocket api - super tenant", () => {
     });
 
     after(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 })

@@ -8,11 +8,11 @@ describe("Upload thumbnail", () => {
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
     it.only("Upload thumbnail", () => {
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemDesignConfigurations"]').click();
         cy.get('[data-testid="edit-api-thumbnail-btn"]').click();
@@ -38,7 +38,7 @@ describe("Upload thumbnail", () => {
           // Test is done. Now delete the api
           cy.deleteApi(apiName, apiVersion);
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

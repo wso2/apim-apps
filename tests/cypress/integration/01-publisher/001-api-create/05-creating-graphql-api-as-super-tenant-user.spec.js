@@ -20,16 +20,17 @@ describe("Create GraphQl API from file", () => {
     const carbonPassword = 'admin';
 
     beforeEach(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
     })
 
     it("Create GraphQl API from file", () => {
+        cy.loginToPublisher(publisher, password);
         const random_number = Math.floor(Date.now() / 1000);
         const randomName = `sample_api_${random_number}`;
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
+        cy.wait(5000);
         cy.get('[data-testid="itest-id-createapi"]').click();
         cy.get('[data-testid="create-api-graphql"]').click();
 
@@ -64,7 +65,7 @@ describe("Create GraphQl API from file", () => {
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 })

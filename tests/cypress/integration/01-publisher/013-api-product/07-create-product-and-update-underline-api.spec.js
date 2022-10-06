@@ -23,15 +23,18 @@ describe("Mock the api response and test it", () => {
     const apiVersion = '1.0.6';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+
     })
 
     it("Mock the api response and test it", () => {
 
+        cy.loginToPublisher(publisher, password);
+
         cy.visit(`/publisher/apis`);
         // select the option from the menu item
+        cy.wait(5000);
         cy.get('[data-testid="itest-id-createapi"]').click();
         cy.get('[data-testid="create-api-open-api"]').click();
         cy.get('[data-testid="open-api-file-select-radio"]').click();
@@ -115,6 +118,7 @@ describe("Mock the api response and test it", () => {
 
                     // Go to api product
                     cy.visit(`/publisher/api-products/${uuidProduct}/resources/edit`);
+                    cy.contains('SwaggerPetstore').click();
 
                     // Add the newly created resource and save
                     cy.get('[data-testid="resource-wrapper"] ul li:last-child', { timeout: 30000 });
@@ -135,7 +139,7 @@ describe("Mock the api response and test it", () => {
     });
 
     after(function () {
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 })

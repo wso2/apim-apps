@@ -22,8 +22,8 @@ describe("Application tests", () => {
     const carbonPassword = 'admin';
 
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
     })
    
     it.only("Generate and update application production and sandbox keys, show hide keys", () => {
@@ -90,7 +90,7 @@ describe("Application tests", () => {
         cy.get(`[data-testid="delete-${appName}-btn"]`).click();
         cy.get(`[data-testid="application-delete-confirm-btn"]`).click();
         // delete developer
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(developer);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(developer);
     })
 })

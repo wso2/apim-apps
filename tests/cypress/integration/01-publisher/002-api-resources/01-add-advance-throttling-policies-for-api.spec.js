@@ -8,8 +8,8 @@ describe("Add advanced throttling policies", () => {
     const apiVersion = '1.0.0';
 
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
         cy.loginToPublisher(publisher, password);
     })
 
@@ -34,7 +34,7 @@ describe("Add advanced throttling policies", () => {
         cy.deleteApi(apiName, apiVersion);
 
         // delete publisher
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });

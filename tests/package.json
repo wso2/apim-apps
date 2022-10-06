@@ -34,7 +34,7 @@
     "cypress-multi-reporters": "^1.5.0",
     "junit-report-merger": "^2.2.3",
     "mocha": "^9.0.2",
-    "mocha-junit-reporter": "^2.0.0",
+    "mocha-junit-reporter": "^2.0.2",
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
     "mochawesome-report-generator": "^5.2.0",

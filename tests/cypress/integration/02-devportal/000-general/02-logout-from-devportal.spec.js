@@ -24,16 +24,17 @@ describe("Login logout from devportal", () => {
     const carbonPassword = 'admin';
 
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
     })
     it.only("Login logout from devportal", () => {
         cy.loginToDevportal(developer, password);
+        cy.wait(3000);
         cy.logoutFromDevportal();
     });
 
     after(() => {
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(developer);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(developer);
     })
 })

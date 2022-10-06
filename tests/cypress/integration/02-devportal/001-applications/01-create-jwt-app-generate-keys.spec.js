@@ -22,8 +22,8 @@ describe("Application tests", () => {
     const carbonPassword = 'admin';
 
     before(function(){
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(developer, ['Internal/subscriber', 'Internal/everyone'], password);
     })
     it.only("Add Applications for JWT token Type", () => {
         cy.loginToDevportal();
@@ -38,7 +38,7 @@ describe("Application tests", () => {
     })
 
     after(() => {
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(developer);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(developer);
     })
 })

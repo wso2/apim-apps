@@ -8,12 +8,13 @@ describe("Lifecycle changes", () => {
     const apiVersion = '1.0.0';
 
     before(function () {
-        cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
-        cy.loginToPublisher(publisher, password);
+        //cy.carbonLogin(carbonUsername, carbonPassword);
+        //cy.addNewUser(publisher, ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], password);
+
     })
 
     it.only("Block demote retire api", () => {
+        cy.loginToPublisher(publisher, password);
         cy.createAPIByRestAPIDesign(apiName, apiVersion);
         cy.get('[data-testid="left-menu-itemsubscriptions"]').click();
         cy.get('[data-testid="policy-checkbox-unlimited"]').click();
@@ -85,7 +86,7 @@ describe("Lifecycle changes", () => {
         cy.get(`[data-testid="itest-id-deleteapi-icon-button"]`).click();
         cy.get(`[data-testid="itest-id-deleteconf"]`).click();
 
-        cy.visit('carbon/user/user-mgt.jsp');
-        cy.deleteUser(publisher);
+        //cy.visit('carbon/user/user-mgt.jsp');
+        //cy.deleteUser(publisher);
     })
 });
