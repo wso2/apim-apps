@@ -20,8 +20,8 @@ import Utils from "@support/utils";
 
 describe("creating document", () => {
     const { publisher, password, } = Utils.getUserInfo();
-    
-    before(function () {
+
+    before(function() {
         cy.loginToPublisher(publisher, password);
     })
     it.only("Creating inline document", () => {
@@ -32,7 +32,7 @@ describe("creating document", () => {
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemdocuments').click();
 
-            cy.get('#add-new-document-btn').click();
+            cy.get('[data-testid="add-document-btn"]').click();
             cy.get('#doc-name').type(documentName);
             cy.get('#doc-summary').click();
             cy.get('#doc-summary').type(documentSummary);

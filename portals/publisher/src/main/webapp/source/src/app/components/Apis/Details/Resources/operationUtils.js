@@ -17,8 +17,8 @@
  */
 
 const VERSIONS = {
-    V3: ['3.0.0', '3.0.1', '3.0.2'],
-    V2: ['2.0'],
+    V3: new RegExp('[3][.][0][.][0-9]'),
+    V2: new RegExp('[2][.][0]'),
 };
 /**
  *
@@ -110,7 +110,7 @@ function extractPathParameters(target, spec) {
     const params = target.match(regEx) || [];
     let parameters = [];
     const openAPIVersion = getVersion(spec);
-    if (VERSIONS.V3.includes(openAPIVersion)) {
+    if (VERSIONS.V3.test(openAPIVersion)) {
         parameters = params.map((para) => {
             const paraObj = {};
             paraObj.name = para;
@@ -122,7 +122,7 @@ function extractPathParameters(target, spec) {
             };
             return paraObj;
         });
-    } else if (VERSIONS.V2.includes(openAPIVersion)) {
+    } else if (VERSIONS.V2.test(openAPIVersion)) {
         parameters = params.map((para) => {
             const paraObj = {};
             paraObj.name = para;
@@ -166,13 +166,13 @@ function extractAsyncAPIPathParameters(target) {
 function getOperationScopes(operation, spec) {
     const openAPIVersion = getVersion(spec);
     let scopes = [];
-    if (VERSIONS.V3.includes(openAPIVersion)) {
+    if (VERSIONS.V3.test(openAPIVersion)) {
         if (Array.isArray(operation.security) && operation.security.find((item) => item.default)) {
             scopes = operation.security.find((item) => item.default).default;
         } else if (operation['x-scope']) {
             scopes = [operation['x-scope']];
         }
-    } else if (VERSIONS.V2.includes(openAPIVersion)) {
+    } else if (VERSIONS.V2.test(openAPIVersion)) {
         if (Array.isArray(operation.security) && operation.security.find((item) => item.default)) {
             scopes = operation.security.find((item) => item.default).default;
         } else if (operation['x-scope']) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -26,6 +26,7 @@ import View from './View';
 import Edit from './Edit';
 import EditContent from './EditContent';
 import DocCreate from './Create';
+import GenerateDocument from './GenerateDocument';
 
 const Documents = (props) => {
     const { isAPIProduct } = useContext(APIContext);
@@ -41,6 +42,7 @@ const Documents = (props) => {
                     path={'/' + urlPrefix + '/:apiUUID/documents/:documentId/edit-content'}
                     component={EditContent} />
                 <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/create'} component={DocCreate} />
+                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/swaggerdoc'} component={GenerateDocument} />
                 <Route component={ResourceNotFound} />
             </Switch>
         </div>

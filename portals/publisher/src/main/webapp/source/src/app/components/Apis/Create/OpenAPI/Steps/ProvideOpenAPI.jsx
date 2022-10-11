@@ -19,7 +19,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Radio from '@material-ui/core/Radio';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -43,12 +42,12 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
 
-import Banner from 'AppComponents/Shared/Banner';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
-import SpecErrors from 'AppComponents/Apis/Details/Resources/components/SpecErrors';
-
+import {  
+    getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
+import ValidationResults from './ValidationResults';
 
 const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
@@ -64,17 +63,38 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component} @inheritdoc
  */
 export default function ProvideOpenAPI(props) {
-    const { apiInputs, inputsDispatcher, onValidate } = props;
+    const { apiInputs, inputsDispatcher, onValidate, onLinterLineSelect } = props;
     const isFileInput = apiInputs.inputType === 'file';
     const { inputType, inputValue } = apiInputs;
     const classes = useStyles();
     // If valid value is `null`,that means valid, else an error object will be there
     const [isValid, setValidity] = useState({});
-    const [validationErrors, setValidationErrors] = useState(null);
+    const [linterResults, setLinterResults] = useState ([]);
+    const [validationErrors, setValidationErrors] = useState([]);
     const [isValidating, setIsValidating] = useState(false);
-    useEffect(() => {
-        setValidationErrors(null);
-    }, [apiInputs.inputType]);
+    const [isLinting, setIsLinting] = useState(false);
+    
+    function lint(content) {
+        // Validate and linting
+        setIsLinting(true);
+        getLinterResultsFromContent(content).then((results)=>{
+            if (results) {
+                setLinterResults(results);
+            } else {
+                setLinterResults([]);
+            }
+        }).finally(()=>{setIsLinting(false);});
+    }
+
+    function reset() {
+        setIsLinting(false);
+        setLinterResults([]);
+        setValidationErrors([]);
+        inputsDispatcher({ action: 'importingContent', value: null });
+        inputsDispatcher({ action: 'inputValue', value: null });
+        inputsDispatcher({ action: 'isFormValid', value: false });
+    }
+
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
             API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
@@ -84,6 +104,9 @@ export default function ProvideOpenAPI(props) {
                     },
                 } = response;
                 if (isValidURL) {
+                    const formattedConent = JSON.stringify(JSON.parse(content), null, 2);
+                    lint(formattedConent);
+                    inputsDispatcher({ action: 'importingContent', value: formattedConent });
                     info.content = content;
                     inputsDispatcher({ action: 'preSetAPI', value: info });
                     setValidity({ ...isValid, url: null });
@@ -98,6 +121,7 @@ export default function ProvideOpenAPI(props) {
                 onValidate(false);
                 setIsValidating(false);
                 console.error(error);
+                
             });
         }, 750),
         [],
@@ -137,8 +161,18 @@ export default function ProvideOpenAPI(props) {
                 setIsValidating(false); // Stop the loading animation
                 onValidate(validFile !== null); // If there is a valid file then validation has passed
                 // If the given file is valid , we set it as the inputValue else set `null`
-                inputsDispatcher({ action: 'inputValue', value: validFile });
+                inputsDispatcher({ action: 'inputValue', value: file });
             });
+
+        if (!file.path.endsWith(".zip")){
+            const read = new FileReader();
+            read.readAsText(file);
+            read.onloadend = function(){
+                const content = read.result?.toString();
+                inputsDispatcher({ action: 'importingContent', value: content });
+                lint(content);
+            }
+        }
     }
 
     /**
@@ -159,6 +193,10 @@ export default function ProvideOpenAPI(props) {
             onValidate(false);
         }
     }
+
+    useEffect(() => {
+        reset();
+    }, [inputType]);
 
     useEffect(() => {
         if (inputValue) {
@@ -197,7 +235,7 @@ export default function ProvideOpenAPI(props) {
 
     return (
         <>
-            <Grid container spacing={5}>
+            <Grid container spacing={2}>
                 <Grid item xs={12} md={12}>
                     <FormControl component='fieldset'>
                         <FormLabel component='legend'>
@@ -211,17 +249,20 @@ export default function ProvideOpenAPI(props) {
                             </>
                         </FormLabel>
                         <RadioGroup
-                            aria-label='Input type'
+                            aria-label='Input Source'
                             value={apiInputs.inputType}
-                            onChange={(event) => inputsDispatcher({ action: 'inputType', value: event.target.value })}
+                            onChange={(event) => inputsDispatcher({ action: 'inputType', 
+                                value: event.target.value })}
                         >
                             <FormControlLabel
+                                disabled={isLinting || isValidating}
                                 value={ProvideOpenAPI.INPUT_TYPES.URL}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI URL'
                                 id='open-api-url-select-radio'
                             />
                             <FormControlLabel
+                                disabled={isLinting || isValidating}
                                 value={ProvideOpenAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
                                 label='OpenAPI File/Archive'
@@ -231,19 +272,6 @@ export default function ProvideOpenAPI(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                {isValid.file
-                    && (
-                        <Grid item md={11}>
-                            <Banner
-                                onClose={() => setValidity({ file: null })}
-                                disableActions
-                                dense
-                                paperProps={{ elevation: 1 }}
-                                type='error'
-                                message={isValid.file.message}
-                            />
-                        </Grid>
-                    )}
                 <Grid item xs={10} md={11}>
                     {isFileInput ? (
                         <>
@@ -263,10 +291,7 @@ export default function ProvideOpenAPI(props) {
                                             <IconButton
                                                 edge='end'
                                                 aria-label='delete'
-                                                onClick={() => {
-                                                    inputsDispatcher({ action: 'inputValue', value: null });
-                                                    inputsDispatcher({ action: 'isFormValid', value: false });
-                                                }}
+                                                onClick={reset}
                                             >
                                                 <DeleteIcon />
                                             </IconButton>
@@ -292,6 +317,7 @@ export default function ProvideOpenAPI(props) {
                                                 color='primary'
                                                 variant='contained'
                                                 id='browse-to-upload-btn'
+                                                onClick={ reset }
                                             >
                                                 <FormattedMessage
                                                     id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.upload'
@@ -330,14 +356,14 @@ export default function ProvideOpenAPI(props) {
                         />
                     )}
                 </Grid>
-                {validationErrors && (
-                    <Grid item xs={10} md={11}>
-                        <Box display='flex' justifyContent='right' alignItems='center'>
-                            Show Errors
-                            <SpecErrors specErrors={validationErrors} />
-                        </Box>
-                    </Grid>
-                )}
+                <ValidationResults 
+                    inputValue={inputValue} 
+                    isValidating={isValidating}
+                    isLinting={isLinting}
+                    validationErrors={validationErrors}
+                    linterResults={linterResults}
+                    onLinterLineSelect={onLinterLineSelect}
+                />
                 <Grid item xs={2} md={5} />
             </Grid>
         </>

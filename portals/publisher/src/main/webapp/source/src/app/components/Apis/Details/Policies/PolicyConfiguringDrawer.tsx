@@ -92,6 +92,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     const apiPolicy: ApiPolicy = {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
+        policyVersion: policyObj?.version,
         parameters: {},
     };
 
@@ -110,6 +111,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                 id: policyObj?.id,
                 name: policyObj?.name,
                 displayName: policyObj?.displayName,
+                version: policyObj?.version,
                 applicableFlows: policyObj?.applicableFlows,
                 uniqueKey: '',
             };
@@ -136,9 +138,9 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                                 <Typography variant='subtitle2'>
                                     <FormattedMessage
                                         id='Apis.Details.Policies.PolicyConfiguringDrawer.title'
-                                        defaultMessage='Configure {policy} Policy'
+                                        defaultMessage='Configure {policy}'
                                         values={{
-                                            policy: policyObj?.displayName,
+                                            policy: policyObj?.displayName + ' : ' + policyObj?.version,
                                         }}
                                     />
                                 </Typography>

@@ -29,6 +29,7 @@ describe("Common Policies", () => {
         cy.visit(`/publisher/policies`);
         cy.get('[data-testid="add-new-common-policy"]').click();
         cy.get('#name').type('Add Header sample test');
+        cy.get('#version').type('1');
         cy.get('input[name="description"]').type('Sample add header policy description');
         cy.get('#fault-select-check-box').uncheck()
 

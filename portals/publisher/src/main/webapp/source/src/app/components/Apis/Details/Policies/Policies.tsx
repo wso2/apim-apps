@@ -43,6 +43,7 @@ import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
 import PoliciesExpansion from './PoliciesExpansion';
+import Configurations from '../../../../../../../site/public/conf/settings.json';
 
 const useStyles = makeStyles(() => ({
     gridItem: {
@@ -73,6 +74,7 @@ const Policies: React.FC = () => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
+    const { showMultiVersionPolicies } = Configurations.apis;
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -133,9 +135,16 @@ const Policies: React.FC = () => {
             // Get all common policies and API specific policies
             setAllPolicies(mergedList);
 
-            // Get the union of policies depending on the policy display name
-            const unionByPolicyDisplayName = [...mergedList
+            let unionByPolicyDisplayName;
+            if (showMultiVersionPolicies) {
+                // Get the union of policies depending on the policy display name and version
+                unionByPolicyDisplayName = [...mergedList
+                .reduce((map, obj) => map.set(obj.name + obj.version, obj), new Map()).values()];
+            } else {
+                // Get the union of policies depending on the policy display name
+                unionByPolicyDisplayName = [...mergedList
                 .reduce((map, obj) => map.set(obj.name, obj), new Map()).values()];
+            }
             unionByPolicyDisplayName.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             

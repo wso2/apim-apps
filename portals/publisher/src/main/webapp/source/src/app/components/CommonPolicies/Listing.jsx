@@ -140,6 +140,7 @@ const Listing = () => {
                 if (gatewayType === policyGateway) {
                     policy.push(policyObj.id);
                     policy.push(policyObj.displayName);
+                    policy.push(policyObj.version);
                     policy.push(policyObj.description);
                     policy.push(policyObj.applicableFlows);
                 }
@@ -171,6 +172,10 @@ const Listing = () => {
         intl.formatMessage({
             id: 'CommonPolicies.Listing.table.header.policy.name',
             defaultMessage: 'Policy Name',
+        }),
+        intl.formatMessage({
+            id: 'CommonPolicies.Listing.table.header.policy.version',
+            defaultMessage: 'Policy Version',
         }),
         intl.formatMessage({
             id: 'CommonPolicies.Listing.table.header.description',

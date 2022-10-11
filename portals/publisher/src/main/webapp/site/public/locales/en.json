@@ -5,6 +5,18 @@
       "value": "Provided regular expression is invalid"
     }
   ],
+  "APIs.details.endpoints.certificate.usage": [
+    {
+      "type": 0,
+      "value": "Usages of certificate -"
+    }
+  ],
+  "APIs.details.endpoints.certificate.usage.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "Api.category.dropdown.tooltip": [
     {
       "type": 0,
@@ -2811,6 +2823,12 @@
       "value": "Type"
     }
   ],
+  "Apis.Details.Documents.Listing.documents.generated.title": [
+    {
+      "type": 0,
+      "value": "Generated Document"
+    }
+  ],
   "Apis.Details.Documents.Listing.documents.listing.fetching.error.message": [
     {
       "type": 0,
@@ -2833,6 +2851,12 @@
     {
       "type": 0,
       "value": "Open"
+    }
+  ],
+  "Apis.Details.Documents.Listing.documents.uploaded.title": [
+    {
+      "type": 0,
+      "value": "Uploaded Documents"
     }
   ],
   "Apis.Details.Documents.Listing.loading": [
@@ -2947,6 +2971,12 @@
     {
       "type": 0,
       "value": "Summary"
+    }
+  ],
+  "Apis.Details.Documents.ViewDocument.view.document": [
+    {
+      "type": 0,
+      "value": "View Document"
     }
   ],
   "Apis.Details.EditScopes.Roles.Invalid": [
@@ -3480,7 +3510,7 @@
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete": [
     {
       "type": 0,
-      "value": "Do you want to delete"
+      "value": "Are you sure you want to delete"
     }
   ],
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.delete.cancel.button": [
@@ -3498,7 +3528,7 @@
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.deleteCertificate": [
     {
       "type": 0,
-      "value": "Delete Certificate"
+      "value": "Delete with caution!"
     }
   ],
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.details.close.button": [
@@ -5555,10 +5585,6 @@
     {
       "type": 1,
       "value": "policy"
-    },
-    {
-      "type": 0,
-      "value": " Policy"
     }
   ],
   "Apis.Details.Policies.PolicyConfiguringDrawer.title": [
@@ -5569,10 +5595,6 @@
     {
       "type": 1,
       "value": "policy"
-    },
-    {
-      "type": 0,
-      "value": " Policy"
     }
   ],
   "Apis.Details.Policies.PolicyForm.GeneralDetails.description": [
@@ -5609,6 +5631,18 @@
     {
       "type": 0,
       "value": "Name"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.helperText": [
+    {
+      "type": 0,
+      "value": "Enter Policy Version ( E.g.: v1 )"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.label": [
+    {
+      "type": 0,
+      "value": "Version"
     }
   ],
   "Apis.Details.Policies.PolicyForm.GeneralDetails.title": [
@@ -7043,6 +7077,12 @@
     {
       "type": 0,
       "value": "Attach business plans to API"
+    }
+  ],
+  "Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.migrated": [
+    {
+      "type": 0,
+      "value": "Following policies are migrated from an old version of APIM. You can uncheck and select a different policy. Note that this is an irreversible operation."
     }
   ],
   "Apis.Details.Subscriptions.Subscriptions.cancel": [
@@ -8481,6 +8521,12 @@
     {
       "type": 0,
       "value": "Policy Name"
+    }
+  ],
+  "CommonPolicies.Listing.table.header.policy.version": [
+    {
+      "type": 0,
+      "value": "Policy Version"
     }
   ],
   "CommonPolicies.ViewPolicy.policies.title": [

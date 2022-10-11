@@ -1976,6 +1976,17 @@ class API extends Resource {
     }
 
     /**
+     * Get settings of an API
+     */
+     static getLinterCustomRules() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const promisedLinterCustomeRules = apiClient.then(client => {
+            return client.apis['Linter Custom Rules'].getLinterCustomRules();
+        });
+        return promisedLinterCustomeRules.then(response => response.body);
+    }
+
+    /**
      *
      * Static method to search apis and documents based on content
      * @static
@@ -2486,6 +2497,24 @@ class API extends Resource {
         return apiClient.then(client => {
             return client.apis['Endpoint Certificates'].deleteEndpointCertificateByAlias({
                 alias,
+            });
+        }, this._requestMetaData());
+    }
+
+    /**
+     * Get APIs that use a endpoint certificate which represented by the given alias.
+     *
+     * @param {string} alias The alias of the certificate
+     * @param {string} limit number of replies to retrieve
+     * @param {string} offset the starting point of replies
+     * */
+     static getEndpointCertificateUsage(alias, limit=null, offset=null) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis['Endpoint Certificates'].getCertificateUsageByAlias({
+                alias,
+                limit,
+                offset
             });
         }, this._requestMetaData());
     }

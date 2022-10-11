@@ -22,6 +22,10 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Footer from 'AppComponents/Base/Footer/Footer';
 import Header from 'AppComponents/Base/Header';
 import { Toaster } from 'react-hot-toast';
+import { Helmet } from 'react-helmet';
+import defaultTheme from 'AppData/defaultTheme';
+import userThemes from 'userCustomThemes';
+
 // import CssBaseline from '@material-ui/core/CssBaseline';
 
 const useStyles = makeStyles((theme) => ({
@@ -60,9 +64,27 @@ const useStyles = makeStyles((theme) => ({
 const Base = ({ children, user }) => {
     const classes = useStyles();
     const theme = useTheme();
+
+    // eslint-disable-next-line require-jsdoc
+    function getTitle() {
+        let prefix;
+        let suffix;
+        if (userThemes.custom && userThemes.custom.title) {
+            prefix = userThemes.custom.title.prefix;
+            suffix = userThemes.custom.title.suffix;
+        } else {
+            prefix = defaultTheme.custom.title.prefix;
+            suffix = defaultTheme.custom.title.suffix;
+        }
+        return (prefix + suffix);
+    }
+
     return (
         <>
             {/* <CssBaseline /> */}
+            <Helmet>
+                <title>{getTitle()}</title>
+            </Helmet>
             <Toaster
                 position='bottom-right'
                 gutter={8}

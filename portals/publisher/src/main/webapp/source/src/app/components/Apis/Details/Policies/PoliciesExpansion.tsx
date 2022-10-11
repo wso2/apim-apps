@@ -42,6 +42,7 @@ const defaultPolicyForMigration = {
     category: 'Mediation',
     name: '',
     displayName: '',
+    version: '',
     description: '',
     applicableFlows: [],
     supportedGateways: ['Synapse'],

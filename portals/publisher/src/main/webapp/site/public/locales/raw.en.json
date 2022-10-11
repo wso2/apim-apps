@@ -2,6 +2,12 @@
   "AApis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": {
     "defaultMessage": "Provided regular expression is invalid"
   },
+  "APIs.details.endpoints.certificate.usage": {
+    "defaultMessage": "Usages of certificate -"
+  },
+  "APIs.details.endpoints.certificate.usage.cancel": {
+    "defaultMessage": "Cancel"
+  },
   "Api.category.dropdown.tooltip": {
     "defaultMessage": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
   },
@@ -1302,6 +1308,9 @@
   "Apis.Details.Documents.Listing.column.header.type": {
     "defaultMessage": "Type"
   },
+  "Apis.Details.Documents.Listing.documents.generated.title": {
+    "defaultMessage": "Generated Document"
+  },
   "Apis.Details.Documents.Listing.documents.listing.fetching.error.message": {
     "defaultMessage": "Error in fetching documents list of the API"
   },
@@ -1313,6 +1322,9 @@
   },
   "Apis.Details.Documents.Listing.documents.open": {
     "defaultMessage": "Open"
+  },
+  "Apis.Details.Documents.Listing.documents.uploaded.title": {
+    "defaultMessage": "Uploaded Documents"
   },
   "Apis.Details.Documents.Listing.loading": {
     "defaultMessage": "Loading..."
@@ -1370,6 +1382,9 @@
   },
   "Apis.Details.Documents.View.meta.summary": {
     "defaultMessage": "Summary"
+  },
+  "Apis.Details.Documents.ViewDocument.view.document": {
+    "defaultMessage": "View Document"
   },
   "Apis.Details.EditScopes.Roles.Invalid": {
     "defaultMessage": "Role is invalid"
@@ -1636,7 +1651,7 @@
     "defaultMessage": "Certificates"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete": {
-    "defaultMessage": "Do you want to delete"
+    "defaultMessage": "Are you sure you want to delete"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.delete.cancel.button": {
     "defaultMessage": "Cancel"
@@ -1645,7 +1660,7 @@
     "defaultMessage": "OK"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.deleteCertificate": {
-    "defaultMessage": "Delete Certificate"
+    "defaultMessage": "Delete with caution!"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.details.close.button": {
     "defaultMessage": "Close"
@@ -2635,10 +2650,10 @@
     "defaultMessage": "Response Flow"
   },
   "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": {
-    "defaultMessage": "Configure {policy} Policy"
+    "defaultMessage": "Configure {policy}"
   },
   "Apis.Details.Policies.PolicyConfiguringDrawer.title": {
-    "defaultMessage": "Configure {policy} Policy"
+    "defaultMessage": "Configure {policy}"
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.description": {
     "defaultMessage": "Provide the name, description and applicable flows of the policy."
@@ -2657,6 +2672,12 @@
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.label": {
     "defaultMessage": "Name"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.helperText": {
+    "defaultMessage": "Enter Policy Version ( E.g.: v1 )"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.label": {
+    "defaultMessage": "Version"
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.title": {
     "defaultMessage": "General Details"
@@ -3369,6 +3390,9 @@
   "Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.heading": {
     "defaultMessage": "Attach business plans to API"
   },
+  "Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.migrated": {
+    "defaultMessage": "Following policies are migrated from an old version of APIM. You can uncheck and select a different policy. Note that this is an irreversible operation."
+  },
   "Apis.Details.Subscriptions.Subscriptions.cancel": {
     "defaultMessage": "Cancel"
   },
@@ -4046,6 +4070,9 @@
   },
   "CommonPolicies.Listing.table.header.policy.name": {
     "defaultMessage": "Policy Name"
+  },
+  "CommonPolicies.Listing.table.header.policy.version": {
+    "defaultMessage": "Policy Version"
   },
   "CommonPolicies.ViewPolicy.policies.title": {
     "defaultMessage": "Policies"

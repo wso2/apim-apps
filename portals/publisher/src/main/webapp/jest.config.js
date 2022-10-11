@@ -40,6 +40,8 @@ module.exports = {
         '^Config$': '<rootDir>/site/public/conf/settings.json',
         '^MaterialIcons$': '<rootDir>/site/public/fonts/iconfont/MaterialIcons.js',
         '^monaco-editor$': '<rootDir>/node_modules/react-monaco-editor',
+        '^nimma/legacy$': '<rootDir>/node_modules/nimma/dist/legacy/cjs/index.js',
+        '^nimma/fallbacks$': '<rootDir>/node_modules/nimma/dist/legacy/cjs/fallbacks/index.js',
     },
     testPathIgnorePatterns: [
         '<rootDir>/node_modules/', 
