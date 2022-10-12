@@ -286,15 +286,17 @@ function Certificates(props) {
                     </Typography>
                 </DialogTitle>
                 <DialogContent className={classes.alertWrapper}>
-                    <Typography>
-                        { certificateUsageDetails.count > 1 ? getWarningMessage() : ''}
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete'
-                            defaultMessage='Are you sure you want to delete '
-                        />
-                        {' '}
-                        { certificateToDelete.alias + '?'}
-                    </Typography>
+                    <div id='warning-message'>
+                        <Typography>
+                            { certificateUsageDetails.count > 1 ? getWarningMessage() : ''}
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete'
+                                defaultMessage='Are you sure you want to delete '
+                            />
+                            {' '}
+                            { certificateToDelete.alias + '?'}
+                        </Typography>
+                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button
