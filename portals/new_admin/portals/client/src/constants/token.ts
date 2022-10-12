@@ -1,0 +1,1 @@
+export const AUTHORIZATION_CODE = "code";
