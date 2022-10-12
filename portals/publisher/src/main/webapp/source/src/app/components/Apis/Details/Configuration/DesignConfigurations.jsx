@@ -259,6 +259,7 @@ export default function DesignConfigurations() {
     const [errorInAccessRoles, setErrorInAccessRoles] = useState(false);
     const [errorInRoleVisibility, setErrorInRoleVisibility] = useState(false);
     const [errorInTags, setErrorInTags] = useState(false);
+    const [errorInExternalEndpoints, setErrorInExternalEndpoints] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
     const classes = useStyles();
     const [descriptionType, setDescriptionType] = useState('');
@@ -550,6 +551,7 @@ export default function DesignConfigurations() {
                                                 api={apiConfig}
                                                 setIsOpen={setIsOpen}
                                                 configDispatcher={configDispatcher}
+                                                setIsDisabled={setErrorInExternalEndpoints}
                                             />
                                         )}
                                     </Box>
@@ -563,7 +565,8 @@ export default function DesignConfigurations() {
                                             disabled={errorInAccessRoles || 
                                                 errorInRoleVisibility || 
                                                 restricted || 
-                                                errorInTags}
+                                                errorInTags ||
+                                                errorInExternalEndpoints}
                                             type='submit'
                                             variant='contained'
                                             color='primary'
