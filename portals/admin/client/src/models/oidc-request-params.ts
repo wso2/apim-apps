@@ -5,5 +5,6 @@
     clientId: string;
     // redirectUri: string;
     scope: string;
-    state: string
+    state: string;
+    serverOrigin: string;
 }
