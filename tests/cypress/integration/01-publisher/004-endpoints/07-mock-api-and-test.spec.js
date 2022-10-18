@@ -74,7 +74,7 @@ describe("Mock the api response and test it", () => {
 
                 cy.get('#operations-pet-getPetById').click();
                 cy.get('#operations-pet-getPetById .try-out__btn').click();
-                cy.get('#operations-pet-getPetById [placeholder="petId - ID of pet to return"]').type('1');
+                cy.get('#operations-pet-getPetById [placeholder="petId"]').type('1');
                 cy.get('#operations-pet-getPetById button.execute').click();
                 cy.get('#operations-pet-getPetById  td.response-col_status').contains('200').should('exist');
             })
