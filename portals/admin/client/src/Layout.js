@@ -1,15 +1,15 @@
 import React from 'react';
 import './App.css';
-import Profile from './Profile';
-import LoginButton from './LoginButton';
-import LogoutButton from './LogoutButton';
+// import Profile from './Profile';
+// import LoginButton from './LoginButton';
+// import LogoutButton from './LogoutButton';
 import { Outlet } from 'react-router-dom';
 
 function Layout() {
 
   return (
     <div className="App">
-      <nav className="container">
+      {/* <nav className="container">
         <input id="nav-toggle" type="checkbox" />
         <div className="logo">
           WSO2 <strong style={{"color": "#153b66", fontWeight: "800"}}>API Manager</strong>
@@ -36,7 +36,7 @@ function Layout() {
           <div className="line"></div>
           <div className="line"></div>
         </label>
-      </nav>
+      </nav> */}
       {/* An <Outlet> renders whatever child route is currently active,
           so you can think about this <Outlet> as a placeholder for
           the child routes we defined above. */}
