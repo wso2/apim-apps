@@ -924,6 +924,15 @@
   "Apis.Details.Configuration.components.CORSConfigurations.origin.helper": {
     "defaultMessage": "Press `Enter` after typing the origin name,to add a new origin"
   },
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration": {
+    "defaultMessage": "WebSub Configuration"
+  },
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification": {
+    "defaultMessage": "Enable subscriber verification"
+  },
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification.tooltip": {
+    "defaultMessage": "If enabled, APIM will perform verification of intent for the subscription API"
+  },
   "Apis.Details.Configuration.components.DescriptionEditor.edit.content.button": {
     "defaultMessage": "Edit description"
   },

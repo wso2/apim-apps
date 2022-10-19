@@ -2257,6 +2257,24 @@
       "value": "API will be exposed in selected transport(s) in the gateway(s) If Mutual SSL option is selected, a trusted client certificate should be presented to access the API"
     }
   ],
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration": [
+    {
+      "type": 0,
+      "value": "WebSub Configuration"
+    }
+  ],
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification": [
+    {
+      "type": 0,
+      "value": "Enable subscriber verification"
+    }
+  ],
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification.tooltip": [
+    {
+      "type": 0,
+      "value": "If enabled, APIM will perform verification of intent for the subscription API"
+    }
+  ],
   "Apis.Details.Configuration.components.oauth.disabled": [
     {
       "type": 0,

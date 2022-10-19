@@ -49,6 +49,7 @@ import {
     API_SECURITY_MUTUAL_SSL_MANDATORY,
     API_SECURITY_MUTUAL_SSL,
 } from './components/APISecurity/components/apiSecurityConstants';
+import WebSubConfiguration from './components/WebSubConfiguration';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -134,6 +135,7 @@ function copyAPIConfig(api) {
         visibility: api.visibility,
         isDefaultVersion: api.isDefaultVersion,
         enableSchemaValidation: api.enableSchemaValidation,
+        enableSubscriberVerification: api.enableSubscriberVerification,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
         tags: [...api.tags],
@@ -194,6 +196,7 @@ export default function RuntimeConfiguration() {
             case 'accessControl':
             case 'visibility':
             case 'maxTps':
+            case 'enableSubscriberVerification':
             case 'tags':
                 nextState[action] = value;
                 return nextState;
@@ -504,20 +507,31 @@ export default function RuntimeConfiguration() {
                                             )}
 
                                         </Typography>
-                                        <Grid item xs={12} style={{ position: 'relative' }}>
-                                            <Box mb={3}>
-                                                <Paper className={classes.paper} elevation={0}>
-                                                    {!isAsyncAPI && (
-                                                        <ResponseCaching
-                                                            api={apiConfig}
-                                                            configDispatcher={configDispatcher}
-                                                        />
-                                                    )}
-                                                </Paper>
-                                                {!isWebSub && (
-                                                    <ArrowBackIcon className={classes.arrowBackIcon} />
+                                        <Grid item xs={12} style={{ marginBottom: 30, position: 'relative' }}>
+                                            <Paper className={classes.paper} elevation={0}>
+                                                {!isWebSub ? (
+                                                    <Grid item xs={12} style={{ position: 'relative' }}>
+                                                        <Box mb={3}>
+                                                            <Paper className={classes.paper} elevation={0}>
+                                                                {!isAsyncAPI && (
+                                                                    <ResponseCaching
+                                                                        api={apiConfig}
+                                                                        configDispatcher={configDispatcher}
+                                                                    />
+                                                                )}
+                                                            </Paper>
+                                                        </Box>
+                                                    </Grid>
+                                                ) : (
+                                                    <WebSubConfiguration 
+                                                        api={apiConfig} 
+                                                        configDispatcher={configDispatcher} 
+                                                    />
                                                 )}
-                                            </Box>
+                                            </Paper>
+                                            {!isWebSub && (
+                                                <ArrowBackIcon className={classes.arrowBackIcon} />
+                                            )}
                                         </Grid>
                                     </>
                                 )}
