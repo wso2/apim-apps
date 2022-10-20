@@ -3,12 +3,10 @@ import { OIDCRequestParamsInterface } from './models/oidc-request-params';
 import { TokenResponseInterface } from './models/token-response';
 import {
     AUTHORIZATION_CODE,
-    ID_TOKEN,
-    ACCESS_TOKEN,
     PKCE_CODE_VERIFIER,
     SERVICE_RESOURCES,
     REQUEST_PARAMS,
-    REQUEST_STATUS
+    REQUEST_STATUS,
 } from './constants/token';
 import { getSessionParameter, removeSessionParameter, setSessionParameter } from "./session";
 import { getAuthorizeEndpoint, getTokenEndpoint, getJwksUri, getIssuer, getToken } from "./op-config";
@@ -88,7 +86,6 @@ const validateIdToken = (clientId: string, idToken: string, serverOrigin: string
         });
 };
 
-
 /**
  * Send token request.
  *
@@ -122,8 +119,6 @@ export const sendTokenRequest = (
                 return Promise.reject(new Error("Invalid status code received in the token response: "
                     + response.status));
             }
-            setSessionParameter(ACCESS_TOKEN, response.data.access_token);
-            setSessionParameter(ID_TOKEN, response.data.id_token);
             removeSessionParameter(PKCE_CODE_VERIFIER);
 
             return validateIdToken(requestParams.clientId, response.data.id_token, requestParams.serverOrigin)
@@ -134,12 +129,11 @@ export const sendTokenRequest = (
                             accessToken: response.data.access_token,
                             expiresIn: response.data.expires_in,
                             idToken: response.data.id_token,
+                            refreshToken: response.data.refresh_token,
                             scope: response.data.scope,
                             tokenType: response.data.token_type
                         };
-                        return Promise.resolve(tokenResponse).then(() => {
-                            window.location.href = `${Settings.loginUri}/users`;
-                        })
+                        return Promise.resolve(tokenResponse)    
                     }
                     return Promise.reject(new Error("Invalid id_token in the token response: " + response.data.id_token));
                 });
@@ -162,3 +156,54 @@ export const sendTokenRequest = (
         });
 };
 
+/**
+ * Send refresh token request.
+ *
+ * @param {OIDCRequestParamsInterface} requestParams request parameters required for token request.
+ * @param {string} refreshToken
+ * @returns {Promise<TokenResponseInterface>} refresh token response data or error.
+ */
+export const sendRefreshTokenRequest = (
+    requestParams: OIDCRequestParamsInterface,
+    refreshToken: string
+): Promise<TokenResponseInterface> => {
+
+    const tokenEndpoint = getTokenEndpoint();
+
+    if (!tokenEndpoint || tokenEndpoint.trim().length === 0) {
+        return Promise.reject("Invalid token endpoint found.");
+    }
+
+    const body = [];
+    body.push(`client_id=${requestParams.clientId}`);
+    body.push(`refresh_token=${refreshToken}`);
+    body.push("grant_type=refresh_token");
+
+    return axios.post(tokenEndpoint, body.join("&"))
+        .then((response: any) => {
+            if (response.status !== 200) {
+                return Promise.reject(new Error("Invalid status code received in the refresh token response: "
+                    + response.status));
+            }
+
+            return validateIdToken(requestParams.clientId, response.data.id_token, requestParams.serverOrigin)
+                .then((valid) => {
+                    if (valid) {
+                        const tokenResponse: TokenResponseInterface = {
+                            accessToken: response.data.access_token,
+                            expiresIn: response.data.expires_in,
+                            idToken: response.data.id_token,
+                            refreshToken: response.data.refresh_token,
+                            scope: response.data.scope,
+                            tokenType: response.data.token_type
+                        };
+
+                        return Promise.resolve(tokenResponse);
+                    }
+                    return Promise.reject(new Error("Invalid id_token in the token response: " +
+                        response.data.id_token));
+                });
+        }).catch((error: any) => {
+            return Promise.reject(error);
+        });
+};

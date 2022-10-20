@@ -6,7 +6,7 @@ const wellKnown='https://dev-kw-oeodk.us.auth0.com/.well-known/openid-configurat
 const serverOrigin='https://dev-kw-oeodk.us.auth0.com/'
 const loginUri='https://localhost:4000'
 const logoutEndpoint='https://dev-kw-oeodk.us.auth0.com/v2/logout'
-const scope='openid'
+const scope='openid offline_access'
 const state='RlZyVjlqYUpHTzltWC42c2FNRDRJT1JPfk1+TUFEa0RLb04yZldwYkpxVA=='
 
 const Settings = {
