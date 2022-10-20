@@ -99,7 +99,7 @@ class Protected extends Component {
             settingPromise.then((settingsNew) => this.setState({ settings: settingsNew }));
             api.getTenantInformation(btoa(user.name))
                 .then((result) => {
-                    const { tenantDomain } = result.body;
+                    const { tenantDomain } = result;
                     if (tenantDomain === 'carbon.super') {
                         this.setState({ isSuperTenant: true });
                     } else {
@@ -110,7 +110,7 @@ class Protected extends Component {
                     Alert.error(error.response.body.description);
                     console.log(error);
                 });
-            this.checkSession();
+            // this.checkSession();
         } else {
             // If no user data available , Get the user info from existing token information
             // This could happen when OAuth code authentication took place and could send

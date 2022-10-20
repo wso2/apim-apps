@@ -123,10 +123,22 @@ class API extends Resource {
      * Get settings of an API
      */
     getSettings() {
-        const promisedSettings = this.client.then(client => {
-            return client.apis['Settings'].get_settings();
-        });
-        return promisedSettings.then(response => response.body);
+        // const promisedSettings = this.client.then(client => {
+        //     return client.apis['Settings'].get_settings();
+        // });
+        // return promisedSettings.then(response => response.body);
+        const apiCall = fetch('http://localhost:81/chanaka3d/wso-2_api_manager_admin/v3/settings', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((r) => {
+                console.log(r);
+                return (r.json()
+                );
+            });
+        return apiCall.then((data) => data);
     }
 
     /**
@@ -172,7 +184,7 @@ class API extends Resource {
     getThrottlingPoliciesAdvancedPolicyId(policyId) {
         return this.client.then((client) => {
             return client.apis['Advanced Policy (Individual)'].get_throttling_policies_advanced__policyId_(
-                {policyId: policyId},
+                { policyId: policyId },
                 this._requestMetaData(),
             );
         });
@@ -212,7 +224,7 @@ class API extends Resource {
     deleteThrottlingPoliciesAdvanced(policyId) {
         return this.client.then((client) => {
             return client.apis['Advanced Policy (Individual)'].delete_throttling_policies_advanced__policyId_(
-                {policyId: policyId},
+                { policyId: policyId },
                 this._requestMetaData(),
             );
         });
@@ -391,9 +403,9 @@ class API extends Resource {
         });
     }
 
-     /**
-     * Update an Application Throttling Policy
-     */
+    /**
+    * Update an Application Throttling Policy
+    */
     updateApplicationThrottlingPolicy(policyId, body) {
         return this.client.then((client) => {
             const payload = {
@@ -430,9 +442,9 @@ class API extends Resource {
         });
     }
 
-     /**
-     * Update an application's owner
-     */
+    /**
+    * Update an application's owner
+    */
     updateApplicationOwner(id, owner) {
         return this.client.then((client) => {
             return client.apis[
@@ -470,7 +482,7 @@ class API extends Resource {
     /**
      * Add a Gateway Environment
      */
-    addGatewayEnvironment(name, displayName, description, vhosts, provider="wso2",  callback = null) {
+    addGatewayEnvironment(name, displayName, description, vhosts, provider = "wso2", callback = null) {
         return this.client.then((client) => {
             const data = { name, displayName, description, vhosts, provider };
             const payload = {
@@ -487,7 +499,7 @@ class API extends Resource {
     /**
      * Update a Gateway Environment
      */
-    updateGatewayEnvironment(id, name, displayName, description, vhosts,  callback = null) {
+    updateGatewayEnvironment(id, name, displayName, description, vhosts, callback = null) {
         return this.client.then((client) => {
             const data = { name, displayName, description, vhosts };
             return client.apis['Environments'].put_environments__environmentId_(
@@ -592,9 +604,9 @@ class API extends Resource {
         });
     }
 
-     /**
-     * Delete a Custom Policy
-     */
+    /**
+    * Delete a Custom Policy
+    */
     deleteCustomPolicy(policyId) {
         return this.client.then((client) => {
             return client.apis['Custom Rules (Individual)'].delete_throttling_policies_custom__ruleId_(
@@ -616,9 +628,9 @@ class API extends Resource {
         });
     }
 
-     /**
-     * Update a Custom Policy
-     */
+    /**
+    * Update a Custom Policy
+    */
     updateCustomPolicy(policyId, body) {
         return this.client.then((client) => {
             const payload = {
@@ -627,7 +639,7 @@ class API extends Resource {
             };
             return client.apis['Custom Rules (Individual)'].put_throttling_policies_custom__ruleId_(
                 payload,
-                { requestBody: body},
+                { requestBody: body },
                 this._requestMetaData(),
             );
         });
@@ -686,16 +698,25 @@ class API extends Resource {
         });
     }
 
-     /**
-     * Retrieve tenant information of the given username
-     */
+    /**
+    * Retrieve tenant information of the given username
+    */
     getTenantInformation(username) {
-        return this.client.then((client) => {
-            return client.apis['Tenants'].getTenantInfoByUsername(
-                { username: username },
-                this._requestMetaData(),
-            );
-        });
+        const apiCall = fetch(`http://localhost:81/chanaka3d/wso-2_api_manager_admin/v3/tenant-info/${username}`, {
+            method: 'GET',
+            // mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((r) => {
+                console.log(r);
+                return (r.json()
+                );
+            });
+
+        return apiCall.then((response) => response);
+
     }
 
     /**
@@ -750,7 +771,7 @@ class API extends Resource {
     getSubscribedAlertTypesByUser() {
         return this.client.then((client) => {
             return client.apis['Alert Subscriptions']
-            .getSubscribedAlertTypes(this._requestMetaData());
+                .getSubscribedAlertTypes(this._requestMetaData());
         });
     }
 
@@ -762,7 +783,7 @@ class API extends Resource {
     subscribeAlerts(alerts) {
         return this.client.then((client) => {
             return client.apis['Alert Subscriptions']
-            .subscribeToAlerts({}, { requestBody: alerts }, this._requestMetaData());
+                .subscribeToAlerts({}, { requestBody: alerts }, this._requestMetaData());
         });
     }
 
@@ -774,7 +795,7 @@ class API extends Resource {
     unsubscribeAlerts() {
         return this.client.then((client) => {
             return client.apis['Alert Subscriptions']
-            .unsubscribeAllAlerts(this._requestMetaData());
+                .unsubscribeAllAlerts(this._requestMetaData());
         });
     }
 
@@ -812,9 +833,9 @@ class API extends Resource {
             );
         });
     }
-        /**
-     * Get details of an Application Throttling Policy
-     */
+    /**
+ * Get details of an Application Throttling Policy
+ */
     keyManagerGet(keyManagerId) {
         return this.client.then((client) => {
             return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId_(
@@ -862,7 +883,7 @@ class API extends Resource {
     deleteKeyManager(keyManagerId) {
         return this.client.then((client) => {
             return client.apis['Key Manager (Individual)'].delete_key_managers__keyManagerId_(
-                {keyManagerId:keyManagerId},
+                { keyManagerId: keyManagerId },
                 this._requestMetaData(),
             );
         });
@@ -895,7 +916,7 @@ class API extends Resource {
     /**
      * Update workflow request according to external workflow reference
      */
-    updateWorkflow(workflowReferenceId,body) {
+    updateWorkflow(workflowReferenceId, body) {
         return this.client.then((client) => {
             const payload = {
                 workflowReferenceId: workflowReferenceId,
@@ -919,9 +940,9 @@ class API extends Resource {
         });
     }
 
-     /**
-     * Update tenant conf
-     */
+    /**
+    * Update tenant conf
+    */
     updateTenantConf(body) {
         return this.client.then((client) => {
             const payload = {
@@ -929,7 +950,7 @@ class API extends Resource {
             };
             return client.apis['Tenant Config'].updateTenantConfig(
                 payload,
-                { requestBody: body},
+                { requestBody: body },
                 this._requestMetaData(),
             );
         });

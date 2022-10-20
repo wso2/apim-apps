@@ -120,12 +120,13 @@ class APIClient {
             if (Configurations.app.proxy_context_path && Configurations.app.proxy_context_path !== '') {
                 url.pathname = Configurations.app.proxy_context_path + url.pathname;
             }
-            updatedSpec.servers[0].url = String(url);
+            // updatedSpec.servers[0].url = String(url);
         }
         return updatedSpec;
     }
 
     _getResponseInterceptor() {
+        /*
         return (data) => {
             if (data.headers.etag) {
                 APIClient.addETag(data.url, data.headers.etag);
@@ -143,6 +144,7 @@ class APIClient {
             }
             return data;
         };
+        */
     }
 
     /**
@@ -152,6 +154,7 @@ class APIClient {
      * @memberof APIClient
      */
     _getRequestInterceptor() {
+        /*
         return (request) => {
             const existingUser = AuthManager.getUser(this.environment.label);
             if (!existingUser) {
@@ -204,6 +207,7 @@ class APIClient {
             }
             return promise;
         };
+        */
     }
 }
 

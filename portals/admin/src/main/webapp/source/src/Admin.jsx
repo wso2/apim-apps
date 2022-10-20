@@ -80,6 +80,7 @@ class Admin extends React.Component {
         const locale = languageWithoutRegionCode || language;
         this.loadLocale(locale);
         const user = AuthManager.getUser();
+        debugger;
         if (user) {
             this.setState({ user, userResolved: true });
         } else {
@@ -89,6 +90,7 @@ class Admin extends React.Component {
             const userPromise = AuthManager.getUserFromToken();
             userPromise
                 .then((loggedUser) => {
+                    debugger;
                     if (loggedUser != null) {
                         this.setState({ user: loggedUser, userResolved: true });
                     } else {
