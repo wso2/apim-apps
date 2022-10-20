@@ -20,7 +20,8 @@ describe("Service catalog create flow", () => {
     it("Create 15~25 services", () => {
         cy.getCookies()
             .then((cookies) => {
-                let i = Utils.getRandomRange(15, 25);
+                let i = Utils.getRandomRange(10, 15);
+                //let i = 1;
 
                 while (i > 0) {
                     const random_number = Utils.getRandomDate();
@@ -44,13 +45,31 @@ describe("Service catalog create flow", () => {
                     formData.append('definitionFile', definitionFile);
 
                     const tokenP1 = cookies.find(c => c.name === "WSO2_AM_TOKEN_1_Default");
-                    fetch(`${Cypress.config().baseUrl}/api/am/service-catalog/v1/services`, {
-                        method: 'POST',
-                        body: formData,
+                    // fetch(`${Cypress.config().baseUrl}/api/am/service-catalog/v1/services`, {
+                    //     method: 'POST',
+                    //     body: formData,
+                    //     headers: {
+                    //         'authorization': 'Bearer ' + tokenP1.value,
+                    //     }
+                    // }).then(response => {
+                    //     //cy.log('response.status: ', response.status);
+                    //     cy.log(response);
+                    //   })
+
+                    cy.request({
+                        method: 'POST', 
+                        url: `${Cypress.config().baseUrl}/api/am/service-catalog/v1/services`,
                         headers: {
-                            'authorization': 'Bearer ' + tokenP1.value,
-                        }
-                    })
+                          'authorization': 'Bearer ' + tokenP1.value,
+                        },
+                        body: formData
+                      }).then( ({ status }) => {
+                        expect(status).to.eq(200)
+                      }).then( ({ body }) => {
+                        cy.log(body)
+                      })
+                      
+
                     i -= 1;
                     debugger;
                 }
@@ -58,6 +77,25 @@ describe("Service catalog create flow", () => {
             })
         cy.visit(`/publisher/service-catalog`);
 
+    });
+
+    it("Delete all Services", () => {
+        cy.wait(3000)
+        cy.visit(`${Cypress.config().baseUrl}/publisher/service-catalog`);
+        cy.wait(3000)
+        cy.get('#itest-services-listing-total')
+            .then(
+                (countElement) => {
+                    let totalServices = parseInt(countElement.text());
+                    debugger;
+                    while (totalServices  > 0) {
+                        cy.get('#itest-service-card-delete').click();
+                        cy.get('#itest-service-card-delete-confirm').click();
+                        totalServices -= 1;
+                    }
+                    cy.get('#itest-service-catalog-onboarding').should('be.visible')
+                }
+            )
     });
 
 
