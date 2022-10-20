@@ -9,13 +9,14 @@ describe("Service catalog create flow", () => {
         // login before each test
         cy.viewport(1920, 980)
         cy.loginToPublisher(publisher, password)
+        cy.wait(8000)
     })
-    it.skip("Deploy sample service", () => {
-        cy.visit(`/publisher/service-catalog`);
-        cy.get('#itest-service-catalog-onboarding').should('be.visible')
-        cy.get('#itest-services-landing-deploy-sample').click()
+    // it.skip("Deploy sample service", () => {
+    //     cy.visit(`/publisher/service-catalog`);
+    //     cy.get('#itest-service-catalog-onboarding').should('be.visible')
+    //     cy.get('#itest-services-landing-deploy-sample').click()
 
-    });
+    // });
 
     it("Create 15~25 services", () => {
         cy.getCookies()
