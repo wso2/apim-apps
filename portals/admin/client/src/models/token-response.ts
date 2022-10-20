@@ -4,6 +4,7 @@
  export interface TokenResponseInterface {
     accessToken: string;
     idToken: string;
+    refreshToken: string;
     expiresIn: string;
     scope: string;
     tokenType: string;

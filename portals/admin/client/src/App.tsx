@@ -6,7 +6,7 @@ import Apis from "./Apis";
 import { hasAuthorizationCode, sendAuthorizationRequest, sendTokenRequest, hasValidToken } from './sign-in';
 import { initOPConfiguration } from './op-config';
 import { OIDCRequestParamsInterface } from './models/oidc-request-params';
-import { getSessionParameter, setSessionParameter } from "./session";
+import { getSessionParameter, setSessionParameter, initUserSession } from "./session";
 import Settings from '../public/Settings';
 import {
   REQUEST_STATUS
@@ -36,7 +36,21 @@ export default function App() {
 
   useEffect(() => {
     if (!hasToken && hasAuthorizationCode()) {
-      sendTokenRequest(requestParams);
+      sendTokenRequest(requestParams)
+        .then((response) => {
+          initUserSession(
+            response
+          );
+        })
+        .catch((error) => {
+          if (error.response.status === 400) {
+            sendAuthorizationRequest(requestParams);
+          }
+          throw error;
+        })
+        .then(() => {
+          window.location.href = `${Settings.loginUri}/users`;
+        })
     }
   }, [hasToken]);
 
