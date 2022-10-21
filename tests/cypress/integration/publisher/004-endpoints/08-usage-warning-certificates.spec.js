@@ -38,6 +38,7 @@ describe("Endpoint certificate usage testing", () => {
             const endpoint = `https://test.wso2.com/v1/api/endpoint${i}`;
             data = {endpoint};
             promises.push(Utils.addAPIWithEndpoints(data));
+            cy.wait(2000)
         }
 
         Cypress.Promise.all(promises).then(res => {
