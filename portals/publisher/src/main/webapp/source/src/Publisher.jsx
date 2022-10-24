@@ -86,7 +86,7 @@ class Publisher extends React.Component {
             if (hasViewScope) {
                 this.setState({ user, userResolved: true });
             } else {
-                console.log('No relevant scopes found, redirecting to login page');
+                console.log('No relevant scopes found, redirecting to login page2');
                 this.setState({ userResolved: true, notEnoughPermission: true });
             }
         } else {

@@ -8,8 +8,8 @@ var logger = require('morgan');
 var livereload = require("livereload");
 var connectLiveReload = require("connect-livereload");
 
-var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var specs = require('./routes/specs');
 
 const liveReloadServer = livereload.createServer();
 liveReloadServer.server.once("connection", () => {
@@ -34,7 +34,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Server side route definitions
 
-app.use('/users', usersRouter);
+// app.use('/users', usersRouter);
+// app.use('/specs', specs);
 
 // Serving the static react files
 /* ******************************** */
@@ -45,7 +46,7 @@ app.use(
 
 app.get("*", (req, res) => {
   res.sendFile(
-    path.join(__dirname, "./client/public/index.html")
+    path.join(__dirname, "./client/public/build/index.html")
   );
 });
 

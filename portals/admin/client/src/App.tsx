@@ -3,15 +3,13 @@ import { useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Layout from "./Layout";
 import Apis from "./Apis";
-import { hasAuthorizationCode, sendAuthorizationRequest, sendTokenRequest, hasValidToken } from './sign-in';
-import { initOPConfiguration } from './op-config';
+import { hasAuthorizationCode, sendAuthorizationRequest, sendTokenRequest, hasValidToken } from './auth/sign-in';
+import { initOPConfiguration } from './auth/op-config';
 import { OIDCRequestParamsInterface } from './models/oidc-request-params';
-import { getSessionParameter, setSessionParameter, initUserSession } from "./session";
-import Settings from '../public/Settings';
-import {
-  REQUEST_STATUS
-} from './constants/token';
-
+import { getSessionParameter, setSessionParameter, initUserSession } from "./auth/session";
+import Settings from '../public/conf/Settings';
+import { REQUEST_STATUS } from './constants/token';
+import NewAdmin from './NewAdmin';
 
 export default function App() {
 
@@ -60,6 +58,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route path='/' element={<Apis />} />
+            <Route path='/users' element={<NewAdmin />} />
             {/* <Route path='/apis' element={<Apis />} /> */}
             {/* Using path="*"" means "match anything", so this route
                       acts like a catch-all for URLs that we don't have explicit
