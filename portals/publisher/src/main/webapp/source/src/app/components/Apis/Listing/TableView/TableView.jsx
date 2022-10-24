@@ -84,13 +84,14 @@ class TableView extends React.Component {
         } else {
             defaultApiView = localStorage.getItem('publisher.listType') || defaultApiView;
         }
+        const prevRowsPerPage = parseInt(localStorage.getItem('publisher.rowsPerPage'), 10) || 10;
         this.state = {
             apisAndApiProducts: null,
             notFound: true,
             listType: defaultApiView,
             loading: true,
             totalCount: -1,
-            rowsPerPage: 10,
+            rowsPerPage: prevRowsPerPage,
             page: 0,
         };
         this.setListType = this.setListType.bind(this);
