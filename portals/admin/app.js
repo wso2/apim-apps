@@ -34,8 +34,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Server side route definitions
 
-app.use('/users', usersRouter);
-app.use('/specs', specs);
+// app.use('/users', usersRouter);
+// app.use('/specs', specs);
 
 // Serving the static react files
 /* ******************************** */
@@ -46,7 +46,7 @@ app.use(
 
 app.get("*", (req, res) => {
   res.sendFile(
-    path.join(__dirname, "./client/public/index.html")
+    path.join(__dirname, "./client/public/build/index.html")
   );
 });
 

@@ -37,7 +37,7 @@ module.exports = (env) => {
       ]
     },
     output: {
-      path: path.resolve(__dirname, './client/public'),
+      path: path.resolve(__dirname, './client/public/build'),
       filename: 'bundle.js',
       publicPath: '/'
     },
@@ -45,17 +45,23 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         title: 'WSO2 API Manager',
         // Load a custom template (lodash by default)
-        template: './client/src/index.html'
+        template: './client/src/pages/index.html',
+        publicPath: '/build',
       })
     ],
     resolve: {
       alias: {
         client: path.resolve(__dirname, 'client/src'),
+        AppData: path.resolve(__dirname, 'client/src/data/'),
+        AppComponents: path.resolve(__dirname, 'client/src/components/'),
       },
       extensions: ['.tsx', '.ts', '.js', '.jsx'],
     },
     externals: {
       Settings: 'Settings',
+      Config: 'OldSettings',
+      Themes: 'AppThemes', // Should use long names for preventing global scope JS variable conflicts
+      MaterialIcons: 'MaterialIcons',
     },
     devtool: 'source-map',
   }
