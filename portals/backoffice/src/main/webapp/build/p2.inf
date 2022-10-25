@@ -1,0 +1,3 @@
+instructions.configure = \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.apimgt.ui.publisher_${feature.version}/lifecycles/APILifeCycle.xml,target:${installFolder}/../../resources/lifecycles/APILifeCycle.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.apimgt.ui.publisher_${feature.version}/publisher.war,target:${installFolder}/../../deployment/server/webapps/publisher.war,overwrite:true);\
