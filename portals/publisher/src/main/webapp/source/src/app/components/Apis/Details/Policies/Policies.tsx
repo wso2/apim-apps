@@ -165,11 +165,11 @@ const Policies: React.FC = () => {
                 filteredByAPITypeList = filteredByGatewayTypeList.filter(
                     (policy: Policy) => policy.supportedApiTypes.includes('HTTP'));
             } else if (api.type === "SOAP"){
-                // Get CC gateway supported policies
+                // Get SOAP supported policies
                 filteredByAPITypeList = filteredByGatewayTypeList.filter(
                     (policy: Policy) => policy.supportedApiTypes.includes('SOAP'));
             } else if (api.type === "SOAPTOREST"){
-                // Get CC gateway supported policies
+                // Get SOAP to REST supported policies
                 filteredByAPITypeList = filteredByGatewayTypeList.filter(
                     (policy: Policy) => policy.supportedApiTypes.includes('SOAPTOREST'));
             }
