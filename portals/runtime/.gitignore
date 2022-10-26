@@ -1,0 +1,5 @@
+site/public/dist/
+site/public/pages/index.jsp
+/.vscode
+coverage
+services/dev_proxy/keys.json
