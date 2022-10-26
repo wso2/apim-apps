@@ -434,13 +434,13 @@ const Policies: React.FC = () => {
                     </Typography>
                 </Box>
                 {(api.type === 'HTTP') && (
-                <Box mb={4} px={1}>
-                    <GatewaySelector
-                        setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
-                        isChoreoConnectEnabled={isChoreoConnectEnabled}
-                        removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
-                    />
-                </Box>
+                    <Box mb={4} px={1}>
+                        <GatewaySelector
+                            setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
+                            isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
+                        />
+                    </Box>
                 )}
                 {isChoreoConnectEnabled ?
                     <Box display='flex' flexDirection='row'>
