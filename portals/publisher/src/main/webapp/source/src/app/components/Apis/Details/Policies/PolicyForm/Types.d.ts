@@ -35,5 +35,6 @@ export type NewPolicyState = {
     description: string;
     applicableFlows: string[];
     supportedGateways: string[];
+    supportedApiTypes: string[];
     policyAttributes: any;
 };

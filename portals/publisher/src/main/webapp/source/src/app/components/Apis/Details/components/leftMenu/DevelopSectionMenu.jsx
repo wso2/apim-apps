@@ -314,7 +314,7 @@ export default function DevelopSectionMenu(props) {
                             />
                         )}
                         {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct
-                            && api.type === 'HTTP' && (
+                            && (api.type === 'HTTP' || api.type === 'SOAP' || api.type === 'SOAPTOREST') && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.policies',

@@ -148,18 +148,33 @@ const Policies: React.FC = () => {
             unionByPolicyDisplayName.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
-            let filteredList = null;
+            let filteredByGatewayTypeList = null;
             if (!isChoreoConnectEnabled) {
                 // Get synpase gateway supported policies
-                filteredList = unionByPolicyDisplayName.filter(
+                filteredByGatewayTypeList = unionByPolicyDisplayName.filter(
                     (policy: Policy) => policy.supportedGateways.includes('Synapse'));
             } else {
                 // Get CC gateway supported policies
-                filteredList = unionByPolicyDisplayName.filter(
+                filteredByGatewayTypeList = unionByPolicyDisplayName.filter(
                     (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'));
             }
 
-            setPolicies(filteredList);
+            let filteredByAPITypeList = null;
+            if (api.type === "HTTP") {
+                // Get HTTP supported policies
+                filteredByAPITypeList = filteredByGatewayTypeList.filter(
+                    (policy: Policy) => policy.supportedApiTypes.includes('HTTP'));
+            } else if (api.type === "SOAP"){
+                // Get CC gateway supported policies
+                filteredByAPITypeList = filteredByGatewayTypeList.filter(
+                    (policy: Policy) => policy.supportedApiTypes.includes('SOAP'));
+            } else if (api.type === "SOAPTOREST"){
+                // Get CC gateway supported policies
+                filteredByAPITypeList = filteredByGatewayTypeList.filter(
+                    (policy: Policy) => policy.supportedApiTypes.includes('SOAPTOREST'));
+            }
+
+            setPolicies(filteredByAPITypeList);
 
         }).catch((error) => {
             console.error(error);
@@ -418,6 +433,7 @@ const Policies: React.FC = () => {
                         />
                     </Typography>
                 </Box>
+                {(api.type === 'HTTP') && (
                 <Box mb={4} px={1}>
                     <GatewaySelector
                         setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
@@ -425,6 +441,7 @@ const Policies: React.FC = () => {
                         removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                     />
                 </Box>
+                )}
                 {isChoreoConnectEnabled ?
                     <Box display='flex' flexDirection='row'>
                         <Box width='65%' pr={1} height='85vh' className={classes.operationListingBox}>

@@ -46,6 +46,7 @@ interface GeneralDetailsProps {
     version: string | null;
     description: string;
     applicableFlows: string[];
+    supportedApiTypes: string[];
     dispatch?: React.Dispatch<any>;
     isViewMode: boolean;
 }
@@ -60,6 +61,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
     version,
     description,
     applicableFlows,
+    supportedApiTypes,
     dispatch,
     isViewMode,
 }) => {
@@ -68,6 +70,10 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
     // Validates whether atleast one flow (i.e. request, response or fault) is selected
     // True if none of the flows are selected.
     const applicableFlowsError = applicableFlows.length === 0;
+
+    // Validates whether atleast one Api Type (i.e. HTTP, SOAP or SOAPTOREST) is selected
+    // True if none of the API types are selected.
+    const supportedApiTypesError = supportedApiTypes.length === 0;
 
     // Name validation
     const nameError = displayName === '';
@@ -102,6 +108,20 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
             });
         }
     };
+
+        /**
+     * Function to handle supported Api Type related checkbox changes
+     * @param {React.ChangeEvent<HTMLInputElement>} event event
+     */
+         const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+            if (dispatch) {
+                dispatch({
+                    type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
+                    name: event.target.name,
+                    checked: event.target.checked,
+                });
+            }
+        };
 
     return (
         <Box display='flex' flexDirection='row' mt={1}>
@@ -300,6 +320,86 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                 <FormHelperText>
                                     {applicableFlowsError
                                         ? 'Please select one or more flows'
+                                        : ''}
+                                </FormHelperText>
+                            </FormControl>
+                        </Box>
+                    </Box>
+                    <Box display='flex' flexDirection='row' alignItems='center'>
+                        <Typography
+                            color='inherit'
+                            variant='body1'
+                            component='div'
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.supported.api.label'
+                                defaultMessage='Supported API Types'
+                            />
+                            <sup className={classes.mandatoryStar}>*</sup>
+                        </Typography>
+                        <Box
+                            flex='1'
+                            display='flex'
+                            flexDirection='row-reverse'
+                            justifyContent='space-around'
+                        >
+                            <FormControl
+                                required
+                                component='fieldset'
+                                variant='standard'
+                                margin='normal'
+                                error={supportedApiTypesError}
+                            >
+                                <FormGroup className={classes.formGroup}>
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                name='HTTP'
+                                                color='primary'
+                                                checked={supportedApiTypes.includes(
+                                                    'HTTP',
+                                                )}
+                                                id='http-select-check-box'
+                                                onChange={handleApiTypeChange}
+                                            />
+                                        }
+                                        label='HTTP'
+                                        data-testid='http-type'
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                name='SOAP'
+                                                color='primary'
+                                                checked={supportedApiTypes.includes(
+                                                    'SOAP',
+                                                )}
+                                                id='soap-select-check-box'
+                                                onChange={handleApiTypeChange}
+                                            />
+                                        }
+                                        label='SOAP'
+                                        data-testid='soap-type'
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                name='SOAPTOREST'
+                                                color='primary'
+                                                checked={supportedApiTypes.includes(
+                                                    'SOAPTOREST',
+                                                )}
+                                                id='soaptorest-select-check-box'
+                                                onChange={handleApiTypeChange}
+                                            />
+                                        }
+                                        label='SOAPTOREST'
+                                        data-testid='soaptorest-flow'
+                                    />
+                                </FormGroup>
+                                <FormHelperText>
+                                    {supportedApiTypesError
+                                        ? 'Please select one or more API Types'
                                         : ''}
                                 </FormHelperText>
                             </FormControl>

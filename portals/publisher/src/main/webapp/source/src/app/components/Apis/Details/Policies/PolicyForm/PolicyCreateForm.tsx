@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const ACTIONS = {
     UPDATE_POLICY_METADATA: 'updatePolicyMetadata',
     UPDATE_APPLICALBLE_FLOWS: 'updateApplicableFlows',
+    UPDATE_SUPPORTED_API_TYPES: 'updateSupportedApiTypes',
     UPDATE_SUPPORTED_GATEWAYS: 'updateSupportedGateways',
     ADD_POLICY_ATTRIBUTE: 'addPolicyAttribute',
     UPDATE_POLICY_ATTRIBUTE: 'updatePolicyAttribute',
@@ -75,6 +76,16 @@ function policyReducer(state: NewPolicyState, action: any) {
                     ? [...state.applicableFlows, action.name]
                     : state.applicableFlows.filter(
                         (flow: string) => flow !== action.name,
+                    ),
+            };
+        }
+        case ACTIONS.UPDATE_SUPPORTED_API_TYPES: {
+            return {
+                ...state,
+                supportedApiTypes: action.checked
+                    ? [...state.supportedApiTypes, action.name]
+                    : state.supportedApiTypes.filter(
+                        (apiType: string) => apiType !== action.name,
                     ),
             };
         }
@@ -166,6 +177,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         version: null,
         description: '',
         applicableFlows: ['request', 'response', 'fault'],
+        supportedApiTypes: ['HTTP'],
         supportedGateways: ['Synapse'],
         policyAttributes: [],
     };
@@ -183,6 +195,9 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
 
         // Applicable flows current state validation
         if (state.applicableFlows.length === 0) hasError = true;
+
+        // Applicable api types current state validation
+        if (state.supportedApiTypes.length === 0) hasError = true;
 
         // Supported gateways current state validation
         if (state.supportedGateways.length === 0) hasError = true;
@@ -217,6 +232,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         state.displayName,
         state.version,
         state.applicableFlows,
+        state.supportedApiTypes,
         state.supportedGateways,
         state.policyAttributes,
         synapsePolicyDefinitionFile,
@@ -253,9 +269,9 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 version: 'v' + state.version,
                 description: state.description,
                 applicableFlows: state.applicableFlows,
+                supportedApiTypes: state.supportedApiTypes,
                 supportedGateways: state.supportedGateways,
                 policyAttributes: getPolicyAttributes(),
-                supportedApiTypes: ['HTTP'],
             };
             onSave(policySpec);
         }
@@ -269,6 +285,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 version={state.version}
                 description={state.description}
                 applicableFlows={state.applicableFlows}
+                supportedApiTypes={state.supportedApiTypes}
                 dispatch={dispatch}
                 isViewMode={false}
             />

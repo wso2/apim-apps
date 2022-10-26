@@ -46,7 +46,7 @@ const defaultPolicyForMigration = {
     description: '',
     applicableFlows: [],
     supportedGateways: ['Synapse'],
-    supportedApiTypes: ['HTTP'],
+    supportedApiTypes: [],
     policyAttributes: [],
     isAPISpecific: true,
 };
