@@ -89,19 +89,19 @@ function Onboarding() {
                     heading={(
                         <FormattedMessage
                             id='ServiceCatalog.Listing.Onboarding.learn.heading'
-                            defaultMessage='Learn to write your first'
+                            defaultMessage='Learn to deploy your first'
                         />
                     )}
                     subHeading={(
                         <FormattedMessage
                             id='ServiceCatalog.Listing.Onboarding.learn.heading.sub'
-                            defaultMessage='Integration Service'
+                            defaultMessage='K8s Service'
                         />
                     )}
                     description={(
                         <FormattedMessage
                             id='ServiceCatalog.Listing.Onboarding.learn.heading.text'
-                            defaultMessage='Create and Deploy your first Integration Service'
+                            defaultMessage='Deploy your first K8s Service with WSO2 APK'
                         />
                     )}
                 >
@@ -119,47 +119,6 @@ function Onboarding() {
                             id='ServiceCatalog.Listing.Onboarding.learn.link'
                             defaultMessage='Get Started'
                         />
-                    </Button>
-                </OnboardingMenuCard>
-                {/* Deploy Sample Service */}
-                <OnboardingMenuCard
-                    iconSrc={
-                        Configurations.app.context + '/site/public/images/wso2-intg-service-icon.svg'
-                    }
-                    heading={(
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.heading'
-                            defaultMessage='Add a sample'
-                        />
-                    )}
-                    subHeading={(
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.heading.sub'
-                            defaultMessage='Integration Service'
-                        />
-                    )}
-                    description={(
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.heading.text'
-                            defaultMessage={'Deploy the Sample Integration Service'
-                            + ' already available with WSO2 API Manager and get started in one click'}
-                        />
-                    )}
-                >
-                    <Button
-                        className={classes.actionStyle}
-                        size='large'
-                        id='itest-services-landing-deploy-sample'
-                        variant='outlined'
-                        color='primary'
-                        onClick={handleOnClick}
-                        disabled={deployStatus.inprogress}
-                    >
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.add'
-                            defaultMessage='Add Sample Service'
-                        />
-                        {deployStatus.inprogress && <CircularProgress size={15} />}
                     </Button>
                 </OnboardingMenuCard>
             </Grid>
