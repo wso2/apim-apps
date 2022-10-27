@@ -77,6 +77,8 @@
             if (isAnonymousEnabled) {
                 referrer = state;
             }
+        } else {
+            referrer = state;
         }
     }
     String postLogoutRedirectURI = Util.getTenantBasedLogoutCallBack(request, LOGOUT_CALLBACK_URL_SUFFIX);
