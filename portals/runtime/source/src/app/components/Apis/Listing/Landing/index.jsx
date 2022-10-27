@@ -25,10 +25,10 @@ import Grid from '@material-ui/core/Grid';
 import { FormattedMessage } from 'react-intl';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-import RestAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/RestAPIMenu';
-import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
-import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
-import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
+import Button from "@material-ui/core/Button";
+import LaunchIcon from "@material-ui/icons/Launch";
+import OnboardingMenuCard from "AppComponents/ServiceCatalog/Listing/components/OnboardingMenuCard";
+import Configurations from 'Config';
 
 const useStyles = makeStyles({
     root: {
@@ -40,12 +40,6 @@ const APILanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { root } = useStyles();
-    const {
-        graphqlIcon,
-        restApiIcon,
-        soapApiIcon,
-        streamingApiIcon,
-    } = theme.custom.landingPage.icons;
 
     return (
         <div className={root}>
@@ -67,13 +61,12 @@ const APILanding = () => {
                             <Typography display='block' gutterBottom align='center' variant='body1'>
                                 <FormattedMessage
                                     id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
-                                    defaultMessage='Choose your option to create an API '
+                                    defaultMessage='You have no APIs published yet '
                                 />
                             </Typography>
                         </Box>
                     </Typography>
                 </Grid>
-
                 <Grid item xs={12}>
                     <Box pt={isXsOrBelow ? 2 : 7} pb={5} mx={isXsOrBelow ? 12 : 3}>
                         <Grid
@@ -83,10 +76,45 @@ const APILanding = () => {
                             alignItems='flex-start'
                             spacing={3}
                         >
-                            <RestAPIMenu icon={restApiIcon} />
-                            <SoapAPIMenu icon={soapApiIcon} />
-                            <GraphqlAPIMenu icon={graphqlIcon} />
-                            <StreamingAPIMenu icon={streamingApiIcon} />
+                            <OnboardingMenuCard
+                                iconSrc={
+                                    Configurations.app.context + '/site/public/images/wso2-intg-service-icon.svg'
+                                }
+                                heading={(
+                                    <FormattedMessage
+                                        id='ServiceCatalog.Listing.Onboarding.learn.heading'
+                                        defaultMessage='Learn to publish your first'
+                                    />
+                                )}
+                                subHeading={(
+                                    <FormattedMessage
+                                        id='ServiceCatalog.Listing.Onboarding.learn.heading.sub'
+                                        defaultMessage='Runtime API'
+                                    />
+                                )}
+                                description={(
+                                    <FormattedMessage
+                                        id='ServiceCatalog.Listing.Onboarding.learn.heading.text'
+                                        defaultMessage='Publish your first runtime API with WSO2 APK'
+                                    />
+                                )}
+                            >
+                                <Button
+                                    size='large'
+                                    variant='outlined'
+                                    color='primary'
+                                    href='https://apim.docs.wso2.com/en/4.1.0/design/create-api/
+                                    create-an-api-using-a-service/'
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    endIcon={<LaunchIcon style={{ fontSize: 15 }} />}
+                                >
+                                    <FormattedMessage
+                                        id='ServiceCatalog.Listing.Onboarding.learn.link'
+                                        defaultMessage='Get Started'
+                                    />
+                                </Button>
+                            </OnboardingMenuCard>
                         </Grid>
                     </Box>
                 </Grid>
