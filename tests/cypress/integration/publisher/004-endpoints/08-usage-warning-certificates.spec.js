@@ -29,6 +29,7 @@ describe("Endpoint certificate usage testing", () => {
 
     before(function () {
         cy.loginToPublisher(publisher, password);
+        cy.wait(5000)
 
         let data;
         let promises = [];
@@ -37,6 +38,7 @@ describe("Endpoint certificate usage testing", () => {
             const endpoint = `https://test.wso2.com/v1/api/endpoint${i}`;
             data = {endpoint};
             promises.push(Utils.addAPIWithEndpoints(data));
+            cy.wait(2000)
         }
 
         Cypress.Promise.all(promises).then(res => {
@@ -46,6 +48,7 @@ describe("Endpoint certificate usage testing", () => {
             // Uploading a certificate
             // Visiting endpoints tab of selected API
             cy.visit(`/publisher/apis/${apiId}/overview`);
+            cy.wait(5000)
             cy.get('[data-testid="itest-api-config"]', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#left-menu-itemendpoints').click();
 
@@ -78,7 +81,7 @@ describe("Endpoint certificate usage testing", () => {
 
     beforeEach(function (){
         cy.loginToPublisher(publisher, password);
-
+        cy.wait(5000)
         // Visiting endpoints tab of selected API
         cy.visit(`/publisher/apis/${apiId}/overview`);
         cy.get('[data-testid="itest-api-config"]', {timeout: Cypress.config().largeTimeout}).click();
