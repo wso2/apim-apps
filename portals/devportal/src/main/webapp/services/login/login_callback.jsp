@@ -84,8 +84,20 @@
         postLogoutRedirectURI = serverUrl + appContext + LOGOUT_CALLBACK_URL_SUFFIX;
     }
     String error = request.getParameter("error");
-    if (error != null && error.equals("login_required")) {
-        response.sendRedirect(postLogoutRedirectURI + "?referrer=" + referrer);
+    boolean isAnonymousEnabled = false;
+    if ((error != null) && error.equals("login_required")) {
+        if(state!=null){
+            state = URLDecoder.decode(state, "UTF-8");
+            if(state.contains("/apis") == true || state.contains("/home") == true){
+                isAnonymousEnabled = true;
+            }
+        }
+        if((state != null) && (isAnonymousEnabled == true)){
+            System.out.println("Redirecting to: "+state);
+            response.sendRedirect(postLogoutRedirectURI + "?referrer=" + state);
+        } else {
+            response.sendRedirect(postLogoutRedirectURI);
+        }
     } else if (request.getParameter("code") != null) {
         String loginCallbackUrl = Util.getTenantBasedLoginCallBack(request, LOGIN_CALLBACK_URL_SUFFIX);
         if (loginCallbackUrl == null) {
