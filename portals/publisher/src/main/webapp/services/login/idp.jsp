@@ -71,7 +71,7 @@
     HttpResponse<String> settingsResult = client.send(getSettingsReq, HttpResponse.BodyHandlers.ofString());
 
     HttpRequest getCatalogReq = HttpRequest.newBuilder()
-            .uri(URI.create(settingsAPIUrl))
+            .uri(URI.create(serviceCatalogSettingsAPIUrl))
             .build();
     HttpResponse<String> serviceCatalogResult = client.send(getCatalogReq, HttpResponse.BodyHandlers.ofString());
 
