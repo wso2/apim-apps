@@ -17,19 +17,15 @@
  */
 
 import React, { useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import LaunchIcon from '@material-ui/icons/Launch';
-import ServiceCatalog from 'AppData/ServiceCatalog';
-import Alert from 'AppComponents/Shared/Alert';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import OnboardingMenuCard from 'AppComponents/ServiceCatalog/Listing/components/OnboardingMenuCard';
 import Configurations from 'Config';
-import { getSampleServiceMeta, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 
 const useStyles = makeStyles((theme) => ({
     actionStyle: {
@@ -45,29 +41,8 @@ const useStyles = makeStyles((theme) => ({
  */
 function Onboarding() {
     const classes = useStyles();
-    const intl = useIntl();
-    const [deployStatus, setDeployStatus] = useState({ inprogress: false, completed: false, error: false });
+    const [deployStatus] = useState({ inprogress: false, completed: false, error: false });
 
-    const handleOnClick = async () => {
-        setDeployStatus({ inprogress: true, completed: false, error: false });
-        const serviceMetadata = getSampleServiceMeta();
-        const inlineContent = getSampleOpenAPI();
-        try {
-            await ServiceCatalog.addService(serviceMetadata, inlineContent);
-        } catch (error) {
-            setDeployStatus({ inprogress: false, completed: false, error });
-            console.error(error);
-            Alert.error(intl.formatMessage({
-                id: 'ServiceCatalog.Listing.Onboarding.error.creating.sample.service',
-                defaultMessage: 'Error while creating Sample Service',
-            }));
-        }
-        setDeployStatus({ inprogress: false, completed: true, error: false });
-        Alert.info(intl.formatMessage({
-            id: 'ServiceCatalog.Listing.Onboarding.add.sample.success',
-            defaultMessage: 'Sample Service added successfully!',
-        }));
-    };
     if (deployStatus.completed && !deployStatus.error) {
         const url = '/service-catalog';
         return <Redirect to={url} />;

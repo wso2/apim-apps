@@ -19,7 +19,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
-import { useTheme } from '@material-ui/styles';
 import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -46,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
 function GlobalNavLinks(props) {
     const classes = useStyles();
     const { selected } = props;
-    const theme = useTheme();
     return (
         <Box mt={10}>
             <List className={classes.listRoot} component='nav' name='primaryNavigation' aria-label='primary navigation'>
