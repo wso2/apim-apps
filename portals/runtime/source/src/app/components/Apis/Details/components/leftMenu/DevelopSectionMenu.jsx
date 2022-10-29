@@ -29,7 +29,6 @@ import ScopesIcon from '@material-ui/icons/VpnKey';
 import PoliciesIcon from '@material-ui/icons/SyncAlt';
 import PropertiesIcon from '@material-ui/icons/List';
 import Tooltip from '@material-ui/core/Tooltip';
-import CommentIcon from '@material-ui/icons/Comment';
 import IconButton from '@material-ui/core/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import RuntimeConfigurationIcon from '@material-ui/icons/Settings';
@@ -151,22 +150,6 @@ export default function DevelopSectionMenu(props) {
                         Portal Configurations
                     </Typography>
                 </AccordianSummary>
-                <AccordionDetails>
-                    <div>
-                        {!isAPIProduct && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.comments',
-                                    defaultMessage: 'Comments',
-                                })}
-                                route='comments'
-                                to={pathPrefix + 'comments'}
-                                Icon={<CommentIcon />}
-                                id='left-menu-itemcomments'
-                            />
-                        )}
-                    </div>
-                </AccordionDetails>
             </Accordion>
             <Accordion
                 id='itest-api-details-api-config-acc'

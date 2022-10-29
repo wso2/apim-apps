@@ -61,7 +61,6 @@ import APIProductOperations from './ProductResources/APIProductOperations';
 import ProductResourcesEdit from './ProductResources/ProductResourcesEdit';
 import Endpoints from './Endpoints/Endpoints';
 import Environments from './Environments/Environments';
-import Comments from './Comments/Comments';
 import Security from './Security';
 import APIDefinition from './APIDefinition/APIDefinition';
 import WSDL from './APIDefinition/WSDL';
@@ -923,7 +922,6 @@ class Details extends Component {
                                         component={APIOperations}
                                     />
                                     <Route path={Details.subPaths.SECURITY} component={() => <Security api={api} />} />
-                                    <Route path={Details.subPaths.COMMENTS} component={() => <Comments api={api} />} />
                                     <Route
                                         path={Details.subPaths.BUSINESS_INFO}
                                         component={() => <BusinessInformation api={api} />}
@@ -958,10 +956,6 @@ class Details extends Component {
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
                                     <Route path={Details.subPaths.EXTERNAL_STORES} component={ExternalStores} />
-                                    <Route
-                                        path={Details.subPaths.COMMENTS}
-                                        component={() => <Comments apiObj={api} />}
-                                    />
                                     <Route
                                         path={Details.subPaths.POLICIES}
                                         component={() => <Policies api={api} />}
@@ -1003,7 +997,6 @@ Details.subPaths = {
     RESOURCES_PRODUCT_EDIT: '/api-products/:apiprod_uuid/resources/edit',
     SCOPES: '/apis/:api_uuid/scopes',
     SECURITY: '/apis/:api_uuid/security',
-    COMMENTS: '/apis/:api_uuid/comments',
     BUSINESS_INFO: '/apis/:api_uuid/business info',
     BUSINESS_INFO_PRODUCT: '/api-products/:apiprod_uuid/business info',
     PROPERTIES: '/apis/:api_uuid/properties',
