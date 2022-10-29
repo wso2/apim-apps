@@ -55,7 +55,6 @@ import RuntimeConfiguration from './Configuration/RuntimeConfiguration';
 import Topics from './Configuration/Topics';
 import RuntimeConfigurationWebSocket from './Configuration/RuntimeConfigurationWebSocket';
 import LifeCycle from './LifeCycle/LifeCycle';
-import Documents from './Documents';
 import Operations from './Operations/Operations';
 import APIOperations from './Resources/APIOperations';
 import APIProductOperations from './ProductResources/APIProductOperations';
@@ -63,7 +62,6 @@ import ProductResourcesEdit from './ProductResources/ProductResourcesEdit';
 import Endpoints from './Endpoints/Endpoints';
 import Environments from './Environments/Environments';
 import Comments from './Comments/Comments';
-import Scope from './Scopes';
 import Security from './Security';
 import APIDefinition from './APIDefinition/APIDefinition';
 import WSDL from './APIDefinition/WSDL';
@@ -924,16 +922,6 @@ class Details extends Component {
                                         key={Details.subPaths.RESOURCES}
                                         component={APIOperations}
                                     />
-
-                                    <Route path={Details.subPaths.SCOPES} component={() => <Scope api={api} />} />
-                                    <Route
-                                        path={Details.subPaths.DOCUMENTS}
-                                        component={() => <Documents api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.DOCUMENTS_PRODUCT}
-                                        component={() => <Documents api={api} />}
-                                    />
                                     <Route path={Details.subPaths.SECURITY} component={() => <Security api={api} />} />
                                     <Route path={Details.subPaths.COMMENTS} component={() => <Comments api={api} />} />
                                     <Route
@@ -1014,8 +1002,6 @@ Details.subPaths = {
     RESOURCES_PRODUCT: '/api-products/:apiprod_uuid/resources',
     RESOURCES_PRODUCT_EDIT: '/api-products/:apiprod_uuid/resources/edit',
     SCOPES: '/apis/:api_uuid/scopes',
-    DOCUMENTS: '/apis/:api_uuid/documents',
-    DOCUMENTS_PRODUCT: '/api-products/:apiprod_uuid/documents',
     SECURITY: '/apis/:api_uuid/security',
     COMMENTS: '/apis/:api_uuid/comments',
     BUSINESS_INFO: '/apis/:api_uuid/business info',

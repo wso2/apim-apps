@@ -146,22 +146,6 @@ const suggestions = {
             route: 'configuration',
         },
         {
-            label: 'Documents',
-            route: 'documents',
-        },
-        {
-            label: 'Add New Documents',
-            route: 'documents',
-        },
-        {
-            label: 'API Help',
-            route: 'documents',
-        },
-        {
-            label: 'Markdown Documents',
-            route: 'documents',
-        },
-        {
             label: 'Business Information',
             route: 'business info',
         },

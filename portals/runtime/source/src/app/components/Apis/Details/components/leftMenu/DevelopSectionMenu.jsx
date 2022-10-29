@@ -27,9 +27,7 @@ import Typography from '@material-ui/core/Typography';
 import EndpointIcon from '@material-ui/icons/GamesOutlined';
 import ScopesIcon from '@material-ui/icons/VpnKey';
 import PoliciesIcon from '@material-ui/icons/SyncAlt';
-import DocumentsIcon from '@material-ui/icons/LibraryBooks';
 import PropertiesIcon from '@material-ui/icons/List';
-import SubscriptionsIcon from '@material-ui/icons/RssFeed';
 import Tooltip from '@material-ui/core/Tooltip';
 import CommentIcon from '@material-ui/icons/Comment';
 import IconButton from '@material-ui/core/IconButton';
@@ -155,15 +153,6 @@ export default function DevelopSectionMenu(props) {
                 </AccordianSummary>
                 <AccordionDetails>
                     <div>
-                        <LeftMenuItem
-                            text={intl.formatMessage({
-                                id: 'Apis.Details.index.documents',
-                                defaultMessage: 'documents',
-                            })}
-                            to={pathPrefix + 'documents'}
-                            Icon={<DocumentsIcon />}
-                            id='left-menu-itemdocuments'
-                        />
                         {!isAPIProduct && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
