@@ -25,7 +25,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
 import Typography from '@material-ui/core/Typography';
 import EndpointIcon from '@material-ui/icons/GamesOutlined';
-import ScopesIcon from '@material-ui/icons/VpnKey';
 import PoliciesIcon from '@material-ui/icons/SyncAlt';
 import PropertiesIcon from '@material-ui/icons/List';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -206,18 +205,6 @@ export default function DevelopSectionMenu(props) {
                                 to={pathPrefix + 'endpoints'}
                                 Icon={<EndpointIcon />}
                                 id='left-menu-itemendpoints'
-                            />
-                        )}
-                        {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.left.menu.scope',
-                                    defaultMessage: 'Local Scopes',
-                                })}
-                                route='scopes'
-                                to={pathPrefix + 'scopes'}
-                                Icon={<ScopesIcon />}
-                                id='left-menu-itemLocalScopes'
                             />
                         )}
                         {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct

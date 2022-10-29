@@ -995,7 +995,6 @@ Details.subPaths = {
     RESOURCES: '/apis/:api_uuid/resources',
     RESOURCES_PRODUCT: '/api-products/:apiprod_uuid/resources',
     RESOURCES_PRODUCT_EDIT: '/api-products/:apiprod_uuid/resources/edit',
-    SCOPES: '/apis/:api_uuid/scopes',
     SECURITY: '/apis/:api_uuid/security',
     BUSINESS_INFO: '/apis/:api_uuid/business info',
     BUSINESS_INFO_PRODUCT: '/api-products/:apiprod_uuid/business info',
