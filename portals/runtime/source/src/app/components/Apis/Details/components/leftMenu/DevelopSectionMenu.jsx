@@ -28,8 +28,6 @@ import EndpointIcon from '@material-ui/icons/GamesOutlined';
 import ScopesIcon from '@material-ui/icons/VpnKey';
 import PoliciesIcon from '@material-ui/icons/SyncAlt';
 import DocumentsIcon from '@material-ui/icons/LibraryBooks';
-import BusinessIcon from '@material-ui/icons/Business';
-import ConfigurationIcon from '@material-ui/icons/Build';
 import PropertiesIcon from '@material-ui/icons/List';
 import SubscriptionsIcon from '@material-ui/icons/RssFeed';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -157,48 +155,6 @@ export default function DevelopSectionMenu(props) {
                 </AccordianSummary>
                 <AccordionDetails>
                     <div>
-                        <LeftMenuItem
-                            className={classes.footeremaillink}
-                            text={intl.formatMessage({
-                                id: 'Apis.Details.index.design.configs',
-                                defaultMessage: 'Basic info',
-                            })}
-                            route='configuration'
-                            to={pathPrefix + 'configuration'}
-                            Icon={<ConfigurationIcon />}
-                            id='left-menu-itemDesignConfigurations'
-                        />
-                        <LeftMenuItem
-                            text={intl.formatMessage({
-                                id: 'Apis.Details.index.business.info',
-                                defaultMessage: 'business info',
-                            })}
-                            to={pathPrefix + 'business info'}
-                            Icon={<BusinessIcon />}
-                            id='left-menu-itembusinessinfo'
-                        />
-                        {!isAPIProduct && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.subscriptions',
-                                    defaultMessage: 'subscriptions',
-                                })}
-                                to={pathPrefix + 'subscriptions'}
-                                Icon={<SubscriptionsIcon />}
-                                id='left-menu-itemsubscriptions'
-                            />
-                        )}
-                        {isAPIProduct && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.subscriptions',
-                                    defaultMessage: 'subscriptions',
-                                })}
-                                to={pathPrefix + 'subscriptions'}
-                                Icon={<SubscriptionsIcon />}
-                                id='left-menu-itemsubscriptions'
-                            />
-                        )}
                         <LeftMenuItem
                             text={intl.formatMessage({
                                 id: 'Apis.Details.index.documents',

@@ -51,7 +51,6 @@ import { RevisionContextProvider } from 'AppComponents/Shared/RevisionContext';
 import DevelopSectionMenu from 'AppComponents/Apis/Details/components/leftMenu/DevelopSectionMenu';
 import { PROPERTIES as UserProperties } from 'AppData/User';
 import Overview from './NewOverview/Overview';
-import DesignConfigurations from './Configuration/DesignConfigurations';
 import RuntimeConfiguration from './Configuration/RuntimeConfiguration';
 import Topics from './Configuration/Topics';
 import RuntimeConfigurationWebSocket from './Configuration/RuntimeConfigurationWebSocket';
@@ -63,7 +62,6 @@ import APIProductOperations from './ProductResources/APIProductOperations';
 import ProductResourcesEdit from './ProductResources/ProductResourcesEdit';
 import Endpoints from './Endpoints/Endpoints';
 import Environments from './Environments/Environments';
-import Subscriptions from './Subscriptions/Subscriptions';
 import Comments from './Comments/Comments';
 import Scope from './Scopes';
 import Security from './Security';
@@ -880,10 +878,6 @@ class Details extends Component {
                                         component={() => <LifeCycle api={api} isAPIProduct={isAPIProduct} />}
                                     />
                                     <Route
-                                        path={Details.subPaths.CONFIGURATION}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
-                                    />
-                                    <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION}
                                         component={() => <RuntimeConfiguration api={api} />}
                                     />
@@ -894,10 +888,6 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.TOPICS}
                                         component={() => <Topics api={api} updateAPI={this.updateAPI} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.CONFIGURATION_PRODUCT}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION_PRODUCT}
@@ -944,14 +934,6 @@ class Details extends Component {
                                         path={Details.subPaths.DOCUMENTS_PRODUCT}
                                         component={() => <Documents api={api} />}
                                     />
-                                    <Route
-                                        path={Details.subPaths.SUBSCRIPTIONS}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.SUBSCRIPTIONS_PRODUCT}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
-                                    />
                                     <Route path={Details.subPaths.SECURITY} component={() => <Security api={api} />} />
                                     <Route path={Details.subPaths.COMMENTS} component={() => <Comments api={api} />} />
                                     <Route
@@ -971,7 +953,6 @@ class Details extends Component {
                                         component={() => <Properties api={api} />}
                                     />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
-                                    <Route path={Details.subPaths.SUBSCRIPTIONS} component={() => <Subscriptions />} />
                                     <Route
                                         path={Details.subPaths.MONETIZATION}
                                         component={() => <Monetization api={api} />}
@@ -1022,9 +1003,7 @@ Details.subPaths = {
     SCHEMA_DEFINITION: '/apis/:api_uuid/schema definition',
     LIFE_CYCLE: '/apis/:api_uuid/lifecycle',
     LIFE_CYCLE_PRODUCT: '/api-products/:apiprod_uuid/lifecycle',
-    CONFIGURATION: '/apis/:api_uuid/configuration',
     RUNTIME_CONFIGURATION: '/apis/:api_uuid/runtime-configuration',
-    CONFIGURATION_PRODUCT: '/api-products/:apiprod_uuid/configuration',
     RUNTIME_CONFIGURATION_PRODUCT: '/api-products/:apiprod_uuid/runtime-configuration',
     RUNTIME_CONFIGURATION_WEBSOCKET: '/apis/:api_uuid/runtime-configuration-websocket',
     ENDPOINTS: '/apis/:api_uuid/endpoints',
@@ -1037,8 +1016,6 @@ Details.subPaths = {
     SCOPES: '/apis/:api_uuid/scopes',
     DOCUMENTS: '/apis/:api_uuid/documents',
     DOCUMENTS_PRODUCT: '/api-products/:apiprod_uuid/documents',
-    SUBSCRIPTIONS_PRODUCT: '/api-products/:apiprod_uuid/subscriptions',
-    SUBSCRIPTIONS: '/apis/:api_uuid/subscriptions',
     SECURITY: '/apis/:api_uuid/security',
     COMMENTS: '/apis/:api_uuid/comments',
     BUSINESS_INFO: '/apis/:api_uuid/business info',
