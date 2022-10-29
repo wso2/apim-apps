@@ -31,8 +31,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import RuntimeConfigurationIcon from '@material-ui/icons/Settings';
-import MonetizationIcon from '@material-ui/icons/LocalAtm';
-import { isRestricted } from 'AppData/AuthManager';
 import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
@@ -232,33 +230,6 @@ export default function DevelopSectionMenu(props) {
                             id='left-menu-itemproperties'
                         />
 
-                        {!api.isWebSocket() && !isRestricted(['apim:api_publish'], api) && (
-                            <>
-                                {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
-                                    <LeftMenuItem
-                                        text={intl.formatMessage({
-                                            id: 'Apis.Details.index.monetization',
-                                            defaultMessage: 'monetization',
-                                        })}
-                                        to={pathPrefix + 'monetization'}
-                                        Icon={<MonetizationIcon />}
-                                        id='left-menu-itemMonetization'
-                                    />
-                                )}
-                            </>
-                        )}
-                        {isAPIProduct && !api.isWebSocket()
-                            && !isRestricted(['apim:api_publish'], api) && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.monetization',
-                                    defaultMessage: 'monetization',
-                                })}
-                                to={pathPrefix + 'monetization'}
-                                Icon={<MonetizationIcon />}
-                                id='left-menu-monetization-prod'
-                            />
-                        )}
                     </div>
                 </AccordionDetails>
             </Accordion>

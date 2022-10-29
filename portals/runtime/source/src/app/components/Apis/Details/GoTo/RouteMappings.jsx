@@ -532,18 +532,6 @@ const suggestions = {
             route: 'lifecycle',
         },
         {
-            label: 'Monetization',
-            route: 'monetization',
-        },
-        {
-            label: 'Monetization Properties',
-            route: 'monetization',
-        },
-        {
-            label: 'Commercial Policies',
-            route: 'monetization',
-        },
-        {
             label: 'Create New Version',
             route: 'new_version',
         },

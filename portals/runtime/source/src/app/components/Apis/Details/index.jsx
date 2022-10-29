@@ -67,7 +67,6 @@ import WSDL from './APIDefinition/WSDL';
 import APIDetailsTopMenu from './components/APIDetailsTopMenu';
 import BusinessInformation from './BusinessInformation/BusinessInformation';
 import Properties from './Properties/Properties';
-import Monetization from './Monetization';
 import Policies from './Policies/Policies';
 import ExternalStores from './ExternalStores/ExternalStores';
 import { APIProvider } from './components/ApiContext';
@@ -940,14 +939,6 @@ class Details extends Component {
                                     />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
                                     <Route
-                                        path={Details.subPaths.MONETIZATION}
-                                        component={() => <Monetization api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.MONETIZATION_PRODUCT}
-                                        component={() => <Monetization api={api} />}
-                                    />
-                                    <Route
                                         path={Details.subPaths.TRYOUT}
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
@@ -1001,8 +992,6 @@ Details.subPaths = {
     PROPERTIES: '/apis/:api_uuid/properties',
     PROPERTIES_PRODUCT: '/api-products/:apiprod_uuid/properties',
     NEW_VERSION: '/apis/:api_uuid/new_version',
-    MONETIZATION: '/apis/:api_uuid/monetization',
-    MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
     TRYOUT: '/apis/:api_uuid/test-console',
     TRYOUT_PRODUCT: '/api-products/:apiprod_uuid/test-console',
