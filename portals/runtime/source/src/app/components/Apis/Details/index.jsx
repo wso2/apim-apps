@@ -19,8 +19,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { isRestricted } from 'AppData/AuthManager';
-import LifeCycleIcon from '@material-ui/icons/Autorenew';
 import StoreIcon from '@material-ui/icons/Store';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import CodeIcon from '@material-ui/icons/Code';
@@ -54,7 +52,6 @@ import Overview from './NewOverview/Overview';
 import RuntimeConfiguration from './Configuration/RuntimeConfiguration';
 import Topics from './Configuration/Topics';
 import RuntimeConfigurationWebSocket from './Configuration/RuntimeConfigurationWebSocket';
-import LifeCycle from './LifeCycle/LifeCycle';
 import Operations from './Operations/Operations';
 import APIOperations from './Resources/APIOperations';
 import APIProductOperations from './ProductResources/APIProductOperations';
@@ -774,21 +771,6 @@ class Details extends Component {
                                     />
                                 </div>
                             )}
-                            {!isRestricted(['apim:api_publish'], api) && (
-                                <div>
-                                    <Divider />
-                                    <Typography className={classes.headingText}>Publish</Typography>
-                                    <LeftMenuItem
-                                        text={intl.formatMessage({
-                                            id: 'Apis.Details.index.lifecycle',
-                                            defaultMessage: 'lifecycle',
-                                        })}
-                                        to={pathPrefix + 'lifecycle'}
-                                        Icon={<LifeCycleIcon />}
-                                        id='left-menu-itemlifecycle'
-                                    />
-                                </div>
-                            )}
                             {!isAPIProduct && settings && settings.externalStoresEnabled && (
                                 <>
                                     <Divider />
@@ -864,14 +846,6 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.ASYNCAPI_DEFINITION}
                                         component={() => <APIDefinition api={api} updateAPI={this.updateAPI} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.LIFE_CYCLE}
-                                        component={() => <LifeCycle api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.LIFE_CYCLE_PRODUCT}
-                                        component={() => <LifeCycle api={api} isAPIProduct={isAPIProduct} />}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION}
