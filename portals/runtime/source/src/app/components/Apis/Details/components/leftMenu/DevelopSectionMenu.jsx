@@ -118,14 +118,9 @@ export default function DevelopSectionMenu(props) {
         pathPrefix, isAPIProduct, api, getLeftMenuItemForResourcesByType, getLeftMenuItemForDefinitionByType,
     } = props;
     const user = useUser();
-    const [portalConfigsExpanded, setPortalConfigsExpanded] = useState(user
-        .getProperty(UserProperties.PORTAL_CONFIG_OPEN));
     const [apiConfigsExpanded, setApiConfigsExpanded] = useState(user.getProperty(UserProperties.API_CONFIG_OPEN));
     const handleAccordionState = (section, isExpanded) => {
-        if (section === 'portalConfigsExpanded') {
-            setPortalConfigsExpanded(isExpanded);
-            user.setProperty(UserProperties.PORTAL_CONFIG_OPEN, isExpanded);
-        } else {
+        if (section === 'apiConfigsExpanded') {
             setApiConfigsExpanded(isExpanded);
             user.setProperty(UserProperties.API_CONFIG_OPEN, isExpanded);
         }
@@ -135,22 +130,6 @@ export default function DevelopSectionMenu(props) {
 
     return (
         <div className={classes.root}>
-            <Accordion
-                id='itest-api-details-portal-config-acc'
-                defaultExpanded={portalConfigsExpanded}
-                elevation={0}
-                onChange={(e, isExpanded) => handleAccordionState('portalConfigsExpanded',
-                    isExpanded)}
-                classes={{ expanded: classes.expanded }}
-            >
-                <AccordianSummary
-                    expandIcon={<ExpandMoreIcon className={classes.expandIconColor} />}
-                >
-                    <Typography className={classes.leftLInkText}>
-                        Portal Configurations
-                    </Typography>
-                </AccordianSummary>
-            </Accordion>
             <Accordion
                 id='itest-api-details-api-config-acc'
                 defaultExpanded={apiConfigsExpanded}
