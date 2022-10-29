@@ -352,10 +352,6 @@ const suggestions = {
             route: 'resources',
         },
         {
-            label: 'Scopes',
-            route: 'scopes',
-        },
-        {
             label: 'Add New Scope',
             route: 'scopes',
         },
@@ -474,10 +470,6 @@ const suggestions = {
         {
             label: 'Schema Definition',
             route: 'schema definition',
-        },
-        {
-            label: 'Scopes',
-            route: 'scopes',
         },
         {
             label: 'Add New Scope',
