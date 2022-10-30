@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Stepper from '@material-ui/core/Stepper';
@@ -6,12 +6,10 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FormattedMessage } from 'react-intl';
-import LaunchIcon from '@material-ui/icons/Launch';
 import Alert from 'AppComponents/Shared/Alert';
 import Grid from '@material-ui/core/Grid';
 import StepConnector from '@material-ui/core/StepConnector';
-import ApiContext, { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import { Link as RouterLink } from 'react-router-dom';
@@ -160,20 +158,9 @@ export default function CustomizedStepper() {
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
-    const { tenantList } = useContext(ApiContext);
-    const { user } = useAppContext();
-    const { data: settings } = usePublisherSettings();
-    const userNameSplit = user.name.split('@');
-    const tenantDomain = userNameSplit[userNameSplit.length - 1];
     const securityScheme = [...api.securityScheme];
     const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
     && securityScheme.includes('mutualssl_mandatory');
-    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
-    // TODO: tmkasun need to handle is loading
-    if (tenantList && tenantList.length > 0) {
-        // TODO: tmkasun need to handle is loading
-        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
-    }
     const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI())
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
     const forceComplete = [];
@@ -265,38 +252,6 @@ export default function CustomizedStepper() {
                                 </Grid>
                             </Box>
                         </Grid>
-                        <Box mt={1} ml={2}>
-                            <a
-                                target='_blank'
-                                className={classes.textLink}
-                                rel='noopener noreferrer'
-                                href={devportalUrl}
-                            >
-                                <Grid
-                                    container
-                                    direction='row'
-                                    alignItems='center'
-                                    justify='center'
-                                >
-                                    <Grid item>
-                                        <Typography variant='h6' display='inline'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.view.devportal'
-                                                defaultMessage='View in devportal'
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Box ml={1}>
-                                            <LaunchIcon
-                                                color='primary'
-                                                fontSize='small'
-                                            />
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                            </a>
-                        </Box>
                     </>
                 );
             case 'PROTOTYPED':
@@ -466,49 +421,6 @@ export default function CustomizedStepper() {
                                                                     id='Apis.Details.Overview.
                                                                     CustomizedStepper.Endpoint'
                                                                     defaultMessage=' Endpoint'
-                                                                />
-                                                            </Typography>
-                                                            <Box ml={1}>
-                                                                <LinkIcon
-                                                                    color='primary'
-                                                                    fontSize='small'
-                                                                />
-                                                            </Box>
-                                                        </Link>
-                                                    </Grid>
-                                                </Box>
-                                            </Grid>
-                                        </Box>
-                                    )}
-                                    {(api.gatewayVendor === 'wso2') && (
-                                        <Box ml={6}>
-                                            <Grid
-                                                container
-                                                direction='row'
-                                                justify='center'
-                                                style={{ marginLeft: '2px' }}
-                                            >
-                                                <Grid item>
-                                                    {isTierAvailable ? (
-                                                        <CheckIcon className={classes.iconTrue} />
-                                                    ) : (
-                                                        <CloseIcon className={classes.iconFalse} />
-                                                    )}
-                                                </Grid>
-                                                <Box ml={1}>
-                                                    <Grid item>
-                                                        <Link
-                                                            underline='none'
-                                                            component={RouterLink}
-                                                            className={classes.pageLinks}
-                                                            to={api.isAPIProduct()
-                                                                ? '/api-products/' + api.id + '/subscriptions'
-                                                                : '/apis/' + api.id + '/subscriptions'}
-                                                        >
-                                                            <Typography variant='h6'>
-                                                                <FormattedMessage
-                                                                    id='Apis.Details.Overview.CustomizedStepper.Tier'
-                                                                    defaultMessage=' Business Plan'
                                                                 />
                                                             </Typography>
                                                             <Box ml={1}>
