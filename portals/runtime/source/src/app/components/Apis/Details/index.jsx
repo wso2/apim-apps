@@ -62,7 +62,6 @@ import Security from './Security';
 import APIDefinition from './APIDefinition/APIDefinition';
 import WSDL from './APIDefinition/WSDL';
 import APIDetailsTopMenu from './components/APIDetailsTopMenu';
-import BusinessInformation from './BusinessInformation/BusinessInformation';
 import Properties from './Properties/Properties';
 import Policies from './Policies/Policies';
 import ExternalStores from './ExternalStores/ExternalStores';
@@ -895,14 +894,6 @@ class Details extends Component {
                                         component={APIOperations}
                                     />
                                     <Route path={Details.subPaths.SECURITY} component={() => <Security api={api} />} />
-                                    <Route
-                                        path={Details.subPaths.BUSINESS_INFO}
-                                        component={() => <BusinessInformation api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.BUSINESS_INFO_PRODUCT}
-                                        component={() => <BusinessInformation api={api} />}
-                                    />
                                     <Route
                                         path={Details.subPaths.PROPERTIES}
                                         component={() => <Properties api={api} />}
