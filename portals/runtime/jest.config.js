@@ -47,7 +47,7 @@ module.exports = {
         '<rootDir>/node_modules/', 
         '<rootDir>/source/Tests/Integration/',
         '<rootDir>/source/src/app/components/Apis/Details/NewOverview/Overview.test.jsx',
-        '<rootDir>/source/src/app/components/Apis/Create/GraphQL/ApiCreateGraphQL.test.tsx'],
+    ],
     transformIgnorePatterns: ['<rootDir>/node_modules/'],
 
     // Automatically clear mock calls and instances between every test
