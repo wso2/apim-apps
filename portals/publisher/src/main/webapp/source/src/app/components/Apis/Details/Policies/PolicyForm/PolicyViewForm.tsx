@@ -69,6 +69,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                 version={policySpec.version}
                 description={policySpec.description}
                 applicableFlows={policySpec.applicableFlows}
+                supportedApiTypes={policySpec.supportedApiTypes}
                 isViewMode
             />
             <Divider light />

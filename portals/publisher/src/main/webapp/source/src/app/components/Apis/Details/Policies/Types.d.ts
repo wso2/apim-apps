@@ -23,6 +23,7 @@ export type Policy = {
     displayName: string;
     applicableFlows: string[];
     supportedGateways: string[];
+    supportedApiTypes: string[];
     isAPISpecific: boolean;
     supportedGateways: string[];
 };
