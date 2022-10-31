@@ -102,18 +102,11 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
 
     useEffect(() => {
         (async () => {
-            let operationInAction = null;
-            if (!isChoreoConnectEnabled) {
-                operationInAction = apiOperations.find(
-                    (op: any) =>
-                        op.target === target &&
-                        op.verb.toLowerCase() === verb.toLowerCase(),
-                );
-            } else {
-                operationInAction = apiOperations.find(
-                    (op: any) => op.target === target,
-                );
-            }
+            let operationInAction = apiOperations.find(
+                (op: any) =>
+                    op.target === target &&
+                    op.verb.toLowerCase() === verb.toLowerCase(),
+            );
 
             // Populate request flow attached policy list
             const requestFlowList: AttachedPolicy[] = [];

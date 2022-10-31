@@ -24,8 +24,6 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Box } from '@material-ui/core';
-import CONSTS from 'AppData/Constants';
-import OperationButton from './OperationButton';
 
 const useStyles = makeStyles((theme) => ({
     tagClass: {
@@ -43,19 +41,14 @@ interface OperationGroupProps {
     openAPI: any;
     children: any;
     tag: string;
-    isChoreoConnectEnabled: boolean;
-    verbObject: any;
 }
 
 const OperationGroup: FC<OperationGroupProps> = ({
-    openAPI, children, tag, isChoreoConnectEnabled, verbObject
+    openAPI, children, tag
 }) => {
     const classes = useStyles();
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo: any) => tagInfo.name === tag);
     let borderColor = "";
-    if (isChoreoConnectEnabled) {
-        borderColor = 'grey';
-    }
 
     return (
         <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
@@ -71,20 +64,6 @@ const OperationGroup: FC<OperationGroupProps> = ({
                     <Typography style={{ margin: '0px 10px' }} variant='caption'>
                         {' '}
                     </Typography>
-                    {isChoreoConnectEnabled ?
-                        <Box display='flex' flexDirection='column wrap' gridRowGap={10} gridColumnGap={5}>
-
-                            {Object.entries(verbObject).map(([verb]) => {
-                                return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                    <>
-                                        <OperationButton
-                                            verb={verb}
-                                        />
-                                    </>
-                                ) : null;
-                            })}
-                        </Box>
-                        : null}
                     {currentTagInfo && (
                         <Typography style={{ margin: '0px 30px' }} variant='caption'>
                             {currentTagInfo.description}

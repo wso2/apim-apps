@@ -129,7 +129,14 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                 disabled={false}
                 className={classes.paperStyles}
             >
-                {isChoreoConnectEnabled ?
+                <ExpansionPanelSummary
+                    className={highlight ? classes.highlightSelected : ''}
+                    disableRipple
+                    disableTouchRipple
+                    expandIcon={<ExpandMoreIcon />}
+                    id={verb + target}
+                    classes={{ content: classes.contentNoMargin }}
+                >
                     <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
                         <Grid item md={4} className={classes.operationSummaryGrid}>
                             <Badge
@@ -170,67 +177,15 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                         </Grid>
                         {renderUsedInApiProducts}
                     </Grid>
-                    :
-                    <ExpansionPanelSummary
-                        className={highlight ? classes.highlightSelected : ''}
-                        disableRipple
-                        disableTouchRipple
-                        expandIcon={<ExpandMoreIcon />}
-                        id={verb + target}
-                        classes={{ content: classes.contentNoMargin }}
-                    >
-                        <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                            <Grid item md={4} className={classes.operationSummaryGrid}>
-                                <Badge
-                                    invisible={!operation['x-wso2-new']}
-                                    color='error'
-                                    variant='dot'
-                                    style={{ display: 'inline-block' }}
-                                >
-                                    <Button
-                                        disableFocusRipple
-                                        variant='contained'
-                                        aria-label={'HTTP verb ' + verb}
-                                        size='small'
-                                        className={classes.customButton}
-                                    >
-                                        {verb}
-                                    </Button>
-                                </Badge>
-                                <Typography
-                                    display='inline'
-                                    variant='h6'
-                                    gutterBottom
-                                    className={classes.targetText}
-                                    title={target}
-                                >
-                                    {target}
-                                    {(operation.summary && operation.summary !== '') && (
-                                        <Typography
-                                            display='inline'
-                                            style={{ margin: '0px 30px' }}
-                                            variant='caption'
-                                            gutterBottom
-                                        >
-                                            {operation.summary}
-                                        </Typography>
-                                    )}
-                                </Typography>
-                            </Grid>
-                            {renderUsedInApiProducts}
-                        </Grid>
-                    </ExpansionPanelSummary>
-                }
+                </ExpansionPanelSummary>
                 <Divider light className={classes.customDivider} />
-                {!isChoreoConnectEnabled && (
-                    <PoliciesExpansion
-                        target={target}
-                        verb={verb}
-                        allPolicies={allPolicies}
-                        isChoreoConnectEnabled={isChoreoConnectEnabled}
-                        policyList={policyList}
-                    />
-                )}
+                <PoliciesExpansion
+                    target={target}
+                    verb={verb}
+                    allPolicies={allPolicies}
+                    isChoreoConnectEnabled={isChoreoConnectEnabled}
+                    policyList={policyList}
+                />
             </ExpansionPanel>
         </>
     );
