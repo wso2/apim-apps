@@ -19,8 +19,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { isRestricted } from 'AppData/AuthManager';
-import LifeCycleIcon from '@material-ui/icons/Autorenew';
 import StoreIcon from '@material-ui/icons/Store';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import CodeIcon from '@material-ui/icons/Code';
@@ -51,28 +49,20 @@ import { RevisionContextProvider } from 'AppComponents/Shared/RevisionContext';
 import DevelopSectionMenu from 'AppComponents/Apis/Details/components/leftMenu/DevelopSectionMenu';
 import { PROPERTIES as UserProperties } from 'AppData/User';
 import Overview from './NewOverview/Overview';
-import DesignConfigurations from './Configuration/DesignConfigurations';
 import RuntimeConfiguration from './Configuration/RuntimeConfiguration';
 import Topics from './Configuration/Topics';
 import RuntimeConfigurationWebSocket from './Configuration/RuntimeConfigurationWebSocket';
-import LifeCycle from './LifeCycle/LifeCycle';
-import Documents from './Documents';
 import Operations from './Operations/Operations';
 import APIOperations from './Resources/APIOperations';
 import APIProductOperations from './ProductResources/APIProductOperations';
 import ProductResourcesEdit from './ProductResources/ProductResourcesEdit';
 import Endpoints from './Endpoints/Endpoints';
 import Environments from './Environments/Environments';
-import Subscriptions from './Subscriptions/Subscriptions';
-import Comments from './Comments/Comments';
-import Scope from './Scopes';
 import Security from './Security';
 import APIDefinition from './APIDefinition/APIDefinition';
 import WSDL from './APIDefinition/WSDL';
 import APIDetailsTopMenu from './components/APIDetailsTopMenu';
-import BusinessInformation from './BusinessInformation/BusinessInformation';
 import Properties from './Properties/Properties';
-import Monetization from './Monetization';
 import Policies from './Policies/Policies';
 import ExternalStores from './ExternalStores/ExternalStores';
 import { APIProvider } from './components/ApiContext';
@@ -780,21 +770,6 @@ class Details extends Component {
                                     />
                                 </div>
                             )}
-                            {!isRestricted(['apim:api_publish'], api) && (
-                                <div>
-                                    <Divider />
-                                    <Typography className={classes.headingText}>Publish</Typography>
-                                    <LeftMenuItem
-                                        text={intl.formatMessage({
-                                            id: 'Apis.Details.index.lifecycle',
-                                            defaultMessage: 'lifecycle',
-                                        })}
-                                        to={pathPrefix + 'lifecycle'}
-                                        Icon={<LifeCycleIcon />}
-                                        id='left-menu-itemlifecycle'
-                                    />
-                                </div>
-                            )}
                             {!isAPIProduct && settings && settings.externalStoresEnabled && (
                                 <>
                                     <Divider />
@@ -872,18 +847,6 @@ class Details extends Component {
                                         component={() => <APIDefinition api={api} updateAPI={this.updateAPI} />}
                                     />
                                     <Route
-                                        path={Details.subPaths.LIFE_CYCLE}
-                                        component={() => <LifeCycle api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.LIFE_CYCLE_PRODUCT}
-                                        component={() => <LifeCycle api={api} isAPIProduct={isAPIProduct} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.CONFIGURATION}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
-                                    />
-                                    <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION}
                                         component={() => <RuntimeConfiguration api={api} />}
                                     />
@@ -894,10 +857,6 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.TOPICS}
                                         component={() => <Topics api={api} updateAPI={this.updateAPI} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.CONFIGURATION_PRODUCT}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION_PRODUCT}
@@ -934,34 +893,7 @@ class Details extends Component {
                                         key={Details.subPaths.RESOURCES}
                                         component={APIOperations}
                                     />
-
-                                    <Route path={Details.subPaths.SCOPES} component={() => <Scope api={api} />} />
-                                    <Route
-                                        path={Details.subPaths.DOCUMENTS}
-                                        component={() => <Documents api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.DOCUMENTS_PRODUCT}
-                                        component={() => <Documents api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.SUBSCRIPTIONS}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.SUBSCRIPTIONS_PRODUCT}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
-                                    />
                                     <Route path={Details.subPaths.SECURITY} component={() => <Security api={api} />} />
-                                    <Route path={Details.subPaths.COMMENTS} component={() => <Comments api={api} />} />
-                                    <Route
-                                        path={Details.subPaths.BUSINESS_INFO}
-                                        component={() => <BusinessInformation api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.BUSINESS_INFO_PRODUCT}
-                                        component={() => <BusinessInformation api={api} />}
-                                    />
                                     <Route
                                         path={Details.subPaths.PROPERTIES}
                                         component={() => <Properties api={api} />}
@@ -971,15 +903,6 @@ class Details extends Component {
                                         component={() => <Properties api={api} />}
                                     />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
-                                    <Route path={Details.subPaths.SUBSCRIPTIONS} component={() => <Subscriptions />} />
-                                    <Route
-                                        path={Details.subPaths.MONETIZATION}
-                                        component={() => <Monetization api={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.MONETIZATION_PRODUCT}
-                                        component={() => <Monetization api={api} />}
-                                    />
                                     <Route
                                         path={Details.subPaths.TRYOUT}
                                         component={() => <TryOutConsole apiObj={api} />}
@@ -989,10 +912,6 @@ class Details extends Component {
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
                                     <Route path={Details.subPaths.EXTERNAL_STORES} component={ExternalStores} />
-                                    <Route
-                                        path={Details.subPaths.COMMENTS}
-                                        component={() => <Comments apiObj={api} />}
-                                    />
                                     <Route
                                         path={Details.subPaths.POLICIES}
                                         component={() => <Policies api={api} />}
@@ -1022,9 +941,7 @@ Details.subPaths = {
     SCHEMA_DEFINITION: '/apis/:api_uuid/schema definition',
     LIFE_CYCLE: '/apis/:api_uuid/lifecycle',
     LIFE_CYCLE_PRODUCT: '/api-products/:apiprod_uuid/lifecycle',
-    CONFIGURATION: '/apis/:api_uuid/configuration',
     RUNTIME_CONFIGURATION: '/apis/:api_uuid/runtime-configuration',
-    CONFIGURATION_PRODUCT: '/api-products/:apiprod_uuid/configuration',
     RUNTIME_CONFIGURATION_PRODUCT: '/api-products/:apiprod_uuid/runtime-configuration',
     RUNTIME_CONFIGURATION_WEBSOCKET: '/apis/:api_uuid/runtime-configuration-websocket',
     ENDPOINTS: '/apis/:api_uuid/endpoints',
@@ -1034,20 +951,12 @@ Details.subPaths = {
     RESOURCES: '/apis/:api_uuid/resources',
     RESOURCES_PRODUCT: '/api-products/:apiprod_uuid/resources',
     RESOURCES_PRODUCT_EDIT: '/api-products/:apiprod_uuid/resources/edit',
-    SCOPES: '/apis/:api_uuid/scopes',
-    DOCUMENTS: '/apis/:api_uuid/documents',
-    DOCUMENTS_PRODUCT: '/api-products/:apiprod_uuid/documents',
-    SUBSCRIPTIONS_PRODUCT: '/api-products/:apiprod_uuid/subscriptions',
-    SUBSCRIPTIONS: '/apis/:api_uuid/subscriptions',
     SECURITY: '/apis/:api_uuid/security',
-    COMMENTS: '/apis/:api_uuid/comments',
     BUSINESS_INFO: '/apis/:api_uuid/business info',
     BUSINESS_INFO_PRODUCT: '/api-products/:apiprod_uuid/business info',
     PROPERTIES: '/apis/:api_uuid/properties',
     PROPERTIES_PRODUCT: '/api-products/:apiprod_uuid/properties',
     NEW_VERSION: '/apis/:api_uuid/new_version',
-    MONETIZATION: '/apis/:api_uuid/monetization',
-    MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
     TRYOUT: '/apis/:api_uuid/test-console',
     TRYOUT_PRODUCT: '/api-products/:apiprod_uuid/test-console',

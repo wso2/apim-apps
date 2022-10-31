@@ -16,20 +16,17 @@
  * under the License.
  */
 
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import LaunchIcon from '@material-ui/icons/Launch';
 import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
 import { isRestricted } from 'AppData/AuthManager';
 import { withStyles } from '@material-ui/core/styles';
 import { Link, useHistory } from 'react-router-dom';
-import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
@@ -41,7 +38,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import API from 'AppData/api';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';
-import CreateNewVersionButton from './CreateNewVersionButton';
 
 const styles = (theme) => ({
     root: {
@@ -132,13 +128,10 @@ const APIDetailsTopMenu = (props) => {
     const lastIndex = prevLocation.split('/')[3];
     const [revisionId, setRevisionId] = useState(api.id);
     let lifecycleState;
-    let isVisibleInStore;
     if (isAPIProduct) {
         lifecycleState = api.state === 'PROTOTYPED' ? 'PRE-RELEASED' : api.state;
-        isVisibleInStore = ['PROTOTYPED', 'PUBLISHED'].includes(api.state);
     } else {
         lifecycleState = api.lifeCycleStatus === 'PROTOTYPED' ? 'PRE-RELEASED' : api.lifeCycleStatus;
-        isVisibleInStore = ['PROTOTYPED', 'PUBLISHED'].includes(api.lifeCycleStatus);
     }
     /**
          * The component for advanced endpoint configurations.
@@ -176,16 +169,7 @@ const APIDetailsTopMenu = (props) => {
     }, [api.id]);
 
     const isDownloadable = [API.CONSTS.API, API.CONSTS.APIProduct].includes(api.apiType);
-    const { user } = useAppContext();
-    const { data: settings } = usePublisherSettings();
     const { allRevisions, allEnvRevision } = useRevisionContext();
-    const { tenantList } = useContext(ApiContext);
-    const userNameSplit = user.name.split('@');
-    const tenantDomain = userNameSplit[userNameSplit.length - 1];
-    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
-    if (tenantList && tenantList.length > 0) {
-        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
-    }
 
     function getDeployments(revisionKey) {
         const array = [];
@@ -380,30 +364,8 @@ const APIDetailsTopMenu = (props) => {
                 api={api}
                 isAPIProduct={isAPIProduct}
             />
-            {(isVisibleInStore) && <VerticalDivider height={70} />}
-            {(isVisibleInStore) && (
-                <a
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    href={devportalUrl}
-                    className={classes.viewInStoreLauncher}
-                    style={{ minWidth: 90 }}
-                >
-                    <div>
-                        <LaunchIcon />
-                    </div>
-                    <Typography variant='caption'>
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.view.in.portal'
-                            defaultMessage='View in Dev Portal'
-                        />
-                    </Typography>
-                </a>
-            )}
             {/* Page error banner */}
             {/* end of Page error banner */}
-            {isAPIProduct || api.isRevision
-                ? null : <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher} api={api} />}
             {(isDownloadable) && <VerticalDivider height={70} />}
             <div className={classes.downloadApi}>
                 {(isDownloadable) && (

@@ -18,8 +18,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -29,8 +27,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
-import { isRestricted } from 'AppData/AuthManager';
-import APICreateMenu from './APICreateMenu';
 
 const styles = (theme) => ({
     button: {
@@ -113,12 +109,6 @@ function TopMenu(props) {
                     {data && (
                         <>
                             <Typography variant='h5' className={classes.mainTitle} component='h1'>
-                                {isAPIProduct && (
-                                    <FormattedMessage
-                                        id='Apis.Listing.components.TopMenu.apiproducts'
-                                        defaultMessage='API Products'
-                                    />
-                                )}
                                 { query && (
                                     <FormattedMessage
                                         id='Apis.Listing.components.TopMenu.unified.search'
@@ -152,30 +142,6 @@ function TopMenu(props) {
                     )}
                 </div>
                 <VerticalDivider height={70} />
-                <div className={classes.APICreateMenu}>
-                    {isAPIProduct && (
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            component={Link}
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                            to='/api-products/create'
-                        >
-                            <FormattedMessage
-                                id='Apis.Listing.components.TopMenu.create.an.api.product'
-                                defaultMessage='Create an API Product'
-                            />
-                        </Button>
-                    )}
-                    {!query && !isAPIProduct && (
-                        <APICreateMenu>
-                            <FormattedMessage
-                                id='Apis.Listing.components.TopMenu.create.api'
-                                defaultMessage='Create API'
-                            />
-                        </APICreateMenu>
-                    )}
-                </div>
                 {showToggle && (
                     <Box height={32} m='auto' mr={8}>
                         <ButtonGroup color='primary' aria-label='outlined primary button group'>

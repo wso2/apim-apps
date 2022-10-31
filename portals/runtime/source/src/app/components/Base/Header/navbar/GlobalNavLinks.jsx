@@ -19,12 +19,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
-import LaunchIcon from '@material-ui/icons/Launch';
-import { useTheme } from '@material-ui/styles';
 import { FormattedMessage } from 'react-intl';
-import AuthManager from 'AppData/AuthManager';
 import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
 
 import GlobalNavLink from './GlobalNavLink';
 
@@ -47,14 +43,8 @@ const useStyles = makeStyles((theme) => ({
  * @returns
  */
 function GlobalNavLinks(props) {
-    const publisherUser = !AuthManager.isNotPublisher();
-    const readOnlyUser = AuthManager.isReadOnlyUser();
-    const adminUser = AuthManager.isAdminUser();
     const classes = useStyles();
     const { selected } = props;
-    const theme = useTheme();
-    const analyticsMenuEnabled = theme.custom.leftMenuAnalytics.enable;
-    const analyticsMenuLink = theme.custom.leftMenuAnalytics.link;
     return (
         <Box mt={10}>
             <List className={classes.listRoot} component='nav' name='primaryNavigation' aria-label='primary navigation'>
@@ -80,66 +70,6 @@ function GlobalNavLinks(props) {
                         defaultMessage='Services'
                     />
                 </GlobalNavLink>
-                { (readOnlyUser || publisherUser)
-                    && (
-                        <GlobalNavLink
-                            to='/api-products'
-                            type='api-product'
-                            title='API Products'
-                            active={selected === 'api-products'}
-                        >
-                            <FormattedMessage
-                                id='Base.Header.navbar.GlobalNavBar.api.products'
-                                defaultMessage='API Products'
-                            />
-                        </GlobalNavLink>
-                    )}
-                {(adminUser)
-                    && (
-                        <GlobalNavLink
-                            id='scope'
-                            to='/scopes'
-                            type='scopes'
-                            title='Scopes'
-                            active={selected === 'scopes'}
-                        >
-                            <FormattedMessage id='Base.Header.navbar.GlobalNavBar.scopes' defaultMessage='Scopes' />
-                        </GlobalNavLink>
-                    )}
-                <GlobalNavLink
-                    id='policies'
-                    to='/policies'
-                    type='policies'
-                    title='Policies'
-                    active={selected === 'policies'}
-                >
-                    <FormattedMessage
-                        id='Base.Header.navbar.GlobalNavBar.common.policies'
-                        defaultMessage='Policies'
-                    />
-                </GlobalNavLink>
-                {analyticsMenuEnabled && (
-                    <>
-                        <Divider />
-                        <a href={analyticsMenuLink} target='_blank' rel='noreferrer'>
-                            <GlobalNavLink
-                                isExternalLink
-                                type='analytics'
-                                title='Analytics'
-                            >
-                                <div style={{ flexDirection: 'row', display: 'flex' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.navbar.GlobalNavBar.analytics'
-                                        defaultMessage='Analytics'
-                                    />
-                                    <div className={classes.externalLinkIcon}>
-                                        <LaunchIcon style={{ fontSize: 15 }} />
-                                    </div>
-                                </div>
-                            </GlobalNavLink>
-                        </a>
-                    </>
-                )}
             </List>
         </Box>
     );

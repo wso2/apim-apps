@@ -17,19 +17,15 @@
  */
 
 import React, { useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import LaunchIcon from '@material-ui/icons/Launch';
-import ServiceCatalog from 'AppData/ServiceCatalog';
-import Alert from 'AppComponents/Shared/Alert';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import OnboardingMenuCard from 'AppComponents/ServiceCatalog/Listing/components/OnboardingMenuCard';
 import Configurations from 'Config';
-import { getSampleServiceMeta, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 
 const useStyles = makeStyles((theme) => ({
     actionStyle: {
@@ -45,29 +41,8 @@ const useStyles = makeStyles((theme) => ({
  */
 function Onboarding() {
     const classes = useStyles();
-    const intl = useIntl();
-    const [deployStatus, setDeployStatus] = useState({ inprogress: false, completed: false, error: false });
+    const [deployStatus] = useState({ inprogress: false, completed: false, error: false });
 
-    const handleOnClick = async () => {
-        setDeployStatus({ inprogress: true, completed: false, error: false });
-        const serviceMetadata = getSampleServiceMeta();
-        const inlineContent = getSampleOpenAPI();
-        try {
-            await ServiceCatalog.addService(serviceMetadata, inlineContent);
-        } catch (error) {
-            setDeployStatus({ inprogress: false, completed: false, error });
-            console.error(error);
-            Alert.error(intl.formatMessage({
-                id: 'ServiceCatalog.Listing.Onboarding.error.creating.sample.service',
-                defaultMessage: 'Error while creating Sample Service',
-            }));
-        }
-        setDeployStatus({ inprogress: false, completed: true, error: false });
-        Alert.info(intl.formatMessage({
-            id: 'ServiceCatalog.Listing.Onboarding.add.sample.success',
-            defaultMessage: 'Sample Service added successfully!',
-        }));
-    };
     if (deployStatus.completed && !deployStatus.error) {
         const url = '/service-catalog';
         return <Redirect to={url} />;
@@ -89,19 +64,19 @@ function Onboarding() {
                     heading={(
                         <FormattedMessage
                             id='ServiceCatalog.Listing.Onboarding.learn.heading'
-                            defaultMessage='Learn to write your first'
+                            defaultMessage='Learn to deploy your first'
                         />
                     )}
                     subHeading={(
                         <FormattedMessage
                             id='ServiceCatalog.Listing.Onboarding.learn.heading.sub'
-                            defaultMessage='Integration Service'
+                            defaultMessage='K8s Service'
                         />
                     )}
                     description={(
                         <FormattedMessage
                             id='ServiceCatalog.Listing.Onboarding.learn.heading.text'
-                            defaultMessage='Create and Deploy your first Integration Service'
+                            defaultMessage='Deploy your first K8s Service with WSO2 APK'
                         />
                     )}
                 >
@@ -119,47 +94,6 @@ function Onboarding() {
                             id='ServiceCatalog.Listing.Onboarding.learn.link'
                             defaultMessage='Get Started'
                         />
-                    </Button>
-                </OnboardingMenuCard>
-                {/* Deploy Sample Service */}
-                <OnboardingMenuCard
-                    iconSrc={
-                        Configurations.app.context + '/site/public/images/wso2-intg-service-icon.svg'
-                    }
-                    heading={(
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.heading'
-                            defaultMessage='Add a sample'
-                        />
-                    )}
-                    subHeading={(
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.heading.sub'
-                            defaultMessage='Integration Service'
-                        />
-                    )}
-                    description={(
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.heading.text'
-                            defaultMessage={'Deploy the Sample Integration Service'
-                            + ' already available with WSO2 API Manager and get started in one click'}
-                        />
-                    )}
-                >
-                    <Button
-                        className={classes.actionStyle}
-                        size='large'
-                        id='itest-services-landing-deploy-sample'
-                        variant='outlined'
-                        color='primary'
-                        onClick={handleOnClick}
-                        disabled={deployStatus.inprogress}
-                    >
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Onboarding.sample.add'
-                            defaultMessage='Add Sample Service'
-                        />
-                        {deployStatus.inprogress && <CircularProgress size={15} />}
                     </Button>
                 </OnboardingMenuCard>
             </Grid>

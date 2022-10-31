@@ -33,7 +33,6 @@ import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import TopMenu from 'AppComponents/Apis/Listing/components/TopMenu';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import SampleAPIProduct from 'AppComponents/Apis/Listing/SampleAPI/SampleAPIProduct';
 import Alert from 'AppComponents/Shared/Alert';
 
 const styles = (theme) => ({
@@ -465,11 +464,7 @@ class TableView extends React.Component {
                         listType={listType}
                         showToggle={this.showToggle}
                     />
-                    {isAPIProduct ? (
-                        <SampleAPIProduct />
-                    ) : (
-                        <APILanding />
-                    )}
+                    <APILanding />
                 </>
             );
         }

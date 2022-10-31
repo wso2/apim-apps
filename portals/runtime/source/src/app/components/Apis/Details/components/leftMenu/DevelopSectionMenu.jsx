@@ -25,20 +25,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
 import Typography from '@material-ui/core/Typography';
 import EndpointIcon from '@material-ui/icons/GamesOutlined';
-import ScopesIcon from '@material-ui/icons/VpnKey';
 import PoliciesIcon from '@material-ui/icons/SyncAlt';
-import DocumentsIcon from '@material-ui/icons/LibraryBooks';
-import BusinessIcon from '@material-ui/icons/Business';
-import ConfigurationIcon from '@material-ui/icons/Build';
 import PropertiesIcon from '@material-ui/icons/List';
-import SubscriptionsIcon from '@material-ui/icons/RssFeed';
 import Tooltip from '@material-ui/core/Tooltip';
-import CommentIcon from '@material-ui/icons/Comment';
 import IconButton from '@material-ui/core/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import RuntimeConfigurationIcon from '@material-ui/icons/Settings';
-import MonetizationIcon from '@material-ui/icons/LocalAtm';
-import { isRestricted } from 'AppData/AuthManager';
 import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
@@ -123,14 +115,9 @@ export default function DevelopSectionMenu(props) {
         pathPrefix, isAPIProduct, api, getLeftMenuItemForResourcesByType, getLeftMenuItemForDefinitionByType,
     } = props;
     const user = useUser();
-    const [portalConfigsExpanded, setPortalConfigsExpanded] = useState(user
-        .getProperty(UserProperties.PORTAL_CONFIG_OPEN));
     const [apiConfigsExpanded, setApiConfigsExpanded] = useState(user.getProperty(UserProperties.API_CONFIG_OPEN));
     const handleAccordionState = (section, isExpanded) => {
-        if (section === 'portalConfigsExpanded') {
-            setPortalConfigsExpanded(isExpanded);
-            user.setProperty(UserProperties.PORTAL_CONFIG_OPEN, isExpanded);
-        } else {
+        if (section === 'apiConfigsExpanded') {
             setApiConfigsExpanded(isExpanded);
             user.setProperty(UserProperties.API_CONFIG_OPEN, isExpanded);
         }
@@ -140,89 +127,6 @@ export default function DevelopSectionMenu(props) {
 
     return (
         <div className={classes.root}>
-            <Accordion
-                id='itest-api-details-portal-config-acc'
-                defaultExpanded={portalConfigsExpanded}
-                elevation={0}
-                onChange={(e, isExpanded) => handleAccordionState('portalConfigsExpanded',
-                    isExpanded)}
-                classes={{ expanded: classes.expanded }}
-            >
-                <AccordianSummary
-                    expandIcon={<ExpandMoreIcon className={classes.expandIconColor} />}
-                >
-                    <Typography className={classes.leftLInkText}>
-                        Portal Configurations
-                    </Typography>
-                </AccordianSummary>
-                <AccordionDetails>
-                    <div>
-                        <LeftMenuItem
-                            className={classes.footeremaillink}
-                            text={intl.formatMessage({
-                                id: 'Apis.Details.index.design.configs',
-                                defaultMessage: 'Basic info',
-                            })}
-                            route='configuration'
-                            to={pathPrefix + 'configuration'}
-                            Icon={<ConfigurationIcon />}
-                            id='left-menu-itemDesignConfigurations'
-                        />
-                        <LeftMenuItem
-                            text={intl.formatMessage({
-                                id: 'Apis.Details.index.business.info',
-                                defaultMessage: 'business info',
-                            })}
-                            to={pathPrefix + 'business info'}
-                            Icon={<BusinessIcon />}
-                            id='left-menu-itembusinessinfo'
-                        />
-                        {!isAPIProduct && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.subscriptions',
-                                    defaultMessage: 'subscriptions',
-                                })}
-                                to={pathPrefix + 'subscriptions'}
-                                Icon={<SubscriptionsIcon />}
-                                id='left-menu-itemsubscriptions'
-                            />
-                        )}
-                        {isAPIProduct && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.subscriptions',
-                                    defaultMessage: 'subscriptions',
-                                })}
-                                to={pathPrefix + 'subscriptions'}
-                                Icon={<SubscriptionsIcon />}
-                                id='left-menu-itemsubscriptions'
-                            />
-                        )}
-                        <LeftMenuItem
-                            text={intl.formatMessage({
-                                id: 'Apis.Details.index.documents',
-                                defaultMessage: 'documents',
-                            })}
-                            to={pathPrefix + 'documents'}
-                            Icon={<DocumentsIcon />}
-                            id='left-menu-itemdocuments'
-                        />
-                        {!isAPIProduct && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.comments',
-                                    defaultMessage: 'Comments',
-                                })}
-                                route='comments'
-                                to={pathPrefix + 'comments'}
-                                Icon={<CommentIcon />}
-                                id='left-menu-itemcomments'
-                            />
-                        )}
-                    </div>
-                </AccordionDetails>
-            </Accordion>
             <Accordion
                 id='itest-api-details-api-config-acc'
                 defaultExpanded={apiConfigsExpanded}
@@ -301,18 +205,6 @@ export default function DevelopSectionMenu(props) {
                                 id='left-menu-itemendpoints'
                             />
                         )}
-                        {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.left.menu.scope',
-                                    defaultMessage: 'Local Scopes',
-                                })}
-                                route='scopes'
-                                to={pathPrefix + 'scopes'}
-                                Icon={<ScopesIcon />}
-                                id='left-menu-itemLocalScopes'
-                            />
-                        )}
                         {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct
                             && api.type === 'HTTP' && (
                             <LeftMenuItem
@@ -338,33 +230,6 @@ export default function DevelopSectionMenu(props) {
                             id='left-menu-itemproperties'
                         />
 
-                        {!api.isWebSocket() && !isRestricted(['apim:api_publish'], api) && (
-                            <>
-                                {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
-                                    <LeftMenuItem
-                                        text={intl.formatMessage({
-                                            id: 'Apis.Details.index.monetization',
-                                            defaultMessage: 'monetization',
-                                        })}
-                                        to={pathPrefix + 'monetization'}
-                                        Icon={<MonetizationIcon />}
-                                        id='left-menu-itemMonetization'
-                                    />
-                                )}
-                            </>
-                        )}
-                        {isAPIProduct && !api.isWebSocket()
-                            && !isRestricted(['apim:api_publish'], api) && (
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.monetization',
-                                    defaultMessage: 'monetization',
-                                })}
-                                to={pathPrefix + 'monetization'}
-                                Icon={<MonetizationIcon />}
-                                id='left-menu-monetization-prod'
-                            />
-                        )}
                     </div>
                 </AccordionDetails>
             </Accordion>

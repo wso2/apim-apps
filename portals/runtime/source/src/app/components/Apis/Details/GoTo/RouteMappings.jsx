@@ -18,10 +18,6 @@
 const suggestions = {
     common: [
         {
-            label: 'comments',
-            route: 'comments',
-        },
-        {
             label: 'Gateway URLs',
             route: 'deployments',
         },
@@ -144,22 +140,6 @@ const suggestions = {
         {
             label: 'Description',
             route: 'configuration',
-        },
-        {
-            label: 'Documents',
-            route: 'documents',
-        },
-        {
-            label: 'Add New Documents',
-            route: 'documents',
-        },
-        {
-            label: 'API Help',
-            route: 'documents',
-        },
-        {
-            label: 'Markdown Documents',
-            route: 'documents',
         },
         {
             label: 'Business Information',
@@ -372,10 +352,6 @@ const suggestions = {
             route: 'resources',
         },
         {
-            label: 'Scopes',
-            route: 'scopes',
-        },
-        {
             label: 'Add New Scope',
             route: 'scopes',
         },
@@ -496,10 +472,6 @@ const suggestions = {
             route: 'schema definition',
         },
         {
-            label: 'Scopes',
-            route: 'scopes',
-        },
-        {
             label: 'Add New Scope',
             route: 'scopes',
         },
@@ -550,18 +522,6 @@ const suggestions = {
         {
             label: 'Requirements',
             route: 'lifecycle',
-        },
-        {
-            label: 'Monetization',
-            route: 'monetization',
-        },
-        {
-            label: 'Monetization Properties',
-            route: 'monetization',
-        },
-        {
-            label: 'Commercial Policies',
-            route: 'monetization',
         },
         {
             label: 'Create New Version',

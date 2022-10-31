@@ -40,7 +40,6 @@ describe('Test Protected app content', () => {
         render(<Protected />);
         expect(screen.getByText(/apis/i)).toBeInTheDocument();
         expect(screen.getByText(/services/i)).toBeInTheDocument();
-        expect(screen.getByText(/api products/i)).toBeInTheDocument();
         await screen.findByText(/by : admin/i);
         await screen.findByText(/delete/i);
     });
