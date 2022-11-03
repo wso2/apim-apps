@@ -29,10 +29,8 @@ describe("Lint when creating API with swagger URL", () => {
     });
 
     it("Lint when creating API with swagger URL", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`);
         // select the option from the menu item
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
         cy.get('#open-api-url-select-radio').click();
 
         // provide the swagger url

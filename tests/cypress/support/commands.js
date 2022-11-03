@@ -205,10 +205,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
     const apiName = name ? name : `0sample_api_${random_number}`;
     const apiVersion = version ? version : `v${random_number}`;
     const apiContext = context ? context : `/sample_context_${random_number}`;
-    cy.visit(`/publisher/apis`);
-    cy.get('#itest-rest-api-create-menu', {timeout: Cypress.config().largeTimeout});
-    cy.get('#itest-rest-api-create-menu').click();
-    cy.get('#itest-id-landing-rest-create-default').click();
+    cy.visit(`/publisher/apis/create/rest`);
     cy.get('#itest-id-apiname-input').type(apiName);
     cy.get('#itest-id-apicontext-input').click();
     cy.get('#itest-id-apicontext-input').type(apiContext);
