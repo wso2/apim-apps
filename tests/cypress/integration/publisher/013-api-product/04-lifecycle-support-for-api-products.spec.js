@@ -18,8 +18,8 @@ import Utils from "@support/utils";
 
 describe("Life cycle support for API Products", () => {
     const { publisher, password, } = Utils.getUserInfo();
-    const productName = Utils.generateName();
-    const apiName = Utils.generateName();
+    let productName;
+    let apiName;
 
     beforeEach(function () {
         cy.loginToPublisher(publisher, password);
@@ -27,7 +27,7 @@ describe("Life cycle support for API Products", () => {
 
     it("Life cycle support for API Products", {
         retries: {
-            runMode: 3,
+            runMode: 5,
             openMode: 0,
         },
     }, () => {
@@ -45,9 +45,11 @@ describe("Life cycle support for API Products", () => {
 
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
+            apiName = Utils.generateName();
             cy.get('#itest-id-apicontext-input').type(apiName);
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
+            cy.get('#itest-id-apiname-input').clear().type(apiName);
 
             // finish the wizard
             cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({force:true});
@@ -65,6 +67,7 @@ describe("Life cycle support for API Products", () => {
                 cy.visit(`/publisher/api-products/create`);
 
                 // fill the form
+                productName = Utils.generateName();
                 cy.get('#itest-id-apiname-input').type(productName);
                 cy.get('#context').type(productName);
                 cy.get('#itest-id-apiname-input').click();
@@ -106,9 +109,6 @@ describe("Life cycle support for API Products", () => {
 
                         //Demote to create
                         cy.get('[data-testid="Demote to Created-btn"]').click();
-
-                        //publish as a prototype
-                        cy.get('[data-testid="Deploy as a Prototype-btn"]').click();
 
                         // Deleting the api and api product
                         cy.visit(`/publisher/api-products/${uuidProduct}/overview`);

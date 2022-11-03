@@ -19,7 +19,7 @@ import Utils from "@support/utils";
 import DevportalComonPage from './DevportalComonPage';
 class DevPortalApisPage extends DevportalComonPage{
     getUrl(){
-        return "/devportal/apis";
+        return "/devportal/apis?tenant=carbon.super";
     }
     visitAPIsPage(){
         cy.visit(`${Utils.getAppOrigin()}` + this.getUrl())

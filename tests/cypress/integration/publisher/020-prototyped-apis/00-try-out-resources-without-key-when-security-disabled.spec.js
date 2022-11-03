@@ -20,6 +20,9 @@ import PublisherComonPage from "../../../support/pages/publisher/PublisherComonP
 const publisherComonPage = new PublisherComonPage();
 
 describe("prototype apis with security disabled", () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+      });
     const userName = 'admin';
     const password = 'admin';
     const apiName="Prototyped_sample1";
@@ -86,6 +89,7 @@ describe("prototype apis with security disabled", () => {
     
             //login to dev portal as Developer
             cy.loginToDevportal(userName, password);
+            cy.get('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
             cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).contains('.api-thumb-chip-main','PRE-RELEASED').should('exist');
             cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).click();
             cy.contains('a',"Try out",{timeout: Cypress.config().largeTimeout}).click();
