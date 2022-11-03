@@ -29,10 +29,8 @@ describe("Lint when creating API with swagger v2 file", () => {
     });
 
     it("Lint when creating API with swagger v2 file", () => {
-        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/openapi`);
         // select the option from the menu item
-        cy.get('#itest-rest-api-create-menu').click();
-        cy.get('#itest-id-landing-upload-oas').click();
         cy.get('#open-api-file-select-radio').click();
 
         // upload the swagger
