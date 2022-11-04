@@ -1388,10 +1388,12 @@ export default function Environments() {
         }
 
         const httpContext = vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '';
-        endpoints.primary = 'http://' + vhost.host
-            + (vhost.httpPort === 80 ? '' : ':' + vhost.httpPort) + httpContext;
-        endpoints.secondary = 'https://' + vhost.host
-            + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort) + httpContext;
+        if (vhost.httpPort !== null) {
+            endpoints.primary = 'http://' + vhost.host + ':' + vhost.httpPort + httpContext;
+        }
+        if (vhost.httpsPort !== null) {
+            endpoints.secondary = 'https://' + vhost.host + ':' + vhost.httpsPort + httpContext;
+        }
         endpoints.combined = endpoints.secondary + ' ' + endpoints.primary;
         return endpoints;
     }
