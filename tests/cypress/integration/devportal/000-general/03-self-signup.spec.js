@@ -21,10 +21,15 @@ function getSuperTenantEmail(username) {
     return `${username}@test.com`;
 }
 
+function getTenantUser(username, domain) {
+    return `${username}@${domain}`;
+}
+
 describe("Self SignUp", () => {
-    const {password, carbonUsername, carbonPassword, testTenant, superTenant} = Utils.getUserInfo();
+    const {publisher, password, carbonUsername, carbonPassword} = Utils.getUserInfo();
+    const testTenant = 'wso2.com';
+    const superTenant = 'carbon.super';
     const devPortal = 'devportal';
-    const publisherPortal = 'publisher';
     const adminPortal = 'admin';
     const firstName = 'firstName';
     const lastName = 'lastName';
@@ -59,9 +64,9 @@ describe("Self SignUp", () => {
     });
 
     it.only("Test - Default self-signup behaviour of the wso2 tenant", () => {
-        cy.addNewUserUsingSelfSignUp(Utils.getTenentUser(tenant1Username, testTenant), password, firstName, lastName, Utils.getTenentUser(tenant1Username, testTenant), testTenant);
-        cy.addExistingUserUsingSelfSignUp(Utils.getTenentUser(tenant1Username, testTenant), testTenant);
-        cy.portalLogin(Utils.getTenentUser(tenant1Username, testTenant), password, devPortal, testTenant);
+        cy.addNewUserUsingSelfSignUp(getTenantUser(tenant1Username, testTenant), password, firstName, lastName, getTenantUser(tenant1Username, testTenant), testTenant);
+        cy.addExistingUserUsingSelfSignUp(getTenantUser(tenant1Username, testTenant), testTenant);
+        cy.portalLogin(getTenantUser(tenant1Username, testTenant), password, devPortal, testTenant);
         cy.logoutFromDevportal();
     });
 
@@ -70,7 +75,7 @@ describe("Self SignUp", () => {
     });
 
     it.only("Test - Login to the publisher portal using incorrect user credentials", () => {
-        cy.portalLoginUsingIncorrectUserCredentials(incorrectUsername, incorrectPassword, publisherPortal, superTenant);
+        cy.portalLoginUsingIncorrectUserCredentials(incorrectUsername, incorrectPassword, publisher, superTenant);
     });
 
     it.only("Test - Login to the admin portal using incorrect user credentials", () => {
@@ -83,7 +88,7 @@ describe("Self SignUp", () => {
     });
 
     it.only("Test - Login to the publisher using newly created user(superTenant1) credentials", () => {
-        cy.portalLogin(superTenant1Username, password, publisherPortal, superTenant);
+        cy.portalLogin(superTenant1Username, password, publisher, superTenant);
         cy.contains('Error 403 : Forbidden').should('exist');
         cy.contains('The server could not verify that you are authorized to access the requested resource.').should('exist');
         cy.logoutFromPublisher();
@@ -115,8 +120,8 @@ describe("Self SignUp", () => {
 
     it.only("Test - Remove self signup config from the advance configuration and create a new user for the wso2 tenant", () => {
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, selfSignupDisabledConfigJson);
-        cy.addNewUserUsingSelfSignUp(Utils.getTenentUser(tenant2Username, testTenant), password, firstName, lastName, Utils.getTenentUser(tenant2Username, testTenant), testTenant);
-        cy.portalLogin(Utils.getTenentUser(tenant2Username, testTenant), password, devPortal, testTenant);
+        cy.addNewUserUsingSelfSignUp(getTenantUser(tenant2Username, testTenant), password, firstName, lastName, getTenantUser(tenant2Username, testTenant), testTenant);
+        cy.portalLogin(getTenantUser(tenant2Username, testTenant), password, devPortal, testTenant);
         cy.contains('Error 403 : Forbidden').should('exist');
         cy.contains('You don\'t have sufficient privileges to access the Developer Portal.').should('exist');
         cy.contains('Logout').click();
@@ -137,7 +142,7 @@ describe("Self SignUp", () => {
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${testTenant}`);
         cy.get('#itest-devportal-sign-in').click();
         cy.get('#registerLink').click();
-        cy.get('#username').type(Utils.getTenentUser(tenant3Username, testTenant));
+        cy.get('#username').type(getTenantUser(tenant3Username, testTenant));
         cy.get('#registrationSubmit').click();
         cy.contains(`Self registration is disabled for tenant - ${testTenant}`).should('exist');
     });
@@ -153,8 +158,8 @@ describe("Self SignUp", () => {
     it.only("Test - Enable self signup back for the wso2 tenant", () => {
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, tenantConfigJson);
         cy.enableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
-        cy.addNewUserUsingSelfSignUp(Utils.getTenentUser(tenant4Username, testTenant), password, firstName, lastName, Utils.getTenentUser(tenant4Username, testTenant), testTenant);
-        cy.portalLogin(Utils.getTenentUser(tenant4Username, testTenant), password, devPortal, testTenant);
+        cy.addNewUserUsingSelfSignUp(getTenantUser(tenant4Username, testTenant), password, firstName, lastName, getTenantUser(tenant4Username, testTenant), testTenant);
+        cy.portalLogin(getTenantUser(tenant4Username, testTenant), password, devPortal, testTenant);
         cy.logoutFromDevportal();
     });
 
@@ -172,7 +177,7 @@ describe("Self SignUp", () => {
         cy.addNewRole(userRole,domain);
         cy.carbonLogout();
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, customUserRoleAddedConfigJson);
-        cy.addNewUserUsingSelfSignUp(Utils.getTenentUser(tenant5Username, testTenant), password, firstName, lastName, Utils.getTenentUser(tenant5Username, testTenant), testTenant);
+        cy.addNewUserUsingSelfSignUp(getTenantUser(tenant5Username, testTenant), password, firstName, lastName, getTenantUser(tenant5Username, testTenant), testTenant);
         cy.checkUserHasGivenRoles(tenantAdminUsername, tenantAdminPassword, testTenant, tenant5Username, [internalSubscriberRole, internalTestRole]);
     });
 
@@ -215,5 +220,4 @@ describe("Self SignUp", () => {
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, tenantConfigJson);
         cy.enableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
     })
-
 });
