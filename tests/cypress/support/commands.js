@@ -220,7 +220,7 @@ Cypress.Commands.add('createAPIByRestAPIDesign', (name = null, version = null, c
         // failing the test
         return false
     });
-    cy.wait(500);
+    cy.wait(5000);
     cy.visit(`/publisher/apis/`);
     cy.get(`#${apiName}`, {timeout: Cypress.config().largeTimeout}).click();
 
