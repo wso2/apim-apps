@@ -23,8 +23,10 @@ class OpenAPIPage extends PublisherComonPage{
     }
     static openAPIURLRadioButton(){
         return cy.get('#open-api-url-select-radio')
+    }   
+    static openFileSelectRadioButton(){
+        return cy.get('#open-api-file-select-radio')
     }
-
     // typing on div also works '[data-testid="swagger-url-endpoint"]'
     static openAPIURLTextBox(){
         return cy.get('input[id="outlined-full-width"]')
@@ -41,5 +43,11 @@ class OpenAPIPage extends PublisherComonPage{
     static warningToggleButton(){
         return cy.get('div[data-testid="itest-id-linter-results"]>div>div>div>div>div>div>button[value="1"]')
     }
+    static browseToUploadButton(){
+        return cy.get(' #browse-to-upload-btn')
+    } 
+    static fileUploadInput(){
+        return cy.get('input[type="file"]')
+    } 
 }
 export default OpenAPIPage;
