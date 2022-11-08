@@ -46,7 +46,7 @@ class APIDefinitionPage extends PublisherComonPage{
         return cy.get('div[data-testid="itest-id-linter-results"]>div>div>div>div>div>div>button[value="1"]')
     }
     static browseToUploadButton(){
-        return cy.get(' #browse-to-upload-btn')
+        return cy.get('#browse-to-upload-btn')
     } 
     static fileUploadInput(){
         return cy.get('input[type="file"]')
