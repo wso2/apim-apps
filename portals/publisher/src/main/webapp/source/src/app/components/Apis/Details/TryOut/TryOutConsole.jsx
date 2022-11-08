@@ -177,24 +177,28 @@ const TryOutConsole = () => {
             }
             oasCopy = cloneDeep(oasDefinition); // If not we are directly mutating the state
             if (oasDefinition.openapi) { // Assumed as OAS 3.x definition
-                const servers = api.transport.map((transport) => {
+                const unfilteredServers = api.transport.map((transport) => {
                     const transportPort = selectedDeploymentVhost[`${transport}Port`];
                     if (!transportPort) {
                         console.error(`Can't find ${transport}Port `
                             + `in selected deployment ( ${selectedDeploymentVhost.name} )`);
                     }
-                    const baseURL = `${transport}://${selectedDeployment.vhost}:${transportPort}`;
-                    let url;
-                    if (isAPIProduct) {
-                        url = `${baseURL}${pathSeparator}`
-                            + `${selectedDeploymentVhost.httpContext}${api.context}`;
-                    } else {
-                        url = `${baseURL}${pathSeparator}`
-                            + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
-                                .replace('{version}', `${api.version}`);
+                    if (transportPort) {
+                        const baseURL = `${transport}://${selectedDeployment.vhost}:${transportPort}`;
+                        let url;
+                        if (isAPIProduct) {
+                            url = `${baseURL}${pathSeparator}`
+                                + `${selectedDeploymentVhost.httpContext}${api.context}`;
+                        } else {
+                            url = `${baseURL}${pathSeparator}`
+                                + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
+                                    .replace('{version}', `${api.version}`);
+                        }
+                        return {url};
                     }
-                    return { url };
+                    return null;
                 });
+                const servers = unfilteredServers.filter(url => url);
                 oasCopy.servers = servers.sort((a, b) => ((a.url > b.url) ? -1 : 1));
             } else { // Assume the API definition is Swagger 2
                 let transportPort = selectedDeploymentVhost.httpsPort;
@@ -213,7 +217,14 @@ const TryOutConsole = () => {
                     basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
                         .replace('{version}', `${api.version}`);
                 }
-                oasCopy.schemes = api.transport.slice().sort((a, b) => ((a > b) ? -1 : 1));
+                let schemes = api.transport.slice().sort((a, b) => ((a > b) ? -1 : 1));
+                if (!selectedDeploymentVhost.httpPort){
+                    schemes = schemes.filter(item => item !== 'http');
+                }
+                if (!selectedDeploymentVhost.httpsPort){
+                    schemes = schemes.filter(item => item !== 'https');
+                }
+                oasCopy.schemes = schemes;
                 oasCopy.basePath = basePath;
                 oasCopy.host = host;
             }
