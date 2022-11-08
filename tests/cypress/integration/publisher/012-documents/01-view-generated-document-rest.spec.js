@@ -23,8 +23,11 @@ const genApiName = 'api-gendoc-rest';
 const documentName = 'api_document';
 const documentSummary = 'api document summery';
 
-describe("View generated document for rest apis", () => {
+describe("publisher-012-01 :View generated document for rest apis", () => {
     const { publisher, password, } = Utils.getUserInfo();
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+    });
     before(function() {
         cy.loginToPublisher(publisher, password);
     })
@@ -61,6 +64,7 @@ describe("View generated document for rest apis", () => {
         cy.get('#left-menu-documents').click();
         cy.get('#apim_elements').should('be.visible');
         cy.get('#document-autocomplete').should('have.value', 'Default');
+        cy.get('h1[class*="sl-text-"]').contains(genApiName).should('be.visible');
         // Test is done. Now delete the api
         Utils.deleteAPI(genApiId);
     });

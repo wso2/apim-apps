@@ -23,8 +23,11 @@ const genApiName = 'api-gendoc-other';
 const documentName = 'api_document';
 const documentSummary = 'api document summery';
 
-describe("View generated document for graphql apis", () => {
+describe("publisher-012-02 :View generated document for graphql apis", () => {
     const { publisher, password, } = Utils.getUserInfo();
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+    });
     before(function() {
         cy.loginToPublisher(publisher, password);
     })
