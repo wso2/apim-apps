@@ -18,9 +18,12 @@
 
 import Utils from "@support/utils";
 
-describe("creating document", () => {
+describe("publisher-012-00 : Creating API document", () => {
     const { publisher, password, } = Utils.getUserInfo();
 
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        return false;
+    });
     before(function() {
         cy.loginToPublisher(publisher, password);
     })
