@@ -191,4 +191,8 @@ export default class Utils {
     static generateRandomNumber() {
         return Math.floor(Math.random() * (100000 - 1 + 1) + 1);
     }
+
+    static getTenantUser(username, domain) {
+        return `${username}@${domain}`;
+    }
 }
