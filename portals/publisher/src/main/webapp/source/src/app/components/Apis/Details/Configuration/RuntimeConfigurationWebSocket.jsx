@@ -30,7 +30,9 @@ import ArrowForwardIcon from '@material-ui/icons/SettingsEthernet';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { isRestricted } from 'AppData/AuthManager';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import API from 'AppData/api';
+import CORSConfigurationWebSocket from './components/CORSConfigurationWebSocket';
 import Endpoints from './components/Endpoints';
 import KeyManager from './components/KeyManager';
 import APILevelRateLimitingPolicies from './components/APILevelRateLimitingPolicies';
@@ -95,6 +97,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         height: '100%',
     },
+    configToggle: {
+        paddingRight: 0,
+    },
 }));
 
 /**
@@ -153,7 +158,7 @@ export default function RuntimeConfiguration() {
      * @returns {Object} updated state
      */
     function configReducer(state, configAction) {
-        const { action, value } = configAction;
+        const { action, value, event } = configAction;
         const nextState = { ...copyAPIConfig(state) };
         switch (action) {
             case 'apiThrottlingPolicy':
@@ -168,6 +173,16 @@ export default function RuntimeConfiguration() {
                     nextState.apiThrottlingPolicy = '';
                 } else {
                     nextState.apiThrottlingPolicy = null;
+                }
+                return nextState;
+            case 'corsConfigurationEnabled':
+                nextState.corsConfiguration[action] = value;
+                return nextState;
+            case 'accessControlAllowOrigins':
+                if (event.checked) {
+                    nextState.corsConfiguration[action] = [event.value];
+                } else {
+                    nextState.corsConfiguration[action] = event.checked === false ? [] : event.value;
                 }
                 return nextState;
             case 'allKeyManagersEnabled':
@@ -186,6 +201,7 @@ export default function RuntimeConfiguration() {
     const history = useHistory();
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
     const classes = useStyles();
+    const { settings } = useAppContext();
 
     /**
      *
@@ -244,12 +260,35 @@ export default function RuntimeConfiguration() {
                                 elevation={0}
                                 style={{ display: 'flex', alignItems: 'center' }}
                             >
-                                <Box pr={3}>
-                                    <KeyManager api={apiConfig} configDispatcher={configDispatcher} />
-                                </Box>
-                                <Box pr={3}>
-                                    <APILevelRateLimitingPolicies api={apiConfig} configDispatcher={configDispatcher} />
-                                </Box>
+                                <Grid container spacing={2}>
+                                    <Grid container direction='row'>
+                                        <Grid item xs={6}>
+                                            <Box>
+                                                <KeyManager api={apiConfig} configDispatcher={configDispatcher} />
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Box>
+                                                <APILevelRateLimitingPolicies
+                                                    api={apiConfig}
+                                                    configDispatcher={configDispatcher}
+                                                />
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                    {settings.validationForWSEnabled && (
+                                        <Grid container direction='row'>
+                                            <Grid item xs={12}>
+                                                <Box pt={3}>
+                                                    <CORSConfigurationWebSocket
+                                                        api={apiConfig}
+                                                        configDispatcher={configDispatcher}
+                                                    />
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+                                    )}
+                                </Grid>
                             </Paper>
                             <ArrowForwardIcon className={classes.arrowForwardIcon} />
                         </div>
