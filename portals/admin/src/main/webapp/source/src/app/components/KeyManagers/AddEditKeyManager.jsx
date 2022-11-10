@@ -323,6 +323,8 @@ function AddEditKeyManager(props) {
             case 'introspectionEndpoint':
             case 'tokenEndpoint':
             case 'revokeEndpoint':
+            case 'userInfoEndpoint':
+            case 'scopeManagementEndpoint':
                 if (fieldValue === '') {
                     error = intl.formatMessage({
                         id: 'KeyManagers.AddEditKeyManager.is.empty.error.key.config',
@@ -386,7 +388,9 @@ function AddEditKeyManager(props) {
                 || hasErrors('introspectionEndpoint', introspectionEndpoint, validatingActive)
                 || hasErrors('tokenEndpoint', tokenEndpoint, validatingActive)
                 || hasErrors('revokeEndpoint', revokeEndpoint, validatingActive)
-                || hasErrors('enableDirectToken', enableDirectToken, validatingActive);
+                || hasErrors('enableDirectToken', enableDirectToken, validatingActive)
+                || hasErrors('userInfoEndpoint', userInfoEndpoint, validatingActive)
+                || hasErrors('scopeManagementEndpoint', scopeManagementEndpoint, validatingActive);
         } else {
             return hasErrors('name', name, validatingActive)
                 || hasErrors('displayName', displayName, validatingActive)
