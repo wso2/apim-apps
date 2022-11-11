@@ -36,7 +36,7 @@ describe("publisher-021-08 : Lint when importing API with swagger v2 URL", () =>
     })
 
     it.only("Lint when importing API with swagger v2 URL", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
+        cy.createAPIByRestAPIDesignAndSearch(apiName, apiVersion);
         cy.wait(3000)
         PublisherMenu.goToAPIDefinitionByUI()
 
@@ -55,7 +55,7 @@ describe("publisher-021-08 : Lint when importing API with swagger v2 URL", () =>
     after(function () {
         
         // Test is done. Now delete the api
-        cy.deleteApi(apiName, apiVersion);
+        cy.searchAndDeleteApi(apiName, apiVersion);
         cy.logoutFromPublisher();
 
         //cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
