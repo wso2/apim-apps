@@ -24,12 +24,14 @@ import AddNewRoleSelectPermissionPage from "./pages/carbon/AddNewRoleSelectPermi
 import ScopeAssignmentsPage from "./pages/adminPortal/ScopeAssignmentsPage";
 import UsersManagementPage from "./pages/carbon/UsersManagementPage";
 import RolesManagementPage from "./pages/carbon/RolesManagementPage";
+import ApisHomePage from "./pages/publisher/ApisHomePage";
 
 const usersManagementPage = new UsersManagementPage();
 const rolesManagementPage = new RolesManagementPage();
 const addNewRolePage = new AddNewRoleEnterDetailsPage();
 const selectPermission = new AddNewRoleSelectPermissionPage();
 const scopeAssignmentsPage = new ScopeAssignmentsPage();
+const apisHomePage = new ApisHomePage();
 
 Cypress.Commands.add('carbonLogin', (username, password) => {
     Cypress.log({
@@ -1055,3 +1057,54 @@ Cypress.Commands.add('checkUserHasGivenRoles', (username, password, tenant = 'ca
     }
     cy.carbonLogout();
 })
+
+Cypress.Commands.add('createAPIByRestAPIDesignAndSearch', (name = null, version = null, context = null) => {
+    const random_number = Math.floor(Date.now() / 1000);
+
+    const apiName = name ? name : `0sample_api_${random_number}`;
+    const apiVersion = version ? version : `v${random_number}`;
+    const apiContext = context ? context : `/sample_context_${random_number}`;
+    cy.visit(`/publisher/apis/create/rest`);
+    cy.get('#itest-id-apiname-input').type(apiName);
+    cy.get('#itest-id-apicontext-input').click();
+    cy.get('#itest-id-apicontext-input').type(apiContext);
+    cy.get('#itest-id-apiversion-input').click();
+    cy.get('#itest-id-apiversion-input').type(apiVersion);
+    cy.get('#itest-id-apiendpoint-input').click();
+    cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
+    cy.get('#itest-create-default-api-button').click();
+    // There is a UI error in the console. We need to skip this so that the test will not fail.
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        // returning false here prevents Cypress from
+        // failing the test
+        return false
+    });
+    apisHomePage.waitUntillPublisherLoadingSpinnerExit();
+    cy.wait(5000);
+    cy.visit(`/publisher/apis/`);
+    apisHomePage.waitUntillPublisherLoadingSpinnerExit();
+    apisHomePage.getSearchTestBox().clear().type(apiName).type("{enter}");
+    apisHomePage.waitUntillPublisherLoadingSpinnerExit();
+    cy.wait(2000);
+    cy.get(`#${apiName}`, {timeout: Cypress.config().largeTimeout}).click();
+
+    cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+    cy.get('#itest-api-name-version').contains(apiVersion);
+})
+
+Cypress.Commands.add('searchAndDeleteApi', (name, version) => {
+    var cardName='card-'+name+version;
+    var actionCardName='card-action-'+name+version;
+    cy.intercept('**/apis*').as('getApis');
+    cy.visit(`/publisher/apis`);
+    apisHomePage.waitUntillPublisherLoadingSpinnerExit();
+    apisHomePage.getSearchTestBox().clear().type(name).type("{enter}");
+    apisHomePage.waitUntillPublisherLoadingSpinnerExit();
+    cy.wait(2000);
+    cy.wait('@getApis', {timeout: Cypress.config().largeTimeout}).then(() => {
+        cy.get(`[data-testid="${cardName}"]`).get(`[data-testid="${actionCardName}"]`).within(($panel) => {
+            cy.get("#itest-id-deleteapi-icon-button", { timeout: 30000 }).click();
+          }) 
+        cy.get("#itest-id-deleteconf",{timeout:30000}).click();
+    });
+});

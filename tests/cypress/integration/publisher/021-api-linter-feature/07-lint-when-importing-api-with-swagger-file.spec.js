@@ -37,7 +37,7 @@ describe("publisher-021-07 : Lint when importing API with swagger file", () => {
     })
 
     it.only("Lint when importing API with swagger file", () => {
-        cy.createAPIByRestAPIDesign(apiName, apiVersion);
+        cy.createAPIByRestAPIDesignAndSearch(apiName, apiVersion);
         cy.wait(3000)
         PublisherMenu.goToAPIDefinitionByUI()
 
@@ -60,7 +60,7 @@ describe("publisher-021-07 : Lint when importing API with swagger file", () => {
     after(function () {
         
         // Test is done. Now delete the api
-        cy.deleteApi(apiName, apiVersion);
+        cy.searchAndDeleteApi(apiName, apiVersion);
         cy.logoutFromPublisher();
 
        // cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
