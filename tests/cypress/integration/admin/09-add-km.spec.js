@@ -30,6 +30,8 @@ describe("Add key manager", () => {
         const clientSecret = 'test';
         const audience = 'test';
         const introspectionEp = 'https://my-tenant.auth0.com/oauth/token';
+        const userInfoEp = 'https://my-tenant.auth0.com/oauth/userInfo';
+        const scopeManagementEp = 'https://my-tenant.auth0.com/oauth/scope';
 
         cy.get('[data-testid="Key Managers"]').click();
         cy.get('.MuiButton-label').contains('Add Key Manager').click();
@@ -44,6 +46,8 @@ describe("Add key manager", () => {
         cy.wait('@importConfig', {timeout: 3000}).then(() => {
             // filing the tokens
             cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
+            cy.get('input[name="userInfoEndpoint"]').clear().type(userInfoEp);
+            cy.get('input[name="scopeManagementEndpoint"]').clear().type(scopeManagementEp);
             cy.get('input[name="client_id"]').type(clientId);
             cy.get('input[name="client_secret"]').type(clientSecret);
             cy.get('input[name="audience"]').type(audience);
