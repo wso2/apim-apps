@@ -754,8 +754,14 @@ class API extends Resource {
                 file: swagger,
                 'Content-Type': 'multipart/form-data',
             };
+            const requestBody = {
+                requestBody: {
+                    file: swagger,
+                },
+            };
             return client.apis['Validation'].validateOpenAPIDefinition(
                 payload,
+                requestBody,
                 this._requestMetaData({
                     'Content-Type': 'multipart/form-data',
                 }),
