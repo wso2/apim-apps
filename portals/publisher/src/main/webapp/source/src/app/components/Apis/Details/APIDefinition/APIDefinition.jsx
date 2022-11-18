@@ -944,7 +944,7 @@ class APIDefinition extends React.Component {
                                     </ToggleButton>
                                     <APILintingSummary 
                                         linterResults={linterResults}
-                                        handleChange = { (value)=> {
+                                        handleChange = { (event, value)=> {
                                             this.setState({linterSelectedSeverity: value});
                                             this.setState({ isSwaggerUI: false }) }}
                                     />
