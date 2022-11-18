@@ -112,7 +112,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             const requestFlowList: AttachedPolicy[] = [];
             const requestFlow = operationInAction.operationPolicies.request;
             for (const requestFlowAttachedPolicy of requestFlow) {
-                const { policyId, policyName, uuid } =
+                const { policyId, policyName, policyVersion, uuid } =
                     requestFlowAttachedPolicy;
                 if (policyId === null) {
                     // Handling migration flow
@@ -125,7 +125,9 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     });
                 } else {
                     const policyObj = allPolicies?.find(
-                        (policy: PolicySpec) => policy.name === policyName,
+                        (policy: PolicySpec) => 
+                            policy.name === policyName && 
+                            policy.version === policyVersion,
                     );
                     if (policyObj) {
                         requestFlowList.push({ ...policyObj, uniqueKey: uuid });
@@ -153,7 +155,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             const responseFlowList: AttachedPolicy[] = [];
             const responseFlow = operationInAction.operationPolicies.response;
             for (const responseFlowAttachedPolicy of responseFlow) {
-                const { policyId, policyName, uuid } =
+                const { policyId, policyName, policyVersion, uuid } =
                     responseFlowAttachedPolicy;
                 if (policyId === null) {
                     // Handling migration flow
@@ -166,7 +168,9 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     });
                 } else {
                     const policyObj = allPolicies?.find(
-                        (policy: PolicySpec) => policy.name === policyName,
+                        (policy: PolicySpec) => 
+                            policy.name === policyName && 
+                            policy.version === policyVersion,
                     );
                     if (policyObj) {
                         responseFlowList.push({ ...policyObj, uniqueKey: uuid });
@@ -195,7 +199,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 const faultFlowList: AttachedPolicy[] = [];
                 const faultFlow = operationInAction.operationPolicies.fault;
                 for (const faultFlowAttachedPolicy of faultFlow) {
-                    const { policyId, policyName, uuid } =
+                    const { policyId, policyName, policyVersion, uuid } =
                         faultFlowAttachedPolicy;
                     if (policyId === null) {
                         // Handling migration flow
@@ -208,7 +212,9 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         });
                     } else {
                         const policyObj = allPolicies?.find(
-                            (policy: PolicySpec) => policy.name === policyName,
+                            (policy: PolicySpec) => 
+                                policy.name === policyName && 
+                                policy.version == policyVersion,
                         );
                         if (policyObj) {
                             faultFlowList.push({ ...policyObj, uniqueKey: uuid });
