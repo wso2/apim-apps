@@ -149,7 +149,7 @@
             response.addCookie(cookie);
 
             cookie = new Cookie("AM_ACC_TOKEN_DEFAULT_P2", accessTokenPart2);
-            cookie.setPath("/api/am/service-catalog/v1/");
+            cookie.setPath(proxyContext != null ? proxyContext + "/api/am/service-catalog/v1/" : "/api/am/service-catalog/v1/");
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setMaxAge((int) expiresIn);

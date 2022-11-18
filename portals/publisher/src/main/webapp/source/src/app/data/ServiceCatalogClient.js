@@ -113,9 +113,17 @@ class ServiceCatalogClient {
      * @returns {JSON} : Fixed specification
      * @private
      */
+    
     _fixSpec(spec) {
         const updatedSpec = spec;
-        updatedSpec.servers = [{ url: window.origin + '/api/am/service-catalog/v1' }];
+        if (Configurations.app.proxy_context_path && Configurations.app.proxy_context_path !== '') {
+            updatedSpec.servers = [{ url: window.origin + Configurations.app.proxy_context_path
+                 + '/api/am/service-catalog/v1' }];
+
+        } else {
+            updatedSpec.servers = [{ url: window.origin + '/api/am/service-catalog/v1' }];
+        }
+
         return updatedSpec;
     }
 
