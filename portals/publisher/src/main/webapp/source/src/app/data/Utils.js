@@ -238,11 +238,21 @@ class Utils {
      * @memberof Utils
      */
     static getServiceCatalogSwaggerURL() {
-        return (
-            'https://' +
-            Utils.getCurrentEnvironment().host +
-            Utils.CONST.SERVICE_CATALOG_SWAGGER_YAML
-        );
+        if (Configurations.app.proxy_context_path) {
+            return (
+                'https://' +
+                Utils.getCurrentEnvironment().host +
+                Configurations.app.proxy_context_path +
+                Utils.CONST.SERVICE_CATALOG_SWAGGER_YAML
+            );
+        } else {
+            return (
+                'https://' +
+                Utils.getCurrentEnvironment().host +
+                Utils.CONST.SERVICE_CATALOG_SWAGGER_YAML
+            );
+        }
+        
         // return Utils.CONST.SERVICE_CATALOG_SWAGGER_YAML;
     }
 
