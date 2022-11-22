@@ -69,7 +69,7 @@ const createMockHandler = (apiMapping: OASBackendMapping) => async (
       headers: headers.all(),
       query,
     };
-    if (req.url.pathname === "/api/am/publisher/v3/swagger.yaml") {
+    if (req.url.pathname === "/api/am/publisher/v4/swagger.yaml") {
       // Temporary fix for removing x-example $refs
       await apiMapping.oasBackend.init();
       const oasDef = thisAPIBackend.document;

@@ -18,7 +18,7 @@
 
 <%
     //  TODO: Wrap these consts with an object and do `require` when needed ~tmkb
-    String SETTINGS_REST_API_URL_SUFFIX = "/api/am/admin/v3/settings";
+    String SETTINGS_REST_API_URL_SUFFIX = "/api/am/admin/v4/settings";
     String DCR_URL_SUFFIX = "/client-registration/v0.17/register";
     String AUTHORIZE_ENDPOINT_SUFFIX = "/oauth2/authorize";
     String OIDC_LOGOUT_ENDPOINT_SUFFIX = "/oidc/logout";
