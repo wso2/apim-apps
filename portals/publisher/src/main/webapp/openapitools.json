@@ -7,7 +7,7 @@
       "Publisher": {
         "generatorName": "typescript-axios",
         "glob": "",
-        "context": "/api/am/publisher/v3",
+        "context": "/api/am/publisher/v4",
         "inputSpec": "https://raw.githubusercontent.com/wso2/carbon-apimgt/v9.20.74/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml",
         "output": "#{cwd}../../src/types/generated/Publisher",
         "additionalProperties": {
