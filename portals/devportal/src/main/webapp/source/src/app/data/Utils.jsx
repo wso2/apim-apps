@@ -330,7 +330,7 @@ Utils.CONST = {
     LOGIN_SIGN_UP_PATH: '/login/signup',
 
     LOGOUT_CALLBACK: '/services/auth/callback/logout',
-    SWAGGER_YAML: '/api/am/devportal/v2/swagger.yaml',
+    SWAGGER_YAML: '/api/am/devportal/v3/swagger.yaml',
     PROTOCOL: 'https://',
 };
 

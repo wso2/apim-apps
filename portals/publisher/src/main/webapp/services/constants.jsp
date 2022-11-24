@@ -17,7 +17,7 @@
 --%>
 
 <%
-    String SETTINGS_REST_API_URL_SUFFIX = "/api/am/publisher/v3/settings";
+    String SETTINGS_REST_API_URL_SUFFIX = "/api/am/publisher/v4/settings";
     String SERVICE_CATALOG_SETTINGS_REST_API_URL_SUFFIX = "/api/am/service-catalog/v1/settings";
     String DCR_URL_SUFFIX = "/client-registration/v0.17/register";
     String AUTHORIZE_ENDPOINT_SUFFIX = "/oauth2/authorize";
