@@ -64,12 +64,13 @@ export const downloadOASDefinition = async function bundle(
         try {
             // disabled the rule to do fail re-tries
             // eslint-disable-next-line no-await-in-loop
-            bundled = await SwaggerParser.bundle(apiURL, opts);
+            bundled = await SwaggerParser.parse(apiURL, opts);
             break;
         } catch (error) {
             retries += 1;
             const retryWaitTime = retries * RE_TRY_WAIT_TIME;
             console.warn(
+                error,
                 `Attempt: ${retries} : Error while downloading ${filePath} \nRe-try in ${
                     retryWaitTime / 1000
                 } Seconds . . .`,
