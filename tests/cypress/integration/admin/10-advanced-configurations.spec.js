@@ -30,7 +30,7 @@ describe("Advanced Configurations", () => {
         
         cy.get('[data-testid="Advanced-child-link"]').click();
 
-        cy.intercept('GET', 'https://localhost:9443/api/am/admin/v4/tenant-config', {
+        cy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {
             statusCode: 200,
             body: adavanceConfFalseJson
             
@@ -40,7 +40,7 @@ describe("Advanced Configurations", () => {
         cy.wait(3000);
         cy.get('[data-testid="monaco-editor-save"]').click();
 
-        cy.intercept('GET', 'https://localhost:9443/api/am/admin/v4/tenant-config', {
+        cy.intercept('GET', 'https://localhost:9443/api/am/admin/v3/tenant-config', {
             statusCode: 200,
             body: adavanceConfTrueJson
         })
