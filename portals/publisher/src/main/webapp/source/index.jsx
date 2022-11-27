@@ -22,8 +22,9 @@ import 'fastestsmallesttextencoderdecoder'; // Added to fix TextEncoding issue i
 import { hot } from 'react-hot-loader/root';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import Publisher from './src/Publisher';
+// import Publisher from './src/Publisher';
+import Publisher from './src/Tmp';
 
 // What about production? # https://github.com/gaearon/react-hot-loader#what-about-production
 const HotApp = hot(Publisher);
-ReactDOM.render(<HotApp />, document.getElementById('react-root'));
+ReactDOM.render(<Publisher />, document.getElementById('react-root'));

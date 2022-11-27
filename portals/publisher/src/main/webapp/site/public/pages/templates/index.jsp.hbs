@@ -59,11 +59,11 @@
                 module.exports = AppConfig; // For Jest unit tests
             }
         </script>
-        <script src="<%= context%>/{{ htmlWebpackPlugin.files.js[0] }}"></script>
         <!-- Swagger worker has being removed until we resolve
         *              https://github.com/wso2/product-apim/issues/10694 issue, need to change webpack config too -->
         <!-- <script src="<%= context%>/"></script> -->
         <link rel="stylesheet" href="<%= context%>/site/public/fonts/iconfont/material-icons.css">
+        <script src="http://localhost:35729/livereload.js?snipver=1" async="" defer=""></script>
     </body>
 
 </html>

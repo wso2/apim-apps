@@ -34,51 +34,58 @@ module.exports = {
             ],
         },
         production: {
-            presets: [
+            "presets": [
                 [
-                    '@babel/preset-env',
+                    "@babel/preset-env",
                     {
+                        "useBuiltIns": "usage",
+                        "corejs": 3,
                         targets: {
                             chrome: '58',
                             edge: '16',
                             firefox: '56',
                             safari: '11',
                         },
-                    },
+                    }
                 ],
-                '@babel/preset-react',
+                [
+                    "@babel/preset-react"
+                ],
+                [
+                    "@babel/preset-typescript"
+                ]
             ],
-            plugins: [
-                '@babel/plugin-proposal-class-properties',
-                '@babel/plugin-syntax-dynamic-import',
-                '@babel/plugin-transform-spread',
-                '@babel/plugin-proposal-object-rest-spread',
-                '@babel/plugin-transform-classes',
-            ],
+            "plugins": [
+                "@babel/plugin-transform-runtime",
+                "@babel/plugin-transform-async-to-generator",
+                "@babel/plugin-transform-arrow-functions",
+                "@babel/plugin-proposal-object-rest-spread",
+                "@babel/plugin-proposal-class-properties"
+            ]
         },
         development: {
-            presets: [
+            "presets": [
                 [
-                    '@babel/preset-env',
+                    "@babel/preset-env",
                     {
-                        targets: 'last 2 versions',
-                    },
+                        "useBuiltIns": "usage",
+                        "corejs": 3
+                    }
                 ],
-                '@babel/preset-react',
-            ],
-            plugins: [
-                '@babel/plugin-proposal-class-properties',
-                '@babel/plugin-syntax-dynamic-import',
-                ['@babel/plugin-transform-spread'],
-                '@babel/plugin-proposal-object-rest-spread',
-                'react-hot-loader/babel',
-                ['formatjs',
-                    {
-                        idInterpolationPattern: '[sha512:contenthash:base64:6]',
-                        ast: true,
-                    },
+                [
+                    "@babel/preset-react"
                 ],
+                [
+                    "@babel/preset-typescript"
+                ]
             ],
+            "plugins": [
+                "@babel/plugin-transform-runtime",
+                "@babel/plugin-transform-async-to-generator",
+                "@babel/plugin-transform-arrow-functions",
+                "@babel/plugin-proposal-object-rest-spread",
+                "@babel/plugin-proposal-class-properties"
+            ]
         },
-    },
+    }
 };
