@@ -19,12 +19,12 @@
 import 'react-app-polyfill/ie11';
 import 'react-app-polyfill/stable';
 import 'fastestsmallesttextencoderdecoder'; // Added to fix TextEncoding issue in edge <79
-import { hot } from 'react-hot-loader/root';
+// import { hot } from 'react-hot-loader/root';
 import ReactDOM from 'react-dom';
 import React from 'react';
-// import Publisher from './src/Publisher';
-import Publisher from './src/Tmp';
+import Publisher from './src/Publisher';
+// import Publisher from './src/Tmp';
 
 // What about production? # https://github.com/gaearon/react-hot-loader#what-about-production
-const HotApp = hot(Publisher);
+// const HotApp = hot(Publisher);
 ReactDOM.render(<Publisher />, document.getElementById('react-root'));
