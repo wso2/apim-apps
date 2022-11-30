@@ -16,9 +16,10 @@
  * under the License.
  */
 module.exports = {
-    parser: 'babel-eslint', // Default parser throws unexpected token error while the syntax is correct
+    parser: '@babel/eslint-parser', // Default parser throws unexpected token error while the syntax is correct
     parserOptions: {
-        ecmaVersion: 6,
+        requireConfigFile: false,
+        ecmaVersion: 8,
         ecmaFeatures: {
             jsx: true,
             modules: true,
@@ -123,7 +124,20 @@ module.exports = {
             "allowFunctions": false,
             "allowBind": false
         }],
-        "react/sort-comp": [1]
+        "react/sort-comp": [1],
+        "react/no-unused-class-component-methods": 'off',
+        "no-undef": "off",
+        "react/function-component-definition": "off",
+        "no-restricted-exports": "off",
+        "react/jsx-no-useless-fragment": "off",
+        "no-promise-executor-return": "off",
+        "react/no-unstable-nested-components": "off",
+        "react/no-unknown-property": "off",
+        "no-constructor-return": "off",
+        "no-dupe-else-if": "off",
+        "react/jsx-curly-brace-presence": "off",
+        "prefer-regex-literals": "off",
+        "default-param-last": "off"
     },
     plugins: ['react', 'jest', 'prettier', 'testing-library'],
     overrides: [

@@ -1,6 +1,10 @@
 /* eslint-disable max-len */
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HookShellScriptPlugin = require('hook-shell-script-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const webpack = require('webpack');
 const path = require('path');
 const devInfo = require('./dev.json');
 const { clientRoutingBypass, devServerBefore } = require('./services/dev_proxy/auth_login.js');
@@ -20,9 +24,36 @@ module.exports = (env, argv) => {
             publicPath: 'site/public/dist/',
             globalObject: 'this',
         },
+        watch: false,
         watchOptions: {
             poll: 1000,
             ignored: ['files/**/*.js', 'node_modules'],
+        },
+        devtool: 'source-map',
+        resolve: {
+            alias: {
+                AppData: path.resolve(__dirname, 'source/src/app/data/'),
+                AppComponents: path.resolve(__dirname, 'source/src/app/components/'),
+                OverrideData: path.resolve(__dirname, 'override/src/app/data/'),
+                OverrideComponents: path.resolve(__dirname, 'override/src/app/components/'),
+                AppTests: path.resolve(__dirname, 'source/Tests/'),
+                // 'nimma/fallbacks': require.resolve('./node_modules/nimma/dist/legacy/cjs/fallbacks/index.js'), // nimma/* things Added because of spectral
+                // 'nimma/legacy': require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
+                // nimma: require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
+            },
+            extensions: ['.tsx', '.ts', '.js', '.jsx'],
+            fallback: {
+                "fs": false,
+                "tls": false,
+                "net": false,
+                "path": false,
+                "zlib": false,
+                "http": false,
+                "https": false,
+                "stream": false,
+                "crypto": false,
+                "crypto-browserify": require.resolve('crypto-browserify')
+            } 
         },
         module: {
             rules: [
@@ -65,6 +96,7 @@ module.exports = (env, argv) => {
                 }
             ]
         },
+<<<<<<< HEAD
         /**
          * Webpack devserver configuration
          * Configured to open the browser with /publisher context, Keep builds in-memory, hot updated enabled
@@ -128,11 +160,12 @@ module.exports = (env, argv) => {
             },
             extensions: ['.tsx', '.ts', '.js', '.jsx'],
         },
- 
-        optimization: {
-            splitChunks: {
-                chunks: 'all',
-            },
+        externals: {
+            Config: 'AppConfig',
+            Themes: 'AppThemes', // Should use long names for preventing global scope JS variable conflicts
+            MaterialIcons: 'MaterialIcons',
+            Settings: 'Settings',
+            userCustomThemes: 'userThemes', // Should use long names for preventing global scope JS variable conflicts
         },
         plugins: [
             new HtmlWebpackPlugin({
@@ -142,18 +175,32 @@ module.exports = (env, argv) => {
                 minify: false, // Make this true to get exploded, formatted index.jsp file,
                 templateParameters: { env: isDevelopmentBuild ? 'development': 'production'},
             }),
+            new CleanWebpackPlugin(),
             new HookShellScriptPlugin({
                 afterEmit: [`echo "Updating files in ${devInfo.location}. Changes done to the publisher webapp." && ${devInfo.command}` ]
-            })
+            }),
+            new ESLintPlugin({
+                extensions: ['js', 'ts', 'jsx'],
+                failOnError: true,
+                quiet: true,
+                exclude: 'node_modules',
+            }),
+            new webpack.ProgressPlugin((percentage, message, ...args) => {
+                // e.g. Output each progress message directly to the console:
+                const pres = Math.round(percentage * 100);
+                if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
+            }),
         ],
-        externals: {
-            Config: 'AppConfig',
-            Themes: 'AppThemes', // Should use long names for preventing global scope JS variable conflicts
-            MaterialIcons: 'MaterialIcons',
-            Settings: 'Settings'
+        optimization: {
+            splitChunks: {
+                chunks: 'all',
+            },
         },
-        devtool: 'source-map',
         mode: (isDevelopmentBuild || isTestBuild) && 'development',
+    }
+    const isAnalysis = process.env && process.env.NODE_ENVS === 'analysis';
+    if (isAnalysis) {
+        devConfig.plugins.push(new BundleAnalyzerPlugin());
     }
     return devConfig;
 };

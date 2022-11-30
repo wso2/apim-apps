@@ -47,53 +47,53 @@ function getMessage(errorType, maxLength) {
 * Ref: https://hapi.dev/family/joi/?v=15.1.1#extendextension
 */
 const roleSchema = Joi.extend((joi) => ({
+    type: 'systemRole',
     base: joi.string(),
-    name: 'systemRole',
-    rules: [
-        {
-            name: 'role',
+    rules: {
+        role: {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateSystemRole(value);
             },
-        },
-    ],
+        }
+    }
 }));
 
 const scopeSchema = Joi.extend((joi) => ({
+    type: 'scopes',
     base: joi.string(),
-    name: 'scopes',
-    rules: [
-        {
-            name: 'scope',
+    rules: {
+        scope: {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateScopeName(value);
-            },
-        },
-    ],
+            }
+        }
+    },
+
 }));
 
 const userRoleSchema = Joi.extend((joi) => ({
+    type: 'userRole',
     base: joi.string(),
-    name: 'userRole',
-    rules: [
-        {
-            name: 'role',
+    rules:
+    {
+        role: {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateUSerRole(value);
-            },
-        },
-    ],
+            }
+        }
+    },
+
 }));
 
 const apiSchema = Joi.extend((joi) => ({
+    type: 'api',
     base: joi.string(),
-    name: 'api',
-    rules: [
-        {
-            name: 'isAPIParameterExist',
+    rules:
+    {
+        isAPIParameterExist: {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const inputValue = value.trim().toLowerCase();
                 const composeQuery = '?query=' + inputValue;
@@ -101,23 +101,24 @@ const apiSchema = Joi.extend((joi) => ({
                 composeQueryJSON.limit = 10;
                 composeQueryJSON.offset = 0;
                 return API.search(composeQueryJSON);
-            },
-        },
-    ],
+            }
+        }
+    },
 }));
 
 const documentSchema = Joi.extend((joi) => ({
+    type: 'document',
     base: joi.object(),
-    name: 'document',
-    rules: [
-        {
-            name: 'isDocumentPresent',
+    rules:
+    {
+        isDocumentPresent: {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateDocumentExists(value.id, value.name);
-            },
-        },
-    ],
+            }
+        }
+    },
+
 }));
 
 const definition = {
@@ -183,7 +184,7 @@ const definition = {
     operationTarget: Joi.string().required(),
     websubOperationTarget: Joi.string().regex(/^[^{}]*$/).required(),
     name: Joi.string().min(1).max(255),
-    email: Joi.string().email({ tlds: true }).required(),
+    email: Joi.string().email({ tlds: { allow: false } }).required(),
 };
 
 export default definition;

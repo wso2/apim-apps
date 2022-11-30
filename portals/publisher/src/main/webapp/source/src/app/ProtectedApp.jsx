@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { Component } from 'react';
+import React, { Component, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider as CoreThemeProvider, createTheme } from '@material-ui/core/styles';
@@ -40,12 +40,12 @@ import CommonPolicies from 'AppComponents/CommonPolicies/CommonPolicies';
 import merge from 'lodash/merge';
 
 const ThemeProvider = CoreThemeProvider || NormalThemeProvider;
-// const Apis = lazy(() => import('AppComponents/Apis/Apis' /* webpackChunkName: "DeferredAPIs" */));
-// const DeferredAPIs = () => (
-//     <Suspense fallback={<Progress per={30} message='Loading components ...' />}>
-//         <Apis />
-//     </Suspense>
-// );
+const Apis = lazy(() => import('AppComponents/Apis/Apis' /* webpackChunkName: "DeferredAPIs" */));
+const DeferredAPIs = () => (
+    <Suspense fallback={<Progress per={30} message='Loading components ...' />}>
+        <Apis />
+    </Suspense>
+);
 /**
  * Language.
  * @type {string}
@@ -207,7 +207,7 @@ export default class Protected extends Component {
                                 >
                                     <Switch>
                                         <Redirect exact from='/' to='/apis' />
-                                        {/* <Route path='/apis' component={DeferredAPIs} /> */}
+                                        <Route path='/apis' component={DeferredAPIs} />
                                         <Route path='/api-products' component={DeferredAPIs} />
                                         <Route path='/scopes' component={Scopes} />
                                         <Route path='/policies' component={CommonPolicies} />

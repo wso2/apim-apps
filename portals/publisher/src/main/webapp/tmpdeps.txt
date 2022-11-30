@@ -17,11 +17,11 @@
         "async-mutex": "^0.3.2",
         "async-react-component": "^0.7.0",
         "autosuggest-highlight": "^3.2.0",
-        "babel-plugin-formatjs": "^10.3.18",
+        "babel-plugin-formatjs": "^10.3.18", ----------
         "base64url": "3.0.1",
         "btoa": "^1.2.1",
         "caniuse-api": "^3.0.0",
-        "clean-webpack-plugin": "^4.0.0",
+        "clean-webpack-plugin": "^4.0.0", ------------
         "dayjs": "^1.10.7",
         "downshift": "^6.1.7",
         "draft-js": "^0.11.7",
@@ -139,3 +139,17 @@
         "worker-loader": "^2.0.0"
     }
 }
+
+@babel/core @babel/plugin-proposal-class-properties @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-dynamic-import @babel/plugin-transform-spread 
+@babel/preset-env @babel/preset-flow @babel/preset-react @babel/preset-typescript @babel/register  @formatjs/cli @stoplight/prism-http 
+@testing-library/jest-dom @testing-library/react 
+@testing-library/user-event @types/history @types/jest
+@types/lodash.clonedeep @types/mui-datatables @types/react
+@types/react-router-dom 
+@webpack-cli/serve ajv-formats babel-core babel-eslint babel-jest babel-loader babel-plugin-dynamic-import-node babel-plugin-styled-components
+        concurrently cross-env css-loader eslint eslint-config-airbnb eslint-config-prettier eslint-plugin-import eslint-plugin-jest eslint-plugin-jsx-a11y
+        eslint-plugin-prettier eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-testing-library eslint-webpack-plugin html-webpack-plugin jest
+        "less": "^2.7.2",
+        "less-loader": "^4.0.4",
+        monaco-editor-webpack-plugin msw openapi-backend prettier prism-multi-mock-oas react-hot-loader rimraf style-loader ts-loader typescript underscore-template-loader
+        webpack webpack-bundle-analyzer webpack-cli webpack-dev-server worker-loader
