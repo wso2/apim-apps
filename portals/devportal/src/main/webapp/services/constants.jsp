@@ -18,7 +18,7 @@
 
 <%
     String MGT_TRANSPORT = "https://";
-    String SETTINGS_REST_API_URL_SUFFIX = "/api/am/devportal/v3/settings";
+    String SETTINGS_REST_API_URL_SUFFIX = "/api/am/devportal/v2/settings";
     String DCR_URL_SUFFIX = "/client-registration/v0.17/register";
     String AUTHORIZE_ENDPOINT_SUFFIX = "/oauth2/authorize";
     String OIDC_LOGOUT_ENDPOINT_SUFFIX = "/oidc/logout";

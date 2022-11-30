@@ -345,7 +345,7 @@ Utils.CONST = {
 
     LOGOUT_CALLBACK: '/services/auth/callback/logout',
     INTROSPECT: '/services/auth/introspect',
-    SWAGGER_JSON: '/api/am/admin/v4/swagger.yaml',
+    SWAGGER_JSON: '/api/am/admin/v3/swagger.yaml',
     PROTOCOL: 'https://',
 };
 
