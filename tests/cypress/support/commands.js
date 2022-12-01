@@ -646,7 +646,7 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
 
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
 
-    cy.contains('WSO2 API-M v4.1.0');
+    cy.contains('WSO2 API-M v4.2.0');
         cy.wait(5000);
         cy.get("body").then($body => {
             if ($body.find("#itest-apis-welcome-msg").length > 0) {

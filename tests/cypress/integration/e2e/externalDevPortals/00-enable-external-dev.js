@@ -41,7 +41,7 @@ describe("Enable External Dev Portal", () => {
     it.only("Configure Sample API for External Dev Portal" , () => {
         cy.loginToPublisher(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.visit(`/publisher/apis`);
-        cy.contains('WSO2 API-M v4.1.0');
+        cy.contains('WSO2 API-M v4.2.0');
         cy.wait(5000);
         cy.get("body").then($body => {
             if ($body.find("#itest-apis-welcome-msg").length > 0) {
