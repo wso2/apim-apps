@@ -51,6 +51,7 @@ module.exports = (env, argv) => {
                 "http": false,
                 "https": false,
                 "stream": false,
+                "process": false,
                 "crypto": false,
                 "crypto-browserify": require.resolve('crypto-browserify')
             } 
@@ -190,6 +191,9 @@ module.exports = (env, argv) => {
                 const pres = Math.round(percentage * 100);
                 if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
             }),
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
+            })
         ],
         optimization: {
             splitChunks: {

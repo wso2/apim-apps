@@ -1,4 +1,4 @@
 {
-    "location": "/Users/chanakajayasena/Documents/42work/wso2am-4.2.0-SNAPSHOT/",
-    "command": "rm -rf /Users/chanakajayasena/Documents/42work/wso2am-4.2.0-SNAPSHOT/repository/deployment/server/webapps/publisher/site/public && cp -R site/public /Users/chanakajayasena/Documents/42work/wso2am-4.2.0-SNAPSHOT/repository/deployment/server/webapps/publisher/site/public"
+    "location": "/Users/chanakajayasena/Documents/42work/wso2am-4.2.0-SNAPSHOT2/",
+    "command": "rm -rf /Users/chanakajayasena/Documents/42work/wso2am-4.2.0-SNAPSHOT2/repository/deployment/server/webapps/publisher/site/public && cp -R site/public /Users/chanakajayasena/Documents/42work/wso2am-4.2.0-SNAPSHOT2/repository/deployment/server/webapps/publisher/site/public"
 }
