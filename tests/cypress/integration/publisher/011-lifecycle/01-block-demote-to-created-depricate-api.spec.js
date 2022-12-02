@@ -39,24 +39,6 @@ describe("Lifecycle changes", () => {
         cy.get('[data-testid="policy-checkbox-silver"]').click();
         cy.get('#subscriptions-save-btn').click();
 
-        // // Going to lifecycle page
-        // cy.get('[data-testid="left-menu-itemlifecycle"]').click();
-        // // This wait is ant pattern. But there is no other way unless the React components are rewrite.
-        // cy.wait(2000);
-        //
-        // // Publishing
-        // cy.get('button[data-testid="Publish"]').click();
-        // cy.get('button[data-testid="Redeploy"]').should('exist');
-        // // Even though this step is redundant we need to do this. The component is behaving
-        // // It removes the buttons after some time of initial rendering.
-        // cy.get('[data-testid="left-menu-itemlifecycle"]').click();
-        // cy.wait(2000);
-        //
-        // // Redeploy
-        // cy.get('button[data-testid="Redeploy"]').then(() => {
-        //     cy.get('button[data-testid="Redeploy"]').click();
-        // });
-
         // Going to deployments page
         cy.get('#left-menu-itemdeployments').click();
 
