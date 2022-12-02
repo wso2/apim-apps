@@ -26,7 +26,7 @@ describe("Login logout from publisher as supper tenant", () => {
         cy.visit(`/publisher/apis`).then(() => {
             cy.get('#profile-menu-btn').click();
             cy.get('#itest-logout').click();
-            cy.get('#usernameUserInput').should('exist');
+            cy.get('#username').should('exist');
         })
     })
 
@@ -35,7 +35,7 @@ describe("Login logout from publisher as supper tenant", () => {
         cy.visit(`/publisher/apis`).then(() => {
             cy.get('#profile-menu-btn').click();
             cy.get('#itest-logout').click();
-            cy.get('#usernameUserInput').should('exist');
+            cy.get('#username').should('exist');
         })
     })
 })
