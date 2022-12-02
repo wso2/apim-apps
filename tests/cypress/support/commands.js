@@ -953,7 +953,7 @@ Cypress.Commands.add('addNewUserUsingSelfSignUp', (username, password, firstName
     cy.get('[name="http://wso2.org/claims/emailaddress"]').type(email);
     cy.get('#termsCheckbox').check();
     cy.get('#registrationSubmit').click();
-    cy.contains('User registration completed successfully').should('exist');
+    cy.contains('Confirmation link has been sent to your email').should('exist');
     cy.get('[type="button"]').click();
 })
 
@@ -1007,7 +1007,7 @@ Cypress.Commands.add('portalLoginUsingIncorrectUserCredentials', (username, pass
     cy.get('[data-testid=login-page-username-input]').type(username);
     cy.get('[data-testid=login-page-password-input]').type(password);
     cy.get('#loginForm').submit();
-    cy.contains('Login failed! Please recheck the username and password and try again.').should('exist');
+    cy.contains('Login failed! Please check your username and password and try again.').should('exist');
 })
 
 Cypress.Commands.add('disableSelfSignUpInCarbonPortal', (username, password, tenant = 'carbon.super') => {
