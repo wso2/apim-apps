@@ -6,7 +6,7 @@
     <groupId>org.wso2.carbon.apimgt.ui</groupId>
     <artifactId>apim.ui.apps</artifactId>
     <packaging>pom</packaging>
-    <version>9.0.391-SNAPSHOT</version>
+    <version>9.0.391</version>
     <name>WSO2 API Manager UI - Parent</name>
     <url>https://wso2.org</url>
 
@@ -21,7 +21,7 @@
         <url>https://github.com/wso2/apim-apps.git</url>
         <developerConnection>scm:git:https://github.com/wso2/apim-apps.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/apim-apps.git</connection>
-        <tag>HEAD</tag>
+        <tag>v9.0.391</tag>
     </scm>
 
     <modules>
