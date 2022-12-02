@@ -19,7 +19,7 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["operationObj"] }] */
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@mui/styles
+import { makeStyles } from '@mui/styles';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';

@@ -42,7 +42,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
-import { makeStyles } from '@mui/styles
+import { makeStyles } from '@mui/styles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Configurations from 'Config';
 import Card from '@mui/material/Card';

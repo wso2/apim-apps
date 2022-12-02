@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { withStyles } from '@mui/styles
+import { withStyles } from '@mui/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import green from '@mui/material/colors/green';
 import red from '@mui/material/colors/red';

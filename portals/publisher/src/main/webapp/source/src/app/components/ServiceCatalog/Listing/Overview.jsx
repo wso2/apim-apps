@@ -23,7 +23,7 @@ import React, {
     Suspense,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles, useTheme } from '@mui/styles
+import { makeStyles, useTheme } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';

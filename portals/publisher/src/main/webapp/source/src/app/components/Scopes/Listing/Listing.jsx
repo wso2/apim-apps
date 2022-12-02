@@ -24,7 +24,7 @@ import { Progress } from 'AppComponents/Shared';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Button from '@mui/material/Button';
-import withStyles from '@mui/styles
+import withStyles from '@mui/styles';
 import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
