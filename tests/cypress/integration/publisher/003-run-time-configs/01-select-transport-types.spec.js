@@ -53,3 +53,4 @@ describe("Runtime configuration", () => {
         cy.deleteUser(publisher);
     })
 });
+

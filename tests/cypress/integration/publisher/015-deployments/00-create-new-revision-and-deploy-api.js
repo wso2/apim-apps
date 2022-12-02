@@ -65,3 +65,4 @@ describe("Create new revision and deploy", () => {
         cy.deleteUser(publisher);
     })
 });
+

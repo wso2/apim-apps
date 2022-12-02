@@ -89,3 +89,4 @@ describe("Endpoint testing", () => {
         cy.deleteUser(publisher);
     })
 });
+

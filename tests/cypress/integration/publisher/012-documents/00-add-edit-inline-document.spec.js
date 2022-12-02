@@ -58,3 +58,4 @@ describe("creating document", () => {
         cy.deleteUser(publisher);
     })
 });
+

@@ -51,3 +51,4 @@ describe("Make api the default version", () => {
         cy.deleteUser(publisher);
     })
 });
+

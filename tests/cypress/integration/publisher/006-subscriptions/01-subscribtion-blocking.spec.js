@@ -121,3 +121,4 @@ describe("Subscription blocking", () => {
         cy.deleteUser(publisher);
     })
 })
+

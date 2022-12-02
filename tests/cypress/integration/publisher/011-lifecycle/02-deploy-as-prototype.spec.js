@@ -63,3 +63,4 @@ describe("Deploy as prototype", () => {
         cy.deleteUser(publisher);
     })
 });
+

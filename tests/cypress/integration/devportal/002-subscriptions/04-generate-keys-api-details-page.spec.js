@@ -84,3 +84,4 @@ describe("Generate keys from api details page", () => {
          cy.deleteUser(publisher);
     })
 })
+

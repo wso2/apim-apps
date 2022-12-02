@@ -45,3 +45,4 @@ describe("Application tests", () => {
         cy.deleteUser(developer);
     })
 })
+

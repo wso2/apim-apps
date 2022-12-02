@@ -55,3 +55,4 @@ describe("Create a new version of API", () => {
         cy.deleteUser(publisher);
     })
 });
+

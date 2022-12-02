@@ -67,3 +67,4 @@ describe("Add additional properties", () => {
         cy.deleteUser(publisher);
     })
 });
+

@@ -103,3 +103,4 @@ describe("Subscribe unsubscribe to application from api details page", () => {
         cy.deleteUser(publisher);
     })
 })
+

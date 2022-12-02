@@ -38,3 +38,4 @@ describe("Login logout from devportal", () => {
         cy.deleteUser(developer);
     })
 })
+

@@ -63,3 +63,4 @@ describe("Add production sandbox endpoints for SOAP", () => {
         cy.deleteUser(publisher);
     })
 });
+

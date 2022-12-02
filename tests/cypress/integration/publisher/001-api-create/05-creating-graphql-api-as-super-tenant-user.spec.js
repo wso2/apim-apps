@@ -71,3 +71,4 @@ describe("Create GraphQl API from file", () => {
         cy.deleteUser(publisher);
     })
 })
+

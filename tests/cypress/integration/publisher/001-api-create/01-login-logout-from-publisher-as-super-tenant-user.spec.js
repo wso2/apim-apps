@@ -55,3 +55,4 @@ describe("Login logout from publisher as supper tenant", () => {
         cy.deleteUser(tenantUser);
     })
 })
+

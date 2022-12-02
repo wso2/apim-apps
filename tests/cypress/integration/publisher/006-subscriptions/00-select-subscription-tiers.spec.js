@@ -54,3 +54,4 @@ describe("Select subscription tiers for the API", () => {
         cy.deleteUser(publisher);
     })
 });
+

@@ -59,3 +59,4 @@ describe("Undeploy new revision", () => {
         cy.deleteUser(publisher);
     })
 });
+

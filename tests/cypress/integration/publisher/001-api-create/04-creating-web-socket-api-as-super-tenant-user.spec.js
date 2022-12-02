@@ -79,3 +79,4 @@ describe("Create websocket api - super tenant", () => {
         cy.deleteUser(publisher);
     })
 })
+

@@ -106,3 +106,4 @@ describe("Lifecycle changes", () => {
         cy.deleteUser(publisher);
     })
 });
+

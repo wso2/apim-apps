@@ -42,3 +42,4 @@ describe("Deploy sample api", () => {
         cy.deleteUser(publisher);
     })
 });
+

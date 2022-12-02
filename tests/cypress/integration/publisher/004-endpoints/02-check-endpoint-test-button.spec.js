@@ -72,3 +72,4 @@ describe("Check endpoint test button", () => {
         cy.deleteUser(publisher);
     })
 });
+

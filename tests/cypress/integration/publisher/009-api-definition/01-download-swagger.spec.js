@@ -58,3 +58,4 @@ describe("Download swagger", () => {
         cy.deleteUser(publisher);
     })
 });
+

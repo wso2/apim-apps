@@ -74,3 +74,4 @@ describe("Upload api spec from the api definition page", () => {
         cy.deleteUser(publisher);
     })
 });
+

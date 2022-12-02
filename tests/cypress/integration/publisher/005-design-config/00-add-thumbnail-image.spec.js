@@ -63,3 +63,4 @@ describe("Upload thumbnail", () => {
         cy.deleteUser(publisher);
     })
 });
+

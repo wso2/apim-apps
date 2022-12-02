@@ -64,3 +64,4 @@ describe("Add business information", () => {
         cy.deleteUser(publisher);
     })
 });
+

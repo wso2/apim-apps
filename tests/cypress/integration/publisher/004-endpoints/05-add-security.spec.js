@@ -75,3 +75,4 @@ describe("Add security to the endpoint", () => {
         cy.deleteUser(publisher);
     })
 });
+

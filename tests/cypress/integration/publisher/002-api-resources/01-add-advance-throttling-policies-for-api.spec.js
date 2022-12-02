@@ -57,3 +57,4 @@ describe("Add advanced throttling policies", () => {
         cy.deleteUser(publisher);
     })
 });
+

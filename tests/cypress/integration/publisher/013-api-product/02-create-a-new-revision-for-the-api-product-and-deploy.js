@@ -120,3 +120,4 @@ describe("Mock the api response and test it", () => {
         cy.deleteUser(publisher);
      })
 })
+

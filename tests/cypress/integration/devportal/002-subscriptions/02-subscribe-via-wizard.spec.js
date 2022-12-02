@@ -125,3 +125,4 @@ describe("Anonymous view apis", () => {
         cy.deleteUser(publisher);
     })
 })
+

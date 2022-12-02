@@ -62,3 +62,4 @@ describe("Add Authorization Header for the api", () => {
         cy.deleteUser(publisher);
     })
 });
+

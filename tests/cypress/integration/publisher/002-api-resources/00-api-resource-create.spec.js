@@ -221,3 +221,4 @@ describe("Resource add edit operations", () => {
         cy.deleteUser(publisher);
     })
 })
+

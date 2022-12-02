@@ -67,3 +67,4 @@ describe("Set publisher access control and visibility by roles", () => {
         cy.deleteUser(publisher);
     })
 });
+

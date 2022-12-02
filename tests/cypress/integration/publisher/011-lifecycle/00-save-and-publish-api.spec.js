@@ -70,3 +70,4 @@ describe("Save and publish API", () => {
         cy.deleteUser(publisher);
     })
 });
+

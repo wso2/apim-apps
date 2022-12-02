@@ -131,3 +131,4 @@ describe("Create api with swagger file super tenant", () => {
         cy.deleteUser(publisher);
     })
 })
+

@@ -56,3 +56,4 @@ describe("Api Definition", () => {
         cy.deleteUser(publisher);
     })
 });
+

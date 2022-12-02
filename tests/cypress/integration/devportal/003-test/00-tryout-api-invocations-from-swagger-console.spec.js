@@ -99,3 +99,4 @@ describe("Tryout API invocations", () => {
         cy.deleteUser(publisher);
     })
 });
+
