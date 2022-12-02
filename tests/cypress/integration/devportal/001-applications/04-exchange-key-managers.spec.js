@@ -53,3 +53,4 @@ describe("Developer portal smoke tests", () => {
         cy.get('#responsive-dialog-title h2').should('contain', 'Get CURL to Generate Access Token');
     })
 })
+

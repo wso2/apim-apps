@@ -60,3 +60,4 @@ describe("Basic login to carbon console", () => {
         cy.visit(`${Utils.getAppOrigin()}/admin/settings/key-managers`);
     })
 })
+

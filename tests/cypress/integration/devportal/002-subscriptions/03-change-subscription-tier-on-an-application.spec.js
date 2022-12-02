@@ -117,3 +117,4 @@ describe("Change subscription tier of an application", () => {
         cy.deleteUser(publisher);
     })
 });
+

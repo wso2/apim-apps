@@ -78,6 +78,5 @@ describe("Service catalog create flow", () => {
         cy.visit(`${CARBON_ORIGIN}/publisher/service-catalog`);
 
     });
-
-
 })
+
