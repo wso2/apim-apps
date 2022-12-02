@@ -22,8 +22,8 @@ import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import Themes from 'AppData/defaultTheme';
 import { MemoryRouter, Redirect } from 'react-router-dom';
 import { resourceMethod, resourcePath } from 'AppData/ScopeValidation';
-import { createTheme } from '@material-ui/core/styles';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import { createTheme } from '@mui/styles';
+import RadioGroup from '@mui/material/RadioGroup';
 import { APIProvider } from 'AppComponents/Apis/Details/components/ApiContext';
 import NewVersion from './NewVersion';
 

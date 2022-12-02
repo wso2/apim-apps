@@ -17,7 +17,7 @@
  */
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/styles';
 import ApiThumbClassic from 'AppComponents/Apis/Listing/components/ImageGenerator/APICards/ApiThumbClassic';
 import APIThumbPlain from 'AppComponents/Apis/Listing/components/ImageGenerator/APICards/APIThumbPlain';
 

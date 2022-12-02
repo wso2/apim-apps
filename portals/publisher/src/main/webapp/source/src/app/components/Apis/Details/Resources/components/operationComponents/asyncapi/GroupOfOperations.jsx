@@ -17,12 +17,12 @@
  */
 
 import React from 'react';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanel from '@mui/material/ExpansionPanel';
 import PropTypes from 'prop-types';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 /**
  * Return a group container , User should provide the operations list as the child component

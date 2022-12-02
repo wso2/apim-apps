@@ -17,17 +17,17 @@
  */
 
 import React, { FC, useContext } from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles, Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+import FormHelperText from '@mui/material/FormHelperText';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import FormControl from '@material-ui/core/FormControl';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import Button from '@material-ui/core/Button';
+import FormControl from '@mui/material/FormControl';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import Button from '@mui/material/Button';
 import Utils from 'AppData/Utils';
 import API from 'AppData/api.js';
 import { Alert } from 'AppComponents/Shared';

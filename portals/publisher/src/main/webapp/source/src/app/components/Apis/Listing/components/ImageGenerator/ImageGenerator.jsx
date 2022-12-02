@@ -17,8 +17,8 @@
  */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
+import { withStyles } from '@mui/styles';
+import Icon from '@mui/material/Icon';
 import Background from './Background';
 
 import getIcon from './APICards/ImageUtils';

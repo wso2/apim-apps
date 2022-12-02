@@ -19,12 +19,12 @@
 import React, { Suspense, lazy } from 'react';
 import AppContext from 'AppComponents/Shared/AppContext';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
+import { withStyles } from '@mui/styles';
+import Button from '@mui/material/Button';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import API from 'AppData/api.js';
 import { withRouter } from 'react-router';

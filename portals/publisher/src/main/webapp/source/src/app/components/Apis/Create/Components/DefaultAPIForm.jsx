@@ -17,15 +17,15 @@
  */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import { InputAdornment, IconButton, Icon } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Chip from '@material-ui/core/Chip';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import { InputAdornment, IconButton, Icon } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
-import green from '@material-ui/core/colors/green';
+import green from '@mui/material/colors/green';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';

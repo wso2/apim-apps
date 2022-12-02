@@ -18,11 +18,11 @@ import {
 } from '@stoplight/spectral-core';
 import { oas } from '@stoplight/spectral-rulesets';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from "@material-ui/core/styles";
+import Box from '@mui/material/Box';
+import { makeStyles } from "@mui/styles";
 import { spectralSeverityMap, spectralSeverityNames } from "./Linting"
-import { Grid, Tooltip, Typography } from '@material-ui/core';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { Grid, Tooltip, Typography } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };
 type APILintingProps = {

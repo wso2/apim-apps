@@ -97,7 +97,6 @@ module.exports = (env, argv) => {
                 }
             ]
         },
-<<<<<<< HEAD
         /**
          * Webpack devserver configuration
          * Configured to open the browser with /publisher context, Keep builds in-memory, hot updated enabled

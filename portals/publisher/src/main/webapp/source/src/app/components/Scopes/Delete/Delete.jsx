@@ -19,9 +19,9 @@
 import React, { useState } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
+import { withStyles } from '@mui/styles';
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import { isRestricted } from 'AppData/AuthManager';

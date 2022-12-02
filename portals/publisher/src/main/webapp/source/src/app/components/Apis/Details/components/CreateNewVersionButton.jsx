@@ -18,11 +18,11 @@
 
 import React from 'react';
 
-import LibraryAdd from '@material-ui/icons/LibraryAdd';
+import LibraryAdd from '@mui/icons-material/LibraryAdd';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 import { resourceMethod, resourcePath, ScopeValidation } from 'AppData/ScopeValidation';

@@ -17,10 +17,10 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography } from '@material-ui/core/';
-import { withStyles } from '@material-ui/core/styles';
-import AccountBox from '@material-ui/icons/AccountBox';
-import Grid from '@material-ui/core/Grid';
+import { Typography } from '@mui/material/';
+import { withStyles } from '@mui/styles';
+import AccountBox from '@mui/icons-material/AccountBox';
+import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import API from 'AppData/api';

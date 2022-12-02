@@ -16,15 +16,15 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 

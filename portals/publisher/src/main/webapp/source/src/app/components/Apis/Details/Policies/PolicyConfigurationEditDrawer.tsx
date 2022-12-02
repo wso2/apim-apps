@@ -19,20 +19,20 @@
 
 import React, { FC, useEffect, useContext, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import {
     Drawer,
     makeStyles,
     ListItemIcon,
     Theme,
     Typography,
-} from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import { Settings, Close } from '@material-ui/icons';
-import Divider from '@material-ui/core/Divider';
+} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { Settings, Close } from '@mui/icons-material';
+import Divider from '@mui/material/Divider';
 import General from './AttachedPolicyForm/General';
 import type { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';
 import ApiContext from '../components/ApiContext';

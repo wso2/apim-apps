@@ -21,14 +21,14 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { withStyles } from '@material-ui/core/styles';
-import Popper from '@material-ui/core/Popper';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@mui/styles';
+import Popper from '@mui/material/Popper';
+import ListSubheader from '@mui/material/ListSubheader';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import CloseIcon from '@mui/icons-material/Close';
 import useAutocomplete, { createFilterOptions } from './useAutocomplete';
 
 export { createFilterOptions };

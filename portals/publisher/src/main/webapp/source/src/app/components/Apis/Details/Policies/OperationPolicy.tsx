@@ -17,18 +17,18 @@
  */
 
 import React, { FC } from 'react';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
+import ExpansionPanel from '@mui/material/ExpansionPanel';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { makeStyles } from '@mui/styles';
 import Utils from 'AppData/Utils';
-import Badge from '@material-ui/core/Badge';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
+import Badge from '@mui/material/Badge';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
 import PoliciesExpansion from './PoliciesExpansion';
 import type { Policy, PolicySpec } from './Types'

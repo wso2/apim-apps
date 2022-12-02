@@ -17,11 +17,11 @@
  */
 
 import React, { FC, useEffect, useReducer, useState } from 'react';
-import { CircularProgress, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
+import { CircularProgress, makeStyles, Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';

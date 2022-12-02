@@ -17,16 +17,16 @@
  */
 
 import React, { useState, FC } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import CardContent from '@material-ui/core/CardContent';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import CardContent from '@mui/material/CardContent';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import { AddCircle } from '@material-ui/icons';
-import { Button, makeStyles, Theme } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import { AddCircle } from '@mui/icons-material';
+import { Button, makeStyles, Theme } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';

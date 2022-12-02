@@ -18,14 +18,14 @@
 import React from 'react';
 import {
     ListItemIcon, withStyles, ListItem, ListItemText, useTheme,
-} from '@material-ui/core';
+} from '@mui/material';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import classNames from 'classnames';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 
 const styles = (theme) => ({
     listRoot: {

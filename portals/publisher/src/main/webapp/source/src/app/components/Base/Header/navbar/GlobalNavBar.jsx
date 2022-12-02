@@ -17,10 +17,10 @@
  */
 import React, { useEffect } from 'react';
 import clsx from 'clsx';
-import Drawer from '@material-ui/core/Drawer';
+import Drawer from '@mui/material/Drawer';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 
 import GlobalNavLinks from './GlobalNavLinks';

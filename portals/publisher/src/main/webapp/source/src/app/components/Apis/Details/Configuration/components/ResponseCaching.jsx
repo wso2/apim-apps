@@ -18,21 +18,21 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { FormattedMessage } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/material';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 
 const useStyles = makeStyles((theme) => ({
     expansionPanel: {

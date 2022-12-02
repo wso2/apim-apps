@@ -17,11 +17,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Icon from '@material-ui/core/Icon';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles, Theme } from '@mui/styles';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Icon from '@mui/material/Icon';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import CONSTS from 'AppData/Constants';

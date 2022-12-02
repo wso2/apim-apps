@@ -23,15 +23,15 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Downshift from 'downshift';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
+import { makeStyles } from '@mui/styles';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Backdrop from '@material-ui/core/Backdrop';
-import SearchIcon from '@material-ui/icons/Search';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import Backdrop from '@mui/material/Backdrop';
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
 import GoToSuggestions from 'AppComponents/Apis/Details/GoTo/Components/GoToSuggestions';
 
 const useStyles = makeStyles((theme) => ({

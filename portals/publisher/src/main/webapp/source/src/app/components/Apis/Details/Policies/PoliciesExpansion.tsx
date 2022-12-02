@@ -17,11 +17,11 @@
  */
 
 import React, { FC, useContext, useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import Typography from '@mui/material/Typography';
+import { makeStyles, Theme } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';

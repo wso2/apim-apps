@@ -25,8 +25,8 @@ import {
     MenuItem,
     TextField,
     Typography,
-} from '@material-ui/core';
-import { ArrowDropDown } from '@material-ui/icons';
+} from '@mui/material';
+import { ArrowDropDown } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 

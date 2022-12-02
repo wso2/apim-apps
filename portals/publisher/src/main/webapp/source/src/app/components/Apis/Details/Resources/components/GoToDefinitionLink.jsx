@@ -17,11 +17,11 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import LaunchIcon from '@material-ui/icons/Launch';
+import { makeStyles } from '@mui/styles';
+import Box from '@mui/material/Box';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles((theme) => ({
     link: {

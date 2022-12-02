@@ -17,19 +17,19 @@
  */
 
 import React from 'react';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import MenuItem from '@material-ui/core/MenuItem';
-import Chip from '@material-ui/core/Chip';
-import { withStyles } from '@material-ui/core/styles';
+import Select from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
+import MenuItem from '@mui/material/MenuItem';
+import Chip from '@mui/material/Chip';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import ListSubheader from '@mui/material/ListSubheader';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import TextField from '@material-ui/core/TextField';
-import { Typography } from '@material-ui/core';
-import Switch from '@material-ui/core/Switch';
+import TextField from '@mui/material/TextField';
+import { Typography } from '@mui/material';
+import Switch from '@mui/material/Switch';
 import { isRestricted } from 'AppData/AuthManager';
 
 const styles = (theme) => ({

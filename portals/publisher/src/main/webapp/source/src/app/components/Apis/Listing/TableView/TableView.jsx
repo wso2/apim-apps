@@ -19,13 +19,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { withStyles } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import queryString from 'query-string';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import ApiThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/ApiThumb';
 import DocThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/DocThumb';
 import { Progress } from 'AppComponents/Shared';
@@ -187,7 +188,7 @@ class TableView extends React.Component {
             };
         }
         muiTheme = Object.assign(theme, muiTheme, themeAdditions);
-        return createMuiTheme(muiTheme);
+        return createTheme(muiTheme);
     };
 
     // get apisAndApiProducts
@@ -494,9 +495,9 @@ class TableView extends React.Component {
                         />
                     )
                         : (
-                            <MuiThemeProvider theme={this.getMuiTheme()}>
+                            <ThemeProvider theme={this.getMuiTheme()}>
                                 <MUIDataTable title='' data={apisAndApiProducts} columns={columns} options={options} />
-                            </MuiThemeProvider>
+                            </ThemeProvider>
                         )}
                 </div>
             </>

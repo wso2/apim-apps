@@ -18,7 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Typography, Tooltip } from '@material-ui/core';
+import { Typography, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 /**

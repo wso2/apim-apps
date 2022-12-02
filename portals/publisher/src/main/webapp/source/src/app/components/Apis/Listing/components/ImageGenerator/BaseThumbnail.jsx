@@ -17,12 +17,12 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import ButtonBase from '@material-ui/core/ButtonBase';
+import { makeStyles } from '@mui/styles';
+import { useTheme } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import ButtonBase from '@mui/material/ButtonBase';
 import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 
 import Api from 'AppData/api';

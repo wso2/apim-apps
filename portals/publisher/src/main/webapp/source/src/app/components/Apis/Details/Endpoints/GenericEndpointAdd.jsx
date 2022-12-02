@@ -22,7 +22,7 @@ import {
     InputAdornment,
     TextField,
     withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';

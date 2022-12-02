@@ -18,7 +18,7 @@
 // TODO: DO we need this component ? this is a pure proxy just passing the props through this to children ? ~tmkb
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import TableView from './TableView/TableView';
 
 const styles = {

@@ -18,7 +18,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@mui/styles';
 import Footer from 'AppComponents/Base/Footer/Footer';
 import Header from 'AppComponents/Base/Header';
 import { Toaster } from 'react-hot-toast';
@@ -26,7 +26,7 @@ import { Helmet } from 'react-helmet';
 import defaultTheme from 'AppData/defaultTheme';
 import userThemes from 'userCustomThemes';
 
-// import CssBaseline from '@material-ui/core/CssBaseline';
+// import CssBaseline from '@mui/material/CssBaseline';
 
 const useStyles = makeStyles((theme) => ({
     wrapper: {

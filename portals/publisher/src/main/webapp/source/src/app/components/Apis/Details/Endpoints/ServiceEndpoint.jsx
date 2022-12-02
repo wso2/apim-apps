@@ -23,10 +23,10 @@ import {
     InputAdornment,
     withStyles,
     IconButton, Icon,
-} from '@material-ui/core';
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import Autocomplete from 'AppComponents/Shared/Autocomplete';
 import { isRestricted } from 'AppData/AuthManager';
 

@@ -16,14 +16,14 @@
  * under the License.
  */
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import ReactMarkdown from 'react-markdown';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';

@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { MenuItem, TextField } from '@material-ui/core';
+import { MenuItem, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 

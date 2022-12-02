@@ -17,24 +17,24 @@
  */
 
 import React, { FC } from 'react';
-import { List, makeStyles, IconButton, Theme } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import { List, makeStyles, IconButton, Theme } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
-import Avatar from '@material-ui/core/Avatar';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Avatar from '@mui/material/Avatar';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Dropzone from 'react-dropzone';
 import clsx from 'clsx';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
-import Icon from '@material-ui/core/Icon';
-import { HelpOutline } from '@material-ui/icons';
+import green from '@mui/material/colors/green';
+import red from '@mui/material/colors/red';
+import Icon from '@mui/material/Icon';
+import { HelpOutline } from '@mui/icons-material';
 import { GATEWAY_TYPE_LABELS } from './SourceDetails';
 
 const useStyles = makeStyles((theme: Theme) => ({

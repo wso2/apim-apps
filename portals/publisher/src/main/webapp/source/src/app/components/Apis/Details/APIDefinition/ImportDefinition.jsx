@@ -16,21 +16,21 @@
  * under the License.
  */
 import React, { useReducer, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Typography } from '@material-ui/core';
-import CloudUploadRounded from '@material-ui/icons/CloudUploadRounded';
+import { Typography } from '@mui/material';
+import CloudUploadRounded from '@mui/icons-material/CloudUploadRounded';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import ProvideWSDL from 'AppComponents/Apis/Create/WSDL/Steps/ProvideWSDL';
 import ProvideAsyncAPI from 'AppComponents/Apis/Create/AsyncAPI/Steps/ProvideAsyncAPI';
 import ProvideOpenAPI from '../../Create/OpenAPI/Steps/ProvideOpenAPI';

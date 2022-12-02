@@ -18,14 +18,14 @@
 
 import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
-import green from '@material-ui/core/colors/green';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import green from '@mui/material/colors/green';
+import { withStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
 const styles = (theme) => ({
     root: {

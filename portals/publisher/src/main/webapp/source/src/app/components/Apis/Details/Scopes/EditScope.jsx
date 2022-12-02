@@ -15,27 +15,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@mui/styles';
 import Alert from 'AppComponents/Shared/Alert';
-import Paper from '@material-ui/core/Paper';
-import FormControl from '@material-ui/core/FormControl';
+import Paper from '@mui/material/Paper';
+import FormControl from '@mui/material/FormControl';
 import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
-import Chip from '@material-ui/core/Chip';
-import { red } from '@material-ui/core/colors/';
-import Icon from '@material-ui/core/Icon';
+import Chip from '@mui/material/Chip';
+import { red } from '@mui/material/colors/';
+import Icon from '@mui/material/Icon';
 import base64url from 'base64url';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Error from '@material-ui/core/SvgIcon/SvgIcon';
+import InputAdornment from '@mui/material/InputAdornment';
+import Error from '@mui/material/SvgIcon/SvgIcon';
 import Api from 'AppData/api';
 
 const styles = (theme) => ({

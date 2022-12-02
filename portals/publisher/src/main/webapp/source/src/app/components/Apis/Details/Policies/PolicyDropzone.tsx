@@ -17,10 +17,10 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Theme, Typography } from '@mui/material';
 import { useDrop } from 'react-dnd';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
+import green from '@mui/material/colors/green';
+import red from '@mui/material/colors/red';
 import clsx from 'clsx';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';

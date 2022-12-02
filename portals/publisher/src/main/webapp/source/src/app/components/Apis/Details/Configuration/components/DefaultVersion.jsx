@@ -18,15 +18,15 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Radio from '@material-ui/core/Radio';
-import Box from '@material-ui/core/Box';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import Grid from '@mui/material/Grid';
+import Radio from '@mui/material/Radio';
+import Box from '@mui/material/Box';
+import RadioGroup from '@mui/material/RadioGroup';
+import Tooltip from '@mui/material/Tooltip';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';

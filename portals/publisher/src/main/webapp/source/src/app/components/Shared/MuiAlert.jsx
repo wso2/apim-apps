@@ -6,16 +6,16 @@
  */
 import * as React from 'react';
 import clsx from 'clsx';
-import { withStyles, lighten, darken } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import { capitalize } from '@material-ui/core/utils';
-import SuccessOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutlineOutlined';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import CloseIcon from '@material-ui/icons/Close';
+import { withStyles, lighten, darken } from '@mui/styles';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import { capitalize } from '@mui/material/utils';
+import SuccessOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import CloseIcon from '@mui/icons-material/Close';
 
 export const styles = (theme) => {
     const getColor = theme.palette.type === 'light' ? darken : lighten;

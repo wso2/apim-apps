@@ -17,16 +17,16 @@
  */
 
 import React, { CSSProperties, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import { makeStyles } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Utils from 'AppData/Utils';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import IconButton from '@material-ui/core/IconButton';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import IconButton from '@mui/material/IconButton';
 import { FormattedMessage } from 'react-intl';
 import { useDrag } from 'react-dnd';
 import type { Policy } from './Types';

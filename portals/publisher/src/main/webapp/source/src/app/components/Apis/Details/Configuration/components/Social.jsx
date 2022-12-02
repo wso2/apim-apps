@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 
 /**
  *

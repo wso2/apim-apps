@@ -17,22 +17,22 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TextField from '@material-ui/core/TextField';
-import TableCell from '@material-ui/core/TableCell';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import TableRow from '@material-ui/core/TableRow';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TextField from '@mui/material/TextField';
+import TableCell from '@mui/material/TableCell';
+import ExpansionPanel from '@mui/material/ExpansionPanel';
+import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
-import TableBody from '@material-ui/core/TableBody';
-import TableHead from '@material-ui/core/TableHead';
-import Box from '@material-ui/core/Box';
+import TableBody from '@mui/material/TableBody';
+import TableHead from '@mui/material/TableHead';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles((theme) => ({
     searchWrapper: {

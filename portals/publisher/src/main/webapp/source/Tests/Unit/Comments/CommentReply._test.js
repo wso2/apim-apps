@@ -15,8 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// import { unwrap } from '@material-ui/core/test-utils';
-import { Typography } from '@material-ui/core';
+// import { unwrap } from '@mui/material/test-utils';
+import { Typography } from '@mui/material';
 import CommentEdit from '../../../src/app/components/Apis/Details/Comments/CommentEdit';
 import CommentOptions from '../../../src/app/components/Apis/Details/Comments/CommentOptions';
 import CommentReply from '../../../src/app/components/Apis/Details/Comments/CommentReply';

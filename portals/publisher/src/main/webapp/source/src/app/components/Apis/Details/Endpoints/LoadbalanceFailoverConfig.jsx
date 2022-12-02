@@ -29,16 +29,16 @@ import {
     TextField,
     Typography,
     withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
 import PropTypes from 'prop-types';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import EndpointListing from 'AppComponents/Apis/Details/Endpoints/EndpointListing';
 import LoadBalanceConfig from 'AppComponents/Apis/Details/Endpoints/LoadBalanceConfig';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse from '@mui/material/Collapse';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { getEndpointTypeProperty } from './endpointUtils';
 

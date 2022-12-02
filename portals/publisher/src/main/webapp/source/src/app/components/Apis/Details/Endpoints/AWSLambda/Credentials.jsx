@@ -29,11 +29,11 @@ import {
     MenuItem,
     Collapse,
     Radio,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import LaunchIcon from '@material-ui/icons/Launch';
+} from '@mui/material';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import API from 'AppData/api';

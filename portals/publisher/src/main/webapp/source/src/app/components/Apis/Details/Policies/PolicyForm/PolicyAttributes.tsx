@@ -17,25 +17,25 @@
  */
 
 import React, { FC, useState, } from 'react';
-import { Button, makeStyles, Theme } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Popover from '@material-ui/core/Popover';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import PriorityHighOutlined from '@material-ui/icons/PriorityHighOutlined';
+import { Button, makeStyles, Theme } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import Popover from '@mui/material/Popover';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import PriorityHighOutlined from '@mui/icons-material/PriorityHighOutlined';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import SubjectOutlinedIcon from '@material-ui/icons/SubjectOutlined';
-import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { AddCircle } from '@material-ui/icons';
+import Tooltip from '@mui/material/Tooltip';
+import ToggleButton from '@mui/lab/ToggleButton';
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup';
+import SubjectOutlinedIcon from '@mui/icons-material/SubjectOutlined';
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { AddCircle } from '@mui/icons-material';
 import { PolicyAttribute } from './Types';
 import { ACTIONS } from './PolicyCreateForm';
 

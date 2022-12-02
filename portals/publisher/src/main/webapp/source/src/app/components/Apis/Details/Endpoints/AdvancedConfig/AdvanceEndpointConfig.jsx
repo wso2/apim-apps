@@ -29,7 +29,7 @@ import {
     withStyles,
     Checkbox,
     ListItemText,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';

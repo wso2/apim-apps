@@ -17,10 +17,10 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import Box from '@material-ui/core/Box';
+import { makeStyles } from '@mui/material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles(() => ({
     arrowColor: {

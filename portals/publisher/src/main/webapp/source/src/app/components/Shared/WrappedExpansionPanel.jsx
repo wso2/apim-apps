@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanel from '@mui/material/ExpansionPanel';
 import { updateUserLocalStorage, getUserLocalStorage } from 'AppData/UserStateUtils';
 
 const WrappedExpansionPanel = (props) => {

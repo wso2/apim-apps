@@ -17,17 +17,17 @@
  */
 
 import React from 'react';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@mui/styles';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
-import LaunchIcon from '@material-ui/icons/Launch';
-import Box from '@material-ui/core/Box';
+import Chip from '@mui/material/Chip';
+import LaunchIcon from '@mui/icons-material/Launch';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import ApiContext from '../components/ApiContext';
 
 const styles = (theme) => ({

@@ -16,10 +16,10 @@
  * under the License.
  */
 import React, { useState } from "react";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, List, ListItem, 
-    ListItemIcon, ListItemText, Typography } from "@material-ui/core";
-import { ExpandMore } from "@material-ui/icons";
+    ListItemIcon, ListItemText, Typography } from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
 import { FormattedMessage } from "react-intl";
 import LinterUI from "AppComponents/Apis/Details/APIDefinition/LinterUI/LinterUI";
 import APILintingSummary from "AppComponents/Apis/Details/APIDefinition/Linting/APILintingSummary";

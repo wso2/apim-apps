@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@mui/styles';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
-import Typography from '@material-ui/core/Typography';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 /**

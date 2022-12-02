@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
+import { makeStyles } from '@mui/styles';
+import Avatar from '@mui/material/Avatar';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import Utils from 'AppData/Utils';
 

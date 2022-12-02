@@ -16,7 +16,7 @@
  * under the License.
  */
 import React from 'react';
-import { useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/styles';
 import DocThumbClassic from 'AppComponents/Apis/Listing/components/ImageGenerator/APICards/DocThumbClassic';
 import DocThumbPlain from 'AppComponents/Apis/Listing/components/ImageGenerator/APICards/DocThumbPlain';
 

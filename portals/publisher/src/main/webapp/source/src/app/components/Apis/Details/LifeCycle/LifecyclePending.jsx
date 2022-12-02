@@ -17,17 +17,17 @@
  */
 
 import React, { useState } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
 import {
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-} from '@material-ui/core/';
-import Slide from '@material-ui/core/Slide';
+} from '@mui/material/';
+import Slide from '@mui/material/Slide';
 
 const lifecyclePending = (props) => {
     const { currentState } = props;

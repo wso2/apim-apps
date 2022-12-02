@@ -22,16 +22,16 @@ import Api from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import PropTypes from 'prop-types';
 
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
-import AddCircle from '@material-ui/icons/AddCircle';
-import Divider from '@material-ui/core/Divider';
+import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableHead from '@mui/material/TableHead';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
+import { withStyles } from '@mui/styles';
+import AddCircle from '@mui/icons-material/AddCircle';
+import Divider from '@mui/material/Divider';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 import AddPolicy from './AddPolicy';

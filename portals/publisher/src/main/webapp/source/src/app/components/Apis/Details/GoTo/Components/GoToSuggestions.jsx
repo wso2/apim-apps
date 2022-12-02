@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import deburr from 'lodash/deburr';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 
 import suggestions from 'AppComponents/Apis/Details/GoTo/RouteMappings';

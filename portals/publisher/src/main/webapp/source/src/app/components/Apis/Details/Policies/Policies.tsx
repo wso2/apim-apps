@@ -18,12 +18,12 @@
 
 import {
     Grid, makeStyles, Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { DndProvider } from 'react-dnd';

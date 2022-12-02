@@ -17,17 +17,17 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Icon from '@material-ui/core/Icon';
+import { makeStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import PolicyCreateForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyCreateForm';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 
 const useStyles = makeStyles((theme: any) => ({

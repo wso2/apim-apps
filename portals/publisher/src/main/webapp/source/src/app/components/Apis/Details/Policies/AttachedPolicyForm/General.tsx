@@ -17,7 +17,7 @@
  */
 
 import React, { useState, FC, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import {
     Grid,
     Typography,
@@ -31,7 +31,7 @@ import {
     InputLabel,
     FormControl,
     FormHelperText,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';

@@ -17,12 +17,12 @@
 import React, {
     useContext, useEffect, useState, useReducer,
 } from 'react';
-import { Grid } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Grid } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { Link, withRouter } from 'react-router-dom';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import NewEndpointCreate from 'AppComponents/Apis/Details/Endpoints/NewEndpointCreate';

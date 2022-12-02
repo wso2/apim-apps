@@ -20,13 +20,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { isRestricted } from 'AppData/AuthManager';
-import LifeCycleIcon from '@material-ui/icons/Autorenew';
-import StoreIcon from '@material-ui/icons/Store';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import CodeIcon from '@material-ui/icons/Code';
-import PersonPinCircleOutlinedIcon from '@material-ui/icons/PersonPinCircleOutlined';
-import ResourcesIcon from '@material-ui/icons/VerticalSplit';
-import { withStyles } from '@material-ui/core/styles';
+import LifeCycleIcon from '@mui/icons-material/Autorenew';
+import StoreIcon from '@mui/icons-material/Store';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CodeIcon from '@mui/icons-material/Code';
+import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
+import ResourcesIcon from '@mui/icons-material/VerticalSplit';
+import { withStyles } from '@mui/styles';
 import { injectIntl, defineMessages } from 'react-intl';
 import {
     Redirect, Route, Switch, Link, matchPath,
@@ -39,14 +39,14 @@ import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { Progress } from 'AppComponents/Shared';
 import Alert from 'AppComponents/Shared/Alert';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import AppContext, { withSettings } from 'AppComponents/Shared/AppContext';
 import LastUpdatedTime from 'AppComponents/Apis/Details/components/LastUpdatedTime';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import { RevisionContextProvider } from 'AppComponents/Shared/RevisionContext';
 import DevelopSectionMenu from 'AppComponents/Apis/Details/components/leftMenu/DevelopSectionMenu';
 import { PROPERTIES as UserProperties } from 'AppData/User';

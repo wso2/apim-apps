@@ -18,12 +18,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
-import Box from '@material-ui/core/Box';
+import { Typography, Tooltip } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import Icon from '@mui/material/Icon';
+import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { injectIntl, FormattedMessage } from 'react-intl';

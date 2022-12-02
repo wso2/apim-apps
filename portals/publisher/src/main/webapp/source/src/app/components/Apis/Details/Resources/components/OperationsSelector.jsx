@@ -18,18 +18,18 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import isEmpty from 'lodash.isempty';
-import IconButton from '@material-ui/core/IconButton';
-import ClearAllIcon from '@material-ui/icons/ClearAll';
-import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
+import Tooltip from '@mui/material/Tooltip';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import LockIcon from '@material-ui/icons//Lock';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import LockOpenTwoToneIcon from '@material-ui/icons/LockOpenTwoTone';
+import LockIcon from '@mui/icons-material//Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
 /**
  *
  *

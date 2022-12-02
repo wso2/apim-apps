@@ -20,11 +20,11 @@ import {
 } from '@stoplight/spectral-core';
 import *  as spectralFunc from "@stoplight/spectral-functions";
 import { oas } from '@stoplight/spectral-rulesets';
-import { green, orange } from '@material-ui/core/colors';
-import WarningIcon from '@material-ui/icons/Warning';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import { green, orange } from '@mui/material/colors';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import InfoIcon from '@mui/icons-material/Info';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage } from 'react-intl';
 

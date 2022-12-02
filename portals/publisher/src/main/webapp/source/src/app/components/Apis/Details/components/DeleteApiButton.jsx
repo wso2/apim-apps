@@ -2,13 +2,13 @@ import React from 'react';
 
 import {
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-} from '@material-ui/core/';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Box from '@material-ui/core/Box';
+} from '@mui/material/';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@mui/styles';
+import IconButton from '@mui/material/IconButton';
 import API from 'AppData/api';
 import { resourceMethod, resourcePath, ScopeValidation } from 'AppData/ScopeValidation';
 import Alert from 'AppComponents/Shared/Alert';

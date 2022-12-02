@@ -16,7 +16,7 @@
  * under the License.
  */
 import React from 'react';
-// import { createShallow } from '@material-ui/core/test-utils';
+// import { createShallow } from '@mui/material/test-utils';
 import PublisherRootErrorBoundary from './PublisherRootErrorBoundary';
 
 describe.skip('PublisherRootErrorBoundary test', () => {

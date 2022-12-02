@@ -16,11 +16,11 @@
  * under the License.
  */
 import React from 'react';
-import { Toolbar, AppBar } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import { Toolbar, AppBar } from '@mui/material';
+import { withStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import Footer from 'AppComponents/Base/Footer/Footer';
 import { FormattedMessage } from 'react-intl';

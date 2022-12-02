@@ -36,7 +36,7 @@ import {
     RadioGroup,
     Tooltip,
     Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import MockedOASOperation from 'AppComponents/Apis/Details/Endpoints/Prototype/MockedOASOperation';

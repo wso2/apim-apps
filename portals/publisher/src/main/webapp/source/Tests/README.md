@@ -171,11 +171,11 @@ Do the following as required
 Use `MemoryRouter` for wrapping the component, for example in [Listing.test.jsx](source/src/app/components/Apis/Listing/Listing.test.jsx)
 
 ```javascript
-<MuiThemeProvider theme={createMuiTheme(light)}>
+<ThemeProvider theme={createMuiTheme(light)}>
     <MemoryRouter>
         <Listing />
     </MemoryRouter>
-</MuiThemeProvider>
+</ThemeProvider>
 ```
 
 - Material-UI [testing](https://material-ui.com/guides/testing/)
@@ -185,7 +185,7 @@ Use `MemoryRouter` for wrapping the component, for example in [Listing.test.jsx]
 Use `unwrap` util from material ui test utils to unwrap the `withStyle` decorations,
 
 ```javascript
-import { unwrap } from '@material-ui/core/test-utils';
+import { unwrap } from '@mui/material/test-utils';
 
 const UnwrappedMenuButton = unwrap(MenuButton);
 ```

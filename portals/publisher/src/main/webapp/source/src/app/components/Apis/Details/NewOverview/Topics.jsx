@@ -17,16 +17,16 @@
  */
 
 import React from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import LaunchIcon from '@material-ui/icons/Launch';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import LaunchIcon from '@mui/icons-material/Launch';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 

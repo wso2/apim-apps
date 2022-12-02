@@ -15,10 +15,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// import { unwrap } from '@material-ui/core/test-utils';
+// import { unwrap } from '@mui/material/test-utils';
 import {
     TextField, Button, Typography, Select, MenuItem,
-} from '@material-ui/core';
+} from '@mui/material';
 import CommentEdit from '../../../src/app/components/Apis/Details/Comments/CommentEdit';
 
 // const CommentEditUnwrapped = unwrap(CommentEdit);
