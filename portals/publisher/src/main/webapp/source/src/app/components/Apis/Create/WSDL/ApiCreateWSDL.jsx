@@ -189,9 +189,9 @@ export default function ApiCreateWSDL(props) {
                             />
                             <MUILink
                                 // eslint-disable-next-line
-                                href={`https://apim.docs.wso2.com/en/4.1.0/integrate/develop/creating-artifacts/creating-an-api/`}
+                                href={`https://apim.docs.wso2.com/en/4.2.0/integrate/develop/creating-artifacts/creating-an-api/`}
                                 target='_blank'>
-                                https://apim.docs.wso2.com/en/4.1.0/integrate/develop/
+                                https://apim.docs.wso2.com/en/4.2.0/integrate/develop/
                                 creating-artifacts/creating-an-api/
                             </MUILink>
                         </MUIAlert>

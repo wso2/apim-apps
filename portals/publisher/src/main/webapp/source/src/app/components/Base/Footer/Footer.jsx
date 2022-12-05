@@ -54,7 +54,7 @@ function Footer() {
                         <Typography noWrap>
                             <FormattedMessage
                                 id='Base.Footer.Footer.product_details'
-                                defaultMessage='WSO2 API-M v4.1.0 | © 2022 WSO2 LLC'
+                                defaultMessage='WSO2 API-M v4.2.0 | © 2022 WSO2 LLC'
                             />
                         </Typography>
                     )}
