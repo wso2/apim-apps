@@ -1,0 +1,132 @@
+{
+    "devportalUrl": "https://localhost:9443/devportal",
+    "environment": [
+        {
+            "id": "Default",
+            "name": "Default",
+            "displayName": "Default",
+            "type": "hybrid",
+            "serverUrl": "https://localhost:9443/services/",
+            "provider": "wso2",
+            "showInApiConsole": true,
+            "vhosts": [
+                {
+                    "host": "localhost",
+                    "httpContext": "",
+                    "httpPort": 8280,
+                    "httpsPort": 8243,
+                    "wsPort": 9099,
+                    "wssPort": 8099,
+                    "websubHttpPort": 9021,
+                    "websubHttpsPort": 8021
+                }
+            ],
+            "endpointURIs": [],
+            "additionalProperties": []
+        },
+        {
+            "id": "WSO2",
+            "name": "WSO2",
+            "displayName": "WSO2",
+            "type": "hybrid",
+            "serverUrl": "https://localhost:9443/services/",
+            "provider": "wso2",
+            "showInApiConsole": true,
+            "vhosts": [
+                {
+                    "host": "wso2.com",
+                    "httpContext": "",
+                    "httpPort": -1,
+                    "httpsPort": 443,
+                    "wsPort": 9100,
+                    "wssPort": 8100,
+                    "websubHttpPort": 9022,
+                    "websubHttpsPort": 8022
+                }
+            ],
+            "endpointURIs": [],
+            "additionalProperties": []
+        },
+        {
+            "id": "APIM",
+            "name": "APIM",
+            "displayName": "APIM",
+            "type": "hybrid",
+            "serverUrl": "https://localhost:9443/services/",
+            "provider": "wso2",
+            "showInApiConsole": true,
+            "vhosts": [
+                {
+                    "host": "apim.com",
+                    "httpContext": "",
+                    "httpPort": 8280,
+                    "httpsPort": -1,
+                    "wsPort": 9100,
+                    "wssPort": 8100,
+                    "websubHttpPort": 9022,
+                    "websubHttpsPort": 8022
+                }
+            ],
+            "endpointURIs": [],
+            "additionalProperties": []
+        }
+    ],
+    "scopes": [
+        "apim:admin",
+        "apim:api_create",
+        "apim:api_definition_view",
+        "apim:api_delete",
+        "apim:api_generate_key",
+        "apim:api_import_export",
+        "apim:api_list_view",
+        "apim:api_manage",
+        "apim:api_mediation_policy_manage",
+        "apim:api_product_import_export",
+        "apim:api_publish",
+        "apim:api_view",
+        "apim:app_import_export",
+        "apim:client_certificates_add",
+        "apim:client_certificates_manage",
+        "apim:client_certificates_update",
+        "apim:client_certificates_view",
+        "apim:comment_manage",
+        "apim:comment_view",
+        "apim:comment_write",
+        "apim:common_operation_policy_manage",
+        "apim:common_operation_policy_view",
+        "apim:document_create",
+        "apim:document_manage",
+        "apim:ep_certificates_add",
+        "apim:ep_certificates_manage",
+        "apim:ep_certificates_update",
+        "apim:ep_certificates_view",
+        "apim:mediation_policy_create",
+        "apim:mediation_policy_manage",
+        "apim:mediation_policy_view",
+        "apim:pub_alert_manage",
+        "apim:publisher_settings",
+        "apim:shared_scope_manage",
+        "apim:subscription_block",
+        "apim:subscription_manage",
+        "apim:subscription_view",
+        "apim:threat_protection_policy_create",
+        "apim:threat_protection_policy_manage",
+        "apim:tier_manage",
+        "apim:tier_view",
+        "openid"
+    ],
+    "monetizationAttributes": [],
+    "securityAuditProperties": {
+        "isGlobal": null,
+        "overrideGlobal": null,
+        "apiToken": null,
+        "collectionId": null,
+        "baseUrl": null
+    },
+    "externalStoresEnabled": false,
+    "docVisibilityEnabled": false,
+    "crossTenantSubscriptionEnabled": false,
+    "defaultAdvancePolicy": "Unlimited",
+    "defaultSubscriptionPolicy": "Unlimited",
+    "authorizationHeader": "Authorization"
+}

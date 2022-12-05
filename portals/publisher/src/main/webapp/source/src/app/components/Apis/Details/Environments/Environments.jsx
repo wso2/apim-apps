@@ -2129,7 +2129,7 @@ export default function Environments() {
                                         </TableCell>
                                         {allEnvDeployments[row.name].revision != null ? (
                                             <>
-                                                <TableCell align='left'>
+                                                <TableCell align='left' id='gateway-access-url-cell'>
                                                     <div className={classes.primaryEndpoint}>
                                                         {api.isWebSocket()
                                                             ? getGatewayAccessUrl(allEnvDeployments[row.name]

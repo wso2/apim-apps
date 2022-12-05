@@ -32,7 +32,7 @@ Setup build environment
 
 > **_Note :-_** 
    >  
-   > You can skip following steps if you don not want to build [product-apim](https://github.com/wso2/product-apim) binaries
+   > You can skip following steps if you do not want to build [product-apim](https://github.com/wso2/product-apim) binaries
    >
 
 2. Install Maven from [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi). * For Maven 3.8 and up, please check the Troubleshoot section.
