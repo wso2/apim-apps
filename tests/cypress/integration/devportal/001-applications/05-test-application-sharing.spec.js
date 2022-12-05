@@ -37,9 +37,18 @@ describe("Invoke API Product", () => {
     let apiContext;
     let apiId;
 
+    before(() => {
+        // Enable Supported by Default for Local Claim http://wso2.org/claims/organization
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.visit(`/carbon/identity-claim-mgt/update-local-claim.jsp?localClaimURI=http%3A%2F%2Fwso2.org%2Fclaims%2Forganization`);
+        cy.get('#supported').check();
+        cy.get('[type="button"]').click();
+        cy.carbonLogout()
+
+    })
+
     beforeEach(function () {
         cy.loginToPublisher(publisher, password);
-    
     })
 
     it("Test Application Sharing", {
