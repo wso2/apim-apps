@@ -70,6 +70,7 @@ export const downloadOASDefinition = async function bundle(
             retries += 1;
             const retryWaitTime = retries * RE_TRY_WAIT_TIME;
             console.warn(
+                error,
                 `Attempt: ${retries} : Error while downloading ${filePath} \nRe-try in ${
                     retryWaitTime / 1000
                 } Seconds . . .`,

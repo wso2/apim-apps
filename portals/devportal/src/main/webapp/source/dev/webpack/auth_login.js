@@ -28,7 +28,7 @@ function oauthAppCache(data) {
  *
  */
 async function getSettings() {
-    const res = await fetch('https://localhost:9443/api/am/devportal/v2/settings', { agent });
+    const res = await fetch('https://localhost:9443/api/am/devportal/v3/settings', { agent });
     const data = await res.json();
     return data;
 }
