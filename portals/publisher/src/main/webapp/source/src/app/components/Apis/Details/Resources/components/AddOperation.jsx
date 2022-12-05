@@ -215,7 +215,7 @@ function AddOperation(props) {
     }
     return (
         <Paper className={classes.paper}>
-            <Grid container direction='row' spacing={0} justify='center' alignItems='center'>
+            <Grid container direction='row' spacing={0} justifyContent='center' alignItems='center'>
                 <Grid item md={5} xs={12}>
                     <FormControl margin='dense' variant='outlined' className={classes.formControl}>
                         <InputLabel ref={inputLabel} htmlFor='operation-verb'>

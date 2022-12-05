@@ -113,7 +113,7 @@ function Banner(props) {
                         </Grid>
                     </Grid>
 
-                    <Grid container justify='flex-end' spacing={1}>
+                    <Grid container justifyContent='flex-end' spacing={1}>
                         <Grid item>
                             {!disableActions && (
                                 <>

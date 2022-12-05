@@ -21,7 +21,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { withStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -95,7 +95,7 @@ const styles = theme => ({
         borderRadius: '5px',
         cursor: 'pointer',
         height: 75,
-        padding: `${theme.spacing(2)}px 0px`,
+        padding: `${theme.spacing(2)} 0px`,
         position: 'relative',
         textAlign: 'center',
         width: '100%',

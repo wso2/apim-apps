@@ -73,7 +73,7 @@ const styles = (theme) => ({
         marginRight: theme.spacing(1),
     },
     content: {
-        margin: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`,
+        margin: `${theme.spacing(2)} 0 ${theme.spacing(2)} 0`,
     },
     head: {
         fontWeight: 200,

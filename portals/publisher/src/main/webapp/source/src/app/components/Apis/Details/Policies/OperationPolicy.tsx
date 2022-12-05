@@ -17,12 +17,12 @@
  */
 
 import React, { FC } from 'react';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
+import Accordion from '@mui/material/Accordion';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@mui/styles';
@@ -121,74 +121,72 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
         );
     }
 
-    return (
-        <>
-            <ExpansionPanel
-                expanded={expandedResource === verb + target}
-                onChange={handleExpansion(verb + target)}
-                disabled={false}
-                className={classes.paperStyles}
+    return <>
+        <Accordion
+            expanded={expandedResource === verb + target}
+            onChange={handleExpansion(verb + target)}
+            disabled={false}
+            className={classes.paperStyles}
+        >
+            <AccordionSummary
+                className={highlight ? classes.highlightSelected : ''}
+                disableRipple
+                disableTouchRipple
+                expandIcon={<ExpandMoreIcon />}
+                id={verb + target}
+                classes={{ content: classes.contentNoMargin }}
             >
-                <ExpansionPanelSummary
-                    className={highlight ? classes.highlightSelected : ''}
-                    disableRipple
-                    disableTouchRipple
-                    expandIcon={<ExpandMoreIcon />}
-                    id={verb + target}
-                    classes={{ content: classes.contentNoMargin }}
-                >
-                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                        <Grid item md={4} className={classes.operationSummaryGrid}>
-                            <Badge
-                                invisible={!operation['x-wso2-new']}
-                                color='error'
-                                variant='dot'
-                                style={{ display: 'inline-block' }}
+                <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
+                    <Grid item md={4} className={classes.operationSummaryGrid}>
+                        <Badge
+                            invisible={!operation['x-wso2-new']}
+                            color='error'
+                            variant='dot'
+                            style={{ display: 'inline-block' }}
+                        >
+                            <Button
+                                disableFocusRipple
+                                variant='contained'
+                                aria-label={'HTTP verb ' + verb}
+                                size='small'
+                                className={classes.customButton}
                             >
-                                <Button
-                                    disableFocusRipple
-                                    variant='contained'
-                                    aria-label={'HTTP verb ' + verb}
-                                    size='small'
-                                    className={classes.customButton}
+                                {verb}
+                            </Button>
+                        </Badge>
+                        <Typography
+                            display='inline'
+                            variant='h6'
+                            gutterBottom
+                            className={classes.targetText}
+                            title={target}
+                        >
+                            {target}
+                            {(operation.summary && operation.summary !== '') && (
+                                <Typography
+                                    display='inline'
+                                    style={{ margin: '0px 30px' }}
+                                    variant='caption'
+                                    gutterBottom
                                 >
-                                    {verb}
-                                </Button>
-                            </Badge>
-                            <Typography
-                                display='inline'
-                                variant='h6'
-                                gutterBottom
-                                className={classes.targetText}
-                                title={target}
-                            >
-                                {target}
-                                {(operation.summary && operation.summary !== '') && (
-                                    <Typography
-                                        display='inline'
-                                        style={{ margin: '0px 30px' }}
-                                        variant='caption'
-                                        gutterBottom
-                                    >
-                                        {operation.summary}
-                                    </Typography>
-                                )}
-                            </Typography>
-                        </Grid>
-                        {renderUsedInApiProducts}
+                                    {operation.summary}
+                                </Typography>
+                            )}
+                        </Typography>
                     </Grid>
-                </ExpansionPanelSummary>
-                <Divider light className={classes.customDivider} />
-                <PoliciesExpansion
-                    target={target}
-                    verb={verb}
-                    allPolicies={allPolicies}
-                    isChoreoConnectEnabled={isChoreoConnectEnabled}
-                    policyList={policyList}
-                />
-            </ExpansionPanel>
-        </>
-    );
+                    {renderUsedInApiProducts}
+                </Grid>
+            </AccordionSummary>
+            <Divider light className={classes.customDivider} />
+            <PoliciesExpansion
+                target={target}
+                verb={verb}
+                allPolicies={allPolicies}
+                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                policyList={policyList}
+            />
+        </Accordion>
+    </>;
 };
 
 export default OperationPolicy;

@@ -19,7 +19,7 @@
 import React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { MemoryRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider, createTheme, adaptV4Theme } from '@mui/material/styles';
 import Themes from 'AppData/defaultTheme';
 import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import API from 'AppData/api.js';
@@ -56,11 +56,13 @@ describe.skip('Publisher <HeaderSearch> component tests', () => {
     async function mountHeaderSearchComponent() {
         const { light } = Themes;
         const headerSearchComponent = (
-            <ThemeProvider theme={createTheme(light)}>
-                <MemoryRouter>
-                    <HeaderSearch classes={{}} />
-                </MemoryRouter>
-            </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={createTheme(adaptV4Theme(light))}>
+                    <MemoryRouter>
+                        <HeaderSearch classes={{}} />
+                    </MemoryRouter>
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
         const wrapper = await mountWithIntl(headerSearchComponent);
         return wrapper;

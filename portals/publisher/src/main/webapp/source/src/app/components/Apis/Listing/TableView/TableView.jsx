@@ -19,7 +19,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider, createTheme, adaptV4Theme } from '@mui/material/styles';
 import { withStyles } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -188,7 +188,7 @@ class TableView extends React.Component {
             };
         }
         muiTheme = Object.assign(theme, muiTheme, themeAdditions);
-        return createTheme(muiTheme);
+        return createTheme(adaptV4Theme(muiTheme));
     };
 
     // get apisAndApiProducts
@@ -476,32 +476,32 @@ class TableView extends React.Component {
             );
         }
 
-        return (
-            <>
-                <TopMenu
-                    data={apisAndApiProducts}
-                    count={totalCount}
-                    setListType={this.setListType}
-                    isAPIProduct={isAPIProduct}
-                    listType={listType}
-                    showToggle={this.showToggle}
-                    query={query}
-                />
-                <div className={classes.contentInside}>
-                    {loading ? (
-                        <Progress
-                            per={96}
-                            message='Updating page ...'
-                        />
-                    )
-                        : (
+        return <>
+            <TopMenu
+                data={apisAndApiProducts}
+                count={totalCount}
+                setListType={this.setListType}
+                isAPIProduct={isAPIProduct}
+                listType={listType}
+                showToggle={this.showToggle}
+                query={query}
+            />
+            <div className={classes.contentInside}>
+                {loading ? (
+                    <Progress
+                        per={96}
+                        message='Updating page ...'
+                    />
+                )
+                    : (
+                        <StyledEngineProvider injectFirst>
                             <ThemeProvider theme={this.getMuiTheme()}>
                                 <MUIDataTable title='' data={apisAndApiProducts} columns={columns} options={options} />
                             </ThemeProvider>
-                        )}
-                </div>
-            </>
-        );
+                        </StyledEngineProvider>
+                    )}
+            </div>
+        </>;
     }
 }
 

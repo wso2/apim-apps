@@ -25,8 +25,7 @@ import { Link } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
-import green from '@mui/material/colors/green';
-import yellow from '@mui/material/colors/yellow';
+import { green, yellow } from '@mui/material/colors';
 import LaunchIcon from '@mui/icons-material/Launch';
 
 const useStyles = makeStyles((theme) => ({

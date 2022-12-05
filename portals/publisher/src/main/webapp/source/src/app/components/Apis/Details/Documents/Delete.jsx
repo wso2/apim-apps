@@ -104,7 +104,7 @@ function Delete(props) {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => runAction('no')} color='default'>
+                    <Button onClick={() => runAction('no')}>
                         <FormattedMessage
                             id='Apis.Details.Documents.Delete.document.listing.delete.cancel'
                             defaultMessage='Cancel'

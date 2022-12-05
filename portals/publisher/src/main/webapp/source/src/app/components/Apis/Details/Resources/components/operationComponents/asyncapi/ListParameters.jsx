@@ -55,83 +55,81 @@ export default function ListParameters(props) {
     const classes = useStyles();
     const [editingParameter, setEditingParameter] = useState(null);
 
-    return (
-        <>
-            {editingParameter !== null && (
-                <EditParameter
-                    operationsDispatcher={operationsDispatcher}
-                    target={target}
-                    verb={verb}
-                    editingParameter={editingParameter}
-                    setEditingParameter={setEditingParameter}
-                    disableForSolaceAPI={disableForSolace}
-                />
-            )}
-            <Table className={classes.table} aria-label='parameters list'>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>
-                            <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListParameter.param.name'
-                                defaultMessage='Name'
-                            />
-                        </TableCell>
+    return <>
+        {editingParameter !== null && (
+            <EditParameter
+                operationsDispatcher={operationsDispatcher}
+                target={target}
+                verb={verb}
+                editingParameter={editingParameter}
+                setEditingParameter={setEditingParameter}
+                disableForSolaceAPI={disableForSolace}
+            />
+        )}
+        <Table className={classes.table} aria-label='parameters list'>
+            <TableHead>
+                <TableRow>
+                    <TableCell>
+                        <FormattedMessage
+                            id='Apis.Details.Topics.components.operationComponents.ListParameter.param.name'
+                            defaultMessage='Name'
+                        />
+                    </TableCell>
+                    <TableCell align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.Topics.components.operationComponents.ListParameter.param.datatype'
+                            defaultMessage='Data Type'
+                        />
+                    </TableCell>
+                    <TableCell align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.Topics.components.operationComponents.ListParameter.param.description'
+                            defaultMessage='Description'
+                        />
+                    </TableCell>
+                    {!disableUpdate && (
                         <TableCell align='left'>
                             <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListParameter.param.datatype'
-                                defaultMessage='Data Type'
+                                id='Apis.Details.Topics.components.operationComponents.ListParameter.actions'
+                                defaultMessage='Actions'
                             />
                         </TableCell>
-                        <TableCell align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListParameter.param.description'
-                                defaultMessage='Description'
-                            />
-                        </TableCell>
-                        {!disableUpdate && (
-                            <TableCell align='left'>
-                                <FormattedMessage
-                                    id='Apis.Details.Topics.components.operationComponents.ListParameter.actions'
-                                    defaultMessage='Actions'
-                                />
-                            </TableCell>
-                        )}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {
-                        operation.parameters && Object.entries(operation.parameters).map(([k, v]) => {
-                            return (
-                                <TableRow key={k}>
-                                    <TableCell align='left'>{k}</TableCell>
-                                    <TableCell align='left'>{v.schema.type}</TableCell>
-                                    <TableCell align='left'>{v.description}</TableCell>
-                                    <TableCell align='left'>
-                                        <Tooltip title={(
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.operationComponents.'
-                                            + 'ListParameter.edit'}
-                                                defaultMessage='Edit'
-                                            />
-                                        )}
-                                        >
-                                            <IconButton
-                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                                onClick={() => setEditingParameter({ name: k, ...v })}
-                                                fontSize='small'
-                                            >
-                                                <EditIcon fontSize='small' />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })
-                    }
-                </TableBody>
-            </Table>
-        </>
-    );
+                    )}
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {
+                    operation.parameters && Object.entries(operation.parameters).map(([k, v]) => {
+                        return (
+                            <TableRow key={k}>
+                                <TableCell align='left'>{k}</TableCell>
+                                <TableCell align='left'>{v.schema.type}</TableCell>
+                                <TableCell align='left'>{v.description}</TableCell>
+                                <TableCell align='left'>
+                                    <Tooltip title={(
+                                        <FormattedMessage
+                                            id={'Apis.Details.Resources.components.operationComponents.'
+                                        + 'ListParameter.edit'}
+                                            defaultMessage='Edit'
+                                        />
+                                    )}
+                                    >
+                                        <IconButton
+                                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                            onClick={() => setEditingParameter({ name: k, ...v })}
+                                            fontSize='small'
+                                            size='large'>
+                                            <EditIcon fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })
+                }
+            </TableBody>
+        </Table>
+    </>;
 }
 
 ListParameters.defaultProps = {

@@ -17,8 +17,7 @@
  */
 import { withStyles } from '@mui/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import green from '@mui/material/colors/green';
-import red from '@mui/material/colors/red';
+import { green, red } from '@mui/material/colors';
 import React, { Component } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -66,7 +65,7 @@ const styles = (theme) => ({
         borderRadius: '5px',
         cursor: 'pointer',
         height: 'calc(100vh - 10em)',
-        padding: `${theme.spacing(2)}px 0px`,
+        padding: `${theme.spacing(2)} 0px`,
         position: 'relative',
         textAlign: 'center',
         width: '100%',
@@ -362,191 +361,191 @@ class ThumbnailView extends Component {
         let { category } = this.state;
         if (!category) category = MaterialIcons.categories[0].name;
 
-        return (
-            <>
-                <BaseThumbnail
-                    isEditable={isEditable}
-                    onClick={this.handleClick('btnEditAPIThumb', intl)}
-                    thumbnail={thumbnail}
-                    selectedIcon={selectedIcon}
-                    color={color}
-                    backgroundIndex={backgroundIndex}
-                    category={category}
-                    api={api}
-                    width={width}
-                    height={height}
-                    imageUpdate={imageUpdate}
-                />
+        return <>
+            <BaseThumbnail
+                isEditable={isEditable}
+                onClick={this.handleClick('btnEditAPIThumb', intl)}
+                thumbnail={thumbnail}
+                selectedIcon={selectedIcon}
+                color={color}
+                backgroundIndex={backgroundIndex}
+                category={category}
+                api={api}
+                width={width}
+                height={height}
+                imageUpdate={imageUpdate}
+            />
 
-                <Dialog
-                    TransitionComponent={Transition}
-                    aria-labelledby='thumb-dialog-title'
-                    disableBackdropClick
-                    open={this.state.open}
-                    onClose={this.handleClose}
-                    fullWidth='true'
-                    maxWidth='lg'
-                    fullScreen
-                >
-                    <Paper square className={classes.popupHeader}>
-                        <IconButton color='inherit' onClick={this.handleClose} aria-label='Close'>
-                            <Icon>close</Icon>
-                        </IconButton>
-                        <RadioGroup
-                            aria-label='APIThumbnail'
-                            name='apiThumbnail'
-                            className={classes.group}
-                            value={this.state.selectedTab}
-                            onChange={this.handleChange}
-                        >
-                            <FormControlLabel
-                                value='upload'
-                                control={<Radio color='primary' />}
-                                label={(
-                                    <FormattedMessage
-                                        id='Apis.Listing.components.ImageGenerator.ThumbnailView.upload'
-                                        defaultMessage='Upload'
-                                    />
-                                )}
-                            />
-                            <FormControlLabel
-                                value='remove'
-                                control={<Radio color='primary' />}
-                                label={(
-                                    <FormattedMessage
-                                        id='Apis.Listing.components.ImageGenerator.ThumbnailView.remove'
-                                        defaultMessage='Remove'
-                                    />
-                                )}
-                            />
-                        </RadioGroup>
-                    </Paper>
-
-                    <DialogContent>
-                        {selectedTab === 'upload' && (
-                            <Grid container spacing={4}>
-                                <Grid item xs={3}>
-                                    <div className={classes.imageContainer}>
-                                        <img
-                                            className={classes.preview}
-                                            src={
-                                                file && file.length > 0
-                                                    ? windowURL.createObjectURL(file[0])
-                                                    : Configurations.app.context
-                                                      + '/site/public/images/api/api-default.png'
-                                            }
-                                            alt='Thumbnail Preview'
-                                        />
-                                    </div>
-                                </Grid>
-                                <Grid item xs={9} id='edit-api-thumbnail-upload'>
-                                    <Dropzone
-                                        multiple={false}
-                                        accept='image/*'
-                                        maxSize={maxSize}
-                                        className={classes.dropzone}
-                                        activeClassName={classes.acceptDrop}
-                                        rejectClassName={classes.rejectDrop}
-                                        onDrop={(dropFile) => {
-                                            this.onDrop(dropFile);
-                                        }}
-                                    >
-                                        {({ getRootProps, getInputProps, rejectedFiles }) => {
-                                            const isFileTooLarge = rejectedFiles && rejectedFiles.length > 0
-                                                && rejectedFiles[0].size > maxSize;
-                                            return (
-                                                <div {...getRootProps({ style: dropzoneStyles })}>
-                                                    <input {...getInputProps()} />
-                                                    {isFileTooLarge && (
-                                                        <Typography color='error'>
-                                                            <FormattedMessage
-                                                                id='upload.image.size.error'
-                                                                defaultMessage='Uploaded File is too large.
-                                                                Maximum file size limit to 1MB'
-                                                            />
-                                                        </Typography>
-                                                    )}
-                                                    <div className={classes.dropZoneWrapper}>
-                                                        <Icon className={classes.dropIcon}>cloud_upload</Icon>
-                                                        <Typography>
-                                                            <FormattedMessage
-                                                                id='upload.image'
-                                                                defaultMessage='Click or drag the image to upload.'
-                                                            />
-                                                        </Typography>
-                                                    </div>
-                                                </div>
-                                            );
-                                        }}
-                                    </Dropzone>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='upload.image.size.info'
-                                            defaultMessage='Maximum file size limit to 1MB'
-                                        />
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        )}
-                    </DialogContent>
-                    <DialogActions className={classes.actionBox}>
-                        <Button
-                            disabled={this.saveDisableEnable()}
-                            variant='contained'
-                            color='primary'
-                            size='small'
-                            onClick={this.handleClick('btnUploadAPIThumb', intl)}
-                            id='edit-api-thumbnail-upload-btn'
-                        >
-                            {selectedTab === 'design' && uploading && (
-                                <>
-                                    <FormattedMessage
-                                        id='Apis.Listing.components.ImageGenerator.ThumbnailView.saving.btn'
-                                        defaultMessage='Saving'
-                                    />
-                                    <CircularProgress size={16} />
-                                </>
-                            )}
-                            {selectedTab === 'design' && !uploading && (
+            <Dialog
+                TransitionComponent={Transition}
+                aria-labelledby='thumb-dialog-title'
+                open={this.state.open}
+                onClose={this.handleClose}
+                fullWidth='true'
+                maxWidth='lg'
+                fullScreen>
+                <Paper square className={classes.popupHeader}>
+                    <IconButton
+                        color='inherit'
+                        onClick={this.handleClose}
+                        aria-label='Close'
+                        size='large'>
+                        <Icon>close</Icon>
+                    </IconButton>
+                    <RadioGroup
+                        aria-label='APIThumbnail'
+                        name='apiThumbnail'
+                        className={classes.group}
+                        value={this.state.selectedTab}
+                        onChange={this.handleChange}
+                    >
+                        <FormControlLabel
+                            value='upload'
+                            control={<Radio color='primary' />}
+                            label={(
                                 <FormattedMessage
-                                    id='Apis.Listing.components.ImageGenerator.ThumbnailView.save.btn'
-                                    defaultMessage='Save'
-                                />
-                            )}
-
-                            {selectedTab !== 'design' && uploading && (
-                                <>
-                                    <FormattedMessage
-                                        id='Apis.Listing.components.ImageGenerator.ThumbnailView.uploading.btn'
-                                        defaultMessage='Uploading'
-                                    />
-                                    <CircularProgress size={16} />
-                                </>
-                            )}
-                            {selectedTab === 'upload' && !uploading && (
-                                <FormattedMessage
-                                    id='Apis.Listing.components.ImageGenerator.ThumbnailView.upload.btn'
+                                    id='Apis.Listing.components.ImageGenerator.ThumbnailView.upload'
                                     defaultMessage='Upload'
                                 />
                             )}
-                            {selectedTab === 'remove' && !uploading && (
+                        />
+                        <FormControlLabel
+                            value='remove'
+                            control={<Radio color='primary' />}
+                            label={(
                                 <FormattedMessage
-                                    id='Apis.Listing.components.ImageGenerator.ThumbnailView.remove.btn'
+                                    id='Apis.Listing.components.ImageGenerator.ThumbnailView.remove'
                                     defaultMessage='Remove'
                                 />
                             )}
-                        </Button>
+                        />
+                    </RadioGroup>
+                </Paper>
 
-                        <Button variant='contained' size='small' onClick={this.handleClose}>
+                <DialogContent>
+                    {selectedTab === 'upload' && (
+                        <Grid container spacing={4}>
+                            <Grid item xs={3}>
+                                <div className={classes.imageContainer}>
+                                    <img
+                                        className={classes.preview}
+                                        src={
+                                            file && file.length > 0
+                                                ? windowURL.createObjectURL(file[0])
+                                                : Configurations.app.context
+                                                  + '/site/public/images/api/api-default.png'
+                                        }
+                                        alt='Thumbnail Preview'
+                                    />
+                                </div>
+                            </Grid>
+                            <Grid item xs={9} id='edit-api-thumbnail-upload'>
+                                <Dropzone
+                                    multiple={false}
+                                    accept='image/*'
+                                    maxSize={maxSize}
+                                    className={classes.dropzone}
+                                    activeClassName={classes.acceptDrop}
+                                    rejectClassName={classes.rejectDrop}
+                                    onDrop={(dropFile) => {
+                                        this.onDrop(dropFile);
+                                    }}
+                                >
+                                    {({ getRootProps, getInputProps, rejectedFiles }) => {
+                                        const isFileTooLarge = rejectedFiles && rejectedFiles.length > 0
+                                            && rejectedFiles[0].size > maxSize;
+                                        return (
+                                            <div {...getRootProps({ style: dropzoneStyles })}>
+                                                <input {...getInputProps()} />
+                                                {isFileTooLarge && (
+                                                    <Typography color='error'>
+                                                        <FormattedMessage
+                                                            id='upload.image.size.error'
+                                                            defaultMessage='Uploaded File is too large.
+                                                            Maximum file size limit to 1MB'
+                                                        />
+                                                    </Typography>
+                                                )}
+                                                <div className={classes.dropZoneWrapper}>
+                                                    <Icon className={classes.dropIcon}>cloud_upload</Icon>
+                                                    <Typography>
+                                                        <FormattedMessage
+                                                            id='upload.image'
+                                                            defaultMessage='Click or drag the image to upload.'
+                                                        />
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                        );
+                                    }}
+                                </Dropzone>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='upload.image.size.info'
+                                        defaultMessage='Maximum file size limit to 1MB'
+                                    />
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    )}
+                </DialogContent>
+                <DialogActions className={classes.actionBox}>
+                    <Button
+                        disabled={this.saveDisableEnable()}
+                        variant='contained'
+                        color='primary'
+                        size='small'
+                        onClick={this.handleClick('btnUploadAPIThumb', intl)}
+                        id='edit-api-thumbnail-upload-btn'
+                    >
+                        {selectedTab === 'design' && uploading && (
+                            <>
+                                <FormattedMessage
+                                    id='Apis.Listing.components.ImageGenerator.ThumbnailView.saving.btn'
+                                    defaultMessage='Saving'
+                                />
+                                <CircularProgress size={16} />
+                            </>
+                        )}
+                        {selectedTab === 'design' && !uploading && (
                             <FormattedMessage
-                                id='Apis.Listing.components.ImageGenerator.ThumbnailView.cancel.btn'
-                                defaultMessage='CANCEL'
+                                id='Apis.Listing.components.ImageGenerator.ThumbnailView.save.btn'
+                                defaultMessage='Save'
                             />
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </>
-        );
+                        )}
+
+                        {selectedTab !== 'design' && uploading && (
+                            <>
+                                <FormattedMessage
+                                    id='Apis.Listing.components.ImageGenerator.ThumbnailView.uploading.btn'
+                                    defaultMessage='Uploading'
+                                />
+                                <CircularProgress size={16} />
+                            </>
+                        )}
+                        {selectedTab === 'upload' && !uploading && (
+                            <FormattedMessage
+                                id='Apis.Listing.components.ImageGenerator.ThumbnailView.upload.btn'
+                                defaultMessage='Upload'
+                            />
+                        )}
+                        {selectedTab === 'remove' && !uploading && (
+                            <FormattedMessage
+                                id='Apis.Listing.components.ImageGenerator.ThumbnailView.remove.btn'
+                                defaultMessage='Remove'
+                            />
+                        )}
+                    </Button>
+
+                    <Button variant='contained' size='small' onClick={this.handleClose}>
+                        <FormattedMessage
+                            id='Apis.Listing.components.ImageGenerator.ThumbnailView.cancel.btn'
+                            defaultMessage='CANCEL'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>;
     }
 }
 

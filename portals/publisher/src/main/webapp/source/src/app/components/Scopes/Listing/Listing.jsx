@@ -24,7 +24,7 @@ import { Progress } from 'AppComponents/Shared';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Button from '@mui/material/Button';
-import withStyles from '@mui/styles';
+import { withStyles } from '@mui/styles';
 import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -165,28 +165,22 @@ function ScopeTablePagination(props) {
         <div
             style={{ display: 'flex' }}
         >
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-            >
+            <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} size='large'>
                 <FirstPageIcon />
             </IconButton>
-            <IconButton
-                onClick={handleBackButtonClick}
-                disabled={page === 0}
-            >
+            <IconButton onClick={handleBackButtonClick} disabled={page === 0} size='large'>
                 <KeyboardArrowLeft />
             </IconButton>
             <IconButton
                 onClick={handleNextButtonClick}
                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-            >
+                size='large'>
                 <KeyboardArrowRight />
             </IconButton>
             <IconButton
                 onClick={handleLastPageButtonClick}
                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-            >
+                size='large'>
                 <LastPageIcon />
             </IconButton>
         </div>

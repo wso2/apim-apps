@@ -24,9 +24,9 @@ import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import TextField from '@mui/material/TextField';
 import TableCell from '@mui/material/TableCell';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
@@ -122,13 +122,13 @@ export default function UpdateComplexity(props) {
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
-                                        <ExpansionPanel>
-                                            <ExpansionPanelSummary
+                                        <Accordion>
+                                            <AccordionSummary
                                                 expandIcon={<ExpandMoreIcon />}
                                                 aria-controls='panel1a-content'
                                                 id='panel1a-header'
                                             />
-                                            <ExpansionPanelDetails>
+                                            <AccordionDetails>
                                                 <Grid item md={12}>
                                                     <Table>
                                                         <TableRow>
@@ -167,8 +167,8 @@ export default function UpdateComplexity(props) {
                                                      )))}
                                                     </Table>
                                                 </Grid>
-                                            </ExpansionPanelDetails>
-                                        </ExpansionPanel>
+                                            </AccordionDetails>
+                                        </Accordion>
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant='body1'>

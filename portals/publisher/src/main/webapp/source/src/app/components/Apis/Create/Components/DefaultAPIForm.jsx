@@ -25,7 +25,7 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
@@ -460,7 +460,7 @@ export default function DefaultAPIForm(props) {
                                             aria-label='TestEndpoint'
                                             onClick={() => testEndpoint(api.endpoint)}
                                             disabled={isUpdating}
-                                        >
+                                            size='large'>
                                             {isUpdating
                                                 ? <CircularProgress size={20} />
                                                 : (
@@ -478,7 +478,7 @@ export default function DefaultAPIForm(props) {
 
                 {!appendChildrenBeforeEndpoint && !!children && children}
             </form>
-            <Grid container direction='row' justify='flex-end' alignItems='center'>
+            <Grid container direction='row' justifyContent='flex-end' alignItems='center'>
                 <Grid item>
                     <Typography variant='caption' display='block' gutterBottom>
                         <sup style={{ color: 'red' }}>*</sup>

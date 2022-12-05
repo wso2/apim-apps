@@ -219,97 +219,95 @@ export default function RuntimeConfiguration() {
             }));
     }
 
-    return (
-        <>
-            <Box pb={3}>
-                <Typography variant='h5'>
-                    <FormattedMessage
-                        id='Apis.Details.Configuration.RuntimeConfigurationWebSocket.topic.header'
-                        defaultMessage='Runtime Configurations'
-                    />
-                </Typography>
-            </Box>
-            <div className={classes.contentWrapper}>
-                <Grid container direction='row' justify='space-around' alignItems='stretch' spacing={8}>
-                    <Grid item xs={12} md={7} style={{ marginBottom: 30, position: 'relative' }}>
-                        <Typography className={classes.heading} variant='h6'>
-                            <FormattedMessage
-                                id='Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.client.websocket'
-                                defaultMessage='Client Websocket'
-                            />
-                        </Typography>
-                        <div className={classes.boxFlex}>
-                            <Paper
-                                className={classes.paper}
-                                elevation={0}
-                                style={{ display: 'flex', alignItems: 'center' }}
-                            >
-                                <Box pr={3}>
-                                    <KeyManager api={apiConfig} configDispatcher={configDispatcher} />
-                                </Box>
-                                <Box pr={3}>
-                                    <APILevelRateLimitingPolicies api={apiConfig} configDispatcher={configDispatcher} />
-                                </Box>
-                            </Paper>
-                            <ArrowForwardIcon className={classes.arrowForwardIcon} />
-                        </div>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Typography className={classes.heading} variant='h6'>
-                            <FormattedMessage
-                                id='Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.backend.websocket'
-                                defaultMessage='Backend Websocket'
-                            />
-                        </Typography>
-                        <Paper className={classes.paper} style={{ height: 'calc(100% - 75px)' }} elevation={0}>
-                            {!api.isAPIProduct() && (
-                                <>
-                                    <Endpoints api={api} />
-                                </>
-                            )}
+    return <>
+        <Box pb={3}>
+            <Typography variant='h5'>
+                <FormattedMessage
+                    id='Apis.Details.Configuration.RuntimeConfigurationWebSocket.topic.header'
+                    defaultMessage='Runtime Configurations'
+                />
+            </Typography>
+        </Box>
+        <div className={classes.contentWrapper}>
+            <Grid container direction='row' justifyContent='space-around' alignItems='stretch' spacing={8}>
+                <Grid item xs={12} md={7} style={{ marginBottom: 30, position: 'relative' }}>
+                    <Typography className={classes.heading} variant='h6'>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.client.websocket'
+                            defaultMessage='Client Websocket'
+                        />
+                    </Typography>
+                    <div className={classes.boxFlex}>
+                        <Paper
+                            className={classes.paper}
+                            elevation={0}
+                            style={{ display: 'flex', alignItems: 'center' }}
+                        >
+                            <Box pr={3}>
+                                <KeyManager api={apiConfig} configDispatcher={configDispatcher} />
+                            </Box>
+                            <Box pr={3}>
+                                <APILevelRateLimitingPolicies api={apiConfig} configDispatcher={configDispatcher} />
+                            </Box>
                         </Paper>
-                    </Grid>
+                        <ArrowForwardIcon className={classes.arrowForwardIcon} />
+                    </div>
                 </Grid>
-                <Grid container>
-                    <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 20 }}>
-                        <Grid item>
-                            {api.isRevision
-                                || ((apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0)
-                                || isRestricted(['apim:api_create'], api)) ? (
-                                    <Button
-                                        disabled
-                                        type='submit'
-                                        variant='contained'
-                                        color='primary'
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Configuration.Configuration.save'
-                                            defaultMessage='Save'
-                                        />
-                                    </Button>
-                                ) : (
-                                    <CustomSplitButton
-                                        advertiseInfo={api.advertiseInfo}
-                                        api={api}
-                                        handleSave={handleSave}
-                                        handleSaveAndDeploy={handleSaveAndDeploy}
-                                        isUpdating={isUpdating}
-                                    />
-                                )}
-                        </Grid>
-                        <Grid item>
-                            <Link to={'/apis/' + api.id + '/overview'}>
-                                <Button>
+                <Grid item xs={12} md={4}>
+                    <Typography className={classes.heading} variant='h6'>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.backend.websocket'
+                            defaultMessage='Backend Websocket'
+                        />
+                    </Typography>
+                    <Paper className={classes.paper} style={{ height: 'calc(100% - 75px)' }} elevation={0}>
+                        {!api.isAPIProduct() && (
+                            <>
+                                <Endpoints api={api} />
+                            </>
+                        )}
+                    </Paper>
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 20 }}>
+                    <Grid item>
+                        {api.isRevision
+                            || ((apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0)
+                            || isRestricted(['apim:api_create'], api)) ? (
+                                <Button
+                                    disabled
+                                    type='submit'
+                                    variant='contained'
+                                    color='primary'
+                                >
                                     <FormattedMessage
-                                        id='Apis.Details.Configuration.Configuration.cancel'
-                                        defaultMessage='Cancel'
+                                        id='Apis.Details.Configuration.Configuration.save'
+                                        defaultMessage='Save'
                                     />
                                 </Button>
-                            </Link>
-                        </Grid>
+                            ) : (
+                                <CustomSplitButton
+                                    advertiseInfo={api.advertiseInfo}
+                                    api={api}
+                                    handleSave={handleSave}
+                                    handleSaveAndDeploy={handleSaveAndDeploy}
+                                    isUpdating={isUpdating}
+                                />
+                            )}
+                    </Grid>
+                    <Grid item>
+                        <Link to={'/apis/' + api.id + '/overview'}>
+                            <Button>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Configuration.cancel'
+                                    defaultMessage='Cancel'
+                                />
+                            </Button>
+                        </Link>
                     </Grid>
                 </Grid>
-            </div>
-        </>
-    );
+            </Grid>
+        </div>
+    </>;
 }

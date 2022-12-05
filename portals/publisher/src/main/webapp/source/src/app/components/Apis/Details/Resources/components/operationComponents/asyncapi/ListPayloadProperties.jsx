@@ -58,101 +58,99 @@ export default function ListPayloadProperties(props) {
     const properties = (operation && operation[verb] && operation[verb].message && operation[verb].message.payload
             && operation[verb].message.payload.properties) ? operation[verb].message.payload.properties : { };
 
-    return (
-        <>
-            {editingProperty !== null && (
-                <EditPayloadProperty
-                    operationsDispatcher={operationsDispatcher}
-                    target={target}
-                    verb={verb}
-                    editingProperty={editingProperty}
-                    setEditingProperty={setEditingProperty}
-                />
-            )}
-            <Table className={classes.table} aria-label='parameters list'>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>
-                            <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.name'
-                                defaultMessage='Name'
-                            />
-                        </TableCell>
-                        <TableCell align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.data.type'
-                                defaultMessage='Data Type'
-                            />
-                        </TableCell>
-                        <TableCell align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.description'
-                                defaultMessage='Description'
-                            />
-                        </TableCell>
-                        <TableCell align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.actions'
-                                defaultMessage='Actions'
-                            />
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {
-                        properties && Object.entries(properties).map(([k, v]) => {
-                            return (
-                                <TableRow key={k}>
-                                    <TableCell align='left'>{k}</TableCell>
-                                    <TableCell align='left'>{v.type}</TableCell>
-                                    <TableCell align='left'>{v.description}</TableCell>
-                                    <TableCell align='left'>
-                                        <Tooltip title={(
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.operationComponents.'
-                                            + 'ListPayloadProperties.edit'}
-                                                defaultMessage='Edit'
-                                            />
-                                        )}
-                                        >
-                                            <IconButton
-                                                disabled={disableForSolace
-                                                    || isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                                onClick={() => setEditingProperty({ name: k, ...v })}
-                                                fontSize='small'
-                                            >
-                                                <EditIcon fontSize='small' />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title={(
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.operationComponents'
-                                            + '.ListPayloadProps.delete'}
-                                                defaultMessage='Delete'
-                                            />
-                                        )}
-                                        >
-                                            <IconButton
-                                                disabled={disableUpdate || disableForSolace
-                                                    || isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                                onClick={() => operationsDispatcher({
-                                                    action: 'deletePayloadProperty',
-                                                    data: { target, verb, value: k },
-                                                })}
-                                                fontSize='small'
-                                            >
-                                                <DeleteIcon fontSize='small' />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })
-                    }
-                </TableBody>
-            </Table>
-        </>
-    );
+    return <>
+        {editingProperty !== null && (
+            <EditPayloadProperty
+                operationsDispatcher={operationsDispatcher}
+                target={target}
+                verb={verb}
+                editingProperty={editingProperty}
+                setEditingProperty={setEditingProperty}
+            />
+        )}
+        <Table className={classes.table} aria-label='parameters list'>
+            <TableHead>
+                <TableRow>
+                    <TableCell>
+                        <FormattedMessage
+                            id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.name'
+                            defaultMessage='Name'
+                        />
+                    </TableCell>
+                    <TableCell align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.data.type'
+                            defaultMessage='Data Type'
+                        />
+                    </TableCell>
+                    <TableCell align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.description'
+                            defaultMessage='Description'
+                        />
+                    </TableCell>
+                    <TableCell align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.actions'
+                            defaultMessage='Actions'
+                        />
+                    </TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {
+                    properties && Object.entries(properties).map(([k, v]) => {
+                        return (
+                            <TableRow key={k}>
+                                <TableCell align='left'>{k}</TableCell>
+                                <TableCell align='left'>{v.type}</TableCell>
+                                <TableCell align='left'>{v.description}</TableCell>
+                                <TableCell align='left'>
+                                    <Tooltip title={(
+                                        <FormattedMessage
+                                            id={'Apis.Details.Resources.components.operationComponents.'
+                                        + 'ListPayloadProperties.edit'}
+                                            defaultMessage='Edit'
+                                        />
+                                    )}
+                                    >
+                                        <IconButton
+                                            disabled={disableForSolace
+                                                || isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                            onClick={() => setEditingProperty({ name: k, ...v })}
+                                            fontSize='small'
+                                            size='large'>
+                                            <EditIcon fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title={(
+                                        <FormattedMessage
+                                            id={'Apis.Details.Resources.components.operationComponents'
+                                        + '.ListPayloadProps.delete'}
+                                            defaultMessage='Delete'
+                                        />
+                                    )}
+                                    >
+                                        <IconButton
+                                            disabled={disableUpdate || disableForSolace
+                                                || isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                            onClick={() => operationsDispatcher({
+                                                action: 'deletePayloadProperty',
+                                                data: { target, verb, value: k },
+                                            })}
+                                            fontSize='small'
+                                            size='large'>
+                                            <DeleteIcon fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })
+                }
+            </TableBody>
+        </Table>
+    </>;
 }
 
 ListPayloadProperties.defaultProps = {

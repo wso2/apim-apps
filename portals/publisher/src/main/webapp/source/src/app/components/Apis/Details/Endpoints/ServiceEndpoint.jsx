@@ -21,9 +21,9 @@ import {
     Grid,
     Tooltip,
     InputAdornment,
-    withStyles,
     IconButton, Icon,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
@@ -86,95 +86,93 @@ function ServiceEndpoint(props) {
         
     };
 
-    return (
-        <>
-            <div>
-                <Grid container spacing={2}>
-                    <Grid item xs={4} className={classes.endpointInputWrapper}>
-                        <div className={classes.endpointInputWrapper}>
-                            <Autocomplete
-                                onChange={(event, value) => setEndpointValue(value)}
-                                id='combo-box-demo'
-                                defaultValue={category === 'production_endpoints' && defaultService}
-                                options={services}
-                                getOptionLabel={(option) => option.serviceKey}
-                                style={{ width:  '100%' }}
-                                renderInput={(params) => <TextField {...params} label={name} variant='outlined'
-                                    margin='normal' defaultValue={category === 'production_endpoints' 
-                                     && defaultService.serviceUrl} />}
-                            />
-                        </div>
-                    </Grid>
-                    <Grid item xs={8}>
-                        <div className={classes.endpointInputWrapper}>
-                            <TextField
-                                disabled
-                                className={classes.textField}
-                                value={!endpointURL ? selectedServiceUrl: endpointURL}
-                                placeholder='Select a service from the service list'
-                                variant='outlined'
-                                margin='normal'
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position='end'>
-
-                                            <>
-                                                <IconButton
-                                                    className={classes.iconButton}
-                                                    aria-label='Settings'
-                                                    onClick={() => setAdvancedConfigOpen(index, type, category)}
-                                                    disabled={(isRestricted(['apim:api_create'], api))}
-                                                >
-                                                    <Tooltip
-                                                        placement='top-start'
-                                                        interactive
-                                                        title={(
-                                                            <FormattedMessage
-                                                                id='Apis.Details.Endpoints.
-                                                                GenericEndpoint.config.endpoint'
-                                                                defaultMessage='Endpoint configurations'
-                                                            />
-                                                        )}
-                                                    >
-                                                        <Icon>
-                                                            settings
-                                                        </Icon>
-                                                    </Tooltip>
-                                                </IconButton>
-                                                <IconButton
-                                                    className={classes.iconButton}
-                                                    aria-label='Security'
-                                                    onClick={() => setESConfigOpen(type, esCategory)}
-                                                    disabled={(isRestricted(['apim:api_create'], api))}
-                                                >
-                                                    <Tooltip
-                                                        placement='top-start'
-                                                        interactive
-                                                        title={(
-                                                            <FormattedMessage
-                                                                id='Apis.Details.Endpoints.
-                                                                GenericEndpoint.security.endpoint'
-                                                                defaultMessage='Endpoint security'
-                                                            />
-                                                        )}
-                                                    >
-                                                        <Icon>
-                                                            security
-                                                        </Icon>
-                                                    </Tooltip>
-                                                </IconButton>
-                                            </>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </div>
-                    </Grid>
-
+    return <>
+        <div>
+            <Grid container spacing={2}>
+                <Grid item xs={4} className={classes.endpointInputWrapper}>
+                    <div className={classes.endpointInputWrapper}>
+                        <Autocomplete
+                            onChange={(event, value) => setEndpointValue(value)}
+                            id='combo-box-demo'
+                            defaultValue={category === 'production_endpoints' && defaultService}
+                            options={services}
+                            getOptionLabel={(option) => option.serviceKey}
+                            style={{ width:  '100%' }}
+                            renderInput={(params) => <TextField {...params} label={name} variant='outlined'
+                                margin='normal' defaultValue={category === 'production_endpoints' 
+                                 && defaultService.serviceUrl} />}
+                        />
+                    </div>
                 </Grid>
-            </div>
-        </>
-    )
+                <Grid item xs={8}>
+                    <div className={classes.endpointInputWrapper}>
+                        <TextField
+                            disabled
+                            className={classes.textField}
+                            value={!endpointURL ? selectedServiceUrl: endpointURL}
+                            placeholder='Select a service from the service list'
+                            variant='outlined'
+                            margin='normal'
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+
+                                        <>
+                                            <IconButton
+                                                className={classes.iconButton}
+                                                aria-label='Settings'
+                                                onClick={() => setAdvancedConfigOpen(index, type, category)}
+                                                disabled={(isRestricted(['apim:api_create'], api))}
+                                                size='large'>
+                                                <Tooltip
+                                                    placement='top-start'
+                                                    interactive
+                                                    title={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.
+                                                            GenericEndpoint.config.endpoint'
+                                                            defaultMessage='Endpoint configurations'
+                                                        />
+                                                    )}
+                                                >
+                                                    <Icon>
+                                                        settings
+                                                    </Icon>
+                                                </Tooltip>
+                                            </IconButton>
+                                            <IconButton
+                                                className={classes.iconButton}
+                                                aria-label='Security'
+                                                onClick={() => setESConfigOpen(type, esCategory)}
+                                                disabled={(isRestricted(['apim:api_create'], api))}
+                                                size='large'>
+                                                <Tooltip
+                                                    placement='top-start'
+                                                    interactive
+                                                    title={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.
+                                                            GenericEndpoint.security.endpoint'
+                                                            defaultMessage='Endpoint security'
+                                                        />
+                                                    )}
+                                                >
+                                                    <Icon>
+                                                        security
+                                                    </Icon>
+                                                </Tooltip>
+                                            </IconButton>
+                                        </>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </div>
+                </Grid>
+
+            </Grid>
+        </div>
+    </>;
 }
 
 

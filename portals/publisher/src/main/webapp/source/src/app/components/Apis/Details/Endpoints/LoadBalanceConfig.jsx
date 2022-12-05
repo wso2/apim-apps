@@ -16,8 +16,9 @@
 
 import React, { useEffect, useState, useContext } from 'react';
 import {
-    TextField, MenuItem, Grid, Button, withStyles,
+    TextField, MenuItem, Grid, Button,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';

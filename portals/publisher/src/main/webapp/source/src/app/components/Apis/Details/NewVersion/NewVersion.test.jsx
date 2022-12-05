@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { adaptV4Theme } from '@mui/material/styles';
 import { getExampleBodyById, getExampleResponseById } from 'AppTests/Utils/DEPRECATED_MockAPIModel.js';
 import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import Themes from 'AppData/defaultTheme';
@@ -42,7 +43,7 @@ describe.skip('Unit test for CreateNewVersion component', () => {
         const newVersion = (
             <APIProvider value={{ api }}>
                 <MemoryRouter>
-                    <NewVersion classes={{}} theme={createTheme(light)} />
+                    <NewVersion classes={{}} theme={createTheme(adaptV4Theme(light))} />
                 </MemoryRouter>
             </APIProvider>
         );

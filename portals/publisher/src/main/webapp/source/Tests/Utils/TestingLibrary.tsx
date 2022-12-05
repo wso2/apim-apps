@@ -19,7 +19,7 @@ import {
   configure,
 } from "@testing-library/react";
 import { IntlProvider } from "react-intl";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, Theme, StyledEngineProvider, createTheme, adaptV4Theme } from '@mui/material/styles';
 import defaultTheme from "AppData/defaultTheme";
 import Api from "AppData/api";
 import { Router } from "react-router-dom";
@@ -29,6 +29,13 @@ import AuthManager from "AppData/AuthManager";
 import User from "AppData/User";
 import Utils from "AppData/Utils";
 import { MockedUsers, TEMPORARY_MOCKED_SETTINGS } from "./constants";
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 export const history = createMemoryHistory();
 
@@ -46,7 +53,7 @@ const GlobalProviders: FC<{ user: any }> = ({
   children,
   user = MockedUsers.Admin,
 }) => {
-  const theme = createTheme(defaultTheme as any); // We really don't care about the styling in this tests, Need to handle Visual Regression
+  const theme = createTheme(adaptV4Theme(defaultTheme as any)); // We really don't care about the styling in this tests, Need to handle Visual Regression
   const testUser = User.fromJson(user, Utils.getDefaultEnvironment().label);
   testUser.setPartialToken("AM_ACC_TOKEN_DEFAULT_P1", -1);
   testUser.setExpiryTime(9999999);
@@ -56,16 +63,18 @@ const GlobalProviders: FC<{ user: any }> = ({
   return (
     <Router history={history}>
       <IntlProvider locale="en" messages={{}}>
-        <ThemeProvider theme={theme}>
-          <AppContextProvider
-            value={{
-              settings: TEMPORARY_MOCKED_SETTINGS,
-              user: AuthManager.getUser(),
-            }}
-          >
-            {children}
-          </AppContextProvider>
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <AppContextProvider
+              value={{
+                settings: TEMPORARY_MOCKED_SETTINGS,
+                user: AuthManager.getUser(),
+              }}
+            >
+              {children}
+            </AppContextProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
       </IntlProvider>
     </Router>
   );

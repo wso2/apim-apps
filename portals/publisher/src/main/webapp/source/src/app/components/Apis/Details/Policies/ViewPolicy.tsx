@@ -115,52 +115,46 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
         return <></>;
     }
 
-    return (
-        <>
-            <Dialog
-                maxWidth='md'
-                open={dialogOpen}
-                aria-labelledby='form-dialog-title'
-                onClose={handleDialogClose}
-                onClick={stopPropagation}
-                fullWidth
+    return <>
+        <Dialog
+            maxWidth='md'
+            open={dialogOpen}
+            aria-labelledby='form-dialog-title'
+            onClose={handleDialogClose}
+            onClick={stopPropagation}
+            fullWidth
+        >
+            <Box
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                flexDirection='row'
+                px={3}
+                pt={3}
             >
-                <Box
-                    display='flex'
-                    justifyContent='space-between'
-                    alignItems='center'
-                    flexDirection='row'
-                    px={3}
-                    pt={3}
-                >
-                    <Box display='flex'>
-                        <Typography variant='h4' component='h2'>
-                            {policyObj.displayName}
-                        </Typography>
-                    </Box>
-                    <Box display='flex'>
-                        <IconButton
-                            color='inherit'
-                            onClick={toggleOpen}
-                            aria-label='Close'
-                        >
-                            <Icon>close</Icon>
-                        </IconButton>
-                    </Box>
+                <Box display='flex'>
+                    <Typography variant='h4' component='h2'>
+                        {policyObj.displayName}
+                    </Typography>
                 </Box>
-                <DialogContent>
-                    <Box my={2}>
-                        <DialogContentText>
-                            <PolicyViewForm
-                                policySpec={policySpec}
-                                onDone={toggleOpen}
-                            />
-                        </DialogContentText>
-                    </Box>
-                </DialogContent>
-            </Dialog>
-        </>
-    );
+                <Box display='flex'>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size="large">
+                        <Icon>close</Icon>
+                    </IconButton>
+                </Box>
+            </Box>
+            <DialogContent>
+                <Box my={2}>
+                    <DialogContentText>
+                        <PolicyViewForm
+                            policySpec={policySpec}
+                            onDone={toggleOpen}
+                        />
+                    </DialogContentText>
+                </Box>
+            </DialogContent>
+        </Dialog>
+    </>;
 };
 
 export default ViewPolicy;

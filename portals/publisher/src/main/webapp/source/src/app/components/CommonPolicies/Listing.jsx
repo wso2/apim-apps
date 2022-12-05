@@ -24,8 +24,8 @@ import {
     Tooltip,
     Typography,
     useTheme,
-    makeStyles,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage, useIntl } from 'react-intl';

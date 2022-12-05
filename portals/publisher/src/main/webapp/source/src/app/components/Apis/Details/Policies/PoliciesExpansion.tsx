@@ -19,9 +19,9 @@
 import React, { FC, useContext, useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import { makeStyles, Theme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
@@ -30,7 +30,7 @@ import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import FlowArrow from './components/FlowArrow';
 import ApiOperationContext from './ApiOperationContext';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
     flowSpecificPolicyAttachGrid: {
         marginTop: theme.spacing(1),
         overflowX: 'scroll',
@@ -242,12 +242,12 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     }, [apiOperations]);
 
     return (
-        <ExpansionPanelDetails>
+        <AccordionDetails>
             <Grid
                 spacing={2}
                 container
                 direction='row'
-                justify='flex-start'
+                justifyContent='flex-start'
                 alignItems='flex-start'
             >
                 <Grid item xs={12} md={12}>
@@ -316,7 +316,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     )}
                 </Grid>
             </Grid>
-        </ExpansionPanelDetails>
+        </AccordionDetails>
     );
 };
 

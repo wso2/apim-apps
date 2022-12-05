@@ -238,7 +238,7 @@ function EditableRow(props) {
                         onKeyDown={() => { }}
                         color='inherit'
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    >
+                        size='large'>
                         <EditIcon className={classes.buttonIcon} />
                     </IconButton>
                 )}
@@ -249,7 +249,7 @@ function EditableRow(props) {
                     onKeyDown={() => { }}
                     color='inherit'
                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                >
+                    size='large'>
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>

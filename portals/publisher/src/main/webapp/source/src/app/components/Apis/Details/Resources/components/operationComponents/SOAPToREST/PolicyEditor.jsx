@@ -129,7 +129,7 @@ export default function PolicyEditor(props) {
         <Dialog fullScreen open={open} onClose={onClose} TransitionComponent={Transition}>
             <AppBar position='fixed' color='default' className={classes.appBar}>
                 <Toolbar variant='dense'>
-                    <Grid container direction='row' justify='flex-start' alignItems='flex-start'>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                         <Grid item>
                             <Button
                                 disabled={saving}
@@ -150,7 +150,7 @@ export default function PolicyEditor(props) {
                     </Grid>
                 </Toolbar>
             </AppBar>
-            <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 {pageError && (
                     <Grid item xs={12}>
                         <Banner

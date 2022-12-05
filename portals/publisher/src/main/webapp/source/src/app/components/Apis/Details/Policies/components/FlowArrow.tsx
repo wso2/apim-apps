@@ -17,7 +17,7 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Box from '@mui/material/Box';

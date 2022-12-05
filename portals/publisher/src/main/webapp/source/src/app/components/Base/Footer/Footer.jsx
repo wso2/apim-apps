@@ -48,7 +48,7 @@ function Footer() {
 
     return (
         <footer className={classes.footer}>
-            <Grid container direction='row' justify='space-between' alignItems='center'>
+            <Grid container direction='row' justifyContent='space-between' alignItems='center'>
                 <Grid item>
                     {theme.custom.footer.text ? theme.custom.footer.text : (
                         <Typography noWrap>

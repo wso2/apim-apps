@@ -18,14 +18,14 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
+import Accordion from '@mui/material/Accordion';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@mui/styles';
@@ -116,7 +116,7 @@ function Operation(props) {
             },
             title: {
                 display: 'inline',
-                margin: `0 ${theme.spacing(5)}px`,
+                margin: `0 ${theme.spacing(5)}`,
             },
         };
     });
@@ -142,180 +142,190 @@ function Operation(props) {
     };
 
     const classes = useStyles();
-    return (
-        <>
-            {markAsDelete && (
-                <Box className={classes.overlayUnmarkDelete}>
-                    <Tooltip title='Marked for delete'>
-                        <Button onClick={toggleDelete} variant='outlined' style={{ marginTop: '10px' }}>
-                            <FormattedMessage
-                                id='Apis.Details.Resources.components.Operation.undo.delete'
-                                defaultMessage='Undo Delete'
-                            />
-                        </Button>
-                    </Tooltip>
-                </Box>
-            )}
-            <ExpansionPanel
-                expanded={expandedResource === verb + target}
-                onChange={handleExpansion(verb + target)}
-                disabled={markAsDelete}
-                className={classes.paperStyles}
+    return <>
+        {markAsDelete && (
+            <Box className={classes.overlayUnmarkDelete}>
+                <Tooltip title='Marked for delete'>
+                    <Button onClick={toggleDelete} variant='outlined' style={{ marginTop: '10px' }}>
+                        <FormattedMessage
+                            id='Apis.Details.Resources.components.Operation.undo.delete'
+                            defaultMessage='Undo Delete'
+                        />
+                    </Button>
+                </Tooltip>
+            </Box>
+        )}
+        <Accordion
+            expanded={expandedResource === verb + target}
+            onChange={handleExpansion(verb + target)}
+            disabled={markAsDelete}
+            className={classes.paperStyles}
+        >
+            <AccordionSummary
+                className={highlight ? classes.highlightSelected : ''}
+                disableRipple
+                disableTouchRipple
+                expandIcon={<ExpandMoreIcon />}
+                id={verb + target}
+                classes={{ content: classes.contentNoMargin }}
             >
-                <ExpansionPanelSummary
-                    className={highlight ? classes.highlightSelected : ''}
-                    disableRipple
-                    disableTouchRipple
-                    expandIcon={<ExpandMoreIcon />}
-                    id={verb + target}
-                    classes={{ content: classes.contentNoMargin }}
-                >
-                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                        <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
-                            <Badge
-                                invisible={!operation['x-wso2-new']}
-                                color='error'
-                                variant='dot'
-                                style={{ display: 'inline-block' }}
+                <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
+                    <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
+                        <Badge
+                            invisible={!operation['x-wso2-new']}
+                            color='error'
+                            variant='dot'
+                            style={{ display: 'inline-block' }}
+                        >
+                            <Button
+                                disableFocusRipple
+                                variant='contained'
+                                aria-label={'HTTP verb ' + verb}
+                                size='small'
+                                className={classes.customButton}
                             >
-                                <Button
-                                    disableFocusRipple
-                                    variant='contained'
-                                    aria-label={'HTTP verb ' + verb}
-                                    size='small'
-                                    className={classes.customButton}
+                                {verb}
+                            </Button>
+                        </Badge>
+                        <Typography
+                            display='inline-block'
+                            variant='h6'
+                            component='div'
+                            gutterBottom
+                            className={classes.targetText}
+                            title={target}
+                        >
+                            {target}
+                            {(operation.summary && operation.summary !== '') && (
+                                <Typography
+                                    display='inline-block'
+                                    style={{ margin: '0px 30px' }}
+                                    variant='caption'
+                                    gutterBottom
                                 >
-                                    {verb}
-                                </Button>
-                            </Badge>
-                            <Typography
-                                display='inline-block'
-                                variant='h6'
-                                component='div'
-                                gutterBottom
-                                className={classes.targetText}
-                                title={target}
-                            >
-                                {target}
-                                {(operation.summary && operation.summary !== '') && (
-                                    <Typography
-                                        display='inline-block'
-                                        style={{ margin: '0px 30px' }}
-                                        variant='caption'
-                                        gutterBottom
-                                    >
-                                        {operation.summary}
-                                    </Typography>
-                                )}
-                            </Typography>
-                        </Grid>
-                        {(isUsedInAPIProduct) ? (
-                            <Grid item md={3}>
-                                <Box display='flex' justifyContent='center'>
-                                    <ReportProblemOutlinedIcon fontSize='small' />
-                                    <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Resources.components.Operation.this.operation.'
-                                            + 'used.in.products'}
-                                            defaultMessage={'This operation is used in {isUsedInAPIProduct} API '
-                                            + 'product(s)'}
-                                            values={{ isUsedInAPIProduct }}
-                                        />
-                                    </Box>
-                                </Box>
-                            </Grid>
-                        ) : (
-                            <Grid item md={3} />
-                        )}
-                        <Grid item md={4}>
-                            <Typography
-                                display='inline'
-                                style={{ margin: '0px 30px' }}
-                                variant='caption'
-                                gutterBottom
-                            >
-                                <b>{ getOperationScopes(operation, spec).length !== 0 && 'Scope : ' }</b>
-                                { getOperationScopes(operation, spec).join(', ') }
-                            </Typography>
-                        </Grid>
-                        <Grid item md={1} justify='flex-end' alignItems='center' container>
-                            {!(disableDelete || markAsDelete) && (
-                                <Tooltip
-                                    title={
-                                        isUsedInAPIProduct
-                                            ? (
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.Operation.cannot.delete'
-                                                    + '.when.used.in.api.products'}
-                                                    defaultMessage='Cannot delete operation when used in an API product'
-                                                />
-                                            )
-                                            : (
-                                                <FormattedMessage
-                                                    id='Apis.Details.Resources.components.Operation.Delete'
-                                                    defaultMessage='Delete'
-                                                />
-                                            )
-                                    }
-                                >
-                                    <div>
-                                        <IconButton
-                                            disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
-                                            onClick={toggleDelete}
-                                            aria-label='delete operation'
-                                        >
-                                            <DeleteIcon fontSize='small' />
-                                        </IconButton>
-                                    </div>
-                                </Tooltip>
+                                    {operation.summary}
+                                </Typography>
                             )}
+                        </Typography>
+                    </Grid>
+                    {(isUsedInAPIProduct) ? (
+                        <Grid item md={3}>
+                            <Box display='flex' justifyContent='center'>
+                                <ReportProblemOutlinedIcon fontSize='small' />
+                                <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
+                                    <FormattedMessage
+                                        id={'Apis.Details.Resources.components.Operation.this.operation.'
+                                        + 'used.in.products'}
+                                        defaultMessage={'This operation is used in {isUsedInAPIProduct} API '
+                                        + 'product(s)'}
+                                        values={{ isUsedInAPIProduct }}
+                                    />
+                                </Box>
+                            </Box>
+                        </Grid>
+                    ) : (
+                        <Grid item md={3} />
+                    )}
+                    <Grid item md={4}>
+                        <Typography
+                            display='inline'
+                            style={{ margin: '0px 30px' }}
+                            variant='caption'
+                            gutterBottom
+                        >
+                            <b>{ getOperationScopes(operation, spec).length !== 0 && 'Scope : ' }</b>
+                            { getOperationScopes(operation, spec).join(', ') }
+                        </Typography>
+                    </Grid>
+                    <Grid item md={1} justifyContent='flex-end' alignItems='center' container>
+                        {!(disableDelete || markAsDelete) && (
                             <Tooltip
                                 title={
-                                    (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                    isUsedInAPIProduct
                                         ? (
                                             <FormattedMessage
-                                                id={'Apis.Details.Resources.components.Operation.disable.security'
-                                                    + '.when.used.in.api.products'}
-                                                defaultMessage='Security enabled'
+                                                id={'Apis.Details.Resources.components.Operation.cannot.delete'
+                                                + '.when.used.in.api.products'}
+                                                defaultMessage='Cannot delete operation when used in an API product'
                                             />
                                         )
                                         : (
                                             <FormattedMessage
-                                                id='Apis.Details.Resources.components.enabled.security'
-                                                defaultMessage='No security'
+                                                id='Apis.Details.Resources.components.Operation.Delete'
+                                                defaultMessage='Delete'
                                             />
                                         )
                                 }
-                                aria-label={(
-                                    <FormattedMessage
-                                        id='Apis.Details.Resources.components.Operation.security.operation'
-                                        defaultMessage='Security '
-                                    />
-                                )}
                             >
-                                <IconButton
-                                    aria-label='Security'
-                                >
-                                    {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? <LockIcon fontSize='small' />
-                                        : <LockOpenIcon fontSize='small' />}
-                                </IconButton>
+                                <div>
+                                    <IconButton
+                                        disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
+                                        onClick={toggleDelete}
+                                        aria-label='delete operation'
+                                        size='large'>
+                                        <DeleteIcon fontSize='small' />
+                                    </IconButton>
+                                </div>
                             </Tooltip>
+                        )}
+                        <Tooltip
+                            title={
+                                (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                    ? (
+                                        <FormattedMessage
+                                            id={'Apis.Details.Resources.components.Operation.disable.security'
+                                                + '.when.used.in.api.products'}
+                                            defaultMessage='Security enabled'
+                                        />
+                                    )
+                                    : (
+                                        <FormattedMessage
+                                            id='Apis.Details.Resources.components.enabled.security'
+                                            defaultMessage='No security'
+                                        />
+                                    )
+                            }
+                            aria-label={(
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.components.Operation.security.operation'
+                                    defaultMessage='Security '
+                                />
+                            )}
+                        >
+                            <IconButton aria-label='Security' size='large'>
+                                {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                    ? <LockIcon fontSize='small' />
+                                    : <LockOpenIcon fontSize='small' />}
+                            </IconButton>
+                        </Tooltip>
 
-                        </Grid>
                     </Grid>
-                </ExpansionPanelSummary>
-                <Divider light className={classes.customDivider} />
-                <ExpansionPanelDetails>
-                    <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
-                        <DescriptionAndSummary
-                            operation={operation}
-                            operationsDispatcher={operationsDispatcher}
-                            disableUpdate={disableUpdate}
-                            target={target}
-                            verb={verb}
-                        />
-                        <OperationGovernance
+                </Grid>
+            </AccordionSummary>
+            <Divider light className={classes.customDivider} />
+            <AccordionDetails>
+                <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                    <DescriptionAndSummary
+                        operation={operation}
+                        operationsDispatcher={operationsDispatcher}
+                        disableUpdate={disableUpdate}
+                        target={target}
+                        verb={verb}
+                    />
+                    <OperationGovernance
+                        operation={operation}
+                        operationsDispatcher={operationsDispatcher}
+                        operationRateLimits={operationRateLimits}
+                        api={api}
+                        disableUpdate={disableUpdate}
+                        spec={spec}
+                        target={target}
+                        verb={verb}
+                        sharedScopes={sharedScopes}
+                        setFocusOperationLevel={setFocusOperationLevel}
+                    />
+                    {!hideParameters && (
+                        <Parameters
                             operation={operation}
                             operationsDispatcher={operationsDispatcher}
                             operationRateLimits={operationRateLimits}
@@ -324,54 +334,40 @@ function Operation(props) {
                             spec={spec}
                             target={target}
                             verb={verb}
-                            sharedScopes={sharedScopes}
-                            setFocusOperationLevel={setFocusOperationLevel}
+                            resolvedSpec={resolvedSpec}
                         />
-                        {!hideParameters && (
-                            <Parameters
+                    )}
+                    {resourcePolicy && (
+                        <SOAPToRESTListing
+                            operation={operation}
+                            operationsDispatcher={operationsDispatcher}
+                            operationRateLimits={operationRateLimits}
+                            resourcePolicy={resourcePolicy}
+                            resourcePoliciesDispatcher={resourcePoliciesDispatcher}
+                            disableUpdate={disableUpdate}
+                            spec={spec}
+                            target={target}
+                            verb={verb}
+                        />
+                    )}
+                    {
+                        api.endpointConfig
+                        && api.endpointConfig.endpoint_type
+                        && api.endpointConfig.endpoint_type === 'awslambda'
+                        && (
+                            <AWSLambdaSettings
                                 operation={operation}
                                 operationsDispatcher={operationsDispatcher}
-                                operationRateLimits={operationRateLimits}
-                                api={api}
-                                disableUpdate={disableUpdate}
-                                spec={spec}
                                 target={target}
                                 verb={verb}
-                                resolvedSpec={resolvedSpec}
+                                arns={arns}
                             />
-                        )}
-                        {resourcePolicy && (
-                            <SOAPToRESTListing
-                                operation={operation}
-                                operationsDispatcher={operationsDispatcher}
-                                operationRateLimits={operationRateLimits}
-                                resourcePolicy={resourcePolicy}
-                                resourcePoliciesDispatcher={resourcePoliciesDispatcher}
-                                disableUpdate={disableUpdate}
-                                spec={spec}
-                                target={target}
-                                verb={verb}
-                            />
-                        )}
-                        {
-                            api.endpointConfig
-                            && api.endpointConfig.endpoint_type
-                            && api.endpointConfig.endpoint_type === 'awslambda'
-                            && (
-                                <AWSLambdaSettings
-                                    operation={operation}
-                                    operationsDispatcher={operationsDispatcher}
-                                    target={target}
-                                    verb={verb}
-                                    arns={arns}
-                                />
-                            )
-                        }
-                    </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-        </>
-    );
+                        )
+                    }
+                </Grid>
+            </AccordionDetails>
+        </Accordion>
+    </>;
 }
 Operation.defaultProps = {
     highlight: false,

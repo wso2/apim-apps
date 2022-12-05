@@ -88,7 +88,7 @@ const DocThumb = (props) => {
                     <Grid
                         container
                         direction='column'
-                        justify='space-evenly'
+                        justifyContent='space-evenly'
                         alignItems='flex-start'
                     >
                         <Grid item>

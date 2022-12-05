@@ -25,8 +25,8 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormLabel from '@mui/material/FormLabel';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -73,7 +73,7 @@ export default function MaxBackendTps(props) {
         <>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded id='maxBackendTps'>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Components.MaxBackendTps.maximum.backend.throughput'
@@ -94,8 +94,8 @@ export default function MaxBackendTps(props) {
                                 <HelpOutline className={classes.iconSpace} />
                             </Tooltip>
                         </Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                    </AccordionSummary>
+                    <AccordionDetails className={classes.expansionPanelDetails}>
                         <FormControl component='fieldset'>
                             <FormLabel component='legend'>Maximum Throughput</FormLabel>
                             <RadioGroup
@@ -181,7 +181,7 @@ export default function MaxBackendTps(props) {
                                 </FormHelperText>
                             </Grid>
                         </Collapse>
-                    </ExpansionPanelDetails>
+                    </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
         </>

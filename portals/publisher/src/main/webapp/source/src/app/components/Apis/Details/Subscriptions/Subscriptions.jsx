@@ -17,10 +17,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@mui/styles';
+import { makeStyles, withStyles } from '@mui/styles';
 import { CircularProgress, Grid } from '@mui/material';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
@@ -100,7 +99,7 @@ function Subscriptions(props) {
 
     if (typeof tenants !== 'number' || typeof subscriptions !== 'number') {
         return (
-            <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item>
                     <CircularProgress />
                 </Grid>

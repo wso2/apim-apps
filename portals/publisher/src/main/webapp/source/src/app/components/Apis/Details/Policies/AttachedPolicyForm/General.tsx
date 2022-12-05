@@ -408,7 +408,7 @@ const General: FC<GeneralProps> = ({
                         </Grid>
                     ))}
                     {setDroppedPolicy && (
-                        <Grid item container justify='flex-start' xs={12}>
+                        <Grid item container justifyContent='flex-start' xs={12}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -430,7 +430,7 @@ const General: FC<GeneralProps> = ({
                             />
                         </Grid>
                     )}
-                    <Grid item container justify='flex-end' xs={12}>
+                    <Grid item container justifyContent='flex-end' xs={12}>
                         <Button
                             variant='outlined'
                             color='primary'

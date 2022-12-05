@@ -21,7 +21,7 @@
  * Application related configurations are located in `<PUBLISHER_ROOT>site/public/theme/settings.js`
  */
 export default {
-    overrides: {
+    components: {
         MuiDrawer: {
             paper: {
                 backgroundColor: '#18202c',

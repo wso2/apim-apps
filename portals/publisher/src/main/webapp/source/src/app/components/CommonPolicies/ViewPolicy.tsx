@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles, Theme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Icon from '@mui/material/Icon';
@@ -31,7 +31,7 @@ import { Progress } from 'AppComponents/Shared';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import PolicyViewForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyViewForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
     titleWrapper: {
         display: 'flex',
         flexDirection: 'row',

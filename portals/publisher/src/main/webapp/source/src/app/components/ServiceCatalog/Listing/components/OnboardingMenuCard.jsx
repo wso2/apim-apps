@@ -48,7 +48,7 @@ function OnboardingMenuCard(props) {
                 <Grid
                     container
                     direction='row'
-                    justify='center'
+                    justifyContent='center'
                     alignItems='flex-end'
                     className={classes.cardContainer}
                 >

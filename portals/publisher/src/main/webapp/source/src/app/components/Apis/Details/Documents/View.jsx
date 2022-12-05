@@ -173,113 +173,109 @@ function View(props) {
     };
     const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
     const listingPath = `/${urlPrefix}/${api.id}/documents`;
-    return (
-        doc && (
-            <React.Fragment>
-                <div className={classes.root}>
-                    <div className={classes.titleWrapper}>
-                        <Link to={listingPath} className={classes.titleLink}>
-                            <Typography variant="h5" component='h2' align="left" className={classes.mainTitle}>
-                                <FormattedMessage id="Apis.Details.Documents.View.heading" defaultMessage="Documents" />
-                            </Typography>
-                        </Link>
-                        <Icon>keyboard_arrow_right</Icon>
-                        <Typography variant="h5" component='h3'>{doc.name}</Typography>
-                    </div>
-                    <Paper className={classes.paper}>
-                        <Table className={classes.table}>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className={classes.leftCell}>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.name"
-                                                defaultMessage="Name"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body1">{doc.name}</Typography>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.summary"
-                                                defaultMessage="Summary"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.summaryView}>
-                                        <Typography variant="body1">{doc.summary}</Typography>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.catogery"
-                                                defaultMessage="Categorized as"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            {doc.type === 'OTHER' ? doc.otherTypeName : doc.type}
-                                        </Typography>{' '}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.source"
-                                                defaultMessage="Source Type"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body1">{doc.sourceType}</Typography>{' '}
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </Paper>
-
-                    <Paper className={classes.paper}>
-                        {doc.sourceType === 'MARKDOWN' && (
-                            <Suspense fallback={<CircularProgress />}>
-                                <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
-                            </Suspense>
-                        )}
-                        {doc.sourceType === 'INLINE' && <ReactSafeHtml html={code} />}
-                        {doc.sourceType === 'URL' && (
-                            <a className={classes.displayURL} href={doc.sourceUrl} target="_blank">
-                                {doc.sourceUrl}
-                                <Icon className={classes.displayURLLink}>open_in_new</Icon>
-                            </a>
-                        )}
-                        {doc.sourceType === 'FILE' && (
-                            <Button
-                                variant="contained"
-                                color="default"
-                                className={classes.button}
-                                onClick={handleDownload}
-                                disabled={!isFileAvailable}
-                            >
-                                <FormattedMessage
-                                    id="Apis.Details.Documents.View.btn.download"
-                                    defaultMessage="Download"
-                                />
-
-                                <Icon>arrow_downward</Icon>
-                            </Button>
-                        )}
-                    </Paper>
+    return doc && (
+        <React.Fragment>
+            <div className={classes.root}>
+                <div className={classes.titleWrapper}>
+                    <Link to={listingPath} className={classes.titleLink}>
+                        <Typography variant="h5" component='h2' align="left" className={classes.mainTitle}>
+                            <FormattedMessage id="Apis.Details.Documents.View.heading" defaultMessage="Documents" />
+                        </Typography>
+                    </Link>
+                    <Icon>keyboard_arrow_right</Icon>
+                    <Typography variant="h5" component='h3'>{doc.name}</Typography>
                 </div>
-            </React.Fragment>
-        )
+                <Paper className={classes.paper}>
+                    <Table className={classes.table}>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell className={classes.leftCell}>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.name"
+                                            defaultMessage="Name"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body1">{doc.name}</Typography>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.summary"
+                                            defaultMessage="Summary"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell className={classes.summaryView}>
+                                    <Typography variant="body1">{doc.summary}</Typography>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.catogery"
+                                            defaultMessage="Categorized as"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        {doc.type === 'OTHER' ? doc.otherTypeName : doc.type}
+                                    </Typography>{' '}
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.source"
+                                            defaultMessage="Source Type"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body1">{doc.sourceType}</Typography>{' '}
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </Paper>
+
+                <Paper className={classes.paper}>
+                    {doc.sourceType === 'MARKDOWN' && (
+                        <Suspense fallback={<CircularProgress />}>
+                            <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
+                        </Suspense>
+                    )}
+                    {doc.sourceType === 'INLINE' && <ReactSafeHtml html={code} />}
+                    {doc.sourceType === 'URL' && (
+                        <a className={classes.displayURL} href={doc.sourceUrl} target="_blank">
+                            {doc.sourceUrl}
+                            <Icon className={classes.displayURLLink}>open_in_new</Icon>
+                        </a>
+                    )}
+                    {doc.sourceType === 'FILE' && (
+                        <Button
+                            variant="contained"
+                            className={classes.button}
+                            onClick={handleDownload}
+                            disabled={!isFileAvailable}>
+                            <FormattedMessage
+                                id="Apis.Details.Documents.View.btn.download"
+                                defaultMessage="Download"
+                            />
+
+                            <Icon>arrow_downward</Icon>
+                        </Button>
+                    )}
+                </Paper>
+            </div>
+        </React.Fragment>
     );
 }
 

@@ -26,11 +26,11 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';
-import { makeStyles } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import TextField from '@mui/material/TextField';
 
@@ -84,7 +84,7 @@ export default function ResponseCaching(props) {
     return (
         <>
             <WrappedExpansionPanel className={classes.expansionPanel} id='responseCaching'>
-                <ExpansionPanelSummary expandIcon={generateElement(api.responseCachingEnabled)}>
+                <AccordionSummary expandIcon={generateElement(api.responseCachingEnabled)}>
                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.Configuration.response.caching'
@@ -125,8 +125,8 @@ export default function ResponseCaching(props) {
                             />
                         )}
                     />
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                </AccordionSummary>
+                <AccordionDetails className={classes.expansionPanelDetails}>
                     <Grid container spacing={1} alignItems='flex-start'>
                         <Grid item>
                             {isResponseCachingEnabled && (
@@ -147,7 +147,7 @@ export default function ResponseCaching(props) {
                             )}
                         </Grid>
                     </Grid>
-                </ExpansionPanelDetails>
+                </AccordionDetails>
             </WrappedExpansionPanel>
         </>
     );

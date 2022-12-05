@@ -26,9 +26,9 @@ import React, {
 import {
     Grid,
     Typography,
-    makeStyles,
     Button,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';

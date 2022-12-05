@@ -22,12 +22,12 @@ import {
     Grid,
     Paper,
     Typography,
-    withStyles,
     Radio,
     FormControlLabel,
     Collapse,
     RadioGroup, Checkbox, Dialog, DialogTitle, DialogContent, IconButton, Button, DialogActions, Icon,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -890,9 +890,8 @@ function EndpointOverview(props) {
                                                                                         + ' which sets the endpoints.'
                                                                                     }
                                                                                 />
-                                                                                <IconButton
-                                                                                    onClick={saveAndRedirect}
-                                                                                >
+                                                                                <IconButton onClick={saveAndRedirect} 
+                                                                                    size='large'>
                                                                                     <LaunchIcon
                                                                                         style={{ marginLeft: '2px' }}
                                                                                         fontSize='small'
@@ -1058,7 +1057,7 @@ function EndpointOverview(props) {
                                                                                                 onClick={
                                                                                                     saveAndRedirect
                                                                                                 }
-                                                                                            >
+                                                                                                size='large'>
                                                                                                 <LaunchIcon
                                                                                                     style={{
                                                                                                         marginLeft:

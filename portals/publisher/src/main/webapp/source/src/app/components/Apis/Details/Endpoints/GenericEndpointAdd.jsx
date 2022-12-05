@@ -21,8 +21,8 @@ import {
     IconButton,
     InputAdornment,
     TextField,
-    withStyles,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
@@ -98,7 +98,7 @@ function GenericEndpointAdd(props) {
                                 aria-label='Search'
                                 disabled={serviceUrl === ''}
                                 id={category + '-' + endpointType + '-add-btn'}
-                            >
+                                size='large'>
                                 <Icon>
                                     add
                                 </Icon>

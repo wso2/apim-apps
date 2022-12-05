@@ -49,7 +49,7 @@ function ServiceCatalogTopMenu(props) {
             <Grid
                 container
                 direction='row'
-                justify='space-between'
+                justifyContent='space-between'
                 alignItems='center'
             >
                 <Grid item>
@@ -96,10 +96,10 @@ function ServiceCatalogTopMenu(props) {
                 <Grid item>
                     {showServiceToggle && (
                         <ButtonGroup color='primary' aria-label='outlined primary button group'>
-                            <IconButton onClick={() => setIsGridView(true)} aria-label='delete'>
+                            <IconButton onClick={() => setIsGridView(true)} aria-label='delete' size='large'>
                                 <GridOn color={isGridView ? 'primary' : 'disabled'} />
                             </IconButton>
-                            <IconButton onClick={() => setIsGridView(false)} aria-label='delete'>
+                            <IconButton onClick={() => setIsGridView(false)} aria-label='delete' size='large'>
                                 <List color={!isGridView ? 'primary' : 'disabled'} />
                             </IconButton>
                         </ButtonGroup>

@@ -162,7 +162,7 @@ function Create(props) {
                         <Grid item md={12}>
                             <Paper elevation={0}>
                                 <CreateEditForm
-                                    innerRef={(node) => {
+                                    ref={(node) => {
                                         createEditForm = node;
                                     }}
                                     apiType={api.apiType}

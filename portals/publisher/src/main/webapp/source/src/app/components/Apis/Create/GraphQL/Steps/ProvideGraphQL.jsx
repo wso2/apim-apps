@@ -101,101 +101,99 @@ export default function ProvideGraphQL(props) {
         }
     }, [inputValue]);
     const accept = '.graphql,text/plain';
-    return (
-        <>
-            <Grid container spacing={5}>
-                {!apiInputs.inputValue && (
-                    <Grid item md={12}>
-                        <FormControl component='fieldset'>
-                            <FormLabel component='legend'>
-                                <>
-                                    <sup className={classes.mandatoryStar}>*</sup>
-                                    {' '}
-                                    <FormattedMessage
-                                        id='Apis.Create.GraphQL.Steps.ProvideGraphQL.Input.type'
-                                        defaultMessage='Provide GraphQL File'
-                                    />
-                                </>
-                            </FormLabel>
-                        </FormControl>
+    return <>
+        <Grid container spacing={5}>
+            {!apiInputs.inputValue && (
+                <Grid item md={12}>
+                    <FormControl component='fieldset'>
+                        <FormLabel component='legend'>
+                            <>
+                                <sup className={classes.mandatoryStar}>*</sup>
+                                {' '}
+                                <FormattedMessage
+                                    id='Apis.Create.GraphQL.Steps.ProvideGraphQL.Input.type'
+                                    defaultMessage='Provide GraphQL File'
+                                />
+                            </>
+                        </FormLabel>
+                    </FormControl>
+                </Grid>
+            )}
+            {isValid.file
+                && (
+                    <Grid item md={11}>
+                        <Banner
+                            onClose={() => setValidity({ file: null })}
+                            disableActions
+                            dense
+                            paperProps={{ elevation: 1 }}
+                            type='error'
+                            message={isValid.file.message}
+                        />
                     </Grid>
                 )}
-                {isValid.file
-                    && (
-                        <Grid item md={11}>
-                            <Banner
-                                onClose={() => setValidity({ file: null })}
-                                disableActions
-                                dense
-                                paperProps={{ elevation: 1 }}
-                                type='error'
-                                message={isValid.file.message}
+            <Grid item md={11}>
+                {apiInputs.inputValue ? (
+                    <List data-testid='uploaded-list-graphql'>
+                        <ListItem key={apiInputs.inputValue.path} data-testid='uploaded-list-content-graphql' >
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <InsertDriveFile />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={`${apiInputs.inputValue.path} - 
+                                ${humanFileSize(apiInputs.inputValue.size)}`}
+                                data-testid={'file-input-'+apiInputs.inputValue.path}
                             />
-                        </Grid>
-                    )}
-                <Grid item md={11}>
-                    {apiInputs.inputValue ? (
-                        <List data-testid='uploaded-list-graphql'>
-                            <ListItem key={apiInputs.inputValue.path} data-testid='uploaded-list-content-graphql' >
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <InsertDriveFile />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={`${apiInputs.inputValue.path} - 
-                                    ${humanFileSize(apiInputs.inputValue.size)}`}
-                                    data-testid={'file-input-'+apiInputs.inputValue.path}
-                                />
-                                <ListItemSecondaryAction>
-                                    <IconButton
-                                        edge='end'
-                                        aria-label='delete'
-                                        onClick={() => {
-                                            inputsDispatcher({ action: 'inputValue', value: null });
-                                            inputsDispatcher({ action: 'isFormValid', value: false });
-                                        }}
-                                        data-testid='btn-delete-imported-file'
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        </List>
-                    ) : (
-                        <DropZoneLocal
-                            error={isValid.file}
-                            onDrop={onDrop}
-                            files={apiInputs.inputValue}
-                            accept={accept}
-                            ariaLabel='GraphQL file upload'
-                        >
-                            {isValidating ? (<CircularProgress />)
-                                : ([
+                            <ListItemSecondaryAction>
+                                <IconButton
+                                    edge='end'
+                                    aria-label='delete'
+                                    onClick={() => {
+                                        inputsDispatcher({ action: 'inputValue', value: null });
+                                        inputsDispatcher({ action: 'isFormValid', value: false });
+                                    }}
+                                    data-testid='btn-delete-imported-file'
+                                    size='large'>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    </List>
+                ) : (
+                    <DropZoneLocal
+                        error={isValid.file}
+                        onDrop={onDrop}
+                        files={apiInputs.inputValue}
+                        accept={accept}
+                        ariaLabel='GraphQL file upload'
+                    >
+                        {isValidating ? (<CircularProgress />)
+                            : ([
+                                <FormattedMessage
+                                    id='Apis.Create.GraphQL.Steps.ProvideGraphQL.Input.file.dropzone'
+                                    defaultMessage={'Drag & Drop files here {break} or {break} '
+                                    + 'Browse files{break}({accept})'}
+                                    values={{ break: <br />, accept }}
+                                />,
+                                <Button
+                                    color='primary'
+                                    variant='contained'
+                                    data-testid='browse-to-upload-btn'
+                                >
                                     <FormattedMessage
-                                        id='Apis.Create.GraphQL.Steps.ProvideGraphQL.Input.file.dropzone'
-                                        defaultMessage={'Drag & Drop files here {break} or {break} '
-                                        + 'Browse files{break}({accept})'}
-                                        values={{ break: <br />, accept }}
-                                    />,
-                                    <Button
-                                        color='primary'
-                                        variant='contained'
-                                        data-testid='browse-to-upload-btn'
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Create.GraphQL.Steps.ProvideGraphQL.Input.file.upload'
-                                            defaultMessage='Browse File to Upload'
-                                        />
-                                    </Button>,
-                                ]
-                                )}
-                        </DropZoneLocal>
-                    )}
-                </Grid>
+                                        id='Apis.Create.GraphQL.Steps.ProvideGraphQL.Input.file.upload'
+                                        defaultMessage='Browse File to Upload'
+                                    />
+                                </Button>,
+                            ]
+                            )}
+                    </DropZoneLocal>
+                )}
             </Grid>
-        </>
-    );
+        </Grid>
+    </>;
 }
 
 ProvideGraphQL.defaultProps = {

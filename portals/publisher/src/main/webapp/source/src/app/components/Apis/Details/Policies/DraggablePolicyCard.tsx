@@ -17,7 +17,7 @@
  */
 
 import React, { CSSProperties, useMemo, useState } from 'react';
-import { makeStyles } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
@@ -112,90 +112,88 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
         setDialogOpen(false);
     };
 
-    return (
-        <>
-            <Box display='flex' flexDirection='row' alignItems='center'>
-                <div ref={drag} style={containerStyle}>
-                    <ListItem
-                        key={policyObj.id}
-                        className={classes.listItem}
-                        onMouseOver={() => setHovered(true)}
-                        onMouseOut={() => setHovered(false)}
-                    >
-                        <ListItemAvatar>
-                            <Avatar
-                                style={{
-                                    backgroundColor: Utils.stringToColor(
-                                        policyObj.displayName,
-                                    ),
-                                }}
-                            >
-                                {Utils.stringAvatar(
-                                    policyObj.displayName.toUpperCase(),
-                                )}
-                            </Avatar>
-                        </ListItemAvatar>
-                        <Box
-                            display='flex-inline'
-                            flexDirection='column'
-                            sx={{ flexGrow: 1 }}
-                            className={classes.policyCardText}
+    return <>
+        <Box display='flex' flexDirection='row' alignItems='center'>
+            <div ref={drag} style={containerStyle}>
+                <ListItem
+                    key={policyObj.id}
+                    className={classes.listItem}
+                    onMouseOver={() => setHovered(true)}
+                    onMouseOut={() => setHovered(false)}
+                >
+                    <ListItemAvatar>
+                        <Avatar
+                            style={{
+                                backgroundColor: Utils.stringToColor(
+                                    policyObj.displayName,
+                                ),
+                            }}
                         >
-                            <ListItemText
-                                id={policyObj.displayName}
-                                primary={policyObj.displayName}
-                                classes={{
-                                    primary: classes.policyCardText,
-                                }}
-                            />
-                            <ListItemText
-                                id={policyObj.version}
-                                secondary={policyObj.version}
-                                classes={{
-                                    secondary: classes.policyCardText,
-                                }}
-                            />
-                        </Box>
-                        <Box
-                            display='flex'
-                            justifyContent='flex-end'
-                            className={!hovered ? classes.policyActions : ''}
-                        >
-                            <Tooltip
-                                placement='top'
-                                title={
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
-                                        defaultMessage='View'
-                                    />
-                                }
-                            >
-                                <IconButton
-                                    onClick={handleViewPolicy}
-                                    aria-label={'view-' + policyObj.name}
-                                >
-                                    <VisibilityIcon />
-                                </IconButton>
-                            </Tooltip>
-                            {isLocalToAPI && (
-                                <DeletePolicy
-                                    policyId={policyObj.id}
-                                    policyName={policyObj.displayName}
-                                    fetchPolicies={fetchPolicies}
-                                />
+                            {Utils.stringAvatar(
+                                policyObj.displayName.toUpperCase(),
                             )}
-                        </Box>
-                    </ListItem>
-                </div>
-            </Box>
-            <ViewPolicy
-                dialogOpen={dialogOpen}
-                handleDialogClose={handleViewPolicyClose}
-                policyObj={policyObj}
-                isLocalToAPI={isLocalToAPI}
-            />
-        </>
-    );
+                        </Avatar>
+                    </ListItemAvatar>
+                    <Box
+                        display='flex-inline'
+                        flexDirection='column'
+                        sx={{ flexGrow: 1 }}
+                        className={classes.policyCardText}
+                    >
+                        <ListItemText
+                            id={policyObj.displayName}
+                            primary={policyObj.displayName}
+                            classes={{
+                                primary: classes.policyCardText,
+                            }}
+                        />
+                        <ListItemText
+                            id={policyObj.version}
+                            secondary={policyObj.version}
+                            classes={{
+                                secondary: classes.policyCardText,
+                            }}
+                        />
+                    </Box>
+                    <Box
+                        display='flex'
+                        justifyContent='flex-end'
+                        className={!hovered ? classes.policyActions : ''}
+                    >
+                        <Tooltip
+                            placement='top'
+                            title={
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
+                                    defaultMessage='View'
+                                />
+                            }
+                        >
+                            <IconButton
+                                onClick={handleViewPolicy}
+                                aria-label={'view-' + policyObj.name}
+                                size="large">
+                                <VisibilityIcon />
+                            </IconButton>
+                        </Tooltip>
+                        {isLocalToAPI && (
+                            <DeletePolicy
+                                policyId={policyObj.id}
+                                policyName={policyObj.displayName}
+                                fetchPolicies={fetchPolicies}
+                            />
+                        )}
+                    </Box>
+                </ListItem>
+            </div>
+        </Box>
+        <ViewPolicy
+            dialogOpen={dialogOpen}
+            handleDialogClose={handleViewPolicyClose}
+            policyObj={policyObj}
+            isLocalToAPI={isLocalToAPI}
+        />
+    </>;
 };
 
 export default DraggablePolicyCard;

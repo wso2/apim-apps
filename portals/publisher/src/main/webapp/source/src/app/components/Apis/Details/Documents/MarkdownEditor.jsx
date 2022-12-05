@@ -173,7 +173,7 @@ function MarkdownEditor(props) {
             </Button>
             <Dialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
                 <Paper square className={classes.popupHeader}>
-                    <IconButton color="inherit" onClick={toggleOpen} aria-label="Close">
+                    <IconButton color="inherit" onClick={toggleOpen} aria-label="Close" size="large">
                         <Icon>close</Icon>
                     </IconButton>
                     <Typography variant="h4" className={classes.docName}>
@@ -236,7 +236,7 @@ function MarkdownEditor(props) {
                                                     <code className={className} {...props}>
                                                         {children}
                                                     </code>
-                                                )
+                                                );
                                             }
                                         }}
                                     />                                

@@ -36,7 +36,7 @@ export { createFilterOptions };
 export const styles = (theme) => ({
     /* Styles applied to the root element. */
     root: {
-        '&$focused $clearIndicatorDirty': {
+        '&.Mui-focused $clearIndicatorDirty': {
             visibility: 'visible',
         },
         /* Avoid double tap issue on iOS */
@@ -415,116 +415,114 @@ const Autocomplete = React.forwardRef((props, ref) => {
     const hasClearIcon = !disableClearable && !disabled;
     const hasPopupIcon = (!freeSolo || forcePopupIcon === true) && forcePopupIcon !== false;
 
-    return (
-        <>
-            <div
-                ref={ref}
-                className={clsx(
-                    classes.root,
-                    {
-                        [classes.focused]: focused,
-                        [classes.fullWidth]: fullWidth,
-                        [classes.hasClearIcon]: hasClearIcon,
-                        [classes.hasPopupIcon]: hasPopupIcon,
-                    },
-                    className,
-                )}
-                {...getRootProps(other)}
-            >
-                {renderInput({
-                    id,
-                    disabled,
-                    fullWidth: true,
-                    size: size === 'small' ? 'small' : undefined,
-                    InputLabelProps: getInputLabelProps(),
-                    InputProps: {
-                        ref: setAnchorEl,
-                        className: classes.inputRoot,
-                        startAdornment,
-                        endAdornment: (
-                            <div className={classes.endAdornment}>
-                                {hasClearIcon ? (
-                                    <IconButton
-                                        {...getClearProps()}
-                                        aria-label={clearText}
-                                        title={clearText}
-                                        className={clsx(classes.clearIndicator, {
-                                            [classes.clearIndicatorDirty]: dirty,
-                                        })}
-                                    >
-                                        {closeIcon}
-                                    </IconButton>
-                                ) : null}
+    return <>
+        <div
+            ref={ref}
+            className={clsx(
+                classes.root,
+                {
+                    [classes.focused]: focused,
+                    [classes.fullWidth]: fullWidth,
+                    [classes.hasClearIcon]: hasClearIcon,
+                    [classes.hasPopupIcon]: hasPopupIcon,
+                },
+                className,
+            )}
+            {...getRootProps(other)}
+        >
+            {renderInput({
+                id,
+                disabled,
+                fullWidth: true,
+                size: size === 'small' ? 'small' : undefined,
+                InputLabelProps: getInputLabelProps(),
+                InputProps: {
+                    ref: setAnchorEl,
+                    className: classes.inputRoot,
+                    startAdornment,
+                    endAdornment: (
+                        <div className={classes.endAdornment}>
+                            {hasClearIcon ? (
+                                <IconButton
+                                    {...getClearProps()}
+                                    aria-label={clearText}
+                                    title={clearText}
+                                    className={clsx(classes.clearIndicator, {
+                                        [classes.clearIndicatorDirty]: dirty,
+                                    })}
+                                    size='large'>
+                                    {closeIcon}
+                                </IconButton>
+                            ) : null}
 
-                                {hasPopupIcon ? (
-                                    <IconButton
-                                        {...getPopupIndicatorProps()}
-                                        disabled={disabled}
-                                        aria-label={popupOpen ? closeText : openText}
-                                        title={popupOpen ? closeText : openText}
-                                        className={clsx(classes.popupIndicator, {
-                                            [classes.popupIndicatorOpen]: popupOpen,
-                                        })}
-                                    >
-                                        {popupIcon}
-                                    </IconButton>
-                                ) : null}
-                            </div>
-                        ),
-                    },
-                    inputProps: {
-                        className: clsx(classes.input, {
-                            [classes.inputFocused]: focusedTag === -1,
-                        }),
-                        disabled,
-                        ...getInputProps(),
-                    },
+                            {hasPopupIcon ? (
+                                <IconButton
+                                    {...getPopupIndicatorProps()}
+                                    disabled={disabled}
+                                    aria-label={popupOpen ? closeText : openText}
+                                    title={popupOpen ? closeText : openText}
+                                    className={clsx(classes.popupIndicator, {
+                                        [classes.popupIndicatorOpen]: popupOpen,
+                                    })}
+                                    size='large'>
+                                    {popupIcon}
+                                </IconButton>
+                            ) : null}
+                        </div>
+                    ),
+                },
+                inputProps: {
+                    className: clsx(classes.input, {
+                        [classes.inputFocused]: focusedTag === -1,
+                    }),
+                    disabled,
+                    ...getInputProps(),
+                },
+            })}
+        </div>
+        {popupOpen && anchorEl ? (
+            <PopperComponent
+                className={clsx(classes.popper, {
+                    [classes.popperDisablePortal]: disablePortal,
                 })}
-            </div>
-            {popupOpen && anchorEl ? (
-                <PopperComponent
-                    className={clsx(classes.popper, {
-                        [classes.popperDisablePortal]: disablePortal,
-                    })}
-                    style={{
-                        width: anchorEl ? anchorEl.clientWidth : null,
-                    }}
-                    role='presentation'
-                    anchorEl={anchorEl}
-                    open
-                >
-                    <PaperComponent className={classes.paper}>
-                        {loading && groupedOptions.length === 0 ? (
-                            <div className={classes.loading}>{loadingText}</div>
-                        ) : null}
-                        {groupedOptions.length === 0 && !freeSolo && !loading ? (
-                            <div className={classes.noOptions}>{noOptionsText}</div>
-                        ) : null}
-                        {groupedOptions.length > 0 ? (
-                            <ListboxComponent
-                                className={classes.listbox}
-                                {...getListboxProps()}
-                                {...ListboxProps}
-                            >
-                                {groupedOptions.map((option, index) => {
-                                    if (groupBy) {
-                                        return renderGroup({
-                                            key: option.key,
-                                            group: option.group,
-                                            children: option.options.map((option2, index2) =>
-                                                renderListOption(option2, option.index + index2),
-                                            ),
-                                        });
-                                    }
-                                    return renderListOption(option, index);
-                                })}
-                            </ListboxComponent>
-                        ) : null}
-                    </PaperComponent>
-                </PopperComponent>
-            ) : null}
-        </>
-    );
+                style={{
+                    width: anchorEl ? anchorEl.clientWidth : null,
+                }}
+                role='presentation'
+                anchorEl={anchorEl}
+                open
+            >
+                <PaperComponent className={classes.paper}>
+                    {loading && groupedOptions.length === 0 ? (
+                        <div className={classes.loading}>{loadingText}</div>
+                    ) : null}
+                    {groupedOptions.length === 0 && !freeSolo && !loading ? (
+                        <div className={classes.noOptions}>{noOptionsText}</div>
+                    ) : null}
+                    {groupedOptions.length > 0 ? (
+                        <ListboxComponent
+                            className={classes.listbox}
+                            {...getListboxProps()}
+                            {...ListboxProps}
+                        >
+                            {groupedOptions.map((option, index) => {
+                                if (groupBy) {
+                                    return renderGroup({
+                                        key: option.key,
+                                        group: option.group,
+                                        children: option.options.map((option2, index2) =>
+                                            renderListOption(option2, option.index + index2),
+                                        ),
+                                    });
+                                }
+                                return renderListOption(option, index);
+                            })}
+                        </ListboxComponent>
+                    ) : null}
+                </PaperComponent>
+            </PopperComponent>
+        ) : null}
+    </>;
 });
 
 Autocomplete.propTypes = {

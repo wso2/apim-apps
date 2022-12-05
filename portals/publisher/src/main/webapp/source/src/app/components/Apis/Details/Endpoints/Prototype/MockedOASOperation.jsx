@@ -21,11 +21,11 @@ import {
     CircularProgress,
     Divider,
     Grid,
-    makeStyles,
     MenuItem,
     TextField,
     Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { ArrowDropDown } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -48,39 +48,37 @@ const useStyles = makeStyles((theme) => {
  * */
 function MockedOASOperation(props) {
     const { operation } = props;
-    return (
-        <>
-            {operation.responses ?
-                <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
-                    <Grid item xs={12}>
-                        <Typography gutterBottom variant='subtitle1'>
+    return <>
+        {operation.responses ?
+            <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                <Grid item xs={12}>
+                    <Typography gutterBottom variant='subtitle1'>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.Prototype.MockedOAS.title'
+                            defaultMessage='Responses'
+                        />
+                        <Typography style={{ marginLeft: '10px' }} gutterBottom variant='caption'>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.Prototype.MockedOAS.title'
-                                defaultMessage='Responses'
+                                id='Apis.Details.Endpoints.Prototype.MockedOAS.subTitle'
+                                defaultMessage='Mocked examples generated from OAS'
                             />
-                            <Typography style={{ marginLeft: '10px' }} gutterBottom variant='caption'>
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.Prototype.MockedOAS.subTitle'
-                                    defaultMessage='Mocked examples generated from OAS'
-                                />
-                            </Typography>
-                            <Divider variant='middle' />
                         </Typography>
-                    </Grid>
+                        <Divider variant='middle' />
+                    </Typography>
+                </Grid>
 
-                    {Object.entries(operation.responses).map(([responseCode, response]) => (
-                        <Grid item xs={12} key={responseCode}>
-                            <MockedOASExample response={response}
-                                responseCode={responseCode} />
-                        </Grid>
-                    ))}
-                </Grid> : <FormattedMessage
-                    id='Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided'
-                    defaultMessage='Responses are not provided in the API definition'
-                />
-            }
-        </>
-    );
+                {Object.entries(operation.responses).map(([responseCode, response]) => (
+                    <Grid item xs={12} key={responseCode}>
+                        <MockedOASExample response={response}
+                            responseCode={responseCode} />
+                    </Grid>
+                ))}
+            </Grid> : <FormattedMessage
+                id='Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided'
+                defaultMessage='Responses are not provided in the API definition'
+            />
+        }
+    </>;
 }
 
 /**

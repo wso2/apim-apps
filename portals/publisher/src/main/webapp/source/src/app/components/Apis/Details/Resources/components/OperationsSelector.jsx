@@ -67,7 +67,7 @@ export default function OperationsSelector(props) {
     });
 
     return (
-        <Grid container direction='row' justify='space-between' alignItems='center'>
+        <Grid container direction='row' justifyContent='space-between' alignItems='center'>
             <Grid item />
             <Grid item>
                 <Box mr={17.25} display='flex'>

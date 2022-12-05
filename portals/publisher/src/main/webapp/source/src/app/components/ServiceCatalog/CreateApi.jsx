@@ -353,292 +353,290 @@ function CreateApi(props) {
         }).finally(() => setIsProcessing(false));
     };
 
-    return (
-        <>
-            {isIconButton && (
-                <Tooltip
-                    interactive
-                    title={(
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.components.ServiceCard.create.api'
-                            defaultMessage='Create API'
-                        />
-                    )}
-                >
-                    <IconButton
-                        disableRipple
-                        disableFocusRipple
-                        color='primary'
-                        onClick={toggleOpen}
-                        aria-label={`Create api from ${serviceDisplayName} service`}
-                    >
-                        <AddCircleIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
-            {!isIconButton && (
-                <Button
-                    color='primary'
-                    variant={isOverview ? 'contained' : 'outlined'}
-                    className={isOverview ? classes.topMarginSpacing : classes.buttonStyle}
-                    onClick={toggleOpen}
-                >
-                    <Typography className={!isOverview && classes.textStyle}>
-                        <FormattedMessage
-                            id='ServiceCatalog.CreateApi.create.api'
-                            defaultMessage='Create API'
-                        />
-                    </Typography>
-                </Button>
-            )}
-            <Dialog
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                open={open}
-                onClose={handleClose}
-                maxWidth='sm'
-                fullWidth
-                aria-labelledby='create-api-dialog-title'
+    return <>
+        {isIconButton && (
+            <Tooltip
+                interactive
+                title={(
+                    <FormattedMessage
+                        id='ServiceCatalog.Listing.components.ServiceCard.create.api'
+                        defaultMessage='Create API'
+                    />
+                )}
             >
-                <DialogTitle id='create-api-dialog-title'>
-                    <Typography variant='h5'>
+                <IconButton
+                    disableRipple
+                    disableFocusRipple
+                    color='primary'
+                    onClick={toggleOpen}
+                    aria-label={`Create api from ${serviceDisplayName} service`}
+                    size='large'>
+                    <AddCircleIcon />
+                </IconButton>
+            </Tooltip>
+        )}
+        {!isIconButton && (
+            <Button
+                color='primary'
+                variant={isOverview ? 'contained' : 'outlined'}
+                className={isOverview ? classes.topMarginSpacing : classes.buttonStyle}
+                onClick={toggleOpen}
+            >
+                <Typography className={!isOverview && classes.textStyle}>
+                    <FormattedMessage
+                        id='ServiceCatalog.CreateApi.create.api'
+                        defaultMessage='Create API'
+                    />
+                </Typography>
+            </Button>
+        )}
+        <Dialog
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            open={open}
+            onClose={handleClose}
+            maxWidth='sm'
+            fullWidth
+            aria-labelledby='create-api-dialog-title'
+        >
+            <DialogTitle id='create-api-dialog-title'>
+                <Typography variant='h5'>
+                    <FormattedMessage
+                        id='ServiceCatalog.CreateApi.create.api.dialog.title'
+                        defaultMessage='Create API'
+                    />
+                </Typography>
+                {servieDefinitionType === 'WSDL1' ? (
+                    <Typography variant='caption'>
                         <FormattedMessage
-                            id='ServiceCatalog.CreateApi.create.api.dialog.title'
-                            defaultMessage='Create API'
+                            id='ServiceCatalog.CreateSoapPassthroughApi.create.api.dialog.helper'
+                            defaultMessage='Create SOAP Passthrough API from service {serviceName}'
+                            values={{ serviceName: serviceDisplayName }}
                         />
                     </Typography>
-                    {servieDefinitionType === 'WSDL1' ? (
-                        <Typography variant='caption'>
-                            <FormattedMessage
-                                id='ServiceCatalog.CreateSoapPassthroughApi.create.api.dialog.helper'
-                                defaultMessage='Create SOAP Passthrough API from service {serviceName}'
-                                values={{ serviceName: serviceDisplayName }}
-                            />
-                        </Typography>
-                    ) : (
-                        <Typography variant='caption'>
-                            <FormattedMessage
-                                id='ServiceCatalog.CreateApi.create.api.dialog.helper'
-                                defaultMessage='Create API from service {serviceName}'
-                                values={{ serviceName: serviceDisplayName }}
-                            />
-                        </Typography>
+                ) : (
+                    <Typography variant='caption'>
+                        <FormattedMessage
+                            id='ServiceCatalog.CreateApi.create.api.dialog.helper'
+                            defaultMessage='Create API from service {serviceName}'
+                            values={{ serviceName: serviceDisplayName }}
+                        />
+                    </Typography>
+                )}
+            </DialogTitle>
+            <DialogContent>
+                <Grid container spacing={2}>
+                    {/* Page error banner */}
+                    {pageError && (
+                        <>
+                            <Grid item xs={12}>
+                                <Banner
+                                    onClose={() => setPageError(null)}
+                                    disableActions
+                                    dense
+                                    paperProps={{ elevation: 1 }}
+                                    type='error'
+                                    message={pageError}
+                                />
+                            </Grid>
+                            <Grid item xs={12} />
+                        </>
                     )}
-                </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        {/* Page error banner */}
-                        {pageError && (
-                            <>
-                                <Grid item xs={12}>
-                                    <Banner
-                                        onClose={() => setPageError(null)}
-                                        disableActions
-                                        dense
-                                        paperProps={{ elevation: 1 }}
-                                        type='error'
-                                        message={pageError}
+                    {/* end of Page error banner */}
+                    <Grid item xs={12}>
+                        <TextField
+                            autoFocus
+                            name='name'
+                            label={(
+                                <>
+                                    <FormattedMessage
+                                        id='ServiceCatalog.CreateApi.api.name.label'
+                                        defaultMessage='Name'
                                     />
-                                </Grid>
-                                <Grid item xs={12} />
-                            </>
-                        )}
-                        {/* end of Page error banner */}
-                        <Grid item xs={12}>
-                            <TextField
-                                autoFocus
-                                name='name'
-                                label={(
-                                    <>
-                                        <FormattedMessage
-                                            id='ServiceCatalog.CreateApi.api.name.label'
-                                            defaultMessage='Name'
-                                        />
-                                        <sup className={classes.mandatoryStar}>*</sup>
-                                    </>
-                                )}
-                                value={name}
-                                variant='outlined'
-                                error={validity.name}
-                                fullWidth
-                                helperText={
-                                    validity.name
-                                    && validity.name.details.map((detail, index) => {
-                                        return <div style={{ marginTop: index !== 0 && '10px' }}>{detail.message}</div>;
-                                    })
-                                }
-                                InputProps={{
-                                    id: 'itest-id-apiname-input',
-                                    onBlur: ({ target: { value } }) => {
-                                        validate('name', value);
-                                    },
-                                }}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
+                                    <sup className={classes.mandatoryStar}>*</sup>
+                                </>
+                            )}
+                            value={name}
+                            variant='outlined'
+                            error={validity.name}
+                            fullWidth
+                            helperText={
+                                validity.name
+                                && validity.name.details.map((detail, index) => {
+                                    return <div style={{ marginTop: index !== 0 && '10px' }}>{detail.message}</div>;
+                                })
+                            }
+                            InputProps={{
+                                id: 'itest-id-apiname-input',
+                                onBlur: ({ target: { value } }) => {
+                                    validate('name', value);
+                                },
+                            }}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            <Grid item md={8} xs={6}>
+                                <TextField
+                                    name='context'
+                                    label={(
+                                        <>
+                                            <FormattedMessage
+                                                id='ServiceCatalog.CreateApi.api.context.label'
+                                                defaultMessage='Context'
+                                            />
+                                            <sup className={classes.mandatoryStar}>*</sup>
+                                        </>
+                                    )}
+                                    value={context}
+                                    margin='normal'
+                                    variant='outlined'
+                                    error={validity.context}
+                                    fullWidth
+                                    helperText={
+                                        (validity.context
+                                            && validity.context.details.map((detail, index) => {
+                                                return (
+                                                    <div style={{ marginTop: index !== 0 && '10px' }}>
+                                                        {detail.message}
+                                                    </div>
+                                                );
+                                            }))
+                                        || `API will be exposed in ${actualContext({ context, version })}`
+                                        + ' context at the gateway'
+                                    }
+                                    InputProps={{
+                                        id: 'itest-id-apicontext-input',
+                                        onBlur: ({ target: { value } }) => {
+                                            validate('context', value);
+                                        },
+                                    }}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item md={4} xs={6}>
+                                <TextField
+                                    name='version'
+                                    label={(
+                                        <>
+                                            <FormattedMessage
+                                                id='ServiceCatalog.CreateApi.api.version.label'
+                                                defaultMessage='Version'
+                                            />
+                                            <sup className={classes.mandatoryStar}>*</sup>
+                                        </>
+                                    )}
+                                    value={version}
+                                    margin='normal'
+                                    variant='outlined'
+                                    error={validity.version}
+                                    fullWidth
+                                    helperText={validity.version && validity.version.message}
+                                    InputProps={{
+                                        id: 'itest-id-apiversion-input',
+                                        onBlur: ({ target: { value } }) => {
+                                            validate('version', value);
+                                        },
+                                    }}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            {definitionType === 'ASYNC_API' && (
                                 <Grid item md={8} xs={6}>
                                     <TextField
-                                        name='context'
+                                        id='version-selector'
+                                        select
                                         label={(
-                                            <>
-                                                <FormattedMessage
-                                                    id='ServiceCatalog.CreateApi.api.context.label'
-                                                    defaultMessage='Context'
-                                                />
-                                                <sup className={classes.mandatoryStar}>*</sup>
-                                            </>
+                                            <FormattedMessage
+                                                id='ServiceCatalog.CreateApi.select.protocol'
+                                                defaultMessage='Select Protocol'
+                                            />
                                         )}
-                                        value={context}
-                                        margin='normal'
+                                        name='selectType'
+                                        value={type}
+                                        onChange={handleChangeType}
+                                        margin='dense'
                                         variant='outlined'
-                                        error={validity.context}
                                         fullWidth
-                                        helperText={
-                                            (validity.context
-                                                && validity.context.details.map((detail, index) => {
-                                                    return (
-                                                        <div style={{ marginTop: index !== 0 && '10px' }}>
-                                                            {detail.message}
-                                                        </div>
-                                                    );
-                                                }))
-                                            || `API will be exposed in ${actualContext({ context, version })}`
-                                            + ' context at the gateway'
-                                        }
-                                        InputProps={{
-                                            id: 'itest-id-apicontext-input',
-                                            onBlur: ({ target: { value } }) => {
-                                                validate('context', value);
-                                            },
-                                        }}
-                                        onChange={handleChange}
-                                    />
-                                </Grid>
-                                <Grid item md={4} xs={6}>
-                                    <TextField
-                                        name='version'
-                                        label={(
-                                            <>
-                                                <FormattedMessage
-                                                    id='ServiceCatalog.CreateApi.api.version.label'
-                                                    defaultMessage='Version'
-                                                />
-                                                <sup className={classes.mandatoryStar}>*</sup>
-                                            </>
-                                        )}
-                                        value={version}
-                                        margin='normal'
-                                        variant='outlined'
-                                        error={validity.version}
-                                        fullWidth
-                                        helperText={validity.version && validity.version.message}
-                                        InputProps={{
-                                            id: 'itest-id-apiversion-input',
-                                            onBlur: ({ target: { value } }) => {
-                                                validate('version', value);
-                                            },
-                                        }}
-                                        onChange={handleChange}
-                                    />
-                                </Grid>
-                                {definitionType === 'ASYNC_API' && (
-                                    <Grid item md={8} xs={6}>
-                                        <TextField
-                                            id='version-selector'
-                                            select
-                                            label={(
-                                                <FormattedMessage
-                                                    id='ServiceCatalog.CreateApi.select.protocol'
-                                                    defaultMessage='Select Protocol'
-                                                />
-                                            )}
-                                            name='selectType'
-                                            value={type}
-                                            onChange={handleChangeType}
-                                            margin='dense'
-                                            variant='outlined'
-                                            fullWidth
-                                            SelectProps={{
-                                                MenuProps: {
-                                                    anchorOrigin: {
-                                                        vertical: 'bottom',
-                                                        horizontal: 'left',
-                                                    },
-                                                    getContentAnchorEl: null,
+                                        SelectProps={{
+                                            MenuProps: {
+                                                anchorOrigin: {
+                                                    vertical: 'bottom',
+                                                    horizontal: 'left',
                                                 },
-                                            }}
-                                        >
-                                            {protocols.map((protocol) => (
-                                                <MenuItem value={protocol.value} native>
-                                                    {protocol.value}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </Grid>
-                                )}
-                            </Grid>
+                                                getContentAnchorEl: null,
+                                            },
+                                        }}
+                                    >
+                                        {protocols.map((protocol) => (
+                                            <MenuItem value={protocol.value} native>
+                                                {protocol.value}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                            )}
                         </Grid>
                     </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Grid
-                        container
-                        direction='row'
-                        justify='flex-start'
-                        alignItems='center'
-                        className={classes.mandatoryLabelStyle}
-                    >
-                        <Grid item>
-                            <Typography variant='caption' display='block'>
-                                <sup style={{ color: 'red' }}>*</sup>
-                                {' '}
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Grid
+                    container
+                    direction='row'
+                    justifyContent='flex-start'
+                    alignItems='center'
+                    className={classes.mandatoryLabelStyle}
+                >
+                    <Grid item>
+                        <Typography variant='caption' display='block'>
+                            <sup style={{ color: 'red' }}>*</sup>
+                            {' '}
+                            <FormattedMessage
+                                id='ServiceCatalog.CreateApi.mandatory.field.label'
+                                defaultMessage='Mandatory fields'
+                            />
+                        </Typography>
+                    </Grid>
+                </Grid>
+                <Grid
+                    container
+                    direction='row'
+                    justifyContent='flex-end'
+                    alignItems='center'
+                    className={classes.actionButtonStyle}
+                >
+                    <Grid item>
+                        <Button disabled={isProcessing} onClick={toggleOpen} color='primary'>
+                            <FormattedMessage
+                                id='ServiceCatalog.CreateApi.cancel.btn'
+                                defaultMessage='Cancel'
+                            />
+                        </Button>
+                        <Button
+                            onClick={runAction}
+                            color='primary'
+                            variant='contained'
+                            disabled={!isFormValid || isProcessing}
+                        >
+                            {isProcessing ? (
                                 <FormattedMessage
-                                    id='ServiceCatalog.CreateApi.mandatory.field.label'
-                                    defaultMessage='Mandatory fields'
+                                    id='ServiceCatalog.CreateApi.update.btn.in.progress'
+                                    defaultMessage='Creating API ...'
                                 />
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Grid
-                        container
-                        direction='row'
-                        justify='flex-end'
-                        alignItems='center'
-                        className={classes.actionButtonStyle}
-                    >
-                        <Grid item>
-                            <Button disabled={isProcessing} onClick={toggleOpen} color='primary'>
+                            ) : (
                                 <FormattedMessage
-                                    id='ServiceCatalog.CreateApi.cancel.btn'
-                                    defaultMessage='Cancel'
+                                    id='ServiceCatalog.CreateApi.update.btn'
+                                    defaultMessage='Create API'
                                 />
-                            </Button>
-                            <Button
-                                onClick={runAction}
-                                color='primary'
-                                variant='contained'
-                                disabled={!isFormValid || isProcessing}
-                            >
-                                {isProcessing ? (
-                                    <FormattedMessage
-                                        id='ServiceCatalog.CreateApi.update.btn.in.progress'
-                                        defaultMessage='Creating API ...'
-                                    />
-                                ) : (
-                                    <FormattedMessage
-                                        id='ServiceCatalog.CreateApi.update.btn'
-                                        defaultMessage='Create API'
-                                    />
-                                )}
-                                {isProcessing && <CircularProgress size={15} />}
-                            </Button>
-                        </Grid>
+                            )}
+                            {isProcessing && <CircularProgress size={15} />}
+                        </Button>
                     </Grid>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
+                </Grid>
+            </DialogActions>
+        </Dialog>
+    </>;
 }
 
 CreateApi.defaultProps = {

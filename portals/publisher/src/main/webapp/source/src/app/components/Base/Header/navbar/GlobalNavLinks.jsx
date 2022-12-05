@@ -17,13 +17,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
+import Box from '@mui/material/Box'; 
 import List from '@mui/material/List';
 import LaunchIcon from '@mui/icons-material/Launch';
-import { useTheme } from '@mui/styles';
+import { useTheme , makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
-import { makeStyles } from '@mui/styles';
 import Divider from '@mui/material/Divider';
 
 import GlobalNavLink from './GlobalNavLink';

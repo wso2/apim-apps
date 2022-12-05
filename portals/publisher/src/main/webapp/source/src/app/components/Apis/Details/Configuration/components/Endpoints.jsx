@@ -21,8 +21,8 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
@@ -103,15 +103,15 @@ function Endpoints(props) {
     return (
         <>
             <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded id='endpoints'>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.Endpoints.endpoints'
                             defaultMessage='Endpoints'
                         />
                     </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                </AccordionSummary>
+                <AccordionDetails className={classes.expansionPanelDetails}>
                     {isDynamicEndpoints(api.endpointConfig)
                         ? (
                             <Box pb={2}>
@@ -218,7 +218,7 @@ function Endpoints(props) {
                             </Typography>
                         </Link>
                     </Box>
-                </ExpansionPanelDetails>
+                </AccordionDetails>
             </WrappedExpansionPanel>
         </>
     );

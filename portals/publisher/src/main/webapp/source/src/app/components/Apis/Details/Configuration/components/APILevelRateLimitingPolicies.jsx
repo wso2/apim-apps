@@ -23,9 +23,9 @@ import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -88,8 +88,8 @@ export default function APILevelRateLimitingPolicies(props) {
     }, []);
 
     return (
-        <ExpansionPanel className={classes.expansionPanel} defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        <Accordion className={classes.expansionPanel} defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={classes.subHeading} variant='h6'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.APILevelRateLimitingPolicies.configuration'
@@ -124,8 +124,8 @@ export default function APILevelRateLimitingPolicies(props) {
                         />
                     )}
                 />
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.expansionPanelDetails}>
                 <Grid container spacing={1} alignItems='center'>
                     <Grid item md={6} xs={12}>
                         {!(apiThrottlingPolicy === null) && (
@@ -149,8 +149,8 @@ export default function APILevelRateLimitingPolicies(props) {
                         )}
                     </Grid>
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     );
 }
 

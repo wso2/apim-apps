@@ -123,7 +123,11 @@ export default function UpdateWithoutDetails(props) {
                     />
                 </Typography>
                 {handleClose ? (
-                    <IconButton aria-label='close' className={classes.closeButton} onClick={handleClose}>
+                    <IconButton
+                        aria-label='close'
+                        className={classes.closeButton}
+                        onClick={handleClose}
+                        size='large'>
                         <CloseIcon />
                     </IconButton>
                 ) : null}

@@ -273,7 +273,7 @@ export default function ApiCreateGraphQL() {
                 </Grid>
                 <Grid item md={1} />
                 <Grid item md={9}>
-                    <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (
                                 <Link to='/apis/'>

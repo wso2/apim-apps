@@ -117,71 +117,69 @@ class Avatar extends Component {
             usr = username;
         }
         const { anchorEl } = this.state;
-        return (
-            <>
-                <IconButton
-                    id='profile-menu-btn'
-                    aria-owns='logout-menu'
-                    aria-haspopup='true'
-                    color='inherit'
-                    onClick={this.handleClick}
-                    className={readOnlyUser ? classes.readOnlyUserLink : classes.userLink}
-                    disableFocusRipple
-                    disableRipple
-                >
-                    <AccountCircle className={classes.accountIcon} />
-                    {' '}
-                    {usr}
-                    <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
-                        keyboard_arrow_down
-                    </Icon>
-                    {readOnlyUser && (
-                        <Box
-                            className={classes.flexbox}
-                            ml={1}
-                            color='#E57739'
-                        >
-                            <FormattedMessage
-                                id='Api.login.page.readonly.user'
-                                defaultMessage='Read only'
-                            />
-                        </Box>
-                    )}
-                </IconButton>
-                <Menu
-                    id='itest-logout-menu'
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={this.handleClose}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                    className={classes.profileMenu}
-                >
-                    <Link to={{ pathname: '/services/logout' }}>
-                        <MenuItem onClick={this.doOIDCLogout} id='itest-logout'>
-                            <Box mx={1} display='flex' alignItems='center' color='text.secondary'>
-                                <ExitToAppIcon fontSize='small' />
-                                <Box ml={1}>
-                                    <FormattedMessage
-                                        id='Base.Header.avatar.Avatar.logout'
-                                        defaultMessage='Logout'
-                                    />
-                                </Box>
+        return <>
+            <IconButton
+                id='profile-menu-btn'
+                aria-owns='logout-menu'
+                aria-haspopup='true'
+                color='inherit'
+                onClick={this.handleClick}
+                className={readOnlyUser ? classes.readOnlyUserLink : classes.userLink}
+                disableFocusRipple
+                disableRipple
+                size='large'>
+                <AccountCircle className={classes.accountIcon} />
+                {' '}
+                {usr}
+                <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
+                    keyboard_arrow_down
+                </Icon>
+                {readOnlyUser && (
+                    <Box
+                        className={classes.flexbox}
+                        ml={1}
+                        color='#E57739'
+                    >
+                        <FormattedMessage
+                            id='Api.login.page.readonly.user'
+                            defaultMessage='Read only'
+                        />
+                    </Box>
+                )}
+            </IconButton>
+            <Menu
+                id='itest-logout-menu'
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={this.handleClose}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                className={classes.profileMenu}
+            >
+                <Link to={{ pathname: '/services/logout' }}>
+                    <MenuItem onClick={this.doOIDCLogout} id='itest-logout'>
+                        <Box mx={1} display='flex' alignItems='center' color='text.secondary'>
+                            <ExitToAppIcon fontSize='small' />
+                            <Box ml={1}>
+                                <FormattedMessage
+                                    id='Base.Header.avatar.Avatar.logout'
+                                    defaultMessage='Logout'
+                                />
                             </Box>
+                        </Box>
 
-                        </MenuItem>
-                    </Link>
-                </Menu>
-            </>
-        );
+                    </MenuItem>
+                </Link>
+            </Menu>
+        </>;
     }
 }
 Avatar.propTypes = {

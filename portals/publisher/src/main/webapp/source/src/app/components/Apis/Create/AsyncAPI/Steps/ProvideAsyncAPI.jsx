@@ -188,155 +188,153 @@ export default function ProvideAsyncAPI(props) {
         }
     }
 
-    return (
-        <>
-            <Grid container spacing={5}>
-                <Grid item xs={12} md={12}>
-                    <FormControl component='fieldset'>
-                        <FormLabel component='legend'>
-                            <>
-                                <sup className={classes.mandatoryStar}>*</sup>
-                                {' '}
-                                <FormattedMessage
-                                    id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.type'
-                                    defaultMessage='Input Type'
-                                />
-                            </>
-                        </FormLabel>
-                        <RadioGroup
-                            aria-label='Input type'
-                            value={apiInputs.inputType}
-                            onChange={(event) => inputsDispatcher({ action: 'inputType', value: event.target.value })}
-                        >
-                            <FormControlLabel
-                                data-testid='input-asyncapi-url'
-                                value={ProvideAsyncAPI.INPUT_TYPES.URL}
-                                control={<Radio color='primary' />}
-                                label='AsyncAPI URL'
-                            />
-                            <FormControlLabel
-                                data-testid='input-asyncapi-file'
-                                value={ProvideAsyncAPI.INPUT_TYPES.FILE}
-                                control={<Radio color='primary' />}
-                                label='AsyncAPI File'
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Grid>
-                {isValid.file
-                && (
-                    <Grid item md={11}>
-                        <Banner
-                            onClose={() => setValidity({ file: null })}
-                            disableActions
-                            dense
-                            paperProps={{ elevation: 1 }}
-                            type='error'
-                            message={isValid.file.message}
-                            errors={validationErrors}
-                        />
-                    </Grid>
-                )}
-                <Grid item xs={10} md={11}>
-                    {isFileInput ? (
+    return <>
+        <Grid container spacing={5}>
+            <Grid item xs={12} md={12}>
+                <FormControl component='fieldset'>
+                    <FormLabel component='legend'>
                         <>
-                            {apiInputs.inputValue ? (
-                                <List>
-                                    <ListItem key={apiInputs.inputValue.path}>
-                                        <ListItemAvatar>
-                                            <Avatar>
-                                                <InsertDriveFile />
-                                            </Avatar>
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={`${apiInputs.inputValue.path} -
-                                    ${humanFileSize(apiInputs.inputValue.size)}`}
-                                        />
-                                        <ListItemSecondaryAction>
-                                            <IconButton
-                                                edge='end'
-                                                aria-label='delete'
-                                                onClick={() => {
-                                                    inputsDispatcher({ action: 'inputValue', value: null });
-                                                    inputsDispatcher({ action: 'isFormValid', value: false });
-                                                }}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-                                </List>
-                            ) : (
-                                <DropZoneLocal
-                                    error={isValid.file}
-                                    onDrop={onDrop}
-                                    files={apiInputs.inputValue}
-                                    accept='.bz,.bz2,.gz,.rar,.tar,.zip,.7z,.json,application/json,.yaml,.yml'
-                                >
-                                    {isValidating ? (<CircularProgress />)
-                                        : ([
-                                            <FormattedMessage
-                                                id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.dropzone'
-                                                defaultMessage={'Drag & Drop AsyncAPI File '
-                                                + 'here {break} or {break} Browse files'}
-                                                values={{ break: <br /> }}
-                                            />,
-                                            <Button
-                                                data-testid='upload-api-file'
-                                                color='primary'
-                                                variant='contained'
-                                            >
-                                                <FormattedMessage
-                                                    id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.upload'
-                                                    defaultMessage='Browse File to Upload'
-                                                />
-                                            </Button>,
-                                        ]
-                                        )}
-                                </DropZoneLocal>
-                            )}
+                            <sup className={classes.mandatoryStar}>*</sup>
+                            {' '}
+                            <FormattedMessage
+                                id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.type'
+                                defaultMessage='Input Type'
+                            />
                         </>
-                    ) : (
-                        <TextField
-                            autoFocus
-                            id='outlined-full-width'
+                    </FormLabel>
+                    <RadioGroup
+                        aria-label='Input type'
+                        value={apiInputs.inputType}
+                        onChange={(event) => inputsDispatcher({ action: 'inputType', value: event.target.value })}
+                    >
+                        <FormControlLabel
+                            data-testid='input-asyncapi-url'
+                            value={ProvideAsyncAPI.INPUT_TYPES.URL}
+                            control={<Radio color='primary' />}
                             label='AsyncAPI URL'
-                            placeholder='Enter AsyncAPI URL'
-                            fullWidth
-                            margin='normal'
-                            variant='outlined'
-                            onChange={({ target: { value } }) => inputsDispatcher({ action: 'inputValue', value })}
-                            value={apiInputs.inputValue}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            InputProps={{
-                                onBlur: ({ target: { value } }) => {
-                                    validateURL(value);
-                                },
-                                endAdornment: urlStateEndAdornment,
-                            }}
-                            // 'Give the URL of AsyncAPI endpoint'
-                            helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
-                            error={isInvalidURL}
                         />
-                    )}
-                </Grid>
-                { gatewayVendor === 'solace' && (
-                    <Grid item xs={10} md={11}>
-                        <Chip
-                            data-testid='solace-api-label'
-                            label='Identified as Solace Event Portal API'
-                            icon={<CheckCircleSharpIcon style={{ color: 'green' }} />}
-                            variant='outlined'
-                            style={{ color: 'green' }}
+                        <FormControlLabel
+                            data-testid='input-asyncapi-file'
+                            value={ProvideAsyncAPI.INPUT_TYPES.FILE}
+                            control={<Radio color='primary' />}
+                            label='AsyncAPI File'
                         />
-                    </Grid>
-                )}
-                <Grid item xs={2} md={5} />
+                    </RadioGroup>
+                </FormControl>
             </Grid>
-        </>
-    );
+            {isValid.file
+            && (
+                <Grid item md={11}>
+                    <Banner
+                        onClose={() => setValidity({ file: null })}
+                        disableActions
+                        dense
+                        paperProps={{ elevation: 1 }}
+                        type='error'
+                        message={isValid.file.message}
+                        errors={validationErrors}
+                    />
+                </Grid>
+            )}
+            <Grid item xs={10} md={11}>
+                {isFileInput ? (
+                    <>
+                        {apiInputs.inputValue ? (
+                            <List>
+                                <ListItem key={apiInputs.inputValue.path}>
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <InsertDriveFile />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={`${apiInputs.inputValue.path} -
+                                ${humanFileSize(apiInputs.inputValue.size)}`}
+                                    />
+                                    <ListItemSecondaryAction>
+                                        <IconButton
+                                            edge='end'
+                                            aria-label='delete'
+                                            onClick={() => {
+                                                inputsDispatcher({ action: 'inputValue', value: null });
+                                                inputsDispatcher({ action: 'isFormValid', value: false });
+                                            }}
+                                            size='large'>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            </List>
+                        ) : (
+                            <DropZoneLocal
+                                error={isValid.file}
+                                onDrop={onDrop}
+                                files={apiInputs.inputValue}
+                                accept='.bz,.bz2,.gz,.rar,.tar,.zip,.7z,.json,application/json,.yaml,.yml'
+                            >
+                                {isValidating ? (<CircularProgress />)
+                                    : ([
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.dropzone'
+                                            defaultMessage={'Drag & Drop AsyncAPI File '
+                                            + 'here {break} or {break} Browse files'}
+                                            values={{ break: <br /> }}
+                                        />,
+                                        <Button
+                                            data-testid='upload-api-file'
+                                            color='primary'
+                                            variant='contained'
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.upload'
+                                                defaultMessage='Browse File to Upload'
+                                            />
+                                        </Button>,
+                                    ]
+                                    )}
+                            </DropZoneLocal>
+                        )}
+                    </>
+                ) : (
+                    <TextField
+                        autoFocus
+                        id='outlined-full-width'
+                        label='AsyncAPI URL'
+                        placeholder='Enter AsyncAPI URL'
+                        fullWidth
+                        margin='normal'
+                        variant='outlined'
+                        onChange={({ target: { value } }) => inputsDispatcher({ action: 'inputValue', value })}
+                        value={apiInputs.inputValue}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        InputProps={{
+                            onBlur: ({ target: { value } }) => {
+                                validateURL(value);
+                            },
+                            endAdornment: urlStateEndAdornment,
+                        }}
+                        // 'Give the URL of AsyncAPI endpoint'
+                        helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
+                        error={isInvalidURL}
+                    />
+                )}
+            </Grid>
+            { gatewayVendor === 'solace' && (
+                <Grid item xs={10} md={11}>
+                    <Chip
+                        data-testid='solace-api-label'
+                        label='Identified as Solace Event Portal API'
+                        icon={<CheckCircleSharpIcon style={{ color: 'green' }} />}
+                        variant='outlined'
+                        style={{ color: 'green' }}
+                    />
+                </Grid>
+            )}
+            <Grid item xs={2} md={5} />
+        </Grid>
+    </>;
 }
 
 ProvideAsyncAPI.defaultProps = {

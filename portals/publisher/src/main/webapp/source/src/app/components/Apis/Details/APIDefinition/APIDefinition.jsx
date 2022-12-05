@@ -748,36 +748,50 @@ class APIDefinition extends React.Component {
 
         // @ts-ignore
         // @ts-ignore
-        return (
-            <>
-                {/* TODO tmkasun: use <Box> component for alignment  */}
-                <div className={classes.topBar}>
-                    <div className={classes.titleWrapper}>
-                        <Typography id='itest-api-details-api-definition-head' variant='h4' component='h2'>
-                            {/* eslint-disable-next-line no-nested-ternary */}
-                            {graphQL ? (
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.schema.definition'
-                                    defaultMessage='Schema Definition'
-                                />
-                            ) : asyncAPI ? (
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.asyncAPI.definition'
-                                    defaultMessage='AsyncAPI Definition'
-                                />
-                            ) : (
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.api.definition'
-                                    defaultMessage='API Definition'
-                                />
-                            )}
-                        </Typography>
-                        {asyncAPI ? (
+        return <>
+            {/* TODO tmkasun: use <Box> component for alignment  */}
+            <div className={classes.topBar}>
+                <div className={classes.titleWrapper}>
+                    <Typography id='itest-api-details-api-definition-head' variant='h4' component='h2'>
+                        {/* eslint-disable-next-line no-nested-ternary */}
+                        {graphQL ? (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.schema.definition'
+                                defaultMessage='Schema Definition'
+                            />
+                        ) : asyncAPI ? (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.asyncAPI.definition'
+                                defaultMessage='AsyncAPI Definition'
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.api.definition'
+                                defaultMessage='API Definition'
+                            />
+                        )}
+                    </Typography>
+                    {asyncAPI ? (
+                        <Button
+                            size='small'
+                            className={classes.button}
+                            onClick={this.openEditor}
+                            disabled={isRestricted(['apim:api_create'], api)}
+                        >
+                            <EditRounded className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.edit'
+                                defaultMessage='Edit'
+                            />
+                        </Button>
+                    ) : (
+                        !(graphQL || isApiProduct) && (
                             <Button
                                 size='small'
                                 className={classes.button}
                                 onClick={this.openEditor}
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
+                                id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />
                                 <FormattedMessage
@@ -785,257 +799,241 @@ class APIDefinition extends React.Component {
                                     defaultMessage='Edit'
                                 />
                             </Button>
-                        ) : (
-                            !(graphQL || isApiProduct) && (
-                                <Button
-                                    size='small'
-                                    className={classes.button}
-                                    onClick={this.openEditor}
-                                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
-                                    id='edit-definition-btn'
-                                >
-                                    <EditRounded className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.edit'
-                                        defaultMessage='Edit'
-                                    />
-                                </Button>
-                            )
-                        )}
-                        {!isApiProduct && (
-                            <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
-                                editAndImport={this.openEditorToImport}/>
-                        )}
-                        {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
-                            <DefinitionOutdated
-                                api={api}
-                                classes={classes}
-                            />
-                        )}
-                        <Button
-                            size='small'
-                            className={classes.button}
-                            component={Link}
-                            download={fileName}
-                            href={downloadLink}
-                            id='download-definition-btn'
-                        >
-                            <CloudDownloadRounded className={classes.buttonIcon} />
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.APIDefinition.download.definition'
-                                defaultMessage='Download Definition'
-                            />
-                        </Button>
-                        {(securityAuditProperties.apiToken && securityAuditProperties.collectionId
-                        && api.type !== 'GRAPHQL' && !asyncAPI)
-                            && (
-                                <Button size='small' className={classes.button} onClick={this.onAuditApiClick}>
-                                    <LockRounded className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.audit.api'
-                                        defaultMessage='Audit API'
-                                    />
-                                </Button>
-                            )}
-                    </div>
-                    {isGraphQL === 0 && (
-                        <div className={classes.titleWrapper}>
-                            <Button size='small' className={classes.button} onClick={this.onChangeFormatClick}>
-                                <SwapHorizontalCircle className={classes.buttonIcon} />
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.convert.to'
-                                    defaultMessage='Convert to'
-                                />
-                                {' '}
-                                {convertTo}
-                            </Button>
-                        </div>
+                        )
                     )}
-                </div>
-                <div>
-                    <Suspense fallback={<Progress />}>
-                        {isAuditApiClicked ? (
-                            <APISecurityAudit apiId={api.id} />
-                        ) : (
-                            <MonacoEditor
-                                language={format}
-                                width='100%'
-                                height='calc(100vh - 51px)'
-                                theme='vs-dark'
-                                /* eslint-disable-next-line no-nested-ternary */
-                                value={swagger !== null ? swagger : asyncAPI !== null ? asyncAPI : graphQL}
-                                options={editorOptions}
-                            />
-                        )}
-                    </Suspense>
-                </div>
-                <Dialog fullScreen open={openEditor} onClose={this.closeEditor} TransitionComponent={this.transition}>
-                    <Paper square className={classes.popupHeader}>
-                        <Box display='flex' flexDirection='row' justifyContent='space-between'>
-                            <Box>
-                                <IconButton
-                                    className={classes.button}
-                                    color='inherit'
-                                    onClick={this.closeEditor}
-                                    aria-label={(
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.btn.close'
-                                            defaultMessage='Close'
-                                        />
-                                    )}
-                                >
-                                    <Icon>close</Icon>
-                                </IconButton>
-
-                                <Button
-                                    className={classes.button}
-                                    variant='contained'
-                                    color='primary'
-                                    onClick={this.openUpdateConfirmation}
-                                    disabled={(!isSwaggerValid || isUpdating) || (!isAsyncAPIValid || isUpdating)}
-                                >
-                                    {isImporting? (
-                                        <FormattedMessage
-                                            id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
-                                                + 'update.content'}
-                                            defaultMessage='Import Content'
-                                        />
-                                    ):(
-                                        <FormattedMessage
-                                            id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
-                                                + 'update.content'}
-                                            defaultMessage='Update Content'
-                                        />
-                                    )}
-                                    {isUpdating && <CircularProgress className={classes.progressLoader} size={24}/>}
-                                </Button>
-                            </Box>
-                            <Box margin='3px'>
-                                <ToggleButtonGroup
-                                    data-testid='editor-drawe-toggle'
-                                    exclusive
-                                    aria-label='toggle'
-                                    size='small'
-                                    onChange={(event, value) => {
-                                        this.setState({ isSwaggerUI: value === "swagger" })
-                                    }}
-                                >
-                                    <ToggleButton
-                                        className={classes.activeButton}
-                                        value='swagger'
-                                        aria-label='swagger'
-                                        selected={this.state.isSwaggerUI}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger'
-                                            defaultMessage='Swagger'
-                                        />
-                                    </ToggleButton>
-                                    <ToggleButton
-                                        className={classes.activeButton}
-                                        value='linter'
-                                        aria-label='linter'
-                                        selected={!this.state.isSwaggerUI}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter'
-                                            defaultMessage='Linter'
-                                        />
-                                    </ToggleButton>
-                                    <APILintingSummary 
-                                        linterResults={linterResults}
-                                        handleChange = { (event, value)=> {
-                                            this.setState({linterSelectedSeverity: value});
-                                            this.setState({ isSwaggerUI: false }) }}
-                                    />
-                                </ToggleButtonGroup>
-                                
-                            </Box>
-                        </Box>
-                    </Paper>
-                    <Suspense
-                        fallback={(
-                            <Progress />
-                        )}
+                    {!isApiProduct && (
+                        <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
+                            editAndImport={this.openEditorToImport}/>
+                    )}
+                    {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
+                        <DefinitionOutdated
+                            api={api}
+                            classes={classes}
+                        />
+                    )}
+                    <Button
+                        size='small'
+                        className={classes.button}
+                        component={Link}
+                        download={fileName}
+                        href={downloadLink}
+                        id='download-definition-btn'
                     >
-                        {swagger ? (
-                            <EditorDialog
-                                swagger={isImporting? swaggerImporting : swaggerModified}
-                                language={format}
-                                onEditContent={this.onChangeSwaggerContent}
-                                errors={errors}
-                                setErrors={this.setErrors}
-                                isSwaggerUI={ isSwaggerUI }
-                                linterResults={ linterResults.filter((item)=> 
-                                    linterSelectedSeverity===null||
-                                    item.severity===Number(linterSelectedSeverity))
-                                }
-                                linterSelectedSeverity={linterSelectedSeverity}
-                                linterSelectedLine={linterSelectedLine}
-                            />
-                        ) : (
-                            <AsyncAPIEditor
-                                asyncAPI={asyncAPIModified}
-                                language={format}
-                                onEditContent={this.onChangeAsyncAPIContent}
-                            />
-                        )}
-                    </Suspense>
-                </Dialog>
-                <Dialog
-                    open={openDialog}
-                    onClose={this.handleNo}
-                    aria-labelledby='alert-dialog-title'
-                    aria-describedby='alert-dialog-description'
-                >
-                    <DialogTitle id='alert-dialog-title'>
-                        <Typography align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.APIDefinition.save.api.definition'
-                                defaultMessage='Save API Definition'
-                            />
-                        </Typography>
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id='alert-dialog-description'>
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
-                                defaultMessage={
-                                    'Are you sure you want to save the API Definition? This might affect the'
-                                    + ' existing resources.'
-                                }
-                            />
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Grid
-                            container
-                            direction='row'
-                            alignItems='flex-start'
-                            spacing={1}
-                        >
-                            <Grid item>
-                                <Button onClick={this.handleNo} color='primary'>
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.btn.no'
-                                        defaultMessage='CANCEL'
-                                    />
-                                </Button>
-                            </Grid>
-                            <Grid item>
-                                <CustomSplitButton
-                                    advertiseInfo={api.advertiseInfo}
-                                    api={api}
-                                    handleSave={this.handleSave}
-                                    handleSaveAndDeploy={this.handleSaveAndDeploy}
-                                    isUpdating={isUpdating}
+                        <CloudDownloadRounded className={classes.buttonIcon} />
+                        <FormattedMessage
+                            id='Apis.Details.APIDefinition.APIDefinition.download.definition'
+                            defaultMessage='Download Definition'
+                        />
+                    </Button>
+                    {(securityAuditProperties.apiToken && securityAuditProperties.collectionId
+                    && api.type !== 'GRAPHQL' && !asyncAPI)
+                        && (
+                            <Button size='small' className={classes.button} onClick={this.onAuditApiClick}>
+                                <LockRounded className={classes.buttonIcon} />
+                                <FormattedMessage
+                                    id='Apis.Details.APIDefinition.APIDefinition.audit.api'
+                                    defaultMessage='Audit API'
                                 />
-                            </Grid>
+                            </Button>
+                        )}
+                </div>
+                {isGraphQL === 0 && (
+                    <div className={classes.titleWrapper}>
+                        <Button size='small' className={classes.button} onClick={this.onChangeFormatClick}>
+                            <SwapHorizontalCircle className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.convert.to'
+                                defaultMessage='Convert to'
+                            />
+                            {' '}
+                            {convertTo}
+                        </Button>
+                    </div>
+                )}
+            </div>
+            <div>
+                <Suspense fallback={<Progress />}>
+                    {isAuditApiClicked ? (
+                        <APISecurityAudit apiId={api.id} />
+                    ) : (
+                        <MonacoEditor
+                            language={format}
+                            width='100%'
+                            height='calc(100vh - 51px)'
+                            theme='vs-dark'
+                            /* eslint-disable-next-line no-nested-ternary */
+                            value={swagger !== null ? swagger : asyncAPI !== null ? asyncAPI : graphQL}
+                            options={editorOptions}
+                        />
+                    )}
+                </Suspense>
+            </div>
+            <Dialog fullScreen open={openEditor} onClose={this.closeEditor} TransitionComponent={this.transition}>
+                <Paper square className={classes.popupHeader}>
+                    <Box display='flex' flexDirection='row' justifyContent='space-between'>
+                        <Box>
+                            <IconButton
+                                className={classes.button}
+                                color='inherit'
+                                onClick={this.closeEditor}
+                                aria-label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDefinition.APIDefinition.btn.close'
+                                        defaultMessage='Close'
+                                    />
+                                )}
+                                size='large'>
+                                <Icon>close</Icon>
+                            </IconButton>
+
+                            <Button
+                                className={classes.button}
+                                variant='contained'
+                                color='primary'
+                                onClick={this.openUpdateConfirmation}
+                                disabled={(!isSwaggerValid || isUpdating) || (!isAsyncAPIValid || isUpdating)}
+                            >
+                                {isImporting? (
+                                    <FormattedMessage
+                                        id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
+                                            + 'update.content'}
+                                        defaultMessage='Import Content'
+                                    />
+                                ):(
+                                    <FormattedMessage
+                                        id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
+                                            + 'update.content'}
+                                        defaultMessage='Update Content'
+                                    />
+                                )}
+                                {isUpdating && <CircularProgress className={classes.progressLoader} size={24}/>}
+                            </Button>
+                        </Box>
+                        <Box margin='3px'>
+                            <ToggleButtonGroup
+                                data-testid='editor-drawe-toggle'
+                                exclusive
+                                aria-label='toggle'
+                                size='small'
+                                onChange={(event, value) => {
+                                    this.setState({ isSwaggerUI: value === "swagger" })
+                                }}
+                            >
+                                <ToggleButton
+                                    className={classes.activeButton}
+                                    value='swagger'
+                                    aria-label='swagger'
+                                    selected={this.state.isSwaggerUI}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger'
+                                        defaultMessage='Swagger'
+                                    />
+                                </ToggleButton>
+                                <ToggleButton
+                                    className={classes.activeButton}
+                                    value='linter'
+                                    aria-label='linter'
+                                    selected={!this.state.isSwaggerUI}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter'
+                                        defaultMessage='Linter'
+                                    />
+                                </ToggleButton>
+                                <APILintingSummary 
+                                    linterResults={linterResults}
+                                    handleChange = { (event, value)=> {
+                                        this.setState({linterSelectedSeverity: value});
+                                        this.setState({ isSwaggerUI: false }) }}
+                                />
+                            </ToggleButtonGroup>
+                            
+                        </Box>
+                    </Box>
+                </Paper>
+                <Suspense
+                    fallback={(
+                        <Progress />
+                    )}
+                >
+                    {swagger ? (
+                        <EditorDialog
+                            swagger={isImporting? swaggerImporting : swaggerModified}
+                            language={format}
+                            onEditContent={this.onChangeSwaggerContent}
+                            errors={errors}
+                            setErrors={this.setErrors}
+                            isSwaggerUI={ isSwaggerUI }
+                            linterResults={ linterResults.filter((item)=> 
+                                linterSelectedSeverity===null||
+                                item.severity===Number(linterSelectedSeverity))
+                            }
+                            linterSelectedSeverity={linterSelectedSeverity}
+                            linterSelectedLine={linterSelectedLine}
+                        />
+                    ) : (
+                        <AsyncAPIEditor
+                            asyncAPI={asyncAPIModified}
+                            language={format}
+                            onEditContent={this.onChangeAsyncAPIContent}
+                        />
+                    )}
+                </Suspense>
+            </Dialog>
+            <Dialog
+                open={openDialog}
+                onClose={this.handleNo}
+                aria-labelledby='alert-dialog-title'
+                aria-describedby='alert-dialog-description'
+            >
+                <DialogTitle id='alert-dialog-title'>
+                    <Typography align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.APIDefinition.APIDefinition.save.api.definition'
+                            defaultMessage='Save API Definition'
+                        />
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id='alert-dialog-description'>
+                        <FormattedMessage
+                            id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
+                            defaultMessage={
+                                'Are you sure you want to save the API Definition? This might affect the'
+                                + ' existing resources.'
+                            }
+                        />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Grid
+                        container
+                        direction='row'
+                        alignItems='flex-start'
+                        spacing={1}
+                    >
+                        <Grid item>
+                            <Button onClick={this.handleNo} color='primary'>
+                                <FormattedMessage
+                                    id='Apis.Details.APIDefinition.APIDefinition.btn.no'
+                                    defaultMessage='CANCEL'
+                                />
+                            </Button>
                         </Grid>
-                    </DialogActions>
-                </Dialog>
-            </>
-        );
+                        <Grid item>
+                            <CustomSplitButton
+                                advertiseInfo={api.advertiseInfo}
+                                api={api}
+                                handleSave={this.handleSave}
+                                handleSaveAndDeploy={this.handleSaveAndDeploy}
+                                isUpdating={isUpdating}
+                            />
+                        </Grid>
+                    </Grid>
+                </DialogActions>
+            </Dialog>
+        </>;
     }
 }
 

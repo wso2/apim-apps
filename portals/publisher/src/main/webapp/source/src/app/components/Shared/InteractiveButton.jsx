@@ -19,7 +19,7 @@
 import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { withStyles } from '@mui/styles';
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';

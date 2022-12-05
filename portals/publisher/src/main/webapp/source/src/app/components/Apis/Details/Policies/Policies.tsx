@@ -17,8 +17,9 @@
  */
 
 import {
-    Grid, makeStyles, Typography,
+    Grid, Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
@@ -433,7 +434,7 @@ const Policies: React.FC = () => {
                                         <Grid
                                             container
                                             direction='column'
-                                            justify='flex-start'
+                                            justifyContent='flex-start'
                                             spacing={1}
                                             alignItems='stretch'
                                         >

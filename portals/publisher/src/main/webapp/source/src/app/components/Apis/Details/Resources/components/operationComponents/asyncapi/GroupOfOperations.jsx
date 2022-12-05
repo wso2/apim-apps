@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
+import Accordion from '@mui/material/Accordion';
 import PropTypes from 'prop-types';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -33,14 +33,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 export default function GroupOfOperations(props) {
     const { children, tag } = props;
     return (
-        <ExpansionPanel defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
+        <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
                 <Typography variant='h4'>
                     {tag}
                 </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionSummary>
+            <AccordionDetails>{children}</AccordionDetails>
+        </Accordion>
     );
 }
 

@@ -36,68 +36,66 @@ interface ResourceNotFoundErrorProps {
 
 const ResourceNotFoundError: FC<ResourceNotFoundErrorProps> = ({ message }) => {
 
-    return (
-        <>
-            <Container maxWidth='md'>
-                <Box padding={4}>
-                    <Paper elevation={0}>
-                        <Box padding={4}>
-                            <Grid container alignItems='center' justify='center' style={{ height: '100%' }}>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant='h5' gutterBottom>
-                                        {message ? message.title : (
+    return <>
+        <Container maxWidth='md'>
+            <Box padding={4}>
+                <Paper elevation={0}>
+                    <Box padding={4}>
+                        <Grid container alignItems='center' justifyContent='center' style={{ height: '100%' }}>
+                            <Grid item xs={12} md={6}>
+                                <Typography variant='h5' gutterBottom>
+                                    {message ? message.title : (
+                                        <FormattedMessage
+                                            id='Base.Errors.ResourceNotfound.default_tittle'
+                                            defaultMessage='Page Not Found'
+                                        />
+                                    )}
+                                </Typography>
+                                <Typography variant='subtitle1' gutterBottom>
+                                    {message ? message.body : (
+                                        <FormattedMessage
+                                            id='Base.Errors.ResourceNotfound.default_body'
+                                            defaultMessage='The page you are looking for is not available'
+                                        />
+                                    )}
+                                </Typography>
+                                <Box py={5}>
+                                    <Box pb={2}>
+                                        <Typography variant='subtitle1'>
                                             <FormattedMessage
-                                                id='Base.Errors.ResourceNotfound.default_tittle'
-                                                defaultMessage='Page Not Found'
+                                                id='Base.Errors.ResourceNotFound.more.links'
+                                                defaultMessage='You may check the links below'
                                             />
-                                        )}
-                                    </Typography>
-                                    <Typography variant='subtitle1' gutterBottom>
-                                        {message ? message.body : (
-                                            <FormattedMessage
-                                                id='Base.Errors.ResourceNotfound.default_body'
-                                                defaultMessage='The page you are looking for is not available'
-                                            />
-                                        )}
-                                    </Typography>
-                                    <Box py={5}>
-                                        <Box pb={2}>
-                                            <Typography variant='subtitle1'>
-                                                <FormattedMessage
-                                                    id='Base.Errors.ResourceNotFound.more.links'
-                                                    defaultMessage='You may check the links below'
-                                                />
-                                            </Typography>
-                                        </Box>
-                                        <Link to='/apis/' style={{ marginRight: 8 }}>
-                                            <Button variant='contained' color='primary'>
-                                                <FormattedMessage
-                                                    id='Base.Errors.ResourceNotFound.api.list'
-                                                    defaultMessage='API List'
-                                                />
-                                            </Button>
-                                        </Link>
-                                        <Link to='/api-products/'>
-                                            <Button variant='contained' color='primary'>
-                                                <FormattedMessage
-                                                    id='Base.Errors.ResourceNotFound.api.product.list'
-                                                    defaultMessage='API Product List'
-                                                />
-                                            </Button>
-                                        </Link>
+                                        </Typography>
                                     </Box>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    {/* Image */}
-                                    <Image404 />
-                                </Grid>
+                                    <Link to='/apis/' style={{ marginRight: 8 }}>
+                                        <Button variant='contained' color='primary'>
+                                            <FormattedMessage
+                                                id='Base.Errors.ResourceNotFound.api.list'
+                                                defaultMessage='API List'
+                                            />
+                                        </Button>
+                                    </Link>
+                                    <Link to='/api-products/'>
+                                        <Button variant='contained' color='primary'>
+                                            <FormattedMessage
+                                                id='Base.Errors.ResourceNotFound.api.product.list'
+                                                defaultMessage='API Product List'
+                                            />
+                                        </Button>
+                                    </Link>
+                                </Box>
                             </Grid>
-                        </Box>
-                    </Paper>
-                </Box>
-            </Container>
-        </>
-    );
+                            <Grid item xs={12} md={6}>
+                                {/* Image */}
+                                <Image404 />
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Paper>
+            </Box>
+        </Container>
+    </>;
 };
 
 export default ResourceNotFoundError;

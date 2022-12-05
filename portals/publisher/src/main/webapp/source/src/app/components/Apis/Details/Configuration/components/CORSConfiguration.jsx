@@ -26,8 +26,8 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@mui/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -86,7 +86,7 @@ export default function CORSConfiguration(props) {
     };
     return (
         <WrappedExpansionPanel className={classes.expansionPanel} id='corsConfiguration'>
-            <ExpansionPanelSummary expandIcon={generateElement(corsConfiguration.corsConfigurationEnabled)}>
+            <AccordionSummary expandIcon={generateElement(corsConfiguration.corsConfigurationEnabled)}>
                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.CORSConfiguration.cors.configuration'
@@ -123,8 +123,8 @@ export default function CORSConfiguration(props) {
                         />
                     )}
                 />
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.expansionPanelDetails}>
                 <Grid container>
                     <Grid item md={12}>
                         {isCorsEnabled && (
@@ -327,7 +327,7 @@ export default function CORSConfiguration(props) {
                         )}
                     </Grid>
                 </Grid>
-            </ExpansionPanelDetails>
+            </AccordionDetails>
         </WrappedExpansionPanel>
     );
 }

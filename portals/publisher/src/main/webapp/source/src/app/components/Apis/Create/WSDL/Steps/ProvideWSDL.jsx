@@ -189,7 +189,7 @@ export default function ProvideWSDL(props) {
                                 inputsDispatcher({ action: 'inputValue', value: null });
                                 inputsDispatcher({ action: 'isFormValid', value: false });
                             }}
-                        >
+                            size='large'>
                             <DeleteIcon />
                         </IconButton>
                     </ListItemSecondaryAction>

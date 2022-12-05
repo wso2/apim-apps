@@ -133,7 +133,7 @@ export default function EditParameter(props) {
     }
     return (
         <Dialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-parameter'>
-            <DialogTitle disableTypography id='edit-parameter'>
+            <DialogTitle id='edit-parameter'>
                 <Typography variant='h6'>
                     <FormattedMessage
                         id='Apis.Details.Resources.components.operationComponents.EditParameter.title'
@@ -149,7 +149,7 @@ export default function EditParameter(props) {
                 </Typography>
             </DialogTitle>
             <DialogContent>
-                <Grid container direction='row' spacing={2} justify='flex-start' alignItems='center'>
+                <Grid container direction='row' spacing={2} justifyContent='flex-start' alignItems='center'>
                     <Grid item md={6}>
                         <TextField
                             value={capitalizeFirstLetter(parameter.in)}
@@ -338,7 +338,7 @@ export default function EditParameter(props) {
                             />
                         </FormControl>
                     </Grid>
-                    <Grid container direction='row' justify='flex-end' alignItems='center'>
+                    <Grid container direction='row' justifyContent='flex-end' alignItems='center'>
                         <DialogContentText>
                             <FormattedMessage
                                 id={'Apis.Details.Resources.components.operationComponents.EditParameter.'

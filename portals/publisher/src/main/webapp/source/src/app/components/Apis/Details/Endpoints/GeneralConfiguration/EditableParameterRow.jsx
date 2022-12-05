@@ -173,7 +173,7 @@ function EditableParameterRow(props) {
                             onKeyDown={() => {}}
                             disabled={validateEmpty(newName) || validateEmpty(newValue)}
                             color='inherit'
-                        >
+                            size='large'>
                             <SaveIcon className={classes.buttonIcon} />
                         </IconButton>
                     </>
@@ -185,7 +185,7 @@ function EditableParameterRow(props) {
                         onKeyDown={() => {}}
                         color='inherit'
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    >
+                        size='large'>
                         <EditIcon className={classes.buttonIcon} />
                     </IconButton>
                 )}
@@ -196,7 +196,7 @@ function EditableParameterRow(props) {
                     onKeyDown={() => {}}
                     color='inherit'
                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                >
+                    size='large'>
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>

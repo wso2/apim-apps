@@ -222,7 +222,7 @@ function Certificates(props) {
                         id='certs-add-btn'
                     >
                         <ListItemAvatar>
-                            <IconButton>
+                            <IconButton size='large'>
                                 <Icon>add</Icon>
                             </IconButton>
                         </ListItemAvatar>
@@ -242,19 +242,19 @@ function Certificates(props) {
                                         : <ListItemText primary={cert.alias} secondary={cert.endpoint} />}
 
                                     <ListItemSecondaryAction>
-                                        <IconButton edge='end'>
+                                        <IconButton edge='end' size='large'>
                                             <CertificateUsage certAlias={cert.alias}/>
                                         </IconButton>
                                         <IconButton
                                             onClick={(event) => showCertificateDetails(event, cert.alias)}
-                                        >
+                                            size='large'>
                                             <Icon>info</Icon>
                                         </IconButton>
                                         <IconButton
                                             disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                             onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
                                             id='delete-cert-btn'
-                                        >
+                                            size='large'>
                                             <Icon className={isRestricted(['apim:api_create'], apiFromContext)
                                                 ? classes.deleteIconDisable : classes.deleteIcon}
                                             >

@@ -84,7 +84,12 @@ function MySnackbarContentWrapper(props) {
                 </span>
             )}
             action={[
-                <IconButton key='close' aria-label='close' color='inherit' onClick={onClose}>
+                <IconButton
+                    key='close'
+                    aria-label='close'
+                    color='inherit'
+                    onClick={onClose}
+                    size="large">
                     <CloseIcon className={classes.icon} />
                 </IconButton>,
             ]}

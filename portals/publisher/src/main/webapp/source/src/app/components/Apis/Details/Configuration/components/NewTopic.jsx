@@ -18,7 +18,7 @@
 
 import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import { withStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -156,7 +156,7 @@ function Topics(props) {
 
     return (
         <Paper className={classes.root}>
-            <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item xs={12}>
                     <Typography component='h4' align='left'>
                         Add New Topic
@@ -189,7 +189,7 @@ function Topics(props) {
                         }}
                     />
                 </Grid>
-                <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                     <Grid item>
                         <Button
                             id='itest-id-apitopics-addtopic'

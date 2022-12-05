@@ -22,9 +22,9 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import UsageViewResource from './UsageViewResource';
@@ -87,8 +87,8 @@ export default function UsageViewAPI(props) {
                 </Typography>
                 <br />
                 {apiList.map((api) => (
-                    <ExpansionPanel expanded={expanded === api.name} onChange={handleChange(api.name)}>
-                        <ExpansionPanelSummary
+                    <Accordion expanded={expanded === api.name} onChange={handleChange(api.name)}>
+                        <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls='panel1a-content'
                             id='panel1a-header'
@@ -145,13 +145,13 @@ export default function UsageViewAPI(props) {
                                     {api.provider}
                                 </Box>
                             </Typography>
-                        </ExpansionPanelSummary>
-                        <ExpansionPanelDetails className={classes.details}>
+                        </AccordionSummary>
+                        <AccordionDetails className={classes.details}>
                             <UsageViewResource
                                 usedResourceList={api.usedResourceList}
                             />
-                        </ExpansionPanelDetails>
-                    </ExpansionPanel>
+                        </AccordionDetails>
+                    </Accordion>
                 ))}
             </div>
         );

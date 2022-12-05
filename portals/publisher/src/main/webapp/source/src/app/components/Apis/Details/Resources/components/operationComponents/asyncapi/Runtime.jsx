@@ -73,102 +73,100 @@ export default function Runtime(props) {
         getUriMappingHelperText(operation[verb]['x-uri-mapping']),
     );
 
-    return (
-        <>
-            <Grid item xs={12} md={12}>
-                <Typography variant='subtitle1'>
-                    Runtime
-                    <Divider variant='middle' />
-                </Typography>
-            </Grid>
-            {api.type === 'WS' && (
-                <>
-                    <Grid item md={1} />
-                    <Grid item md={5}>
-                        <TextField
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                            margin='dense'
-                            fullWidth
-                            label='URL Mapping'
-                            value={operation[verb]['x-uri-mapping']}
-                            variant='outlined'
-                            helperText={uriMappingHelperText}
-                            onChange={(e) => {
-                                let { value } = e.target;
-                                if (value.length > 0 && value.substr(0, 1) !== '/') {
-                                    value = '/' + value;
-                                }
-                                setUriMappingHelperText(getUriMappingHelperText(value));
-                                operationsDispatcher({ action: 'uriMapping', data: { target, verb, value } });
-                            }}
-                        />
-                    </Grid>
-                    <Grid item md={6} />
-                </>
-            )}
-            {api.type === 'WEBSUB' && settings.environment.map((env) => (
-                <>
-                    <Grid item md={1} />
-                    <Grid item md={10}>
-                        <Typography variant='subtitle1'>{env.displayName}</Typography>
-                        <TextField
-                            margin='dense'
-                            fullWidth
-                            label='HTTP Callback URL'
-                            disabled
-                            value={buildCallbackURL('http', allEnvDeployments[env.name].vhost.host,
-                                allEnvDeployments[env.name].vhost.websubHttpPort)}
-                            variant='outlined'
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position='end'>
-                                        <CopyToClipboard
-                                            text={buildCallbackURL('http',
-                                                allEnvDeployments[env.name].vhost.host,
-                                                allEnvDeployments[env.name].vhost.websubHttpPort)}
-                                        >
-                                            <IconButton>
-                                                <Icon>
-                                                    <FileCopy />
-                                                </Icon>
-                                            </IconButton>
-                                        </CopyToClipboard>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <TextField
-                            margin='dense'
-                            fullWidth
-                            label='HTTPS Callback URL'
-                            disabled
-                            value={buildCallbackURL('https', allEnvDeployments[env.name].vhost.host,
-                                allEnvDeployments[env.name].vhost.websubHttpsPort)}
-                            variant='outlined'
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position='end'>
-                                        <CopyToClipboard
-                                            text={buildCallbackURL('https',
-                                                allEnvDeployments[env.name].vhost.host,
-                                                allEnvDeployments[env.name].vhost.websubHttpsPort)}
-                                        >
-                                            <IconButton>
-                                                <Icon>
-                                                    <FileCopy />
-                                                </Icon>
-                                            </IconButton>
-                                        </CopyToClipboard>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </Grid>
-                    <Grid item md={1} />
-                </>
-            ))}
-        </>
-    );
+    return <>
+        <Grid item xs={12} md={12}>
+            <Typography variant='subtitle1'>
+                Runtime
+                <Divider variant='middle' />
+            </Typography>
+        </Grid>
+        {api.type === 'WS' && (
+            <>
+                <Grid item md={1} />
+                <Grid item md={5}>
+                    <TextField
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                        margin='dense'
+                        fullWidth
+                        label='URL Mapping'
+                        value={operation[verb]['x-uri-mapping']}
+                        variant='outlined'
+                        helperText={uriMappingHelperText}
+                        onChange={(e) => {
+                            let { value } = e.target;
+                            if (value.length > 0 && value.substr(0, 1) !== '/') {
+                                value = '/' + value;
+                            }
+                            setUriMappingHelperText(getUriMappingHelperText(value));
+                            operationsDispatcher({ action: 'uriMapping', data: { target, verb, value } });
+                        }}
+                    />
+                </Grid>
+                <Grid item md={6} />
+            </>
+        )}
+        {api.type === 'WEBSUB' && settings.environment.map((env) => (
+            <>
+                <Grid item md={1} />
+                <Grid item md={10}>
+                    <Typography variant='subtitle1'>{env.displayName}</Typography>
+                    <TextField
+                        margin='dense'
+                        fullWidth
+                        label='HTTP Callback URL'
+                        disabled
+                        value={buildCallbackURL('http', allEnvDeployments[env.name].vhost.host,
+                            allEnvDeployments[env.name].vhost.websubHttpPort)}
+                        variant='outlined'
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <CopyToClipboard
+                                        text={buildCallbackURL('http',
+                                            allEnvDeployments[env.name].vhost.host,
+                                            allEnvDeployments[env.name].vhost.websubHttpPort)}
+                                    >
+                                        <IconButton size='large'>
+                                            <Icon>
+                                                <FileCopy />
+                                            </Icon>
+                                        </IconButton>
+                                    </CopyToClipboard>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <TextField
+                        margin='dense'
+                        fullWidth
+                        label='HTTPS Callback URL'
+                        disabled
+                        value={buildCallbackURL('https', allEnvDeployments[env.name].vhost.host,
+                            allEnvDeployments[env.name].vhost.websubHttpsPort)}
+                        variant='outlined'
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <CopyToClipboard
+                                        text={buildCallbackURL('https',
+                                            allEnvDeployments[env.name].vhost.host,
+                                            allEnvDeployments[env.name].vhost.websubHttpsPort)}
+                                    >
+                                        <IconButton size='large'>
+                                            <Icon>
+                                                <FileCopy />
+                                            </Icon>
+                                        </IconButton>
+                                    </CopyToClipboard>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </Grid>
+                <Grid item md={1} />
+            </>
+        ))}
+    </>;
 }
 
 Runtime.propTypes = {

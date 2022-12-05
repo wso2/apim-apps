@@ -21,7 +21,6 @@ import PropTypes from 'prop-types';
 import {
     Grid,
     TextField,
-    makeStyles,
     Typography,
     Tooltip,
     RadioGroup,
@@ -30,6 +29,7 @@ import {
     Collapse,
     Radio,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import HelpOutline from '@mui/icons-material/HelpOutline';

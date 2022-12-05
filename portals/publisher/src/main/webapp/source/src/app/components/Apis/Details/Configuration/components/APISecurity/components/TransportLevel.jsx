@@ -22,8 +22,8 @@ import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
@@ -176,7 +176,7 @@ function TransportLevel(props) {
         <>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} id='transportLevel'>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -184,8 +184,8 @@ function TransportLevel(props) {
                                 defaultMessage='Transport Level Security'
                             />
                         </Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                    </AccordionSummary>
+                    <AccordionDetails className={classes.expansionPanelDetails}>
                         <Transports api={api} configDispatcher={configDispatcher} securityScheme={securityScheme} />
                         <FormControlLabel
                             control={(
@@ -262,7 +262,7 @@ function TransportLevel(props) {
                                 apiId={id}
                             />
                         )}
-                    </ExpansionPanelDetails>
+                    </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
         </>

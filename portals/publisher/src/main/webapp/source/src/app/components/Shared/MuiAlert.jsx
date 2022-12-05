@@ -6,7 +6,8 @@
  */
 import * as React from 'react';
 import clsx from 'clsx';
-import { withStyles, lighten, darken } from '@mui/styles';
+import { withStyles } from '@mui/styles';
+import { darken, lighten } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import { capitalize } from '@mui/material/utils';
@@ -18,8 +19,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
 
 export const styles = (theme) => {
-    const getColor = theme.palette.type === 'light' ? darken : lighten;
-    const getBackgroundColor = theme.palette.type === 'light' ? lighten : darken;
+    const getColor = theme.palette.mode === 'light' ? darken : lighten;
+    const getBackgroundColor = theme.palette.mode === 'light' ? lighten : darken;
 
     return {
         /* Styles applied to the root element. */

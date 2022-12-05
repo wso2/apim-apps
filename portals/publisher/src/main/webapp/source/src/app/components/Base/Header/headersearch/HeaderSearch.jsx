@@ -348,7 +348,7 @@ class HeaderSearch extends React.Component {
                         </>
                     )}
                 >
-                    <IconButton className={classes.infoButton}>
+                    <IconButton className={classes.infoButton} size='large'>
                         <InfoIcon />
                     </IconButton>
                 </Tooltip>

@@ -50,12 +50,12 @@ const AccordianSummary = withStyles({
         paddingLeft: '8px',
         borderBottom: '1px solid rgba(0, 0, 0, .125)',
         minHeight: 40,
-        '&$expanded': {
+        '&.Mui-expanded': {
             minHeight: 40,
         },
     },
     content: {
-        '&$expanded': {
+        '&.Mui-expanded': {
             margin: 0,
         },
     },
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: '0',
     },
     expanded: {
-        '&$expanded': {
+        '&.Mui-expanded': {
             margin: 0,
             backgroundColor: theme.palette.background.leftMenu,
             minHeight: 40,

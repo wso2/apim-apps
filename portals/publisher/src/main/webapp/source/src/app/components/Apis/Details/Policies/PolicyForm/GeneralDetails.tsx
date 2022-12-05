@@ -17,7 +17,8 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles, Theme } from '@mui/material';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';

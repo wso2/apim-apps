@@ -24,11 +24,11 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import {
     Drawer,
-    makeStyles,
     ListItemIcon,
     Theme,
     Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import { Settings, Close } from '@mui/icons-material';
 import Divider from '@mui/material/Divider';
@@ -147,7 +147,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                             }
                         />
                         <ListItemIcon>
-                            <IconButton onClick={handleDrawerClose}>
+                            <IconButton onClick={handleDrawerClose} size="large">
                                 <Close className={classes.iconSize} />
                             </IconButton>
                         </ListItemIcon>

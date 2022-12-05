@@ -16,7 +16,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
-import grey from '@mui/material/colors/grey';
+import { grey } from '@mui/material/colors';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -237,68 +237,66 @@ export default function CustomizedStepper() {
     function finalLifecycleState(state) {
         switch (state) {
             case 'PUBLISHED':
-                return (
-                    <>
-                        <Grid
-                            container
-                            direction='row'
-                            alignItems='center'
-                            justify='center'
-                        >
+                return <>
+                    <Grid
+                        container
+                        direction='row'
+                        alignItems='center'
+                        justifyContent='center'
+                    >
+                        <Grid item>
+                            <CheckIcon className={classes.iconTrue} />
+                        </Grid>
+                        <Box ml={1}>
                             <Grid item>
-                                <CheckIcon className={classes.iconTrue} />
-                            </Grid>
-                            <Box ml={1}>
-                                <Grid item>
-                                    <Typography variant='h6' component='div'>
+                                <Typography variant='h6' component='div'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Overview.CustomizedStepper.publish'
+                                        defaultMessage=' Published'
+                                    />
+                                    <Box display='inline' pl={0.4} color='text.secondary'>
                                         <FormattedMessage
-                                            id='Apis.Details.Overview.CustomizedStepper.publish'
-                                            defaultMessage=' Published'
+                                            id='Apis.Details.Overview.CustomizedStepper.publish.current.api'
+                                            defaultMessage=' (Current API)'
                                         />
-                                        <Box display='inline' pl={0.4} color='text.secondary'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.publish.current.api'
-                                                defaultMessage=' (Current API)'
-                                            />
-                                        </Box>
+                                    </Box>
+                                </Typography>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Box mt={1} ml={2}>
+                        <a
+                            target='_blank'
+                            className={classes.textLink}
+                            rel='noopener noreferrer'
+                            href={devportalUrl}
+                        >
+                            <Grid
+                                container
+                                direction='row'
+                                alignItems='center'
+                                justifyContent='center'
+                            >
+                                <Grid item>
+                                    <Typography variant='h6' display='inline'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Overview.CustomizedStepper.view.devportal'
+                                            defaultMessage='View in devportal'
+                                        />
                                     </Typography>
                                 </Grid>
-                            </Box>
-                        </Grid>
-                        <Box mt={1} ml={2}>
-                            <a
-                                target='_blank'
-                                className={classes.textLink}
-                                rel='noopener noreferrer'
-                                href={devportalUrl}
-                            >
-                                <Grid
-                                    container
-                                    direction='row'
-                                    alignItems='center'
-                                    justify='center'
-                                >
-                                    <Grid item>
-                                        <Typography variant='h6' display='inline'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.view.devportal'
-                                                defaultMessage='View in devportal'
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Box ml={1}>
-                                            <LaunchIcon
-                                                color='primary'
-                                                fontSize='small'
-                                            />
-                                        </Box>
-                                    </Grid>
+                                <Grid item>
+                                    <Box ml={1}>
+                                        <LaunchIcon
+                                            color='primary'
+                                            fontSize='small'
+                                        />
+                                    </Box>
                                 </Grid>
-                            </a>
-                        </Box>
-                    </>
-                );
+                            </Grid>
+                        </a>
+                    </Box>
+                </>;
             case 'PROTOTYPED':
                 return (
                     <Typography variant='h6' component='div'>
@@ -418,7 +416,7 @@ export default function CustomizedStepper() {
                                     <Grid
                                         container
                                         direction='row'
-                                        justify='center'
+                                        justifyContent='center'
                                     >
                                         <Grid item>
                                             {api ? (
@@ -443,7 +441,7 @@ export default function CustomizedStepper() {
                                             <Grid
                                                 container
                                                 direction='row'
-                                                justify='center'
+                                                justifyContent='center'
                                                 style={{ marginLeft: '2px' }}
                                             >
                                                 <Grid item>
@@ -485,7 +483,7 @@ export default function CustomizedStepper() {
                                             <Grid
                                                 container
                                                 direction='row'
-                                                justify='center'
+                                                justifyContent='center'
                                                 style={{ marginLeft: '2px' }}
                                             >
                                                 <Grid item>
@@ -534,7 +532,7 @@ export default function CustomizedStepper() {
                                         container
                                         direction='row'
                                         alignItems='center'
-                                        justify='center'
+                                        justifyContent='center'
                                     >
                                         <Box mb={1}>
                                             <Grid item>
@@ -585,7 +583,7 @@ export default function CustomizedStepper() {
                                         container
                                         direction='row'
                                         alignItems='center'
-                                        justify='center'
+                                        justifyContent='center'
                                     >
                                         <Box ml={1} mb={1}>
                                             <Grid item>

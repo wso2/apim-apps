@@ -484,200 +484,220 @@ function ProductResourcesEdit(props) {
     if (notFound) {
         return <ResourceNotFound message={resourceNotFountMessage} />;
     }
-    return (
-        <>
-            {allApis.length === 0 && !fromSearch ? (
-                <Grid container>
-                    <Typography className={classes.messageWrapper}>
-                        <FormattedMessage
-                            id='Apis.Details.ProductResources.ProductResourcesWorkspace.ApisnotFound'
-                            defaultMessage='No REST APIs are created yet'
-                        />
-                    </Typography>
-                </Grid>
-            ) : (
-                <>
-                    {!isStateCreate && (
-                        <Grid container>
-                            <>
-                                <Grid item xs={8} className={classes.leftMost}>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='Apis.Details.ProductResources.ProductResourcesWorkspace.find.and.select'
-                                            defaultMessage='Find and select resources for the API Product'
-                                        />
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={4} className={classes.rightMost}>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='Apis.Details.ProductResources.ProductResourcesWorkspace.selected'
-                                            defaultMessage='Selected resources of API Product'
-                                        />
-                                    </Typography>
-                                </Grid>
-                            </>
-                        </Grid>
-                    )}
+    return <>
+        {allApis.length === 0 && !fromSearch ? (
+            <Grid container>
+                <Typography className={classes.messageWrapper}>
+                    <FormattedMessage
+                        id='Apis.Details.ProductResources.ProductResourcesWorkspace.ApisnotFound'
+                        defaultMessage='No REST APIs are created yet'
+                    />
+                </Typography>
+            </Grid>
+        ) : (
+            <>
+                {!isStateCreate && (
                     <Grid container>
-                        {/* ************************************************ */}
-                        {/* 1st column API search and select column          */}
-                        {/* ************************************************ */}
-                        <Grid item xs={3}>
+                        <>
+                            <Grid item xs={8} className={classes.leftMost}>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.ProductResources.ProductResourcesWorkspace.find.and.select'
+                                        defaultMessage='Find and select resources for the API Product'
+                                    />
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={4} className={classes.rightMost}>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.ProductResources.ProductResourcesWorkspace.selected'
+                                        defaultMessage='Selected resources of API Product'
+                                    />
+                                </Typography>
+                            </Grid>
+                        </>
+                    </Grid>
+                )}
+                <Grid container>
+                    {/* ************************************************ */}
+                    {/* 1st column API search and select column          */}
+                    {/* ************************************************ */}
+                    <Grid item xs={3}>
+                        <div className={classes.colTitle}>
+                            <Typography>
+                                <FormattedMessage
+                                    id='Apis.Details.ProductResources.ProductResourcesWorkspace.select.an.api'
+                                    defaultMessage='Select an API'
+                                />
+                            </Typography>
+                        </div>
+                        <Paper>
+                            <div className={classes.searchWrapper}>
+                                <TextField
+                                    id='outlined-full-width'
+                                    label='API'
+                                    style={{ margin: 8 }}
+                                    placeholder='Filter APIs'
+                                    helperText='Filter by name'
+                                    onChange={handleSearchTextChange}
+                                    value={searchText}
+                                    fullWidth
+                                    margin='normal'
+                                    variant='outlined'
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                            </div>
+                            <div className={classes.apiWrapper}>
+                                <List dense component='nav'>
+                                    {allApis.map((apiObj) => {
+                                        const labelId = `checkbox-list-label-${apiObj.id}`;
+
+                                        return (
+                                            <ListItem
+                                                key={apiObj.id}
+                                                role={undefined}
+                                                dense
+                                                button
+                                                className={
+                                                    selectedApi
+                                                    && apiObj.id === selectedApi.id
+                                                    && classes.selectedApi
+                                                }
+                                            >
+                                                <ListItemText
+                                                    id={labelId}
+                                                    primary={apiObj.name}
+                                                    secondary={`${apiObj.version} - ${apiObj.context}`}
+                                                    onClick={() => getApiSwagger(apiObj)}
+                                                />
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
+                            </div>
+                        </Paper>
+                    </Grid>
+                    {/* ************************************************ */}
+                    {/* 2nd column Resource Selection                    */}
+                    {/* ************************************************ */}
+                    <Grid item xs={5}>
+                        <Paper className={classes.paper}>
                             <div className={classes.colTitle}>
                                 <Typography>
                                     <FormattedMessage
-                                        id='Apis.Details.ProductResources.ProductResourcesWorkspace.select.an.api'
-                                        defaultMessage='Select an API'
+                                        id='Apis.Details.ProductResources.ProductResourcesEdit.api.resources'
+                                        defaultMessage='Select API Resources'
                                     />
                                 </Typography>
                             </div>
-                            <Paper>
-                                <div className={classes.searchWrapper}>
-                                    <TextField
-                                        id='outlined-full-width'
-                                        label='API'
-                                        style={{ margin: 8 }}
-                                        placeholder='Filter APIs'
-                                        helperText='Filter by name'
-                                        onChange={handleSearchTextChange}
-                                        value={searchText}
-                                        fullWidth
-                                        margin='normal'
-                                        variant='outlined'
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                    />
-                                </div>
-                                <div className={classes.apiWrapper}>
-                                    <List dense component='nav'>
-                                        {allApis.map((apiObj) => {
-                                            const labelId = `checkbox-list-label-${apiObj.id}`;
-
-                                            return (
-                                                <ListItem
-                                                    key={apiObj.id}
-                                                    role={undefined}
-                                                    dense
-                                                    button
-                                                    className={
-                                                        selectedApi
-                                                        && apiObj.id === selectedApi.id
-                                                        && classes.selectedApi
-                                                    }
-                                                >
-                                                    <ListItemText
-                                                        id={labelId}
-                                                        primary={apiObj.name}
-                                                        secondary={`${apiObj.version} - ${apiObj.context}`}
-                                                        onClick={() => getApiSwagger(apiObj)}
-                                                    />
-                                                </ListItem>
-                                            );
-                                        })}
-                                    </List>
-                                </div>
-                            </Paper>
-                        </Grid>
-                        {/* ************************************************ */}
-                        {/* 2nd column Resource Selection                    */}
-                        {/* ************************************************ */}
-                        <Grid item xs={5}>
-                            <Paper className={classes.paper}>
-                                <div className={classes.colTitle}>
-                                    <Typography>
+                            {selectedApi && (
+                                <Typography variant='h5' component='h2' className={classes.selectedTitle}>
+                                    {selectedApi.name}
+                                </Typography>
+                            )}
+                            <div className={classes.tootBar}>
+                                <Button
+                                    onClick={() => addSelectedResourcesToTree()}
+                                    onKeyDown={() => addSelectedResourcesToTree()}
+                                    id='add-selected-resources'
+                                >
+                                    <Typography variant='body2'>
                                         <FormattedMessage
-                                            id='Apis.Details.ProductResources.ProductResourcesEdit.api.resources'
-                                            defaultMessage='Select API Resources'
+                                            id='Apis.Details.ProductResources.ProductResourcesWorkspace.
+                                    toolbar.add.selected'
+                                            defaultMessage='Add Selected'
                                         />
                                     </Typography>
-                                </div>
-                                {selectedApi && (
-                                    <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                        {selectedApi.name}
+                                    <Icon>fast_forward</Icon>
+                                </Button>
+                                <VerticalDivider />
+                                <Button
+                                    onClick={() => addSelectedResourcesToTree(true)}
+                                    onKeyDown={() => addSelectedResourcesToTree(true)}
+                                    id='add-all-resources-btn'
+                                >
+                                    <Typography variant='body2'>
+                                        <FormattedMessage
+                                            id='Apis.Details.ProductResources.ProductResourcesWorkspace.toolbar.
+                                            add.all'
+                                            defaultMessage='Add All'
+                                        />
                                     </Typography>
-                                )}
-                                <div className={classes.tootBar}>
-                                    <Button
-                                        onClick={() => addSelectedResourcesToTree()}
-                                        onKeyDown={() => addSelectedResourcesToTree()}
-                                        id='add-selected-resources'
-                                    >
-                                        <Typography variant='body2'>
-                                            <FormattedMessage
-                                                id='Apis.Details.ProductResources.ProductResourcesWorkspace.
-                                        toolbar.add.selected'
-                                                defaultMessage='Add Selected'
-                                            />
-                                        </Typography>
-                                        <Icon>fast_forward</Icon>
-                                    </Button>
-                                    <VerticalDivider />
-                                    <Button
-                                        onClick={() => addSelectedResourcesToTree(true)}
-                                        onKeyDown={() => addSelectedResourcesToTree(true)}
-                                        id='add-all-resources-btn'
-                                    >
-                                        <Typography variant='body2'>
-                                            <FormattedMessage
-                                                id='Apis.Details.ProductResources.ProductResourcesWorkspace.toolbar.
-                                                add.all'
-                                                defaultMessage='Add All'
-                                            />
-                                        </Typography>
-                                        <Icon>fast_forward</Icon>
-                                    </Button>
-                                </div>
-                                <div className={classes.ResourceWrapper}>
-                                    <div className='frame'>
-                                        <List dense id='resource-wrapper'>
-                                            {Object.keys(selectedApiPaths).map((key) => {
-                                                const path = selectedApiPaths[key];
-                                                const labelId = `checkbox-list-label_${key}`;
-                                                return Object.keys(path).map((innerKey) => {
-                                                    const methodObj = path[innerKey];
-                                                    return (
-                                                        CONSTS.HTTP_METHODS.includes(innerKey) && (
-                                                            <ListItem
-                                                                key={`${innerKey} - ${key}`}
-                                                                role={undefined}
-                                                                dense
-                                                            >
-                                                                <ListItemIcon style={{ minWidth: 35 }}>
-                                                                    <Checkbox
-                                                                        edge='start'
-                                                                        checked={methodObj.checked}
-                                                                        tabIndex={-1}
-                                                                        disableRipple
-                                                                        onChange={() => updateCheckBox(key, innerKey)}
-                                                                        color='primary'
-                                                                        disabled={methodObj.allreadyAdded}
-                                                                        inputProps={
-                                                                            {
-                                                                                'aria-label': 'Select API resource',
-                                                                            }
-                                                                        }
-                                                                    />
-                                                                </ListItemIcon>
-                                                                <ListItemText
-                                                                    id={labelId + innerKey}
-                                                                    primary={(
-                                                                        <div>
-                                                                            <MethodView
-                                                                                method={innerKey}
-                                                                                className={classes.methodView}
-                                                                            />
-                                                                            <span>{key}</span>
-                                                                        </div>
-                                                                    )}
-                                                                    secondary={
-                                                                        methodObj['x-auth-type']
-                                                                    && methodObj['x-throttling-tier']
-                                                                    && `${methodObj['x-auth-type']} - ${
-                                                                        methodObj['x-throttling-tier']
-                                                                    }`
+                                    <Icon>fast_forward</Icon>
+                                </Button>
+                            </div>
+                            <div className={classes.ResourceWrapper}>
+                                <div className='frame'>
+                                    <List dense id='resource-wrapper'>
+                                        {Object.keys(selectedApiPaths).map((key) => {
+                                            const path = selectedApiPaths[key];
+                                            const labelId = `checkbox-list-label_${key}`;
+                                            return Object.keys(path).map((innerKey) => {
+                                                const methodObj = path[innerKey];
+                                                return CONSTS.HTTP_METHODS.includes(innerKey) && (
+                                                    <ListItem
+                                                        key={`${innerKey} - ${key}`}
+                                                        role={undefined}
+                                                        dense
+                                                    >
+                                                        <ListItemIcon style={{ minWidth: 35 }}>
+                                                            <Checkbox
+                                                                edge='start'
+                                                                checked={methodObj.checked}
+                                                                tabIndex={-1}
+                                                                disableRipple
+                                                                onChange={() => updateCheckBox(key, innerKey)}
+                                                                color='primary'
+                                                                disabled={methodObj.allreadyAdded}
+                                                                inputProps={
+                                                                    {
+                                                                        'aria-label': 'Select API resource',
                                                                     }
+                                                                }
+                                                            />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            id={labelId + innerKey}
+                                                            primary={(
+                                                                <div>
+                                                                    <MethodView
+                                                                        method={innerKey}
+                                                                        className={classes.methodView}
+                                                                    />
+                                                                    <span>{key}</span>
+                                                                </div>
+                                                            )}
+                                                            secondary={
+                                                                methodObj['x-auth-type']
+                                                            && methodObj['x-throttling-tier']
+                                                            && `${methodObj['x-auth-type']} - ${
+                                                                methodObj['x-throttling-tier']
+                                                            }`
+                                                            }
+                                                            onClick={() => updateResourceTree(
+                                                                {
+                                                                    target: key,
+                                                                    verb: innerKey,
+                                                                    apiId: selectedApi.id,
+                                                                    name: selectedApi.name,
+                                                                    version: selectedApi.version,
+                                                                },
+                                                                'add',
+                                                            )}
+                                                            className={classes.middleText}
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            {methodObj.allreadyAdded && (
+                                                                <Icon className={classes.inactiveIcon}>
+                                                                    chevron_right
+                                                                </Icon>
+                                                            )}
+                                                            {!methodObj.allreadyAdded && (
+                                                                <IconButton
+                                                                    edge='end'
+                                                                    aria-label='comments'
                                                                     onClick={() => updateResourceTree(
                                                                         {
                                                                             target: key,
@@ -688,132 +708,108 @@ function ProductResourcesEdit(props) {
                                                                         },
                                                                         'add',
                                                                     )}
-                                                                    className={classes.middleText}
-                                                                />
-                                                                <ListItemSecondaryAction>
-                                                                    {methodObj.allreadyAdded && (
-                                                                        <Icon className={classes.inactiveIcon}>
-                                                                            chevron_right
-                                                                        </Icon>
-                                                                    )}
-                                                                    {!methodObj.allreadyAdded && (
-                                                                        <IconButton
-                                                                            edge='end'
-                                                                            aria-label='comments'
-                                                                            onClick={() => updateResourceTree(
-                                                                                {
-                                                                                    target: key,
-                                                                                    verb: innerKey,
-                                                                                    apiId: selectedApi.id,
-                                                                                    name: selectedApi.name,
-                                                                                    version: selectedApi.version,
-                                                                                },
-                                                                                'add',
-                                                                            )}
-                                                                        >
-                                                                            <Icon>chevron_right</Icon>
-                                                                        </IconButton>
-                                                                    )}
-                                                                </ListItemSecondaryAction>
-                                                            </ListItem>
-                                                        )
-                                                    );
-                                                });
-                                            })}
-                                        </List>
-                                    </div>
-                                </div>
-                            </Paper>
-                        </Grid>
-                        {/* ************************************************ */}
-                        {/* Third column with  selected resources            */}
-                        {/* ************************************************ */}
-                        <Grid item xs={4}>
-                            <Paper className={classes.paper}>
-                                <div className={classes.colTitle} />
-                                {api.name && (
-                                    <>
-                                        <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                            {api.name}
-                                        </Typography>
-                                    </>
-                                )}
-                                <div className={classes.ResourceWrapper}>
-                                    <div className='frame rightFrame'>
-                                        {allApis.length > 0 && apiResources && apiResources.length === 0 && (
-                                            <div className={classes.messageWrapper}>
-                                                <Typography component='p'>
-                                                    <FormattedMessage
-                                                        id='Apis.Details.ProductResources.ProductResourcesWorkspace.
-                                                    empty.title'
-                                                        defaultMessage='Use the left side panel to add resources'
-                                                    />
-                                                </Typography>
-                                            </div>
-                                        )}
-                                        {apiResources
-                                        && apiResources.length > 0
-                                        && Object.keys(apiResources).map((key) => {
-                                            const apiResource = apiResources[key];
-                                            return (
-                                                <div key={apiResource.name}>
-                                                    <div className={classes.treeItemMain}>
-                                                        <Typography component='p'>
-                                                            {apiResource.name}
-                                                            {' - '}
-                                                            {apiResource.version}
-                                                        </Typography>
-                                                    </div>
-                                                    <div className={classes.treeItemMainWrapper}>
-                                                        {Object.keys(apiResource.operations).map((innerKey) => {
-                                                            const operation = apiResource.operations[innerKey];
-                                                            const { target, verb } = operation;
-                                                            return (
-                                                                <div
-                                                                    key={`${apiResource.apiId}_${verb}_${target}`}
-                                                                    className={classes.treeItem}
-                                                                >
-                                                                    <MethodView
-                                                                        method={verb}
-                                                                        className={classes.methodView}
-                                                                    />
-                                                                    <Typography variant='body2'>{target}</Typography>
-                                                                    <hr className={classes.hr} />
-                                                                    <IconButton
-                                                                        onClick={() => updateResourceTree(
-                                                                            {
-                                                                                target,
-                                                                                verb,
-                                                                                apiId: apiResource.apiId,
-                                                                                name: apiResource.name,
-                                                                                version: apiResource.version,
-                                                                            },
-                                                                            'remove',
-                                                                        )}
-                                                                        aria-label={
-                                                                            'delete resource ' + apiResource.name
-                                                                        }
-                                                                    >
-                                                                        <Icon>
-                                                                            delete
-                                                                        </Icon>
-                                                                    </IconButton>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-                                            );
+                                                                    size='large'>
+                                                                    <Icon>chevron_right</Icon>
+                                                                </IconButton>
+                                                            )}
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                );
+                                            });
                                         })}
-                                    </div>
+                                    </List>
                                 </div>
-                            </Paper>
-                        </Grid>
+                            </div>
+                        </Paper>
                     </Grid>
-                </>
-            )}
-        </>
-    );
+                    {/* ************************************************ */}
+                    {/* Third column with  selected resources            */}
+                    {/* ************************************************ */}
+                    <Grid item xs={4}>
+                        <Paper className={classes.paper}>
+                            <div className={classes.colTitle} />
+                            {api.name && (
+                                <>
+                                    <Typography variant='h5' component='h2' className={classes.selectedTitle}>
+                                        {api.name}
+                                    </Typography>
+                                </>
+                            )}
+                            <div className={classes.ResourceWrapper}>
+                                <div className='frame rightFrame'>
+                                    {allApis.length > 0 && apiResources && apiResources.length === 0 && (
+                                        <div className={classes.messageWrapper}>
+                                            <Typography component='p'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.ProductResources.ProductResourcesWorkspace.
+                                                empty.title'
+                                                    defaultMessage='Use the left side panel to add resources'
+                                                />
+                                            </Typography>
+                                        </div>
+                                    )}
+                                    {apiResources
+                                    && apiResources.length > 0
+                                    && Object.keys(apiResources).map((key) => {
+                                        const apiResource = apiResources[key];
+                                        return (
+                                            <div key={apiResource.name}>
+                                                <div className={classes.treeItemMain}>
+                                                    <Typography component='p'>
+                                                        {apiResource.name}
+                                                        {' - '}
+                                                        {apiResource.version}
+                                                    </Typography>
+                                                </div>
+                                                <div className={classes.treeItemMainWrapper}>
+                                                    {Object.keys(apiResource.operations).map((innerKey) => {
+                                                        const operation = apiResource.operations[innerKey];
+                                                        const { target, verb } = operation;
+                                                        return (
+                                                            <div
+                                                                key={`${apiResource.apiId}_${verb}_${target}`}
+                                                                className={classes.treeItem}
+                                                            >
+                                                                <MethodView
+                                                                    method={verb}
+                                                                    className={classes.methodView}
+                                                                />
+                                                                <Typography variant='body2'>{target}</Typography>
+                                                                <hr className={classes.hr} />
+                                                                <IconButton
+                                                                    onClick={() => updateResourceTree(
+                                                                        {
+                                                                            target,
+                                                                            verb,
+                                                                            apiId: apiResource.apiId,
+                                                                            name: apiResource.name,
+                                                                            version: apiResource.version,
+                                                                        },
+                                                                        'remove',
+                                                                    )}
+                                                                    aria-label={
+                                                                        'delete resource ' + apiResource.name
+                                                                    }
+                                                                    size='large'>
+                                                                    <Icon>
+                                                                        delete
+                                                                    </Icon>
+                                                                </IconButton>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </>
+        )}
+    </>;
 }
 ProductResourcesEdit.propTypes = {
     apiResources: PropTypes.instanceOf(Array).isRequired,

@@ -104,7 +104,7 @@ export default function EditPayloadProperty(props) {
     }
     return (
         <Dialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-property'>
-            <DialogTitle disableTypography id='edit-property'>
+            <DialogTitle id='edit-property'>
                 <Typography variant='h6'>
                     <FormattedMessage
                         id='Apis.Details.Resources.components.operationComponents.EditPayloadProperty.title'
@@ -117,7 +117,7 @@ export default function EditPayloadProperty(props) {
                 </Typography>
             </DialogTitle>
             <DialogContent>
-                <Grid container direction='row' spacing={2} justify='flex-start' alignItems='center'>
+                <Grid container direction='row' spacing={2} justifyContent='flex-start' alignItems='center'>
                     <Grid item md={6}>
                         <FormControl
                             required

@@ -28,7 +28,7 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import API from 'AppData/api';
 import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
 
@@ -44,7 +44,7 @@ const styles = (theme) => ({
         textTransform: 'capitalize',
     },
     apiDetails: { padding: theme.spacing(1) },
-    apiActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)}px 8px` },
+    apiActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)} 8px` },
     deleteProgress: {
         color: green[200],
         position: 'absolute',

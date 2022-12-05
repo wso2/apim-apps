@@ -145,87 +145,85 @@ class SwaggerEditorDrawer extends React.Component {
         const { classes, language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap, 
             linterSelectedSeverity } = this.props;
         const swaggerUrl = 'data:text/' + language + ',' + encodeURIComponent(swagger);
-        return (
-            <>
-                <Grid container spacing={2} className={classes.editorRoot}>
-                    <Grid item className={classes.editorPane}>
-                        <MonacoEditor
-                            language={language}
-                            width='100%'
-                            height='calc(100vh - 51px)'
-                            theme='vs-dark'
-                            value={swagger}
-                            onChange={this.onContentChange}
-                            options={{ glyphMargin: true }}
-                            editorDidMount={this.editorDidMount}
-                        />
-                    </Grid>
-                    <Grid item className={classes.editorPane}>
-                        {(errors && errors.length > 0) && (
-                            <Box mr={2}>
-                                <InlineMessage type='warning' height='100%'>
-                                    <Box>
-                                        <Box onClick={setErrors} position='absolute' right='0' top='0'>
-                                            <IconButton area-label='close'>
-                                                <CancelIcon />
-                                            </IconButton>
-                                        </Box>
-                                        <Typography
-                                            variant='h5'
-                                            component='h3'
-                                            className={classes.head}
-                                        >
-                                            <FormattedMessage
-                                                id='Apis.Details.APIDefinition.SwaggerEditorDrawer.title'
-                                                defaultMessage='Failed to Validate OpenAPI File'
-                                            />
-                                        </Typography>
-                                        {errors.map((e) => (
-                                            <Typography component='p' className={classes.content}>
-                                                {e.description}
-                                            </Typography>
-                                        ))}
-                                    </Box>
-                                </InlineMessage>
-                            </Box>
-                        )}
-                        { isSwaggerUI && (
-                            <SwaggerUI url={swaggerUrl}/>
-                        )}
-                        { !isSwaggerUI && linterResults.length > 0 && (
-                            <div data-testid='testid-linter-ui'>
-                                <LinterUI
-                                    linterResults={linterResults}
-                                    severityMap={severityMap}
-                                    handleRowClick={(line) => {this.handleRowClick(line)}}
-                                />
-                            </div>
-                        )}
-                        { !isSwaggerUI && linterResults.length === 0 && (
-                            <Box alignSelf='center' justifySelf='center' flexDirection='column'>
-                                <ThumbUp fontSize='large'/>
-                                <Typography variant='h4'>
-                                    <FormattedMessage
-                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.good'
-                                            + 'update.content'}
-                                        defaultMessage='Good to go !'
-                                    />
-                                </Typography>
-                                <Typography variant='h6'>
-                                    <FormattedMessage
-                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.results'
-                                            + 'update.content'}
-                                        defaultMessage='No Linter Results{type} found'
-                                        values={{type: linterSelectedSeverity?
-                                            ` (${spectralSeverityNames[linterSelectedSeverity]})`:''}}
-                                    />
-                                </Typography>
-                            </Box>
-                        )}
-                    </Grid>
+        return <>
+            <Grid container spacing={2} className={classes.editorRoot}>
+                <Grid item className={classes.editorPane}>
+                    <MonacoEditor
+                        language={language}
+                        width='100%'
+                        height='calc(100vh - 51px)'
+                        theme='vs-dark'
+                        value={swagger}
+                        onChange={this.onContentChange}
+                        options={{ glyphMargin: true }}
+                        editorDidMount={this.editorDidMount}
+                    />
                 </Grid>
-            </>
-        );
+                <Grid item className={classes.editorPane}>
+                    {(errors && errors.length > 0) && (
+                        <Box mr={2}>
+                            <InlineMessage type='warning' height='100%'>
+                                <Box>
+                                    <Box onClick={setErrors} position='absolute' right='0' top='0'>
+                                        <IconButton area-label='close' size='large'>
+                                            <CancelIcon />
+                                        </IconButton>
+                                    </Box>
+                                    <Typography
+                                        variant='h5'
+                                        component='h3'
+                                        className={classes.head}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.SwaggerEditorDrawer.title'
+                                            defaultMessage='Failed to Validate OpenAPI File'
+                                        />
+                                    </Typography>
+                                    {errors.map((e) => (
+                                        <Typography component='p' className={classes.content}>
+                                            {e.description}
+                                        </Typography>
+                                    ))}
+                                </Box>
+                            </InlineMessage>
+                        </Box>
+                    )}
+                    { isSwaggerUI && (
+                        <SwaggerUI url={swaggerUrl}/>
+                    )}
+                    { !isSwaggerUI && linterResults.length > 0 && (
+                        <div data-testid='testid-linter-ui'>
+                            <LinterUI
+                                linterResults={linterResults}
+                                severityMap={severityMap}
+                                handleRowClick={(line) => {this.handleRowClick(line)}}
+                            />
+                        </div>
+                    )}
+                    { !isSwaggerUI && linterResults.length === 0 && (
+                        <Box alignSelf='center' justifySelf='center' flexDirection='column'>
+                            <ThumbUp fontSize='large'/>
+                            <Typography variant='h4'>
+                                <FormattedMessage
+                                    id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.good'
+                                        + 'update.content'}
+                                    defaultMessage='Good to go !'
+                                />
+                            </Typography>
+                            <Typography variant='h6'>
+                                <FormattedMessage
+                                    id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.results'
+                                        + 'update.content'}
+                                    defaultMessage='No Linter Results{type} found'
+                                    values={{type: linterSelectedSeverity?
+                                        ` (${spectralSeverityNames[linterSelectedSeverity]})`:''}}
+                                />
+                            </Typography>
+                        </Box>
+                    )}
+                </Grid>
+            </Grid>
+        </>;
     }
 }
 

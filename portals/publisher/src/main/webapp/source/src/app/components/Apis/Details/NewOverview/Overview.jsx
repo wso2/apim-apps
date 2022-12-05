@@ -18,7 +18,7 @@
 
 import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import { withStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
@@ -37,7 +37,12 @@ import Topics from './Topics';
 
 const styles = (theme) => ({
     root: {
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },

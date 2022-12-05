@@ -18,10 +18,10 @@
 
 import React from 'react';
 import { makeStyles } from '@mui/styles';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
+import Accordion from '@mui/material/Accordion';
 import PropTypes from 'prop-types';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        [theme.breakpoints.down('md')]: {
+        [theme.breakpoints.down('lg')]: {
             maxWidth: 800,
         },
     },
@@ -50,8 +50,8 @@ export default function GroupOfOperations(props) {
     const { openAPI, children, tag } = props;
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo) => tagInfo.name === tag);
     return (
-        <ExpansionPanel defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
+        <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} id={tag}>
                 <Typography
                     variant='h4'
                     className={classes.tagClass}
@@ -64,9 +64,9 @@ export default function GroupOfOperations(props) {
                         {currentTagInfo.description}
                     </Typography>
                 )}
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionSummary>
+            <AccordionDetails>{children}</AccordionDetails>
+        </Accordion>
     );
 }
 

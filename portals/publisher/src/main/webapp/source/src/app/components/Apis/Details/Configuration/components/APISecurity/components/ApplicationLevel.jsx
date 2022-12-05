@@ -24,8 +24,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AuthorizationHeader from 'AppComponents/Apis/Details/Configuration/components/AuthorizationHeader.jsx';
 import Typography from '@mui/material/Typography';
@@ -117,7 +117,7 @@ export default function ApplicationLevel(props) {
         <>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} id='applicationLevel'>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -144,8 +144,8 @@ export default function ApplicationLevel(props) {
                                 <HelpOutline className={classes.iconSpace} />
                             </Tooltip>
                         </Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                    </AccordionSummary>
+                    <AccordionDetails className={classes.expansionPanelDetails}>
                         <FormGroup style={{ display: 'flow-root' }}>
                             <FormControlLabel
                                 control={(
@@ -257,7 +257,7 @@ export default function ApplicationLevel(props) {
                                 </FormHelperText>
                             )}
                         </FormControl>
-                    </ExpansionPanelDetails>
+                    </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
         </>

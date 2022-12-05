@@ -17,7 +17,8 @@
  */
 
 import React, { FC, useEffect, useReducer, useState } from 'react';
-import { CircularProgress, makeStyles, Theme } from '@mui/material';
+import { CircularProgress, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';

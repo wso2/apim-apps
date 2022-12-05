@@ -119,7 +119,7 @@ const styles = (theme) => ({
         fontWeight: theme.typography.fontWeightRegular,
     },
     expanded: {
-        '&$expanded': {
+        '&.Mui-expanded': {
             margin: 0,
             backgroundColor: theme.palette.background.leftMenu,
             minHeight: 40,

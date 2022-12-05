@@ -21,11 +21,11 @@ import {
     IconButton,
     InputAdornment,
     TextField,
-    withStyles,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
@@ -180,7 +180,7 @@ function GenericEndpoint(props) {
                                     onClick={() => testEndpoint(serviceUrl, apiId)}
                                     disabled={(isRestricted(['apim:api_create'], api)) || isUpdating}
                                     id={category + '-endpoint-test-icon-btn'}
-                                >
+                                    size='large'>
                                     {isUpdating
                                         ? <CircularProgress size={20} />
                                         : (
@@ -211,7 +211,7 @@ function GenericEndpoint(props) {
                                             aria-label='Settings'
                                             onClick={() => setAdvancedConfigOpen(index, type, category)}
                                             disabled={(isRestricted(['apim:api_create'], api))}
-                                        >
+                                            size='large'>
                                             <Tooltip
                                                 placement='top-start'
                                                 interactive
@@ -233,7 +233,7 @@ function GenericEndpoint(props) {
                                             onClick={() => setESConfigOpen(type, esCategory)}
                                             disabled={(isRestricted(['apim:api_create'], api))}
                                             id={category + '-endpoint-security-icon-btn'}
-                                        >
+                                            size='large'>
                                             <Tooltip
                                                 placement='top-start'
                                                 interactive
@@ -259,7 +259,7 @@ function GenericEndpoint(props) {
                                     color='secondary'
                                     onClick={() => deleteEndpoint(index, type, category)}
                                     disabled={(isRestricted(['apim:api_create'], api))}
-                                >
+                                    size='large'>
                                     <Icon>
                                         delete
                                     </Icon>

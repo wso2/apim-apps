@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import blue from '@mui/material/colors/blue';
+import { blue } from '@mui/material/colors';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { makeStyles } from '@mui/styles';
@@ -62,7 +62,7 @@ const   LandingMenu = (props) => {
                 bgcolor='background.paper'
                 justifyContent='center'
                 alignItems='center'
-                borderRadius={8}
+                borderRadius='8px'
                 borderColor='grey.300'
                 display='flex'
                 border={1}
@@ -79,7 +79,7 @@ const   LandingMenu = (props) => {
                 <Grid
                     container
                     direction='row'
-                    justify='center'
+                    justifyContent='center'
                     alignItems='center'
                 >
                     <Grid item xs={12}>
@@ -124,13 +124,13 @@ const   LandingMenu = (props) => {
                                     setIsCollapsed(false);
                                     e.preventDefault(); e.stopPropagation();
                                 }}
-                            >
+                                size='large'>
                                 <CloseIcon />
                             </IconButton>
                             <Grid
                                 container
                                 direction='row'
-                                justify='flex-start'
+                                justifyContent='flex-start'
                                 alignItems='center'
                                 spacing={4}
                             >

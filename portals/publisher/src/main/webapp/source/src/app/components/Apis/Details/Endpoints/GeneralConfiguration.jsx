@@ -16,14 +16,14 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Grid,
     Typography,
-    withStyles,
     Box,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';
@@ -195,13 +195,13 @@ function GeneralConfiguration(props) {
 
     return (
         <>
-            <ExpansionPanel
+            <Accordion
                 expanded={isConfigExpanded}
                 onChange={() => setConfigExpand(!isConfigExpanded)}
                 className={classes.generalConfigPanel}
                 disabled={isRestricted(['apim:ep_certificates_view', 'apim:api_view'])}
             >
-                <ExpansionPanelSummary
+                <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     id={endpointType.key + '-panel1bh-header'}
                     className={classes.configHeaderContainer}
@@ -233,8 +233,8 @@ function GeneralConfiguration(props) {
                             )}
                         </Typography>
                     )}
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className={classes.generalConfigContent}>
+                </AccordionSummary>
+                <AccordionDetails className={classes.generalConfigContent}>
                     <Grid
                         container
                         className={classes.endpointConfigSection}
@@ -248,8 +248,8 @@ function GeneralConfiguration(props) {
                             aliasList={aliasList}
                         />
                     </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
         </>
     );
 }

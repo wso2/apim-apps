@@ -17,8 +17,9 @@
  */
 import React from 'react';
 import {
-    ListItemIcon, withStyles, ListItem, ListItemText, useTheme,
+    ListItemIcon, ListItem, ListItemText, useTheme,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';

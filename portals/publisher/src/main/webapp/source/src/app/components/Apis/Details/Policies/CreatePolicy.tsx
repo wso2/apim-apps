@@ -17,7 +17,8 @@
  */
 
 import React, { useContext, useState } from 'react';
-import { Typography, makeStyles, Theme } from '@mui/material';
+import { Typography, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import Dialog from '@mui/material/Dialog';
@@ -111,77 +112,75 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
         e.stopPropagation();
     };
 
-    return (
-        <>
-            <Dialog
-                maxWidth='md'
-                open={dialogOpen}
-                aria-labelledby='form-dialog-title'
-                onClose={handleDialogClose}
-                onClick={stopPropagation}
-                fullWidth
+    return <>
+        <Dialog
+            maxWidth='md'
+            open={dialogOpen}
+            aria-labelledby='form-dialog-title'
+            onClose={handleDialogClose}
+            onClick={stopPropagation}
+            fullWidth
+        >
+            <Box
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                flexDirection='row'
+                px={3}
+                pt={3}
             >
-                <Box
-                    display='flex'
-                    justifyContent='space-between'
-                    alignItems='center'
-                    flexDirection='row'
-                    px={3}
-                    pt={3}
-                >
-                    <Box display='flex'>
-                        <Typography variant='h4' component='h2'>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.CreatePolicy.create.new.policy'
-                                defaultMessage='Create New Policy'
-                            />
-                        </Typography>
-                    </Box>
-                    <Box display='flex'>
-                        <IconButton
-                            color='inherit'
-                            onClick={handleDialogClose}
-                            aria-label='Close'
-                        >
-                            <Icon>close</Icon>
-                        </IconButton>
-                    </Box>
+                <Box display='flex'>
+                    <Typography variant='h4' component='h2'>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.CreatePolicy.create.new.policy'
+                            defaultMessage='Create New Policy'
+                        />
+                    </Typography>
                 </Box>
-                <DialogContent>
-                    <Box my={2}>
-                        <DialogContentText>
-                            <PolicyCreateForm
-                                onSave={onSave}
-                                synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
-                                setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
-                                ccPolicyDefinitionFile={ccPolicyDefinitionFile}
-                                setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
-                                onCancel={handleDialogClose}
-                                saving={saving}
-                            />
-                        </DialogContentText>
-                    </Box>
-                </DialogContent>
-                <Box
-                    display='flex'
-                    flexDirection='row'
-                    justifyContent='right'
-                    px={3}
-                    pb={3}
-                >
-                    <Link to={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}>
-                        <Typography className={classes.link} variant='caption'>
-                            Want to create a common policy that will be visible to all APIs instead?
-                            <LaunchIcon
-                                style={{ marginLeft: '2px' }}
-                                fontSize='small'
-                            />
-                        </Typography>
-                    </Link>
+                <Box display='flex'>
+                    <IconButton
+                        color='inherit'
+                        onClick={handleDialogClose}
+                        aria-label='Close'
+                        size="large">
+                        <Icon>close</Icon>
+                    </IconButton>
                 </Box>
-            </Dialog>
-        </>
-    );
+            </Box>
+            <DialogContent>
+                <Box my={2}>
+                    <DialogContentText>
+                        <PolicyCreateForm
+                            onSave={onSave}
+                            synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
+                            setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
+                            ccPolicyDefinitionFile={ccPolicyDefinitionFile}
+                            setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
+                            onCancel={handleDialogClose}
+                            saving={saving}
+                        />
+                    </DialogContentText>
+                </Box>
+            </DialogContent>
+            <Box
+                display='flex'
+                flexDirection='row'
+                justifyContent='right'
+                px={3}
+                pb={3}
+            >
+                <Link to={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}>
+                    <Typography className={classes.link} variant='caption'>
+                        Want to create a common policy that will be visible to all APIs instead?
+                        <LaunchIcon
+                            style={{ marginLeft: '2px' }}
+                            fontSize='small'
+                        />
+                    </Typography>
+                </Link>
+            </Box>
+        </Dialog>
+    </>;
 };
 
 export default CreatePolicy;

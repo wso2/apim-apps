@@ -141,7 +141,7 @@ function Edit(props) {
             </Button>
             <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen>
                 <Paper square className={classes.popupHeader}>
-                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size="large">
                         <Icon>close</Icon>
                     </IconButton>
                     <Typography variant='h4' className={classes.docName}>
@@ -166,7 +166,7 @@ function Edit(props) {
                 </Paper>
                 <div className={classes.splitWrapper}>
                     <CreateEditForm
-                        innerRef={(node) => {
+                        ref={(node) => {
                             createEditForm = node;
                         }}
                         docId={docId}

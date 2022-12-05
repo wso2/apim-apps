@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 
 const APILanding = () => {
     const theme = useTheme();
-    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
+    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
     const { root } = useStyles();
     const {
         graphqlIcon,
@@ -52,7 +52,7 @@ const APILanding = () => {
             <Grid
                 container
                 direction='column'
-                justify='center'
+                justifyContent='center'
             >
                 <Grid item xs={12}>
                     <Box pt={isXsOrBelow ? 2 : 7} />
@@ -79,7 +79,7 @@ const APILanding = () => {
                         <Grid
                             container
                             direction='row'
-                            justify='center'
+                            justifyContent='center'
                             alignItems='flex-start'
                             spacing={3}
                         >
@@ -92,7 +92,6 @@ const APILanding = () => {
                 </Grid>
             </Grid>
         </div>
-
     );
 };
 

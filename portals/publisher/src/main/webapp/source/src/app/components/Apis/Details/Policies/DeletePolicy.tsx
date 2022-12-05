@@ -76,73 +76,68 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
         setOpen(false);
     };
 
-    return (
-        <>
-            <Tooltip
-                placement='top'
-                title={
+    return <>
+        <Tooltip
+            placement='top'
+            title={
+                <FormattedMessage
+                    id='Apis.Details.Policies.DeletePolicy.delete.title'
+                    defaultMessage='Delete'
+                />
+            }
+        >
+            <IconButton onClick={toggleOpen} aria-label={'delete ' + policyName} size="large">
+                <DeleteIcon />
+            </IconButton>
+        </Tooltip>
+        <Dialog
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
+            open={open}
+            onClose={handleClose}
+        >
+            <DialogTitle>
+                <FormattedMessage
+                    id='Apis.Details.Policies.DeletePolicy.delete.confirm'
+                    defaultMessage='Confirm Delete'
+                />
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText>
                     <FormattedMessage
-                        id='Apis.Details.Policies.DeletePolicy.delete.title'
+                        id='Apis.Details.Policies.DeletePolicy.delete.confirm.content'
+                        defaultMessage='Are you sure you want to delete {policy} policy ?'
+                        values={{ policy: policyName }}
+                    />
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    id={'cancel-delete-' + policyId}
+                    onClick={handleClose}
+                    color='primary'
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Policies.DeletePolicy.cancel'
+                        defaultMessage='Cancel'
+                    />
+                </Button>
+                <Button
+                    id={'delete-' + policyId}
+                    onClick={handleDelete}
+                    color='primary'
+                    variant='outlined'
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Policies.DeletePolicy.confirm'
                         defaultMessage='Delete'
                     />
-                }
-            >
-                <IconButton
-                    onClick={toggleOpen}
-                    aria-label={'delete ' + policyName}
-                >
-                    <DeleteIcon />
-                </IconButton>
-            </Tooltip>
-            <Dialog
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                open={open}
-                onClose={handleClose}
-            >
-                <DialogTitle>
-                    <FormattedMessage
-                        id='Apis.Details.Policies.DeletePolicy.delete.confirm'
-                        defaultMessage='Confirm Delete'
-                    />
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.DeletePolicy.delete.confirm.content'
-                            defaultMessage='Are you sure you want to delete {policy} policy ?'
-                            values={{ policy: policyName }}
-                        />
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        id={'cancel-delete-' + policyId}
-                        onClick={handleClose}
-                        color='primary'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.DeletePolicy.cancel'
-                            defaultMessage='Cancel'
-                        />
-                    </Button>
-                    <Button
-                        id={'delete-' + policyId}
-                        onClick={handleDelete}
-                        color='primary'
-                        variant='outlined'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.DeletePolicy.confirm'
-                            defaultMessage='Delete'
-                        />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
+                </Button>
+            </DialogActions>
+        </Dialog>
+    </>;
 };
 
 export default DeletePolicy;

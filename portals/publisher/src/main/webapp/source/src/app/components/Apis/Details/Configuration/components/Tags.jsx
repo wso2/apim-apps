@@ -23,7 +23,7 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Chip from '@mui/material/Chip';
-import { red } from '@mui/material/colors/';
+import { red } from '@mui/material/colors';
 
 /**
  *

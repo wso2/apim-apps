@@ -17,7 +17,8 @@
  */
 
 import React, { FC, useState, } from 'react';
-import { Button, makeStyles, Theme } from '@mui/material';
+import { Button, Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -84,8 +85,8 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
-    const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLElement | null>(null);
+    const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLElement | null>(null);
     const [openedDescriptionPopoverId, setOpenedDescriptionPopoverId] = useState<string | null>(null);
     const [openedValuesPopoverId, setOpenedValuesPopoverId] = useState<string | null>(null);
 
@@ -202,7 +203,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     }
 
     // Description toggle button related actions
-    const handleDescriptionToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+    const handleDescriptionToggle = (event: React.MouseEvent<HTMLElement, MouseEvent>, id: string) => {
         setOpenedDescriptionPopoverId(id);
         setDescriptionAnchorEl(event.currentTarget);
     }
@@ -212,7 +213,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     };
 
     // Value properties toggle button related actions
-    const handleValuePropertiesToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+    const handleValuePropertiesToggle = (event: React.MouseEvent<HTMLElement, MouseEvent>, id: string) => {
         setOpenedValuesPopoverId(id);
         setValuePropertiesAnchorEl(event.currentTarget);
     }
@@ -536,7 +537,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                     />
                                                                 }
                                                                 onChange={(e) => handleAttributeChange(e, attribute.id)}
-                                                                classes={{ root: classes.selectRoot }}
+                                                                classes={{ select: classes.selectRoot }}
                                                                 inputProps={{
                                                                     readOnly: isViewMode,
                                                                     style: isViewMode ? {cursor: 'auto'} : {},

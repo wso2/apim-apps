@@ -20,7 +20,6 @@ import React, { useState } from 'react';
 import {
     Typography,
     Grid,
-    withStyles,
     RadioGroup,
     FormControlLabel,
     Radio,
@@ -31,6 +30,7 @@ import {
     CardContent,
     CardActions,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
@@ -165,74 +165,72 @@ function NewEndpointCreate(props) {
         return type;
     });
 
-    return (
-        <>
-            <Typography variant='h4' align='left' className={classes.titleWrapper}>
-                <FormattedMessage
-                    id='Apis.Details.Endpoints.NewEndpointCreate.add.endpoints.header'
-                    defaultMessage='Select an Endpoint Type to Add'
-                />
-            </Typography>
-            <Grid container justify='flex-start' spacing={2}>
-                {eligibleTypes.map(((type) => {
-                    return (
-                        <Grid item className={classes.inlineMessageContainer}>
-                            <Card className={classes.endpointTypeCard}>
-                                <CardContent className={classes.cardContent}>
-                                    <Typography variant='h5' component='h3' className={classes.head}>
-                                        {type.name}
-                                    </Typography>
-                                    <Divider />
-                                    <Typography component='p' className={classes.content}>
-                                        {type.description}
-                                    </Typography>
-                                    {type.options
-                                        ? (
-                                            <div>
-                                                <FormControl component='fieldset' className={classes.formControl}>
-                                                    <RadioGroup
-                                                        aria-label='EndpointType'
-                                                        name='endpointType'
-                                                        className={classes.radioGroup}
-                                                        value={endpointImplType}
-                                                        onChange={(event) => { setImplType(event.target.value); }}
-                                                    >
-                                                        {type.options.filter((types) => !types.disabled
-                                                            .includes(apiType)).map(((option) => {
-                                                            return (
-                                                                <FormControlLabel
-                                                                    value={option.type}
-                                                                    control={<Radio color='primary' />}
-                                                                    label={option.name}
-                                                                />
-                                                            );
-                                                        }))}
-                                                    </RadioGroup>
-                                                </FormControl>
-                                            </div>
-                                        )
-                                        : <div /> }
-                                </CardContent>
-                                <CardActions className={classes.cardActions}>
-                                    <Button
-                                        color='primary'
-                                        className={classes.button}
-                                        onClick={() => generateEndpointConfig(type.type, endpointImplType)}
-                                        data-testid={type.name.replace(/\s/g, '').toLowerCase() + '-add-btn'}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.NewEndpointCreate.create.button'
-                                            defaultMessage='Add'
-                                        />
-                                    </Button>
-                                </CardActions>
-                            </Card>
-                        </Grid>
-                    );
-                }))}
-            </Grid>
-        </>
-    );
+    return <>
+        <Typography variant='h4' align='left' className={classes.titleWrapper}>
+            <FormattedMessage
+                id='Apis.Details.Endpoints.NewEndpointCreate.add.endpoints.header'
+                defaultMessage='Select an Endpoint Type to Add'
+            />
+        </Typography>
+        <Grid container justifyContent='flex-start' spacing={2}>
+            {eligibleTypes.map(((type) => {
+                return (
+                    <Grid item className={classes.inlineMessageContainer}>
+                        <Card className={classes.endpointTypeCard}>
+                            <CardContent className={classes.cardContent}>
+                                <Typography variant='h5' component='h3' className={classes.head}>
+                                    {type.name}
+                                </Typography>
+                                <Divider />
+                                <Typography component='p' className={classes.content}>
+                                    {type.description}
+                                </Typography>
+                                {type.options
+                                    ? (
+                                        <div>
+                                            <FormControl component='fieldset' className={classes.formControl}>
+                                                <RadioGroup
+                                                    aria-label='EndpointType'
+                                                    name='endpointType'
+                                                    className={classes.radioGroup}
+                                                    value={endpointImplType}
+                                                    onChange={(event) => { setImplType(event.target.value); }}
+                                                >
+                                                    {type.options.filter((types) => !types.disabled
+                                                        .includes(apiType)).map(((option) => {
+                                                        return (
+                                                            <FormControlLabel
+                                                                value={option.type}
+                                                                control={<Radio color='primary' />}
+                                                                label={option.name}
+                                                            />
+                                                        );
+                                                    }))}
+                                                </RadioGroup>
+                                            </FormControl>
+                                        </div>
+                                    )
+                                    : <div /> }
+                            </CardContent>
+                            <CardActions className={classes.cardActions}>
+                                <Button
+                                    color='primary'
+                                    className={classes.button}
+                                    onClick={() => generateEndpointConfig(type.type, endpointImplType)}
+                                    data-testid={type.name.replace(/\s/g, '').toLowerCase() + '-add-btn'}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.NewEndpointCreate.create.button'
+                                        defaultMessage='Add'
+                                    />
+                                </Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                );
+            }))}
+        </Grid>
+    </>;
 }
 
 NewEndpointCreate.propTypes = {

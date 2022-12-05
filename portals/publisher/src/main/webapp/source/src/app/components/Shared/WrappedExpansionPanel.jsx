@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
+import Accordion from '@mui/material/Accordion';
 import { updateUserLocalStorage, getUserLocalStorage } from 'AppData/UserStateUtils';
 
 const WrappedExpansionPanel = (props) => {
@@ -27,8 +27,8 @@ const WrappedExpansionPanel = (props) => {
         updateUserLocalStorage(`${id}-expanded`, expandedState);
         setExpanded(expandedState);
     };
-    return (<ExpansionPanel expanded={expanded} {...props} onChange={setExpandState} />);
+    return (<Accordion expanded={expanded} {...props} onChange={setExpandState} />);
 };
-WrappedExpansionPanel.muiName = 'ExpansionPanel';
+WrappedExpansionPanel.muiName = 'Accordion';
 
 export default WrappedExpansionPanel;

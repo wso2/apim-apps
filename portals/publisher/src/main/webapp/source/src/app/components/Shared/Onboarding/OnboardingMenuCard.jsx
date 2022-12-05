@@ -46,7 +46,6 @@ const RestAPIMenu = (props) => {
     const Component = disabled ? span : Link;
 
     return (
-
         <Grid
             item
             xs={12}
@@ -67,7 +66,7 @@ const RestAPIMenu = (props) => {
                     bgcolor='background.paper'
                     justifyContent='center'
                     alignItems='center'
-                    borderRadius={8}
+                    borderRadius='8px'
                     borderColor='grey.300'
                     display='flex'
                     border={1}
@@ -82,7 +81,7 @@ const RestAPIMenu = (props) => {
                     <Grid
                         container
                         direction='column'
-                        justify='space-between'
+                        justifyContent='space-between'
                         alignItems='center'
                     >
                         <Grid item xs={12}>

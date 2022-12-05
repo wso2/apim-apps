@@ -26,9 +26,9 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import ExpansionPanel from '@mui/material/ExpansionPanel';
-import ExpansionPanelSummary from '@mui/material/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@mui/material/ExpansionPanelDetails';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -83,14 +83,14 @@ function SubscriptionConfig(props) {
     }
 
     return (
-        <ExpansionPanel
+        <Accordion
             expanded={isExpanded}
             onChange={(e, expanded) => {
                 setIsExpanded(expanded);
             }}
             className={classes.paperStyles}
         >
-            <ExpansionPanelSummary
+            <AccordionSummary
                 disableRipple
                 disableTouchRipple
                 expandIcon={<ExpandMoreIcon />}
@@ -105,9 +105,9 @@ function SubscriptionConfig(props) {
                         </Typography>
                     </Box>
                 </Grid>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-                <Grid container direction='row' spacing={0} justify='center' alignItems='center'>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Grid container direction='row' spacing={0} justifyContent='center' alignItems='center'>
                     <Grid item xs={6}>
                         <FormControl component='fieldset'>
                             <FormControlLabel
@@ -230,8 +230,8 @@ function SubscriptionConfig(props) {
                     </Grid>
                     <Grid item xs={6} />
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     );
 }
 

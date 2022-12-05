@@ -187,85 +187,83 @@ class DeleteApiButton extends React.Component {
             path = resourcePath.SINGLE_API_PRODUCT;
         }
 
-        return (
-            <>
-                {/* allowing delete based on scopes */}
-                <ScopeValidation resourceMethod={resourceMethod.DELETE} resourcePath={path}>
-                    <Box
-                        className={classNames({ [classes.inlineBlock]: updateData, [classes.flexBox]: !updateData })}
-                    >
-                        {!updateData && (<VerticalDivider height={70} />)}
-                        <Box className={classes.delete}>
-                            <IconButton
-                                id='itest-id-deleteapi-icon-button'
-                                onClick={this.handleRequestOpen}
-                                className={classes.delete}
-                                disabled={isRestricted(['apim:api_delete'], api)}
-                                aria-label='delete'
-                                disableFocusRipple
-                                disableRipple
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                            <Box
-                                fontFamily='fontFamily'
-                                fontSize='caption.fontSize'
-                                onClick={this.handleRequestOpen}
-                            >
-
-                                <FormattedMessage
-                                    id='Apis.Details.components.DeleteApiButton.delete'
-                                    defaultMessage='Delete'
-                                />
-                            </Box>
-                        </Box>
-                    </Box>
-                </ScopeValidation>
-                <Dialog open={this.state.openMenu}>
-                    <DialogTitle>
-                        <FormattedMessage
-                            id='Apis.Details.components.DeleteApiButton.title'
-                            defaultMessage='Delete {type}'
-                            values={{ type }}
-                        />
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            <FormattedMessage
-                                id='Apis.Details.components.DeleteApiButton.text.description'
-                                defaultMessage='{type} <b> {name} {version} </b> will be deleted permanently.'
-                                values={{
-                                    b: (msg) => <b>{msg}</b>,
-                                    type,
-                                    name: api.name,
-                                    version,
-                                }}
-                            />
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button dense onClick={this.handleRequestClose}>
-                            <FormattedMessage
-                                id='Apis.Details.components.DeleteApiButton.button.cancel'
-                                defaultMessage='Cancel'
-                            />
-                        </Button>
-                        <Button
-                            id='itest-id-deleteconf'
-                            onClick={() => {
-                                deleteHandler();
-                                this.handleRequestClose();
-                            }}
+        return <>
+            {/* allowing delete based on scopes */}
+            <ScopeValidation resourceMethod={resourceMethod.DELETE} resourcePath={path}>
+                <Box
+                    className={classNames({ [classes.inlineBlock]: updateData, [classes.flexBox]: !updateData })}
+                >
+                    {!updateData && (<VerticalDivider height={70} />)}
+                    <Box className={classes.delete}>
+                        <IconButton
+                            id='itest-id-deleteapi-icon-button'
+                            onClick={this.handleRequestOpen}
+                            className={classes.delete}
+                            disabled={isRestricted(['apim:api_delete'], api)}
+                            aria-label='delete'
+                            disableFocusRipple
+                            disableRipple
+                            size='large'>
+                            <DeleteIcon />
+                        </IconButton>
+                        <Box
+                            fontFamily='fontFamily'
+                            fontSize='caption.fontSize'
+                            onClick={this.handleRequestOpen}
                         >
+
                             <FormattedMessage
-                                id='Apis.Details.components.DeleteApiButton.button.delete'
+                                id='Apis.Details.components.DeleteApiButton.delete'
                                 defaultMessage='Delete'
                             />
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </>
-        );
+                        </Box>
+                    </Box>
+                </Box>
+            </ScopeValidation>
+            <Dialog open={this.state.openMenu}>
+                <DialogTitle>
+                    <FormattedMessage
+                        id='Apis.Details.components.DeleteApiButton.title'
+                        defaultMessage='Delete {type}'
+                        values={{ type }}
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <FormattedMessage
+                            id='Apis.Details.components.DeleteApiButton.text.description'
+                            defaultMessage='{type} <b> {name} {version} </b> will be deleted permanently.'
+                            values={{
+                                b: (msg) => <b>{msg}</b>,
+                                type,
+                                name: api.name,
+                                version,
+                            }}
+                        />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button dense onClick={this.handleRequestClose}>
+                        <FormattedMessage
+                            id='Apis.Details.components.DeleteApiButton.button.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button
+                        id='itest-id-deleteconf'
+                        onClick={() => {
+                            deleteHandler();
+                            this.handleRequestClose();
+                        }}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.components.DeleteApiButton.button.delete'
+                            defaultMessage='Delete'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>;
     }
 }
 

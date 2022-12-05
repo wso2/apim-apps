@@ -26,10 +26,10 @@ import {
     TextField,
     Typography,
     Button,
-    withStyles,
     Checkbox,
     ListItemText,
 } from '@mui/material';
+import { withStyles } from '@mui/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
