@@ -128,7 +128,8 @@ function Endpoints(props) {
                     value.endpointType === 'address',
                     tmpEndpointConfig,
                 );
-                return { ...initState, endpointConfig: { ...config } };
+                const endpointSecurity = cloneDeep(initState.endpointConfig.endpoint_security);
+                return { ...initState, endpointConfig: { ...config, endpoint_security: endpointSecurity } };
             }
             case 'set_inline_or_mocked_oas': {
                 const { endpointImplementationType, endpointConfig } = value;
