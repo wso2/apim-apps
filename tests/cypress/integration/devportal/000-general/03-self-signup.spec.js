@@ -80,7 +80,7 @@ describe("Self SignUp", () => {
 
     it.only("Test - Login to the carbon using incorrect user credentials", () => {
         cy.carbonLogin(incorrectUsername, incorrectPassword);
-        cy.contains('Login failed! Please recheck your username and password and try again.').should('exist');
+        cy.contains('Login failed! Please recheck the username and password and try again.').should('exist');
     });
 
     it.only("Test - Login to the publisher using newly created user(superTenant1) credentials", () => {
