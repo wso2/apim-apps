@@ -1,0 +1,40 @@
+{
+    "count": 1,
+    "list": [
+        {
+            "displayName": "Revision 1",
+            "id": "1f4733db-2c48-449a-9fea-e5fd7068430a",
+            "description": "test",
+            "createdTime": 1670230943000,
+            "apiInfo": {
+                "id": "e2e5c296-0569-4074-9794-974131b65363"
+            },
+            "deploymentInfo": [
+                {
+                    "revisionUuid": "1f4733db-2c48-449a-9fea-e5fd7068430a",
+                    "name": "Default",
+                    "vhost": "localhost",
+                    "displayOnDevportal": true,
+                    "deployedTime": 1670230943000,
+                    "successDeployedTime": null
+                },
+                {
+                    "revisionUuid": "1f4733db-2c48-449a-9fea-e5fd7068430a",
+                    "name": "WSO2",
+                    "vhost": "wso2.com",
+                    "displayOnDevportal": true,
+                    "deployedTime": 1670230943000,
+                    "successDeployedTime": null
+                },
+                {
+                    "revisionUuid": "1f4733db-2c48-449a-9fea-e5fd7068430a",
+                    "name": "APIM",
+                    "vhost": "apim.com",
+                    "displayOnDevportal": true,
+                    "deployedTime": 1670230943000,
+                    "successDeployedTime": null
+                }
+            ]
+        }
+    ]
+}
