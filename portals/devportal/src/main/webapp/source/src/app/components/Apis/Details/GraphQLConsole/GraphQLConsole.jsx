@@ -250,7 +250,7 @@ export default function GraphQLConsole() {
                         <Grid item md={6}>
                             <Paper className={classes.userNotificationPaper}>
                                 <Typography variant='h5' component='h3'>
-                                    <Icon>warning</Icon>
+                                    <Icon>info</Icon>
                                     {' '}
                                     <FormattedMessage id='notice' defaultMessage='Notice' />
                                 </Typography>
