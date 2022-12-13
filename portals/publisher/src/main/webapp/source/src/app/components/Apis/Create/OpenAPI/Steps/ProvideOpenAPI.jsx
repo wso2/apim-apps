@@ -102,6 +102,7 @@ export default function ProvideOpenAPI(props) {
             const result = JSON.parse(definition);
             return result && typeof result === 'object';
         } catch (err) {
+            console.log("API definition is in not in JSON format");
             return false;
         }
     }
