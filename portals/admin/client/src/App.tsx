@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import * as React from "react";
+import React from "react";
 import { useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Layout from "./Layout";
