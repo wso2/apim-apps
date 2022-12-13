@@ -2,13 +2,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = (env) => {
-  // const env = dotenv.config().parsed;
-
-  // // reduce it to a nice object, the same as before
-  // const envKeys = Object.keys(env).reduce((prev, next) => {
-  //   prev[`process.env.${next}`] = JSON.stringify(env[next]);
-  //   return prev;
-  // }, {});
   const devConfig = {
     entry: {
       main: path.resolve(__dirname, './client/src/index.jsx'),
@@ -76,3 +69,4 @@ module.exports = (env) => {
     }
   }
 };
+

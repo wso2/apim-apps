@@ -46,8 +46,6 @@ export const getSessionParameter = (key: string): string | null => {
     return sessionStorage.getItem(key);
 };
 
-
-
 /**
  * End authenticated user session.
  */
@@ -126,3 +124,4 @@ export const getAccessToken = (): Promise<string> => {
         return Promise.resolve(accessToken);
     }
 };
+
