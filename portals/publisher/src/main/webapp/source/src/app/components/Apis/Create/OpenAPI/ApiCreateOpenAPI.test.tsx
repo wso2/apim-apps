@@ -53,6 +53,8 @@ describe('Importing an OpenAPI definition', () => {
         resetMockHandler();
         userEvent.clear(OAS_URL_INPUT);
         userEvent.type(OAS_URL_INPUT, 'https://pass.this.com/validURL');
-        await waitForElementToBeRemoved(() => screen.queryByText(/url should not be empty/i));
+        await waitFor(() => {
+            waitForElementToBeRemoved(() => screen.queryByText(/url should not be empty/i));
+        });
     });
 });
