@@ -6,7 +6,6 @@
 
 var app = require('../app');
 var debug = require('debug')('apps:server');
-// var http = require('http');
 const https = require("https");
 const fs = require('fs');
 /**
@@ -93,3 +92,4 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+

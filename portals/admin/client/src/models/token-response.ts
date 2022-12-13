@@ -9,3 +9,4 @@
     scope: string;
     tokenType: string;
 }
+

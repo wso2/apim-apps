@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import { getCodeVerifier, getCodeChallenge, getJWKForTheIdToken, isValidIdToken } from './crypto';
 import { OIDCRequestParamsInterface } from '../models/oidc-request-params';
 import { TokenResponseInterface } from '../models/token-response';
@@ -137,20 +155,6 @@ export const sendTokenRequest = (
                     }
                     return Promise.reject(new Error("Invalid id_token in the token response: " + response.data.id_token));
                 });
-
-            // const body = [];
-            // body.push(`client_id=${requestParams.clientId}`);
-            // body.push(`scope=apim:api_manage apim:subscription_manage apim:tier_manage apim:admin`);
-            // body.push("grant_type=urn:ietf:params:oauth:grant-type:token-exchange");
-            // body.push(`subject_token_type=urn:ietf:params:oauth:token-type:jwt`);
-            // body.push(`requested_token_type=urn:ietf:params:oauth:token-type:jwt`);
-            // body.push(`subject_token=${response.data.access_token}`);
-            // body.push(`org_handle=organization`);
-            // return axios.post(stsEndoint, body.join("&"))
-            //     .then((response: any) => {
-            //         window.sessionStorage.setItem("exchanged_token", response.data.access_token);
-            //         window.location.href = "https://localhost:4000/users";
-            //     });
         }).catch((error: any) => {
             return Promise.reject(error);
         });
@@ -207,3 +211,4 @@ export const sendRefreshTokenRequest = (
             return Promise.reject(error);
         });
 };
+
