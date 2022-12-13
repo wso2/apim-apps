@@ -34,7 +34,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
         cy.get('button > span').contains('Save').click();
-        cy.wait('@environmentsGet',{timeout: 3000}).then(() => {
+        cy.wait('@environmentsGet',{ timeout: 3000 }).then(() => {
             cy.get('table tr td').contains('MARKETING_STORE').should('exist');
         });
 
@@ -44,7 +44,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
         cy.get('button > span').contains('Save').click();
-        cy.wait('@environmentsGet', {timeout: 3000}).then(() => {
+        cy.wait('@environmentsGet', { timeout: 3000 }).then(() => {
             cy.get('table tr td').contains('marketing store').should('exist');
         });
 
