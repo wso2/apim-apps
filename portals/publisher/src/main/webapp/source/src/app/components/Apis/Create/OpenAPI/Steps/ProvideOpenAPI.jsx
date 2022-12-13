@@ -41,6 +41,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
+import YAML from 'js-yaml';
 
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
@@ -95,6 +96,16 @@ export default function ProvideOpenAPI(props) {
         inputsDispatcher({ action: 'isFormValid', value: false });
     }
 
+    function hasJSONStructure (definition) {
+        if (typeof definition !== 'string') return false;
+        try {
+            const result = JSON.parse(definition);
+            return result && typeof result === 'object';
+        } catch (err) {
+            return false;
+        }
+    }
+
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
             API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
@@ -104,9 +115,14 @@ export default function ProvideOpenAPI(props) {
                     },
                 } = response;
                 if (isValidURL) {
-                    const formattedConent = JSON.stringify(JSON.parse(content), null, 2);
-                    lint(formattedConent);
-                    inputsDispatcher({ action: 'importingContent', value: formattedConent });
+                    let formattedContent;
+                    if (hasJSONStructure(content)) {
+                        formattedContent = JSON.stringify(JSON.parse(content), null, 2);
+                    } else {
+                        formattedContent = JSON.stringify(YAML.load(content), null, 2);
+                    }
+                    lint(formattedContent);
+                    inputsDispatcher({ action: 'importingContent', value: formattedContent});
                     info.content = content;
                     inputsDispatcher({ action: 'preSetAPI', value: info });
                     setValidity({ ...isValid, url: null });
