@@ -53,7 +53,7 @@ function GenerateDocument(){
                 apiDescriptionDocument={swagger}
                 hideTryIt='true'
                 router='memory'
-                layout='stacked'
+                layout='sidebar'
             />
         </div>
     );
