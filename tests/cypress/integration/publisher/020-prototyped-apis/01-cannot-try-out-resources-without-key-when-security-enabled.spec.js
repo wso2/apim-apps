@@ -24,8 +24,8 @@ describe("prototype apis with security enabled", () => {
       });
     const userName = 'admin';
     const password = 'admin';
-    const apiName="Prototyped_sample2";
-    const apiVersion='1.0.0';
+    const apiName = "Prototyped_sample2";
+    const apiVersion = '1.0.0';
     let testApiId;
     beforeEach(function () {
         cy.loginToPublisher(userName, password);

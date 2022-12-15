@@ -215,7 +215,7 @@ class APIThumb extends Component {
                 onBlur={this.toggleMouseOver}
                 elevation={isHover ? 4 : 1}
                 className={classes.card}
-                data-testid={'card-'+api.name+api.version}
+                data-testid={'card-' + api.name + api.version}
             >
                 {api.advertiseOnly && (
                     <div className={classes.ribbon} data-testid='third-party-api-card-label'>third party</div>
@@ -286,7 +286,7 @@ class APIThumb extends Component {
                         </div>
                     </div>
                 </CardContent>
-                <CardActions className={classes.apiActions} data-testid={'card-action-'+api.name+api.version}>
+                <CardActions className={classes.apiActions} data-testid={'card-action-' + api.name + api.version}>
                     <Chip
                         size='small'
                         classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
