@@ -43,7 +43,7 @@ describe("Add key manager", () => {
         // importing config'
         cy.intercept('**/key-managers/discover').as('importConfig');
         cy.get('button span.MuiButton-label').contains('Import').click();
-        cy.wait('@importConfig', {timeout: 3000}).then(() => {
+        cy.wait('@importConfig', { timeout: 3000 }).then(() => {
             // filing the tokens
             cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
             cy.get('input[name="userInfoEndpoint"]').clear().type(userInfoEp);
