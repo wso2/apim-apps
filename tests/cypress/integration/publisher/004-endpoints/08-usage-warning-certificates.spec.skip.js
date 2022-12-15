@@ -19,7 +19,7 @@
 import Utils from "@support/utils";
 
 describe("Endpoint certificate usage testing", () => {
-    const {publisher, password,} = Utils.getUserInfo();
+    const { publisher, password } = Utils.getUserInfo();
     const random_number = Utils.getRandomRange(10, 20);
     const selectedEndpoint = `https://test.wso2.com/v1/api/endpoint0`;
     const certPath = 'api_artifacts/sample.crt.pem';
@@ -36,9 +36,9 @@ describe("Endpoint certificate usage testing", () => {
 
         for (let i = 0; i < random_number; i++) {
             const endpoint = `https://test.wso2.com/v1/api/endpoint${i}`;
-            data = {endpoint};
+            data = { endpoint };
             promises.push(Utils.addAPIWithEndpoints(data));
-            cy.wait(2000)
+            cy.wait(2000);
         }
 
         Cypress.Promise.all(promises).then(res => {
@@ -48,8 +48,8 @@ describe("Endpoint certificate usage testing", () => {
             // Uploading a certificate
             // Visiting endpoints tab of selected API
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.wait(5000)
-            cy.get('[data-testid="itest-api-config"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.wait(5000);
+            cy.get('[data-testid="itest-api-config"]', { timeout: Cypress.config().largeTimeout }).click();
             cy.get('#left-menu-itemendpoints').click();
 
             // Expand the general config section to upload certificate
@@ -58,7 +58,7 @@ describe("Endpoint certificate usage testing", () => {
 
             // Select endpoint
             cy.get('#endpoint-certificate').click();
-            cy.get(`[data-value="${selectedEndpoint}"]`).click({multiple: true});
+            cy.get(`[data-value="${selectedEndpoint}"]`).click({ multiple: true });
 
             // Set alias
             cy.get('#certificateAlias').click();
@@ -79,12 +79,13 @@ describe("Endpoint certificate usage testing", () => {
         });
     })
 
-    beforeEach(function (){
+    beforeEach(function () {
         cy.loginToPublisher(publisher, password);
-        cy.wait(5000)
+        cy.wait(5000);
+
         // Visiting endpoints tab of selected API
         cy.visit(`/publisher/apis/${apiId}/overview`);
-        cy.get('[data-testid="itest-api-config"]', {timeout: Cypress.config().largeTimeout}).click();
+        cy.get('[data-testid="itest-api-config"]', { timeout: Cypress.config().largeTimeout }).click();
         cy.get('#left-menu-itemendpoints').click();
 
         // Expand the general config section to upload certificate
@@ -110,15 +111,15 @@ describe("Endpoint certificate usage testing", () => {
         const expectedMessage = `${alias} is used by ${random_number} other APIs`;
 
         // Test for correct warning message
-        cy.get('#delete-cert-btn').click({force: true});
+        cy.get('#delete-cert-btn').click({ force: true });
         cy.get('#warning-message>p').should('include.text', expectedMessage);
 
         // Delete certificate
-        cy.get('#delete-cert-confirm-btn').click({force: true});
+        cy.get('#delete-cert-confirm-btn').click({ force: true });
     });
 
     after(function () {
-        apiIds.forEach(id => {
+        apiIds.forEach( id => {
             Utils.deleteAPI(id);
         })
     });
@@ -132,31 +133,31 @@ function testPagination(numOfRows, random_number) {
     let pages = Math.floor(random_number / numOfRows);
     let numOfRowsInFinalPage = random_number % numOfRows;
 
-    if(pages === 0) {
+    if (pages === 0) {
         cy.get("#certificate-usage-table")
             .find("tr")
             .should('have.length', numOfRows + 2);
-    }else if(numOfRowsInFinalPage === 0) {
-        for (let i = 0; i<pages-1; i++) {
+    } else if (numOfRowsInFinalPage === 0) {
+        for (let i = 0; i < pages - 1; i++) {
             cy.get("#pagination-next").click();
             cy.wait(1000);
         }
         cy.get("#certificate-usage-table")
             .find("tr")
             .should('have.length', numOfRows + 2);
-        for (let i = 0; i<pages-1; i++) {
+        for (let i = 0; i < pages - 1; i++) {
             cy.get("#pagination-back").click();
             cy.wait(1000);
         }
-    }else {
-        for (let i = 0; i<pages; i++) {
+    } else {
+        for (let i = 0; i < pages; i++) {
             cy.get("#pagination-next").click();
             cy.wait(1000);
         }
         cy.get("#certificate-usage-table")
             .find("tr")
             .should('have.length', numOfRowsInFinalPage + 2);
-        for (let i = 0; i<pages; i++) {
+        for (let i = 0; i < pages; i++) {
             cy.get("#pagination-back").click();
             cy.wait(1000);
         }
