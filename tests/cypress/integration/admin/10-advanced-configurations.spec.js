@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import adavanceConfFalseJson from "../../fixtures/api_artifacts/advanceConfigFlase.json"
-import adavanceConfTrueJson from "../../fixtures/api_artifacts/advanceConfigTrue.json"
+import advanceConfFalseJson from "../../fixtures/api_artifacts/advanceConfigFalse.json"
+import advanceConfTrueJson from "../../fixtures/api_artifacts/advanceConfigTrue.json"
 
 describe("Advanced Configurations", () => {
     const carbonUsername = 'admin';
@@ -32,7 +32,7 @@ describe("Advanced Configurations", () => {
 
         cy.intercept('GET', 'https://localhost:9443/api/am/admin/v4/tenant-config', {
             statusCode: 200,
-            body: adavanceConfFalseJson
+            body: advanceConfFalseJson
             
         })
         cy.get('[data-testid="Scope Assignments-child-link"]').click();
@@ -42,7 +42,7 @@ describe("Advanced Configurations", () => {
 
         cy.intercept('GET', 'https://localhost:9443/api/am/admin/v4/tenant-config', {
             statusCode: 200,
-            body: adavanceConfTrueJson
+            body: advanceConfTrueJson
         })
         cy.get('[data-testid="Scope Assignments-child-link"]').click();
         cy.get('[data-testid="Advanced-child-link"]').click();

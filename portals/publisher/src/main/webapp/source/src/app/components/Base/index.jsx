@@ -65,7 +65,6 @@ const Base = ({ children, user }) => {
     const classes = useStyles();
     const theme = useTheme();
 
-    // eslint-disable-next-line require-jsdoc
     function getTitle() {
         let prefix;
         let suffix;

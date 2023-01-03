@@ -30,7 +30,7 @@ describe("Invoke API Product", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
     let appName;
-    const appDescription = 'Testing sharing app ';
+    const appDescription = 'Testing sharing app';
     const groupId = 'org1';
     let apiName;
     const apiVersion = '2.0.0';
