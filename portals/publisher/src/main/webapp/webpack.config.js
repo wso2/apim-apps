@@ -9,6 +9,10 @@ const path = require('path');
 const devInfo = require('./dev.json');
 const { clientRoutingBypass, devServerBefore } = require('./services/dev_proxy/auth_login.js');
 
+if(!devInfo.location.endsWith('/')){
+    devInfo.location += "/";
+}
+
 module.exports = (env, argv) => {
     const isDevelopmentBuild = argv.mode === 'development';
     const isTestBuild = process.env && process.env.WSO2_UI_MOCKED === 'true';
@@ -177,7 +181,7 @@ module.exports = (env, argv) => {
             }),
             new CleanWebpackPlugin(),
             new HookShellScriptPlugin({
-                afterEmit: [`echo "Updating files in ${devInfo.location}. Changes done to the publisher webapp." && ${devInfo.command}` ]
+                afterEmit: [`echo "Updating files in ${devInfo.location}. Changes done to the publisher webapp." && rm -rf ${devInfo.location}repository/deployment/server/webapps/publisher/site/public && cp -R site/public ${devInfo.location}repository/deployment/server/webapps/publisher/site/public` ]
             }),
             new ESLintPlugin({
                 extensions: ['js', 'ts', 'jsx'],

@@ -1,4 +1,3 @@
 {
-    "location": "/Users/chanakajayasena/Documents/42work/x/",
-    "command": "rm -rf /Users/chanakajayasena/Documents/42work/x/repository/deployment/server/webapps/publisher/site/public && cp -R site/public /Users/chanakajayasena/Documents/42work/x/repository/deployment/server/webapps/publisher/site/public"
+    "location": "/Users/chanakajayasena/Documents/42newyear/wso2am-4.2.0-alpha/"
 }
