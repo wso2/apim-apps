@@ -4703,12 +4703,24 @@
       "value": "See more"
     }
   ],
+  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.title": [
+    {
+      "type": 0,
+      "value": "Deploy API product before publishing"
+    }
+  ],
+  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.message": [
+    {
+      "type": 0,
+      "value": "Deploy the API product before publishing the API"
+    }
+  ],
   "Apis.Details.LifeCycle.components.confirm.publish.message": [
     {
       "type": 0,
       "value": "The API will not be available for consumption unless it is deployed."
     }
-  ],
+  ], 
   "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": [
     {
       "type": 0,
@@ -5649,6 +5661,12 @@
     {
       "type": 0,
       "value": "Name"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.supported.api.label": [
+    {
+      "type": 0,
+      "value": "Supported API Types"
     }
   ],
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.helperText": [

@@ -32,6 +32,7 @@ import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeVali
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import PublishWithoutDeploy from 'AppComponents/Apis/Details/LifeCycle/Components/PublishWithoutDeploy';
+import PublishWithoutDeployProduct from 'AppComponents/Apis/Details/LifeCycle/Components/PublishWithoutDeployProduct';
 import Configurations from 'Config';
 import APIProduct from 'AppData/APIProduct';
 import LifeCycleImage from './LifeCycleImage';
@@ -206,9 +207,10 @@ class LifeCycleUpdate extends Component {
             action = 'Deploy as a Prototype';
         }
         const {
-            api: { id: apiUUID, advertiseInfo },
+            api: { id: apiUUID, advertiseInfo }, isAPIProduct,
         } = this.props;
-        if (action === 'Publish' && !deploymentsAvailable && advertiseInfo && !advertiseInfo.advertised) {
+        if (action === 'Publish' && !deploymentsAvailable && ((advertiseInfo && !advertiseInfo.advertised)
+            || isAPIProduct)) {
             this.setIsOpen(true);
         } else {
             this.updateLCStateOfAPI(apiUUID, action);
@@ -365,13 +367,19 @@ class LifeCycleUpdate extends Component {
                     </Grid>
                 )}
                 {/* end of Page error banner */}
-                <PublishWithoutDeploy
+                {isAPIProduct ? <PublishWithoutDeployProduct
                     classes={classes}
                     api={api}
                     handleClick={this.handleClick}
                     handleClose={() => this.setIsOpen(false)}
                     open={isOpen}
-                />
+                /> : <PublishWithoutDeploy
+                    classes={classes}
+                    api={api}
+                    handleClick={this.handleClick}
+                    handleClose={() => this.setIsOpen(false)}
+                    open={isOpen}
+                /> }
             </Grid>
         );
     }
