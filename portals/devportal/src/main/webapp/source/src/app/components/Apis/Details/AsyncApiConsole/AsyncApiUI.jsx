@@ -115,23 +115,29 @@ export default function AsyncApiUI(props) {
         } = subscription;
         const token = generateAccessToken();
         if (mode === 'subscribe') {
-            let curl = `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}`;
+            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub
+            .topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub
+            .mode=${mode}'`;
             if (secret) {
-                curl += `&hub.secret=${secret}`;
+                curl += ` -d 'hub.secret=${secret}'`;
             }
             if (lease) {
-                curl += `&hub.lease_seconds=${lease}`;
+                curl += ` -d 'hub.lease_seconds=${lease}'`;
             }
             if (api.advertiseInfo && api.advertiseInfo.adveritsed && authorizationHeader !== '') {
-                curl += `' -H '${authorizationHeader}: ${token}'`;
+                curl += ` -H '${authorizationHeader}: ${token}'`;
             } else {
-                curl += `' -H 'Authorization: ${token}'`;
+                curl += ` -H 'Authorization: ${token}'`;
             }
             return curl;
         } else {
-            let curl = `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub
+            .topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub
+            .mode=${mode}' -H 'Authorization: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
-                curl = `curl -X POST '${endPoint}?hub.topic=${encodeURIComponent(topic)}&hub.callback=${encodeURIComponent(callback)}&hub.mode=${mode}' -H '${authorizationHeader}: ${token}'`;
+                curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub
+                .topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub
+                .mode=${mode}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         }
