@@ -570,7 +570,6 @@ class ApiConsole extends React.Component {
                                         defaultMessage='Postman collection'
                                     />
                                 </Button>
-
                             </Grid>
                             <Grid xs={2} item>
                                 <a href={downloadLink} download={fileName}>
