@@ -168,6 +168,7 @@ class TableView extends React.Component {
                 overrides: {
                     MUIDataTable: {
                         tableRoot: {
+                            backgroundColor: 'red',
                             display: 'block',
                             '& tbody': {
                                 display: 'flex',

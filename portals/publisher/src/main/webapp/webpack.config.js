@@ -101,15 +101,45 @@ module.exports = (env, argv) => {
                 }
             ]
         },
-        /**
-         * Webpack devserver configuration
-         * Configured to open the browser with /publisher context, Keep builds in-memory, hot updated enabled
-         * Overlay the error messages in the app,
-         * and use proxy configs and `devServerBefore` to handle authentication requests.
-         * For more info:
-         *      https://webpack.js.org/configuration/dev-server/
-         *      https://github.com/gaearon/react-hot-loader
-        */
+        externals: {
+            Config: 'AppConfig',
+            Themes: 'AppThemes', // Should use long names for preventing global scope JS variable conflicts
+            MaterialIcons: 'MaterialIcons',
+            Settings: 'Settings',
+            userCustomThemes: 'userThemes', // Should use long names for preventing global scope JS variable conflicts
+        },
+        plugins: [
+            new HtmlWebpackPlugin({
+                inject: true,
+                template: path.resolve(__dirname, 'site/public/pages/templates/index.jsp.hbs'),
+                filename: path.resolve(__dirname, 'site/public/pages/index.jsp'),
+                minify: false, // Make this true to get exploded, formatted index.jsp file,
+                templateParameters: { env: isDevelopmentBuild ? 'development': 'production'},
+            }),
+            new CleanWebpackPlugin(),
+            new HookShellScriptPlugin({
+                afterEmit: [`echo "Updating files in ${devInfo.location}. Changes done to the publisher webapp." && rm -rf ${devInfo.location}repository/deployment/server/webapps/publisher/site/public && cp -R site/public ${devInfo.location}repository/deployment/server/webapps/publisher/site/public` ]
+            }),
+            new ESLintPlugin({
+                extensions: ['js', 'ts', 'jsx'],
+                failOnError: true,
+                quiet: true,
+                exclude: 'node_modules',
+            }),
+            new webpack.ProgressPlugin((percentage, message, ...args) => {
+                // e.g. Output each progress message directly to the console:
+                const pres = Math.round(percentage * 100);
+                if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
+            }),
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
+            })
+        ],
+        optimization: {
+            splitChunks: {
+                chunks: 'all',
+            },
+        },
         devServer: {
             open: !isTestBuild,
             openPage: 'publisher',
@@ -149,58 +179,6 @@ module.exports = (env, argv) => {
                 '/publisher': {
                     bypass: clientRoutingBypass,
                 },
-            },
-        },
-        resolve: {
-            alias: {
-                AppData: path.resolve(__dirname, 'source/src/app/data/'),
-                AppComponents: path.resolve(__dirname, 'source/src/app/components/'),
-                OverrideData: path.resolve(__dirname, 'override/src/app/data/'),
-                OverrideComponents: path.resolve(__dirname, 'override/src/app/components/'),
-                AppTests: path.resolve(__dirname, 'source/Tests/'),
-                // 'nimma/fallbacks': require.resolve('./node_modules/nimma/dist/legacy/cjs/fallbacks/index.js'), // nimma/* things Added because of spectral
-                // 'nimma/legacy': require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
-                // nimma: require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
-            },
-            extensions: ['.tsx', '.ts', '.js', '.jsx'],
-        },
-        externals: {
-            Config: 'AppConfig',
-            Themes: 'AppThemes', // Should use long names for preventing global scope JS variable conflicts
-            MaterialIcons: 'MaterialIcons',
-            Settings: 'Settings',
-            userCustomThemes: 'userThemes', // Should use long names for preventing global scope JS variable conflicts
-        },
-        plugins: [
-            new HtmlWebpackPlugin({
-                inject: true,
-                template: path.resolve(__dirname, 'site/public/pages/templates/index.jsp.hbs'),
-                filename: path.resolve(__dirname, 'site/public/pages/index.jsp'),
-                minify: false, // Make this true to get exploded, formatted index.jsp file,
-                templateParameters: { env: isDevelopmentBuild ? 'development': 'production'},
-            }),
-            new CleanWebpackPlugin(),
-            new HookShellScriptPlugin({
-                afterEmit: [`echo "Updating files in ${devInfo.location}. Changes done to the publisher webapp." && rm -rf ${devInfo.location}repository/deployment/server/webapps/publisher/site/public && cp -R site/public ${devInfo.location}repository/deployment/server/webapps/publisher/site/public` ]
-            }),
-            new ESLintPlugin({
-                extensions: ['js', 'ts', 'jsx'],
-                failOnError: true,
-                quiet: true,
-                exclude: 'node_modules',
-            }),
-            new webpack.ProgressPlugin((percentage, message, ...args) => {
-                // e.g. Output each progress message directly to the console:
-                const pres = Math.round(percentage * 100);
-                if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
-            }),
-            new webpack.ProvidePlugin({
-                process: 'process/browser',
-            })
-        ],
-        optimization: {
-            splitChunks: {
-                chunks: 'all',
             },
         },
         mode: (isDevelopmentBuild || isTestBuild) && 'development',

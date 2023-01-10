@@ -60,6 +60,7 @@ function renderInput(inputProps) {
         <>
             <InputLabel className={classes.ariaLabel} htmlFor='searchQuery'>Search APIs</InputLabel>
             <TextField
+                variant='standard'
                 id='searchQuery' // Pay attention to usages when renaming this ID
                 InputProps={{
                     inputRef: ref,
