@@ -115,9 +115,7 @@ export default function AsyncApiUI(props) {
         } = subscription;
         const token = generateAccessToken();
         if (mode === 'subscribe') {
-            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub
-            .topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub
-            .mode=${mode}'`;
+            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}'`;
             if (secret) {
                 curl += ` -d 'hub.secret=${secret}'`;
             }
@@ -131,13 +129,9 @@ export default function AsyncApiUI(props) {
             }
             return curl;
         } else {
-            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub
-            .topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub
-            .mode=${mode}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' - 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}' -H 'Authorization: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
-                curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub
-                .topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub
-                .mode=${mode}' -H '${authorizationHeader}: ${token}'`;
+                curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         }
