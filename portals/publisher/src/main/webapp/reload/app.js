@@ -7,5 +7,5 @@ liveReloadServer.watch(path.join(__dirname, '../site/public'));
 liveReloadServer.server.once("connection", () => {
     setTimeout(() => {
         liveReloadServer.refresh("/");
-    }, 100);
+    }, 1000);
 });

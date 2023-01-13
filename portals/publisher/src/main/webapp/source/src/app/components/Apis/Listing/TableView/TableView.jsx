@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /*
  * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -19,7 +20,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { ThemeProvider, StyledEngineProvider, createTheme, adaptV4Theme } from '@mui/material/styles';
 import { withStyles } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -119,78 +119,25 @@ class TableView extends React.Component {
         // The foollowing is resetting the styles for the mui-datatables
         const { theme } = this.props;
         const themeAdditions = {
-            overrides: {
+            components: {
                 MUIDataTable: {
-                    tableRoot: {
-                        display: 'table',
-                        '& tbody': {
-                            display: 'table-row-group',
+                    styleOverrides: {
+                        tableRoot: {
+                            display: 'table',
+                            '& tbody': {
+                                display: 'table-row-group',
+                            },
+                            '& thead': {
+                                display: 'table-header-group',
+                            },
                         },
-                        '& thead': {
-                            display: 'table-header-group',
-                        },
-                    },
+                    }
                 },
             },
         };
         Object.assign(theme, themeAdditions);
     }
 
-    getMuiTheme = () => {
-        const { listType, totalCount } = this.state;
-        const { theme } = this.props;
-        let themeAdditions = {};
-        let muiTheme = {
-            overrides: {
-                MUIDataTable: {
-                    root: {
-                        backgroundColor: 'transparent',
-                    },
-                    paper: {
-                        boxShadow: 'none',
-                        backgroundColor: 'transparent',
-                    },
-                    tableRoot: {
-                        '& tbody': {
-                            backgroundColor: '#fff',
-                        },
-                    },
-                },
-                MUIDataTableBodyCell: {
-                    root: {
-                        backgroundColor: 'transparent',
-                    },
-                },
-            },
-        };
-        if (listType === 'grid') {
-            themeAdditions = {
-                overrides: {
-                    MUIDataTable: {
-                        tableRoot: {
-                            backgroundColor: 'red',
-                            display: 'block',
-                            '& tbody': {
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                backgroundColor: 'transparent',
-                            },
-                            '& thead': {
-                                display: 'none',
-                            },
-                        },
-                    },
-                    MuiTableBody: {
-                        root: {
-                            justifyContent: totalCount > 4 ? 'center' : 'flex-start',
-                        },
-                    },
-                },
-            };
-        }
-        muiTheme = Object.assign(theme, muiTheme, themeAdditions);
-        return createTheme(adaptV4Theme(muiTheme));
-    };
 
     // get apisAndApiProducts
     getData = (rowsPerPage, page) => {
@@ -495,11 +442,10 @@ class TableView extends React.Component {
                     />
                 )
                     : (
-                        <StyledEngineProvider injectFirst>
-                            <ThemeProvider theme={this.getMuiTheme()}>
-                                <MUIDataTable title='' data={apisAndApiProducts} columns={columns} options={options} />
-                            </ThemeProvider>
-                        </StyledEngineProvider>
+                        <div className={listType === 'grid' ? 'tableGrid': 'tableList'}>
+                            <MUIDataTable title='' data={apisAndApiProducts} 
+                                columns={columns} options={options} />
+                        </div>
                     )}
             </div>
         </>;
