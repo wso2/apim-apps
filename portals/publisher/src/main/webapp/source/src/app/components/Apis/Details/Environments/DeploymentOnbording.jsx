@@ -39,8 +39,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
+import InlineMessage from 'AppComponents/Shared/InlineMessage';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         minHeight: '480px',
     },
@@ -67,6 +68,12 @@ const useStyles = makeStyles(() => ({
     },
     textAlign: {
         textAlign: 'center',
+    },
+    content: {
+        margin: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`,
+    },
+    head: {
+        fontWeight: 200,
     },
 }));
 /**
@@ -183,56 +190,277 @@ export default function DeploymentOnboarding(props) {
 
     return (
         <>
-            <Grid container spacing={2}>
-                <Grid item xs={2} />
-                <Grid item xs={8}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={2} />
-                        <Grid item xs={8} className={classes1.textAlign}>
-                            <Typography variant='h6' className={classes1.textDeploy}>
-                                Deploy the API
+            <div className={classes.titleWrapper}>
+                <Typography
+                    id='Apis.Details.environments.deploymentOnBoarding.typography.head'
+                    variant='h4'
+                    component='h2'
+                    align='left'
+                    className={classes.mainTitle}
+                >
+                    <FormattedMessage
+                        id='Apis.Details.environments.deploymentOnBoarding.formattedMessage.head'
+                        defaultMessage='Deployments'
+                    />
+                </Typography>
+                
+            </div>
+
+            { api.lifeCycleStatus === 'RETIRED' ? (
+                <>
+                    <Box mt={2}/>
+                    <InlineMessage type='warning' height={140}>
+                        <div className={classes1.contentWrapper}>
+                            <Typography variant='h5' component='h3' className={classes1.head}>
+                                <FormattedMessage
+                                    id='Apis.Details.environments.deploymentOnBoarding.formattedMessage.warningTitle'
+                                    defaultMessage='Can not deploy retired APIs'
+                                />
                             </Typography>
-                        </Grid>
-                        <Grid item xs={2} />
-                    </Grid>
-                    <Box pb={2}>
-                        <Grid container>
+                            <Box mt={1}/>
+                            <Typography component='p' className={classes1.content}>
+                                <FormattedMessage
+                                    id='Apis.Details.environments.deploymentOnBoarding.formattedMessage.description'
+                                    defaultMessage='It is not possible to deploy new revisions for retired APIs.'
+                                    
+                                />
+                            </Typography>
+                        </div>
+                    </InlineMessage>
+                </>
+            ) : (
+                <Grid container spacing={2}>
+                    <Grid item xs={2} />
+                    <Grid item xs={8}>
+                        <Grid container spacing={2}>
                             <Grid item xs={2} />
                             <Grid item xs={8} className={classes1.textAlign}>
-                                <Typography variant='h6' className={classes1.textDescription}>
-                                    Deploy API to the Gateway Environment
+                                <Typography variant='h6' className={classes1.textDeploy}>
+                                    Deploy the API
                                 </Typography>
                             </Grid>
                             <Grid item xs={2} />
                         </Grid>
-                    </Box>
-                    {(gatewayVendor === 'wso2') ? (
-                        <Paper fullWidth className={classes1.root}>
-                            <Box p={5}>
-                                <Typography className={classes1.textRevision}>
-                                    API Gateways
-                                </Typography>
-                                <Box mt={4}>
-                                    <Grid
-                                        container
-                                        spacing={3}
-                                    >
-                                        {internalGateways.map((row) => (
-                                            <Grid item xs={3}>
-                                                <Card
-                                                    className={clsx(selectedEnvironment
-                                                    && selectedEnvironment.includes(row.name)
-                                                        ? (classes.changeCard) : (classes.noChangeCard),
-                                                    classes.cardHeight)}
+                        <Box pb={2}>
+                            <Grid container>
+                                <Grid item xs={2} />
+                                <Grid item xs={8} className={classes1.textAlign}>
+                                    <Typography variant='h6' className={classes1.textDescription}>
+                                        Deploy API to the Gateway Environment
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={2} />
+                            </Grid>
+                        </Box>
+                        {(gatewayVendor === 'wso2') ? (
+                            <Paper fullWidth className={classes1.root}>
+                                <Box p={5}>
+                                    <Typography className={classes1.textRevision}>
+                                        API Gateways
+                                    </Typography>
+                                    <Box mt={4}>
+                                        <Grid
+                                            container
+                                            spacing={3}
+                                        >
+                                            {internalGateways.map((row) => (
+                                                <Grid item xs={3}>
+                                                    <Card
+                                                        className={clsx(selectedEnvironment
+                                                        && selectedEnvironment.includes(row.name)
+                                                            ? (classes.changeCard) : (classes.noChangeCard),
+                                                        classes.cardHeight)}
+                                                        variant='outlined'
+                                                    >
+                                                        <Box height='100%'>
+                                                            <CardHeader
+                                                                action={(
+                                                                    <Checkbox
+                                                                        id={row.name.split(' ').join('')}
+                                                                        value={row.name}
+                                                                        checked={selectedEnvironment.includes(row.name)}
+                                                                        onChange={handleChange}
+                                                                        color='primary'
+                                                                        icon={<RadioButtonUncheckedIcon />}
+                                                                        checkedIcon=
+                                                                            {<CheckCircleIcon color='primary' />}
+                                                                        inputProps=
+                                                                            {{ 'aria-label': 'secondary checkbox' }}
+                                                                    />
+                                                                )}
+                                                                title={(
+                                                                    <Typography variant='subtitle2'>
+                                                                        {row.displayName}
+                                                                    </Typography>
+                                                                )}
+                                                                subheader={(
+                                                                    <Typography
+                                                                        variant='body2'
+                                                                        color='textSecondary'
+                                                                        gutterBottom
+                                                                    >
+                                                                        {row.type}
+                                                                    </Typography>
+                                                                )}
+                                                            />
+                                                            <CardContent className={classes.cardContentHeight}>
+                                                                <Grid
+                                                                    container
+                                                                    direction='column'
+                                                                    spacing={2}
+                                                                >
+                                                                    <Grid item xs={12}>
+                                                                        <Tooltip
+                                                                            title={(
+                                                                                <>
+                                                                                    <Typography color='inherit'>
+                                                                                        {getVhostHelperText(row.name,
+                                                                                            selectedVhostDeploy)}
+                                                                                    </Typography>
+                                                                                </>
+                                                                            )}
+                                                                            placement='bottom'
+                                                                        >
+                                                                            <TextField
+                                                                                id='vhost-selector'
+                                                                                select={row.vhosts.length > 1}
+                                                                                disabled={row.vhosts.length === 1}
+                                                                                label={(
+                                                                                    <FormattedMessage
+                                                                                        id='Apis.Details.Environments
+                                                                                        .deploy.vhost'
+                                                                                        defaultMessage='VHost'
+                                                                                    />
+                                                                                )}
+                                                                                SelectProps={{
+                                                                                    MenuProps: {
+                                                                                        anchorOrigin: {
+                                                                                            vertical: 'bottom',
+                                                                                            horizontal: 'left',
+                                                                                        },
+                                                                                        getContentAnchorEl: null,
+                                                                                    },
+                                                                                }}
+                                                                                name={row.name}
+                                                                                value={selectedVhostDeploy.find(
+                                                                                    (v) => v.env === row.name,
+                                                                                ).vhost}
+                                                                                onChange={handleVhostDeploySelect}
+                                                                                margin='dense'
+                                                                                variant='outlined'
+                                                                                fullWidth
+                                                                                helperText={getVhostHelperText(row.name,
+                                                                                    selectedVhostDeploy, true)}
+                                                                            >
+                                                                                {row.vhosts.map(
+                                                                                    (vhost) => (
+                                                                                        <MenuItem value={vhost.host}>
+                                                                                            {vhost.host}
+                                                                                        </MenuItem>
+                                                                                    ),
+                                                                                )}
+                                                                            </TextField>
+                                                                        </Tooltip>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </CardContent>
+                                                        </Box>
+                                                    </Card>
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+                                    </Box>
+                                    <Box mt={2}>
+                                        <Button
+                                            color='primary'
+                                            className={classes.button}
+                                            display='inline'
+                                            startIcon={<AddIcon />}
+                                            onClick={handleDescriptionOpen}
+                                            id='add-description-btn'
+                                        >
+                                            Add a description
+                                        </Button>
+                                        <Typography display='inline' className={classes1.textOptional}>
+                                            (optional)
+                                        </Typography>
+                                        <br />
+                                        {descriptionOpen && (
+                                            <>
+                                                <TextField
+                                                    className={classes1.descriptionWidth}
+                                                    name='description'
+                                                    margin='dense'
                                                     variant='outlined'
-                                                >
-                                                    <Box height='100%'>
+                                                    label='Description'
+                                                    inputProps={{ maxLength: maxCommentLength }}
+                                                    helperText={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Environments.Environments.revision
+                                                            .description.deploy'
+                                                            defaultMessage='Add a description to the revision'
+                                                        />
+                                                    )}
+                                                    multiline
+                                                    rows={3}
+                                                    defaultValue={description === true ? '' : description}
+                                                    onBlur={handleChange}
+                                                    id='add-description'
+                                                />
+                                            </>
+                                        )}
+                                    </Box>
+                                    <Box mt={3}>
+                                        <Button
+                                            id='deploy-btn'
+                                            type='submit'
+                                            variant='contained'
+                                            onClick={
+                                                () => createDeployRevision(selectedEnvironment, selectedVhostDeploy)
+                                            }
+                                            color='primary'
+                                            disabled={selectedEnvironment.length === 0
+                                                || (advertiseInfo && advertiseInfo.advertised)
+                                                || isDeployButtonDisabled}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.Environments.deploy.deploy'
+                                                defaultMessage='Deploy'
+                                            />
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </Paper>
+                        ) : (
+                            <Paper fullWidth className={classes1.root}>
+                                <Box p={5}>
+                                    <Typography className={classes1.textRevision}>
+                                        Solace Environments
+                                    </Typography>
+                                    <Box mt={4}>
+                                        <Grid
+                                            container
+                                            spacing={3}
+                                        >
+                                            { externalGateways.map((row) => (
+                                                <Grid item xs={3}>
+                                                    <Card
+                                                        className={clsx(selectedSolaceEnvironment
+                                                        && selectedSolaceEnvironment.includes(row.name)
+                                                            ? (classes.changeCard) : (classes.noChangeCard),
+                                                        classes.cardHeight)}
+                                                        variant='outlined'
+                                                    >
                                                         <CardHeader
+                                                            data-testid='solace-api-name'
                                                             action={(
                                                                 <Checkbox
                                                                     id={row.name.split(' ').join('')}
                                                                     value={row.name}
-                                                                    checked={selectedEnvironment.includes(row.name)}
+                                                                    checked=
+                                                                        {selectedSolaceEnvironment.includes(row.name)}
+                                                                    disabled={isRestricted(['apim:api_publish',
+                                                                        'apim:api_create'])}
                                                                     onChange={handleChange}
                                                                     color='primary'
                                                                     icon={<RadioButtonUncheckedIcon />}
@@ -247,11 +475,12 @@ export default function DeploymentOnboarding(props) {
                                                             )}
                                                             subheader={(
                                                                 <Typography
+                                                                    data-testid={row.provider.toString()}
                                                                     variant='body2'
                                                                     color='textSecondary'
                                                                     gutterBottom
                                                                 >
-                                                                    {row.type}
+                                                                    {row.provider.toString().toUpperCase()}
                                                                 </Typography>
                                                             )}
                                                         />
@@ -262,281 +491,102 @@ export default function DeploymentOnboarding(props) {
                                                                 spacing={2}
                                                             >
                                                                 <Grid item xs={12}>
-                                                                    <Tooltip
-                                                                        title={(
-                                                                            <>
-                                                                                <Typography color='inherit'>
-                                                                                    {getVhostHelperText(row.name,
-                                                                                        selectedVhostDeploy)}
-                                                                                </Typography>
-                                                                            </>
+                                                                    <TextField
+                                                                        data-testid='api-env-name'
+                                                                        id='Api.Details.Third.party.environment.name'
+                                                                        label='Environment'
+                                                                        variant='outlined'
+                                                                        disabled
+                                                                        fullWidth
+                                                                        margin='dense'
+                                                                        value={row.name}
+                                                                    />
+                                                                    <TextField
+                                                                        data-testid='api-org-name'
+                                                                        id='Api.Details.
+                                                                            Third.party.environment.organization'
+                                                                        label='Organization'
+                                                                        variant='outlined'
+                                                                        disabled
+                                                                        fullWidth
+                                                                        margin='dense'
+                                                                        value={getOrganizationFromAdditionalProperties(
+                                                                            row.additionalProperties,
                                                                         )}
-                                                                        placement='bottom'
-                                                                    >
-                                                                        <TextField
-                                                                            id='vhost-selector'
-                                                                            select={row.vhosts.length > 1}
-                                                                            disabled={row.vhosts.length === 1}
-                                                                            label={(
-                                                                                <FormattedMessage
-                                                                                    id='Apis.Details.Environments
-                                                                                    .deploy.vhost'
-                                                                                    defaultMessage='VHost'
-                                                                                />
-                                                                            )}
-                                                                            SelectProps={{
-                                                                                MenuProps: {
-                                                                                    anchorOrigin: {
-                                                                                        vertical: 'bottom',
-                                                                                        horizontal: 'left',
-                                                                                    },
-                                                                                    getContentAnchorEl: null,
-                                                                                },
-                                                                            }}
-                                                                            name={row.name}
-                                                                            value={selectedVhostDeploy.find(
-                                                                                (v) => v.env === row.name,
-                                                                            ).vhost}
-                                                                            onChange={handleVhostDeploySelect}
-                                                                            margin='dense'
-                                                                            variant='outlined'
-                                                                            fullWidth
-                                                                            helperText={getVhostHelperText(row.name,
-                                                                                selectedVhostDeploy, true)}
-                                                                        >
-                                                                            {row.vhosts.map(
-                                                                                (vhost) => (
-                                                                                    <MenuItem value={vhost.host}>
-                                                                                        {vhost.host}
-                                                                                    </MenuItem>
-                                                                                ),
-                                                                            )}
-                                                                        </TextField>
-                                                                    </Tooltip>
+                                                                    />
                                                                 </Grid>
                                                             </Grid>
                                                         </CardContent>
-                                                    </Box>
-                                                </Card>
-                                            </Grid>
-                                        ))}
-                                    </Grid>
-                                </Box>
-                                <Box mt={2}>
-                                    <Button
-                                        color='primary'
-                                        className={classes.button}
-                                        display='inline'
-                                        startIcon={<AddIcon />}
-                                        onClick={handleDescriptionOpen}
-                                        id='add-description-btn'
-                                    >
-                                        Add a description
-                                    </Button>
-                                    <Typography display='inline' className={classes1.textOptional}>
-                                        (optional)
-                                    </Typography>
-                                    <br />
-                                    {descriptionOpen && (
-                                        <>
-                                            <TextField
-                                                className={classes1.descriptionWidth}
-                                                name='description'
-                                                margin='dense'
-                                                variant='outlined'
-                                                label='Description'
-                                                inputProps={{ maxLength: maxCommentLength }}
-                                                helperText={(
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Environments.Environments.revision
-                                                        .description.deploy'
-                                                        defaultMessage='Add a description to the revision'
-                                                    />
-                                                )}
-                                                multiline
-                                                rows={3}
-                                                defaultValue={description === true ? '' : description}
-                                                onBlur={handleChange}
-                                                id='add-description'
-                                            />
-                                        </>
-                                    )}
-                                </Box>
-                                <Box mt={3}>
-                                    <Button
-                                        id='deploy-btn'
-                                        type='submit'
-                                        variant='contained'
-                                        onClick={
-                                            () => createDeployRevision(selectedEnvironment, selectedVhostDeploy)
-                                        }
-                                        color='primary'
-                                        disabled={selectedEnvironment.length === 0
-                                            || (advertiseInfo && advertiseInfo.advertised)
-                                            || isDeployButtonDisabled}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Environments.Environments.deploy.deploy'
-                                            defaultMessage='Deploy'
-                                        />
-                                    </Button>
-                                </Box>
-                            </Box>
-                        </Paper>
-                    ) : (
-                        <Paper fullWidth className={classes1.root}>
-                            <Box p={5}>
-                                <Typography className={classes1.textRevision}>
-                                    Solace Environments
-                                </Typography>
-                                <Box mt={4}>
-                                    <Grid
-                                        container
-                                        spacing={3}
-                                    >
-                                        { externalGateways.map((row) => (
-                                            <Grid item xs={3}>
-                                                <Card
-                                                    className={clsx(selectedSolaceEnvironment
-                                                    && selectedSolaceEnvironment.includes(row.name)
-                                                        ? (classes.changeCard) : (classes.noChangeCard),
-                                                    classes.cardHeight)}
+                                                    </Card>
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+                                    </Box>
+                                    <Box mt={2}>
+                                        <Button
+                                            color='primary'
+                                            className={classes.button}
+                                            display='inline'
+                                            startIcon={<AddIcon />}
+                                            onClick={handleDescriptionOpen}
+                                        >
+                                            Add a description
+                                        </Button>
+                                        <Typography display='inline' className={classes1.textOptional}>
+                                            (optional)
+                                        </Typography>
+                                        <br />
+                                        { descriptionOpen && (
+                                            <>
+                                                <TextField
+                                                    className={classes1.descriptionWidth}
+                                                    name='description'
+                                                    margin='dense'
                                                     variant='outlined'
-                                                >
-                                                    <CardHeader
-                                                        data-testid='solace-api-name'
-                                                        action={(
-                                                            <Checkbox
-                                                                id={row.name.split(' ').join('')}
-                                                                value={row.name}
-                                                                checked={selectedSolaceEnvironment.includes(row.name)}
-                                                                disabled={isRestricted(['apim:api_publish',
-                                                                    'apim:api_create'])}
-                                                                onChange={handleChange}
-                                                                color='primary'
-                                                                icon={<RadioButtonUncheckedIcon />}
-                                                                checkedIcon={<CheckCircleIcon color='primary' />}
-                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                            />
-                                                        )}
-                                                        title={(
-                                                            <Typography variant='subtitle2'>
-                                                                {row.displayName}
-                                                            </Typography>
-                                                        )}
-                                                        subheader={(
-                                                            <Typography
-                                                                data-testid={row.provider.toString()}
-                                                                variant='body2'
-                                                                color='textSecondary'
-                                                                gutterBottom
-                                                            >
-                                                                {row.provider.toString().toUpperCase()}
-                                                            </Typography>
-                                                        )}
-                                                    />
-                                                    <CardContent className={classes.cardContentHeight}>
-                                                        <Grid
-                                                            container
-                                                            direction='column'
-                                                            spacing={2}
-                                                        >
-                                                            <Grid item xs={12}>
-                                                                <TextField
-                                                                    data-testid='api-env-name'
-                                                                    id='Api.Details.Third.party.environment.name'
-                                                                    label='Environment'
-                                                                    variant='outlined'
-                                                                    disabled
-                                                                    fullWidth
-                                                                    margin='dense'
-                                                                    value={row.name}
-                                                                />
-                                                                <TextField
-                                                                    data-testid='api-org-name'
-                                                                    id='Api.Details.
-                                                                        Third.party.environment.organization'
-                                                                    label='Organization'
-                                                                    variant='outlined'
-                                                                    disabled
-                                                                    fullWidth
-                                                                    margin='dense'
-                                                                    value={getOrganizationFromAdditionalProperties(
-                                                                        row.additionalProperties,
-                                                                    )}
-                                                                />
-                                                            </Grid>
-                                                        </Grid>
-                                                    </CardContent>
-                                                </Card>
-                                            </Grid>
-                                        ))}
-                                    </Grid>
-                                </Box>
-                                <Box mt={2}>
-                                    <Button
-                                        color='primary'
-                                        className={classes.button}
-                                        display='inline'
-                                        startIcon={<AddIcon />}
-                                        onClick={handleDescriptionOpen}
-                                    >
-                                        Add a description
-                                    </Button>
-                                    <Typography display='inline' className={classes1.textOptional}>
-                                        (optional)
-                                    </Typography>
-                                    <br />
-                                    { descriptionOpen && (
-                                        <>
-                                            <TextField
-                                                className={classes1.descriptionWidth}
-                                                name='description'
-                                                margin='dense'
-                                                variant='outlined'
-                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                                label='Description'
-                                                inputProps={{ maxLength: maxCommentLength }}
-                                                helperText={(
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Environments.Environments.revision
-                                                        .description.deploy'
-                                                        defaultMessage='Add a description to the revision'
-                                                    />
-                                                )}
-                                                multiline
-                                                rows={3}
-                                                defaultValue={description === true ? '' : description}
-                                                onBlur={handleChange}
+                                                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                                    label='Description'
+                                                    inputProps={{ maxLength: maxCommentLength }}
+                                                    helperText={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Environments.Environments.revision
+                                                            .description.deploy'
+                                                            defaultMessage='Add a description to the revision'
+                                                        />
+                                                    )}
+                                                    multiline
+                                                    rows={3}
+                                                    defaultValue={description === true ? '' : description}
+                                                    onBlur={handleChange}
+                                                />
+                                            </>
+                                        ) }
+                                    </Box>
+                                    <Box mt={3}>
+                                        <Button
+                                            id='deploy-btn-solace'
+                                            type='submit'
+                                            variant='contained'
+                                            onClick={
+                                                () => 
+                                                    createDeployRevision(selectedSolaceEnvironment, selectedVhostDeploy)
+                                            }
+                                            color='primary'
+                                            disabled={selectedSolaceEnvironment.length === 0
+                                                || isRestricted(['apim:api_publish', 'apim:api_create'])
+                                                || isDeployButtonDisabled}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.Environments.deploy.deploy'
+                                                defaultMessage='Deploy'
                                             />
-                                        </>
-                                    ) }
+                                        </Button>
+                                    </Box>
                                 </Box>
-                                <Box mt={3}>
-                                    <Button
-                                        id='deploy-btn-solace'
-                                        type='submit'
-                                        variant='contained'
-                                        onClick={
-                                            () => createDeployRevision(selectedSolaceEnvironment, selectedVhostDeploy)
-                                        }
-                                        color='primary'
-                                        disabled={selectedSolaceEnvironment.length === 0
-                                            || isRestricted(['apim:api_publish', 'apim:api_create'])
-                                            || isDeployButtonDisabled}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Environments.Environments.deploy.deploy'
-                                            defaultMessage='Deploy'
-                                        />
-                                    </Button>
-                                </Box>
-                            </Box>
-                        </Paper>
-                    )}
-                </Grid>
-                <Grid item xs={2} />
-            </Grid>
+                            </Paper>
+                        )}
+                    </Grid>
+                    <Grid item xs={2} />
+                </Grid>)}
         </>
     );
 }
@@ -546,6 +596,7 @@ DeploymentOnboarding.propTypes = {
     setDescription: PropTypes.shape({}).isRequired,
     description: PropTypes.string.isRequired,
     gatewayVendor: PropTypes.string,
+    classes: PropTypes.shape({}).isRequired
 };
 
 DeploymentOnboarding.defaultProps = {
