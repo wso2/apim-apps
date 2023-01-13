@@ -400,7 +400,15 @@ export default function CustomizedStepper() {
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
     const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
     || (!isMutualSslOnly && !isTierAvailable)
-    || api.workflowStatus === 'CREATED');
+    || api.workflowStatus === 'CREATED' || lifecycleState === 'RETIRED');
+
+    let deployLinkToolTipTitle = '';
+    if (lifecycleState === 'RETIRED') {
+        deployLinkToolTipTitle = 'Cannot deploy retired APIs';
+    } else if (!deploymentsAvailable) { 
+        deployLinkToolTipTitle = 'Deploy a revision of this API to the Gateway';
+    }
+
     return (
         <div id='itest-overview-api-flow' className={classes.root}>
             <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
@@ -527,7 +535,7 @@ export default function CustomizedStepper() {
                             )}
                             {label === 'Deploy' && (
                                 <Tooltip
-                                    title={deploymentsAvailable ? '' : 'Deploy a revision of this API to the Gateway'}
+                                    title={deployLinkToolTipTitle}
                                     placement='bottom'
                                 >
                                     <Grid
@@ -577,7 +585,7 @@ export default function CustomizedStepper() {
                             )}
                             {label === 'Test' && (
                                 <Tooltip
-                                    title={lifecycleState === 'RETIERD' ? 'Cannot use test option while API'
+                                    title={lifecycleState === 'RETIRED' ? 'Cannot use test option while API'
                                         + ' is in retired state' : ''}
                                     placement='bottom'
                                 >
