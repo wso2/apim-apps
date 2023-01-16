@@ -29,9 +29,9 @@ import queryString from 'query-string';
  * */
 function getMessage(errorType, maxLength) {
     switch (errorType) {
-        case 'any.empty':
+        case 'string.empty':
             return 'should not be empty';
-        case 'string.regex.base':
+        case 'string.pattern.base':
             return 'should not contain spaces or special characters';
         case 'string.max':
             return 'has exceeded the maximum number of ' + maxLength + ' characters';
@@ -112,9 +112,9 @@ const documentSchema = Joi.extend((joi) => ({
     rules:
     {
         isDocumentPresent: {
-            validate(params, value, state, options) { // eslint-disable-line no-unused-vars
+            validate(params, helpers, args, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
-                return api.validateDocumentExists(value.id, value.name);
+                return api.validateDocumentExists(params.id, params.name);
             }
         }
     },
@@ -124,32 +124,33 @@ const documentSchema = Joi.extend((joi) => ({
 const definition = {
     apiName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, 50) }));
+            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.code, 50) }));
         }),
     apiVersion: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&/$[\]\s]+$/).required().error((errors) => {
         const tmpErrors = [...errors];
         errors.forEach((err, index) => {
             const tmpError = { ...err };
-            tmpError.message = 'API Version ' + getMessage(err.type);
+            tmpError.message = 'API Version ' + getMessage(err.code);
             tmpErrors[index] = tmpError;
         });
         return tmpErrors;
     }),
     apiContext: Joi.string().max(200).regex(/(?!.*\/t\/.*|.*\/t$)^[^~!@#:%^&*+=|\\<>"',&\s[\]]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Context ' + getMessage(error.type, 200) }));
+            return errors.map((error) => ({ ...error, message: 'Context ' + getMessage(error.code, 200) }));
         }),
     gatewayVendor: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, 50) }));
+            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.code, 50) }));
         }),
-    documentName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
+    documentName: Joi.string().max(50).pattern(new RegExp('^[^~!@#;:%^*()+={}|\\<>"\',&$\\s+[\\]/]*$')).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Document name ' + getMessage(error.type, 50) }));
+            const allErrors = errors.map( error => 'Document name ' + getMessage(error.code, 50)).join(', ');
+            return new Error(allErrors);
         }),
     authorizationHeader: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Authorization Header ' + getMessage(error.type) }));
+            return errors.map((error) => ({ ...error, message: 'Authorization Header ' + getMessage(error.code) }));
         }),
     role: roleSchema.systemRole().role(),
     scope: scopeSchema.scopes().scope(),
@@ -175,7 +176,7 @@ const definition = {
     }),
     alias: Joi.string().max(30).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Alias ' + getMessage(error.type, 30) }));
+            return errors.map((error) => ({ ...error, message: 'Alias ' + getMessage(error.code, 30) }));
         }),
     userRole: userRoleSchema.userRole().role(),
     apiParameter: apiSchema.api().isAPIParameterExist(),

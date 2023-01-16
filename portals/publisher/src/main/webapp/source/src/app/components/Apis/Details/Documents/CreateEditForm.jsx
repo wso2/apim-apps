@@ -270,7 +270,7 @@ class CreateEditForm extends React.Component {
         } else if (field === 'name') {
             if (value) {
                 const nameValidity = APIValidation.documentName.required().validate(value, { abortEarly: false }).error;
-                if (nameValidity === null) {
+                if (!nameValidity) {
                     this.setState({ invalidDocName: false });
                     const promise = APIValidation.apiDocument.validate({ id: this.props.apiId, name: value });
                         promise

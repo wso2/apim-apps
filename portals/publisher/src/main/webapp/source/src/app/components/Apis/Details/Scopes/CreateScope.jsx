@@ -26,7 +26,7 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@mui/styles';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
+import ChipInput from 'material-ui-chip-input-v5';
 import APIValidation from 'AppData/APIValidation';
 import base64url from 'base64url';
 import Error from '@mui/icons-material/Error';
