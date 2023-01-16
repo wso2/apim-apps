@@ -170,7 +170,7 @@ class CreateEditForm extends React.Component {
             this.setState({ sourceUrl: value });
         } else if (name === 'otherTypeName') {
             this.setState({ otherTypeName: value });
-        }else if (name === 'visibility') {
+        } else if (name === 'visibility') {
             this.setState({ visibility: value });
         }
     };
@@ -257,7 +257,7 @@ class CreateEditForm extends React.Component {
                 });
         }
     }
-    validate(field=null, value=null) {
+    validate(field = null, value = null) {
         let invalidUrl = false;
         if (field === 'url') {
             invalidUrl = value ? APIValidation.url.validate(value).error : false;
@@ -272,7 +272,8 @@ class CreateEditForm extends React.Component {
                 const nameValidity = APIValidation.documentName.required().validate(value, { abortEarly: false }).error;
                 if (!nameValidity) {
                     this.setState({ invalidDocName: false });
-                    const promise = APIValidation.apiDocument.validate({ id: this.props.apiId, name: value });
+                    try {
+                        const promise = APIValidation.apiDocument.validate({ id: this.props.apiId, name: value });
                         promise
                             .then((isDocumentPresent) => {
                                 this.setState({ nameNotDuplicate: !isDocumentPresent });
@@ -284,6 +285,10 @@ class CreateEditForm extends React.Component {
                                     Alert.error('Error when validating document name');
                                 }
                             });
+                    } catch (e) {
+                        // If the api fails to validate we set the api name as not duplicate
+                        this.setState({ nameNotDuplicate: true });
+                    }
                 } else {
                     this.setState({ invalidDocName: true });
                 }
@@ -353,7 +358,7 @@ class CreateEditForm extends React.Component {
         }
     }
     getUrlHelperText() {
-        const { invalidUrl, urlEmpty} = this.state;
+        const { invalidUrl, urlEmpty } = this.state;
 
         if (invalidUrl) {
             return (
@@ -487,59 +492,59 @@ class CreateEditForm extends React.Component {
                         error={summeryEmpty}
                     />
                 </FormControl>
-                {settingsContext.docVisibilityEnabled && 
-                <FormControl margin='normal' className={classes.FormControlOdd}>
-                <TextField
-                    fullWidth
-                    id='docVisibility-selector'
-                    select
-                    variant='outlined'
-                    label={
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility'
-                            defaultMessage='Document Visibility'
-                        />
-                    }
-                    helperText={
-                        summeryEmpty ? (
-                            <FormattedMessage
-                                id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
-                                defaultMessage='Document summary can not be empty'
-                            />
-                        ) : (
-                            <FormattedMessage
-                                id='Apis.Details.Documents.CreateEditForm.document.summary.helper.text'
-                                defaultMessage='Provide a brief description for the document'
-                            />
-                        )
-                    }
-                    type='text'
-                    name='visibility'
-                    margin='normal'
-                    value={visibility}
-                    onChange={this.handleChange('visibility')}
-                    error={summeryEmpty}
-                >
-                    <MenuItem value='API_LEVEL'>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.public'
-                            defaultMessage='Same as API Visibility'
-                        />
-                    </MenuItem>
-                    <MenuItem value='PRIVATE'>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.private'
-                            defaultMessage='Private'
-                        />
-                    </MenuItem>
-                    <MenuItem value='OWNER_ONLY'>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.ownerOnly'
-                            defaultMessage='Owner Only'
-                        />
-                    </MenuItem>
-                </TextField>
-            </FormControl>}
+                {settingsContext.docVisibilityEnabled &&
+                    <FormControl margin='normal' className={classes.FormControlOdd}>
+                        <TextField
+                            fullWidth
+                            id='docVisibility-selector'
+                            select
+                            variant='outlined'
+                            label={
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.docVisibility'
+                                    defaultMessage='Document Visibility'
+                                />
+                            }
+                            helperText={
+                                summeryEmpty ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
+                                        defaultMessage='Document summary can not be empty'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Documents.CreateEditForm.document.summary.helper.text'
+                                        defaultMessage='Provide a brief description for the document'
+                                    />
+                                )
+                            }
+                            type='text'
+                            name='visibility'
+                            margin='normal'
+                            value={visibility}
+                            onChange={this.handleChange('visibility')}
+                            error={summeryEmpty}
+                        >
+                            <MenuItem value='API_LEVEL'>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.public'
+                                    defaultMessage='Same as API Visibility'
+                                />
+                            </MenuItem>
+                            <MenuItem value='PRIVATE'>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.private'
+                                    defaultMessage='Private'
+                                />
+                            </MenuItem>
+                            <MenuItem value='OWNER_ONLY'>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.ownerOnly'
+                                    defaultMessage='Owner Only'
+                                />
+                            </MenuItem>
+                        </TextField>
+                    </FormControl>}
                 <FormControl component='fieldset' className={classes.formControlFirst}>
                     <FormLabel component='legend'>
                         <FormattedMessage
@@ -557,7 +562,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             className={classes.formControlLabel}
                             value='HOWTO'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <div className={classes.typeTextWrapper}>
                                     <Icon>help_outline</Icon>
@@ -573,7 +578,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             className={classes.formControlLabel}
                             value='SAMPLES'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <div className={classes.typeTextWrapper}>
                                     <Icon>code</Icon>
@@ -589,7 +594,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             className={classes.formControlLabel}
                             value='PUBLIC_FORUM'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <div className={classes.typeTextWrapper}>
                                     <Icon>forum</Icon>
@@ -605,7 +610,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             className={classes.formControlLabel}
                             value='SUPPORT_FORUM'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <div className={classes.typeTextWrapper}>
                                     <Icon>forum</Icon>
@@ -624,7 +629,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             className={classes.formControlLabel}
                             value='OTHER'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <div className={classes.typeTextWrapper}>
                                     <Icon>video_label</Icon>
@@ -688,7 +693,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             disabled={this.setDisable('INLINE')}
                             value='INLINE'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <FormattedMessage
                                     id='Apis.Details.Documents.CreateEditForm.source.inline'
@@ -699,7 +704,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             disabled={this.setDisable('MARKDOWN')}
                             value='MARKDOWN'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <FormattedMessage
                                     id='Apis.Details.Documents.CreateEditForm.source.markdown'
@@ -710,7 +715,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             disabled={this.setDisable('URL')}
                             value='URL'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <FormattedMessage
                                     id='Apis.Details.Documents.CreateEditForm.source.url'
@@ -721,7 +726,7 @@ class CreateEditForm extends React.Component {
                         <FormControlLabel
                             disabled={this.setDisable('FILE')}
                             value='FILE'
-                            control={<Radio color='primary'/>}
+                            control={<Radio color='primary' />}
                             label={
                                 <FormattedMessage
                                     id='Apis.Details.Documents.CreateEditForm.source.file'

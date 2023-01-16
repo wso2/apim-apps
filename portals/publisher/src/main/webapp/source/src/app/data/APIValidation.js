@@ -51,9 +51,9 @@ const roleSchema = Joi.extend((joi) => ({
     base: joi.string(),
     rules: {
         role: {
-            validate(params, value, state, options) { // eslint-disable-line no-unused-vars
+            validate(params, helpers, args, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
-                return api.validateSystemRole(value);
+                return api.validateSystemRole(params);
             },
         }
     }
@@ -64,9 +64,9 @@ const scopeSchema = Joi.extend((joi) => ({
     base: joi.string(),
     rules: {
         scope: {
-            validate(params, value, state, options) { // eslint-disable-line no-unused-vars
+            validate(params, helpers, args, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
-                return api.validateScopeName(value);
+                return api.validateScopeName(params);
             }
         }
     },
@@ -79,9 +79,9 @@ const userRoleSchema = Joi.extend((joi) => ({
     rules:
     {
         role: {
-            validate(params, value, state, options) { // eslint-disable-line no-unused-vars
+            validate(params, helpers, args, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
-                return api.validateUSerRole(value);
+                return api.validateUSerRole(params);
             }
         }
     },
@@ -94,8 +94,8 @@ const apiSchema = Joi.extend((joi) => ({
     rules:
     {
         isAPIParameterExist: {
-            validate(params, value, state, options) { // eslint-disable-line no-unused-vars
-                const inputValue = value.trim().toLowerCase();
+            validate(params, helpers, args, options) { // eslint-disable-line no-unused-vars
+                const inputValue = params.trim().toLowerCase();
                 const composeQuery = '?query=' + inputValue;
                 const composeQueryJSON = queryString.parse(composeQuery);
                 composeQueryJSON.limit = 10;
@@ -122,61 +122,55 @@ const documentSchema = Joi.extend((joi) => ({
 }));
 
 const definition = {
-    apiName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
+    apiName: Joi.string().max(50).pattern(new RegExp(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/)).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.code, 50) }));
+            const allErrors = errors.map(error => 'API Name ' + getMessage(error.code, 50)).join(', ');
+            return new Error(allErrors);
         }),
-    apiVersion: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&/$[\]\s]+$/).required().error((errors) => {
-        const tmpErrors = [...errors];
-        errors.forEach((err, index) => {
-            const tmpError = { ...err };
-            tmpError.message = 'API Version ' + getMessage(err.code);
-            tmpErrors[index] = tmpError;
-        });
-        return tmpErrors;
-    }),
-    apiContext: Joi.string().max(200).regex(/(?!.*\/t\/.*|.*\/t$)^[^~!@#:%^&*+=|\\<>"',&\s[\]]*$/).required()
+    apiVersion: Joi.string().pattern(new RegExp(/^[^~!@#;:%^*()+={}|\\<>"',&/$[\]\s]+$/)).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Context ' + getMessage(error.code, 200) }));
+            const allErrors = errors.map(error => 'Document name ' + getMessage(error.code)).join(', ');
+            return new Error(allErrors);
         }),
-    gatewayVendor: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
+    apiContext: Joi.string().max(200)
+        .pattern(new RegExp(/(?!.*\/t\/.*|.*\/t$)^[^~!@#:%^&*+=|\\<>"',&\s[\]]*$/)).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.code, 50) }));
+            const allErrors = errors.map(error => 'Context ' + getMessage(error.code, 200)).join(', ');
+            return new Error(allErrors);
+        }),
+    gatewayVendor: Joi.string().max(50).pattern(new RegExp(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/)).required()
+        .error((errors) => {
+            const allErrors = errors.map(error => 'Name ' + getMessage(error.code, 50)).join(', ');
+            return new Error(allErrors);
         }),
     documentName: Joi.string().max(50).pattern(new RegExp('^[^~!@#;:%^*()+={}|\\<>"\',&$\\s+[\\]/]*$')).required()
         .error((errors) => {
-            const allErrors = errors.map( error => 'Document name ' + getMessage(error.code, 50)).join(', ');
+            const allErrors = errors.map(error => 'Document name ' + getMessage(error.code, 50)).join(', ');
             return new Error(allErrors);
         }),
-    authorizationHeader: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/).required()
+    authorizationHeader: Joi.string().pattern(new RegExp(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/)).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Authorization Header ' + getMessage(error.code) }));
+            const allErrors = errors.map(error => 'Authorization Header ' + getMessage(error.code)).join(', ');
+            return new Error(allErrors);
         }),
     role: roleSchema.systemRole().role(),
     scope: scopeSchema.scopes().scope(),
-    url: Joi.string().uri({ scheme: ['http', 'https'] }).error((errors) => {
-        const tmpErrors = [...errors];
-        errors.forEach((err, index) => {
-            const tmpError = { ...err };
-            tmpError.message = 'URL ' + getMessage(err.type);
-            tmpErrors[index] = tmpError;
-        });
-        return tmpErrors;
-    }),
-    wsUrl: Joi.string().uri({ scheme: ['ws', 'wss'] }).error((errors) => {
-        const tmpErrors = [...errors];
-        errors.forEach((err, index) => {
-            const tmpError = { ...err };
-            const errType = err.type;
-            tmpError.message = errType === 'string.uriCustomScheme' ? 'Invalid WebSocket URL'
-                : 'WebSocket URL ' + getMessage(errType);
-            tmpErrors[index] = tmpError;
-        });
-        return tmpErrors;
-    }),
-    alias: Joi.string().max(30).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
+    url: Joi.string().uri({ scheme: ['http', 'https'] })
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Alias ' + getMessage(error.code, 30) }));
+            const allErrors = errors.map(error => 'URL ' + getMessage(error.code)).join(', ');
+            return new Error(allErrors);
+        }),
+    wsUrl: Joi.string().uri({ scheme: ['ws', 'wss'] })
+        .error((errors) => {
+            const allErrors = errors.map(error =>
+                error.code === 'string.uriCustomScheme' ? 'Invalid WebSocket URL'
+                    : 'WebSocket URL ' + getMessage(error.code)).join(', ');
+            return new Error(allErrors);
+        }),
+    alias: Joi.string().max(30).pattern(new RegExp(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/)).required()
+        .error((errors) => {
+            const allErrors = errors.map(error => 'Alias ' + getMessage(error.code, 30)).join(', ');
+            return new Error(allErrors);
         }),
     userRole: userRoleSchema.userRole().role(),
     apiParameter: apiSchema.api().isAPIParameterExist(),
