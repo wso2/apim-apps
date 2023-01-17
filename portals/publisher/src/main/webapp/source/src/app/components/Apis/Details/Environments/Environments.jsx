@@ -1485,8 +1485,10 @@ export default function Environments() {
                         title={(
                             <>
                                 <Typography color='inherit'>
-                                    {api.lifeCycleStatus === 'RETIRED' ? 
-                                        'Can not deploy new revisions for retired API' : 'Deploy new revision'}
+                                    {api.lifeCycleStatus === 'RETIRED' ? intl.formatMessage({
+                                        id: 'Apis.Details.Environments.Environments.RetiredApi.ToolTip',
+                                        defaultMessage: 'Can not deploy new revisions for retired API',
+                                    }): 'Deploy new revision'}
                                 </Typography>
                             </>
                         )}
