@@ -19,7 +19,8 @@ import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
 import cloneDeep from 'lodash.clonedeep';
-import Configurations from '../../../../site/public/conf/settings.json';
+
+const Configurations = require('Config');
 
 /**
  * An abstract representation of an API
