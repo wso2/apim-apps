@@ -388,6 +388,7 @@ function ListLabels() {
                     </CardContent>
                     <CardActions>
                         {addButtonOverride || (
+                            // eslint-disable-next-line react/no-unknown-property
                             <span updateList={fetchData} {...addButtonProps} />
                         )}
                     </CardActions>
@@ -458,6 +459,7 @@ function ListLabels() {
                                 <Grid item>
                                     {addButtonOverride || (
                                         <span
+                                            // eslint-disable-next-line react/no-unknown-property
                                             updateList={fetchData}
                                             {...addButtonProps}
                                         />

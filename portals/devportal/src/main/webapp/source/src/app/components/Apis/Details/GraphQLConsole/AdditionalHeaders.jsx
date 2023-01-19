@@ -147,7 +147,7 @@ function AdditionalHeaders(props) {
                     aria-controls='panel1bh-content'
                     id='panel1bh-header'
                 >
-                    <div className={classes.heading} variant='body2'>
+                    <div className={classes.heading}>
                         {!expanded && (
                             <Typography variant='caption'>
                                 Add additional headers
