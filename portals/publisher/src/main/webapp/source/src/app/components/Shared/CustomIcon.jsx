@@ -70,6 +70,7 @@ export default function CustomIcon(props) {
                 style={{ padding: 0 }}
             >
                 <g
+                    // eslint-disable-next-line react/no-unknown-property
                     sid='layer2'
                     transform='translate(79.833 -138.905)'
                 >
