@@ -3,7 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Slide from '@material-ui/core/Slide';
 import Icon from '@material-ui/core/Icon';
 import classNames from 'classnames';
-import ReactSafeHtml from 'react-safe-html';
+import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import { app } from 'Settings';
 
 const useStyles = makeStyles((theme) => ({
@@ -119,9 +119,9 @@ function Carousel() {
                                     'slideContentTitle')
                             }
                             >
-                                <ReactSafeHtml html={slide.title} />
+                                <HTMLRender html={slide.title} />
                             </div>
-                            <div className={classes.slideContentContent}><ReactSafeHtml html={slide.content} /></div>
+                            <div className={classes.slideContentContent}><HTMLRender html={slide.content} /></div>
                         </div>
                         <img
                             alt='slider'

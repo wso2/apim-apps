@@ -26,13 +26,13 @@ import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ReactSafeHtml from 'react-safe-html';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
 import Settings from 'Settings';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import { ApiContext } from '../ApiContext';
 import Alert from '../../../Shared/Alert';
 
@@ -229,7 +229,7 @@ function View(props) {
                     </Suspense>
                 </div>
             )}
-            {doc.sourceType === 'INLINE' && <ReactSafeHtml html={code} />}
+            {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
             {doc.sourceType === 'URL' && (
                 <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noreferrer'>
                     {doc.sourceUrl}
