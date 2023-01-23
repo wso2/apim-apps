@@ -37,6 +37,7 @@ import APIProduct from 'AppData/APIProduct';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import Utils from 'AppData/Utils';
 import Configuration from 'Config';
+import HTMLRender from 'AppComponents/Shared/HTMLRender';
 
 const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "ViewReactMD" */));
 
@@ -174,17 +175,6 @@ function View(props) {
     };
     const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
     const listingPath = `/${urlPrefix}/${api.id}/documents`;
-
-    // Extract html parser props from settings.json
-    const {decodeEntities, tagsNotAllowed} =  ( Configuration.app && Configuration.app.reactHTMLParser ) ? Configuration.app.reactHTMLParser : {
-        decodeEntities: true,
-        tagsNotAllowed: [],
-      };
-    function transform(node, index) {
-        if (node.type === 'tag' && tagsNotAllowed.includes(node.name)) {
-          return null;
-        }
-      }
     return (
         doc && (
             <React.Fragment>
@@ -265,7 +255,7 @@ function View(props) {
                                 <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
                             </Suspense>
                         )}
-                        {doc.sourceType === 'INLINE' && <div>{ReactHtmlParser(code, { transform, decodeEntities })}</div>}
+                        {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
                         {doc.sourceType === 'URL' && (
                             <a className={classes.displayURL} href={doc.sourceUrl} target="_blank">
                                 {doc.sourceUrl}

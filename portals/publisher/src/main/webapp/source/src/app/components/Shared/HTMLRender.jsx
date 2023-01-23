@@ -3,7 +3,7 @@
 /* eslint-disable consistent-return */
 import React from 'react'
 import ReactHtmlParser from 'react-html-parser';
-import Settings from 'Settings';
+import Configuration from 'Config';
 
 /**
  * Render html content.
@@ -13,8 +13,8 @@ import Settings from 'Settings';
 export default function HTMLRender(props) {
     const {html} = props;
     // Extract html parser props from settings.json
-    const { decodeEntities, tagsNotAllowed } = (Settings.app && 
-        Settings.app.reactHTMLParser) ? Settings.app.reactHTMLParser : {
+    const { decodeEntities, tagsNotAllowed } = (Configuration.app && 
+        Configuration.app.reactHTMLParser) ? Configuration.app.reactHTMLParser : {
             decodeEntities: true,
             tagsNotAllowed: [],
         };

@@ -34,10 +34,9 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         padding: theme.spacing(2),
-        color: theme.palette.getContrastText(theme.custom.apiDetailPages.documentBackground),
+        paddingLeft: theme.spacing(4),
         minHeight: 400,
         position: 'relative',
-        background: theme.custom.apiDetailPages.documentBackground,
     },
     popupHeader: {
         display: 'flex',
