@@ -155,7 +155,17 @@
         }
     }
 
-    String authRequestParams = "?response_type=code&client_id=" + clientId + "&scope=" + scopes + "&state=" + state + "&redirect_uri=" + loginCallbackUrl;
+    boolean isPKCEEnabled = systemApplicationDAO.isPKCEEnabled(clientId);
+    String pkceParams = "";
+    if (isPKCEEnabled) {
+       String codeVerifier = APIUtil.generateCodeVerifier();
+       session.setAttribute("code_verifier", codeVerifier);
+       String codeChallenge = APIUtil.generateCodeChallenge(codeVerifier);
+       pkceParams = "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
+    }
+
+    String authRequestParams = "?response_type=code&client_id=" + clientId + "&scope=" + scopes + "&state=" + state + "&redirect_uri=" + loginCallbackUrl
+         + pkceParams;
     String loginPrompt = request.getParameter("loginPrompt");
     if (loginPrompt != null && loginPrompt.equals("false")) {
         authRequestParams += "&prompt=none";
