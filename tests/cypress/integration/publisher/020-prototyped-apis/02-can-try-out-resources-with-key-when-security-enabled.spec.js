@@ -24,9 +24,9 @@ describe("prototype apis with security enabled", () => {
       });
     const userName = 'admin';
     const password = 'admin';
-    const apiName="Prototyped_sample3";
-    const applicationName="Prototype client app";
-    const apiVersion='1.0.0';
+    const apiName = "Prototyped_sample3";
+    const applicationName = "Prototype client app";
+    const apiVersion = '1.0.0';
     const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
     let testApiId;
 
@@ -79,7 +79,7 @@ describe("prototype apis with security enabled", () => {
                     //login to dev portal as Developer
                     cy.loginToDevportal(userName, password);
                     
-                    cy.createApplication(applicationName,"50PerMin","Sample Description");
+                    cy.createApplication(applicationName, "50PerMin", "Sample Description");
                     cy.get('[data-testid="itest-link-to-apis"]',{timeout: Cypress.config().largeTimeout}).click();
         
                     cy.get('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");

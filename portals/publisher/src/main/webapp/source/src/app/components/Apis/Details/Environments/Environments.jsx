@@ -1091,7 +1091,7 @@ export default function Environments() {
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <AddIcon className={classes.plusIconStyle}  data-testid='new-revision-icon-btn'/>
+                        <AddIcon className={classes.plusIconStyle} data-testid='new-revision-icon-btn'/>
                     </Grid>
                 )}
 
@@ -1481,20 +1481,39 @@ export default function Environments() {
             {!api.isRevision && allRevisions && allRevisions.length !== 0
             && (
                 <Grid container>
-                    <Button
-                        onClick={toggleDeployRevisionPopup}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                    || (api.advertiseInfo && api.advertiseInfo.advertised) || isDeployButtonDisabled}
-                        variant='contained'
-                        color='primary'
-                        size='large'
-                        className={classes.deployNewRevButtonStyle}
+                    <Tooltip
+                        title={(
+                            <>
+                                <Typography color='inherit'>
+                                    {api.lifeCycleStatus === 'RETIRED' ? intl.formatMessage({
+                                        id: 'Apis.Details.Environments.Environments.RetiredApi.ToolTip',
+                                        defaultMessage: 'Can not deploy new revisions for retired API',
+                                    }): 'Deploy new revision'}
+                                </Typography>
+                            </>
+                        )}
+                        placement='bottom'
                     >
-                        <FormattedMessage
-                            id='Apis.Details.Environments.Environments.deploy.new.revision'
-                            defaultMessage='Deploy New Revision'
-                        />
-                    </Button>
+                        <span>
+                            <Button
+                                onClick={toggleDeployRevisionPopup}
+                                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                            || (api.advertiseInfo && api.advertiseInfo.advertised) 
+                                            || isDeployButtonDisabled
+                                            || api.lifeCycleStatus === 'RETIRED'}
+                                variant='contained'
+                                color='primary'
+                                size='large'
+                                className={classes.deployNewRevButtonStyle}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Environments.Environments.deploy.new.revision'
+                                    defaultMessage='Deploy New Revision'
+                                />
+                            </Button>
+                        </span>
+
+                    </Tooltip>
                 </Grid>
             )}
             <Grid container>
@@ -1639,7 +1658,7 @@ export default function Environments() {
                                                                 icon={<RadioButtonUncheckedIcon />}
                                                                 checkedIcon={<CheckCircleIcon color='primary' />}
                                                                 inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                                data-testid={row.displayName+'gateway-select-btn'}
+                                                                data-testid={row.displayName + 'gateway-select-btn'}
                                                             />
                                                         )}
                                                         title={(
@@ -2057,7 +2076,8 @@ export default function Environments() {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
+            {api.lifeCycleStatus !== 'RETIRED' 
+            &&  allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
                 <Box mx='auto' mt={5}>
                     <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage

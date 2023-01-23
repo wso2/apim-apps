@@ -38,7 +38,7 @@ describe("Add Edit Delete api categories", () => {
 
         cy.intercept('GET', '**/api-categories').as('getCategories');
         cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
-        cy.wait('@getCategories', {timeout: 3000}).then(() => {
+        cy.wait('@getCategories', { timeout: 3000 }).then(() => {
             cy.get('[data-testid="MuiDataTableBodyCell-2-0"]').contains('finance apis').should('exist');
         });
 

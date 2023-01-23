@@ -95,7 +95,6 @@
             }
         }
         if((state != null) && (isAnonymousEnabled == true)){
-            System.out.println("Redirecting to: "+state);
             response.sendRedirect(postLogoutRedirectURI + "?referrer=" + state);
         } else {
             response.sendRedirect(postLogoutRedirectURI);

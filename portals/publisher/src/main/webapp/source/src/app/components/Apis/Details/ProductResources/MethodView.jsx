@@ -19,8 +19,10 @@ import React from 'react';
 import { useTheme } from '@material-ui/styles';
 import Chip from '@material-ui/core/Chip';
 import PropTypes from 'prop-types';
+import Configurations from 'Config';
 
 function MethodView(props) {
+    console.info(Configurations.app);
     const theme = useTheme();
     const { method, className } = props;
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[method.toLowerCase()] : null;

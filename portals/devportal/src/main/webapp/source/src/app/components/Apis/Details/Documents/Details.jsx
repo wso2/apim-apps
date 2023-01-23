@@ -81,7 +81,7 @@ export default function Details(props) {
                 <View doc={selectedDoc} apiId={apiId} fullScreen={open} />
             </div>
             <Dialog fullScreen open={open} onClose={toggleOpen}>
-                <div square className={classes.popupHeader}>
+                <div className={classes.popupHeader}>
                     <IconButton color='inherit' onClick={toggleOpen} aria-label='Close full screen view'>
                         <Icon>close</Icon>
                     </IconButton>

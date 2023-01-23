@@ -179,7 +179,7 @@ describe("Create GraphQl API from file", () => {
           cy.loginToDevportal(username, password);
 
           // create an application
-          cy.createApplication(applicationName,"50PerMin","Sample Description");
+          cy.createApplication(applicationName, "50PerMin", "Sample Description");
 
           //go to apis
           cy.get('[data-testid="itest-link-to-apis"]', {timeout: Cypress.config().largeTimeout}).click();

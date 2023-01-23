@@ -156,7 +156,7 @@ Cypress.Commands.add('deleteApi', (name, version) => {
         cy.get(`[data-testid="${cardName}"]`).get(`[data-testid="${actionCardName}"]`).within(($panel) => {
             cy.get("#itest-id-deleteapi-icon-button", { timeout: 30000 }).click();
           }) 
-        cy.get("#itest-id-deleteconf",{timeout:30000}).click();
+        cy.get("#itest-id-deleteconf",{ timeout:30000 }).click();
     });
 });
 
@@ -319,8 +319,10 @@ Cypress.Commands.add('addBusinessInfo', (businessOwnerName,businessOwnerEmail,te
  * @param {boolean} required  true | false
  */
 
-Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel,httpverb,uripattern,description=null,summary=null,security=true,scope,parametername=null,parametertype=null,datatype=null,required=false) => {
-    const uriId=httpverb.toLowerCase()+'\/'+uripattern;
+Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel, httpverb, uripattern, description=null,
+    summary=null, security=true, scope, parametername=null, parametertype=null, datatype=null, required=false) => {
+
+    const uriId = httpverb.toLowerCase() + '\/' + uripattern;
 
     if(ratelimitlevel=="api"){
         cy.get('#api-rate-limiting-api-level').click();
@@ -490,15 +492,15 @@ Cypress.Commands.add('createLocalScope', (name, displayname='sample display name
 })
 
 
-Cypress.Commands.add('createAPIWithoutEndpoint', (name=null,version=null,type = 'REST') => {
+Cypress.Commands.add('createAPIWithoutEndpoint', (name = null,version = null,type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
-    var apiVersion=`v${random_number}`;
+    var apiVersion = `v${random_number}`;
     var apiName = `0sample_api_${random_number}`;
     if(name){
-        apiName=name;
+        apiName = name;
     }
     if(version){
-        apiVersion=version;
+        apiVersion = version;
     }
     cy.visit(`/publisher/apis`);
     cy.get('#itest-create-api-menu-button', {timeout: Cypress.config().largeTimeout});

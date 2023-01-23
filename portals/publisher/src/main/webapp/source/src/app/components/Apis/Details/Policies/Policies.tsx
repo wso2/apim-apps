@@ -42,7 +42,8 @@ import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
-import Configurations from '../../../../../../../site/public/conf/settings.json';
+
+const Configurations = require('Config');
 
 const useStyles = makeStyles(() => ({
     gridItem: {

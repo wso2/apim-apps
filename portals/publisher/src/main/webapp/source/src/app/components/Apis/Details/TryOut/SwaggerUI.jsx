@@ -46,8 +46,8 @@ const SwaggerUI = (props) => {
         docExpansion: 'list',
         requestInterceptor: (req) => {
             const { url } = req;
-            const { context } = api;
-            const patternToCheck = `${context}/*`;
+            const { context, version } = api;
+            const patternToCheck = `${context}/${version}/*`;
             const accessToken = accessTokenProvider();
             if (accessToken) {
                 req.headers[authorizationHeader] = accessToken;

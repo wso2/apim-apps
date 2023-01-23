@@ -313,7 +313,7 @@ export default function UploadCertificate(props) {
                                             </div>
                                         ) : iff(
                                             isRejected,
-                                            <div classNames={classes.uploadedFile}>
+                                            <div className={classes.uploadedFile}>
                                                 <InsertDriveFileIcon color='error' fontSize='large' />
                                                 <Box fontSize='h6.fontSize' color='error' fontWeight='fontWeightLight'>
                                                     <Grid xs={12}>

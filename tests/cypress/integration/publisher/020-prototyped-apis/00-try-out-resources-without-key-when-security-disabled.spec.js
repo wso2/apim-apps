@@ -25,8 +25,8 @@ describe("prototype apis with security disabled", () => {
       });
     const userName = 'admin';
     const password = 'admin';
-    const apiName="Prototyped_sample1";
-    const apiVersion='1.0.0';
+    const apiName = "Prototyped_sample1";
+    const apiVersion = '1.0.0';
     let testApiId;
     before(function () {
 

@@ -37,7 +37,7 @@ describe("Add Edit Delete advance throttle policies", () => {
         // editing
         cy.intercept('**/throttling/policies/advanced/*').as('getPolicy');
         cy.get('table tr td a').contains(policyName).click();
-        cy.wait('@getPolicy', {timeout: 3000}).then(() => {
+        cy.wait('@getPolicy', { timeout: 3000 }).then(() => {
             cy.get('input[name="requestCount"]').clear().type('31');
             cy.get('button.MuiButton-containedPrimary > span').contains('Update').click();
             cy.get('table tr td').contains('31').should('exist');

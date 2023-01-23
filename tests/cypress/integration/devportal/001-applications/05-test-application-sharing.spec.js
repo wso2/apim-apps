@@ -30,7 +30,7 @@ describe("Invoke API Product", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
     let appName;
-    const appDescription = 'Testing sharing app ';
+    const appDescription = 'Testing sharing app';
     const groupId = 'org1';
     let apiName;
     const apiVersion = '2.0.0';
@@ -111,7 +111,7 @@ describe("Invoke API Product", () => {
             //Log into developer portal as user 1
             cy.loginToDevportal(user1, password);
 
-            //Test with Oath2 Token
+            //Test with OAuth2 Token
             cy.visit(`/devportal/applications/create`);
             cy.get('#application-name', {timeout: Cypress.config().largeTimeout}).click();
             cy.get('#application-name').type(appName);
@@ -128,7 +128,6 @@ describe("Invoke API Product", () => {
             cy.loginToDevportal(user2, password);
             cy.visit(`/devportal/applications`);
             cy.contains(appName, {timeout: Cypress.config().largeTimeout}).click();
-
             cy.location('pathname').then((pathName) => {
                 const pathSegments = pathName.split('/');
                 const uuidApp = pathSegments[pathSegments.length - 2];
@@ -136,7 +135,6 @@ describe("Invoke API Product", () => {
                 //Subscription of API
                 cy.get('#left-menu-subscriptions').click();
                 cy.contains('Subscribe APIs').click();
-
                 cy.get(`#policy-subscribe-btn-${uuid}`).click();
                 cy.get('[aria-label="close"]').click();
                 cy.logoutFromDevportal();

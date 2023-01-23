@@ -5,7 +5,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Tooltip from '@material-ui/core/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import LaunchIcon from '@material-ui/icons/Launch';
 import Alert from 'AppComponents/Shared/Alert';
 import Grid from '@material-ui/core/Grid';
@@ -169,6 +169,7 @@ export default function CustomizedStepper() {
     const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
     && securityScheme.includes('mutualssl_mandatory');
     let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
+    const intl = useIntl();
     // TODO: tmkasun need to handle is loading
     if (tenantList && tenantList.length > 0) {
         // TODO: tmkasun need to handle is loading
@@ -400,7 +401,20 @@ export default function CustomizedStepper() {
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
     const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
     || (!isMutualSslOnly && !isTierAvailable)
-    || api.workflowStatus === 'CREATED');
+    || api.workflowStatus === 'CREATED' || lifecycleState === 'RETIRED');
+    let deployLinkToolTipTitle = '';
+    if (lifecycleState === 'RETIRED') {
+        deployLinkToolTipTitle = intl.formatMessage({
+            id: 'Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentAvailable',
+            defaultMessage: 'Cannot deploy retired APIs',
+        });
+    } else if (!deploymentsAvailable) { 
+        deployLinkToolTipTitle = intl.formatMessage({
+            id: 'Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentUnavailable',
+            defaultMessage: 'Deploy a revision of this API to the Gateway',
+        });
+    }
+
     return (
         <div id='itest-overview-api-flow' className={classes.root}>
             <Stepper alternativeLabel activeStep={activeStep} connector={<ColorlibConnector />}>
@@ -527,7 +541,7 @@ export default function CustomizedStepper() {
                             )}
                             {label === 'Deploy' && (
                                 <Tooltip
-                                    title={deploymentsAvailable ? '' : 'Deploy a revision of this API to the Gateway'}
+                                    title={deployLinkToolTipTitle}
                                     placement='bottom'
                                 >
                                     <Grid
@@ -577,7 +591,7 @@ export default function CustomizedStepper() {
                             )}
                             {label === 'Test' && (
                                 <Tooltip
-                                    title={lifecycleState === 'RETIERD' ? 'Cannot use test option while API'
+                                    title={lifecycleState === 'RETIRED' ? 'Cannot use test option while API'
                                         + ' is in retired state' : ''}
                                     placement='bottom'
                                 >
