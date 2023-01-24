@@ -753,7 +753,8 @@ class TokenManager extends React.Component {
         }
 
         let isResidentKeyManagerTokensAvailable = false;
-        if (keys.has('Resident Key Manager') &&
+        if (keys.has('Resident Key Manager') && 
+            keys.get('Resident Key Manager').supportedGrantTypes &&
             keys.get('Resident Key Manager').supportedGrantTypes.
             includes("urn:ietf:params:oauth:grant-type:token-exchange")){
             isResidentKeyManagerTokensAvailable = true;
