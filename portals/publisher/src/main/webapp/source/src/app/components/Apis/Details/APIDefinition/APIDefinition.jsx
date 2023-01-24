@@ -897,7 +897,7 @@ class APIDefinition extends React.Component {
                                     {isImporting? (
                                         <FormattedMessage
                                             id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
-                                                + 'update.content'}
+                                                + 'import.content'}
                                             defaultMessage='Import Content'
                                         />
                                     ):(

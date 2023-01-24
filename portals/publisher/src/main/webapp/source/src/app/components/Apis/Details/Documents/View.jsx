@@ -24,7 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
-import ReactSafeHtml from 'react-safe-html';
+import ReactHtmlParser from 'react-html-parser';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -36,6 +36,8 @@ import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import Utils from 'AppData/Utils';
+import Configuration from 'Config';
+import HTMLRender from 'AppComponents/Shared/HTMLRender';
 
 const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "ViewReactMD" */));
 
@@ -112,7 +114,7 @@ function View(props) {
     const [doc, setDoc] = useState(null);
     const [isFileAvailable, setIsFileAvailable] = useState(true);
     const restAPI = isAPIProduct ? new APIProduct() : new API();
-
+    
     useEffect(() => {
         const docPromise = restAPI.getDocument(api.id, documentId);
         docPromise
@@ -253,7 +255,7 @@ function View(props) {
                                 <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
                             </Suspense>
                         )}
-                        {doc.sourceType === 'INLINE' && <ReactSafeHtml html={code} />}
+                        {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
                         {doc.sourceType === 'URL' && (
                             <a className={classes.displayURL} href={doc.sourceUrl} target="_blank">
                                 {doc.sourceUrl}

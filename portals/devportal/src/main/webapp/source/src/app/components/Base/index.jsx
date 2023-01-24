@@ -42,7 +42,7 @@ import Drawer from '@material-ui/core/Drawer';
 import HeaderSearch from 'AppComponents/Base/Header/Search/HeaderSearch';
 import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import { app } from 'Settings';
-import ReactSafeHtml from 'react-safe-html';
+import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -631,7 +631,7 @@ class Layout extends React.Component {
                         <footer className={classes.footer} id='footer'>
                             {footerHTML && footerHTML !== '' ? (
                                 <>
-                                    {!dangerMode && (<ReactSafeHtml html={footerHTML} />)}
+                                    {!dangerMode && (<HTMLRender html={footerHTML} />)}
                                     {dangerMode && (<div contentEditable='true' dangerouslySetInnerHTML={{ __html: footerHTML }} />)}
                                 </>
                             ) : (

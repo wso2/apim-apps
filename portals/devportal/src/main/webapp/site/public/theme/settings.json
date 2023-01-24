@@ -26,6 +26,10 @@
         "sanitizeHtml": {
             "allowedTags": false,
             "allowedAttributes": false
+        },
+        "reactHTMLParser": {
+            "decodeEntries": true,
+            "tagsNotAllowed": []
         }
     },
     "grantTypes": {

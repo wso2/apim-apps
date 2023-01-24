@@ -212,6 +212,18 @@
   "Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.type": {
     "defaultMessage": "Input Type"
   },
+  "Apis.Create.OpenAPI.Steps.ValidationResults.linter.results": {
+    "defaultMessage": "Linter Results"
+  },
+  "Apis.Create.OpenAPI.Steps.ValidationResults.linting": {
+    "defaultMessage": "Generating Linter Results"
+  },
+  "Apis.Create.OpenAPI.Steps.ValidationResults.validating": {
+    "defaultMessage": "Validating API definition"
+  },
+  "Apis.Create.OpenAPI.Steps.ValidationResults.validation.errros": {
+    "defaultMessage": "Validation Errors"
+  },
   "Apis.Create.StreamingAPI.APICreateStreamingAPI.api.heading": {
     "defaultMessage": "Create a Streaming API"
   },
@@ -305,6 +317,9 @@
   "Apis.Details.APIDefinition.APIDefinition.convert.to": {
     "defaultMessage": "Convert to"
   },
+  "Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.import.content": {
+    "defaultMessage": "Import Content"
+  },
   "Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.update.content": {
     "defaultMessage": "Update Content"
   },
@@ -313,6 +328,12 @@
   },
   "Apis.Details.APIDefinition.APIDefinition.edit": {
     "defaultMessage": "Edit"
+  },
+  "Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter": {
+    "defaultMessage": "Linter"
+  },
+  "Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger": {
+    "defaultMessage": "Swagger"
   },
   "Apis.Details.APIDefinition.APIDefinition.error.updating.graphQL.schema": {
     "defaultMessage": "Error while updating GraphQL schema"
@@ -340,6 +361,9 @@
   },
   "Apis.Details.APIDefinition.APIDefinition.import.definition.cancel": {
     "defaultMessage": "Cancel"
+  },
+  "Apis.Details.APIDefinition.APIDefinition.import.definition.edit": {
+    "defaultMessage": "Edit and Import"
   },
   "Apis.Details.APIDefinition.APIDefinition.import.definition.graphql": {
     "defaultMessage": "Import GraphQL Schema Definition"
@@ -503,6 +527,24 @@
   },
   "Apis.Details.APIDefinition.Linting.APILinting.loading": {
     "defaultMessage": "Linting . . ."
+  },
+  "Apis.Details.APIDefinition.Linting.APILintingSummary.loading": {
+    "defaultMessage": "Linting . . ."
+  },
+  "Apis.Details.APIDefinition.Linting.Linting.custom.ruleset.validation.failed": {
+    "defaultMessage": "OpenAPI linter custom ruleset validation failed"
+  },
+  "Apis.Details.APIDefinition.Linting.Linting.default.ruleset.validation.failed": {
+    "defaultMessage": "OpenAPI linter default ruleset validation failed"
+  },
+  "Apis.Details.APIDefinition.Linting.Linting.error.retrieving.custom.rules": {
+    "defaultMessage": "Error retrieving custom linter rules"
+  },
+  "Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.goodupdate.content": {
+    "defaultMessage": "Good to go !"
+  },
+  "Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.resultsupdate.content": {
+    "defaultMessage": "No Linter Results{type} found"
   },
   "Apis.Details.APIDefinition.SwaggerEditorDrawer.title": {
     "defaultMessage": "Failed to Validate OpenAPI File"
@@ -924,15 +966,6 @@
   "Apis.Details.Configuration.components.CORSConfigurations.origin.helper": {
     "defaultMessage": "Press `Enter` after typing the origin name,to add a new origin"
   },
-  "Apis.Details.Configuration.components.WebSubConfiguration.configuration": {
-    "defaultMessage": "WebSub Configuration"
-  },
-  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification": {
-    "defaultMessage": "Enable subscriber verification"
-  },
-  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification.tooltip": {
-    "defaultMessage": "If enabled, APIM will perform verification of intent for the subscription API"
-  },
   "Apis.Details.Configuration.components.DescriptionEditor.edit.content.button": {
     "defaultMessage": "Edit description"
   },
@@ -1037,6 +1070,15 @@
   },
   "Apis.Details.Configuration.components.Transports.tooltip": {
     "defaultMessage": "API will be exposed in selected transport(s) in the gateway(s) If Mutual SSL option is selected, a trusted client certificate should be presented to access the API"
+  },
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration": {
+    "defaultMessage": "WebSub Configuration"
+  },
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification": {
+    "defaultMessage": "Enable subscriber verification"
+  },
+  "Apis.Details.Configuration.components.WebSubConfiguration.configuration.subVerification.tooltip": {
+    "defaultMessage": "If enabled, APIM will perform verification of intent for the subscription API"
   },
   "Apis.Details.Configuration.components.oauth.disabled": {
     "defaultMessage": "Key Manager configuration only valid when OAuth2 security is enabled."
@@ -1941,7 +1983,7 @@
   "Apis.Details.Endpoints.Prototype.MockedOAS.title": {
     "defaultMessage": "Responses"
   },
-  "Apis.Details.Environments\n                                                                                    .deploy.vhost": {
+  "Apis.Details.Environments\n                                                                                        .deploy.vhost": {
     "defaultMessage": "VHost"
   },
   "Apis.Details.Environments.\n                                                                            Environments.select.table": {
@@ -1970,6 +2012,9 @@
   },
   "Apis.Details.Environments.Environments.Deployments": {
     "defaultMessage": "Revisions"
+  },
+  "Apis.Details.Environments.Environments.RetiredApi.ToolTip": {
+    "defaultMessage": "Can not deploy new revisions for retired API"
   },
   "Apis.Details.Environments.Environments.advertise.only.warning": {
     "defaultMessage": "This API is marked as a third party API. The requests are not proxied through the gateway. Hence, deployments are not required."
@@ -2019,7 +2064,7 @@
   "Apis.Details.Environments.Environments.gateway.action": {
     "defaultMessage": "Action"
   },
-  "Apis.Details.Environments.Environments.revision\n                                                        .description.deploy": {
+  "Apis.Details.Environments.Environments.revision\n                                                            .description.deploy": {
     "defaultMessage": "Add a description to the revision"
   },
   "Apis.Details.Environments.Environments.revision.create.heading": {
@@ -2535,6 +2580,12 @@
   "Apis.Details.Overview.CustomizedStepper.Tier": {
     "defaultMessage": "Business Plan"
   },
+  "Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentAvailable": {
+    "defaultMessage": "Cannot deploy retired APIs"
+  },
+  "Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentUnavailable": {
+    "defaultMessage": "Deploy a revision of this API to the Gateway"
+  },
   "Apis.Details.Overview.CustomizedStepper.blocked": {
     "defaultMessage": "Blocked"
   },
@@ -2643,9 +2694,6 @@
   "Apis.Details.Policies.OperationPolicy.operation.used.in.products": {
     "defaultMessage": "This operation is used in {isUsedInAPIProduct} API product(s)"
   },
-  "Apis.Details.Policies.Policies.cc.info.title": {
-    "defaultMessage": "Choreo Connect supports resource level request and response flow policies only."
-  },
   "Apis.Details.Policies.Policies.title": {
     "defaultMessage": "Policies"
   },
@@ -2681,6 +2729,9 @@
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.name.label": {
     "defaultMessage": "Name"
+  },
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.form.supported.api.label": {
+    "defaultMessage": "Supported API Types"
   },
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.helperText": {
     "defaultMessage": "Enter Policy Version ( E.g.: v1 )"
@@ -3591,6 +3642,15 @@
   "Apis.Details.components.DeleteApiButton.title": {
     "defaultMessage": "Delete {type}"
   },
+  "Apis.Details.environments.deploymentOnBoarding.formattedMessage.description": {
+    "defaultMessage": "It is not possible to deploy new revisions for retired APIs."
+  },
+  "Apis.Details.environments.deploymentOnBoarding.formattedMessage.head": {
+    "defaultMessage": "Deployments"
+  },
+  "Apis.Details.environments.deploymentOnBoarding.formattedMessage.warningTitle": {
+    "defaultMessage": "Can not deploy retired APIs"
+  },
   "Apis.Details.index.Tryout.menu.name": {
     "defaultMessage": "Try Out"
   },
@@ -3967,7 +4027,7 @@
     "defaultMessage": "Page Not Found"
   },
   "Base.Footer.Footer.product_details": {
-    "defaultMessage": "WSO2 API-M v4.1.0 | © 2022 WSO2 LLC"
+    "defaultMessage": "WSO2 API-M v4.2.0 | © 2022 WSO2 LLC"
   },
   "Base.Header.avatar.Avatar.logout": {
     "defaultMessage": "Logout"

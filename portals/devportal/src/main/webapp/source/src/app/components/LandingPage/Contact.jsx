@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import ReactSafeHtml from 'react-safe-html';
+import HTMLRender from 'AppComponents/Shared/HTMLRender';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -19,7 +19,7 @@ function Contact() {
     const { custom: { landingPage: { contact: { contactHTML } } } } = theme;
     return (
         <div className={classes.root}>
-            <ReactSafeHtml html={contactHTML} />
+            <HTMLRender html={contactHTML} />
         </div>
     );
 }

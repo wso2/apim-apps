@@ -19,7 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import ReactSafeHtml from 'react-safe-html';
+import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import classNames from 'classnames';
 import { app } from 'Settings';
 
@@ -73,11 +73,11 @@ function ParallaxScroll(props) {
             >
                 <div className={classNames(classes.slideContentWrapper, 'slideContentWrapper')}>
                     <div className={classNames(classes.slideContentTitle, 'slideContentTitle')}>
-                        <ReactSafeHtml html={slide.title} />
+                        <HTMLRender html={slide.title} />
                     </div>
 
                     <div className={classes.slideContentContent}>
-                        <ReactSafeHtml html={slide.content} />
+                        <HTMLRender html={slide.content} />
                     </div>
                 </div>
             </div>
