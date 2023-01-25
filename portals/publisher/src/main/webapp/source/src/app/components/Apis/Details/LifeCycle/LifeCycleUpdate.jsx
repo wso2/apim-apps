@@ -132,7 +132,7 @@ class LifeCycleUpdate extends Component {
         if (isAPIProduct) {
             promisedUpdate = this.apiProduct.updateLcState(apiUUID, action, lifecycleChecklist);
         } else if (lifecycleChecklist.length > 0) {
-            promisedUpdate = this.api.updateLcState(apiUUID, action, lifecycleChecklist);
+            promisedUpdate = this.api.updateLcState(apiUUID, action, lifecycleChecklist.toString());
         } else {
             promisedUpdate = this.api.updateLcState(apiUUID, action);
         }
