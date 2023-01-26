@@ -1269,7 +1269,8 @@ class API extends Resource {
         return promised_getDocContent;
     }
 
-    getDocuments(api_id, callback, limit=1000) {
+    getDocuments(api_id, callback) {
+        const limit = Configurations.app.documentCount || 80;
         const promise_get_all = this.client.then(client => {
             return client.apis['API Documents'].getAPIDocuments(
                 {
@@ -2965,7 +2966,7 @@ class API extends Resource {
      */
     static getOperationPolicies(apiId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        const limit = Configurations.app.operationPolicyCount;
+        const limit = Configurations.app.operationPolicyCount || 80;
         return restApiClient.then(client => {
             return client.apis['API Operation Policies'].getAllAPISpecificOperationPolicies(
                 {
