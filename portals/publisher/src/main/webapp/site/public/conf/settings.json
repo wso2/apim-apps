@@ -18,6 +18,7 @@
         },
         "throttlingPolicyLimit": 80,
         "operationPolicyCount": 500,
+        "documentCount": 1000,
         "propertyDisplaySuffix": "__display",
         "markdown": {
             "skipHtml": true,
