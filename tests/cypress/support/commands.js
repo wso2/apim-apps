@@ -430,7 +430,8 @@ Cypress.Commands.add('createGraphqlAPIfromFile', (name,version,context,filepath)
         cy.get('body').click(0,0);
 
         // Saving the form
-        cy.get('[data-testid="itest-create-graphql-api-button"]',).click({force:true, timeout: Cypress.config().largeTimeout});
+        cy.get('[data-testid="itest-create-graphql-api-button"]',)
+            .click({force:true, timeout: Cypress.config().largeTimeout});
 
         //Checking the version in the overview
         cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout}).should('be.visible');
