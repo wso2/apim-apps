@@ -763,7 +763,8 @@ class TokenManager extends React.Component {
         let defaultTokenEndpoint;
 
         if (keyManagers.length > 0) {
-            defaultTokenEndpoint = (keyManagers.filter((item) => item.name === 'Resident Key Manager'))[0].tokenEndpoint;
+            const residentKMs = keyManagers.filter((item) => item.name === 'Resident Key Manager');
+            defaultTokenEndpoint = residentKMs.length > 0 ? (residentKMs)[0].tokenEndpoint: null;
         }
 
         if (key && key.keyState === 'APPROVED' && !key.consumerKey) {
@@ -1002,6 +1003,14 @@ class TokenManager extends React.Component {
                                         />
                                     </Typography>
                                     <Box m={2}>
+                                        {/*
+                                        Token exchange grant flow enable/disable logic
+                                        Given that in the key manager selected has the tokenType='EXCHANGE'
+                                            If 'Resident Key Manager' disabled we can't proceed with token exchange. So need to show a banner
+                                            If 'Resident Key Manager' enabled, we need to check if the resident key manager 'exchange grant' is selected. 
+                                            So we need to ask the user to select 'exchange grant' for the 'Resident Key Manager'.
+                                            If 'Resident Key Manager' enabled and 'exchange grant' is enabled the token exchange is possible
+                                        */}
                                         <TokenExchangeKeyConfiguration
                                             keys={keys}
                                             key={key}
