@@ -17,15 +17,20 @@
  * under the License.
  */
 
-import React, { useContext } from 'react';
-import { Link as MUILink } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@material-ui/core/Tooltip';
 import API from 'AppData/api';
 import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import Settings from 'Settings';
+import queryString from 'query-string';
 import { ApiContext } from './ApiContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,16 +63,31 @@ function SourceDownload(props) {
     const apiClient = new API();
     const classes = useStyles();
     const intl = useIntl();
+    const accessTokenPart = Utils.getCookieWithoutEnvironment('WSO2_AM_TOKEN_1_Default');
+    const [isTokenCopied, setIsTokenCopied] = useState(false);
 
+    const { location } = window;
+
+    const { app: { customUrl: { tenantDomain: customUrlEnabledDomain } } } = Settings;
+    let tenantDomain = '';
+    if (customUrlEnabledDomain !== 'null') {
+        tenantDomain = customUrlEnabledDomain;
+    } else if (location) {
+        const { tenant } = queryString.parse(location.search);
+        if (tenant) {
+            tenantDomain = tenant;
+        }
+    }
+    const tenant = tenantDomain;
     /**
      * Downloads the WSDL of the api for the provided environment
      *
-     * @param {string} apiId uuid of the API
-     * @param {string} environmentName name of the environment
+     * @param {EventListener} e element click event
      */
-    const downloadWSDL = (apiId, environmentName) => {
+    const downloadWSDL = (e) => {
+        e.preventDefault();
         const wsdlClient = apiClient.getWsdlClient();
-        const promisedGet = wsdlClient.downloadWSDLForEnvironment(apiId, environmentName);
+        const promisedGet = wsdlClient.downloadWSDLForEnvironment(api.id, selectedEndpoint.environmentName);
         promisedGet
             .then((done) => {
                 Utils.downloadFile(done);
@@ -83,9 +103,9 @@ function SourceDownload(props) {
             });
     };
 
-    const downloadGraphQLSchema = () => {
-        const newAPI = new API();
-        const promisedGraphQL = newAPI.getGraphQLSchemaByAPIId(api.id);
+    const downloadGraphQLSchema = (e) => {
+        e.preventDefault();
+        const promisedGraphQL = apiClient.getGraphQLSchemaByAPIId(api.id);
         promisedGraphQL.then((response) => {
             const fileName = api.provider + '-' + api.name + '-' + api.version + '.graphql';
             Utils.downloadFile(response, fileName);
@@ -107,19 +127,24 @@ function SourceDownload(props) {
      * @param {string} apiId uuid of the API
      * @param {string} environment name of the environment
      */
-    const downloadSwagger = (apiId, environment) => {
-        const promiseSwagger = apiClient.getSwaggerByAPIIdAndEnvironment(apiId, environment);
-        promiseSwagger
-            .then((done) => {
-                Utils.downloadFile(done);
-            })
-            .catch((error) => {
-                console.log(error);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Environments.download.swagger.error',
-                    defaultMessage: 'Error downloading the Swagger',
-                }));
-            });
+    const downloadSwagger = (e) => {
+        e.preventDefault();
+        let promiseSwagger;
+
+        if (selectedEndpoint.environmentName) {
+            promiseSwagger = apiClient.getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName);
+        } else {
+            promiseSwagger = apiClient.getSwaggerByAPIId(api.id);
+        }
+        promiseSwagger.then((done) => {
+            Utils.downloadFile(done);
+        }).catch((error) => {
+            console.log(error);
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Environments.download.swagger.error',
+                defaultMessage: 'Error downloading the Swagger',
+            }));
+        });
     };
 
     /**
@@ -128,8 +153,9 @@ function SourceDownload(props) {
      * @param {string} apiId uuid of the API
      * @param {string} environment name of the environment
      */
-    const downloadAsync = (apiId, environment) => {
-        const promiseAsync = apiClient.getAsyncApiSpecificationByAPIIdAndEnvironment(apiId, environment);
+    const downloadAsync = (e) => {
+        e.preventDefault();
+        const promiseAsync = apiClient.getAsyncApiSpecificationByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName);
         promiseAsync
             .then((done) => {
                 Utils.downloadFile(done);
@@ -142,6 +168,7 @@ function SourceDownload(props) {
                 }));
             });
     };
+
     if (
         api.type === 'SOAP') {
         return (
@@ -155,8 +182,9 @@ function SourceDownload(props) {
                 placement='right'
                 className={classes.iconStyle}
             >
-                <MUILink
-                    onClick={() => downloadWSDL(api.id, selectedEndpoint.environmentName)}
+                <a
+                    onKeyDown={downloadWSDL}
+                    onClick={downloadWSDL}
                     className={classes.downloadLink}
                 >
                     <CloudDownloadRounded className={classes.buttonIcon} />
@@ -164,35 +192,65 @@ function SourceDownload(props) {
                         id='Apis.Details.Environments.download.wsdl.text'
                         defaultMessage='Download WSDL'
                     />
-                </MUILink>
+                </a>
             </Tooltip>
         );
     }
     if (api.type === 'HTTP' || api.type === 'SOAPTOREST') {
         return (
-            <Tooltip
-                title={(
-                    <FormattedMessage
-                        id='Apis.Details.Environments.download.swagger'
-                        defaultMessage='Swagger'
-                    />
-                )}
-                placement='right'
-                className={classes.iconStyle}
-            >
-                <MUILink
-                    to='#'
-                    onClick={() => downloadSwagger(api.id, selectedEndpoint.environmentName)}
-                    className={classes.downloadLink}
-                    id='swagger-download-btn'
+            <Box display='flex' alignItems='center'>
+                <Tooltip
+                    title={(
+                        <FormattedMessage
+                            id='Apis.Details.Environments.download.swagger'
+                            defaultMessage='Swagger'
+                        />
+                    )}
+                    placement='right'
+                    className={classes.iconStyle}
                 >
-                    <CloudDownloadRounded className={classes.buttonIcon} />
-                    <FormattedMessage
-                        id='Apis.Details.Environments.download.swagger.text'
-                        defaultMessage='Download Swagger'
-                    />
-                </MUILink>
-            </Tooltip>
+                    <a
+                        onClick={downloadSwagger}
+                        onKeyDown={downloadSwagger}
+                        className={classes.downloadLink}
+                        id='swagger-download-btn'
+                    >
+                        <CloudDownloadRounded className={classes.buttonIcon} />
+                        <FormattedMessage
+                            id='Apis.Details.Environments.download.swagger.text'
+                            defaultMessage='Download Swagger'
+                        />
+                    </a>
+                </Tooltip>
+                <Tooltip
+                    title={isTokenCopied
+                        ? (
+                            <FormattedMessage
+                                id='Apis.Details.Swagger.URL.copied'
+                                defaultMessage='Copied'
+                            />
+                        )
+                        : (
+                            <FormattedMessage
+                                id='Apis.Details.Swagger.URL.copy.to.clipboard'
+                                defaultMessage='Copy to clipboard'
+                            />
+                        )}
+                    placement='top'
+                >
+                    <CopyToClipboard
+                        text={location.origin + '/api/am/devportal/v3/apis/' + api.id
+                        + '/swagger?accessToken=' + accessTokenPart + '&X-WSO2-Tenant-Q='
+                        + tenant + '&environmentName='
+                        + selectedEndpoint.environmentName}
+                        onCopy={() => setIsTokenCopied('urlCopied')}
+                    >
+                        <Button aria-label='Copy to clipboard' size='small'>
+                            <FileCopyIcon className={classes.buttonIcon} />
+                        </Button>
+                    </CopyToClipboard>
+                </Tooltip>
+            </Box>
         );
     }
     if (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC') {
@@ -207,9 +265,9 @@ function SourceDownload(props) {
                 placement='right'
                 className={classes.iconStyle}
             >
-                <MUILink
-                    to='#'
-                    onClick={() => downloadAsync(api.id, selectedEndpoint.environmentName)}
+                <a
+                    onKeyDown={downloadAsync}
+                    onClick={downloadAsync}
                     className={classes.downloadLink}
                     id='swagger-download-btn'
                 >
@@ -218,7 +276,7 @@ function SourceDownload(props) {
                         id='Apis.Details.Environments.download.asyncapi.text'
                         defaultMessage='Download AsyncAPI Specification'
                     />
-                </MUILink>
+                </a>
             </Tooltip>
         );
     }
@@ -234,9 +292,9 @@ function SourceDownload(props) {
                 placement='right'
                 className={classes.iconStyle}
             >
-                <MUILink
-                    href='#'
-                    onClick={() => downloadGraphQLSchema()}
+                <a
+                    onKeyDown={downloadGraphQLSchema}
+                    onClick={downloadGraphQLSchema}
                     className={classes.downloadLink}
                 >
                     <CloudDownloadRounded className={classes.buttonIcon} />
@@ -244,7 +302,7 @@ function SourceDownload(props) {
                         id='Apis.Details.Environments.download.graphql.text'
                         defaultMessage='Download GraphQL'
                     />
-                </MUILink>
+                </a>
             </Tooltip>
         );
     }
