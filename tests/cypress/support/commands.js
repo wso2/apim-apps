@@ -956,7 +956,7 @@ Cypress.Commands.add('addNewUserUsingSelfSignUp', (username, password, firstName
     cy.get('[name="http://wso2.org/claims/emailaddress"]').type(email);
     cy.get('#termsCheckbox').check();
     cy.get('#registrationSubmit').click();
-    cy.contains('Confirmation link has been sent to your email').should('exist');
+    cy.contains('User registration completed successfully').should('exist');
     cy.get('[type="button"]').click();
 })
 
