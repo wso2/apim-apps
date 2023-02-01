@@ -227,4 +227,3 @@ DocList.propTypes = {
 };
 
 export default injectIntl(withStyles(styles)(DocList));
-
