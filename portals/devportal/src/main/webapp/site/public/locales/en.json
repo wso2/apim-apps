@@ -1,6 +1,6 @@
 {
   "Apis.Details.APIConsole.APIConsole.download.postman": "Postman collection",
-  "Apis.Details.APIConsole.APIConsole.download.swagger": "OpenAPI",
+  "Apis.Details.APIConsole.APIConsole.download.swagger": "Swagger ( /swagger.json )",
   "Apis.Details.ApiCOnsole.generate.test.key": "GET TEST KEY ",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header": "Authorization Header",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header.value": "Authorization Header Value",
@@ -225,6 +225,8 @@
   "Apis.Details.StarRatingSummary.users": "users",
   "Apis.Details.SubTopic.copied": "Copied",
   "Apis.Details.SubTopic.copy.to.clipboard": "Copy to clipboard",
+  "Apis.Details.Swagger.URL.copied": "Copied",
+  "Apis.Details.Swagger.URL.copy.to.clipboard": "Copy to clipboard",
   "Apis.Details.Topics.error.404": "Resource not found",
   "Apis.Details.TryOutConsole.access.token.tooltip": "You can use your existing Access Token or you can generate a new Test Key.",
   "Apis.Details.index.all.apis": "ALL APIs",
