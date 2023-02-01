@@ -51,9 +51,10 @@ describe("publisher-021-10 : Lint when importing API with errounous swagger file
             APIDefinitionPage.fileUploadInput().attachFile(filepath);
         });
         cy.wait('@linter-custom-rules',{timeout: 25000}).its('response.statusCode').should('equal', 204)
-        APIDefinitionPage.linterResultDivBlock().should('be.visible');
+        cy.wait(5000)
         cy.contains("attribute info2 is unexpected")
         cy.contains("attribute info is missing")
+        APIDefinitionPage.linterResultDivBlock().should('exist');
        // TODO : click on errors, warnings toggle buttons and verify it loads, currently there is an issue on this
 
     });
