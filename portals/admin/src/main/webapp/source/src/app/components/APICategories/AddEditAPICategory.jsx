@@ -97,7 +97,7 @@ function AddEdit(props) {
                 }
                 break;
             case 'description':
-                if (value.length > 1024) {
+                if (value && value.length > 1024) {
                     error = 'API Category description is too long';
                 }
                 break;
