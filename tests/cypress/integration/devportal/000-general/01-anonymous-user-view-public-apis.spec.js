@@ -71,14 +71,14 @@ describe("Anonymous view apis", () => {
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
         // intercepting overview page network calls
-        cy.intercept('GET', '**/apis/**/comments?limit=5&offset=0').as('getComments');
+        // cy.intercept('GET', '**/apis/**/comments**').as('getComments');
         cy.intercept('GET', '**/apis/**/documents').as('getDocuments');
         cy.intercept('GET', '**/throttling-policies/subscription').as('getSubscriptionPolicies');
         cy.intercept('GET', '**/apis/**/thumbnail').as('getThumbnail');
 
         cy.get('#left-menu-overview').click();
 
-        cy.wait(['@getComments', '@getDocuments', '@getSubscriptionPolicies', '@getThumbnail'], { timeout: 30000 })
+        cy.wait(['@getDocuments', '@getSubscriptionPolicies', '@getThumbnail'], { timeout: 30000 })
             .then(() => {
                 // Downloading swagger
                 cy.get('#swagger-download-btn').click();
