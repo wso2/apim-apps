@@ -176,81 +176,83 @@ export default function Credentials(props) {
                 </RadioGroup>
             </Grid>
             <Grid item className={classes.contentWrapper}>
-                <Collapse in={endpointConfig.access_method === 'stored'}>
-                    <TextField
-                        required
-                        id='outlined-required'
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.accessKey'}
-                                    defaultMessage='Access Key'
-                                />
-                            )
-                        }
-                        margin='normal'
-                        variant='outlined'
-                        className={classes.textField}
-                        value={endpointConfig.amznAccessKey}
-                        onChange={(event) => {
-                            const newEndpointConfig = { ...endpointConfig };
-                            newEndpointConfig.amznAccessKey = event.target.value;
-                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                        }}
-                    />
-                    <TextField
-                        required
-                        id='outlined-password-input-required'
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.secretKey'}
-                                    defaultMessage='Secret Key'
-                                />
-                            )
-                        }
-                        type='password'
-                        margin='normal'
-                        variant='outlined'
-                        className={classes.textField}
-                        value={endpointConfig.amznSecretKey}
-                        onChange={(event) => {
-                            const newEndpointConfig = { ...endpointConfig };
-                            newEndpointConfig.amznSecretKey = event.target.value;
-                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                        }}
-                    />
-                    <TextField
-                        select
-                        required
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.region'}
-                                    defaultMessage='Region'
-                                />
-                            )
-                        }
-                        margin='normal'
-                        variant='outlined'
-                        className={classes.textField}
-                        value={endpointConfig.amznRegion}
-                        onChange={(event) => {
-                            const newEndpointConfig = { ...endpointConfig };
-                            newEndpointConfig.amznRegion = event.target.value;
-                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                        }}
-                    >
-                        {Object.entries(regions).map(([key, value]) => ((
-                            <MenuItem key={key} value={key}>
-                                {value}
-                            </MenuItem>
-                        )))}
-                    </TextField>
-                </Collapse>
+                { endpointConfig.access_method === 'stored' &&
+                    <Collapse in={endpointConfig.access_method === 'stored'}>
+                        <TextField
+                            required
+                            id='outlined-required'
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.accessKey'}
+                                        defaultMessage='Access Key'
+                                    />
+                                )
+                            }
+                            margin='normal'
+                            variant='outlined'
+                            className={classes.textField}
+                            value={endpointConfig.amznAccessKey}
+                            onChange={(event) => {
+                                const newEndpointConfig = { ...endpointConfig };
+                                newEndpointConfig.amznAccessKey = event.target.value;
+                                endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                            }}
+                        />
+                        <TextField
+                            required
+                            id='outlined-password-input-required'
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.secretKey'}
+                                        defaultMessage='Secret Key'
+                                    />
+                                )
+                            }
+                            type='password'
+                            margin='normal'
+                            variant='outlined'
+                            className={classes.textField}
+                            value={endpointConfig.amznSecretKey}
+                            onChange={(event) => {
+                                const newEndpointConfig = { ...endpointConfig };
+                                newEndpointConfig.amznSecretKey = event.target.value;
+                                endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                            }}
+                        />
+                        <TextField
+                            select
+                            required
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.region'}
+                                        defaultMessage='Region'
+                                    />
+                                )
+                            }
+                            margin='normal'
+                            variant='outlined'
+                            className={classes.textField}
+                            value={endpointConfig.amznRegion}
+                            onChange={(event) => {
+                                const newEndpointConfig = { ...endpointConfig };
+                                newEndpointConfig.amznRegion = event.target.value;
+                                endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                            }}
+                        >
+                            {Object.entries(regions).map(([key, value]) => ((
+                                <MenuItem key={key} value={key}>
+                                    {value}
+                                </MenuItem>
+                            )))}
+                        </TextField>
+                    </Collapse>
+                }
             </Grid>
             <br/>
             <Grid item className={classes.contentWrapper}>
@@ -273,78 +275,80 @@ export default function Credentials(props) {
                         )
                     }
                 />
-                <Collapse in={endpointConfig.assume_role}>
-                    <TextField
-                        required
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.roleArn'}
-                                    defaultMessage='Role ARN'
-                                />
-                            )
-                        }
-                        margin='normal'
-                        variant='outlined'
-                        className={classes.textField}
-                        value={endpointConfig.amznRoleArn}
-                        onChange={(event) => {
-                            const newEndpointConfig = { ...endpointConfig };
-                            newEndpointConfig.amznRoleArn = event.target.value;
-                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                        }}
-                    />
-                    <TextField
-                        required
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.roleSessionName'}
-                                    defaultMessage='Role Session Name'
-                                />
-                            )
-                        }
-                        margin='normal'
-                        variant='outlined'
-                        className={classes.textField}
-                        value={endpointConfig.amznRoleSessionName}
-                        onChange={(event) => {
-                            const newEndpointConfig = { ...endpointConfig };
-                            newEndpointConfig.amznRoleSessionName = event.target.value;
-                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                        }}
-                    />
-                    <TextField
-                        select
-                        required
-                        label={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
-                                    + '.endpoint.roleRegion'}
-                                    defaultMessage='Region'
-                                />
-                            )
-                        }
-                        margin='normal'
-                        variant='outlined'
-                        className={classes.textField}
-                        value={endpointConfig.amznRoleRegion}
-                        onChange={(event) => {
-                            const newEndpointConfig = { ...endpointConfig };
-                            newEndpointConfig.amznRoleRegion = event.target.value;
-                            endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
-                        }}
-                    >
-                        {Object.entries(regions).map(([key, value]) => ((
-                            <MenuItem key={key} value={key}>
-                                {value}
-                            </MenuItem>
-                        )))}
-                    </TextField>
-                </Collapse>
+                { endpointConfig.assume_role &&
+                    <Collapse in={endpointConfig.assume_role}>
+                        <TextField
+                            required
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.roleArn'}
+                                        defaultMessage='Role ARN'
+                                    />
+                                )
+                            }
+                            margin='normal'
+                            variant='outlined'
+                            className={classes.textField}
+                            value={endpointConfig.amznRoleArn}
+                            onChange={(event) => {
+                                const newEndpointConfig = { ...endpointConfig };
+                                newEndpointConfig.amznRoleArn = event.target.value;
+                                endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                            }}
+                        />
+                        <TextField
+                            required
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.roleSessionName'}
+                                        defaultMessage='Role Session Name'
+                                    />
+                                )
+                            }
+                            margin='normal'
+                            variant='outlined'
+                            className={classes.textField}
+                            value={endpointConfig.amznRoleSessionName}
+                            onChange={(event) => {
+                                const newEndpointConfig = { ...endpointConfig };
+                                newEndpointConfig.amznRoleSessionName = event.target.value;
+                                endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                            }}
+                        />
+                        <TextField
+                            select
+                            required
+                            label={
+                                (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
+                                        + '.endpoint.roleRegion'}
+                                        defaultMessage='Region'
+                                    />
+                                )
+                            }
+                            margin='normal'
+                            variant='outlined'
+                            className={classes.textField}
+                            value={endpointConfig.amznRoleRegion}
+                            onChange={(event) => {
+                                const newEndpointConfig = { ...endpointConfig };
+                                newEndpointConfig.amznRoleRegion = event.target.value;
+                                endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
+                            }}
+                        >
+                            {Object.entries(regions).map(([key, value]) => ((
+                                <MenuItem key={key} value={key}>
+                                    {value}
+                                </MenuItem>
+                            )))}
+                        </TextField>
+                    </Collapse>
+                }
             </Grid>
             <br/>
             <Grid item>
