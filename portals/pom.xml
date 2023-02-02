@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.wso2.carbon.apimgt.ui</groupId>
         <artifactId>apim.ui.apps</artifactId>
-        <version>9.0.416-SNAPSHOT</version>
+        <version>9.0.416</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apim.ui.apps.portals</artifactId>
     <packaging>pom</packaging>
-    <version>9.0.416-SNAPSHOT</version>
+    <version>9.0.416</version>
     <name>WSO2 API Manager UI Portals - Parent</name>
     <url>https://wso2.org</url>
 
