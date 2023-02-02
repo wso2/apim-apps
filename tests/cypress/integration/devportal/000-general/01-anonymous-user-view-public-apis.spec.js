@@ -26,19 +26,19 @@ describe("Anonymous view apis", () => {
     const apiContext = apiName;
     let testApiId;
 
-    it.only("Anonymous view apis",{
+    it.only("Anonymous view apis", {
         retries: {
-          runMode: 3,
-          openMode: 0,
+            runMode: 3,
+            openMode: 0,
         },
-      }, () => {
+    }, () => {
         cy.loginToPublisher(publisher, password);
 
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then((serverResponse) => {
                 console.log(serverResponse);
-                cy.logoutFromPublisher(); 
+                cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
                 cy.visit(`/devportal/apis?tenant=carbon.super`);
 
@@ -47,8 +47,8 @@ describe("Anonymous view apis", () => {
                 // following waitUntilApiExists function does that recursively.
                 let remainingAttempts = 15;
                 let attemptCount = 0;
-                for (; attemptCount< remainingAttempts; attemptCount++) {
-                    let $apis = Cypress.$(`[title="${apiName}"]`, {timeout: Cypress.config().largeTimeout});
+                for (; attemptCount < remainingAttempts; attemptCount++) {
+                    let $apis = Cypress.$(`[title="${apiName}"]`, { timeout: Cypress.config().largeTimeout });
                     if ($apis.length) {
                         // At least one with api name was found.
                         // Return a jQuery object.
@@ -57,7 +57,7 @@ describe("Anonymous view apis", () => {
                     }
                     cy.reload();
                 }
-                if (attemptCount==(remainingAttempts-1)){
+                if (attemptCount == (remainingAttempts - 1)) {
                     throw Error('Table was not found.');
                 }
             });
@@ -70,15 +70,24 @@ describe("Anonymous view apis", () => {
 
         cy.get(`[title="${apiName}"]`, { timeout: 30000 });
         cy.get(`[title="${apiName}"]`).click();
+        // intercepting overview page network calls
+        cy.intercept('GET', '**/apis/**/comments?limit=5&offset=0').as('getComments');
+        cy.intercept('GET', '**/apis/**/documents').as('getDocuments');
+        cy.intercept('GET', '**/throttling-policies/subscription').as('getSubscriptionPolicies');
+        cy.intercept('GET', '**/apis/**/thumbnail').as('getThumbnail');
+
         cy.get('#left-menu-overview').click();
 
-        // Downloading swagger
-        cy.get('#swagger-download-btn').click();
-        Cypress.on('uncaught:exception', (err, runnable) => {
-            // returning false here prevents Cypress from
-            // failing the test
-            return false
-        });
+        cy.wait(['@getComments', '@getDocuments', '@getSubscriptionPolicies', '@getThumbnail'], { timeout: 30000 })
+            .then(() => {
+                // Downloading swagger
+                cy.get('#swagger-download-btn').click();
+                Cypress.on('uncaught:exception', (err, runnable) => {
+                    // returning false here prevents Cypress from
+                    // failing the test
+                    return false
+                });
+            });
         /*
         TODO
         Need to fix this part

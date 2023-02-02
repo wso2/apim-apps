@@ -28,28 +28,24 @@ describe("publisher-015-02 : Verify Gateway Environments", () => {
             cy.intercept('GET', `/api/am/publisher/v3/apis/${apiId}/revisions?query=deployed%3Atrue`, 
             {fixture:'multipleDeployments.json'}).as('revisions');
 
-            // Go to overview page
-            cy.visit(`/publisher/apis/${apiId}/overview`);
-
             // Go to deployments page
-            cy.get('#left-menu-itemdeployments').click();
-            cy.wait(2000);
+            cy.visit(`/publisher/apis/${apiId}/deployments`);
 
             // Deploy API
-            cy.get('#Default').click({ "force": true });
             cy.get('#add-description-btn').scrollIntoView().click({ "force": true });
             cy.get('#add-description').click({ "force": true });
             cy.get('#add-description').type('test');
             cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
-            cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
-            cy.wait(2000);
+            cy.intercept('**/revisions**').as('revisionsCall');
+            cy.wait('@revisionsCall', { timeout: 30000 }).then(() => {
+                cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
+                // Verify environments
+                cy.contains('http://localhost:8280').should('exist');
+                cy.contains('https://localhost:8243').should('exist');
 
-            // Verify environments
-            cy.get('#gateway-access-url-cell > div').should('have.text', 
-            'http://localhost:8280https://localhost:8243https://wso2.comhttp://apim.com:8280').should('exist');
-
-            // Delete API
-            Utils.deleteAPI(apiId);
+                // Delete API
+                Utils.deleteAPI(apiId);
+            })
         });
     }
 

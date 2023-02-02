@@ -26,23 +26,28 @@ describe("Create api with swagger file super tenant", () => {
         cy.get('#open-api-file-select-radio').click();
         // upload the swagger
         cy.get('#browse-to-upload-btn').then(function () {
+            cy.intercept('POST', '**/apis/validate-openapi').as('validateOpenApi');
+            cy.intercept('GET', '**/linter-custom-rules').as('lintRules');
             const filepath = `api_artifacts/swagger_2.0.json`
-            cy.get('input[type="file"]').attachFile(filepath)           
+            cy.get('input[type="file"]').attachFile(filepath);
+            cy.wait(['@validateOpenApi', '@lintRules'], { timeout: 30000 }).then(() => {
+                // go to the next step
+                cy.get('#open-api-create-next-btn').click();
+                cy.get('#itest-id-apiendpoint-input')
+                    .clear()
+                    .type('https://petstore.swagger.io/v2');
+    
+                cy.intercept('**/apis/**').as('apiGet');
+                // finish the wizard
+                cy.get('#open-api-create-btn').click();
+                cy.wait('@apiGet', { timeout: 30000 }).then((data) => {
+                    // validate
+                    cy.get('#itest-api-name-version', { timeout: 30000 }).contains('1.0.5');
+                    const apiId = data.response.body.id;
+                    Utils.deleteAPI(apiId);
+                })
+            })
         });
-
-        // go to the next step
-        cy.get('#open-api-create-next-btn').click();
-        cy.get('#itest-id-apiendpoint-input').click();
-
-        cy.intercept('**/apis/**').as('apiGet');
-        // finish the wizard
-        cy.get('#open-api-create-btn').click();
-        cy.wait('@apiGet', {timeout: 30000}).then((data) => {
-            // validate
-            cy.get('#itest-api-name-version', { timeout: 30000 }).contains('1.0.5');
-            const apiId = data.response.body.id;
-            Utils.deleteAPI(apiId);
-        })
     }
     it("Create API from swagger from file - supper admin", () => {
         createApiFromSwagger(publisher, password);
@@ -51,5 +56,5 @@ describe("Create api with swagger file super tenant", () => {
     it("Create API from swagger from file - tenant user", () => {
         createApiFromSwagger(`${tenantUser}@${tenant}`, password);
     });
-    
+
 })
