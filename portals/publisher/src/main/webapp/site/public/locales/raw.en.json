@@ -2265,9 +2265,15 @@
   "Apis.Details.LifeCycle.PublishWithoutDeploy.see.more": {
     "defaultMessage": "See more"
   },
-  "Apis.Details.LifeCycle.components.confirm.publish.message": {
+  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.title": {
+    "defaultMessage": "Deploy the API product before publishing the API"
+  },
+  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.message": {
     "defaultMessage": "The API will not be available for consumption unless it is deployed."
   },
+  "Apis.Details.LifeCycle.components.confirm.publish.message": {
+    "defaultMessage": "The API will not be available for consumption unless it is deployed."
+  },  
   "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": {
     "defaultMessage": "If you want to publish as a third party API, please provide the external endpoint and press \"Publish\"."
   },
