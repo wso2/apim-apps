@@ -676,7 +676,7 @@ function Overview() {
                     || api.type === 'SOAP' || api.type === 'GRAPHQL' || api.type === 'WS' || api.type === 'WEBSUB'
                     || api.type === 'SSE' || api.type === 'ASYNC') && (
                         <Box mt={2}>
-                            <SourceDownload selectedEndpoint={selectedEndpoint} />
+                            {selectedEndpoint && (<SourceDownload selectedEndpoint={selectedEndpoint} />)}
                         </Box>
                     )}
                     {/* Key Managers */}

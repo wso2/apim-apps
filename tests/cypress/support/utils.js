@@ -127,6 +127,52 @@ export default class Utils {
             }
         })
     }
+
+    static  addRevision(apiId) {
+        const payload = `{"description":""}`;
+
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken()
+                    .then((token) => {
+                        const curl = `curl -k -X POST \
+                        -H "Content-Type: application/json" \
+                        -d '${payload}' \
+                        -H "Authorization: Bearer ${token}"  "${Cypress.config().baseUrl}/api/am/publisher/v4/apis/${apiId}/revisions"`;
+                        cy.exec(curl).then(result => {
+                            var resultJSON = JSON.parse(result.stdout);
+                            cy.log(resultJSON);
+                            resolve(resultJSON.id);
+                        })
+                    })
+            } catch (e) {
+                reject('Error while publishing api');
+            }
+        })
+    }
+
+    static  deployRevision(apiId, revisionId) {
+        const payload = `[{"name": "Default", "vhost": "localhost", "displayOnDevportal": true}]`;
+
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken()
+                    .then((token) => {
+                        const curl = `curl -k -X POST \
+                        -H "Content-Type: application/json" \
+                        -d '${payload}' \
+                        -H "Authorization: Bearer ${token}"  "${Cypress.config().baseUrl}/api/am/publisher/v4/apis/${apiId}/deploy-revision?revisionId=${revisionId}"`;
+                        cy.exec(curl).then(result => {
+                            resolve(result.stdout);
+                        })
+                    })
+            } catch (e) {
+                reject('Error while publishing api');
+            }
+        })
+    }
+
+
     
     static deleteAPI(apiId) {
         // todo need to remove this check after `console.err(err)` -> `console.err(err)` in Endpoints.jsx

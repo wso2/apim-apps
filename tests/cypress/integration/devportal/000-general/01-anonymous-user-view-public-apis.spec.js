@@ -36,30 +36,34 @@ describe("Anonymous view apis", () => {
 
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
-            Utils.publishAPI(apiId).then((serverResponse) => {
-                console.log(serverResponse);
-                cy.logoutFromPublisher();
-                cy.loginToDevportal(developer, password);
-                cy.visit(`/devportal/apis?tenant=carbon.super`);
+            Utils.addRevision(apiId).then((revId) => {
+                Utils.deployRevision(apiId, revId).then((deployResponse) => {
+                    Utils.publishAPI(apiId).then((serverResponse) => {
+                        console.log(serverResponse);
+                        cy.logoutFromPublisher();
+                        cy.loginToDevportal(developer, password);
+                        cy.visit(`/devportal/apis?tenant=carbon.super`);
 
-                // After publishing the api appears in devportal with a delay.
-                // We need to keep refresing and look for the api in the listing page
-                // following waitUntilApiExists function does that recursively.
-                let remainingAttempts = 15;
-                let attemptCount = 0;
-                for (; attemptCount < remainingAttempts; attemptCount++) {
-                    let $apis = Cypress.$(`[title="${apiName}"]`, { timeout: Cypress.config().largeTimeout });
-                    if ($apis.length) {
-                        // At least one with api name was found.
-                        // Return a jQuery object.
-                        cy.log('apis: ' + $apis.text());
-                        break;
-                    }
-                    cy.reload();
-                }
-                if (attemptCount == (remainingAttempts - 1)) {
-                    throw Error('Table was not found.');
-                }
+                        // After publishing the api appears in devportal with a delay.
+                        // We need to keep refresing and look for the api in the listing page
+                        // following waitUntilApiExists function does that recursively.
+                        let remainingAttempts = 15;
+                        let attemptCount = 0;
+                        for (; attemptCount < remainingAttempts; attemptCount++) {
+                            let $apis = Cypress.$(`[title="${apiName}"]`, { timeout: Cypress.config().largeTimeout });
+                            if ($apis.length) {
+                                // At least one with api name was found.
+                                // Return a jQuery object.
+                                cy.log('apis: ' + $apis.text());
+                                break;
+                            }
+                            cy.reload();
+                        }
+                        if (attemptCount == (remainingAttempts - 1)) {
+                            throw Error('Table was not found.');
+                        }
+                    });
+                });
             });
         });
     })
@@ -68,26 +72,25 @@ describe("Anonymous view apis", () => {
         cy.visit(`/devportal/apis?tenant=carbon.super`);
         cy.url().should('contain', '/apis?tenant=carbon.super');
 
-        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-        cy.get(`[title="${apiName}"]`).click();
         // intercepting overview page network calls
-        // cy.intercept('GET', '**/apis/**/comments**').as('getComments');
+        cy.intercept('GET', '**/apis/**/comments**').as('getComments');
         cy.intercept('GET', '**/apis/**/documents').as('getDocuments');
         cy.intercept('GET', '**/throttling-policies/subscription').as('getSubscriptionPolicies');
         cy.intercept('GET', '**/apis/**/thumbnail').as('getThumbnail');
 
-        cy.get('#left-menu-overview').click();
+        cy.visit(`/devportal/apis/${testApiId}/overview?tenant=carbon.super`);
+        cy.wait('@getComments').its('response.statusCode').should('eq', 200)
+        cy.wait('@getDocuments').its('response.statusCode').should('eq', 200)
+        cy.wait('@getSubscriptionPolicies').its('response.statusCode').should('eq', 200)
+        cy.wait('@getThumbnail').its('response.statusCode').should('eq', 204)
 
-        cy.wait(['@getDocuments', '@getSubscriptionPolicies', '@getThumbnail'], { timeout: 30000 })
-            .then(() => {
-                // Downloading swagger
-                cy.get('#swagger-download-btn').click();
-                Cypress.on('uncaught:exception', (err, runnable) => {
-                    // returning false here prevents Cypress from
-                    // failing the test
-                    return false
-                });
-            });
+        // Downloading swagger
+        cy.get('#swagger-download-btn').click();
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            // returning false here prevents Cypress from
+            // failing the test
+            return false
+        });
         /*
         TODO
         Need to fix this part
