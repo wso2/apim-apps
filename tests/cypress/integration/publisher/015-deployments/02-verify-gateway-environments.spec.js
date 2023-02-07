@@ -33,7 +33,7 @@ describe("publisher-015-02 : Verify Gateway Environments", () => {
 
             // Deploy API
             cy.get('#add-description-btn').scrollIntoView().click({ "force": true });
-            cy.get('#add-description').click({ "force": true });
+            cy.get('#add-description').scrollIntoView().click({ "force": true });
             cy.get('#add-description').type('test');
             cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
             cy.intercept('**/revisions**').as('revisionsCall');
