@@ -191,8 +191,12 @@ const TryOutConsole = () => {
                                 + `${selectedDeploymentVhost.httpContext}${api.context}`;
                         } else {
                             url = `${baseURL}${pathSeparator}`
-                                + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
-                                    .replace('{version}', `${api.version}`);
+                            + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`;
+                            if (`${api.context}`.includes('{version}')) {
+                                url = `${baseURL}${pathSeparator}`
+                                        + `${selectedDeploymentVhost.httpContext}${api.context}`
+                                            .replaceAll('{version}', `${api.version}`);
+                            }
                         }
                         return {url};
                     }
@@ -214,8 +218,12 @@ const TryOutConsole = () => {
                 if (isAPIProduct) {
                     basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}`;
                 } else {
-                    basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`
-                        .replace('{version}', `${api.version}`);
+                    basePath = `${pathSeparator}${selectedDeploymentVhost.
+                        httpContext}${api.context}/${api.version}`;
+                    if (`${api.context}`.includes('{version}')) {
+                        basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}`
+                            .replaceAll('{version}', `${api.version}`);
+                    }
                 }
                 let schemes = api.transport.slice().sort((a, b) => ((a > b) ? -1 : 1));
                 if (selectedDeploymentVhost.httpPort === -1){
