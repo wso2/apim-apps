@@ -117,7 +117,8 @@ const BaseThumbnail = (props) => {
      */
     useEffect(() => {
         if (type !== 'DOC') {
-            if (api.hasThumbnail !== null && api.hasThumbnail) {
+            if ((api.hasThumbnail !== null && api.hasThumbnail) 
+                || (apiType === Api.CONSTS.APIProduct)) {
                 const promisedThumbnail = apiType === Api.CONSTS.APIProduct
                     ? new APIProduct().getAPIProductThumbnail(id)
                     : new Api().getAPIThumbnail(id);

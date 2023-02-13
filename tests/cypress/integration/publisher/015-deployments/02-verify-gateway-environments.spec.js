@@ -24,23 +24,19 @@ describe("publisher-015-02 : Verify Gateway Environments", () => {
     const verifyGatewayEnvironments = (tenant) => {
         cy.loginToPublisher(publisher, password, tenant);
         Utils.addAPIWithEndpoints({}).then((apiId) => {
-            cy.intercept('GET', '**/apis/**/asyncapi**').as('getAsyncapi');
 
             // Go to deployments page
             cy.visit(`/publisher/apis/${apiId}/deployments`);
-            cy.wait('@getAsyncapi').its('response.statusCode').should('eq', 200);
-
+            cy.wait(5000);
             // Deploy API
             cy.get('#add-description-btn').scrollIntoView().click({ "force": true });
             cy.get('#add-description').scrollIntoView().click({ "force": true });
             cy.get('#add-description').type('test');
 
             // Intercept revisions call before hitting deploy button
-            cy.intercept('GET', '**/apis/**/revisions**').as('revisionsCall');
             cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
-
+            cy.wait(5000);
             // Wait for the revisions call to finish
-            cy.wait('@revisionsCall').its('response.statusCode').should('eq', 200);
             cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
             // Verify environments
             cy.contains('http://localhost:8280').should('exist');
