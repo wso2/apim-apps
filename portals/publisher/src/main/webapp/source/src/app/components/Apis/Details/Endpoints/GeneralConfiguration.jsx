@@ -109,7 +109,7 @@ function GeneralConfiguration(props) {
                         id: 'Apis.Details.Endpoints.GeneralConfiguration.Certificates.certificate.alias.exist',
                         defaultMessage: 'Adding Certificate Failed. Certificate Alias Exists.',
                     }));
-                } else if (err.response) {
+                } else if (err.response && err.response.body && err.response.body.description) {
                     Alert.error(err.response.body.description);
                 } else {
                     Alert.error(intl.formatMessage({
@@ -117,6 +117,7 @@ function GeneralConfiguration(props) {
                         defaultMessage: 'Something went wrong while adding the certificate.',
                     }));
                 }
+                return Promise.reject(err);
             });
     };
     /**
@@ -143,10 +144,11 @@ function GeneralConfiguration(props) {
             })
             .catch((err) => {
                 console.log(err);
-                Alert.info(intl.formatMessage({
+                Alert.error(intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.Certificates.certificate.delete.error',
                     defaultMessage: 'Error Deleting Certificate',
                 }));
+                return Promise.reject(err);
             });
     };
 
