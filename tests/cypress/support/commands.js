@@ -155,8 +155,8 @@ Cypress.Commands.add('deleteApi', (name, version) => {
     cy.wait('@getApis', {timeout: Cypress.config().largeTimeout}).then(() => {
         cy.get(`[data-testid="${cardName}"]`).get(`[data-testid="${actionCardName}"]`).within(($panel) => {
             cy.get("#itest-id-deleteapi-icon-button", { timeout: 30000 }).click();
-          }) 
-        cy.get("#itest-id-deleteconf",{ timeout:30000 }).click();
+        }) 
+        cy.get("#itest-id-deleteconf", { timeout:30000 }).click();
     });
 });
 
@@ -250,7 +250,7 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#itest-id-apiendpoint-input').click();
     cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('#itest-id-apiversion-input').click();
-    cy.get('body').click(0,0);
+    cy.get('body').click(0, 0);
     cy.get('#itest-id-apicreatedefault-createnpublish').click({force:true});
 
     // Wait for the api to load
@@ -259,15 +259,15 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
 })
   
 
-Cypress.Commands.add('addDocument', (name,summary,type,source) => {
+Cypress.Commands.add('addDocument', (name, summary, type, source) => {
     
     cy.get('[data-testid="add-document-btn"]').click({force:true});
     cy.wait(5000);
-    cy.get('#doc-name',{timeout: 30000}).focus().type(name, {force:true}).should('have.value',name);
+    cy.get('#doc-name', {timeout: 30000}).focus().type(name, {force:true}).should('have.value', name);
     cy.wait(2000);
     cy.get('#doc-summary').focus().type(summary);
-    cy.contains('label',type).click();
-    cy.contains('label',source).click();
+    cy.contains('label', type).click();
+    cy.contains('label', source).click();
     cy.get('#add-document-btn').scrollIntoView();
     cy.get('#add-document-btn').click();
     cy.get('#add-content-back-to-listing-btn').click();
@@ -277,13 +277,14 @@ Cypress.Commands.add('addDocument', (name,summary,type,source) => {
 
 Cypress.Commands.add('addComment', (comment) => {
     
-    cy.get('[data-testid="new-comment-field"]',{timeout: 30000 }).type(comment);
+    cy.get('[data-testid="new-comment-field"]', {timeout: 30000 }).type(comment);
     cy.get('#add-comment-btn').click();
     
-    cy.contains('p',comment).should('exist');
+    cy.contains('p', comment).should('exist');
 })
 
-Cypress.Commands.add('addBusinessInfo', (businessOwnerName,businessOwnerEmail,techOwnerName,techOwnerEmail) => {
+Cypress.Commands.add('addBusinessInfo', (businessOwnerName, businessOwnerEmail, 
+    techOwnerName, techOwnerEmail) => {
     
     cy.get('#name').focus({timeout: 30000 }).type(businessOwnerName);
     cy.get('#Email').focus({timeout: 30000 }).type(businessOwnerEmail);
@@ -319,20 +320,21 @@ Cypress.Commands.add('addBusinessInfo', (businessOwnerName,businessOwnerEmail,te
  * @param {boolean} required  true | false
  */
 
-Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel, httpverb, uripattern, description=null,
-    summary=null, security=true, scope, parametername=null, parametertype=null, datatype=null, required=false) => {
+Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel, httpverb, uripattern, 
+    description=null, summary=null, security=true, scope, parametername=null, parametertype=null,
+    datatype=null, required=false) => {
 
     const uriId = httpverb.toLowerCase() + '\/' + uripattern;
 
-    if(ratelimitlevel=="api"){
+    if (ratelimitlevel=="api") {
         cy.get('#api-rate-limiting-api-level').click();
         cy.get('#operation_throttling_policy').click();
-        cy.contains('li',limitinglevel).click();
-    }else{
+        cy.contains('li', limitinglevel).click();
+    } else {
         cy.get('#api-rate-limiting-operation-level').click();
     }
     cy.get('#add-operation-selection-dropdown').click();
-    cy.contains('li',httpverb).click();
+    cy.contains('li', httpverb).click();
     
     //colapse dropdown
     cy.get('#menu-verbs').click();
@@ -343,41 +345,41 @@ Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel, httpverb,
     cy.get(`[id="${uriId}"]`, { timeout: 30000 }).click();
 
     
-    if(description!= null){
+    if (description!= null) {
         cy.get(`[data-testid="description-${uriId}"]`, { timeout: 30000 }).click();
         cy.get(`[data-testid="description-${uriId}"]`).type(description);
 
     }
-    if(summary!=null){
+    if (summary!=null) {
         cy.get(`[data-testid="summary-${uriId}"]`, { timeout: 30000 }).click();
         cy.get(`[data-testid="summary-${uriId}"]`).type(summary);
     }
-    if(security==false){
+    if (security==false) {
         cy.get(`[data-testid="security-${uriId}"]`).click();
-    }else{
+    } else {
         cy.get(`[id="${uriId}-operation-scope-select"]`, { timeout: 30000 }).click();
-        cy.contains('li',scope).click();
+        cy.contains('li', scope).click();
         cy.get('#menu-').click();
     }
 
-    if(ratelimitlevel=="operation"){
+    if (ratelimitlevel=="operation") {
         cy.get(`[id="${uriId}-operation_throttling_policy-label"]`).click();
-        cy.contains('li',limitinglevel).click();
+        cy.contains('li', limitinglevel).click();
     }
 
 
     //parameters
-    if(parametertype!=null){
+    if (parametertype!=null) {
         cy.get(`[id="param-${uriId}"]`).click();
-        cy.contains('li',parametertype).click();
+        cy.contains('li', parametertype).click();
         cy.get(`[id="name-${uriId}"]`).type(parametername);
         cy.get(`[id="data-${uriId}"]`).click();
         cy.get(`[id="data-${uriId}/${datatype.toLowerCase()}"]`).click();
-        if(required){
+        if (required) {
             cy.get(`[data-testid="required-${uriId}"]`).click();
         }
         cy.get(`[id="param-${uriId}-add-btn"]`).click();
-        cy.contains('td',parametername).should('exist');
+        cy.contains('td', parametername).should('exist');
     }
     cy.get('#resources-save-operations', { timeout: 30000 }).click();
 
@@ -392,13 +394,13 @@ Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
     cy.get('#property-name', {timeout: Cypress.config().largeTimeout}).focus().type(name);
     cy.get('#property-value').focus().type(value);
 
-    if(ifSendToDevPortal)
-        cy.contains('label','Show in devportal').click();
+    if (ifSendToDevPortal)
+        cy.contains('label', 'Show in devportal').click();
     cy.get('#properties-add-btn').should('exist');
     cy.get('#properties-add-btn').click();
 
     //verifying that the property added
-    cy.get('tr').contains('td',name);
+    cy.get('tr').contains('td', name);
 
     //save the property
     cy.get('[data-testid="custom-select-save-button"]').click();
@@ -406,41 +408,42 @@ Cypress.Commands.add('addProperty',(name,value,ifSendToDevPortal)=>{
 })
 
 
-Cypress.Commands.add('createGraphqlAPIfromFile', (name,version,context,filepath)=>{
+Cypress.Commands.add('createGraphqlAPIfromFile', (name, version, context, filepath)=>{
 
     cy.visit(`/publisher/apis/create/graphQL`);
 
     // upload the graphql file
-    cy.get('[data-testid="browse-to-upload-btn"]', {timeout: Cypress.config().largeTimeout}).then(function () {
-        cy.get('input[type="file"]').attachFile(filepath);
-        // Wait to upload and go to next page
-        cy.get('[data-testid="uploaded-list-graphql"]', {timeout: Cypress.config().largeTimeout}).should('be.visible');
-        cy.get('[data-testid="create-graphql-next-btn"]').click();
+    cy.get('[data-testid="browse-to-upload-btn"]', {timeout: Cypress.config().largeTimeout})
+        .then(function () {
+            cy.get('input[type="file"]').attachFile(filepath);
+            // Wait to upload and go to next page
+            cy.get('[data-testid="uploaded-list-graphql"]', {timeout: Cypress.config().largeTimeout}).should('be.visible');
+            cy.get('[data-testid="create-graphql-next-btn"]').click();
 
-        // Filling the form
-        cy.get('#itest-id-apiname-input').click();
-        cy.get('#itest-id-apiname-input').type(name);
-        cy.get('#itest-id-apicontext-input').click();
-        cy.get('#itest-id-apicontext-input').type(context);
-        cy.get('#itest-id-apiversion-input').click();
-        cy.get('#itest-id-apiversion-input').type(version);
-        cy.get('#itest-id-apiendpoint-input').click();
-        cy.get('#itest-id-apiendpoint-input').type('http://localhost:8080/graphql');
-        cy.get('#itest-id-apiversion-input').click();
-        cy.get('body').click(0,0);
+            // Filling the form
+            cy.get('#itest-id-apiname-input').click();
+            cy.get('#itest-id-apiname-input').type(name);
+            cy.get('#itest-id-apicontext-input').click();
+            cy.get('#itest-id-apicontext-input').type(context);
+            cy.get('#itest-id-apiversion-input').click();
+            cy.get('#itest-id-apiversion-input').type(version);
+            cy.get('#itest-id-apiendpoint-input').click();
+            cy.get('#itest-id-apiendpoint-input').type('http://localhost:8080/graphql');
+            cy.get('#itest-id-apiversion-input').click();
+            cy.get('body').click(0, 0);
 
-        // Saving the form
-        cy.get('[data-testid="itest-create-graphql-api-button"]',)
-            .click({force:true, timeout: Cypress.config().largeTimeout});
+            // Saving the form
+            cy.get('[data-testid="itest-create-graphql-api-button"]',)
+                .click({force:true, timeout: Cypress.config().largeTimeout});
 
-        //Checking the version in the overview
-        cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout}).should('be.visible');
-        cy.get('#itest-api-name-version').contains(version);
-        cy.url().then(url => {
-            let apiId = /apis\/(.*?)\/overview/.exec(url)[1];
-            return cy.wrap(apiId);
+            //Checking the version in the overview
+            cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout}).should('be.visible');
+            cy.get('#itest-api-name-version').contains(version);
+            cy.url().then(url => {
+                let apiId = /apis\/(.*?)\/overview/.exec(url)[1];
+                return cy.wrap(apiId);
+            });
         });
-    });
 })
   
 
@@ -454,33 +457,35 @@ Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath)=>{
     // upload the graphql file
     cy.get('[data-testid="browse-to-upload-btn"]')
     cy.get('input[type="file"]').attachFile(filepath);
-    cy.contains('h2','Import GraphQL Schema Definition').should('exist');
-    uploadedDefinitionPanel=cy.get('[data-testid="uploaded-list-graphql"]').get('li').get('[data-testid="uploaded-list-content-graphql"]')
+    cy.contains('h2', 'Import GraphQL Schema Definition').should('exist');
+    uploadedDefinitionPanel=cy.get('[data-testid="uploaded-list-graphql"]').get('li')
+        .get('[data-testid="uploaded-list-content-graphql"]')
     //uploadedDefinitionPanel.contains(`[data-testid="file-input-${filename}"]`,filename).should('be.visible');
     uploadedDefinitionPanel.get('[data-testid="btn-delete-imported-file"]').should('be.visible');
     cy.get('#import-open-api-btn').click();
     cy.get('#import-open-api-btn').should('not.exist')
     const searchCmd = Cypress.platform === 'darwin' ? '{cmd}f' : '{ctrl}f'
-    cy.get('.react-monaco-editor-container',{timeout:30000}).get('.monaco-editor textarea:first')
-        .type(searchCmd,{force:true});
+    cy.get('.react-monaco-editor-container', {timeout:30000}).get('.monaco-editor textarea:first')
+        .type(searchCmd, {force:true});
     cy.get('.find-part .input').type('modified schema file');
-    cy.contains('.find-actions','1 of').should('be.visible');
+    cy.contains('.find-actions', '1 of').should('be.visible');
     
    
 })
 
 
-Cypress.Commands.add('createLocalScope', (name, displayname='sample display name',description='sample description',roles=[]) => {
+Cypress.Commands.add('createLocalScope', (name, displayname='sample display name', 
+    description='sample description', roles=[]) => {
 
     cy.get('h3',  {timeout: Cypress.config().largeTimeout}).contains("Create New Scope",  { timeout: 30000 });
     cy.wait(1000);
-    cy.get('#name',{timeout:30000}).type(name, {force:true});
-    cy.get('#displayName',{timeout: 30000 }).click().type(displayname,  {force:true});
-    cy.get('#description',{timeout: 30000 }).click().type(description,  {force:true});
-    cy.get('#name',{timeout:30000}).clear().click().type(name,  {force:true});
+    cy.get('#name', {timeout:30000}).type(name, {force:true});
+    cy.get('#displayName', {timeout: 30000 }).click().type(displayname,  {force:true});
+    cy.get('#description', {timeout: 30000 }).click().type(description,  {force:true});
+    cy.get('#name', {timeout:30000}).clear().click().type(name,  {force:true});
 
     roles.forEach(role => {
-        cy.get('#roles-input',{timeout: 30000 }).type(role+'\n');
+        cy.get('#roles-input', {timeout: 30000 }).type(role+'\n');
     });
     cy.get('#scope-save-btn').click({force: true});
 
@@ -493,14 +498,14 @@ Cypress.Commands.add('createLocalScope', (name, displayname='sample display name
 })
 
 
-Cypress.Commands.add('createAPIWithoutEndpoint', (name = null,version = null,type = 'REST') => {
+Cypress.Commands.add('createAPIWithoutEndpoint', (name = null, version = null, type = 'REST') => {
     const random_number = Math.floor(Date.now() / 1000);
     var apiVersion = `v${random_number}`;
     var apiName = `0sample_api_${random_number}`;
-    if(name){
+    if (name) {
         apiName = name;
     }
-    if(version){
+    if (version) {
         apiVersion = version;
     }
     cy.visit(`/publisher/apis`);
@@ -517,7 +522,7 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name = null,version = null,typ
     cy.wait(500);
 
     cy.visit(`/publisher/apis/`);
-    cy.get(`#${apiName}`,{timeout: Cypress.config().largeTimeout}).click();
+    cy.get(`#${apiName}`, {timeout: Cypress.config().largeTimeout}).click();
 
 
     cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
@@ -769,30 +774,32 @@ Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
  * @param {string} perTokenQuota 10PerMin | 20OPerMin | 50PerMin | Unlimited
  * @param {string} appDescription description about application
  */
-Cypress.Commands.add('createApplication', (applicationName,perTokenQuota,applicationDescription=null) => {
+Cypress.Commands.add('createApplication', (applicationName, perTokenQuota, applicationDescription=null) => {
     cy.get("#itest-link-to-applications").click();
-    cy.get("#itest-application-create-link",{timeout:30000}).click();
+    cy.get("#itest-application-create-link", {timeout:30000}).click();
     cy.get('#application-name').type(applicationName);
     cy.get('#per-token-quota').click();
-    cy.get('ul').contains('li',perTokenQuota).click();
+    cy.get('ul').contains('li', perTokenQuota).click();
 
-    if(applicationDescription){
+    if (applicationDescription) {
         cy.get('#application-description').type(applicationDescription);
     }
     cy.get("#itest-application-create-save").click();
 
-    cy.get("#itest-info-bar-application-name", {timeout: Cypress.config().largeTimeout}).contains(applicationName).should('exist');
+    cy.get("#itest-info-bar-application-name", {timeout: Cypress.config().largeTimeout})
+        .contains(applicationName).should('exist');
     cy.get("#production-keys").click();
     cy.get("#generate-keys").click();
 
     cy.get("#sandbox-keys").click();
-    cy.get("#generate-keys",{timeout:30000}).click();
+    cy.get("#generate-keys", {timeout:30000}).click();
 
 });
 
 Cypress.Commands.add('deleteApplication', (applicationName) => {
     cy.get("#itest-link-to-applications", {timeout: Cypress.config().largeTimeout}).click();
-    cy.get('table', {timeout: Cypress.config().largeTimeout}).get('tbody').get(`[data-testid="row-${applicationName}"]`)
+    cy.get('table', {timeout: Cypress.config().largeTimeout}).get('tbody')
+        .get(`[data-testid="row-${applicationName}"]`)
         .find('td').eq(5).get(`[id="delete-${applicationName}-btn"]`).click();
     cy.get("#itest-confirm-application-delete").click();
 });
