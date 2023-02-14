@@ -18,9 +18,9 @@
 
 import Utils from "@support/utils";
 
-const genApiId = 'sample-apiid-gendoc';
-const genApiName = 'api-gendoc-rest';
-const documentName = 'api_document';
+let genApiId;
+const genApiName = Utils.generateName();
+const documentName = Utils.generateName();
 const documentSummary = 'api document summery';
 
 describe("publisher-012-01 :View generated document for rest apis", () => {
@@ -32,7 +32,8 @@ describe("publisher-012-01 :View generated document for rest apis", () => {
         cy.loginToPublisher(publisher, password);
     })
     it.only("Creating inline document", () => {
-        Utils.addAPIWithEndpoints({ apiId: genApiId, name: genApiName }).then((apiId) => {
+        Utils.addAPIWithEndpoints({ name: genApiName }).then((apiId) => {
+            genApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemdocuments').click();
@@ -58,14 +59,14 @@ describe("publisher-012-01 :View generated document for rest apis", () => {
         });
     });
     it.only("Viewing generated document in devportal", () => {
-        const { developer, password, } = Utils.getUserInfo();
-        cy.loginToDevportal(developer, password);
-        cy.get(`[area-label="Go to ${genApiName}"]`, { timeout: Cypress.config().largeTimeout }).click();
-        cy.get('#left-menu-documents').click();
+        cy.intercept('GET', '**/apis/**/swagger**').as('getSwagger');
+        cy.visit(`/devportal/apis/${genApiId}/documents/default?tenant=carbon.super`);
+        cy.wait('@getSwagger').its('response.statusCode').should('eq', 200);
         cy.get('#apim_elements').should('be.visible');
         cy.get('#document-autocomplete').should('have.value', 'Default');
         cy.get('h1[class*="sl-text-"]').contains(genApiName).should('be.visible');
         // Test is done. Now delete the api
+        cy.loginToPublisher(publisher, password);
         Utils.deleteAPI(genApiId);
     });
 });
