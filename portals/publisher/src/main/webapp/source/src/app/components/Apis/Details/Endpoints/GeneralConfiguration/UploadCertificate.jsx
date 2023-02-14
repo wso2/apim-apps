@@ -149,11 +149,17 @@ export default function UploadCertificate(props) {
         setSaving(true);
         if (isMutualSSLEnabled) {
             uploadCertificate(certificate.content, policy, alias)
-                .then(closeCertificateUpload)
+                .then(() => {
+                    closeCertificateUpload();
+                    aliasList.push(alias);
+                })
                 .finally(() => setSaving(false));
         } else {
             uploadCertificate(certificate.content, endpoint, alias)
-                .then(closeCertificateUpload)
+                .then(() => {
+                    closeCertificateUpload();
+                    aliasList.push(alias);
+                })
                 .finally(() => setSaving(false));
         }
     };

@@ -162,8 +162,16 @@ function Certificates(props) {
     const deleteCertificateByAlias = (certificateAlias) => {
         setDeleting(true);
         deleteCertificate(certificateAlias)
-            .then(() => setCertificateToDelete({ open: false, alias: '' }))
+            .then(() => { 
+                setCertificateToDelete({ open: false, alias: '' })
+                // Remove certificateAlias from aliasList.
+                const index = aliasList.indexOf(certificateAlias);
+                if (index > -1) {
+                    aliasList.splice(index, 1);
+                }
+            })
             .finally(() => setDeleting(false));
+        
     };
 
     /**
