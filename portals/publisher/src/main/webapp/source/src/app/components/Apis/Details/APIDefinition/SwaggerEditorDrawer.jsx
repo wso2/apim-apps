@@ -25,7 +25,6 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage } from 'react-intl';
 import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
-import { ThumbUp } from '@material-ui/icons';
 import { orange } from '@material-ui/core/colors';
 import differenceBy from 'lodash/differenceBy'
 import SwaggerUI from './swaggerUI/SwaggerUI';
@@ -47,6 +46,9 @@ const styles = () => ({
     },
     noGlyphMargin: {
         background: 'none',
+    },
+    topMargin:{
+        paddingTop: '10px',   
     }
 });
 
@@ -202,25 +204,26 @@ class SwaggerEditorDrawer extends React.Component {
                             </div>
                         )}
                         { !isSwaggerUI && linterResults.length === 0 && (
-                            <Box alignSelf='center' justifySelf='center' flexDirection='column'>
-                                <ThumbUp fontSize='large'/>
-                                <Typography variant='h4'>
-                                    <FormattedMessage
-                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.good'
-                                            + 'update.content'}
-                                        defaultMessage='Good to go !'
-                                    />
-                                </Typography>
-                                <Typography variant='h6'>
-                                    <FormattedMessage
-                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.results'
-                                            + 'update.content'}
-                                        defaultMessage='No Linter Results{type} found'
-                                        values={{type: linterSelectedSeverity?
-                                            ` (${spectralSeverityNames[linterSelectedSeverity]})`:''}}
-                                    />
-                                </Typography>
-                            </Box>
+                            <div className={classes.topMargin}>
+                                <Box alignSelf='center' justifySelf='center' flexDirection='column'>
+                                    <Typography variant='h4'>
+                                        <FormattedMessage
+                                            id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.good'
+                                                + 'update.content'}
+                                            defaultMessage='No linting issues found in the definition'
+                                        />
+                                    </Typography>
+                                    <Typography variant='h6'>
+                                        <FormattedMessage
+                                            id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.results'
+                                                + 'update.content'}
+                                            defaultMessage='No Linter Results{type} found'
+                                            values={{type: linterSelectedSeverity?
+                                                ` (${spectralSeverityNames[linterSelectedSeverity]})`:''}}
+                                        />
+                                    </Typography>
+                                </Box>
+                            </div>
                         )}
                     </Grid>
                 </Grid>
