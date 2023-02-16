@@ -106,7 +106,9 @@ export default function AuthorizationHeader(props) {
                     }}
                     margin='normal'
                     variant='outlined'
-                    onChange={({ target: { value } }) => configDispatcher({ action: 'authorizationHeader', value })}
+                    onChange={({ target: { value } }) => configDispatcher({
+                        action: 'authorizationHeader',
+                        value: value === '' ? 'Authorization' : value })}
                     style={{ display: 'flex' }}
                 />
             </Grid>
