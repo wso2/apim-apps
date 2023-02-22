@@ -213,7 +213,8 @@ class AuthManager {
 
         // determines whether the user is a publisher or creator (based on what is passed from the element)
         // if (scopesAllowedToEdit.filter(element => AuthManager.getUser().scopes.includes(element)).length > 0) {
-        if (scopesAllowedToEdit.find((element) => AuthManager.getUser().scopes.includes(element))) {
+        if (AuthManager.getUser()
+            && scopesAllowedToEdit.find((element) => AuthManager.getUser().scopes.includes(element))) {
             // if the user has publisher role, no need to consider the api LifeCycleStatus
             if ((Object.keys(api).length === 0 && api.constructor === Object)
             || AuthManager.getUser().scopes.includes('apim:api_publish')) {
