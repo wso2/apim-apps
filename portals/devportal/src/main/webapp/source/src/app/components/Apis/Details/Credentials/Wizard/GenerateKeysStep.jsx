@@ -147,7 +147,9 @@ const generateKeysStep = (props) => {
                     selectedKeyManager = responseKeyManagerListDefault.length > 0 ? responseKeyManagerListDefault[0]
                         : responseKeyManagerList[0];
                 }
-                setKeyManager(selectedKeyManager);
+                const filteredKeyManager = selectedKeyManager.
+                    filter((k) => (k.name !== 'urn:ietf:params:oauth:grant-type:token-exchange'));
+                setKeyManager(filteredKeyManager);
 
                 // Setting key request
                 try {
