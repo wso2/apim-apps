@@ -147,9 +147,11 @@ const generateKeysStep = (props) => {
                     selectedKeyManager = responseKeyManagerListDefault.length > 0 ? responseKeyManagerListDefault[0]
                         : responseKeyManagerList[0];
                 }
-                const filteredKeyManager = selectedKeyManager
-                    .filter((k) => (k.name !== 'urn:ietf:params:oauth:grant-type:token-exchange'));
-                setKeyManager(filteredKeyManager);
+
+                //Filtering Grant Types for Token Exchange
+                const filteredGrantTypes = selectedKeyManager.availableGrantTypes
+                    .filter((k) => (k !== 'urn:ietf:params:oauth:grant-type:token-exchange'));
+                setKeyManager({ ...selectedKeyManager, availableGrantTypes: filteredGrantTypes });
 
                 // Setting key request
                 try {
