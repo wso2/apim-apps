@@ -147,7 +147,11 @@ const generateKeysStep = (props) => {
                     selectedKeyManager = responseKeyManagerListDefault.length > 0 ? responseKeyManagerListDefault[0]
                         : responseKeyManagerList[0];
                 }
-                setKeyManager(selectedKeyManager);
+
+                // Filtering Grant Types for Token Exchange
+                const filteredGrantTypes = selectedKeyManager.availableGrantTypes
+                    .filter((k) => (k !== 'urn:ietf:params:oauth:grant-type:token-exchange'));
+                setKeyManager({ ...selectedKeyManager, availableGrantTypes: filteredGrantTypes });
 
                 // Setting key request
                 try {
@@ -179,7 +183,8 @@ const generateKeysStep = (props) => {
     const generateKeys = () => {
         Application.get(createdApp.value).then((application) => {
             return application.generateKeys(
-                keyRequest.keyType, keyRequest.supportedGrantTypes,
+                keyRequest.keyType, keyRequest.supportedGrantTypes
+                    .filter((k) => (k !== 'urn:ietf:params:oauth:grant-type:token-exchange')),
                 keyRequest.callbackUrl,
                 keyRequest.additionalProperties, keyRequest.keyManager,
             );
@@ -226,7 +231,7 @@ const generateKeysStep = (props) => {
                                     <FormHelperText>
                                         <FormattedMessage
                                             defaultMessage={'These configurations are set for the purpose of the wizard.'
-                                        + 'You have more control over them when you go to the application view. '}
+                                                + 'You have more control over them when you go to the application view. '}
                                             id='Apis.Details.Credentials.Wizard.GenerateKeysStep.key.configuration.help'
                                         />
                                     </FormHelperText>

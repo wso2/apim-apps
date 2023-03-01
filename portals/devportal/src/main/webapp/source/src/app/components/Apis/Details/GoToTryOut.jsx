@@ -127,7 +127,9 @@ export default function GoToTryOut() {
                 // Setting key request
                 try {
                     keyRequest.keyManager = selectedKeyManager.id;
-                    keyRequest.supportedGrantTypes = selectedKeyManager.availableGrantTypes;
+                    // Filtering Grant Types for Token Exchange
+                    keyRequest.supportedGrantTypes = selectedKeyManager.availableGrantTypes
+                        .filter((k) => (k !== 'urn:ietf:params:oauth:grant-type:token-exchange'));
                     if (selectedKeyManager.availableGrantTypes.includes('implicit')
                         || selectedKeyManager.availableGrantTypes.includes('authorization_code')) {
                         keyRequest.callbackUrl = 'http://localhost';
