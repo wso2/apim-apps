@@ -109,8 +109,9 @@ class TableView extends React.Component {
 
     componentDidUpdate(prevProps) {
         const { isAPIProduct, query } = this.props;
+        const { rowsPerPage, page } = this.state;
         if (isAPIProduct !== prevProps.isAPIProduct || query !== prevProps.query) {
-            this.getData();
+            this.getData(rowsPerPage, page);
         }
     }
 
