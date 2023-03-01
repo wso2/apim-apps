@@ -489,6 +489,30 @@
       "value": "Input Type"
     }
   ],
+  "Apis.Create.OpenAPI.Steps.ValidationResults.linter.results": [
+    {
+      "type": 0,
+      "value": "Linter Results"
+    }
+  ],
+  "Apis.Create.OpenAPI.Steps.ValidationResults.linting": [
+    {
+      "type": 0,
+      "value": "Generating Linter Results"
+    }
+  ],
+  "Apis.Create.OpenAPI.Steps.ValidationResults.validating": [
+    {
+      "type": 0,
+      "value": "Validating API definition"
+    }
+  ],
+  "Apis.Create.OpenAPI.Steps.ValidationResults.validation.errros": [
+    {
+      "type": 0,
+      "value": "Validation Errors"
+    }
+  ],
   "Apis.Create.StreamingAPI.APICreateStreamingAPI.api.heading": [
     {
       "type": 0,
@@ -691,6 +715,12 @@
       "value": "Convert to"
     }
   ],
+  "Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.import.content": [
+    {
+      "type": 0,
+      "value": "Import Content"
+    }
+  ],
   "Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.update.content": [
     {
       "type": 0,
@@ -707,6 +737,18 @@
     {
       "type": 0,
       "value": "Edit"
+    }
+  ],
+  "Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter": [
+    {
+      "type": 0,
+      "value": "Linter"
+    }
+  ],
+  "Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger": [
+    {
+      "type": 0,
+      "value": "Swagger"
     }
   ],
   "Apis.Details.APIDefinition.APIDefinition.error.updating.graphQL.schema": [
@@ -761,6 +803,12 @@
     {
       "type": 0,
       "value": "Cancel"
+    }
+  ],
+  "Apis.Details.APIDefinition.APIDefinition.import.definition.edit": [
+    {
+      "type": 0,
+      "value": "Edit and Import"
     }
   ],
   "Apis.Details.APIDefinition.APIDefinition.import.definition.graphql": [
@@ -1193,6 +1241,50 @@
     {
       "type": 0,
       "value": "Linting . . ."
+    }
+  ],
+  "Apis.Details.APIDefinition.Linting.APILintingSummary.loading": [
+    {
+      "type": 0,
+      "value": "Linting . . ."
+    }
+  ],
+  "Apis.Details.APIDefinition.Linting.Linting.custom.ruleset.validation.failed": [
+    {
+      "type": 0,
+      "value": "OpenAPI linter custom ruleset validation failed"
+    }
+  ],
+  "Apis.Details.APIDefinition.Linting.Linting.default.ruleset.validation.failed": [
+    {
+      "type": 0,
+      "value": "OpenAPI linter default ruleset validation failed"
+    }
+  ],
+  "Apis.Details.APIDefinition.Linting.Linting.error.retrieving.custom.rules": [
+    {
+      "type": 0,
+      "value": "Error retrieving custom linter rules"
+    }
+  ],
+  "Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.goodupdate.content": [
+    {
+      "type": 0,
+      "value": "No linting issues found in the definition"
+    }
+  ],
+  "Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.resultsupdate.content": [
+    {
+      "type": 0,
+      "value": "No Linter Results"
+    },
+    {
+      "type": 1,
+      "value": "type"
+    },
+    {
+      "type": 0,
+      "value": " found"
     }
   ],
   "Apis.Details.APIDefinition.SwaggerEditorDrawer.title": [
@@ -4089,7 +4181,7 @@
       "value": "Responses"
     }
   ],
-  "Apis.Details.Environments\n                                                                                    .deploy.vhost": [
+  "Apis.Details.Environments\n                                                                                        .deploy.vhost": [
     {
       "type": 0,
       "value": "VHost"
@@ -4147,6 +4239,12 @@
     {
       "type": 0,
       "value": "Revisions"
+    }
+  ],
+  "Apis.Details.Environments.Environments.RetiredApi.ToolTip": [
+    {
+      "type": 0,
+      "value": "Can not deploy new revisions for retired API"
     }
   ],
   "Apis.Details.Environments.Environments.advertise.only.warning": [
@@ -4245,7 +4343,7 @@
       "value": "Action"
     }
   ],
-  "Apis.Details.Environments.Environments.revision\n                                                        .description.deploy": [
+  "Apis.Details.Environments.Environments.revision\n                                                            .description.deploy": [
     {
       "type": 0,
       "value": "Add a description to the revision"
@@ -4703,16 +4801,16 @@
       "value": "See more"
     }
   ],
-  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.title": [
-    {
-      "type": 0,
-      "value": "Deploy API product before publishing"
-    }
-  ],
   "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.message": [
     {
       "type": 0,
       "value": "Deploy the API product before publishing the API"
+    }
+  ],
+  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.title": [
+    {
+      "type": 0,
+      "value": "Deploy API product before publishing"
     }
   ],
   "Apis.Details.LifeCycle.components.confirm.publish.message": [
@@ -4720,7 +4818,7 @@
       "type": 0,
       "value": "The API will not be available for consumption unless it is deployed."
     }
-  ], 
+  ],
   "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": [
     {
       "type": 0,
@@ -5345,6 +5443,18 @@
       "value": "Business Plan"
     }
   ],
+  "Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentAvailable": [
+    {
+      "type": 0,
+      "value": "Cannot deploy retired APIs"
+    }
+  ],
+  "Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentUnavailable": [
+    {
+      "type": 0,
+      "value": "Deploy a revision of this API to the Gateway"
+    }
+  ],
   "Apis.Details.Overview.CustomizedStepper.blocked": [
     {
       "type": 0,
@@ -5575,12 +5685,6 @@
     {
       "type": 0,
       "value": " API product(s)"
-    }
-  ],
-  "Apis.Details.Policies.Policies.cc.info.title": [
-    {
-      "type": 0,
-      "value": "Choreo Connect supports resource level request and response flow policies only."
     }
   ],
   "Apis.Details.Policies.Policies.title": [
@@ -7561,6 +7665,24 @@
       "value": "type"
     }
   ],
+  "Apis.Details.environments.deploymentOnBoarding.formattedMessage.description": [
+    {
+      "type": 0,
+      "value": "It is not possible to deploy new revisions for retired APIs."
+    }
+  ],
+  "Apis.Details.environments.deploymentOnBoarding.formattedMessage.head": [
+    {
+      "type": 0,
+      "value": "Deployments"
+    }
+  ],
+  "Apis.Details.environments.deploymentOnBoarding.formattedMessage.warningTitle": [
+    {
+      "type": 0,
+      "value": "Can not deploy retired APIs"
+    }
+  ],
   "Apis.Details.index.Tryout.menu.name": [
     {
       "type": 0,
@@ -8326,7 +8448,7 @@
   "Base.Footer.Footer.product_details": [
     {
       "type": 0,
-      "value": "WSO2 API-M v4.1.0 | © 2022 WSO2 LLC"
+      "value": "WSO2 API-M v4.2.0 | © 2023 WSO2 LLC"
     }
   ],
   "Base.Header.avatar.Avatar.logout": [
