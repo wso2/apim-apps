@@ -109,7 +109,13 @@ function checkContext(value, result) {
     if (tenant !== null && tenant !== undefined && tenant !== 'carbon.super') {
         contextVal = '/t/' + tenant + contextVal.toLowerCase();
     }
-    if (result.find((x) => x.context.toLowerCase() === contextVal.toLowerCase()) !== undefined) {
+    if (
+        result.find(
+            (x) =>
+                x.context.toLowerCase() === contextVal.toLowerCase() ||
+                x.contextTemplate.toLowerCase() === contextVal.toLowerCase(),
+        ) !== undefined
+    ) {
         return true;
     }
     return false;
@@ -193,13 +199,12 @@ export default function DefaultAPIForm(props) {
                         if (count > 0 && checkContext(value, result.body.list)) {
                             updateValidity({
                                 ...validity,
-                                // eslint-disable-next-line max-len
-                                context: { details: [{ message:  isWebSocket ? apiContext + ' channel already exists' : apiContext + ' context already exists' }] },
-                            });
-                        } else if (count > 0 && checkContext(value, result.body.list)) {
-                            updateValidity({
-                                ...validity,
-                                context: { details: [{ message: apiContext + ' dynamic context already exists' }] },
+                                context: {
+                                    details: [{
+                                        message: isWebSocket ? apiContext + ' channel already exists'
+                                            : apiContext + ' context already exists'
+                                    }]
+                                },
                             });
                         } else {
                             updateValidity({ ...validity, context: contextValidity, version: null });
