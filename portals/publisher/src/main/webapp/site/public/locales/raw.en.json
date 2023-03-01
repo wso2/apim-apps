@@ -541,7 +541,7 @@
     "defaultMessage": "Error retrieving custom linter rules"
   },
   "Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.goodupdate.content": {
-    "defaultMessage": "Good to go !"
+    "defaultMessage": "No linting issues found in the definition"
   },
   "Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.resultsupdate.content": {
     "defaultMessage": "No Linter Results{type} found"
@@ -2265,15 +2265,15 @@
   "Apis.Details.LifeCycle.PublishWithoutDeploy.see.more": {
     "defaultMessage": "See more"
   },
-  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.title": {
+  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.message": {
     "defaultMessage": "Deploy the API product before publishing the API"
   },
-  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.message": {
-    "defaultMessage": "The API will not be available for consumption unless it is deployed."
+  "Apis.Details.LifeCycle.components.confirm.publish.apiProducts.title": {
+    "defaultMessage": "Deploy API product before publishing"
   },
   "Apis.Details.LifeCycle.components.confirm.publish.message": {
     "defaultMessage": "The API will not be available for consumption unless it is deployed."
-  },  
+  },
   "Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only": {
     "defaultMessage": "If you want to publish as a third party API, please provide the external endpoint and press \"Publish\"."
   },
@@ -4033,7 +4033,7 @@
     "defaultMessage": "Page Not Found"
   },
   "Base.Footer.Footer.product_details": {
-    "defaultMessage": "WSO2 API-M v4.2.0 | © 2022 WSO2 LLC"
+    "defaultMessage": "WSO2 API-M v4.2.0 | © 2023 WSO2 LLC"
   },
   "Base.Header.avatar.Avatar.logout": {
     "defaultMessage": "Logout"
