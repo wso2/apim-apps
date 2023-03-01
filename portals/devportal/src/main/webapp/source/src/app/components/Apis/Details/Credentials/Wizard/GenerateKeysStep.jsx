@@ -183,7 +183,8 @@ const generateKeysStep = (props) => {
     const generateKeys = () => {
         Application.get(createdApp.value).then((application) => {
             return application.generateKeys(
-                keyRequest.keyType, keyRequest.supportedGrantTypes,
+                keyRequest.keyType, keyRequest.supportedGrantTypes
+                    .filter((k) => (k !== 'urn:ietf:params:oauth:grant-type:token-exchange')),
                 keyRequest.callbackUrl,
                 keyRequest.additionalProperties, keyRequest.keyManager,
             );
