@@ -272,7 +272,7 @@ function AdvanceEndpointConfig(props) {
     }, [props]);
 
     /**
-     * Method to handle the advance endpoint field change. In each change, the advance config object is getting updated.
+     * Method to validate text fields to only allow numerics.
      *
      * @param {any} event The HTML event triggered by the element.
      * */
