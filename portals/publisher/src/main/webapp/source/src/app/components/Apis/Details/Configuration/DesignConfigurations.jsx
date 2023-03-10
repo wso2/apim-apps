@@ -242,7 +242,7 @@ function configReducer(state, configAction) {
         case 'policies':
             return { ...state, [action]: value };
         case 'visibility':
-            if(nextState[action] !== value && value !== 'RESTRICTED') {
+            if (nextState[action] !== value && value !== 'RESTRICTED') {
                 nextState.visibleRoles = [];
             }
             nextState[action] = value;
