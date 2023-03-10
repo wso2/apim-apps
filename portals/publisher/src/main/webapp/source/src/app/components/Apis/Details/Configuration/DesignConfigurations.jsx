@@ -198,7 +198,6 @@ function configReducer(state, configAction) {
         case 'responseCachingEnabled':
         case 'cacheTimeout':
         case 'enableSchemaValidation':
-        case 'visibility':
         case 'maxTps':
         case 'categories':
         case 'tags':
@@ -242,6 +241,12 @@ function configReducer(state, configAction) {
             return { ...state, [action]: value };
         case 'policies':
             return { ...state, [action]: value };
+        case 'visibility':
+            if (nextState[action] !== value && value !== 'RESTRICTED') {
+                nextState.visibleRoles = [];
+            }
+            nextState[action] = value;
+            return nextState;
         default:
             return state;
     }
