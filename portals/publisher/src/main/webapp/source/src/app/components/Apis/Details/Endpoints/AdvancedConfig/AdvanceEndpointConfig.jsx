@@ -272,6 +272,16 @@ function AdvanceEndpointConfig(props) {
     }, [props]);
 
     /**
+     * Method to validate text fields to only allow numerics.
+     *
+     * @param {any} event The HTML event triggered by the element.
+     * */
+    const validateNumber = (event) => {
+        const regex = new RegExp(/(^\d*$)|(Backspace|Tab|Delete|ArrowLeft|ArrowRight)/)
+        return !event.key.match(regex) && event.preventDefault();
+    };
+
+    /**
      * Method to handle the advance endpoint field change. In each change, the advance config object is getting updated.
      *
      * @param {any} event The HTML event triggered by the element.
@@ -373,6 +383,7 @@ function AdvanceEndpointConfig(props) {
                     className={classes.textField}
                     id='initial-duration-input'
                     value={advanceConfigObj.suspendDuration}
+                    onKeyDown={(event) => validateNumber(event)}
                     onChange={(event) => handleConfigFieldChange(event, 'suspendDuration')}
                     label={(
                         <FormattedMessage
@@ -387,6 +398,7 @@ function AdvanceEndpointConfig(props) {
                     className={classes.textField}
                     id='max-duration-input'
                     value={advanceConfigObj.suspendMaxDuration}
+                    onKeyDown={(event) => validateNumber(event)}
                     onChange={(event) => handleConfigFieldChange(event, 'suspendMaxDuration')}
                     label={(
                         <FormattedMessage
@@ -400,6 +412,7 @@ function AdvanceEndpointConfig(props) {
                 <TextField
                     className={classes.textField}
                     value={advanceConfigObj.factor}
+                    onKeyDown={(event) => validateNumber(event)}
                     onChange={(event) => handleConfigFieldChange(event, 'factor')}
                     id='factor-input'
                     label={(
@@ -408,6 +421,7 @@ function AdvanceEndpointConfig(props) {
                             defaultMessage='Factor'
                         />
                     )}
+                    type='number'
                     margin='normal'
                 />
             </Grid>
@@ -450,6 +464,7 @@ function AdvanceEndpointConfig(props) {
                     className={classes.textField}
                     id='retries-input'
                     value={advanceConfigObj.retryTimeOut}
+                    onKeyDown={(event) => validateNumber(event)}
                     onChange={(event) => handleConfigFieldChange(event, 'retryTimeOut')}
                     label={(
                         <FormattedMessage
@@ -464,6 +479,7 @@ function AdvanceEndpointConfig(props) {
                     className={classes.textField}
                     id='retry-delay-input'
                     value={advanceConfigObj.retryDelay}
+                    onKeyDown={(event) => validateNumber(event)}
                     onChange={(event) => handleConfigFieldChange(event, 'retryDelay')}
                     label={(
                         <FormattedMessage
@@ -505,7 +521,8 @@ function AdvanceEndpointConfig(props) {
                     className={classes.textField}
                     id='duration-input'
                     value={advanceConfigObj.actionDuration}
-                    onChange={(event) => handleConfigFieldChange(event, 'actionDuration')}
+                    onKeyDown={(event) => validateNumber(event)}
+                    onChange= {(event) => handleConfigFieldChange(event, 'actionDuration')}
                     label={(
                         <FormattedMessage
                             id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.duration.ms'
