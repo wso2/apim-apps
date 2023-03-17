@@ -109,6 +109,7 @@ export default function PermissionsSelector(props) {
                 size='small'
                 variant='outlined'
                 color='primary'
+                data-testid={role + '-scope-assignment'}
             >
                 <FormattedMessage
                     id='RolePermissions.TreeView.PermissionsSelector.scope.assignment.button'
