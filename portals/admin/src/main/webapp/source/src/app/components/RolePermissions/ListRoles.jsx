@@ -287,6 +287,7 @@ export default function ListRoles() {
                         variant='contained'
                         color='primary'
                         onClick={() => setIsOpen(true)}
+                        data-testid='add-scope-mapping'
                     >
                         <FormattedMessage
                             id='RolePermissions.ListRoles.scope.assignment.button'
