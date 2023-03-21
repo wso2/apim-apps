@@ -16,13 +16,16 @@
  * under the License.
  */
 class DeploymentsPage {
-    getUrl(apiID){
-        return cy.get(`publisher/apis/${apiID}/deployments`);
+    static getUrl(apiId){
+        return cy.get(`publisher/apis/${apiId}/deployments`);
     }
+    static visitURL() {
+        cy.visit(this.getUrl());
+      }
     // getLocalScopesHeader(){
     //     return cy.get('#itest-api-details-scopes-onboarding-head')
     // }
-    getDeployButton(){
+    static getDeployButton(){
         return cy.get('#deploy-btn')
     }
     

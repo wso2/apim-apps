@@ -19,9 +19,10 @@
 import Utils from "@support/utils";
 
 describe("adding comment", () => {
+
     const { publisher, password, } = Utils.getUserInfo();
     let testApiId;
-
+    
     beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
@@ -45,10 +46,20 @@ describe("adding comment", () => {
                 // Checking it's existence
                 cy.get('#comment-list').contains(comment).should('be.visible');
             })
+
+            //delete comment 
+            cy.get('button > span').contains('Delete').click();
+            cy.get('button > span').contains('Yes').click();
+            cy.get('div[role="status"]').should('have.text','Comment has been successfully deleted');
         });
-    });
+
+     })
+
     afterEach(function () {
         // Test is done. Now delete the api
         Utils.deleteAPI(testApiId);
-    })
-});
+
+
+  });
+
+})
