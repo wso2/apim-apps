@@ -15,30 +15,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-class APICategoriesPage{
-   
-    static getUrl(){
-        return "/admin/settings/api-categories";
-    }
-    static visitURL(){
-        cy.visit(this.getUrl())
-    }
+class APICategoriesPage {
+  static getUrl() {
+    return "/admin/settings/api-categories";
+  }
+  static visitURL() {
+    cy.visit(this.getUrl());
+  }
 
-   static getAddAPICategoriesButton(){
-        return cy.get('.MuiButton-label').contains('Add API Category')
-    }
-    
-   static getNameTextBox(){
-        return cy.get('input[name="name"]')
-    }
+  static getAddAPICategoriesButton() {
+    return cy.get(".MuiButton-label").contains("Add API Category");
+  }
 
-   static getDescriptionTextBox(){
-        return cy.get('textarea[name="description"]')
-    }
-    
-  static getSaveButton(){
-        return cy.get('.MuiButton-label').contains('Save')
-    }
+  static getNameTextBox() {
+    return cy.get('input[name="name"]');
+  }
 
+  static getDescriptionTextBox() {
+    return cy.get('textarea[name="description"]');
+  }
+
+  static getSaveButton() {
+    return cy.get(".MuiButton-label").contains("Save");
+  }
 }
 export default APICategoriesPage;

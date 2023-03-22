@@ -19,107 +19,93 @@
 
 import Utils from "@support/utils";
 
-describe('publisher-022-01 : Verify CRUD operation in shared scopes', () => {
-    
-    
-    Cypress.on('uncaught:exception', (err, runnable) => {
-        return false;
-      });
+describe("publisher-022-01 : Verify CRUD operation in shared scopes", () => {
+  Cypress.on("uncaught:exception", (err, runnable) => {
+    return false;
+  });
 
-       const carbonUsername = 'admin';
-       const carbonPassword = 'admin';
-       const target = '/test';
-       const scopeName = 'admin_scope';
-       const displayName = 'adminscope';
-       const description = 'admin scope description';
-       let testApiId;
+  const carbonUsername = "admin";
+  const carbonPassword = "admin";
+  const target = "/test";
+  const scopeName = "admin_scope";
+  const displayName = "adminscope";
+  const description = "admin scope description";
+  let testApiId;
 
-       
-       const addSharedScope = () => {
-       
-      
-        cy.visit(`/publisher/scopes/create`);
+  const addSharedScope = () => {
+    cy.visit(`/publisher/scopes/create`);
 
-        cy.get('#name').type(scopeName);
-        cy.get('#displayName').type(displayName);
-        cy.get('#description').type(description);
-        cy.contains('label', 'Roles').next().type('admin{enter}');
-        cy.get('button > span').contains('Save').click();
-    
-          //Checking the scope existence
-         cy.get('[data-testid="MuiDataTableBodyCell-1-0"]').contains(scopeName).should('be.visible'); 
-     }
+    cy.get("#name").type(scopeName);
+    cy.get("#displayName").type(displayName);
+    cy.get("#description").type(description);
+    cy.contains("label", "Roles").next().type("admin{enter}");
+    cy.get("button > span").contains("Save").click();
 
-     const addApiAndResource = (verb, apiId) => {
-        // Typing the resource name
+    //Checking the scope existence
+    cy.get('[data-testid="MuiDataTableBodyCell-1-0"]')
+      .contains(scopeName)
+      .should("be.visible");
+  };
+
+  const addApiAndResource = (verb, apiId) => {
+    // Typing the resource name
+    cy.visit(`/publisher/apis/${apiId}/resources`);
+    cy.get("#operation-target").type(target);
+    cy.get("body").click();
+    cy.get("#add-operation-selection-dropdown").click();
+
+    // Checking all the operations
+    cy.get(`#add-operation-${verb}`).click();
+
+    cy.get("body").click();
+    cy.get("#add-operation-button").click();
+    cy.get("#resources-save-operations").click();
+
+    // Validating if the resource exists after saving
+    cy.get("#resources-save-operations", { timeout: 30000 });
+
+    cy.get(`#${verb}\\${target}`).should("be.visible");
+  };
+
+  it.only(
+    "Assign shared scopes for API",
+    {
+      retries: {
+        runMode: 3,
+        openMode: 0,
+      },
+    },
+    () => {
+      const random_number = Math.floor(Date.now() / 1000);
+      const apiName = Utils.generateName();
+      const verb = "post";
+      const apiVersion = "1.0.0";
+      cy.loginToPublisher(carbonUsername, carbonPassword);
+
+      addSharedScope();
+      Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+        testApiId = apiId;
+        addApiAndResource(verb, apiId);
+
         cy.visit(`/publisher/apis/${apiId}/resources`);
-        cy.get('#operation-target').type(target);
-        cy.get('body').click();
-        cy.get('#add-operation-selection-dropdown').click();
 
-        // Checking all the operations
-        cy.get(`#add-operation-${verb}`).click();
+        // Open the operation sub section
+        cy.get(`#${verb}\\${target}`).click();
+        cy.get(`#${verb}\\${target}-operation-scope-select`, { timeout: 3000 });
+        cy.get(`#${verb}\\${target}-operation-scope-select`).click();
+        cy.get("ul, li").contains(scopeName).click();
+        cy.get("ul, li").contains(scopeName).type("{esc}");
+        //   cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).type('{esc}');
+        // // Save the resources
+        cy.get("#resources-save-operations").click();
 
-        cy.get('body').click();
-        cy.get('#add-operation-button').click();
-        cy.get('#resources-save-operations').click();
+        cy.get("#resources-save-operations", { timeout: 30000 });
+        cy.get(`#${verb}\\${target}-operation-scope-select`)
+          .contains(scopeName)
+          .should("be.visible");
 
-        // Validating if the resource exists after saving
-        cy.get('#resources-save-operations', { timeout: 30000 });
-
-        cy.get(`#${verb}\\${target}`).should('be.visible');
+        Utils.deleteAPI(apiId);
+      });
     }
-
-          it.only('Assign shared scopes for API',{
-
-            retries: {
-                runMode: 3,
-                openMode: 0,
-              },
-
-          }, () => {
-                         
-
-              const random_number = Math.floor(Date.now() / 1000);
-              const apiName = Utils.generateName();
-              const verb = 'post';
-              const apiVersion = '1.0.0';
-              cy.loginToPublisher(carbonUsername, carbonPassword);
-
-              addSharedScope();
-              Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-                  testApiId = apiId;
-                  addApiAndResource(verb, apiId);
-
-                  cy.visit(`/publisher/apis/${apiId}/resources`);
-
-                  // Open the operation sub section
-                  cy.get(`#${verb}\\${target}`).click();
-                  cy.get(`#${verb}\\${target}-operation-scope-select`, { timeout: 3000 });
-                  cy.get(`#${verb}\\${target}-operation-scope-select`).click();
-                  cy.get('ul, li').contains(scopeName).click();
-                  cy.get('ul, li').contains(scopeName).type('{esc}');
-                //   cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).type('{esc}');
-                  // // Save the resources
-                  cy.get('#resources-save-operations').click();
-      
-                  cy.get('#resources-save-operations', { timeout: 30000 });
-                  cy.get(`#${verb}\\${target}-operation-scope-select`)
-                      .contains(scopeName)
-                      .should('be.visible');
-      
-                      
-                      Utils.deleteAPI(apiId);
-            
-                   
-             });
-
-              
-
-         })
-
-        
-})
-
-    
-
+  );
+});

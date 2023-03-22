@@ -16,19 +16,19 @@
  * under the License.
  */
 
-import  APICategoriesPage from "../../../support/pages/adminPortal/APICategoriesPage.js";
+import APICategoriesPage from "../../../support/pages/adminPortal/APICategoriesPage.js";
 
 class APICategories {
-
-    static addAPICategories(categoryname = 'Finance', description = 'Finance Category' ){
-         APICategoriesPage.visitURL();
-         APICategoriesPage.getAddAPICategoriesButton().click();
-         APICategoriesPage.getNameTextBox().type(categoryname);
-         APICategoriesPage.getDescriptionTextBox().type(description);
-         APICategoriesPage.getSaveButton().click();
-
-    }
-
+  static addAPICategories(
+    categoryname = "Finance",
+    description = "Finance Category"
+  ) {
+    APICategoriesPage.visitURL();
+    APICategoriesPage.getAddAPICategoriesButton().click();
+    APICategoriesPage.getNameTextBox().type(categoryname);
+    APICategoriesPage.getDescriptionTextBox().type(description);
+    APICategoriesPage.getSaveButton().click();
+  }
 }
 
-export default APICategories; 
+export default APICategories;

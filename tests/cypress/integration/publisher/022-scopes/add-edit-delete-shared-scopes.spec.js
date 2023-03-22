@@ -19,46 +19,50 @@
 
 import Utils from "@support/utils";
 
-describe('publisher-022-01 : Verify CRUD operation in shared scopes', () => {
-    const carbonUsername = 'admin';
-    const carbonPassword = 'admin';
+describe("publisher-022-01 : Verify CRUD operation in shared scopes", () => {
+  const carbonUsername = "admin";
+  const carbonPassword = "admin";
 
-    before(function () {
-        cy.loginToPublisher(carbonUsername, carbonPassword);
-    })
+  before(function () {
+    cy.loginToPublisher(carbonUsername, carbonPassword);
+  });
 
+  it.only("Verify creating shared scopes for API", () => {
+    const scopeName = "admin_scope";
+    const displayName = "adminscope";
+    const description = "admin scope description";
 
-    it.only('Verify creating shared scopes for API', () => {
+    cy.visit(`/publisher/scopes/create`);
 
-          const scopeName = 'admin_scope';
-          const displayName = 'adminscope';
-          const description = 'admin scope description';
-        
-        cy.visit(`/publisher/scopes/create`);
+    cy.get("#name").type(scopeName);
+    cy.get("#displayName").type(displayName);
+    cy.get("#description").type(description);
+    cy.contains("label", "Roles").next().type("admin{enter}");
+    cy.get("button > span").contains("Save").click();
 
-        cy.get('#name').type(scopeName);
-        cy.get('#displayName').type(displayName);
-        cy.get('#description').type(description);
-        cy.contains('label', 'Roles').next().type('admin{enter}');
-        cy.get('button > span').contains('Save').click();
-    
-          //Checking the scope existence
-          cy.get('[data-testid="MuiDataTableBodyCell-1-0"]').contains(scopeName).should('be.visible'); 
-         
-           //editing
-           cy.get('table tr td div a > span').contains('Edit').click();
-           cy.get('#displayName').clear().type('ADMIN SCOPE');
-           cy.get('#description').clear().type('Edited admin scope description');
-           cy.get('button > span').contains('Update').click();
-           cy.get('table').contains('td','Edited admin scope description').should('exist');
+    //Checking the scope existence
+    cy.get('[data-testid="MuiDataTableBodyCell-1-0"]')
+      .contains(scopeName)
+      .should("be.visible");
 
+    //editing
+    cy.get("table tr td div a > span").contains("Edit").click();
+    cy.get("#displayName").clear().type("ADMIN SCOPE");
+    cy.get("#description").clear().type("Edited admin scope description");
+    cy.get("button > span").contains("Update").click();
+    cy.get("table")
+      .contains("td", "Edited admin scope description")
+      .should("exist");
 
-          //deleting
-          cy.get('table tr td div button > span').contains('Delete').click();
-          cy.get('button > span').contains('Yes').click();
-          cy.wait(1000);
-          cy.get('div[role="status"]').should('have.text','API Scope deleted successfully!');
+    //deleting
+    cy.get("table tr td div button > span").contains("Delete").click();
+    cy.get("button > span").contains("Yes").click();
+    cy.wait(1000);
+    cy.get('div[role="status"]').should(
+      "have.text",
+      "API Scope deleted successfully!"
+    );
 
-    })
-          
- })
+    Utils.deleteAPI(apiId);
+  });
+});
