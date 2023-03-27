@@ -2634,7 +2634,7 @@
   "Apis.Details.Documents.CreateEditForm.invalid.document.name.helper.text": [
     {
       "type": 0,
-      "value": "Document name cannot contain spaces or special characters"
+      "value": "Document name cannot contain special characters"
     }
   ],
   "Apis.Details.Documents.CreateEditForm.source": [

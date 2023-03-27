@@ -340,7 +340,7 @@ class CreateEditForm extends React.Component {
             return (
                 <FormattedMessage
                     id='Apis.Details.Documents.CreateEditForm.invalid.document.name.helper.text'
-                    defaultMessage='Document name cannot contain spaces or special characters'
+                    defaultMessage='Document name cannot contain special characters'
                 />
             );
         } else {

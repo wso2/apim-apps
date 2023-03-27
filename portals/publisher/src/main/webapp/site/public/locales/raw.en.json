@@ -1213,7 +1213,7 @@
     "defaultMessage": "Document name exceeds the maximum length of 60 characters"
   },
   "Apis.Details.Documents.CreateEditForm.invalid.document.name.helper.text": {
-    "defaultMessage": "Document name cannot contain spaces or special characters"
+    "defaultMessage": "Document name cannot contain special characters"
   },
   "Apis.Details.Documents.CreateEditForm.source": {
     "defaultMessage": "Source"
