@@ -142,7 +142,7 @@ const definition = {
         .error((errors) => {
             return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, 50) }));
         }),
-    documentName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
+    documentName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$+[\]/]*$/).required()
         .error((errors) => {
             return errors.map((error) => ({ ...error, message: 'Document name ' + getMessage(error.type, 50) }));
         }),
