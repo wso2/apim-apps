@@ -27,6 +27,7 @@ describe("publisher-012-00 : Creating API document", () => {
     before(function() {
         cy.loginToPublisher(publisher, password);
     })
+    
     it.only("Creating inline document", () => {
         const documentName = 'api_document';
         const documentSummary = 'api document summery';

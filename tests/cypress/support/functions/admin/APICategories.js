@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -15,19 +15,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-class DeploymentsPage {
-    static getUrl(apiId){
-        return cy.get(`publisher/apis/${apiId}/deployments`);
-    }
-    static visitURL() {
-        cy.visit(this.getUrl());
-      }
-    // getLocalScopesHeader(){
-    //     return cy.get('#itest-api-details-scopes-onboarding-head')
-    // }
-    static getDeployButton(){
-        return cy.get('#deploy-btn')
-    }
-    
+
+import APICategoriesPage from "../../../support/pages/adminPortal/APICategoriesPage.js";
+
+class APICategories {
+  static addAPICategories(
+    categoryname = "Finance",
+    description = "Finance Category"
+  ) {
+    APICategoriesPage.visitURL();
+    APICategoriesPage.getAddAPICategoriesButton().click();
+    APICategoriesPage.getNameTextBox().type(categoryname);
+    APICategoriesPage.getDescriptionTextBox().type(description);
+    APICategoriesPage.getSaveButton().click();
+  }
 }
-export default DeploymentsPage;
+
+export default APICategories;
