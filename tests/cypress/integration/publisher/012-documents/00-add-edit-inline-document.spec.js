@@ -26,9 +26,9 @@ describe("publisher-012-00 : Creating API document", () => {
     });
     before(function() {
         cy.loginToPublisher(publisher, password);
-    })
-    it.only("Creating inline document", () => {
-        const documentName = 'api_document';
+    });
+
+    const addDoc = (documentName) => {
         const documentSummary = 'api document summery';
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
@@ -49,5 +49,13 @@ describe("publisher-012-00 : Creating API document", () => {
             // Test is done. Now delete the api
             Utils.deleteAPI(apiId);
         });
+    };
+
+    it.only("Creating inline document", () => {
+        const documentName = 'api_document';
+        const documentName2 = 'api document name with space';
+        addDoc(documentName);
+        addDoc(documentName2);
     });
+     
 });
