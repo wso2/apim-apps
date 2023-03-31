@@ -51,6 +51,7 @@ interface AttachedPolicyCardProps {
     verb: string;
     target: string;
     allPolicies: PolicySpec[] | null;
+    isAPILevelPolicy: boolean;
 }
 
 /**
@@ -66,6 +67,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     verb,
     target,
     allPolicies,
+    isAPILevelPolicy,
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
@@ -232,6 +234,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     target={target}
                     verb={verb}
                     allPolicies={allPolicies}
+                    isAPILevelPolicy={isAPILevelPolicy}
                 />
             )}
         </>

@@ -42,6 +42,7 @@ interface AttachedPolicyListProps {
     target: string;
     verb: string;
     allPolicies: PolicySpec[] | null;
+    isAPILevelPolicy: boolean;
 }
 
 /**
@@ -57,6 +58,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
     target,
     verb,
     allPolicies,
+    isAPILevelPolicy,
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay =
@@ -116,6 +118,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                             target={target}
                             verb={verb}
                             allPolicies={allPolicies}
+                            isAPILevelPolicy={isAPILevelPolicy}
                         />
                     ))}
                 </SortableContext>
