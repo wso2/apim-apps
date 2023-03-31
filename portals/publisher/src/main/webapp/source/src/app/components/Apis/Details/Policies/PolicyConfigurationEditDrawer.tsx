@@ -59,6 +59,7 @@ interface PolicyConfigurationEditDrawerProps {
     drawerOpen: boolean;
     setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
     allPolicies: PolicySpec[] | null;
+    isAPILevelPolicy: boolean;
 }
 
 /**
@@ -74,10 +75,12 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     allPolicies,
     drawerOpen,
     setDrawerOpen,
+    isAPILevelPolicy,
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
     const { apiOperations } = useContext<any>(ApiOperationContext);
+    const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {
@@ -102,12 +105,12 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
         })();
     }, [policyObj]);
 
-    const operationInAction = apiOperations.find(
+    const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
         (op: any) =>
             op.target === target &&
             op.verb.toLowerCase() === verb.toLowerCase(),
-    );
-    const operationFlowPolicy = operationInAction.operationPolicies[
+    ) : null;
+    const operationFlowPolicy = ((isAPILevelPolicy) ? apiLevelPolicies : operationInAction.operationPolicies)[
         currentFlow
     ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 
@@ -166,6 +169,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                         apiPolicy={apiPolicy}
                         handleDrawerClose={handleDrawerClose}
                         isEditMode
+                        isAPILevelPolicy={isAPILevelPolicy}
                     />
                 )}
             </Box>

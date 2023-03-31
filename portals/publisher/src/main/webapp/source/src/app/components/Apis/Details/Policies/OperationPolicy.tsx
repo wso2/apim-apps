@@ -185,6 +185,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                     allPolicies={allPolicies}
                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                     policyList={policyList}
+                    isAPILevelPolicy={false}
                 />
             </ExpansionPanel>
         </>

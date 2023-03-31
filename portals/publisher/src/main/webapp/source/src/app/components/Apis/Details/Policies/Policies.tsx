@@ -37,11 +37,13 @@ import { arrayMove } from '@dnd-kit/sortable';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
-import type { ApiPolicy, Policy, PolicySpec } from './Types';
+import type { ApiPolicy, Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';
+import GranularitySelector from './GranularitySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
+import PoliciesExpansion from './PoliciesExpansion';
 
 const Configurations = require('Config');
 
@@ -74,12 +76,17 @@ const Policies: React.FC = () => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
+    const [isAPILevelGranularitySelected, setIsAPILevelGranularitySelected] = useState(api.apiPolicies != null);
     const { showMultiVersionPolicies } = Configurations.apis;
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
     const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
         setIsChoreoConnectEnabled(isCCEnabled);
+    }
+
+    const setIsChangedToAPILevelPolicies = (isAPILevelSelected: boolean) => {
+        setIsAPILevelGranularitySelected(isAPILevelSelected);
     }
 
     /**
@@ -94,28 +101,49 @@ const Policies: React.FC = () => {
         clonedOperations.forEach((operation: any) => {
             if (operation.operationPolicies) {
                 const { operationPolicies } = operation;
-
-                // Iterating through the policy list of request flow, response flow and fault flow
-                for (const flow in operationPolicies) {
-                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
-                        const policyArray = operationPolicies[flow];
-                        policyArray.forEach((policyItem: ApiPolicy) => {
-                            // eslint-disable-next-line no-param-reassign
-                            policyItem.uuid = uuidv4();
-                        });
-                    }
-                }
+                getInitPolicyState(operationPolicies);
             }
         });
         return clonedOperations;
     }
 
+    const getInitAPILevelPoliciesState = () => {
+        const clonedAPIPolicies = cloneDeep(api.apiPolicies);
+        if (api.apiPolicies != null) { 
+            getInitPolicyState(clonedAPIPolicies);
+        }
+        return clonedAPIPolicies || initApiLevelPolicy;
+    }
+
+    const initApiLevelPolicy: ApiLevelPolicy = {
+        request: [],
+        response: [],
+        fault: [],
+    };
+
+    const getInitPolicyState = (policyList: any) => {
+        // Iterating through the policy list of request flow, response flow and fault flow
+        for (const flow in policyList) {
+            if (Object.prototype.hasOwnProperty.call(policyList, flow)) {
+                const policyArray = policyList[flow];
+                policyArray.forEach((policyItem: ApiPolicy) => {
+                    // eslint-disable-next-line no-param-reassign
+                    policyItem.uuid = uuidv4();
+                });
+            }
+        }
+    }
+
     const [apiOperations, setApiOperations] = useState<any>(getInitState);
+    const [apiLevelPolicies, setApiLevelPolicies] = useState<any>(getInitAPILevelPoliciesState);
     const [openAPISpec, setOpenAPISpec] = useState<any>(null);
 
     useEffect(() => {
         const currentOperations = getInitState();
         setApiOperations(currentOperations);
+
+        const currentAPIPolicies = getInitAPILevelPoliciesState();
+        setApiLevelPolicies(currentAPIPolicies);
     }, [api]);
 
     /**
@@ -183,6 +211,7 @@ const Policies: React.FC = () => {
     }
 
     const removeAPIPoliciesForGatewayChange = () => {
+
         const newApiOperations: any = cloneDeep(apiOperations);
         // Set operation policies to the API object
         newApiOperations.forEach((operation: any) => {
@@ -192,19 +221,18 @@ const Policies: React.FC = () => {
                 // Iterating through the policy list of request flow, response flow and fault flow
                 for (const flow in operationPolicies) {
                     if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
-
                         operationPolicies[flow] = [];
-
                     }
                 }
             }
         });
         setApiOperations(newApiOperations);
+        setApiLevelPolicies(initApiLevelPolicy);
     }
 
     useEffect(() => {
         fetchPolicies();
-    }, [isChoreoConnectEnabled])
+    }, [isChoreoConnectEnabled, isAPILevelGranularitySelected])
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
@@ -245,12 +273,15 @@ const Policies: React.FC = () => {
     const updateApiOperations = (
         updatedOperation: any, target: string, verb: string, currentFlow: string,
     ) => {
+        
         const newApiOperations: any = cloneDeep(apiOperations);
-        let operationInAction = newApiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
 
-        const operationFlowPolicy =
-            operationInAction.operationPolicies[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
+        let operationInAction = (!isAPILevelGranularitySelected) ? newApiOperations.find((op: any) =>
+            op.target === target && op.verb.toLowerCase() === verb.toLowerCase()) : null;
+
+        const operationFlowPolicy = ((isAPILevelGranularitySelected) ? newApiLevelPolicies 
+        : operationInAction.operationPolicies)[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
                 && p.uuid === updatedOperation.uuid));
 
         if (operationFlowPolicy) {
@@ -259,11 +290,11 @@ const Policies: React.FC = () => {
         } else {
             // Add new operation policy
             const uuid = uuidv4();
-            operationInAction.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
+            ((isAPILevelGranularitySelected) ? newApiLevelPolicies : operationInAction.operationPolicies)[currentFlow].push({ ...updatedOperation, uuid });
         }
 
         // Finally update the state
-        setApiOperations(newApiOperations);
+        (isAPILevelGranularitySelected) ? setApiLevelPolicies(newApiLevelPolicies) : setApiOperations(newApiOperations);
     }
 
     /**
@@ -294,20 +325,28 @@ const Policies: React.FC = () => {
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
     const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
-        const newApiOperations: any = cloneDeep(apiOperations);
-        const operationInAction = newApiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-        // Find the location of the element using the following logic
-        /*
-        [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a) will output ['1', '2', '1']
-        [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a).indexOf('2') will output the location of '2'
-        */
-        const index = operationInAction.operationPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
-        // delete the element
-        operationInAction.operationPolicies[currentFlow].splice(index, 1);
 
-        // Finally update the state
-        setApiOperations(newApiOperations);
+        if (isAPILevelGranularitySelected) {
+            const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
+            const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
+            newApiLevelPolicies[currentFlow].splice(index, 1);
+            setApiLevelPolicies(newApiLevelPolicies);
+        } else {
+            const newApiOperations: any = cloneDeep(apiOperations);
+            const operationInAction = newApiOperations.find((op: any) =>
+                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+            // Find the location of the element using the following logic
+            /*
+            [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a) will output ['1', '2', '1']
+            [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a).indexOf('2') will output the location of '2'
+            */
+            const index = operationInAction.operationPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
+            // delete the element
+            operationInAction.operationPolicies[currentFlow].splice(index, 1);
+
+            // Finally update the state
+            setApiOperations(newApiOperations);
+        }
     }
 
     /**
@@ -321,15 +360,20 @@ const Policies: React.FC = () => {
     const rearrangeApiOperations = (
         oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
     ) => {
-        const newApiOperations: any = cloneDeep(apiOperations);
-        let operationInAction = newApiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-        
-        const policyArray = operationInAction.operationPolicies[currentFlow];
-        operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
-        
-        // Finally update the state
-        setApiOperations(newApiOperations);
+
+        if (isAPILevelGranularitySelected) {
+            const newAPIPolicies: any = cloneDeep(apiLevelPolicies);
+            const policyArray = newAPIPolicies[currentFlow];
+            newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+            setApiLevelPolicies(newAPIPolicies);
+        } else {
+            const newApiOperations: any = cloneDeep(apiOperations);
+            const operationInAction = newApiOperations.find((op: any) =>
+                op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+            const policyArray = operationInAction.operationPolicies[currentFlow];
+            operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+            setApiOperations(newApiOperations);
+        }
     }
 
     /**
@@ -338,28 +382,21 @@ const Policies: React.FC = () => {
     const saveApi = () => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
+        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
         let getewayTypeForPolicies = "wso2/synapse";
         const getewayVendorForPolicies = "wso2";
 
-        // Set operation policies to the API object
-        newApiOperations.forEach((operation: any, index: any, array: any) => {
-            if (operation.operationPolicies) {
-                const { operationPolicies } = operation;
-
-                // Iterating through the policy list of request flow, response flow and fault flow
-                for (const flow in operationPolicies) {
-                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
-                        const policyArray = operationPolicies[flow];
-                        policyArray.forEach((policyItem: ApiPolicy) => {
-                            if (policyItem.uuid) {
-                                // eslint-disable-next-line no-param-reassign
-                                delete policyItem.uuid;
-                            }
-                        });
-                    }
+        if (isAPILevelGranularitySelected) {
+            deletePolicyUuid(newApiLevelPolicies)
+        } else {
+            // Set operation policies to the API object
+            newApiOperations.forEach((operation: any, index: any, array: any) => {
+                if (operation.operationPolicies) {
+                    const { operationPolicies } = operation;
+                    deletePolicyUuid(operationPolicies)
                 }
-            }
-        });
+            });
+        }
 
         // Handles normal policy savings for choreo connect gateway type.
         if(isChoreoConnectEnabled) {
@@ -367,6 +404,7 @@ const Policies: React.FC = () => {
         }
 
         const updatePromise = updateAPI({ 
+            apiPolicies: newApiLevelPolicies,
             operations: newApiOperations, 
             gatewayVendor: getewayVendorForPolicies, 
             gatewayType: getewayTypeForPolicies});
@@ -374,6 +412,22 @@ const Policies: React.FC = () => {
             .finally(() => {
                 setUpdating(false);
             });
+    }
+
+
+    const deletePolicyUuid = (operationPolicies: any) => {
+        // Iterating through the policy list of request flow, response flow and fault flow
+        for (const flow in operationPolicies) {
+            if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+                const policyArray = operationPolicies[flow];
+                policyArray.forEach((policyItem: ApiPolicy) => {
+                    if (policyItem.uuid) {
+                        // eslint-disable-next-line no-param-reassign
+                        delete policyItem.uuid;
+                    }
+                });
+            }
+        }
     }
 
     // handles operations (verbs) for CC policy expansion.
@@ -391,11 +445,12 @@ const Policies: React.FC = () => {
      */
     const providerValue = useMemo(() => ({
         apiOperations,
+        apiLevelPolicies,
         updateApiOperations,
         updateAllApiOperations,
         deleteApiOperation,
         rearrangeApiOperations,
-    }), [apiOperations, updateApiOperations, updateAllApiOperations, deleteApiOperation, rearrangeApiOperations])
+    }), [apiOperations, apiLevelPolicies, updateApiOperations, updateAllApiOperations, deleteApiOperation, rearrangeApiOperations])
 
     if (!policies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
@@ -421,11 +476,37 @@ const Policies: React.FC = () => {
                         />
                     </Box>
                 )}
+                <Box mb={4} px={1}>
+                        <GranularitySelector
+                            setIsChangedToAPILevel={setIsChangedToAPILevelPolicies}
+                            isAPILevelPoliciesSelected={isAPILevelGranularitySelected}
+                            removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
+                        />
+                    </Box>
                 <Box display='flex' flexDirection='row'>
                     <Box width='65%' p={1} height='115vh' className={classes.operationListingBox}>
                         <Paper className={classes.paper}>
-                            {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
-
+                            {isAPILevelGranularitySelected ? (
+                                <Grid item xs={12}>
+                                    <Grid
+                                            container
+                                            direction='column'
+                                            justify='flex-start'
+                                            spacing={1}
+                                            alignItems='stretch'
+                                        >
+                                    <PoliciesExpansion
+                                        target={null}
+                                        verb={"None"}
+                                        allPolicies={allPolicies}
+                                        isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                        policyList={policies}
+                                        isAPILevelPolicy={true}
+                                    />
+                                    </Grid>
+                            </Grid>
+                            ) : 
+                            (Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
                                 <Grid key={target} item xs={12}>
                                     <OperationsGroup
                                         openAPI={openAPISpec}
@@ -463,7 +544,7 @@ const Policies: React.FC = () => {
                                         </Grid>
                                     </OperationsGroup>
                                 </Grid>
-                            ))}
+                            )))}
                         </Paper>
                     </Box>
                     <Box width='35%' p={1}>

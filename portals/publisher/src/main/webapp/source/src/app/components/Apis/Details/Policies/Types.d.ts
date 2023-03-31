@@ -86,3 +86,9 @@ export type ApiPolicy = {
     parameters: any;
     uuid?: string;
 };
+
+export type ApiLevelPolicy = {
+    request?: any[];
+    response?: any[];
+    fault?: any[];
+};

@@ -55,6 +55,7 @@ interface PolicyConfiguringDrawerProps {
     target: string;
     verb: string;
     allPolicies: PolicySpec[] | null;
+    isAPILevelPolicy: boolean;
 }
 
 /**
@@ -69,6 +70,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     target,
     verb,
     allPolicies,
+    isAPILevelPolicy,
 }) => {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(!!policyObj);
@@ -164,6 +166,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     apiPolicy={apiPolicy}
                     handleDrawerClose={handleDrawerClose}
                     isEditMode={false}
+                    isAPILevelPolicy={isAPILevelPolicy}
                 />
             </Box>
         </Drawer>

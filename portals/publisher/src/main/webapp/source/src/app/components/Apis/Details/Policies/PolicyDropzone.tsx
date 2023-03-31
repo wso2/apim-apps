@@ -71,6 +71,7 @@ interface PolicyDropzoneProps {
     target: string;
     verb: string;
     allPolicies: PolicySpec[] | null;
+    isAPILevelPolicy: boolean;
 }
 
 /**
@@ -87,6 +88,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     target,
     verb,
     allPolicies,
+    isAPILevelPolicy,
 }) => {
     const classes = useStyles();
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
@@ -129,6 +131,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                             target={target}
                             verb={verb}
                             allPolicies={allPolicies}
+                            isAPILevelPolicy={isAPILevelPolicy}
                         />
                     )}
                 </div>
@@ -141,6 +144,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                     target={target}
                     verb={verb}
                     allPolicies={allPolicies}
+                    isAPILevelPolicy={isAPILevelPolicy}
                 />
             )}
         </>
