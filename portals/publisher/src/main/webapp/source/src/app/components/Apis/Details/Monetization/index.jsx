@@ -132,7 +132,6 @@ class Monetization extends Component {
                         defaultMessage: 'Monetization Disabled Successfully',
                     }));
                 }
-                this.setState((cState) => ({ monStatus: !cState.monStatus }));
             }).catch((error) => {
                 console.error(error);
                 if (error.response) {
@@ -165,7 +164,6 @@ class Monetization extends Component {
                         defaultMessage: 'Monetization Disabled Successfully',
                     }));
                 }
-                this.setState((cState) => ({ monStatus: !cState.monStatus }));
             }).catch((error) => {
                 console.error(error);
                 if (error.response) {
