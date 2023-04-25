@@ -36,7 +36,7 @@ const SwaggerUI = (props) => {
             const { url } = req;
             const { context } = api;
             const patternToCheck = `${context}/*`;
-            if (authorizationHeader === 'apikey') {
+            if (securitySchemeType === 'API-KEY') {
                 req.headers[authorizationHeader] = accessTokenProvider();
             } else if (securitySchemeType === 'BASIC') {
                 req.headers[authorizationHeader] = 'Basic ' + accessTokenProvider();
