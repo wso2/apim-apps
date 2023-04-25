@@ -28,6 +28,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AuthorizationHeader from 'AppComponents/Apis/Details/Configuration/components/AuthorizationHeader.jsx';
+import ApiKeyHeader from "AppComponents/Apis/Details/Configuration/components/ApiKeyHeader";
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -245,6 +246,7 @@ export default function ApplicationLevel(props) {
                             />
                         )}
                         <AuthorizationHeader api={api} configDispatcher={configDispatcher} />
+                        <ApiKeyHeader api={api} configDispatcher={configDispatcher} />
                         <FormControl>
                             {!hasResourceWithSecurity
                             && (

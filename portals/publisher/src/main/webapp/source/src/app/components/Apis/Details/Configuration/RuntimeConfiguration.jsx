@@ -130,6 +130,7 @@ function copyAPIConfig(api) {
         lifeCycleStatus: api.lifeCycleStatus,
         accessControl: api.accessControl,
         authorizationHeader: api.authorizationHeader,
+        apiKeyHeader: api.apiKeyHeader,
         responseCachingEnabled: api.responseCachingEnabled,
         cacheTimeout: api.cacheTimeout,
         visibility: api.visibility,
@@ -190,6 +191,7 @@ export default function RuntimeConfiguration() {
             case 'description':
             case 'isDefaultVersion':
             case 'authorizationHeader':
+            case 'apiKeyHeader':
             case 'responseCachingEnabled':
             case 'cacheTimeout':
             case 'enableSchemaValidation':
@@ -523,9 +525,9 @@ export default function RuntimeConfiguration() {
                                                         </Box>
                                                     </Grid>
                                                 ) : (
-                                                    <WebSubConfiguration 
-                                                        api={apiConfig} 
-                                                        configDispatcher={configDispatcher} 
+                                                    <WebSubConfiguration
+                                                        api={apiConfig}
+                                                        configDispatcher={configDispatcher}
                                                     />
                                                 )}
                                             </Paper>
@@ -592,7 +594,7 @@ export default function RuntimeConfiguration() {
                                         disabled
                                         type='submit'
                                         variant='contained'
-                                        color='primary'                     
+                                        color='primary'
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Configuration.Configuration.save'

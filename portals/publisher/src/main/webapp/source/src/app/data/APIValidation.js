@@ -150,6 +150,10 @@ const definition = {
         .error((errors) => {
             return errors.map((error) => ({ ...error, message: 'Authorization Header ' + getMessage(error.type) }));
         }),
+    apiKeyHeader: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/).required()
+        .error((errors) => {
+            return errors.map((error) => ({ ...error, message: 'Api Key Header ' + getMessage(error.type) }));
+        }),
     role: roleSchema.systemRole().role(),
     scope: scopeSchema.scopes().scope(),
     url: Joi.string().uri({ scheme: ['http', 'https'] }).error((errors) => {
