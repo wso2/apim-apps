@@ -85,7 +85,7 @@ export default function GraphQLUI(props) {
         let token;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             token = accessTokenProvider();
-        } else if (authorizationHeader === 'apikey') {
+        } else if (securitySchemeType === 'API-KEY') {
             token = accessTokenProvider();
         } else if (securitySchemeType === 'BASIC') {
             token = 'Basic ' + accessTokenProvider();
