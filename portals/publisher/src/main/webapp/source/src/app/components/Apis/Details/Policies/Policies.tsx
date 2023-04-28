@@ -16,26 +16,20 @@
  * under the License.
  */
 
-import {
-    Grid, makeStyles, Typography,
-} from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
-import CONSTS from 'AppData/Constants';
-import { isRestricted } from 'AppData/AuthManager';
 import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { arrayMove } from '@dnd-kit/sortable';
-import OperationPolicy from './OperationPolicy';
-import OperationsGroup from './OperationsGroup';
 import PolicyList from './PolicyList';
 import type { ApiPolicy, Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';
@@ -43,11 +37,13 @@ import GranularitySelector from './GranularitySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
-import PoliciesExpansion from './PoliciesExpansion';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import PolicyPanel from './components/PolicyPanel';
 
 const Configurations = require('Config');
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     gridItem: {
         display: 'flex',
         width: '100%',
@@ -56,12 +52,35 @@ const useStyles = makeStyles(() => ({
         overflowY: 'scroll',
     },
     paper: {
-        padding:'2px'
+        padding: '2px',
     },
     ccTypography: {
-        paddingLeft:'10px', 
-        marginTop:'20px'
-    }
+        paddingLeft: '10px',
+        marginTop: '20px',
+    },
+    titleWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: '20px',
+    },
+    tagClass: {
+        maxWidth: 1000,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        [theme.breakpoints.down('md')]: {
+            maxWidth: 800,
+        },
+    },
+    flowTabs: {
+        '& button': {
+            minWidth: 50,
+        },
+    },
+    flowTab: {
+        fontSize: 'smaller',
+    },
 }));
 
 /**
@@ -76,8 +95,9 @@ const Policies: React.FC = () => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
-    const [isAPILevelGranularitySelected, setIsAPILevelGranularitySelected] = useState(api.apiPolicies != null);
+    const [isAPILevelTabSelected, setIsAPILevelTabSelected] = useState(api.apiPolicies != null,);
     const { showMultiVersionPolicies } = Configurations.apis;
+    const [selectedTab, setSelectedTab] = useState(0);
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -85,9 +105,6 @@ const Policies: React.FC = () => {
         setIsChoreoConnectEnabled(isCCEnabled);
     }
 
-    const setIsChangedToAPILevelPolicies = (isAPILevelSelected: boolean) => {
-        setIsAPILevelGranularitySelected(isAPILevelSelected);
-    }
 
     /**
      * Function to get the initial state of all the operation policies from the API object.
@@ -109,11 +126,11 @@ const Policies: React.FC = () => {
 
     const getInitAPILevelPoliciesState = () => {
         const clonedAPIPolicies = cloneDeep(api.apiPolicies);
-        if (api.apiPolicies != null) { 
+        if (api.apiPolicies != null) {
             getInitPolicyState(clonedAPIPolicies);
         }
         return clonedAPIPolicies || initApiLevelPolicy;
-    }
+    };
 
     const initApiLevelPolicy: ApiLevelPolicy = {
         request: [],
@@ -211,7 +228,6 @@ const Policies: React.FC = () => {
     }
 
     const removeAPIPoliciesForGatewayChange = () => {
-
         const newApiOperations: any = cloneDeep(apiOperations);
         // Set operation policies to the API object
         newApiOperations.forEach((operation: any) => {
@@ -232,7 +248,10 @@ const Policies: React.FC = () => {
 
     useEffect(() => {
         fetchPolicies();
-    }, [isChoreoConnectEnabled, isAPILevelGranularitySelected])
+        if (isChoreoConnectEnabled) {
+            setSelectedTab(1);
+        }
+    }, [isChoreoConnectEnabled]);
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
@@ -273,14 +292,13 @@ const Policies: React.FC = () => {
     const updateApiOperations = (
         updatedOperation: any, target: string, verb: string, currentFlow: string,
     ) => {
-        
         const newApiOperations: any = cloneDeep(apiOperations);
         const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
 
-        let operationInAction = (!isAPILevelGranularitySelected) ? newApiOperations.find((op: any) =>
+        let operationInAction = (!isAPILevelTabSelected) ? newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase()) : null;
 
-        const operationFlowPolicy = ((isAPILevelGranularitySelected) ? newApiLevelPolicies 
+        const operationFlowPolicy = ((isAPILevelTabSelected) ? newApiLevelPolicies
         : operationInAction.operationPolicies)[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
                 && p.uuid === updatedOperation.uuid));
 
@@ -290,11 +308,11 @@ const Policies: React.FC = () => {
         } else {
             // Add new operation policy
             const uuid = uuidv4();
-            ((isAPILevelGranularitySelected) ? newApiLevelPolicies : operationInAction.operationPolicies)[currentFlow].push({ ...updatedOperation, uuid });
+            ((isAPILevelTabSelected) ? newApiLevelPolicies : operationInAction.operationPolicies)[currentFlow].push({ ...updatedOperation, uuid });
         }
 
         // Finally update the state
-        (isAPILevelGranularitySelected) ? setApiLevelPolicies(newApiLevelPolicies) : setApiOperations(newApiOperations);
+        (isAPILevelTabSelected) ? setApiLevelPolicies(newApiLevelPolicies) : setApiOperations(newApiOperations);
     }
 
     /**
@@ -326,7 +344,7 @@ const Policies: React.FC = () => {
      */
     const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
 
-        if (isAPILevelGranularitySelected) {
+        if (isAPILevelTabSelected) {
             const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
             const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
             newApiLevelPolicies[currentFlow].splice(index, 1);
@@ -360,8 +378,7 @@ const Policies: React.FC = () => {
     const rearrangeApiOperations = (
         oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
     ) => {
-
-        if (isAPILevelGranularitySelected) {
+        if (isAPILevelTabSelected) {
             const newAPIPolicies: any = cloneDeep(apiLevelPolicies);
             const policyArray = newAPIPolicies[currentFlow];
             newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
@@ -374,7 +391,7 @@ const Policies: React.FC = () => {
             operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
             setApiOperations(newApiOperations);
         }
-    }
+    };
 
     /**
      * To update the API object with the attached policies on Save.
@@ -386,17 +403,14 @@ const Policies: React.FC = () => {
         let getewayTypeForPolicies = "wso2/synapse";
         const getewayVendorForPolicies = "wso2";
 
-        if (isAPILevelGranularitySelected) {
-            deletePolicyUuid(newApiLevelPolicies)
-        } else {
-            // Set operation policies to the API object
-            newApiOperations.forEach((operation: any, index: any, array: any) => {
-                if (operation.operationPolicies) {
-                    const { operationPolicies } = operation;
-                    deletePolicyUuid(operationPolicies)
-                }
-            });
-        }
+        deletePolicyUuid(newApiLevelPolicies);
+        // Set operation policies to the API object
+        newApiOperations.forEach((operation: any, index: any, array: any) => {
+            if (operation.operationPolicies) {
+                const { operationPolicies } = operation;
+                deletePolicyUuid(operationPolicies);
+            }
+        });
 
         // Handles normal policy savings for choreo connect gateway type.
         if(isChoreoConnectEnabled) {
@@ -405,15 +419,14 @@ const Policies: React.FC = () => {
 
         const updatePromise = updateAPI({ 
             apiPolicies: newApiLevelPolicies,
-            operations: newApiOperations, 
-            gatewayVendor: getewayVendorForPolicies, 
-            gatewayType: getewayTypeForPolicies});
-        updatePromise
-            .finally(() => {
-                setUpdating(false);
-            });
-    }
-
+            operations: newApiOperations,
+            gatewayVendor: getewayVendorForPolicies,
+            gatewayType: getewayTypeForPolicies,
+        });
+        updatePromise.finally(() => {
+            setUpdating(false);
+        });
+    };
 
     const deletePolicyUuid = (operationPolicies: any) => {
         // Iterating through the policy list of request flow, response flow and fault flow
@@ -428,7 +441,7 @@ const Policies: React.FC = () => {
                 });
             }
         }
-    }
+    };
 
     // handles operations (verbs) for CC policy expansion.
     const handleVerbsForCC = (verbObject: any) => {
@@ -439,6 +452,11 @@ const Policies: React.FC = () => {
         // therefore returning only the first verb (operation) here for the resource.
         return array[0]
     }
+
+    const handleTabChange = (tab: number) => {
+        setIsAPILevelTabSelected(tab === 0);
+        setSelectedTab(tab);
+    };
 
     /**
      * To memoize the value passed into ApiOperationContextProvider
@@ -476,75 +494,82 @@ const Policies: React.FC = () => {
                         />
                     </Box>
                 )}
-                <Box mb={4} px={1}>
-                        <GranularitySelector
-                            setIsChangedToAPILevel={setIsChangedToAPILevelPolicies}
-                            isAPILevelPoliciesSelected={isAPILevelGranularitySelected}
-                            removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
-                        />
-                    </Box>
-                <Box display='flex' flexDirection='row'>
-                    <Box width='65%' p={1} height='115vh' className={classes.operationListingBox}>
+                <Box display="flex" flexDirection="row">
+                    <Box
+                        width="65%"
+                        p={1}
+                        className={classes.operationListingBox}
+                    >
                         <Paper className={classes.paper}>
-                            {isAPILevelGranularitySelected ? (
-                                <Grid item xs={12}>
-                                    <Grid
-                                            container
-                                            direction='column'
-                                            justify='flex-start'
-                                            spacing={1}
-                                            alignItems='stretch'
-                                        >
-                                    <PoliciesExpansion
-                                        target={null}
-                                        verb={"None"}
-                                        allPolicies={allPolicies}
-                                        isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                        policyList={policies}
-                                        isAPILevelPolicy={true}
+                            <Box p={1}>
+                                <Tabs
+                                    value={selectedTab}
+                                    onChange={(event, tab) =>
+                                        handleTabChange(tab)
+                                    }
+                                    indicatorColor="primary"
+                                    textColor="primary"
+                                    variant="fullWidth"
+                                    aria-label="Policies local to API"
+                                    className={classes.flowTabs}
+                                >
+                                    <Tab
+                                        label={
+                                            <span className={classes.flowTab}>
+                                                API Level Policies
+                                            </span>
+                                        }
+                                        id="request-tab"
+                                        aria-controls="request-tabpanel"
+                                        disabled={isChoreoConnectEnabled}
                                     />
-                                    </Grid>
-                            </Grid>
-                            ) : 
-                            (Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
-                                <Grid key={target} item xs={12}>
-                                    <OperationsGroup
-                                        openAPI={openAPISpec}
-                                        tag={target}
-                                    >
-                                        <Grid
-                                            container
-                                            direction='column'
-                                            justify='flex-start'
-                                            spacing={1}
-                                            alignItems='stretch'
-                                        >
-                                            {Object.entries(verbObject).map(([verb, operation]) => {
-                                                return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                                    <Grid
-                                                        key={`${target}/${verb}`}
-                                                        item className={classes.gridItem}
-                                                    >
-                                                        <OperationPolicy
-                                                            target={target}
-                                                            verb={verb}
-                                                            highlight
-                                                            operation={operation}
-                                                            api={localAPI}
-                                                            disableUpdate={isRestricted(['apim:api_create'], api)}
-                                                            expandedResource={expandedResource}
-                                                            setExpandedResource={setExpandedResource}
-                                                            policyList={policies}
-                                                            allPolicies={allPolicies}
-                                                            isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                                        />
-                                                    </Grid>
-                                                ) : null;
-                                            })}
-                                        </Grid>
-                                    </OperationsGroup>
-                                </Grid>
-                            )))}
+                                    <Tab
+                                        label={
+                                            <span className={classes.flowTab}>
+                                                Operation Level Policies
+                                            </span>
+                                        }
+                                        id="response-tab"
+                                        aria-controls="response-tabpanel"
+                                    />
+                                </Tabs>
+                                <Box height="60vh" pt={1} overflow="scroll">
+                                    <PolicyPanel
+                                        index={0}
+                                        selectedTab={selectedTab}
+                                        openAPISpec={openAPISpec}
+                                        isChoreoConnectEnabled={
+                                            isChoreoConnectEnabled
+                                        }
+                                        isAPILevelGranularitySelected={true}
+                                        allPolicies={allPolicies}
+                                        policyList={policies}
+                                        api={localAPI}
+                                        expandedResource={expandedResource}
+                                        setExpandedResource={
+                                            setExpandedResource
+                                        }
+                                        fetchPolicies={fetchPolicies}
+                                    />
+                                    <PolicyPanel
+                                        index={1}
+                                        selectedTab={selectedTab}
+                                        openAPISpec={openAPISpec}
+                                        isChoreoConnectEnabled={
+                                            isChoreoConnectEnabled
+                                        }
+                                        isAPILevelGranularitySelected={false}
+                                        allPolicies={allPolicies}
+                                        policyList={policies}
+                                        api={localAPI}
+                                        expandedResource={expandedResource}
+                                        setExpandedResource={
+                                            setExpandedResource
+                                        }
+                                        fetchPolicies={fetchPolicies}
+                                    />
+                                </Box>
+                            </Box>
                         </Paper>
                     </Box>
                     <Box width='35%' p={1}>
