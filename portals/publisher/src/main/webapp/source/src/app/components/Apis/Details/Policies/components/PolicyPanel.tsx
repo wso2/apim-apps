@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,6 @@
 
 import { Box } from '@material-ui/core';
 import React, { FC } from 'react';
-import DraggablePolicyCard from '../DraggablePolicyCard';
 import PoliciesSection from '../PoliciesSection';
 import type { Policy, PolicySpec } from '../Types';
 
@@ -34,12 +33,11 @@ interface PolicyPanelProps {
     api: any;
     expandedResource: string | null;
     setExpandedResource: React.Dispatch<React.SetStateAction<string | null>>;
-    fetchPolicies: () => void;
 }
 
 /**
  * Tab panel component to render content of a particular tab.
- * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault).
+ * Renders the policy section under the relevant tab (i.e. API Level or Operation Level).
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Tab panel.
  */
@@ -54,17 +52,16 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
     api,
     expandedResource,
     setExpandedResource,
-    fetchPolicies,
 }) => {
-    const flowNames = ['request', 'response', 'fault'];
-    const currentFlow = flowNames[index];
+    const tabs = ['api-level', 'operation-level'];
+    const currentTab = tabs[index];
 
     return (
         <div
             role='tabpanel'
             hidden={selectedTab !== index}
-            id={`${currentFlow}-tabpanel`}
-            aria-labelledby={`${currentFlow}-tab`}
+            id={`${currentTab}-tabpanel`}
+            aria-labelledby={`${currentTab}-tab`}
         >
             <Box py={1} px={3}>
                 <PoliciesSection
@@ -76,7 +73,6 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
                     api={api}
                     expandedResource={expandedResource}
                     setExpandedResource={setExpandedResource}
-                    fetchPolicies={fetchPolicies}
                 />
             </Box>
         </div>
