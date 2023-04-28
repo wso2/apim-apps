@@ -20,17 +20,13 @@ import {
     Grid, makeStyles, Typography,
 } from '@material-ui/core';
 import React, { FC } from 'react';
-import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
-import PolicyList from './PolicyList';
 import type {Policy, PolicySpec } from './Types';
 import PoliciesExpansion from './PoliciesExpansion';
-
-const Configurations = require('Config');
 
 const useStyles = makeStyles((theme) => ({
     gridItem: {
@@ -78,7 +74,6 @@ interface PolicySectionProps {
     api: any;
     expandedResource: string | null;
     setExpandedResource: React.Dispatch<React.SetStateAction<string | null>>;
-    fetchPolicies: () => void;
 
 }
 
@@ -95,19 +90,42 @@ const PoliciesSection: FC<PolicySectionProps> = ({
     api,
     expandedResource,
     setExpandedResource,
-    fetchPolicies,
-  }) => {
+}) => {
     const classes = useStyles();
     let borderColor = "";
-  
+
     return (
         <Box>
             {isAPILevelGranularitySelected ? (
-                    <Box m={1} p={0.1} mt={1.5} 
-                        sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}
-                    >
+                <Box m={1} p={0.1} mt={1.5}
+                    sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}
+                >
 
-                                <Grid item xs={12}>
+                    <Grid item xs={12}>
+                        <Grid
+                            container
+                            direction="column"
+                            justify="flex-start"
+                            spacing={1}
+                            alignItems="stretch"
+                        >
+                            <PoliciesExpansion
+                                target={null}
+                                verb={"None"}
+                                allPolicies={allPolicies}
+                                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                policyList={policyList}
+                                isAPILevelPolicy={true}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+            ) : (
+                <Box>
+                    {Object.entries(openAPISpec.paths).map(
+                        ([target, verbObject]: [string, any]) => (
+                            <Grid key={target} item xs={12}>
+                                <OperationsGroup openAPI={openAPISpec} tag={target}>
                                     <Grid
                                         container
                                         direction="column"
@@ -115,63 +133,39 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                         spacing={1}
                                         alignItems="stretch"
                                     >
-                                        <PoliciesExpansion
-                                            target={null}
-                                            verb={"None"}
-                                            allPolicies={allPolicies}
-                                            isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                            policyList={policyList}
-                                            isAPILevelPolicy={true}
-                                        />
+                                        {Object.entries(verbObject).map(([verb, operation]) => {
+                                            return CONSTS.HTTP_METHODS.includes(verb) ? (
+                                                <Grid
+                                                    key={`${target}/${verb}`}
+                                                    item className={classes.gridItem}
+                                                >
+                                                    <OperationPolicy
+                                                        target={target}
+                                                        verb={verb}
+                                                        highlight
+                                                        operation={operation}
+                                                        api={api}
+                                                        disableUpdate={isRestricted(["apim:api_create"], api)}
+                                                        expandedResource={expandedResource}
+                                                        setExpandedResource={setExpandedResource}
+                                                        policyList={policyList}
+                                                        allPolicies={allPolicies}
+                                                        isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                    />
+                                                </Grid>
+                                            ) : null;
+                                        })}
                                     </Grid>
-                                </Grid>
-                    </Box>
-            ) : (
-                <Box>
-                    {Object.entries(openAPISpec.paths).map(
-                        ([target, verbObject]: [string, any]) => (
-                        <Grid key={target} item xs={12}>
-                            <OperationsGroup openAPI={openAPISpec} tag={target}>
-                                <Grid
-                                    container
-                                    direction="column"
-                                    justify="flex-start"
-                                    spacing={1}
-                                    alignItems="stretch"
-                                >
-                                    {Object.entries(verbObject).map(([verb, operation]) => {
-                                    return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                        <Grid 
-                                            key={`${target}/${verb}`}
-                                            item className={classes.gridItem}
-                                        >
-                                            <OperationPolicy
-                                                target={target}
-                                                verb={verb}
-                                                highlight
-                                                operation={operation}
-                                                api={api}
-                                                disableUpdate={isRestricted(["apim:api_create"], api)}
-                                                expandedResource={expandedResource}
-                                                setExpandedResource={setExpandedResource}
-                                                policyList={policyList}
-                                                allPolicies={allPolicies}
-                                                isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                            />
-                                        </Grid>
-                                    ) : null;
-                                    })}
-                                </Grid>
-                            </OperationsGroup>
-                        </Grid>
+                                </OperationsGroup>
+                            </Grid>
                         )
                     )}
-                    </Box>
-          )}
+                </Box>
+            )}
         </Box>
     );
-  };
-  
+};
+
 
 
 export default PoliciesSection;

@@ -549,7 +549,6 @@ const Policies: React.FC = () => {
                                         setExpandedResource={
                                             setExpandedResource
                                         }
-                                        fetchPolicies={fetchPolicies}
                                     />
                                     <PolicyPanel
                                         index={1}
@@ -566,7 +565,6 @@ const Policies: React.FC = () => {
                                         setExpandedResource={
                                             setExpandedResource
                                         }
-                                        fetchPolicies={fetchPolicies}
                                     />
                                 </Box>
                             </Box>
