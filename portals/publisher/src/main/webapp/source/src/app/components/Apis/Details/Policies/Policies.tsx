@@ -33,7 +33,6 @@ import { arrayMove } from '@dnd-kit/sortable';
 import PolicyList from './PolicyList';
 import type { ApiPolicy, Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';
-import GranularitySelector from './GranularitySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';

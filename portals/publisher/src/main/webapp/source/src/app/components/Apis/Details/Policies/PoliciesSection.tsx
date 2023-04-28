@@ -27,42 +27,21 @@ import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import type {Policy, PolicySpec } from './Types';
 import PoliciesExpansion from './PoliciesExpansion';
+import MuiAlert from 'AppComponents/Shared/MuiAlert';
+import { FormattedMessage } from 'react-intl';
+import Alert from '@material-ui/lab/Alert';
 
-const useStyles = makeStyles((theme) => ({
+
+
+
+const useStyles = makeStyles((theme:any) => ({
     gridItem: {
         display: 'flex',
         width: '100%',
     },
-    operationListingBox: {
-        overflowY: 'scroll',
-    },
-    paper: {
-        padding:'2px'
-    },
-    ccTypography: {
-        paddingLeft:'10px', 
-        marginTop:'20px'
-    },
-    titleWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop:'20px'
-    },
-    tagClass: {
-        maxWidth: 1000,
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-        [theme.breakpoints.down('md')]: {
-            maxWidth: 800,
-        },
-    },
-    flowTabs: {
-        '& button': {
-            minWidth: 50,
-        },
-    },
+    alert: {
+        backgroundColor: 'transparent'
+    }
 }));
 
 interface PolicySectionProps {
@@ -100,7 +79,9 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                 <Box m={1} p={0.1} mt={1.5}
                     sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}
                 >
-
+                    <Alert severity="info" className={classes.alert}>
+                        API level policies will execute before Operation Level Policies
+                    </Alert>
                     <Grid item xs={12}>
                         <Grid
                             container
@@ -121,7 +102,13 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                     </Grid>
                 </Box>
             ) : (
-                <Box>
+                    <Box m={1} p={0.1} mt={1.5}
+                        sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}
+                    >
+                        {!isChoreoConnectEnabled && (
+                            <Alert severity="info" className={classes.alert}>
+                                API level policies will execute before Operation Level Policies
+                            </Alert> )}
                     {Object.entries(openAPISpec.paths).map(
                         ([target, verbObject]: [string, any]) => (
                             <Grid key={target} item xs={12}>
