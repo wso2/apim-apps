@@ -57,21 +57,6 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: '10px',
         marginTop: '20px',
     },
-    titleWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: '20px',
-    },
-    tagClass: {
-        maxWidth: 1000,
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-        [theme.breakpoints.down('md')]: {
-            maxWidth: 800,
-        },
-    },
     flowTabs: {
         '& button': {
             minWidth: 50,
@@ -94,9 +79,9 @@ const Policies: React.FC = () => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
-    const [isAPILevelTabSelected, setIsAPILevelTabSelected] = useState(api.apiPolicies != null,);
+    const [isAPILevelTabSelected, setIsAPILevelTabSelected] = useState(api.apiPolicies != null);
     const { showMultiVersionPolicies } = Configurations.apis;
-    const [selectedTab, setSelectedTab] = useState(0);
+    const [selectedTab, setSelectedTab] = useState((api.apiPolicies != null) ? 0 : 1);
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -297,15 +282,15 @@ const Policies: React.FC = () => {
         let operationInAction = (!isAPILevelTabSelected) ? newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase()) : null;
 
-        const operationFlowPolicy = ((isAPILevelTabSelected) ? newApiLevelPolicies
-        : operationInAction.operationPolicies)[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
+        const flowPolicy = ((isAPILevelTabSelected) ? newApiLevelPolicies
+            : operationInAction.operationPolicies)[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
                 && p.uuid === updatedOperation.uuid));
 
-        if (operationFlowPolicy) {
-            // Edit operation policy
-            operationFlowPolicy.parameters = { ...updatedOperation.parameters };
+        if (flowPolicy) {
+            // Edit policy
+            flowPolicy.parameters = { ...updatedOperation.parameters };
         } else {
-            // Add new operation policy
+            // Add new policy
             const uuid = uuidv4();
             ((isAPILevelTabSelected) ? newApiLevelPolicies : operationInAction.operationPolicies)[currentFlow].push({ ...updatedOperation, uuid });
         }
@@ -416,15 +401,16 @@ const Policies: React.FC = () => {
             getewayTypeForPolicies = "wso2/choreo-connect";
         }
 
-        const updatePromise = updateAPI({ 
-            apiPolicies: newApiLevelPolicies,
+        const updatePromise = updateAPI({
             operations: newApiOperations,
+            apiPolicies: newApiLevelPolicies,
             gatewayVendor: getewayVendorForPolicies,
-            gatewayType: getewayTypeForPolicies,
+            gatewayType: getewayTypeForPolicies
         });
-        updatePromise.finally(() => {
-            setUpdating(false);
-        });
+        updatePromise
+            .finally(() => {
+                setUpdating(false);
+            });
     };
 
     const deletePolicyUuid = (operationPolicies: any) => {
@@ -494,11 +480,7 @@ const Policies: React.FC = () => {
                     </Box>
                 )}
                 <Box display="flex" flexDirection="row">
-                    <Box
-                        width="65%"
-                        p={1}
-                        className={classes.operationListingBox}
-                    >
+                    <Box width="65%" p={1} height='115vh' className={classes.operationListingBox}>
                         <Paper className={classes.paper}>
                             <Box p={1}>
                                 <Tabs
@@ -532,15 +514,13 @@ const Policies: React.FC = () => {
                                         aria-controls="response-tabpanel"
                                     />
                                 </Tabs>
-                                <Box height="60vh" pt={1} overflow="scroll">
+                                <Box pt={1} overflow="scroll">
                                     <PolicyPanel
                                         index={0}
                                         selectedTab={selectedTab}
                                         openAPISpec={openAPISpec}
-                                        isChoreoConnectEnabled={
-                                            isChoreoConnectEnabled
-                                        }
-                                        isAPILevelGranularitySelected={true}
+                                        isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                        isAPILevelTabSelected={true}
                                         allPolicies={allPolicies}
                                         policyList={policies}
                                         api={localAPI}
@@ -553,10 +533,8 @@ const Policies: React.FC = () => {
                                         index={1}
                                         selectedTab={selectedTab}
                                         openAPISpec={openAPISpec}
-                                        isChoreoConnectEnabled={
-                                            isChoreoConnectEnabled
-                                        }
-                                        isAPILevelGranularitySelected={false}
+                                        isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                        isAPILevelTabSelected={false}
                                         allPolicies={allPolicies}
                                         policyList={policies}
                                         api={localAPI}
