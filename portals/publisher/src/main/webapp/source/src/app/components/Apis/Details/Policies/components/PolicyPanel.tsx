@@ -27,7 +27,7 @@ interface PolicyPanelProps {
     selectedTab: number;
     openAPISpec: any;
     isChoreoConnectEnabled: boolean;
-    isAPILevelGranularitySelected: boolean;
+    isAPILevelTabSelected: boolean;
     allPolicies: PolicySpec[] | null;
     policyList: Policy[];
     api: any;
@@ -46,7 +46,7 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
     selectedTab,
     openAPISpec,
     isChoreoConnectEnabled,
-    isAPILevelGranularitySelected,
+    isAPILevelTabSelected,
     allPolicies,
     policyList,
     api,
@@ -67,7 +67,7 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
                 <PoliciesSection
                     openAPISpec={openAPISpec}
                     isChoreoConnectEnabled={isChoreoConnectEnabled}
-                    isAPILevelGranularitySelected={isAPILevelGranularitySelected}
+                    isAPILevelTabSelected={isAPILevelTabSelected}
                     allPolicies={allPolicies}
                     policyList={policyList}
                     api={api}
