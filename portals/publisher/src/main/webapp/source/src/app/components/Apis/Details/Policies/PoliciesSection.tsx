@@ -34,6 +34,8 @@ const useStyles = makeStyles((theme: any) => ({
     },
     alert: {
         backgroundColor: 'transparent',
+        marginTop: '-25px',
+        marginBottom: '-15px',
     },
 }));
 
@@ -90,7 +92,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                 <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1, }}
                 >
                     {!isChoreoConnectEnabled && (
-                        <Alert severity="info" className={classes.alert}>
+                        <Alert severity="info" className={classes.alert} >
                             API level policies will execute before Operation
                             Level Policies
                         </Alert>
