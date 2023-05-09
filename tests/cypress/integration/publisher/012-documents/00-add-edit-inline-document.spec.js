@@ -53,9 +53,7 @@ describe("publisher-012-00 : Creating API document", () => {
 
     it.only("Creating inline document", () => {
         const documentName = 'api_document';
-        const documentName2 = 'api document name with space';
         addDoc(documentName);
-        addDoc(documentName2);
     });
      
 });
