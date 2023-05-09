@@ -79,7 +79,6 @@ const Policies: React.FC = () => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
-    const [isAPILevelTabSelected, setIsAPILevelTabSelected] = useState(api.apiPolicies != null);
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState((api.apiPolicies != null) ? 0 : 1);
 
@@ -88,6 +87,10 @@ const Policies: React.FC = () => {
     const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
         setIsChoreoConnectEnabled(isCCEnabled);
     }
+
+    //Tabs
+    const apiLevelTab = 0;
+    const operationLevelTab = 1;
 
 
     /**
@@ -279,10 +282,10 @@ const Policies: React.FC = () => {
         const newApiOperations: any = cloneDeep(apiOperations);
         const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
 
-        let operationInAction = (!isAPILevelTabSelected) ? newApiOperations.find((op: any) =>
+        let operationInAction = (selectedTab == operationLevelTab) ? newApiOperations.find((op: any) =>
             op.target === target && op.verb.toLowerCase() === verb.toLowerCase()) : null;
 
-        const flowPolicy = ((isAPILevelTabSelected) ? newApiLevelPolicies
+        const flowPolicy = ((selectedTab == apiLevelTab) ? newApiLevelPolicies
             : operationInAction.operationPolicies)[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
                 && p.uuid === updatedOperation.uuid));
 
@@ -292,11 +295,11 @@ const Policies: React.FC = () => {
         } else {
             // Add new policy
             const uuid = uuidv4();
-            ((isAPILevelTabSelected) ? newApiLevelPolicies : operationInAction.operationPolicies)[currentFlow].push({ ...updatedOperation, uuid });
+            ((selectedTab == apiLevelTab) ? newApiLevelPolicies : operationInAction.operationPolicies)[currentFlow].push({ ...updatedOperation, uuid });
         }
 
         // Finally update the state
-        (isAPILevelTabSelected) ? setApiLevelPolicies(newApiLevelPolicies) : setApiOperations(newApiOperations);
+        (selectedTab == apiLevelTab) ? setApiLevelPolicies(newApiLevelPolicies) : setApiOperations(newApiOperations);
     }
 
     /**
@@ -328,7 +331,7 @@ const Policies: React.FC = () => {
      */
     const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
 
-        if (isAPILevelTabSelected) {
+        if (selectedTab == apiLevelTab) {
             const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
             const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
             newApiLevelPolicies[currentFlow].splice(index, 1);
@@ -362,7 +365,7 @@ const Policies: React.FC = () => {
     const rearrangeApiOperations = (
         oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
     ) => {
-        if (isAPILevelTabSelected) {
+        if (selectedTab == apiLevelTab) {
             const newAPIPolicies: any = cloneDeep(apiLevelPolicies);
             const policyArray = newAPIPolicies[currentFlow];
             newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
@@ -439,7 +442,6 @@ const Policies: React.FC = () => {
     }
 
     const handleTabChange = (tab: number) => {
-        setIsAPILevelTabSelected(tab === 0);
         setSelectedTab(tab);
     };
 
@@ -516,7 +518,7 @@ const Policies: React.FC = () => {
                                 </Tabs>
                                 <Box pt={1} overflow="scroll">
                                     <PolicyPanel
-                                        index={0}
+                                        index={apiLevelTab}
                                         selectedTab={selectedTab}
                                         openAPISpec={openAPISpec}
                                         isChoreoConnectEnabled={isChoreoConnectEnabled}
@@ -530,7 +532,7 @@ const Policies: React.FC = () => {
                                         }
                                     />
                                     <PolicyPanel
-                                        index={1}
+                                        index={operationLevelTab}
                                         selectedTab={selectedTab}
                                         openAPISpec={openAPISpec}
                                         isChoreoConnectEnabled={isChoreoConnectEnabled}
