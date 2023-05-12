@@ -2712,6 +2712,9 @@
   "Apis.Details.Policies.PoliciesExpansion.response.flow.title": {
     "defaultMessage": "Response Flow"
   },
+  "Apis.Details.Policies.PoliciesSection.info": {
+    "defaultMessage": "API level policies will execute before operation level policies"
+  },
   "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": {
     "defaultMessage": "Configure {policy}"
   },

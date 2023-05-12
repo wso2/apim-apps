@@ -26,6 +26,7 @@ import OperationsGroup from './OperationsGroup';
 import type { Policy, PolicySpec } from './Types';
 import PoliciesExpansion from './PoliciesExpansion';
 import Alert from '@material-ui/lab/Alert';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme: any) => ({
     gridItem: {
@@ -93,8 +94,11 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                 >
                     {!isChoreoConnectEnabled && (
                         <Alert severity="info" className={classes.alert} >
-                            API level policies will execute before Operation
-                            Level Policies
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PoliciesSection.info'
+                                    defaultMessage='API level policies will execute before operation level policies'
+                                />
+                            
                         </Alert>
                     )}
                     {Object.entries(openAPISpec.paths).map(
