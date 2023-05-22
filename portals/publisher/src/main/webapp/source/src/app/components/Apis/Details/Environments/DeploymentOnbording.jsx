@@ -109,9 +109,16 @@ export default function DeploymentOnboarding(props) {
     || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED');
 
-    const defaultVhosts = internalGateways.map(
-        (e) => (e.vhosts && e.vhosts.length > 0 ? { env: e.name, vhost: e.vhosts[0].host } : undefined),
-    );
+    const defaultVhosts = internalGateways.map((e) => {
+        if (e.vhosts && e.vhosts.length > 0) {
+            return {
+                env: e.name,
+                vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+            };
+        } else {
+            return undefined;
+        }
+    });
 
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedEnvironment, setSelectedEnvironment] = useState(hasOnlyOneEnvironment
@@ -354,8 +361,13 @@ export default function DeploymentOnboarding(props) {
                                                                             >
                                                                                 {row.vhosts.map(
                                                                                     (vhost) => (
-                                                                                        <MenuItem value={vhost.host}>
-                                                                                            {vhost.host}
+                                                                                        <MenuItem value = 
+                                                                                            {api.isWebSocket()
+                                                                                                ? vhost.wsHost 
+                                                                                                : vhost.host}>
+                                                                                            {api.isWebSocket() 
+                                                                                                ? vhost.wsHost 
+                                                                                                : vhost.host}
                                                                                         </MenuItem>
                                                                                     ),
                                                                                 )}
