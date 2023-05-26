@@ -27,6 +27,8 @@ const CONSTS = {
     TENANT_STATE_ACTIVE: 'ACTIVE',
     DEFAULT_MIN_SCOPES_TO_LOGIN: ['apim:api_workflow_view', 'apim:api_workflow_approve', 'apim:tenantInfo',
         'apim:admin_settings'],
+    KM_ADMIN_AS_APP_OWNER_KEY: 'km_admin_as_app_owner',
+    KM_ADMIN_AS_APP_OWNER_VALUE: 'Use as Application Owner',
 };
 
 export default CONSTS;

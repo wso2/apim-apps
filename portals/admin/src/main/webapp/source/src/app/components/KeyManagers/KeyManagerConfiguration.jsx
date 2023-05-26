@@ -13,6 +13,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { makeStyles } from '@material-ui/core/styles';
 import CustomInputField from 'AppComponents/KeyManagers/CustomInputField';
+import CONSTS from '../../data/Constants';
 
 const useStyles = makeStyles((theme) => ({
     inputLabel: {
@@ -43,16 +44,24 @@ export default function KeyManagerConfiguration(props) {
         let finalValue;
         const { name, value, type } = e.target;
         if (type === 'checkbox') {
-            if (additionalProperties[name]) {
-                finalValue = additionalProperties[name];
+            if (name === CONSTS.KM_ADMIN_AS_APP_OWNER_KEY) {
+                if (e.target.checked) {
+                    finalValue = true;
+                } else {
+                    finalValue = false;
+                }
             } else {
-                finalValue = [];
-            }
-            if (e.target.checked) {
-                finalValue.push(value);
-            } else {
-                const newValue = value.filter((v) => v !== e.target.value);
-                finalValue = newValue;
+                if (additionalProperties[name]) {
+                    finalValue = additionalProperties[name];
+                } else {
+                    finalValue = [];
+                }
+                if (e.target.checked) {
+                    finalValue.push(value);
+                } else {
+                    const newValue = value.filter((v) => v !== e.target.value);
+                    finalValue = newValue;
+                }
             }
         } else {
             finalValue = value;
@@ -62,7 +71,13 @@ export default function KeyManagerConfiguration(props) {
     const getComponent = (keymanagerConnectorConfiguration) => {
         let value = '';
         if (additionalProperties[keymanagerConnectorConfiguration.name]) {
-            value = additionalProperties[keymanagerConnectorConfiguration.name];
+            if (keymanagerConnectorConfiguration.name === CONSTS.KM_ADMIN_AS_APP_OWNER_KEY) {
+                if (additionalProperties[keymanagerConnectorConfiguration.name] === true) {
+                    value = CONSTS.KM_ADMIN_AS_APP_OWNER_VALUE;
+                }
+            } else {
+                value = additionalProperties[keymanagerConnectorConfiguration.name];
+            }
         }
         if (keymanagerConnectorConfiguration.type === 'input') {
             if (keymanagerConnectorConfiguration.mask) {

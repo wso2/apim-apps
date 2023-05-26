@@ -429,9 +429,23 @@ function AddEditKeyManager(props) {
             tokenType = 'DIRECT';
         }
 
-        const keymanager = {
-            ...state, tokenValidation: newTokenValidation, tokenType,
-        };
+        let keymanager = {};
+        if (type === 'WSO2-IS') {
+            const additionalPropertiesForIS = { ...additionalProperties };
+            if (!additionalPropertiesForIS.km_admin_as_app_owner) {
+                additionalPropertiesForIS.km_admin_as_app_owner = false;
+            }
+            keymanager = {
+                ...state,
+                tokenValidation: newTokenValidation,
+                tokenType,
+                additionalProperties: additionalPropertiesForIS,
+            };
+        } else {
+            keymanager = {
+                ...state, tokenValidation: newTokenValidation, tokenType,
+            };
+        }
 
         if (id) {
             promisedAddKeyManager = restApi.updateKeyManager(id, keymanager);
