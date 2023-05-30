@@ -200,6 +200,9 @@ export default function Resources(props) {
             case 'amznResourceTimeout':
                 updatedOperation['x-amzn-resource-timeout'] = value;
                 break;
+            case 'amznResourceContentEncode':
+                updatedOperation['x-amzn-resource-content-encode'] = value;
+                break;
             case 'scopes': {
                 if (!updatedOperation.security) {
                     updatedOperation.security = [{ default: [] }];
