@@ -126,16 +126,29 @@
         String tokenEndpoint = Util.getLoopbackOrigin((String) Util.readJsonObj(settings, "app.origin.host")) + TOKEN_URL_SUFFIX;
         String data = "code=" + request.getParameter("code") + "&grant_type=authorization_code&redirect_uri=" + loginCallbackUrl;
         String codeVerifier = (String) session.getAttribute("code_verifier");
+        boolean isBypassClientCredentials = systemApplicationDAO.isBypassClientCredentials(clientId);
         if (codeVerifier != null) {
             data = data + "&code_verifier=" + codeVerifier;
-        }
+            if (isBypassClientCredentials) {
+                data = data + "&client_id=" + clientId;
+            }
+        }  
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest post = HttpRequest.newBuilder()
+        if (isBypassClientCredentials && codeVerifier !== null) {
+            HttpRequest post = HttpRequest.newBuilder()
+                .uri(URI.create(tokenEndpoint))
+                .POST(HttpRequest.BodyPublishers.ofString(data))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+        }
+        else {
+            HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(tokenEndpoint))
                 .POST(HttpRequest.BodyPublishers.ofString(data))
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", "Basic " + base64encoded)
                 .build();
+        }
         HttpResponse<String> result = client.send(post, HttpResponse.BodyHandlers.ofString());
         response.setContentType("application/json");
         session.removeAttribute("code_verifier");
