@@ -141,8 +141,7 @@
                 .POST(HttpRequest.BodyPublishers.ofString(data))
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
-        }
-        else {
+        } else {
             post = HttpRequest.newBuilder()
                 .uri(URI.create(tokenEndpoint))
                 .POST(HttpRequest.BodyPublishers.ofString(data))
