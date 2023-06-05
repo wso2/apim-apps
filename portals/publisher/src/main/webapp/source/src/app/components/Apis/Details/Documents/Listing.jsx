@@ -120,7 +120,7 @@ const styles = theme => ({
 });
  
 function LinkGenerator(props) {
-    return props.apiType === 'APIProduct' ? (
+    return props.apiType === 'APIPRODUCT' ? (
         <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
     ) : (
         <Link to={'/apis/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
