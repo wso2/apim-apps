@@ -17,7 +17,6 @@
  */
 
 import React, {
-    useCallback,
     lazy,
     Suspense,
     useContext,
@@ -82,7 +81,6 @@ function MockScriptOperation(props) {
     } = props;
     const { api } = useContext(APIContext);
     const [showReset, setShowReset] = useState(false);
-    const [mockValueDetails, setMockValueDetails] = useState({ resourcePath: '', resourceMethod: '' });
     const classes = useStyles();
 
     /**
@@ -92,14 +90,11 @@ function MockScriptOperation(props) {
      * @param {string} path The path value of the resource.
      * @param {string} method The resource method.
      * */
-    const onScriptChange = useCallback(
-        (value, path, method) => {
-            const tmpPaths = JSON.parse(JSON.stringify(paths));
-            tmpPaths[path][method][xMediationScriptProperty] = value;
-            updatePaths(tmpPaths);
-        },
-        [mockValueDetails.resourcePath, mockValueDetails.resourceMethod],
-    );
+    const onScriptChange = (value, path, method) => {
+        const tmpPaths = JSON.parse(JSON.stringify(paths));
+        tmpPaths[path][method][xMediationScriptProperty] = value;
+        updatePaths(tmpPaths);
+    };
 
     const mediationScript = operation[xMediationScriptProperty];
     const script = mediationScript === undefined ? defaultScript : mediationScript;
@@ -121,7 +116,6 @@ function MockScriptOperation(props) {
                             color='primary'
                             onClick={() => {
                                 setShowReset(false);
-                                setMockValueDetails({ resourcePath, resourceMethod });
                                 onScriptChange(originalScript, resourcePath, resourceMethod);
                             }}
                         >
@@ -146,7 +140,6 @@ function MockScriptOperation(props) {
                         language='javascript'
                         onChange={(content) => {
                             setShowReset(true);
-                            setMockValueDetails({ resourcePath, resourceMethod });
                             onScriptChange(content, resourcePath, resourceMethod);
                         }}
                     />

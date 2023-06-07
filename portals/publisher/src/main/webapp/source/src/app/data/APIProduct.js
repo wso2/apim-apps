@@ -314,6 +314,7 @@ class APIProduct extends Resource {
             })
             .catch(error => {
                 console.error(error);
+                return new Promise.reject(error);
             });
 
         return promisedAddAPIThumbnail;
