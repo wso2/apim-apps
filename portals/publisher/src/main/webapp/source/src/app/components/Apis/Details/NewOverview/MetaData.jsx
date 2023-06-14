@@ -228,21 +228,22 @@ function MetaData(props) {
                     </Grid>
                     <Grid item xs={12} md={6} lg={8}>
                         <Typography component='p' variant='body1'>
-                            {api.lastUpdatedTime
+                            {api.lastUpdatedTimestamp
                             && (
                                 <>
                                     <Tooltip
-                                        title={moment(api.lastUpdatedTime).calendar()}
+                                        title={moment(parseInt(api.lastUpdatedTimestamp, 10)).calendar()}
                                         interactive
                                         placement='top-start'
                                     >
                                         <Typography variant='body1' display='block'>
-                                            {capitalizeFirstLetter(moment(api.lastUpdatedTime).fromNow())}
+                                            {capitalizeFirstLetter
+                                            (moment(parseInt(api.lastUpdatedTimestamp, 10)).fromNow())}
                                         </Typography>
                                     </Tooltip>
                                 </>
                             )}
-                            {!api.lastUpdatedTime
+                            {!api.lastUpdatedTimestamp
                                 && (
                                     <>
                                         <Typography

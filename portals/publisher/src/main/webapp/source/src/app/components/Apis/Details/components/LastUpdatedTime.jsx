@@ -31,7 +31,7 @@ function LastUpdatedTime(props) {
     return (
         <div style={{ float: 'right' }}>
             <Tooltip
-                title={moment(lastUpdatedTime).calendar()}
+                title={moment(parseInt(lastUpdatedTime, 10)).calendar()}
                 interactive
             >
                 <Typography variant='caption' display='block'>
@@ -40,7 +40,7 @@ function LastUpdatedTime(props) {
                         defaultMessage='Last updated:'
                     />
                     {' '}
-                    {moment(lastUpdatedTime).fromNow()}
+                    {moment(parseInt(lastUpdatedTime, 10)).fromNow()}
                 </Typography>
             </Tooltip>
         </div>
