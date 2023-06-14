@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (c) 2017, WSO2 LLC (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2017-2023, WSO2 LLC (https://www.wso2.com).
   ~
   ~ WSO2 LLC licenses this file to you under the Apache License,
   ~ Version 2.0 (the "License"); you may not use this file except
@@ -26,7 +26,8 @@
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%    Log log = LogFactory.getLog(this.getClass());
+<%
+    Log log = LogFactory.getLog(this.getClass());
     log.debug("Logout Request Function");
     Map settings = Util.readJsonFile("/site/public/conf/settings.json", request.getServletContext());
     String appContext = Util.getAppContextForServerUrl((String) Util.readJsonObj(settings, "app.context"), (String) Util.readJsonObj(settings, "app.proxy_context_path"));

@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (c) 2017, WSO2 LLC (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2017-2023, WSO2 LLC (https://www.wso2.com).
   ~
   ~ WSO2 LLC licenses this file to you under the Apache License,
   ~ Version 2.0 (the "License"); you may not use this file except
@@ -34,7 +34,8 @@
 
 <%@page trimDirectiveWhitespaces="true" %>
 
-<%    Log log = LogFactory.getLog(this.getClass());
+<%
+    Log log = LogFactory.getLog(this.getClass());
     Map settings = Util.readJsonFile("site/public/theme/settings.json", request.getServletContext());
     String context = Util.getTenantBaseStoreContext(request, (String) Util.readJsonObj(settings, "app.context"));
     String tenantDomain = Util.getServiceProviderTenantDomain(request);
