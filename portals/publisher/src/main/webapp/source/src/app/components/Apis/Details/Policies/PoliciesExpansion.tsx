@@ -106,12 +106,12 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     useEffect(() => {
         (async () => {
             
-            let operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
+            const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
                 (op: any) =>
                     op.target === target &&
                     op.verb.toLowerCase() === verb.toLowerCase(),
             ) : null;
-            let apiPolicies = (isAPILevelPolicy) ? apiLevelPolicies : null;
+            const apiPolicies = (isAPILevelPolicy) ? apiLevelPolicies : null;
 
             // Populate request flow attached policy list
             const requestFlowList: AttachedPolicy[] = [];
@@ -158,7 +158,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
 
             // Populate response flow attached policy list
             const responseFlowList: AttachedPolicy[] = [];
-            const responseFlow = (isAPILevelPolicy) ? apiPolicies.response : operationInAction.operationPolicies.response;
+            const responseFlow = isAPILevelPolicy ? apiPolicies.response : operationInAction.operationPolicies.response;
             for (const responseFlowAttachedPolicy of responseFlow) {
                 const { policyId, policyName, policyVersion, uuid } =
                     responseFlowAttachedPolicy;
@@ -202,7 +202,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             if (!isChoreoConnectEnabled) {
                 // Populate fault flow attached policy list
                 const faultFlowList: AttachedPolicy[] = [];
-                const faultFlow = (isAPILevelPolicy) ? apiPolicies.fault : operationInAction.operationPolicies.fault;
+                const faultFlow = isAPILevelPolicy ? apiPolicies.fault : operationInAction.operationPolicies.fault;
                 for (const faultFlowAttachedPolicy of faultFlow) {
                     const { policyId, policyName, policyVersion, uuid } =
                         faultFlowAttachedPolicy;
@@ -219,7 +219,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         const policyObj = allPolicies?.find(
                             (policy: PolicySpec) => 
                                 policy.name === policyName && 
-                                policy.version == policyVersion,
+                                policy.version === policyVersion,
                         );
                         if (policyObj) {
                             faultFlowList.push({ ...policyObj, uniqueKey: uuid });

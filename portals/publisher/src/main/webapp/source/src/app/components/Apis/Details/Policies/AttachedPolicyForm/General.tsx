@@ -72,7 +72,16 @@ interface GeneralProps {
 }
 
 const General: FC<GeneralProps> = ({
-    policyObj, setDroppedPolicy, currentFlow, target, verb, apiPolicy, policySpec, handleDrawerClose, isEditMode, isAPILevelPolicy
+    policyObj,
+    setDroppedPolicy,
+    currentFlow,
+    target,
+    verb,
+    apiPolicy,
+    policySpec,
+    handleDrawerClose,
+    isEditMode,
+    isAPILevelPolicy,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -335,7 +344,7 @@ const General: FC<GeneralProps> = ({
                                     name={spec.name}
                                     type={spec.type.toLowerCase() === 'integer' ? 'number' : 'text'}
                                     value={getValue(spec)}
-                                    onChange={(e) => onInputChange(e, spec.type)}
+                                    onChange={(e: any) => onInputChange(e, spec.type)}
                                     fullWidth
                                 />
                             )}

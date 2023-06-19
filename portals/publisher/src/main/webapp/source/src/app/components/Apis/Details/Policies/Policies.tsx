@@ -30,19 +30,19 @@ import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operation
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { arrayMove } from '@dnd-kit/sortable';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import PolicyList from './PolicyList';
 import type { ApiPolicy, Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import PolicyPanel from './components/PolicyPanel';
 
 const Configurations = require('Config');
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     gridItem: {
         display: 'flex',
         width: '100%',
@@ -88,10 +88,28 @@ const Policies: React.FC = () => {
         setIsChoreoConnectEnabled(isCCEnabled);
     }
 
-    //Tabs
+    // Tabs
     const apiLevelTab = 0;
     const operationLevelTab = 1;
 
+    const initApiLevelPolicy: ApiLevelPolicy = {
+        request: [],
+        response: [],
+        fault: [],
+    }
+
+    const getInitPolicyState = (policyList: any) => {
+        // Iterating through the policy list of request flow, response flow and fault flow
+        for (const flow in policyList) {
+            if (Object.prototype.hasOwnProperty.call(policyList, flow)) {
+                const policyArray = policyList[flow];
+                policyArray.forEach((policyItem: ApiPolicy) => {
+                    // eslint-disable-next-line no-param-reassign
+                    policyItem.uuid = uuidv4();
+                });
+            }
+        }
+    }
 
     /**
      * Function to get the initial state of all the operation policies from the API object.
@@ -118,25 +136,6 @@ const Policies: React.FC = () => {
         }
         return clonedAPIPolicies || initApiLevelPolicy;
     };
-
-    const initApiLevelPolicy: ApiLevelPolicy = {
-        request: [],
-        response: [],
-        fault: [],
-    };
-
-    const getInitPolicyState = (policyList: any) => {
-        // Iterating through the policy list of request flow, response flow and fault flow
-        for (const flow in policyList) {
-            if (Object.prototype.hasOwnProperty.call(policyList, flow)) {
-                const policyArray = policyList[flow];
-                policyArray.forEach((policyItem: ApiPolicy) => {
-                    // eslint-disable-next-line no-param-reassign
-                    policyItem.uuid = uuidv4();
-                });
-            }
-        }
-    }
 
     const [apiOperations, setApiOperations] = useState<any>(getInitState);
     const [apiLevelPolicies, setApiLevelPolicies] = useState<any>(getInitAPILevelPoliciesState);
@@ -171,11 +170,11 @@ const Policies: React.FC = () => {
             if (showMultiVersionPolicies) {
                 // Get the union of policies depending on the policy display name and version
                 unionByPolicyDisplayName = [...mergedList
-                .reduce((map, obj) => map.set(obj.name + obj.version, obj), new Map()).values()];
+                    .reduce((map, obj) => map.set(obj.name + obj.version, obj), new Map()).values()];
             } else {
                 // Get the union of policies depending on the policy display name
                 unionByPolicyDisplayName = [...mergedList
-                .reduce((map, obj) => map.set(obj.name, obj), new Map()).values()];
+                    .reduce((map, obj) => map.set(obj.name, obj), new Map()).values()];
             }
             unionByPolicyDisplayName.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
@@ -282,12 +281,25 @@ const Policies: React.FC = () => {
         const newApiOperations: any = cloneDeep(apiOperations);
         const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
 
-        let operationInAction = (selectedTab == operationLevelTab) ? newApiOperations.find((op: any) =>
-            op.target === target && op.verb.toLowerCase() === verb.toLowerCase()) : null;
+        const operationInAction =
+            selectedTab === operationLevelTab
+                ? newApiOperations.find(
+                    (op: any) =>
+                        op.target === target &&
+                            op.verb.toLowerCase() === verb.toLowerCase(),
+                )
+                : null;
 
-        const flowPolicy = ((selectedTab == apiLevelTab) ? newApiLevelPolicies
-            : operationInAction.operationPolicies)[currentFlow].find((p: any) => (p.policyId === updatedOperation.policyId
-                && p.uuid === updatedOperation.uuid));
+        const flowPolicy = (
+            selectedTab === apiLevelTab
+                ? newApiLevelPolicies
+                : operationInAction.operationPolicies
+        )[currentFlow].find(
+            (p: any) =>
+                p.policyId === updatedOperation.policyId &&
+                p.uuid === updatedOperation.uuid,
+        );
+        
 
         if (flowPolicy) {
             // Edit policy
@@ -295,11 +307,17 @@ const Policies: React.FC = () => {
         } else {
             // Add new policy
             const uuid = uuidv4();
-            ((selectedTab == apiLevelTab) ? newApiLevelPolicies : operationInAction.operationPolicies)[currentFlow].push({ ...updatedOperation, uuid });
+            (selectedTab === apiLevelTab ? newApiLevelPolicies : operationInAction
+                .operationPolicies)[currentFlow].push({ ...updatedOperation, uuid }
+            );
         }
 
         // Finally update the state
-        (selectedTab == apiLevelTab) ? setApiLevelPolicies(newApiLevelPolicies) : setApiOperations(newApiOperations);
+        if (selectedTab === apiLevelTab) {
+            setApiLevelPolicies(newApiLevelPolicies);
+        } else {
+            setApiOperations(newApiOperations);
+        }
     }
 
     /**
@@ -331,7 +349,7 @@ const Policies: React.FC = () => {
      */
     const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
 
-        if (selectedTab == apiLevelTab) {
+        if (selectedTab === apiLevelTab) {
             const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
             const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
             newApiLevelPolicies[currentFlow].splice(index, 1);
@@ -365,7 +383,7 @@ const Policies: React.FC = () => {
     const rearrangeApiOperations = (
         oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
     ) => {
-        if (selectedTab == apiLevelTab) {
+        if (selectedTab === apiLevelTab) {
             const newAPIPolicies: any = cloneDeep(apiLevelPolicies);
             const policyArray = newAPIPolicies[currentFlow];
             newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
@@ -377,6 +395,21 @@ const Policies: React.FC = () => {
             const policyArray = operationInAction.operationPolicies[currentFlow];
             operationInAction.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
             setApiOperations(newApiOperations);
+        }
+    };
+
+    const deletePolicyUuid = (operationPolicies: any) => {
+        // Iterating through the policy list of request flow, response flow and fault flow
+        for (const flow in operationPolicies) {
+            if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+                const policyArray = operationPolicies[flow];
+                policyArray.forEach((policyItem: ApiPolicy) => {
+                    if (policyItem.uuid) {
+                        // eslint-disable-next-line no-param-reassign
+                        delete policyItem.uuid;
+                    }
+                });
+            }
         }
     };
 
@@ -392,7 +425,7 @@ const Policies: React.FC = () => {
 
         deletePolicyUuid(newApiLevelPolicies);
         // Set operation policies to the API object
-        newApiOperations.forEach((operation: any, index: any, array: any) => {
+        newApiOperations.forEach((operation: any) => {
             if (operation.operationPolicies) {
                 const { operationPolicies } = operation;
                 deletePolicyUuid(operationPolicies);
@@ -416,31 +449,6 @@ const Policies: React.FC = () => {
             });
     };
 
-    const deletePolicyUuid = (operationPolicies: any) => {
-        // Iterating through the policy list of request flow, response flow and fault flow
-        for (const flow in operationPolicies) {
-            if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
-                const policyArray = operationPolicies[flow];
-                policyArray.forEach((policyItem: ApiPolicy) => {
-                    if (policyItem.uuid) {
-                        // eslint-disable-next-line no-param-reassign
-                        delete policyItem.uuid;
-                    }
-                });
-            }
-        }
-    };
-
-    // handles operations (verbs) for CC policy expansion.
-    const handleVerbsForCC = (verbObject: any) => {
-        const array = Object.entries(verbObject).map(([verb]) => {
-            return verb;
-        })
-        // returns the first element since CC handles resource level policies only.
-        // therefore returning only the first verb (operation) here for the resource.
-        return array[0]
-    }
-
     const handleTabChange = (tab: number) => {
         setSelectedTab(tab);
     };
@@ -448,14 +456,24 @@ const Policies: React.FC = () => {
     /**
      * To memoize the value passed into ApiOperationContextProvider
      */
-    const providerValue = useMemo(() => ({
-        apiOperations,
-        apiLevelPolicies,
-        updateApiOperations,
-        updateAllApiOperations,
-        deleteApiOperation,
-        rearrangeApiOperations,
-    }), [apiOperations, apiLevelPolicies, updateApiOperations, updateAllApiOperations, deleteApiOperation, rearrangeApiOperations])
+    const providerValue = useMemo(
+        () => ({
+            apiOperations,
+            apiLevelPolicies,
+            updateApiOperations,
+            updateAllApiOperations,
+            deleteApiOperation,
+            rearrangeApiOperations,
+        }),
+        [
+            apiOperations,
+            apiLevelPolicies,
+            updateApiOperations,
+            updateAllApiOperations,
+            deleteApiOperation,
+            rearrangeApiOperations,
+        ],
+    );
 
     if (!policies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
@@ -481,8 +499,8 @@ const Policies: React.FC = () => {
                         />
                     </Box>
                 )}
-                <Box display="flex" flexDirection="row">
-                    <Box width="65%" p={1} height='115vh' className={classes.operationListingBox}>
+                <Box display='flex' flexDirection='row'>
+                    <Box width='65%' p={1} height='115vh' className={classes.operationListingBox}>
                         <Paper className={classes.paper}>
                             <Box p={1}>
                                 <Tabs
@@ -490,10 +508,10 @@ const Policies: React.FC = () => {
                                     onChange={(event, tab) =>
                                         handleTabChange(tab)
                                     }
-                                    indicatorColor="primary"
-                                    textColor="primary"
-                                    variant="fullWidth"
-                                    aria-label="Policies local to API"
+                                    indicatorColor='primary'
+                                    textColor='primary'
+                                    variant='fullWidth'
+                                    aria-label='Policies local to API'
                                     className={classes.flowTabs}
                                 >
                                     <Tab
@@ -502,8 +520,8 @@ const Policies: React.FC = () => {
                                                 API Level Policies
                                             </span>
                                         }
-                                        id="request-tab"
-                                        aria-controls="request-tabpanel"
+                                        id='request-tab'
+                                        aria-controls='request-tabpanel'
                                         disabled={isChoreoConnectEnabled}
                                     />
                                     <Tab
@@ -512,17 +530,17 @@ const Policies: React.FC = () => {
                                                 Operation Level Policies
                                             </span>
                                         }
-                                        id="response-tab"
-                                        aria-controls="response-tabpanel"
+                                        id='response-tab'
+                                        aria-controls='response-tabpanel'
                                     />
                                 </Tabs>
-                                <Box pt={1} overflow="scroll">
+                                <Box pt={1} overflow='scroll'>
                                     <PolicyPanel
                                         index={apiLevelTab}
                                         selectedTab={selectedTab}
                                         openAPISpec={openAPISpec}
                                         isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                        isAPILevelTabSelected={true}
+                                        isAPILevelTabSelected
                                         allPolicies={allPolicies}
                                         policyList={policies}
                                         api={localAPI}
