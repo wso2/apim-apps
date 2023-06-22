@@ -141,21 +141,82 @@ class AuthManager {
         Utils.getCookie(User.CONST.WSO2_AM_REFRESH_TOKEN_1, currentEnv);
     }
 
-    static hasBasicLoginPermission(scopes) {
-        if (scopes.includes('apim:admin')) {
-            return true;
-        } else {
-            let { minScopesToLogin } = Configurations.app;
-            if (!minScopesToLogin) {
-                minScopesToLogin = CONSTS.DEFAULT_MIN_SCOPES_TO_LOGIN;
-            }
-            for (let i = 0; i < minScopesToLogin.length; i++) {
-                if (!scopes.includes(minScopesToLogin[i])) {
-                    return false;
-                }
-            }
-            return true;
+    static hasPermission = (scopes, val) => {
+        let value;
+        if (val === 'workflowManager') {
+            value = Configurations.app.roles.workflowManager;
+        } else if (val === 'settingsManager') {
+            value = Configurations.app.roles.settingsManager;
+        } else if (val === 'policyManager') {
+            value = Configurations.app.roles.policyManager;
+        } else if (val === 'keyManagers') {
+            value = Configurations.app.roles.keyManagers;
+        } else if (val === 'categoriesManager') {
+            value = Configurations.app.roles.workflowManager;
+        } else if (val === 'gatewayManager') {
+            value = Configurations.app.roles.gatewayManager;
         }
+        for (let i = 0; i < value.length; i++) {
+            if (!scopes.includes(value[i])) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    /**
+     *
+     * @param {*} scopes
+     * @returns
+     */
+    static hasBasicLoginPermission(scopes) {
+        console.log('scope-----', scopes);
+        const workflowManager = 'workflowManager';
+        const settingsManager = 'settingsManager';
+        const policyManager = 'policyManager';
+        const keyManagers = 'keyManagers';
+        const categoriesManager = 'categoriesManager';
+        const gatewayManager = 'gatewayManager';
+        return (scopes.includes('apim:admin')
+        || this.hasPermission(scopes, workflowManager)
+        || this.hasPermission(scopes, settingsManager)
+        || this.hasPermission(scopes, policyManager)
+        || this.hasPermission(scopes, keyManagers)
+        || this.hasPermission(scopes, categoriesManager)
+        || this.hasPermission(scopes, gatewayManager));
+        // const isWorkflowManager = hasPermission(scopes);
+        // || (scopes.includes('apim:api_workflow_view')
+        // && scopes.includes('apim:api_workflow_approve')
+        // && scopes.includes('apim:tenantInfo')
+        // && scopes.includes('apim:admin_settings'))
+        // || (scopes.includes('apim:tier_view')
+        // && scopes.includes('apim:policies_import_export')
+        // && scopes.includes('apim:tier_manage')
+        // && scopes.includes('apim:bl_manage')
+        // && scopes.includes('apim:tenantInfo')
+        // && scopes.includes('apim:admin_settings')
+        // && scopes.includes('apim:bl_view'))
+        // || (scopes.includes('apim:admin_operations')
+        // && scopes.includes('openid'))
+        // || (scopes.includes('apim:environment_manage')
+        // && scopes.includes('openid')
+        // && scopes.includes('apim:environment_read'))
+        // || (scopes.includes('apim:app_owner_change')
+        // && scopes.includes('apim:app_import_export')
+        // && scopes.includes('apim:admin_application_view')
+        // && scopes.includes('apim:scope_manage')
+        // && scopes.includes('apim:role_manage'))
+        // || (scopes.includes('apim:admin_settings')
+        // && scopes.includes('openid')
+        // && scopes.includes('apim:tenantInfo')
+        // && scopes.includes('apim:admin_settings')
+        // && scopes.includes('apim:keymanagers_manage'))
+        // || (scopes.includes('apim:admin_settings')
+        // && scopes.includes('openid')
+        // && scopes.includes('apim:tenantInfo')
+        // && scopes.includes('apim:admin_settings')
+        // && scopes.includes('apim:scope_manage'))
+        // );
     }
 
     /**

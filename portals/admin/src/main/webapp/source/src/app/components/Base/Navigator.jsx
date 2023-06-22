@@ -79,27 +79,81 @@ function Navigator(props) {
         routeMenuMapping = RouteMenuMapping(intl).filter((menu) => menu.id !== 'Manage Alerts');
     }
 
-    const hasWorkflowViewPermission = _scopes.includes('apim:api_workflow_view');
-    if (!hasWorkflowViewPermission) {
-        routeMenuMapping = RouteMenuMapping(intl).filter((menu) => menu.id !== 'Tasks');
-    }
-
-    const isWorkflowManager = _scopes.includes('apim:api_workflow_view')
-    && _scopes.includes('apim:api_workflow_approve')
-    && _scopes.includes('apim:tenantInfo')
-    && _scopes.includes('openid')
-    && _scopes.includes('apim:admin_settings')
-    && _scopes.length === 5;
-
-    if (isWorkflowManager) {
-        const { location: { pathname } } = history;
-        if (pathname.indexOf('dashboard') !== -1) {
-            history.push('/tasks/user-creation');
+    const hasPermission = (scopes) => {
+        for (let i = 0; i < scopes.length; i++) {
+            if (!_scopes.includes(scopes[i])) {
+                return false;
+            }
         }
-        routeMenuMapping = routeMenuMapping.filter(((route) => route.id === intl.formatMessage({
-            id: 'Base.RouteMenuMapping.tasks',
-            defaultMessage: 'Tasks',
-        })));
+        return true;
+    };
+
+    const isWorkflowManager = hasPermission(Configurations.app.roles.workflowManager);
+    const isSettingsManager = hasPermission(Configurations.app.roles.settingsManager);
+    const isPolicyManager = hasPermission(Configurations.app.roles.policyManager);
+    const iskeyManagers = hasPermission(Configurations.app.roles.keyManagers);
+    const isAPICategory = hasPermission(Configurations.app.roles.categoriesManager);
+    const isGatewayManager = hasPermission(Configurations.app.roles.gatewayManager);
+
+    const entireArray = [];
+    const checkRouteMenuMapping = routeMenuMapping;
+    console.log('-----mapping-----------', JSON.stringify(routeMenuMapping));
+    for (let i = 0; i < checkRouteMenuMapping.length; i++) {
+        const adminRoute = routeMenuMapping;
+        if (checkRouteMenuMapping[i].id === 'Dashboard') {
+            const dashboardObj = checkRouteMenuMapping[i];
+            entireArray.push(dashboardObj);
+        }
+        if (checkRouteMenuMapping[i].id === 'Rate Limiting Policies') {
+            const policyObj = checkRouteMenuMapping[i];
+            if (isPolicyManager) {
+                entireArray.push(policyObj);
+            }
+        }
+        if (checkRouteMenuMapping[i].id === 'Tasks') {
+            const taskObj = checkRouteMenuMapping[i];
+            if (isWorkflowManager) {
+                entireArray.push(taskObj);
+            }
+        }
+        if (checkRouteMenuMapping[i].id === 'Key Managers') {
+            const keyManagerObj = checkRouteMenuMapping[i];
+            if (iskeyManagers) {
+                entireArray.push(keyManagerObj);
+            }
+        }
+        if (checkRouteMenuMapping[i].id === 'API Categories') {
+            const apiCatObj = checkRouteMenuMapping[i];
+            if (isAPICategory) {
+                entireArray.push(apiCatObj);
+            }
+        }
+        if (checkRouteMenuMapping[i].id === 'Gateways') {
+            const gatewayObj = checkRouteMenuMapping[i];
+            if (isGatewayManager) {
+                entireArray.push(gatewayObj);
+            }
+        }
+        if (checkRouteMenuMapping[i].id === 'Settings') {
+            const settingObj = checkRouteMenuMapping[i];
+            const val = settingObj;
+            const childRoutes = val.children;
+            if (!_scopes.includes('apim:admin')) {
+                for (let k = 0; k < childRoutes.length; k++) {
+                    if (childRoutes[k].id === 'Advanced') {
+                        childRoutes.splice(k, 1);
+                    }
+                }
+            }
+            if (isSettingsManager) {
+                entireArray.push(val);
+            }
+        }
+        routeMenuMapping = entireArray;
+        if (_scopes.includes('apim:admin')) {
+            console.log('-----mapping-----------', JSON.stringify(routeMenuMapping));
+            routeMenuMapping = adminRoute;
+        }
     }
 
     const updateAllRoutePaths = (path) => {
