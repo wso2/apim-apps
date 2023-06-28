@@ -84,7 +84,7 @@ function Usage(props) {
 
     useEffect(() => {
         API.getSharedScopeUsages(scopeId).then((response) => setUsage(response.body));
-    }, []);
+    }, [scopeName, scopeId, usageCount]);
 
     const handleUsageOpen = () => {
         setOpen(true);
