@@ -22,7 +22,7 @@ afterAll(() => server.close());
 describe('Create REST API From scratch', () => {
     test('Should render REST API from scratch form', async () => {
         render(<APICreateDefault />);
-        expect(await screen.findByTestId('loading-publisher-settings')).toBeInTheDocument();
+        expect(await screen.findByTestId('default-api-form')).toBeInTheDocument();
         expect(screen.getByRole('heading', {
             name: /create an api/i,
         })).toBeInTheDocument();
@@ -40,13 +40,14 @@ describe('Create REST API From scratch', () => {
 
     test('Should have auto focused `Name` input field', async () => {
         render(<APICreateDefault />);
+        expect(await screen.findByTestId('default-api-form')).toBeInTheDocument();
         expect(screen.getByRole('textbox', { name: /name \*/i })).toHaveFocus();
         userEvent.tab();
     });
 
     test('Should validate name field for empty and special characters', async () => {
         render(<APICreateDefault />);
-        expect(await screen.findByTestId('loading-publisher-settings')).toBeInTheDocument();
+        expect(await screen.findByTestId('default-api-form')).toBeInTheDocument();
         const NAME_INPUT = screen.getByRole('textbox', { name: /name \*/i });
         const NAME_EMPTY_ERROR = /name should not be empty/i;
         const VALID_API_NAME = 'sampleAPIName';
@@ -79,7 +80,9 @@ describe('Create REST API From scratch', () => {
 
     test('should not exceed 50 character length', async () => {
         render(<APICreateDefault />);
-        expect(screen.getByTestId('loading-publisher-settings')).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByTestId('default-api-form')).toBeInTheDocument();
+        });
         const NAME_INPUT = screen.getByRole('textbox', { name: /name \*/i });
         const NAME_EXCEEDED_ERROR = /Name has exceeded the maximum number of 50 characters/i;
         userEvent.type(NAME_INPUT, 'a'.repeat(50));
@@ -97,6 +100,7 @@ describe('Create REST API From scratch', () => {
 
     test('Should validate context field for empty and special characters', async () => {
         render(<APICreateDefault />);
+        expect(await screen.findByTestId('default-api-form')).toBeInTheDocument();
         const CONTEXT_INPUT = screen.getByRole('textbox', { name: /context \*/i });
         const CONTEXT_EMPTY_ERROR = /Context should not be empty/i;
         const VALID_API_CONTEXT = 'sampleContext';
