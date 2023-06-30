@@ -18,7 +18,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint-disable react/jsx-no-bind */
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect  } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
@@ -46,6 +46,7 @@ import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import { isRestricted } from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
+import Progress from 'AppComponents/Shared/Progress';
 import EditableRow from './EditableRow';
 
 const useStyles = makeStyles((theme) => ({
@@ -153,23 +154,19 @@ function Properties(props) {
     const classes = useStyles();
     const history = useHistory();
     const { api, updateAPI } = useContext(APIContext);
-    const additionalPropertiesTemp = cloneDeep(api.additionalProperties);
+    const customPropertiesTemp = cloneDeep(api.additionalProperties);
 
-    if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'github_repo')) {
-        delete additionalPropertiesTemp.github_repo;
-    }
-    if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'slack_url')) {
-        delete additionalPropertiesTemp.slack_url;
-    }
-
-    const [additionalProperties, setAdditionalProperties] = useState(additionalPropertiesTemp);
+    const [customProperties, setCustomProperties] = useState([]);
+    const [additionalProperties, setAdditionalProperties] = useState([]);
     const [showAddProperty, setShowAddProperty] = useState(false);
     const [propertyKey, setPropertyKey] = useState(null);
     const [propertyValue, setPropertyValue] = useState(null);
+    const [customPropertyValue, setCustomPropertyValue] = useState(cloneDeep(api.additionalProperties));
     const [isUpdating, setUpdating] = useState(false);
     const [editing, setEditing] = useState(false);
     const [isAdditionalPropertiesStale, setIsAdditionalPropertiesStale] = useState(false);
     const [isVisibleInStore, setIsVisibleInStore] = useState(false);
+    const [loading, setLoading] = useState(true);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
     const keywords = ['provider', 'version', 'context', 'status', 'description',
@@ -186,6 +183,41 @@ function Properties(props) {
             setPropertyValue(value);
         }
     };
+    const handleCustomPropertyValueChange = (name, value) => {
+        setCustomPropertyValue((prevData) => {
+            const existingData = prevData.find((data) => data.name === name);
+            if (existingData) {
+                return prevData.map((data) => (data.name === name ? { ...data, value } : data));
+            }
+            return [...prevData, { name, value }];
+        });
+    };
+
+    const getDefaultCustomProperties = () => {
+        api.getSettings().then((settings) => {
+            if (settings.customProperties != null) {
+                setCustomProperties(settings.customProperties);
+            }
+            const additionalPropertiesTemp = customPropertiesTemp.filter(
+                (additionalProp) =>
+                    !settings.customProperties.some((customProp) => customProp.Name === additionalProp.name)
+            );
+            if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'github_repo')) {
+                delete additionalPropertiesTemp.github_repo;
+            }
+            if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'slack_url')) {
+                delete additionalPropertiesTemp.slack_url;
+            }
+            setAdditionalProperties(additionalPropertiesTemp);
+            setLoading(false);
+        });
+    };
+
+    useEffect(() => {
+        getDefaultCustomProperties();
+    }, []);
+
+
 
     /**
      *
@@ -208,7 +240,9 @@ function Properties(props) {
         if (itemValue === null) {
             return false;
         }
-        return keywords.includes(itemValue.toLowerCase());
+        return keywords.includes(itemValue.toLowerCase()) || customProperties.some((property) =>
+            property.Name.toLowerCase() === itemValue.toLowerCase()
+        )
     };
     const hasWhiteSpace = (itemValue) => {
         if (itemValue === null) {
@@ -226,19 +260,35 @@ function Properties(props) {
      */
     const handleSave = () => {
         setUpdating(true);
-        if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'github_repo')) {
+        if (Object.prototype.hasOwnProperty.call(additionalProperties, 'github_repo')) {
             additionalProperties.github_repo = api.additionalProperties.github_repo;
         }
-        if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'slack_url')) {
+        if (Object.prototype.hasOwnProperty.call(additionalProperties, 'slack_url')) {
             additionalProperties.slack_url = api.additionalProperties.slack_url;
         }
         const additionalPropertiesCopyForMap = cloneDeep(additionalProperties);
         const additionalPropertiesMap = {};
+        const updatedAdditionalProperties = [];
+        if (customProperties && customProperties.length > 0 && customPropertyValue && customPropertyValue.length > 0) {
+            customPropertyValue.map((property) => {
+                const matchingProperty = customProperties.find((item) => item.Name === property.name);
+                if (matchingProperty) {
+                    if (!Object.prototype.hasOwnProperty.call(property, 'display')) {
+                        property.display = false;
+                    }
+                    additionalPropertiesMap[property.name] = property;
+                    updatedAdditionalProperties.push(property);
+                    return additionalPropertiesMap;
+                }
+                return additionalPropertiesMap;
+            });
+        }
         additionalPropertiesCopyForMap.map((property) => {
             additionalPropertiesMap[property.name] = property;
+            updatedAdditionalProperties.push(property);
             return additionalPropertiesMap;
         });
-        const updatePromise = updateAPI({ additionalProperties, additionalPropertiesMap });
+        const updatePromise = updateAPI({ additionalProperties: updatedAdditionalProperties, additionalPropertiesMap });
         updatePromise
             .then(() => {
                 setUpdating(false);
@@ -256,19 +306,35 @@ function Properties(props) {
 
     const handleSaveAndDeploy = () => {
         setUpdating(true);
-        if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'github_repo')) {
+        if (Object.prototype.hasOwnProperty.call(additionalProperties, 'github_repo')) {
             additionalProperties.github_repo = api.additionalProperties.github_repo;
         }
-        if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'slack_url')) {
+        if (Object.prototype.hasOwnProperty.call(additionalProperties, 'slack_url')) {
             additionalProperties.slack_url = api.additionalProperties.slack_url;
         }
         const additionalPropertiesCopyForMap = cloneDeep(additionalProperties);
         const additionalPropertiesMap = {};
+        const updatedAdditionalProperties = [];
+        if (customProperties && customProperties.length > 0 && customPropertyValue && customPropertyValue.length > 0) {
+            customPropertyValue.map((property) => {
+                const matchingProperty = customProperties.find((item) => item.Name === property.name);
+                if (matchingProperty) {
+                    if (!Object.prototype.hasOwnProperty.call(property, 'display')) {
+                        property.display = false;
+                    }
+                    additionalPropertiesMap[property.name] = property;
+                    updatedAdditionalProperties.push(property);
+                    return additionalPropertiesMap;
+                }
+                return additionalPropertiesMap;
+            });
+        }
         additionalPropertiesCopyForMap.map((property) => {
             additionalPropertiesMap[property.name] = property;
+            updatedAdditionalProperties.push(property);
             return additionalPropertiesMap;
         });
-        const updatePromise = updateAPI({ additionalProperties, additionalPropertiesMap });
+        const updatePromise = updateAPI({ additionalProperties: updatedAdditionalProperties, additionalPropertiesMap });
         updatePromise
             .then(() => {
                 setUpdating(false);
@@ -437,6 +503,16 @@ function Properties(props) {
     const handleChangeVisibleInStore = (event) => {
         setIsVisibleInStore(event.target.checked);
     };
+    const handleCustomPropChangeVisibleInStore = (name, event) => {
+        const { checked } = event.target;
+        setCustomPropertyValue((prevData) => {
+            const existingData = prevData.find((data) => data.name === name);
+            if (existingData) {
+                return prevData.map((data) => (data.name === name ? { ...data, display: checked } : data));
+            }
+            return [...prevData, { name, display: checked }];
+        });
+    };
     /**
      *
      *
@@ -473,12 +549,72 @@ function Properties(props) {
             return propertyKey;
         }
     };
+
+    const isCustomPropsFilled = customProperties.every((property) => {
+        const dataItem = customPropertyValue.find((data) => data.name === property.Name);
+        if (property.Required) {
+            return dataItem && dataItem.value !== '';
+        }
+        return true;
+    });
+
+    let renderSaveButton;
+    if (customProperties && customProperties.length > 0 && isCustomPropsFilled) {
+        renderSaveButton = (
+            <CustomSplitButton
+                advertiseInfo={api.advertiseInfo}
+                api={api}
+                handleSave={handleSave}
+                handleSaveAndDeploy={handleSaveAndDeploy}
+                isUpdating={isUpdating}
+            />
+        );
+    } else if (
+        (customProperties && customProperties.length > 0 && !isCustomPropsFilled)
+        || editing
+        || api.isRevision
+        || (isEmpty(additionalProperties) && !isAdditionalPropertiesStale)
+        || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+    ) {
+        renderSaveButton = (
+            <Button
+                id='save-api-properties'
+                data-testid='save-api-properties-btn'
+                disabled
+                type='submit'
+                variant='contained'
+                color='primary'
+            >
+                <FormattedMessage
+                    id='Apis.Details.Configuration.Configuration.save'
+                    defaultMessage='Save'
+                />
+            </Button>
+        );
+    } else {
+        renderSaveButton = (
+            <CustomSplitButton
+                advertiseInfo={api.advertiseInfo}
+                api={api}
+                handleSave={handleSave}
+                handleSaveAndDeploy={handleSaveAndDeploy}
+                isUpdating={isUpdating}
+            />
+        );
+    }
+
     /**
      *
      *
      * @returns
      * @memberof Properties
      */
+
+    if (loading) {
+        return (
+            <Progress />
+        )
+    }
     return (
         <>
             <div className={classes.titleWrapper}>
@@ -512,7 +648,8 @@ function Properties(props) {
                         </Typography>
                     )}
 
-                {(!isEmpty(additionalProperties) || showAddProperty) && (
+                {(!isEmpty(additionalProperties) || showAddProperty ||
+                    (customProperties && customProperties.length > 0)) && (
                     <Box ml={1}>
                         <Button
                             id='add-new-property'
@@ -540,7 +677,8 @@ function Properties(props) {
                          add specific custom properties to the API.`}
                 />
             </Typography>
-            {isEmpty(additionalProperties) && !isAdditionalPropertiesStale && !showAddProperty && (
+            {isEmpty(additionalProperties) && !isAdditionalPropertiesStale && !showAddProperty &&
+                customProperties.length === 0 && (
                 <div className={classes.messageBox}>
                     <InlineMessage type='info' height={140}>
                         <div className={classes.contentWrapper}>
@@ -593,170 +731,235 @@ function Properties(props) {
                     </InlineMessage>
                 </div>
             )}
-            {(!isEmpty(additionalProperties) || showAddProperty || isAdditionalPropertiesStale) && (
+            {(!isEmpty(additionalProperties) || showAddProperty || isAdditionalPropertiesStale ||
+                customProperties.length > 0) && (
                 <Grid container spacing={7}>
                     <Grid item xs={12}>
                         <Paper className={classes.paperRoot}>
-                            <Table className={classes.table}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>
-                                            <FormattedMessage
-                                                id='Apis.Details.Properties.Properties.add.new.property.table'
-                                                defaultMessage='Property Name'
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FormattedMessage
-                                                id='Apis.Details.Properties.Properties.add.new.property.value'
-                                                defaultMessage='Property Value'
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FormattedMessage
-                                                id='Apis.Details.Properties.Properties.add.new.property.visibility'
-                                                defaultMessage='Visibility'
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Typography variant='srOnly'>
-                                                Action
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {showAddProperty && (
-                                        <>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <TextField
-                                                        fullWidth
-                                                        required
-                                                        id='property-name'
-                                                        label={intl.formatMessage({
-                                                            id: `Apis.Details.Properties.Properties.
-                                                                show.add.property.property.name`,
-                                                            defaultMessage: 'Name',
-                                                        })}
-                                                        margin='dense'
-                                                        variant='outlined'
-                                                        className={classes.addProperty}
-                                                        value={getKeyValue()}
-                                                        onChange={handleChange('propertyKey')}
-                                                        onKeyDown={handleKeyDown('propertyKey')}
-                                                        helperText={validateEmpty(propertyKey) ? ''
-                                                            : iff((isKeyword(propertyKey)
-                                                                || hasWhiteSpace(propertyKey)), intl.formatMessage({
-                                                                id: `Apis.Details.Properties.Properties.
-                                                                    show.add.property.invalid.error`,
-                                                                defaultMessage: 'Invalid property name',
-                                                            }), '')}
-                                                        error={validateEmpty(propertyKey) || isKeyword(propertyKey)
-                                                        || hasWhiteSpace(propertyKey)}
-                                                        disabled={isRestricted(
-                                                            ['apim:api_create', 'apim:api_publish'],
-                                                            api,
-                                                        )}
+                            {customProperties && customProperties.map((property) => (
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            fullWidth
+                                            required={property.Required}
+                                            id='custom-property-value'
+                                            label={intl.formatMessage({
+                                                id: `Apis.Details.Properties.Properties.
+                                                                            show.add.property.custom.property.name`,
+                                                defaultMessage: '{message}',
+                                            },
+                                            { message: property.Name }
+                                            )}
+                                            key={property.Name}
+                                            margin='dense'
+                                            variant='outlined'
+                                            className={classes.addProperty}
+                                            value={customPropertyValue.find((data) =>
+                                                data.name === property.Name)?.value || ''}
+                                            onChange={(event) =>
+                                                handleCustomPropertyValueChange(property.Name, event.target.value)}
+                                            helperText={property.Required &&
+                                                validateEmpty(customPropertyValue.find((data) =>
+                                                    data.name === property.Name)?.value)
+                                                ? 'Mandatory fields cannot be empty' : property.Description
+                                            }
+                                            error={property.Required &&
+                                                validateEmpty(customPropertyValue.find((data) =>
+                                                    data.name === property.Name)?.value)}
+                                            disabled={isRestricted(
+                                                ['apim:api_create', 'apim:api_publish'],
+                                                api,
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} alignItems='center'>
+                                        <Box pt={1}>
+                                            <FormControlLabel
+                                                control={(
+                                                    <Checkbox
+                                                        checked={customPropertyValue.find((data) =>
+                                                            data.name === property.Name)?.display || false}
+                                                        onChange={(event) =>
+                                                            handleCustomPropChangeVisibleInStore(property.Name, event)}
+                                                        name='checkedB'
+                                                        color='primary'
                                                     />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <TextField
-                                                        fullWidth
-                                                        required
-                                                        id='property-value'
-                                                        label={intl.formatMessage({
-                                                            id: 'Apis.Details.Properties.Properties.property.value',
-                                                            defaultMessage: 'Value',
-                                                        })}
-                                                        margin='dense'
-                                                        variant='outlined'
-                                                        className={classes.addProperty}
-                                                        value={propertyValue === null ? '' : propertyValue}
-                                                        onChange={handleChange('propertyValue')}
-                                                        onKeyDown={handleKeyDown('propertyValue')}
-                                                        error={validateEmpty(propertyValue)}
-                                                        disabled={isRestricted(
-                                                            ['apim:api_create', 'apim:api_publish'],
-                                                            api,
-                                                        )}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <FormControlLabel
-                                                        control={(
-                                                            <Checkbox
-                                                                checked={isVisibleInStore}
-                                                                onChange={handleChangeVisibleInStore}
-                                                                name='checkedB'
-                                                                color='primary'
-                                                            />
-                                                        )}
-                                                        label={intl.formatMessage({
-                                                            id: `Apis.Details.Properties.
-                                                            Properties.editable.show.in.devporal`,
-                                                            defaultMessage: 'Show in devportal',
-                                                        })}
-                                                        className={classes.checkBoxStyles}
-                                                    />
-                                                </TableCell>
-                                                <TableCell align='right'>
-                                                    <Box display='flex'>
-                                                        <Button
-                                                            id='properties-add-btn'
-                                                            variant='contained'
-                                                            color='primary'
-                                                            disabled={
-                                                                !propertyValue
-                                                            || !propertyKey
-                                                            || isRestricted(
-                                                                ['apim:api_create', 'apim:api_publish'], api,
-                                                            )
-                                                            }
-                                                            onClick={handleAddToList}
-                                                            className={classes.marginRight}
-                                                        >
-                                                            <Typography variant='caption' component='div'>
-                                                                <FormattedMessage
-                                                                    id='Apis.Details.Properties.Properties.add'
-                                                                    defaultMessage='Add'
-                                                                />
-                                                            </Typography>
-                                                        </Button>
+                                                )}
+                                                label={intl.formatMessage({
+                                                    id: `Apis.Details.Properties.
+                                                    Properties.editable.show.in.devporal`,
+                                                    defaultMessage: 'Show in devportal',
+                                                })}
+                                                className={classes.checkBoxStyles}
+                                            />
+                                        </Box>
 
-                                                        <Button onClick={toggleAddProperty}>
-                                                            <Typography variant='caption' component='div'>
-                                                                <FormattedMessage
-                                                                    id='Apis.Details.Properties.Properties.cancel'
-                                                                    defaultMessage='Cancel'
-                                                                />
-                                                            </Typography>
-                                                        </Button>
-                                                    </Box>
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell colSpan={4}>
-                                                    <Typography variant='caption'>
-                                                        <FormattedMessage
-                                                            id='Apis.Details.Properties.Properties.help'
-                                                            defaultMessage={
-                                                                'Property name should be unique, should not contain '
-                                                                + 'spaces, cannot be more than 80 chars '
-                                                                + 'and cannot be any of the following '
-                                                                + 'reserved keywords : '
-                                                                + 'provider, version, context, status, description, '
-                                                                + 'subcontext, doc, lcState, name, tags.'
-                                                            }
+                                    </Grid>
+                                </Grid>
+                            ))}
+                            {((customProperties && customProperties.length > 0) ||
+                                (!isEmpty(additionalProperties) || showAddProperty)) && (
+                                <Table className={classes.table}>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Properties.Properties.add.new.property.table'
+                                                    defaultMessage='Property Name'
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Properties.Properties.add.new.property.value'
+                                                    defaultMessage='Property Value'
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Properties.Properties.add.new.property.visibility'
+                                                    defaultMessage='Visibility'
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant='srOnly'>
+                                                    Action
+                                                </Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {showAddProperty && (
+                                            <>
+                                                <TableRow>
+                                                    <TableCell>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            id='property-name'
+                                                            label={intl.formatMessage({
+                                                                id: `Apis.Details.Properties.Properties.
+                                                            show.add.property.property.name`,
+                                                                defaultMessage: 'Name',
+                                                            })}
+                                                            margin='dense'
+                                                            variant='outlined'
+                                                            className={classes.addProperty}
+                                                            value={getKeyValue()}
+                                                            onChange={handleChange('propertyKey')}
+                                                            onKeyDown={handleKeyDown('propertyKey')}
+                                                            helperText={validateEmpty(propertyKey) ? ''
+                                                                : iff((isKeyword(propertyKey)
+                                                                    || hasWhiteSpace(propertyKey)), intl.formatMessage({
+                                                                    id: `Apis.Details.Properties.Properties.
+                                                                    show.add.property.invalid.error`,
+                                                                    defaultMessage: 'Invalid property name',
+                                                                }), '')}
+                                                            error={validateEmpty(propertyKey) || isKeyword(propertyKey)
+                                                                || hasWhiteSpace(propertyKey)}
+                                                            disabled={isRestricted(
+                                                                ['apim:api_create', 'apim:api_publish'],
+                                                                api,
+                                                            )}
                                                         />
-                                                    </Typography>
-                                                </TableCell>
-                                            </TableRow>
-                                        </>
-                                    )}
-                                    {renderAdditionalProperties()}
-                                </TableBody>
-                            </Table>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            id='property-value'
+                                                            label={intl.formatMessage({
+                                                                id: 'Apis.Details.Properties.Properties.property.value',
+                                                                defaultMessage: 'Value',
+                                                            })}
+                                                            margin='dense'
+                                                            variant='outlined'
+                                                            className={classes.addProperty}
+                                                            value={propertyValue === null ? '' : propertyValue}
+                                                            onChange={handleChange('propertyValue')}
+                                                            onKeyDown={handleKeyDown('propertyValue')}
+                                                            error={validateEmpty(propertyValue)}
+                                                            disabled={isRestricted(
+                                                                ['apim:api_create', 'apim:api_publish'],
+                                                                api,
+                                                            )}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FormControlLabel
+                                                            control={(
+                                                                <Checkbox
+                                                                    checked={isVisibleInStore}
+                                                                    onChange={handleChangeVisibleInStore}
+                                                                    name='checkedB'
+                                                                    color='primary'
+                                                                />
+                                                            )}
+                                                            label={intl.formatMessage({
+                                                                id: `Apis.Details.Properties.
+                                                            Properties.editable.show.in.devporal`,
+                                                                defaultMessage: 'Show in devportal',
+                                                            })}
+                                                            className={classes.checkBoxStyles}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align='right'>
+                                                        <Box display='flex'>
+                                                            <Button
+                                                                id='properties-add-btn'
+                                                                variant='contained'
+                                                                color='primary'
+                                                                disabled={
+                                                                    !propertyValue
+                                                                    || !propertyKey
+                                                                    || isRestricted(
+                                                                        ['apim:api_create', 'apim:api_publish'], api,
+                                                                    )
+                                                                }
+                                                                onClick={handleAddToList}
+                                                                className={classes.marginRight}
+                                                            >
+                                                                <Typography variant='caption' component='div'>
+                                                                    <FormattedMessage
+                                                                        id='Apis.Details.Properties.Properties.add'
+                                                                        defaultMessage='Add'
+                                                                    />
+                                                                </Typography>
+                                                            </Button>
+
+                                                            <Button onClick={toggleAddProperty}>
+                                                                <Typography variant='caption' component='div'>
+                                                                    <FormattedMessage
+                                                                        id='Apis.Details.Properties.Properties.cancel'
+                                                                        defaultMessage='Cancel'
+                                                                    />
+                                                                </Typography>
+                                                            </Button>
+                                                        </Box>
+                                                    </TableCell>
+                                                </TableRow>
+                                                <TableRow>
+                                                    <TableCell colSpan={4}>
+                                                        <Typography variant='caption'>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Properties.Properties.help'
+                                                                defaultMessage={
+                                                                    'Property name should be unique, should not contain'
+                                                                    + ' spaces, cannot be more than 80 chars '
+                                                                    + 'and cannot be any of the following '
+                                                                    + 'reserved keywords : '
+                                                                    + 'provider, version, context, status, description,'
+                                                                    + ' subcontext, doc, lcState, name, tags.'
+                                                                }
+                                                            />
+                                                        </Typography>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </>
+                                        )}
+                                        {renderAdditionalProperties()}
+                                    </TableBody>
+                                </Table>
+                            )}
                         </Paper>
                         <div className={classes.buttonWrapper}>
                             <Grid
@@ -768,31 +971,7 @@ function Properties(props) {
                             >
                                 <Grid item id='save-api-properties'>
                                     <div>
-                                        {editing || api.isRevision || (isEmpty(additionalProperties)
-                                            && !isAdditionalPropertiesStale)
-                                            || isRestricted(['apim:api_create', 'apim:api_publish'], api) ? (
-                                                <Button
-                                                    id='save-api-properties'
-                                                    data-testid='save-api-properties-btn'
-                                                    disabled
-                                                    type='submit'
-                                                    variant='contained'
-                                                    color='primary'
-                                                >
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Configuration.Configuration.save'
-                                                        defaultMessage='Save'
-                                                    />
-                                                </Button>
-                                            ) : (
-                                                <CustomSplitButton
-                                                    advertiseInfo={api.advertiseInfo}
-                                                    api={api}
-                                                    handleSave={handleSave}
-                                                    handleSaveAndDeploy={handleSaveAndDeploy}
-                                                    isUpdating={isUpdating}
-                                                />
-                                            )}
+                                        {renderSaveButton}
                                     </div>
                                 </Grid>
                                 <Grid item>

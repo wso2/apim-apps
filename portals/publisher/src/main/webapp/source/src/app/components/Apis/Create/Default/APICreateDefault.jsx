@@ -35,6 +35,7 @@ import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APIProduct from 'AppData/APIProduct';
 import AuthManager from 'AppData/AuthManager';
+import Progress from 'AppComponents/Shared/Progress';
 
 
 const getPolicies = async () => {
@@ -70,6 +71,7 @@ function APICreateDefault(props) {
 
     const [isRevisioning, setIsRevisioning] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
+    const [isMandatoryPropsConfigured, setIsMandatoryPropsConfigured] = useState(false);
     const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
     /**
      *
@@ -117,6 +119,18 @@ function APICreateDefault(props) {
             value: isFormValid,
         });
     }
+
+    const getDefaultCustomProperties = () => {
+        if (settings != null) {
+            if (settings.customProperties && settings.customProperties.length > 0 ) {
+                setIsMandatoryPropsConfigured(true);
+            }
+        }
+    };
+
+    useEffect(() => {
+        getDefaultCustomProperties();
+    }, [settings]);
 
     /**
      *
@@ -393,6 +407,12 @@ function APICreateDefault(props) {
         );
     }
 
+    if (isLoading) {
+        return (
+            <Progress />
+        )
+    }
+
     return (
         <APICreateBase title={pageTitle}>
             <Grid container direction='row' justify='center' alignItems='center' spacing={3}>
@@ -419,7 +439,7 @@ function APICreateDefault(props) {
                     )}
                 </Grid>
                 <Grid item md={1} xs={0} />
-                <Grid item md={11} xs={12}>
+                <Grid item md={11} xs={12} data-testid='default-api-form'>
 
                     <DefaultAPIForm
                         onValidate={handleOnValidate}
@@ -445,7 +465,7 @@ function APICreateDefault(props) {
                                 {isCreating && !isPublishButtonClicked && <CircularProgress size={24} />}
                             </Button>
                         </Grid>
-                        {!AuthManager.isNotPublisher() && (
+                        {!isMandatoryPropsConfigured && !AuthManager.isNotPublisher() && (
                             <Grid item>
                                 <Button
                                     id='itest-id-apicreatedefault-createnpublish'
