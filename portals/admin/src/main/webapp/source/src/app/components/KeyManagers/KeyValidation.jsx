@@ -138,9 +138,9 @@ export default function KeyValidation(props) {
         setjwtValue(newjwt);
     };
     const onDelete = (claimKey) => {
-        const newMapping = { ...tokenValidation.value };
-        if (newMapping.body) {
-            delete newMapping.body[claimKey];
+        const newMapping = { ...tokenValidation };
+        if (newMapping.value.body) {
+            delete newMapping.value.body[claimKey];
         }
         setTokenValidation(newMapping);
     };
