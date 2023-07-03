@@ -143,8 +143,8 @@ export default function DefaultAPIForm(props) {
     // Check the provided API validity on mount, TODO: Better to use Joi schema here ~tmkb
     useEffect(() => {
         onValidate(Boolean(api.name)
-                && (isAPIProduct || Boolean(api.version))
-                && Boolean(api.context));
+            && (isAPIProduct || Boolean(api.version))
+            && Boolean(api.context));
     }, []);
 
     const updateValidity = (newState) => {
@@ -190,26 +190,78 @@ export default function DefaultAPIForm(props) {
                 break;
             }
             case 'context': {
-                const contextValidity = APIValidation.apiContext.required().validate(value, { abortEarly: false })
+                let contextValidity = APIValidation.apiContext.required().validate(value, { abortEarly: false })
                     .error;
                 const apiContext = value.startsWith('/') ? value : '/' + value;
                 if (contextValidity === null) {
-                    APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
-                        const count = result.body.list.length;
-                        if (count > 0 && checkContext(value, result.body.list)) {
+                    const splitContext = apiContext.split('/');
+                    for (const param of splitContext) {
+                        if (param !== null && param !== '{version}') {
+                            if (param.includes('{version}')) {
+                                contextValidity = APIValidation.apiContextWithoutKeyWords.required()
+                                    .validate(value, { abortEarly: false }).error;
+                                updateValidity({
+                                    ...validity,
+                                    // eslint-disable-next-line max-len
+                                    context: { details: [{ message: '{version} cannot exist as a substring in a path param' }] },
+                                });
+                            } else if (param.includes('{') || param.includes('}')) {
+                                contextValidity = APIValidation.apiContextWithoutKeyWords.required()
+                                    .validate(value, { abortEarly: false }).error;
+                                updateValidity({
+                                    ...validity,
+                                    // eslint-disable-next-line max-len
+                                    context: { details: [{ message: '{ or } cannot exist as a substring in a path param' }] },
+                                });
+                            }
+                        }
+                    }
+
+                    let charCount = 0;
+
+                    if (contextValidity === null) {
+                        for (const a of apiContext) {
+                            if (a === '(') {
+                                charCount++;
+                            } else if (a === ')') {
+                                charCount--;
+                            }
+                            if (charCount < 0) {
+                                updateValidity({
+                                    ...validity,
+                                    // eslint-disable-next-line max-len
+                                    context: { details: [{ message: 'Parentheses should be balanced in API context' }] },
+                                });
+                            }
+                        }
+
+                        if (charCount > 0) {
                             updateValidity({
                                 ...validity,
-                                context: {
-                                    details: [{
-                                        message: isWebSocket ? apiContext + ' channel already exists'
-                                            : apiContext + ' context already exists'
-                                    }]
-                                },
+                                // eslint-disable-next-line max-len
+                                context: { details: [{ message: 'Parentheses should be balanced in API context' }] },
                             });
-                        } else {
-                            updateValidity({ ...validity, context: contextValidity, version: null });
                         }
-                    });
+                    }
+                    if (contextValidity === null && charCount === 0) {
+                        APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
+                            const count = result.body.list.length;
+                            if (count > 0 && checkContext(value, result.body.list)) {
+                                updateValidity({
+                                    ...validity,
+                                    // eslint-disable-next-line max-len
+                                    context: { details: [{ message: isWebSocket ? apiContext + ' channel already exists' : apiContext + ' context already exists' }] },
+                                });
+                            } else if (count > 0 && checkContext(value, result.body.list)) {
+                                updateValidity({
+                                    ...validity,
+                                    context: { details: [{ message: apiContext + ' dynamic context already exists' }] },
+                                });
+                            } else {
+                                updateValidity({ ...validity, context: contextValidity, version: null });
+                            }
+                        });
+                    }
                 } else {
                     updateValidity({ ...validity, context: contextValidity });
                 }
@@ -497,7 +549,7 @@ export default function DefaultAPIForm(props) {
 }
 
 DefaultAPIForm.defaultProps = {
-    onValidate: () => {},
+    onValidate: () => { },
     api: {}, // Uncontrolled component
     isWebSocket: false,
 };
