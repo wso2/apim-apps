@@ -61,6 +61,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import CardHeader from '@material-ui/core/CardHeader';
 import Checkbox from '@material-ui/core/Checkbox';
+import InfoIcon from '@material-ui/icons/Info';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import API from 'AppData/api';
@@ -76,6 +77,11 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
+    },
+    infoIcon: {
+        fontSize: 'medium',
+        marginLeft: theme.spacing(1),
+        verticalAlign: 'middle',
     },
     saveButton: {
         marginTop: theme.spacing(3),
@@ -143,6 +149,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 6.5,
     },
     textShape2: {
+        display: 'flex',
+        alignItems: 'center',
         marginTop: 8,
         marginLeft: 115,
         height: '18px',
@@ -1198,6 +1206,61 @@ export default function Environments() {
         );
         return item6;
     }
+    let infoIconItem;
+    /**
+       * Returns modified infoIconItem
+       * @param {*} revDescription The description of the revision
+       * @returns {Object} Returns the infoIconItem
+     */
+    function ReturnInfoIconItem({ revDescription}) {
+        const [anchorEl, setAnchorEl] = useState(null);
+
+        const handlePopoverOpen = (event) => {
+            setAnchorEl(event.currentTarget);
+        };
+
+        const handlePopoverClose = () => {
+            setAnchorEl(null);
+        };
+
+        const openPopover = Boolean(anchorEl);
+        infoIconItem = (
+            <>
+                <InfoIcon className={classes.infoIcon} color='primary'
+                    onMouseEnter={handlePopoverOpen}
+                    onMouseLeave={handlePopoverClose}
+                />
+                <Popover
+                    id='mouse-over-popover'
+                    className={classes.popover}
+                    classes={{
+                        paper: classes.paper,
+
+                    }}
+                    open={openPopover}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    onClose={handlePopoverClose}
+                    disableRestoreFocus
+                >
+                    <div>
+                        <Typography variant='body2'>
+                            {revDescription}
+                        </Typography>
+                    </div>
+                </Popover>
+            </>
+
+        );
+        return infoIconItem;
+    }
 
     const items = [];
     if (!api.isRevision) {
@@ -1218,6 +1281,13 @@ export default function Environments() {
                             {item1}
                             <Grid className={classes.textShape2}>
                                 {allRevisions[revision].displayName}
+                                {allRevisions[revision].description && <>
+                                    <ReturnInfoIconItem
+                                        revDescription={allRevisions[revision].description}
+                                    />
+                                    {infoIconItem}
+                                </>
+                                }
                             </Grid>
                             <Grid>
                                 <Button
@@ -1261,6 +1331,13 @@ export default function Environments() {
                             <Grid className={classes.textShape5} />
                             <Grid className={classes.textShape2}>
                                 {allRevisions[revision].displayName}
+                                {allRevisions[revision].description && <>
+                                    <ReturnInfoIconItem
+                                        revDescription={allRevisions[revision].description}
+                                    />
+                                    {infoIconItem}
+                                </>
+                                }
                             </Grid>
                             <Grid className={classes.textPadding}>
                                 <Button
