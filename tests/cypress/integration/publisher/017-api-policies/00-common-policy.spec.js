@@ -28,14 +28,14 @@ describe("Common Policies", () => {
     it("Common Policy", () => {
         cy.visit(`/publisher/policies`);
         cy.get('[data-testid="add-new-common-policy"]').click();
-        cy.get('#name').type('Add Header sample test');
+        cy.get('#name').type('Common Policy Sample');
         cy.get('#version').type('1');
-        cy.get('input[name="description"]').type('Sample add header policy description');
+        cy.get('input[name="description"]').type('Sample common policy description');
         cy.get('#fault-select-check-box').uncheck()
 
-        //upload the policy file
+        // Upload policy file
         cy.get('#upload-policy-file-for-policy').then(function () {
-            const filepath = `api_artifacts/sampleAddHeader.j2`
+            const filepath = `api_artifacts/samplePolicyTemplate.j2`
             cy.get('input[type="file"]').attachFile(filepath)
         });
 
@@ -44,21 +44,19 @@ describe("Common Policies", () => {
         cy.get('[data-testid="add-policy-attribute-display-name-btn"]').type('Header Name');
         cy.get('#attribute-require-btn').click();
 
-        //save common policy
+        // Save Common policy
         cy.get('[data-testid="policy-create-save-btn"]').click();
         cy.wait(2000);
 
-        //View Common policy
-        cy.get('[aria-label="View Add Header sample test"]').click();
-        //Download file
-        cy.get('[data-testid="download-policy-file"]').click();
-        const downloadsFolder = Cypress.config('downloadsFolder')
-        const downloadedFilename = `${downloadsFolder}/swagger.yaml`;
+        // View Common policy
+        cy.get('[aria-label="View Common Policy Sample"]').click();
 
+        // Download file
+        cy.get('[data-testid="download-policy-file"]').click();
         cy.get('[data-testid="done-view-policy-file"]').click();
 
-        //Delete Common Policy
-        cy.get('[aria-label="Delete Add Header sample test"]').click();
+        // Delete Common Policy
+        cy.get('[aria-label="Delete Common Policy Sample"]').click();
         cy.contains('Yes').click();
         
         cy.logoutFromPublisher();

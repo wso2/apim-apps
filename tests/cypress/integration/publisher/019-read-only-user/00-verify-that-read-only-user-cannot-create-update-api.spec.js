@@ -270,7 +270,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('[data-testid="create-policy-form"]').get('[data-testid="displayname"]').type("test name");
         cy.get('[data-testid="create-policy-form"]').get('[data-testid="gateway-details-panel"]')
             .get('[data-testid="file-drop-zone"]').then(function () {
-                cy.get('input[type="file"]').attachFile('api_artifacts/sampleAddHeader.j2');
+                cy.get('input[type="file"]').attachFile('api_artifacts/samplePolicyTemplate.j2');
             });
         cy.get('[data-testid="create-policy-form"]').get('[data-testid="policy-add-btn-panel"]')
             .get('[data-testid="policy-create-save-btn"]').should('be.disabled');

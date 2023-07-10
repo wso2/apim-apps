@@ -520,8 +520,8 @@ const Policies: React.FC = () => {
                                                 API Level Policies
                                             </span>
                                         }
-                                        id='request-tab'
-                                        aria-controls='request-tabpanel'
+                                        id='api-level-policies-tab'
+                                        aria-controls='api-level-policies-tabpanel'
                                         disabled={isChoreoConnectEnabled}
                                     />
                                     <Tab
@@ -530,8 +530,8 @@ const Policies: React.FC = () => {
                                                 Operation Level Policies
                                             </span>
                                         }
-                                        id='response-tab'
-                                        aria-controls='response-tabpanel'
+                                        id='operation-level-policies-tab'
+                                        aria-controls='operation-level-policies-tabpanel'
                                     />
                                 </Tabs>
                                 <Box pt={1} overflow='scroll'>
