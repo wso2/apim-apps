@@ -5711,6 +5711,12 @@
       "value": "Response Flow"
     }
   ],
+  "Apis.Details.Policies.PoliciesSection.info": [
+    {
+      "type": 0,
+      "value": "API level policies will execute before operation level policies"
+    }
+  ],
   "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": [
     {
       "type": 0,

@@ -26,7 +26,6 @@ describe("Common Policies", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-
     it("Api Specific Policy", {
         retries: {
             runMode: 3,
@@ -36,51 +35,38 @@ describe("Common Policies", () => {
         Utils.addAPI({}).then((apiId) => {
             apiTestId = apiId;
             cy.visit(`/publisher/apis/${apiId}/policies`);
-            //Create API Specific Policy
+
+            // Create API Specific Policy
             cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.config().largeTimeout}).click();
-            cy.get('#name').type('Add Header sample test');
+            cy.get('#name').type('API Specific Policy Sample');
             cy.get('#version').type('1');
-            cy.get('input[name="description"]').type('Sample add header policy description');
+            cy.get('input[name="description"]').type('Sample API specific policy description');
             cy.get('#fault-select-check-box').uncheck()
 
-            //upload the policy file
+            // Upload policy file
             cy.get('#upload-policy-file-for-policy').then(function () {
-                const filepath = `api_artifacts/sampleAddHeader.j2`
+                const filepath = `api_artifacts/samplePolicyTemplate.j2`
                 cy.get('input[type="file"]').attachFile(filepath)
             });
 
             cy.get('#add-policy-attributes-btn').click();
-            cy.get('[data-testid="add-policy-attribute-name-btn"]').type('headerName');
-            cy.get('[data-testid="add-policy-attribute-display-name-btn"]').type('Header Name');
+            cy.get('[data-testid="add-policy-attribute-name-btn"]').type('sampleAttribute');
+            cy.get('[data-testid="add-policy-attribute-display-name-btn"]').type('Sample Attribute');
             cy.get('#attribute-require-btn').click();
-            //save common policy
+
+            // Save API specific policy
             cy.get('[data-testid="policy-create-save-btn"]').click();
             cy.wait(2000);
 
-            //View API Specific Policy
-            cy.contains('Add Header sample test').trigger('mouseover');
-            cy.get('[aria-label="view-AddHeadersampletest"]').click({force:true});
-            //Download file
+            // View API specific policy
+            cy.contains('API Specific Policy Sample').trigger('mouseover');
+            cy.get('[aria-label="view-APISpecificPolicySample"]').click({force:true});
+
+            // Download file
             cy.get('[data-testid="download-policy-file"]').click();
-            cy.wait(2000);
             cy.get('[data-testid="done-view-policy-file"]').click();
 
-            //Drag and Drop Policy
-            const dataTransfer = new DataTransfer();
-            cy.contains('Add Header sample test').trigger('dragstart', {
-                dataTransfer
-            });
-
-            cy.contains('Drag and drop policies here').trigger('drop', {
-                // cy.('[data-testid="drop-policy-zone-request"]').trigger('drop', {
-                dataTransfer
-            });
-            cy.get('#headerName').type('Testing');
-            cy.get('[data-testid="policy-attached-details-save"]').click();
-            cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
-            cy.visit(`/publisher/apis/${apiId}/scopes`);
-            cy.visit(`/publisher/apis/${apiId}/policies`);
-            cy.wait(2000);
+            cy.logoutFromPublisher();
 
         });
     });
