@@ -70,6 +70,7 @@ describe("Add key manager", () => {
             cy.contains(claimKey2).should('exist');
             cy.contains(claimValueRegex2).should('exist');
             cy.get('button.MuiButton-containedPrimary span').contains('Add').click();
+            cy.wait(1000);
 
             // validating
             cy.get('td > div').contains(km).should('exist');
