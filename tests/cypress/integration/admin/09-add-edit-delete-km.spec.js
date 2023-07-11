@@ -22,8 +22,8 @@ describe("Add key manager", () => {
 
     const { carbonUsername, carbonPassword, tenant, superTenant } = Utils.getUserInfo();
 
-    const addKeyManager = (usernameLocal, passwordLocal, tenant) => {
-        cy.loginToAdmin(usernameLocal, passwordLocal, tenant);
+    const addKeyManager = (usernameLocal, passwordLocal) => {
+        cy.loginToAdmin(usernameLocal, passwordLocal);
         const km = 'myAuth0';
         const wellKnowUrl = 'https://my-tenant.us.auth0.com/.well-known/openid-configuration';
         const clientId = 'test';
@@ -96,6 +96,6 @@ describe("Add key manager", () => {
         addKeyManager(carbonUsername, carbonPassword, superTenant);
     });
     it.only("Add key manager - tenant user", () => {
-        addKeyManager(carbonUsername, carbonPassword, tenant);
+        addKeyManager(Utils.getTenantUser(carbonUsername, tenant), carbonPassword, tenant);
     });
 })

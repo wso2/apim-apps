@@ -50,9 +50,6 @@ Cypress.Commands.add('carbonLogout', () => {
 })
 
 Cypress.Commands.add('portalLogin', (username, password, portal, tenant='carbon.super') => {
-    if (tenant != 'carbon.super') {
-        username = `${username}@${tenant}`;
-    }
     Cypress.log({
         name: 'portalLogin',
         message: `${username} | ${password}`,
@@ -79,8 +76,8 @@ Cypress.Commands.add('loginToDevportal', (username, password) => {
     cy.portalLogin(username, password, 'devportal');
 })
 
-Cypress.Commands.add('loginToAdmin', (username, password, tenant = 'carbon.super') => {
-    cy.portalLogin(username, password, 'admin', tenant);
+Cypress.Commands.add('loginToAdmin', (username, password) => {
+    cy.portalLogin(username, password, 'admin');
 })
 
 Cypress.Commands.add('addNewTenant', (tenant = 'wso2.com', username = 'admin', password = 'admin') => {
