@@ -93,9 +93,9 @@ describe("Add key manager", () => {
         cy.get('td > div').contains(km).should('not.exist');
     }
     it.only("Add key manager - super admin", () => {
-        addKeyManager(carbonUsername, carbonPassword, superTenant);
+        addKeyManager(carbonUsername, carbonPassword);
     });
     it.only("Add key manager - tenant user", () => {
-        addKeyManager(Utils.getTenantUser(carbonUsername, tenant), carbonPassword, tenant);
+        addKeyManager(Utils.getTenantUser(carbonUsername, tenant), carbonPassword);
     });
 })
