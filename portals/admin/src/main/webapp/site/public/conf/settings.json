@@ -8,6 +8,9 @@
     "origin": {
       "host": "localhost"
     },
+    "workflows": {
+      "limit": 30
+    },
     "feedback": {
       "enable": false,
       "serviceURL": ""
