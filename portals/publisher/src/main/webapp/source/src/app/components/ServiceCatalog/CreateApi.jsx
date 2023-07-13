@@ -257,20 +257,85 @@ function CreateApi(props) {
                 break;
             }
             case 'context': {
-                const contextValidity = APIValidation.apiContext.required().validate(value, { abortEarly: false })
+                let contextValidity = APIValidation.apiContext.required().validate(value, { abortEarly: false })
                     .error;
                 const apiContext = value.includes('/') ? value : '/' + value;
                 if (contextValidity === null) {
-                    APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
-                        if (result.body.list.length > 0 && checkContext(value, result.body.list[0].context)) {
+                    const splitContext = apiContext.split('/');
+                    for (const param of splitContext) {
+                        if (param !== null && param !== '{version}') {
+                            if (param.includes('{version}')) {
+                                contextValidity = APIValidation.apiContextWithoutKeyWords.required()
+                                    .validate(value, { abortEarly: false }).error;
+                                updateValidity({
+                                    ...validity,
+                                    context: {
+                                        details: [{
+                                            message: '{version} cannot exist as a substring in a path param'
+                                        }]
+                                    },
+                                });
+                            } else if (param.includes('{') || param.includes('}')) {
+                                contextValidity = APIValidation.apiContextWithoutKeyWords.required()
+                                    .validate(value, { abortEarly: false }).error;
+                                updateValidity({
+                                    ...validity,
+                                    context: {
+                                        details: [{
+                                            message: '{ or } cannot exist as a substring in a path param'
+                                        }]
+                                    },
+                                });
+                            }
+                        }
+                    }
+
+                    let charCount = 0;
+
+                    if (contextValidity === null) {
+                        for (const a of apiContext) {
+                            if (a === '(') {
+                                charCount++;
+                            } else if (a === ')') {
+                                charCount--;
+                            }
+                            if (charCount < 0) {
+                                updateValidity({
+                                    ...validity,
+                                    context: {
+                                        details: [{
+                                            message: 'Parentheses should be balanced in API context'
+                                        }]
+                                    },
+                                });
+                            }
+                        }
+
+                        if (charCount > 0) {
                             updateValidity({
                                 ...validity,
-                                context: { details: [{ message: apiContext + ' context already exists' }] },
+                                context: {
+                                    details: [{
+                                        message: 'Parentheses should be balanced in API context'
+                                    }]
+                                },
                             });
-                        } else {
-                            updateValidity({ ...validity, context: contextValidity, version: null });
                         }
-                    });
+                    }
+
+                    if (contextValidity === null && charCount === 0) {
+                        APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
+                            const count = result.body.list.length;
+                            if (count > 0 && checkContext(value, result.body.list)) {
+                                updateValidity({
+                                    ...validity,
+                                    context: { details: [{ message: apiContext + ' context already exists' }] },
+                                });
+                            } else {
+                                updateValidity({ ...validity, context: contextValidity, version: null });
+                            }
+                        });
+                    }
                 } else {
                     updateValidity({ ...validity, context: contextValidity });
                 }
