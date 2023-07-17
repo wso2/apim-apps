@@ -584,6 +584,7 @@ class SubscriptionsTable extends Component {
                 for (let i = 0; i < response.body.list.length; i++) {
                     const { subscriptionId } = response.body.list[i];
                     response.body.list[i].name = response.body.list[i].applicationInfo.name;
+                    response.body.list[i].subscriber = response.body.list[i].applicationInfo.subscriber;
                     const promisedInfo = api.getSubscriberInfo(subscriptionId);
                     promisedInfo
                         .then((resp) => {
@@ -732,7 +733,7 @@ class SubscriptionsTable extends Component {
                 },
             },
             {
-                name: 'applicationInfo.subscriber',
+                name: 'subscriber',
                 label: (
                     <FormattedMessage
                         id='Apis.Details.Subscriptions.Listing.column.header.subscriber'
@@ -774,9 +775,6 @@ class SubscriptionsTable extends Component {
                                                     <InfoIcon color='action' />
                                                 </Typography>
                                             </Grid>
-                                            <Grid item>
-                                                {value}
-                                            </Grid>
                                         </Grid>
                                     </Tooltip>
                                 </Box>
@@ -784,6 +782,7 @@ class SubscriptionsTable extends Component {
                         }
                         return null;
                     },
+                    filter: true,
                 },
             },
             {
