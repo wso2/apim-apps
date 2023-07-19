@@ -264,6 +264,7 @@ export default function AccessControl(props) {
                                 key={key}
                                 size='small'
                                 label={value}
+                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                 onDelete={() => {
                                     handleRoleDeletion(value);
                                 }}
