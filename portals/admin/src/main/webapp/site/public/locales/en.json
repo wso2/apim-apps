@@ -290,6 +290,7 @@
   "KeyManagers.AddEditKeyManager.token.handling.options": "Token Handling Options",
   "KeyManagers.AddEditKeyManager.token.validation.method": "Token Validation Method",
   "KeyManagers.AddEditKeyManager.useIntrospect": "Use introspect",
+  "KeyManagers.AddEditKeyManager.usages": "Key Manager - usages",
   "KeyManagers.AddEditTokenExchangeIDP.form.Issuer": "Issuer",
   "KeyManagers.AddEditTokenExchangeIDP.form.issuer.help": "E.g.,: https://localhost:9443/oauth2/token",
   "KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint": "Token Endpoint",
@@ -316,6 +317,7 @@
   "KeyManagers.ListKeyManagers.table.header.label.name": "Name",
   "KeyManagers.ListKeyManagers.table.header.label.provider": "Provider",
   "KeyManagers.ListKeyManagers.table.header.label.tokenType": "Type",
+  "KeyManagers.ListKeyManagers.table.header.label.usage": "Usage",
   "Keymanager.Claim.Action": "Action",
   "Keymanager.KeyValidation.Action": "Action",
   "Keymanager.KeyValidation.ClaimKey": "Claim Key",
@@ -790,5 +792,13 @@
   "error.list.404": "404 : The page cannot be found.",
   "error.list.404.description": "The page you are looking for might have been removed,  had its name changed or is temporarily unavailable.",
   "error.list.500": "500 : The page cannot be displayed.",
-  "error.list.500.description": "The server encountered an internal error or misconfiguration and was unable to complete your request."
+  "error.list.500.description": "The server encountered an internal error or misconfiguration and was unable to complete your request.",
+  "Api.Name": "API Name",
+  "Api.Version": "Version",
+  "Api.Context": "Context",
+  "Api.Status": "Status",
+  "Api.SubscriptionCount": "Subscription Count",
+  "Api.Owner": "Owner",
+  "KeyManagers.ListKeyManagerUsages.quota.apis.count": "APIs Count",
+  "KeyManagers.ListKeyManagerUsages.quota.applications.count": "Applications Count"
 }

@@ -301,6 +301,27 @@ export default function ListKeyManagers() {
                 sort: false,
             },
         },
+        {
+            name: 'usage',
+            label: intl.formatMessage({
+                id: 'KeyManagers.ListKeyManagers.table.header.label.usage',
+                defaultMessage: 'Usage',
+            }),
+            options: {
+                customBodyRender: (value, tableMeta) => {
+                    if (typeof tableMeta.rowData === 'object') {
+                        const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
+                        return (
+                            <RouterLink to={`/settings/key-managers/usages/${artifactId}`}>
+                                <ThreeSixty aria-label='key-manager-delete-icon' />
+                            </RouterLink>
+                        );
+                    } else {
+                        return <div />;
+                    }
+                },
+            },
+        },
         { name: 'enabled', options: { display: false } },
         { name: 'id', options: { display: false } },
         { name: 'isGlobal', options: { display: false } },
