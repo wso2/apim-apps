@@ -164,6 +164,17 @@ function ListKeyManagerUsages() {
                 filter: true,
             },
         },
+        {
+            name: 'keyManagerEntry',
+            label: intl.formatMessage({
+                id: 'Api.keyManagerEntry',
+                defaultMessage: 'Key Managers',
+            }),
+            options: {
+                sort: false,
+                filter: true,
+            },
+        },
     ];
 
     const columApplicationProps = [
