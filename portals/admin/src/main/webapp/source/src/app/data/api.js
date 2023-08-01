@@ -881,6 +881,18 @@ class API extends Resource {
     }
 
     /**
+     * Check whether the key manager is deletable or not.
+     */
+    isKeyManagerDeletable(keyManagerId) {
+        return this.client.then((client) => {
+            return client.apis['Key Manager (Individual)'].get_key_managers_is_deletable__keyManagerId_(
+                { keyManagerId: keyManagerId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Add an Key Manager
      */
     addKeyManager(body) {
