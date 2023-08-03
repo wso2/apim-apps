@@ -876,6 +876,7 @@ class TokenManager extends React.Component {
                                             hashEnabled={keymanager.enableTokenHashing || hashEnabled}
                                             keyManagerConfig={keymanager}
                                             mode={mode}
+                                            loadApplication={this.loadApplication}
                                         />
                                     </Box>
                                     <Typography className={classes.subTitle} variant='h6' component='h6'>
@@ -1106,6 +1107,7 @@ class TokenManager extends React.Component {
                                                     hashEnabled={keymanager.enableTokenHashing || hashEnabled}
                                                     keyManagerConfig={keymanager}
                                                     mode={mode}
+                                                    loadApplication={this.loadApplication}
                                                 />
                                             </Box>
                                             <Typography className={classes.subTitle} variant='h6' component='h6'>
@@ -1142,6 +1144,7 @@ class TokenManager extends React.Component {
                                                     callbackError={hasError}
                                                     setValidating={this.setValidating}
                                                     defaultTokenEndpoint={defaultTokenEndpoint}
+                                                    selectedApp={selectedApp}
                                                 />
                                                 <div className={classes.generateWrapper}>
                                                     <ScopeValidation
@@ -1227,6 +1230,7 @@ class TokenManager extends React.Component {
                                                         callbackError={hasError}
                                                         setValidating={this.setValidating}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
+                                                        selectedApp={selectedApp}
                                                     />
                                                 </Box>
                                             </TabPanel>

@@ -17,6 +17,8 @@
  */
 import React from 'react';
 import { styled } from '@mui/material/styles';
+import API from 'AppData/api';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
@@ -130,6 +132,28 @@ class ViewKeys extends React.Component {
      * Fetch Application object by ID coming from URL path params and fetch related keys to display
      */
     componentDidMount() {
+        this.getGeneratedKeys();
+    }
+
+    /**
+     * Adding this here becasue it is not possible to add in the render method becasue isKeyJWT in state is used
+     * to close the dialog box and render method will casue this to be always true and cannot close the box.
+     * Rule is ignored becasue according to react docs its ok to setstate as long as we are checking a condition
+     * This is an ani pattern to be fixed later.
+     *  wso2/product-apim#5293
+     * https://reactjs.org/docs/react-component.html#componentdidupdate
+     * @param {*} prevProps previous props
+     * @memberof ViewKeys
+     */
+    componentDidUpdate(prevProps) {
+        const { isKeyJWT } = this.props;
+        if (isKeyJWT && !prevProps.isKeyJWT) {
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({ isKeyJWT: true });
+        }
+    }
+
+    getGeneratedKeys = () => {
         const { accessTokenRequest } = this.state;
         const { keyType } = this.props;
         this.applicationPromise
@@ -217,6 +241,29 @@ class ViewKeys extends React.Component {
      * */
     handleClickOpen = () => {
         this.setState({ open: true, showToken: false });
+    };
+
+    /**
+     * Handle onCLick of remove keys
+     * */
+    handleClickRemove = (keyMappingId) => {
+        const { selectedTab, keyType, intl, loadApplication } = this.props;
+        this.applicationPromise
+            .then((application) => {
+                return application.cleanUpKeys(keyType, selectedTab, keyMappingId);
+            })
+            .then((result) => {
+                if (result) {
+                    loadApplication();
+                    Alert.info(intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.TokenManager.key.cleanupall.success',
+                        defaultMessage: 'Application keys removed successfully',
+                    }));
+                }
+            })
+            .catch((error) => {
+                throw (error);
+            });
     };
 
     /**
@@ -604,11 +651,12 @@ class ViewKeys extends React.Component {
                                         />
                                     </Button>
                                 )}
-                                <Button 
-                                onClick={this.handleClose} 
-                                id='generate-access-token-close-btn'
-                                color='primary' 
-                                autoFocus>
+                                <Button
+                                    onClick={this.handleClose}
+                                    id='generate-access-token-close-btn'
+                                    color='primary'
+                                    autoFocus
+                                >
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ViewKeys.consumer.close.btn'
                                         defaultMessage='Close'
@@ -650,6 +698,25 @@ class ViewKeys extends React.Component {
                                         defaultMessage='CURL to Generate Access Token'
                                     />
                                 </Button>
+                                {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
+                                    && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
+                                    && mode !== 'MAPPED'
+                                    && (
+                                        <Button
+                                            id='remove-generated-keys'
+                                            variant='outlined'
+                                            size='small'
+                                            color='secondary'
+                                            className={classes.margin}
+                                            onClick={() => this.handleClickRemove(keyMappingId)}
+                                            disabled={!supportedGrantTypesUnchanged.includes('client_credentials')}
+                                        >
+                                            <FormattedMessage
+                                                id='Shared.AppsAndKeys.ViewKeys.remove.keys'
+                                                defaultMessage='Remove Keys'
+                                            />
+                                        </Button>
+                                    )}
                             </div>
                         )}
                         {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
@@ -681,4 +748,4 @@ ViewKeys.propTypes = {
     mode: PropTypes.string,
 };
 
-export default injectIntl((ViewKeys));
+export default injectIntl(withRouter(withStyles(styles)(ViewKeys)));
