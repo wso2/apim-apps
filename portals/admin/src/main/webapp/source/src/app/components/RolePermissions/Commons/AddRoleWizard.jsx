@@ -157,12 +157,14 @@ export default function AddRoleWizard(props) {
                 return;
             }
             const updatedRoleAliases = [...roleAliases.list];
-            const targetRole = updatedRoleAliases.find(({ role }) => role === mappedRole);
-            if (targetRole) {
-                targetRole.aliases.push(newRole);
-            } else {
-                updatedRoleAliases.push({ role: mappedRole, aliases: [newRole] });
-            }
+            mappedRole.forEach((mappedRoleElement) => {
+                const targetRole = updatedRoleAliases.find(({ role }) => role === mappedRoleElement);
+                if (targetRole) {
+                    targetRole.aliases.push(newRole);
+                } else {
+                    updatedRoleAliases.push({ role: mappedRoleElement, aliases: [newRole] });
+                }
+            });
             PermissionAPI.updateRoleAliases(updatedRoleAliases).then((response) => {
                 setRoleAliases(response.body);
                 Alert.info(
