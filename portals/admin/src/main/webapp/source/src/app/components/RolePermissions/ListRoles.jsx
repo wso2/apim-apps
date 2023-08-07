@@ -320,6 +320,7 @@ export default function ListRoles() {
                                 display='inline'
                                 fontSize={10}
                                 fontWeight='fontWeightLight'
+                                data-testid={mapping.aliases}
                             >
                                 {mapping.aliases.map((alias) => (
                                     <Box
