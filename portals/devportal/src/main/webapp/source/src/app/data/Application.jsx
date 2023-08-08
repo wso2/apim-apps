@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import APIClientFactory from './APIClientFactory';
 import Resource from './Resource';
 import Utils from './Utils';
@@ -88,11 +87,11 @@ export default class Application extends Resource {
                 const keys = keysResponse.obj.list;
                 this._setKeys(keys);
                 this._setTokens(keys);
-                if (keyType === 'PRODUCTION'){
+                if (keyType === 'PRODUCTION') {
                     return this.productionKeys;
                 } else {
                     return this.sandboxKeys;
-                }         
+                }
             });
     }
 
@@ -107,10 +106,10 @@ export default class Application extends Resource {
      * @returns {promise} Set the generated token into current
      * instance and return tokenObject received as Promise object
      */
-    generateToken(selectedTab, type, validityPeriod, selectedScopes, isTokenExchange
-                  , externalToken) {
+    generateToken(selectedTab, type, validityPeriod, selectedScopes, isTokenExchange,
+        externalToken) {
         if (isTokenExchange) {
-           const defaultKMTab = "Resident Key Manager";
+            const defaultKMTab = 'Resident Key Manager';
             const promiseToken = this.getKeys()
                 .then(() => this.client)
                 .then((client) => {
@@ -121,7 +120,7 @@ export default class Application extends Resource {
                         keys = this.sandboxKeys.get(defaultKMTab);
                     }
                     keys.additionalProperties.subject_token = externalToken;
-                    const keyMappingId = keys.keyMappingId;
+                    const { keyMappingId } = keys;
                     let accessToken;
                     if (type === 'PRODUCTION') {
                         accessToken = this.productionTokens.get(defaultKMTab);
@@ -133,11 +132,11 @@ export default class Application extends Resource {
                         validityPeriod,
                         revokeToken: accessToken.accessToken,
                         scopes: selectedScopes,
-                        grantType: "TOKEN_EXCHANGE",
+                        grantType: 'TOKEN_EXCHANGE',
                         additionalProperties: keys.additionalProperties,
                     };
-                    const payload = {applicationId: this.id, keyMappingId: keyMappingId};
-                    const body = {requestBody: requestContent};
+                    const payload = { applicationId: this.id, keyMappingId };
+                    const body = { requestBody: requestContent };
                     return client.apis['Application Tokens']
                         .post_applications__applicationId__oauth_keys__keyMappingId__generate_token(payload, body);
                 });
@@ -160,7 +159,7 @@ export default class Application extends Resource {
                     } else {
                         keys = this.sandboxKeys.get(selectedTab);
                     }
-                    const keyMappingId = keys.keyMappingId;
+                    const { keyMappingId } = keys;
                     let accessToken;
                     if (type === 'PRODUCTION') {
                         accessToken = this.productionTokens.get(selectedTab);
@@ -174,8 +173,8 @@ export default class Application extends Resource {
                         scopes: selectedScopes,
                         additionalProperties: keys.additionalProperties,
                     };
-                    const payload = {applicationId: this.id, keyMappingId: keyMappingId};
-                    const body = {requestBody: requestContent};
+                    const payload = { applicationId: this.id, keyMappingId };
+                    const body = { requestBody: requestContent };
                     return client.apis['Application Tokens']
                         .post_applications__applicationId__oauth_keys__keyMappingId__generate_token(payload, body);
                 });
@@ -236,13 +235,32 @@ export default class Application extends Resource {
      */
     cleanUpKeys(keyType, keyManager, keyMappingId) {
         const requestContent = {
-            keyType, 
+            keyType,
             keyMappingId,
             keyManager,
         };
         const payload = { applicationId: this.id, keyMappingId, body: requestContent };
         return this.client.then((client) => client.apis['Application Keys']
             .post_applications__applicationId__oauth_keys__keyMappingId__clean_up(payload))
+            .then((response) => {
+                if (keyType === 'PRODUCTION') {
+                    this.productionKeys = new Map();
+                } else {
+                    this.sandboxKeys = new Map();
+                }
+                return response.ok;
+            });
+    }
+
+    removeKeys(keyType, keyManager, keyMappingId) {
+        const requestContent = {
+            keyType,
+            keyMappingId,
+            keyManager,
+        };
+        const payload = { applicationId: this.id, keyMappingId, body: requestContent };
+        return this.client.then((client) => client.apis['Application Keys']
+            .post_applications__applicationId__oauth_keys__keyMappingId__remove_keys(payload))
             .then((response) => {
                 if (keyType === 'PRODUCTION') {
                     this.productionKeys = new Map();
@@ -276,7 +294,7 @@ export default class Application extends Resource {
                 callbackUrl,
                 keyType,
                 tokenType,
-                additionalProperties
+                additionalProperties,
             };
             const payload = { applicationId: this.id, keyMappingId };
             return client.apis['Application Keys'].put_applications__applicationId__oauth_keys__keyMappingId_(
@@ -336,7 +354,9 @@ export default class Application extends Resource {
      */
     provideKeys(keyType, consumerKey, consumerSecret, keyManager) {
         const promisedKeys = this.client.then((client) => {
-            const requestContent = { consumerKey, consumerSecret, keyType, keyManager};
+            const requestContent = {
+                consumerKey, consumerSecret, keyType, keyManager,
+            };
             const payload = { applicationId: this.id };
             const body = { requestBody: requestContent };
             return client.apis['Application Keys'].post_applications__applicationId__map_keys(payload, body);

@@ -250,7 +250,7 @@ class ViewKeys extends React.Component {
         const { selectedTab, keyType, intl, loadApplication } = this.props;
         this.applicationPromise
             .then((application) => {
-                return application.cleanUpKeys(keyType, selectedTab, keyMappingId);
+                return application.removeKeys(keyType, selectedTab, keyMappingId);
             })
             .then((result) => {
                 if (result) {

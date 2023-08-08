@@ -45,6 +45,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 const styles = {
     searchBar: {
@@ -313,7 +314,7 @@ export default function ListKeyManagers() {
                         const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
                         return (
                             <RouterLink to={`/settings/key-managers/usages/${artifactId}`}>
-                                <ThreeSixty aria-label='key-manager-delete-icon' />
+                                <FormatListBulletedIcon aria-label='key-manager-delete-icon' />
                             </RouterLink>
                         );
                     } else {

@@ -164,17 +164,6 @@ function ListKeyManagerUsages() {
                 filter: true,
             },
         },
-        {
-            name: 'keyManagerEntry',
-            label: intl.formatMessage({
-                id: 'Api.keyManagerEntry',
-                defaultMessage: 'Key Managers',
-            }),
-            options: {
-                sort: false,
-                filter: true,
-            },
-        },
     ];
 
     const columApplicationProps = [
@@ -193,7 +182,7 @@ function ListKeyManagerUsages() {
             name: 'owner',
             label: intl.formatMessage({
                 id: 'Aplication.Owner',
-                defaultMessage: 'Aplication owner',
+                defaultMessage: 'Aplication Owner',
             }),
             options: {
                 sort: false,
@@ -233,12 +222,12 @@ function ListKeyManagerUsages() {
     const options = {
         filterType: 'checkbox',
         selectableRows: 'none',
-        filter: false,
-        search: false,
+        filter: true,
+        search: true,
         print: false,
         download: false,
         viewColumns: false,
-        customToolbar: null,
+        customToolbar: false,
         responsive: 'stacked',
     };
     if (data && data.length === 0) {
@@ -327,11 +316,6 @@ function ListKeyManagerUsages() {
                                             defaultMessage='Key Manager Usage'
                                         />
                                     </Typography>
-                                    <Box pb={1}>
-                                        <Typography variant='body2' color='textSecondary' component='p'>
-                                            TODO
-                                        </Typography>
-                                    </Box>
                                 </Grid>
                                 <Grid item>
                                     <HelpBase>
@@ -361,7 +345,7 @@ function ListKeyManagerUsages() {
                             </Grid>
                         </Toolbar>
                     </Grid>
-                    <Grid item xs={11} sm={8}>
+                    <Grid item xs={8}>
                         <Box pt={6} position='relative'>
                             <Grid item xs={12}>
                                 <Box pl={2}>
@@ -370,16 +354,14 @@ function ListKeyManagerUsages() {
                                     </Typography>
                                 </Box>
                             </Grid>
+
+                            <Grid item xs={12}>
+                                <MUIAlert severity='info' variant=''>
+                                    {data.apiCount === 1 ? '1 API is using this keymanager specifically.'
+                                        : data.apiCount + ' APIs are using this keymanager specifically.'}
+                                </MUIAlert>
+                            </Grid>
                             <Paper>
-                                <Grid item xs={12}>
-                                    <MUIAlert severity='info' variant='outlined'>
-                                        Threre are
-                                        {' '}
-                                        {data.apiCount}
-                                        {' '}
-                                        APIs using this keymanager specifically.
-                                    </MUIAlert>
-                                </Grid>
                                 {data && data.apis.length > 0 && (
                                     <MUIDataTable
                                         title={null}
@@ -397,36 +379,40 @@ function ListKeyManagerUsages() {
                                 )}
                             </Paper>
                             <Box mt={4} backgroundColor='black' />
+                            <Grid item xs={12}>
+                                <Box pl={2}>
+                                    <Typography variant='h6' gutterBottom>
+                                        Application Usages
+                                    </Typography>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <MUIAlert severity='info' variant=''>
+                                    {data.applicationCount === 1 ? '1 Application is using this '
+                                            + 'keymanager specifically.'
+                                        : data.applicationCount + ' Applications are using this '
+                                            + 'keymanager specifically.'}
+                                </MUIAlert>
+                            </Grid>
                             <Paper>
                                 <Grid item xs={12}>
-                                    <Box pl={2}>
-                                        <Typography variant='h6' gutterBottom>
-                                            Application Usages
-                                        </Typography>
-                                    </Box>
-                                    <MUIAlert severity='info' variant='outlined'>
-                                        Threre are
-                                        {' '}
-                                        {data.applicationCount}
-                                        {' '}
-                                        APIs using this keymanager specifically.
-                                    </MUIAlert>
+                                    {data && data.applications.length > 0 && (
+                                        <MUIDataTable
+                                            title={null}
+                                            data={data.applications}
+                                            columns={columnsApplications}
+                                            options={options}
+                                        />
+                                    )}
+                                    {data && data.applications.length === 0 && (
+                                        <div className={classes.contentWrapper}>
+                                            <Typography color='textSecondary' align='center'>
+                                                {noDataMessage}
+                                            </Typography>
+                                        </div>
+                                    )}
                                 </Grid>
-                                {data && data.applications.length > 0 && (
-                                    <MUIDataTable
-                                        title={null}
-                                        data={data.applications}
-                                        columns={columnsApplications}
-                                        options={options}
-                                    />
-                                )}
-                                {data && data.applications.length === 0 && (
-                                    <div className={classes.contentWrapper}>
-                                        <Typography color='textSecondary' align='center'>
-                                            {noDataMessage}
-                                        </Typography>
-                                    </div>
-                                )}
                             </Paper>
                         </Box>
                     </Grid>
