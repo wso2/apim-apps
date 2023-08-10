@@ -698,25 +698,6 @@ class ViewKeys extends React.Component {
                                         defaultMessage='CURL to Generate Access Token'
                                     />
                                 </Button>
-                                {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
-                                    && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
-                                    && mode !== 'MAPPED'
-                                    && (
-                                        <Button
-                                            id='remove-generated-keys'
-                                            variant='outlined'
-                                            size='small'
-                                            color='secondary'
-                                            className={classes.margin}
-                                            onClick={() => this.handleClickRemove(keyMappingId)}
-                                            disabled={!supportedGrantTypesUnchanged.includes('client_credentials')}
-                                        >
-                                            <FormattedMessage
-                                                id='Shared.AppsAndKeys.ViewKeys.remove.keys'
-                                                defaultMessage='Remove Keys'
-                                            />
-                                        </Button>
-                                    )}
                             </div>
                         )}
                         {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
