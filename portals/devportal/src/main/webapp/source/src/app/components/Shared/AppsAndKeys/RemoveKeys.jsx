@@ -31,7 +31,7 @@ function RemoveKeys(props) {
         keyMappingId, keys, selectedTab, handleClickRemove,
     } = props;
 
-    const handleClickOpen = () => {  
+    const handleClickOpen = () => {
         setOpen(true);
     };
 
@@ -40,7 +40,7 @@ function RemoveKeys(props) {
     };
 
     const handleRemove = () => {
-        handleClickRemove(keyMappingId)
+        handleClickRemove(keyMappingId);
     };
 
     return (
@@ -65,18 +65,33 @@ function RemoveKeys(props) {
                 aria-labelledby='alert-dialog-title'
                 aria-describedby='alert-dialog-description'
             >
-                <DialogTitle id='alert-dialog-title'>Do you really want to remove keys?</DialogTitle>
+                <DialogTitle id='alert-dialog-title'>
+                    <FormattedMessage
+                        id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.title'
+                        defaultMessage='Do you really want to remove keys?'
+                    />
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        This will remove the key entries stored in devportal, gateway as well as in the service provider.
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.content'
+                            defaultMessage='This will remove the key entries stored in devportal, 
+                            gateway as well as in the service provider.'
+                        />
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color='primary'>
-                        Cancel
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.Cancel'
+                            defaultMessage='Cancel'
+                        />
                     </Button>
                     <Button onClick={handleRemove} color='primary' autoFocus>
-                        Delete
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.Delete'
+                            defaultMessage='Delete'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -39,7 +39,7 @@ function CleanKeys(props) {
         setOpen(false);
     };
 
-    const handleRemove = () => {
+    const handleClean = () => {
         handleClickClean(keyMappingId);
     };
 
@@ -65,18 +65,33 @@ function CleanKeys(props) {
                 aria-labelledby='alert-dialog-title'
                 aria-describedby='alert-dialog-description'
             >
-                <DialogTitle id='alert-dialog-title'>Do you really want to remove keys?</DialogTitle>
+                <DialogTitle id='alert-dialog-title'>
+                    <FormattedMessage
+                        id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.title'
+                        defaultMessage='Do you really want to remove keys?'
+                    />
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        This will remove only the key entries stored in devportal, gateway and will not remove the service proveder keys.
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.clean.keys.dialog.content'
+                            defaultMessage='This will remove only the key entries stored in devportal,
+                            gateway and will not remove the service proveder keys.'
+                        />
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color='primary'>
-                        Cancel
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.Cancel'
+                            defaultMessage='Cancel'
+                        />
                     </Button>
-                    <Button onClick={handleRemove} color='primary' autoFocus>
-                        Delete
+                    <Button onClick={handleClean} color='primary' autoFocus>
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.Delete'
+                            defaultMessage='Delete'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
