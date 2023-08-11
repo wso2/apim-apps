@@ -37,7 +37,6 @@ import API from 'AppData/api';
 import Table from '@mui/material/Table';
 import TokenExchangeKeyConfiguration from 'AppComponents/Shared/AppsAndKeys/TokenExchangeKeyConfiguration';
 import TableRow from '@mui/material/TableRow';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
     Dialog,
     DialogActions, DialogContent,
@@ -55,6 +54,8 @@ import WaitingForApproval from './WaitingForApproval';
 import { ScopeValidation, resourceMethods, resourcePaths } from '../ScopeValidation';
 import TokenMangerSummary from './TokenManagerSummary';
 import Progress from '../Progress';
+import RemoveKeys from './RemoveKeys';
+import CleanKeys from './CleanKeys';
 
 const PREFIX = 'TokenManager';
 
@@ -932,39 +933,21 @@ class TokenManager extends React.Component {
                                                 mode !== 'MAPPED'
                                                     ? (
                                                         <Box ml={2}>
-                                                            <Button
-                                                                id='remove-generated-keys'
-                                                                variant='outlined'
-                                                                color='secondary'
-                                                                startIcon={<DeleteIcon />}
-                                                                className={classes.margin}
-                                                                onClick={() => this.handleClickClean(keyMappingId)}
-                                                                disabled={!keys.get(selectedTab)
-                                                                    .supportedGrantTypes.includes('client_credentials')}
-                                                            >
-                                                                <FormattedMessage
-                                                                    id='Shared.AppsAndKeys.ViewKeys.remove.keys'
-                                                                    defaultMessage='Remove Keys'
-                                                                />
-                                                            </Button>
+                                                            <RemoveKeys
+                                                                keys={keys}
+                                                                selectedTab={selectedTab}
+                                                                keyMappingId={keyMappingId}
+                                                                handleClickRemove={this.handleClickRemove}
+                                                            />
                                                         </Box>
                                                     ) : (
                                                         <Box ml={2}>
-                                                            <Button
-                                                                id='remove-generated-keys'
-                                                                variant='outlined'
-                                                                color='secondary'
-                                                                startIcon={<DeleteIcon />}
-                                                                className={classes.margin}
-                                                                onClick={() => this.handleClickClean(keyMappingId)}
-                                                                disabled={!keys.get(selectedTab)
-                                                                    .supportedGrantTypes.includes('client_credentials')}
-                                                            >
-                                                                <FormattedMessage
-                                                                    id='Shared.AppsAndKeys.ViewKeys.remove.mapping'
-                                                                    defaultMessage='Remove MApping'
-                                                                />
-                                                            </Button>
+                                                            <CleanKeys
+                                                                keys={keys}
+                                                                selectedTab={selectedTab}
+                                                                keyMappingId={keyMappingId}
+                                                                handleClickClean={this.handleClickClean}
+                                                            />
                                                         </Box>
                                                     ))}
                                     </Box>
