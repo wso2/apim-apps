@@ -306,7 +306,7 @@ class TokenManager extends React.Component {
         } = this.props;
         this.application
             .then((application) => {
-                return application.cleanUpKeys(keyType, selectedTab, keyMappingId);
+                return application.removeKeys(keyType, selectedTab, keyMappingId);
             })
             .then((result) => {
                 if (result) {
