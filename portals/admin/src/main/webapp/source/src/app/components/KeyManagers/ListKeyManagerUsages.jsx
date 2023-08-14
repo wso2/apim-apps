@@ -64,6 +64,15 @@ const useStyles = makeStyles((theme) => ({
         textDecoration: 'none',
         backgroundColor: theme.palette.error.light,
     },
+    pageTitle: {
+        minHeight: 43,
+        backgroundColor: '#f6f6f6',
+    },
+    root: {
+        flexGrow: 1,
+        minHeight: 'calc(100vh - (100px))',
+        backgroundColor: '#eaeff1',
+    },
 }));
 
 /**
