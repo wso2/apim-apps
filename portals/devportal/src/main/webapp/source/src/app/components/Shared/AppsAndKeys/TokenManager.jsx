@@ -901,8 +901,7 @@ class TokenManager extends React.Component {
                                                 />
                                             </Box>
                                         )}
-                                        {(keymanager.enableTokenGeneration && keys.get(selectedTab)
-                                            && keys.get(selectedTab).supportedGrantTypes.find((a) => a.includes('client_credentials')))
+                                        {(keymanager.enableTokenGeneration && keys.get(selectedTab))
                                             && (
                                                 mode !== 'MAPPED'
                                                     ? (

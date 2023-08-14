@@ -51,8 +51,6 @@ function CleanKeys(props) {
                 color='secondary'
                 startIcon={<DeleteIcon />}
                 onClick={handleClickOpen}
-                disabled={!keys.get(selectedTab)
-                    .supportedGrantTypes.includes('client_credentials')}
             >
                 <FormattedMessage
                     id='Shared.AppsAndKeys.ViewKeys.remove.keys'
