@@ -6463,6 +6463,12 @@
       "value": "AWS Lambda Settings"
     }
   ],
+  "Apis.Details.Resources.components.operationComponents.AWSLambdaSettings.encode": [
+    {
+      "type": 0,
+      "value": "Check if request body should be base64 encoded"
+    }
+  ],
   "Apis.Details.Resources.components.operationComponents.AddParameter.add": [
     {
       "type": 0,
