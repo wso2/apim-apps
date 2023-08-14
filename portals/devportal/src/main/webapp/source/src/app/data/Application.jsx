@@ -226,32 +226,6 @@ export default class Application extends Resource {
         });
     }
 
-    /** *
-     * Cleanup Consumer Secret and Consumer Key for this application instance
-     * @param {string} keyType Key type either `Production` or `SandBox`
-     * @param {object} keyManager keyManager configuration object
-     * @returns {promise} Set the generated token into current instance and return tokenObject
-     * received as Promise object
-     */
-    cleanUpKeys(keyType, keyManager, keyMappingId) {
-        const requestContent = {
-            keyType,
-            keyMappingId,
-            keyManager,
-        };
-        const payload = { applicationId: this.id, keyMappingId, body: requestContent };
-        return this.client.then((client) => client.apis['Application Keys']
-            .post_applications__applicationId__oauth_keys__keyMappingId__clean_up(payload))
-            .then((response) => {
-                if (keyType === 'PRODUCTION') {
-                    this.productionKeys = new Map();
-                } else {
-                    this.sandboxKeys = new Map();
-                }
-                return response.ok;
-            });
-    }
-
     removeKeys(keyType, keyManager, keyMappingId) {
         const requestContent = {
             keyType,

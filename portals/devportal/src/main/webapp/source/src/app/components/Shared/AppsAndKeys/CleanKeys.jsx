@@ -28,7 +28,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 function CleanKeys(props) {
     const [open, setOpen] = React.useState(false);
     const {
-        keyMappingId, keys, selectedTab, handleClickClean,
+        keyMappingId, keys, selectedTab, handleClickRemove,
     } = props;
 
     const handleClickOpen = () => {

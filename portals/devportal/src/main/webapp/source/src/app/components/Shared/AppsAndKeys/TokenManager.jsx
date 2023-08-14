@@ -297,31 +297,6 @@ class TokenManager extends React.Component {
             });
     };
 
-    /**
-     * Handle onClick of remove keys
-     * */
-    handleClickClean = (keyMappingId) => {
-        const {
-            selectedTab, keyType, intl,
-        } = this.props;
-        this.application
-            .then((application) => {
-                return application.removeKeys(keyType, selectedTab, keyMappingId);
-            })
-            .then((result) => {
-                if (result) {
-                    this.loadApplication();
-                    Alert.info(intl.formatMessage({
-                        id: 'Shared.AppsAndKeys.TokenManager.key.cleanupall.success',
-                        defaultMessage: 'Application keys removed successfully',
-                    }));
-                }
-            })
-            .catch((error) => {
-                throw (error);
-            });
-    };
-
     getDefaultAdditionalProperties(selectedKM) {
         const { availableGrantTypes, applicationConfiguration } = selectedKM;
         // Fill the keyRequest.additionalProperties from the selectedKM.applicationConfiguration defaultValues.
@@ -926,7 +901,6 @@ class TokenManager extends React.Component {
                                                 />
                                             </Box>
                                         )}
-                                        {console.log(mode)}
                                         {(keymanager.enableTokenGeneration && keys.get(selectedTab)
                                             && keys.get(selectedTab).supportedGrantTypes.find((a) => a.includes('client_credentials')))
                                             && (
@@ -946,7 +920,7 @@ class TokenManager extends React.Component {
                                                                 keys={keys}
                                                                 selectedTab={selectedTab}
                                                                 keyMappingId={keyMappingId}
-                                                                handleClickClean={this.handleClickClean}
+                                                                handleClickRemove={this.handleClickRemove}
                                                             />
                                                         </Box>
                                                     ))}
