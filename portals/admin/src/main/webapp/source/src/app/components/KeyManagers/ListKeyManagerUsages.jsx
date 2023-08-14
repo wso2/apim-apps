@@ -364,7 +364,10 @@ function ListKeyManagerUsages() {
                             <Grid item xs={12}>
                                 <Box pl={2}>
                                     <Typography variant='h6' gutterBottom>
-                                        API Usages
+                                        <FormattedMessage
+                                            id='KeyManagers.AddEditKeyManager.api.usages'
+                                            defaultMessage='API Usages'
+                                        />
                                     </Typography>
                                 </Box>
                             </Grid>
@@ -405,7 +408,10 @@ function ListKeyManagerUsages() {
                                     <Grid item xs={12}>
                                         <Box pl={2}>
                                             <Typography variant='h8' gutterBottom>
-                                                No API usages for this keymanager specifically.
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.api.no.usages'
+                                                    defaultMessage='No API usages for this keymanager specifically.'
+                                                />
                                             </Typography>
                                         </Box>
                                     </Grid>
@@ -414,7 +420,10 @@ function ListKeyManagerUsages() {
                             <Grid item xs={12}>
                                 <Box pl={2}>
                                     <Typography variant='h6' gutterBottom>
-                                        Application Usages
+                                        <FormattedMessage
+                                            id='KeyManagers.AddEditKeyManager.appplicarion.usages'
+                                            defaultMessage='Application Usages'
+                                        />
                                     </Typography>
                                 </Box>
                             </Grid>
@@ -457,7 +466,10 @@ function ListKeyManagerUsages() {
                                     <Grid item xs={12}>
                                         <Box pl={2}>
                                             <Typography variant='h8' gutterBottom>
-                                                No Application usages for this keymanager specifically.
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.appplicarion.no.usages'
+                                                    defaultMessage='No Application usages for this keymanager specifically.'
+                                                />
                                             </Typography>
                                         </Box>
                                     </Grid>
