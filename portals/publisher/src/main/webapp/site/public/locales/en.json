@@ -534,13 +534,7 @@
   "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg": [
     {
       "type": 0,
-      "value": "This feature is deprecated. Please use the WSO2 Integration Studio as an alternative"
-    }
-  ],
-  "Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg": [
-    {
-      "type": 0,
-      "value": "Integration Studio Documentation:"
+      "value": "APIM supports only a limited set of capabilities with this feature. If you want to process complex WSDL/XML schema, please refer to the following documentation."
     }
   ],
   "Apis.Create.WSDL.ApiCreateWSDL.error.policies.not.available": [
