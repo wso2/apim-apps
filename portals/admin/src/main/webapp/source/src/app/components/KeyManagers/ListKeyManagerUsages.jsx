@@ -358,29 +358,33 @@ function ListKeyManagerUsages() {
                                 ? (
                                     <>
                                         <Grid item xs={12}>
-                                            <Typography variant='h6' gutterBottom>
-                                                {data.apiCount === 1 ? '1 API is using this keymanager specifically.'
-                                                    : data.apiCount + ' APIs are using this keymanager specifically.'}
-                                            </Typography>
+                                            <Box pl={2}>
+                                                <Typography variant='h8' gutterBottom>
+                                                    {data.apiCount === 1 ? '1 API is using this keymanager specifically.'
+                                                        : data.apiCount + ' APIs are using this keymanager specifically.'}
+                                                </Typography>
+                                            </Box>
                                         </Grid>
-                                        <Paper>
-                                            {data && data.apis.length > 0 && (
-                                                <MUIDataTable
-                                                    title={null}
-                                                    data={data.apis}
-                                                    columns={columnsApis}
-                                                    options={options}
-                                                />
-                                            )}
-                                            {data && data.apis.length === 0 && (
-                                                <div className={classes.contentWrapper}>
-                                                    <Typography color='textSecondary' align='center'>
-                                                        {noDataMessage}
-                                                    </Typography>
-                                                </div>
-                                            )}
-                                        </Paper>
-
+                                        <Box mt={4} backgroundColor='black' />
+                                        <Box pl={2}>
+                                            <Paper>
+                                                {data && data.apis.length > 0 && (
+                                                    <MUIDataTable
+                                                        title={null}
+                                                        data={data.apis}
+                                                        columns={columnsApis}
+                                                        options={options}
+                                                    />
+                                                )}
+                                                {data && data.apis.length === 0 && (
+                                                    <div className={classes.contentWrapper}>
+                                                        <Typography color='textSecondary' align='center'>
+                                                            {noDataMessage}
+                                                        </Typography>
+                                                    </div>
+                                                )}
+                                            </Paper>
+                                        </Box>
                                     </>
                                 )
                                 : (
@@ -433,7 +437,6 @@ function ListKeyManagerUsages() {
                                                 )}
                                             </Paper>
                                         </Box>
-
                                     </>
                                 )
                                 : (
@@ -447,7 +450,6 @@ function ListKeyManagerUsages() {
                                 )}
                         </Box>
                     </Grid>
-
                 </Grid>
             </div>
         </>

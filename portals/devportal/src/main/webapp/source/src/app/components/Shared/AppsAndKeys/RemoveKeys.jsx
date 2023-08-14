@@ -75,7 +75,7 @@ function RemoveKeys(props) {
                     <DialogContentText id='alert-dialog-description'>
                         <FormattedMessage
                             id='Applications.Listing.DeleteConfirmation.remove.keys.dialog.content'
-                            defaultMessage='This will remove the key entries stored in devportal, 
+                            defaultMessage='This will remove the key entries stored in devportal,
                             gateway as well as in the service provider.'
                         />
                     </DialogContentText>

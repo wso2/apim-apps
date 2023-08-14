@@ -38,7 +38,7 @@ function Delete({ updateList, dataRow }) {
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const fetchData = () => {
         const restApi = new API();
-        restApi.isKeyManagerDeletable(id)
+        restApi.getKeyManagerUsages(id)
             .then((result) => {
                 if (result.body) {
                     setDeleteData(false);
