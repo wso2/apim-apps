@@ -86,6 +86,7 @@ function ListKeyManagerUsages() {
     const restApi = new API();
     const classes = useStyles();
     const [hasListPermission, setHasListPermission] = useState(true);
+    const [kmName, setKmName] = useState('');
     const [errorMessage, setError] = useState(null);
     const { id } = useParams();
 
@@ -128,6 +129,9 @@ function ListKeyManagerUsages() {
 
     useEffect(() => {
         fetchData();
+        restApi.keyManagerGet(id).then((result) => {
+            setKmName(result.body.name);
+        });
     }, []);
 
     const pageProps = {
@@ -322,8 +326,9 @@ function ListKeyManagerUsages() {
                                     <Typography color='inherit' variant='h5' component='h1'>
                                         <FormattedMessage
                                             id='KeyManagers.AddEditKeyManager.usages'
-                                            defaultMessage='Key Manager Usage'
+                                            defaultMessage='Key Manager Usages - '
                                         />
+                                        {kmName}
                                     </Typography>
                                 </Grid>
                                 <Grid item>

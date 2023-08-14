@@ -290,7 +290,7 @@
   "KeyManagers.AddEditKeyManager.token.handling.options": "Token Handling Options",
   "KeyManagers.AddEditKeyManager.token.validation.method": "Token Validation Method",
   "KeyManagers.AddEditKeyManager.useIntrospect": "Use introspect",
-  "KeyManagers.AddEditKeyManager.usages": "Key Manager - usages",
+  "KeyManagers.AddEditKeyManager.usages": "Key Manager Usages - ",
   "KeyManagers.AddEditTokenExchangeIDP.form.Issuer": "Issuer",
   "KeyManagers.AddEditTokenExchangeIDP.form.issuer.help": "E.g.,: https://localhost:9443/oauth2/token",
   "KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint": "Token Endpoint",

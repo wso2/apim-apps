@@ -40,7 +40,7 @@ function CleanKeys(props) {
     };
 
     const handleClean = () => {
-        handleClickClean(keyMappingId);
+        handleClickRemove(keyMappingId);
     };
 
     return (
