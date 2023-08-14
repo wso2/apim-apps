@@ -32,7 +32,7 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
  * @returns {JSX} Loading animation.
  */
 function Delete({ updateList, dataRow }) {
-    const [deletaData, setDeleteData] = React.useState(false);
+    const [deletaData, setDeleteData] = React.useState(true);
     const { id, type, isGlobal } = dataRow;
     const { isSuperTenant, user: { _scopes } } = useAppContext();
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
@@ -40,15 +40,14 @@ function Delete({ updateList, dataRow }) {
         const restApi = new API();
         restApi.getKeyManagerUsages(id)
             .then((result) => {
-                if (result.body) {
-                    setDeleteData(true);
+                if (result.body.apiCount === 0 && result.body.applicationCount === 0) {
+                    setDeleteData(false);
                 }
             })
             .catch((error) => {
                 const { status } = error;
                 throw (error);
             });
-        console.log(id);
     };
 
     useEffect(() => {
