@@ -154,6 +154,7 @@ function AdminTableBody(props) {
                                     padding={multiSelect ? 'none' : 'default'}
                                     align={index === 0 ? 'left' : 'right'}
                                     data-testid={column}
+                                    style={{ maxWidth: '800px' }}
                                 >
                                     {column}
                                 </TableCell>

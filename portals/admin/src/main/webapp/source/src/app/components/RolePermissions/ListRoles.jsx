@@ -312,22 +312,30 @@ export default function ListRoles() {
                 <AdminTableHead headCells={headCells} />
                 <TableBody rows={Object.entries(searchPermissionMappings).map(([role, mapping]) => {
                     return [mapping.aliases ? (
-                        <Box display='inline'>
+                        <Box display='grid'>
                             {role}
                             <Box
-                                borderRadius={16}
-                                borderColor='info.main'
-                                ml={2}
                                 mr={2}
-                                pl={1}
                                 pr={1}
-                                border={1}
                                 display='inline'
                                 fontSize={10}
                                 fontWeight='fontWeightLight'
+                                data-testid={mapping.aliases}
                             >
-                                {/* TODO: Do support multiple aliases from UI ~tmkb  */}
-                                {mapping.aliases[0]}
+                                {mapping.aliases.map((alias) => (
+                                    <Box
+                                        borderRadius={16}
+                                        borderColor='info.main'
+                                        display='inline-block'
+                                        border={1}
+                                        pr={1}
+                                        mr={1}
+                                        pl={1}
+                                        mt={1}
+                                    >
+                                        {alias}
+                                    </Box>
+                                ))}
                             </Box>
                         </Box>
                     ) : role,

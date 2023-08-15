@@ -98,8 +98,15 @@ export default function AddRoleWizard(props) {
     const handleNext = () => {
         if (!validation.role && newRole) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        } else if (newRole === '') {
+            Alert.warning(
+                intl.formatMessage({
+                    id: 'RolePermissions.Common.AddRoleWizard.add.role.warn.empty',
+                    defaultMessage: 'Role name can not be empty!',
+                }),
+            );
         } else {
-            Alert.warning('Role name can not be empty!');
+            Alert.warning(validation.role);
         }
     };
 
@@ -150,12 +157,14 @@ export default function AddRoleWizard(props) {
                 return;
             }
             const updatedRoleAliases = [...roleAliases.list];
-            const targetRole = updatedRoleAliases.find(({ role }) => role === mappedRole);
-            if (targetRole) {
-                targetRole.aliases.push(newRole);
-            } else {
-                updatedRoleAliases.push({ role: mappedRole, aliases: [newRole] });
-            }
+            mappedRole.forEach((mappedRoleElement) => {
+                const targetRole = updatedRoleAliases.find(({ role }) => role === mappedRoleElement);
+                if (targetRole) {
+                    targetRole.aliases.push(newRole);
+                } else {
+                    updatedRoleAliases.push({ role: mappedRoleElement, aliases: [newRole] });
+                }
+            });
             PermissionAPI.updateRoleAliases(updatedRoleAliases).then((response) => {
                 setRoleAliases(response.body);
                 Alert.info(
