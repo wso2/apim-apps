@@ -174,28 +174,26 @@ export default function ApiCreateWSDL(props) {
         <APICreateBase
             title={(
                 <>
-                    <Box mb={2}>
-                        <MUIAlert severity='warning'>
-                            <AlertTitle>
-                                <FormattedMessage
-                                    id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg'
-                                    defaultMessage='This feature is deprecated. 
-                                    Please use the WSO2 Integration Studio as an alternative'
-                                />
-                            </AlertTitle>
-                            <FormattedMessage
-                                id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg.info.link.msg'
-                                defaultMessage='Integration Studio Documentation: '
-                            />
-                            <MUILink
-                                // eslint-disable-next-line
-                                href={`https://apim.docs.wso2.com/en/4.2.0/integrate/develop/creating-artifacts/creating-an-api/`}
-                                target='_blank'>
-                                https://apim.docs.wso2.com/en/4.2.0/integrate/develop/
-                                creating-artifacts/creating-an-api/
-                            </MUILink>
-                        </MUIAlert>
-                    </Box>
+                    {wizardStep === 1 && apiInputs.type === "SOAPTOREST" && (
+                        <Box mb={2}>
+                            <MUIAlert severity='warning'>
+                                <AlertTitle>
+                                    <FormattedMessage
+                                        id='Apis.Create.WSDL.ApiCreateWSDL.deprecated.msg'
+                                        defaultMessage='APIM supports only a limited set of capabilities with
+                                        this feature. If you want to process complex WSDL/XML schema,
+                                        please refer to the following documentation.'
+                                    />
+                                </AlertTitle>
+                                <MUILink
+                                    // eslint-disable-next-line
+                                    href={`https://apim.docs.wso2.com/en/4.2.0/integrate/develop/creating-artifacts/creating-an-api/`}
+                                    target='_blank'>
+                                    WSO2 Integration Studio Documentation
+                                </MUILink>
+                            </MUIAlert>
+                        </Box>
+                    )}
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.WSDL.ApiCreateWSDL.heading'
