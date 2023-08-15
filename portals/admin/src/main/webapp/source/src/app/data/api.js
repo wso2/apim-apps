@@ -873,7 +873,7 @@ class API extends Resource {
      */
     getKeyManagerUsages(keyManagerId) {
         return this.client.then((client) => {
-            return client.apis['Key Manager (Individual)'].get_key_managers_usages__keyManagerId_(
+            return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId__usages(
                 { keyManagerId: keyManagerId },
                 this._requestMetaData(),
             );

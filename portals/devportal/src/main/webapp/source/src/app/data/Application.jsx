@@ -234,7 +234,7 @@ export default class Application extends Resource {
         };
         const payload = { applicationId: this.id, keyMappingId, body: requestContent };
         return this.client.then((client) => client.apis['Application Keys']
-            .post_applications__applicationId__oauth_keys__keyMappingId__remove_keys(payload))
+            .delete_applications__applicationId__oauth_keys__keyMappingId_(payload))
             .then((response) => {
                 if (keyType === 'PRODUCTION') {
                     this.productionKeys = new Map();
