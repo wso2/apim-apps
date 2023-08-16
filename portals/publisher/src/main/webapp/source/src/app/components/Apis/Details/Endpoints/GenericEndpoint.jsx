@@ -211,6 +211,7 @@ function GenericEndpoint(props) {
                                             aria-label='Settings'
                                             onClick={() => setAdvancedConfigOpen(index, type, category)}
                                             disabled={(isRestricted(['apim:api_create'], api))}
+                                            id={category + '-endpoint-configuration-icon-btn'}
                                         >
                                             <Tooltip
                                                 placement='top-start'
