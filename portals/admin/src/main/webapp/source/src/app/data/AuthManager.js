@@ -170,7 +170,6 @@ class AuthManager {
      * @returns
      */
     static hasBasicLoginPermission(scopes) {
-        console.log('scope-----', scopes);
         const workflowManager = 'workflowManager';
         const settingsManager = 'settingsManager';
         const policyManager = 'policyManager';
@@ -184,39 +183,6 @@ class AuthManager {
         || this.hasPermission(scopes, keyManagers)
         || this.hasPermission(scopes, categoriesManager)
         || this.hasPermission(scopes, gatewayManager));
-        // const isWorkflowManager = hasPermission(scopes);
-        // || (scopes.includes('apim:api_workflow_view')
-        // && scopes.includes('apim:api_workflow_approve')
-        // && scopes.includes('apim:tenantInfo')
-        // && scopes.includes('apim:admin_settings'))
-        // || (scopes.includes('apim:tier_view')
-        // && scopes.includes('apim:policies_import_export')
-        // && scopes.includes('apim:tier_manage')
-        // && scopes.includes('apim:bl_manage')
-        // && scopes.includes('apim:tenantInfo')
-        // && scopes.includes('apim:admin_settings')
-        // && scopes.includes('apim:bl_view'))
-        // || (scopes.includes('apim:admin_operations')
-        // && scopes.includes('openid'))
-        // || (scopes.includes('apim:environment_manage')
-        // && scopes.includes('openid')
-        // && scopes.includes('apim:environment_read'))
-        // || (scopes.includes('apim:app_owner_change')
-        // && scopes.includes('apim:app_import_export')
-        // && scopes.includes('apim:admin_application_view')
-        // && scopes.includes('apim:scope_manage')
-        // && scopes.includes('apim:role_manage'))
-        // || (scopes.includes('apim:admin_settings')
-        // && scopes.includes('openid')
-        // && scopes.includes('apim:tenantInfo')
-        // && scopes.includes('apim:admin_settings')
-        // && scopes.includes('apim:keymanagers_manage'))
-        // || (scopes.includes('apim:admin_settings')
-        // && scopes.includes('openid')
-        // && scopes.includes('apim:tenantInfo')
-        // && scopes.includes('apim:admin_settings')
-        // && scopes.includes('apim:scope_manage'))
-        // );
     }
 
     /**
