@@ -541,6 +541,7 @@ function AdvanceEndpointConfig(props) {
                     disabled={isRestricted(['apim:api_create'], api)}
                     variant='contained'
                     style={{ marginRight: '10px' }}
+                    id='endpoint-configuration-submit-btn'
                 >
                     <FormattedMessage
                         id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.config.save.button'

@@ -101,8 +101,7 @@ describe("Create GraphQl API from file", () => {
         cy.get('#ygtvcheck34 > .ygtvspacer').click();
         cy.get('#ygtvcheck48 > .ygtvspacer').click();
         cy.get('td.buttonRow').find('input').eq(1).click();
-        cy.get('.ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix>.\
-            ui-dialog-buttonset>.ui-button.ui-corner-all.ui-widget', {timeout:4000}).click();
+        cy.get('.ui-dialog-buttonpane .ui-dialog-buttonset .ui-button:contains("OK")', { timeout: 4000 }).click();
 
         cy.carbonLogout();
         

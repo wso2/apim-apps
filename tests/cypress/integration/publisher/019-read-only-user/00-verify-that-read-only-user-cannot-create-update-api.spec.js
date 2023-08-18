@@ -51,7 +51,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //add business info
         cy.get('#left-menu-itembusinessinfo').click();
-        cy.addBusinessInfo("John Yen", "john@abc.com", "Ann Ross", "ann@abc.com");
+        cy.addBusinessInfo("John Yen", "john@abc.com", "Ann Ross", "ann@abc.com", {delay: 100});
 
         //add document
         cy.get('#left-menu-itemdocuments').click();
