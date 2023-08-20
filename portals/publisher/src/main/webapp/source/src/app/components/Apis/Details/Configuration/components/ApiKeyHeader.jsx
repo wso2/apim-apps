@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -97,7 +97,7 @@ export default function ApiKeyHeader(props) {
                         )
                     }
                     InputProps={{
-                        id: 'itest-id-apiHeaderName-input',
+                        id: 'itest-id-apiKeyHeaderName-input',
                         onBlur: ({ target: { value } }) => {
                             validateHeader(value);
                         },
