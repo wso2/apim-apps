@@ -166,8 +166,9 @@ describe("Resource add edit operations", () => {
 
             // Go to local scope page
             cy.visit(`/publisher/apis/${apiId}/scopes/create`);
+            
 
-            cy.wait(2000);
+            cy.wait(3000);
             // Create a local scope
             cy.get('input#name').click({force:true});
             cy.get('input#name').type(scopeName, {force:true});
