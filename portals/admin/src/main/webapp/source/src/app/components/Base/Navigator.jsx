@@ -97,7 +97,6 @@ function Navigator(props) {
 
     const entireArray = [];
     const checkRouteMenuMapping = routeMenuMapping;
-    console.log('-----mapping-----------', JSON.stringify(routeMenuMapping));
     for (let i = 0; i < checkRouteMenuMapping.length; i++) {
         const adminRoute = routeMenuMapping;
         if (checkRouteMenuMapping[i].id === 'Dashboard') {
@@ -151,7 +150,6 @@ function Navigator(props) {
         }
         routeMenuMapping = entireArray;
         if (_scopes.includes('apim:admin')) {
-            console.log('-----mapping-----------', JSON.stringify(routeMenuMapping));
             routeMenuMapping = adminRoute;
         }
     }

@@ -24,7 +24,8 @@
       "categoriesManager": ["apim:api_category", "openid", "apim:tenantInfo", "apim:admin_settings"],
       "keyManagers": ["apim:keymanagers_manage", "openid", "apim:tenantInfo", "apim:admin_settings"],
       "gatewayManager": ["apim:environment_manage", "openid", "apim:admin_settings", "apim:environment_read"],
-      "settingsManager": ["apim:app_owner_change", "apim:app_import_export", "apim:admin_application_view","apim:scope_manage", "openid", "apim:admin_settings", "apim:tenantInfo"]
+      "settingsManager": ["apim:app_owner_change", "apim:app_import_export", "apim:admin_application_view","apim:scope_manage", "openid", 
+                          "apim:admin_settings", "apim:tenantInfo"]
       }
   }
 }
