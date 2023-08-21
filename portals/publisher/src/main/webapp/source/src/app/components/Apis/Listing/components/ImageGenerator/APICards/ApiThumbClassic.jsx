@@ -31,6 +31,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import green from '@material-ui/core/colors/green';
 import API from 'AppData/api';
 import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
 import BaseThumbnail from '../BaseThumbnail';
 
@@ -43,7 +44,7 @@ const styles = (theme) => ({
     providerText: {
         textTransform: 'capitalize',
     },
-    apiDetails: { padding: theme.spacing(1) },
+    apiDetails: { padding: theme.spacing(1), paddingBottom: 0 },
     apiActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)}px 8px` },
     deleteProgress: {
         color: green[200],
@@ -220,14 +221,19 @@ class APIThumb extends Component {
                 {api.advertiseOnly && (
                     <div className={classes.ribbon} data-testid='third-party-api-card-label'>third party</div>
                 )}
-                <CardMedia
-                    src='None'
-                    component={BaseThumbnail}
-                    height={theme.custom.thumbnail.height}
-                    width={theme.custom.thumbnail.width}
-                    title='Thumbnail'
-                    api={api}
-                />
+                <div style={{ position: "relative" }}>
+                    <CardMedia
+                        src='None'
+                        component={BaseThumbnail}
+                        height={theme.custom.thumbnail.height}
+                        width={theme.custom.thumbnail.width}
+                        title='Thumbnail'
+                        api={api}
+                    />
+                    <div style={{ position: "absolute", bottom: 0 }}>
+                        <MonetizationOnIcon fontSize='medium' style={{ color: '#FFD700', paddingLeft: '2px' }} />
+                    </div>
+                </div>
                 <CardContent className={classes.apiDetails}>
                     <div className={classes.textWrapper}>
                         <Link to={overviewPath}>
@@ -285,6 +291,52 @@ class APIThumb extends Component {
                             </div>
                         </div>
                     </div>
+                    <hr/>
+                    <div>
+                        <div className={classes.row}>
+                            <div>
+                                <Typography variant='caption' gutterBottom align='right' className={classes.context}>
+                                    <FormattedMessage
+                                        defaultMessage='Business Owner'
+                                        id='Apis.Listing.ApiThumb.business.owner'
+                                    />
+                                    <FormattedMessage id='colon' defaultMessage=' : ' />
+                                    Business Owner
+                                </Typography>
+                            </div>
+                            <div>
+                                <Typography variant='caption' gutterBottom align='right' className={classes.context}>
+                                    <FormattedMessage
+                                        defaultMessage='Business Owner Email'
+                                        id='Apis.Listing.ApiThumb.business.owner.email'
+                                    />
+                                    <FormattedMessage id='colon' defaultMessage=' : ' />
+                                    businessowner@xyz.com
+                                </Typography>
+                            </div>
+                            <div>
+                                <Typography variant='caption' gutterBottom align='right' className={classes.context}>
+                                    <FormattedMessage
+                                        defaultMessage='Technical Owner'
+                                        id='Apis.Listing.ApiThumb.business.owner'
+                                    />
+                                    <FormattedMessage id='colon' defaultMessage=' : ' />
+                                    Technical Owner
+                                </Typography>
+                            </div>
+                            <div>
+                                <Typography variant='caption' gutterBottom align='right' className={classes.context}>
+                                    <FormattedMessage
+                                        defaultMessage='Technical Owner Email'
+                                        id='Apis.Listing.ApiThumb.technical.owner'
+                                    />
+                                    <FormattedMessage id='colon' defaultMessage=' : ' />
+                                    technicalowner@xyz.com
+                                </Typography>
+                            </div>
+                        </div> 
+                    </div>
+                    <hr/>
                 </CardContent>
                 <CardActions className={classes.apiActions} data-testid={'card-action-' + api.name + api.version}>
                     <Chip
