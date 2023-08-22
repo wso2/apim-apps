@@ -161,6 +161,8 @@ const AdvertiseInfo = (props) => {
             setIsDisabled(!(validateUrl(advertiseInfo.apiExternalProductionEndpoint, false) && 
                 validateUrl(advertiseInfo.apiExternalSandboxEndpoint) && 
                 validateUrl(advertiseInfo.originalDevPortalUrl)));
+        } else {
+            setIsDisabled(false);
         }
     };
 
