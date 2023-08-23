@@ -94,9 +94,7 @@ describe("Depricate old versions of api before publishing", () => {
           ).should("be.checked");
           cy.get('[data-testid="Publish-btn"]').click();
 
-          cy.visit(`/publisher/apis`, {
-            timeout: Cypress.config().largeTimeout,
-          });
+          cy.visit(`/publisher/apis`, { timeout: Cypress.config().largeTimeout });
           publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
           cy.get("#searchQuery").type(apiName).type("{enter}");
           cy.wait(10000);

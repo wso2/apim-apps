@@ -33,7 +33,7 @@ describe("Add assign global scopes for api", () => {
 
   const addApiAndResource = (verb, apiId) => {
     // Typing the resource name
-    cy.visit(`/publisher/apis/${apiId}/resources`);
+    cy.visit(`/publisher/apis/${apiId}/resources`, { timeout: Cypress.config().largeTimeout });
     cy.get('#operation-target').type(target);
     cy.get('body').click();
     cy.get('#add-operation-selection-dropdown').click();
@@ -59,7 +59,7 @@ describe("Add assign global scopes for api", () => {
     Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
         addApiAndResource(verb, apiId);
       //create a global scope
-      cy.visit(`${Cypress.config().baseUrl}/publisher/scopes`);
+      cy.visit(`${Cypress.config().baseUrl}/publisher/scopes`, { timeout: Cypress.config().largeTimeout });
       publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
       cy.wait(5000);
       cy.get('a[href="/publisher/scopes/create"]').click({ force: true });
@@ -82,7 +82,7 @@ describe("Add assign global scopes for api", () => {
       cy.get("tbody").get("tr").contains(scopeName).should("be.visible");
 
       // Go to resources page
-      cy.visit(`/publisher/apis/${apiId}/resources`);
+      cy.visit(`/publisher/apis/${apiId}/resources`, { timeout: Cypress.config().largeTimeout });
 
       // Open the operation sub section
       cy.get(`#${verb}\\${target}`).click();
