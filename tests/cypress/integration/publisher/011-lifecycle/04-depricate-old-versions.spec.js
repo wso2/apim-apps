@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -26,7 +26,7 @@ describe("Depricate old versions of api before publishing", () => {
   const apiVersion = "1.0.0";
   const newVersion = "2.0.0";
 
-  const deployeandPublish = (apiId) => {
+  const deployandPublish = (apiId) => {
     // Going to deployments page
     cy.get("#left-menu-itemdeployments").click();
 
@@ -44,7 +44,6 @@ describe("Depricate old versions of api before publishing", () => {
       .should("not.have.class", "Mui-disabled")
       .should("exist");
 
-    // Going to lifecycle page
   };
 
   before(function () {
@@ -54,14 +53,16 @@ describe("Depricate old versions of api before publishing", () => {
   it.only("Depricate old versions of api before publishing", () => {
     Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then(
       (apiId) => {
-        cy.visit(`/publisher/apis/${apiId}/overview`, {timeout: Cypress.config().largeTimeout});
+        cy.visit(`/publisher/apis/${apiId}/overview`, {
+          timeout: Cypress.config().largeTimeout,
+        });
         cy.get("#itest-api-details-portal-config-acc").click();
         cy.get("#left-menu-itemsubscriptions").click();
         cy.get('[data-testid="policy-checkbox-silver"]').click();
         cy.get("#subscriptions-save-btn").click();
 
         // Going to deployments page and publish
-        deployeandPublish(apiId);
+        deployandPublish(apiId);
         cy.get("#left-menu-itemlifecycle").click();
         cy.wait(2000);
         cy.get('[data-testid="Publish-btn"]').click();
@@ -81,7 +82,7 @@ describe("Depricate old versions of api before publishing", () => {
         cy.url().then((url) => {
           const newAPIid = url.split("/")[5];
 
-          deployeandPublish(newAPIid);
+          deployandPublish(newAPIid);
 
           //depricate old version
           cy.get("#left-menu-itemlifecycle").click();
@@ -94,7 +95,9 @@ describe("Depricate old versions of api before publishing", () => {
           ).should("be.checked");
           cy.get('[data-testid="Publish-btn"]').click();
 
-          cy.visit(`/publisher/apis`, { timeout: Cypress.config().largeTimeout });
+          cy.visit(`/publisher/apis`, {
+            timeout: Cypress.config().largeTimeout,
+          });
           publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
           cy.get("#searchQuery").type(apiName).type("{enter}");
           cy.wait(10000);
@@ -108,8 +111,8 @@ describe("Depricate old versions of api before publishing", () => {
             .contains("DEPRECATED")
             .should("exist");
 
-            Utils.deleteAPI(apiId);
-            Utils.deleteAPI(newAPIid);
+          Utils.deleteAPI(apiId);
+          Utils.deleteAPI(newAPIid);
         });
       }
     );

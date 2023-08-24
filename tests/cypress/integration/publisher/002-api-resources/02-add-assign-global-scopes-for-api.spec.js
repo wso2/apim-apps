@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -29,37 +29,38 @@ describe("Add assign global scopes for api", () => {
   const role = "internal/publisher";
   const apiName = Utils.generateName();
   const apiVersion = "1.0.0";
-  const target = '/test';
+  const target = "/test";
 
   const addApiAndResource = (verb, apiId) => {
     // Typing the resource name
-    cy.visit(`/publisher/apis/${apiId}/resources`, { timeout: Cypress.config().largeTimeout });
-    cy.get('#operation-target').type(target);
-    cy.get('body').click();
-    cy.get('#add-operation-selection-dropdown').click();
+    cy.visit(`/publisher/apis/${apiId}/resources`, {
+      timeout: Cypress.config().largeTimeout,
+    });
+    cy.get("#operation-target").type(target);
+    cy.get("body").click();
+    cy.get("#add-operation-selection-dropdown").click();
 
     // Checking all the operations
     cy.get(`#add-operation-${verb}`).click();
 
-    cy.get('body').click();
-    cy.get('#add-operation-button').click();
-    cy.get('#resources-save-operations').click();
+    cy.get("body").click();
+    cy.get("#add-operation-button").click();
+    cy.get("#resources-save-operations").click();
 
     // Validating if the resource exists after saving
-    cy.get('#resources-save-operations', { timeout: 30000 });
+    cy.get("#resources-save-operations", { timeout: 30000 });
 
-    cy.get(`#${verb}\\${target}`).should('be.visible');
-}
-
-  
+    cy.get(`#${verb}\\${target}`).should("be.visible");
+  };
 
   it("Add assign global scopes for api", () => {
-
     cy.loginToPublisher(carbonUsername, carbonPassword);
     Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-        addApiAndResource(verb, apiId);
+      addApiAndResource(verb, apiId);
       //create a global scope
-      cy.visit(`${Cypress.config().baseUrl}/publisher/scopes`, { timeout: Cypress.config().largeTimeout });
+      cy.visit(`${Cypress.config().baseUrl}/publisher/scopes`, {
+        timeout: Cypress.config().largeTimeout,
+      });
       publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
       cy.wait(5000);
       cy.get('a[href="/publisher/scopes/create"]').click({ force: true });
@@ -75,14 +76,18 @@ describe("Add assign global scopes for api", () => {
       cy.get("#description").type(scopeDescription);
 
       cy.get('input[placeholder="Enter roles and press Enter"]').click();
-      cy.get('input[placeholder="Enter roles and press Enter"]').type(`${role}{enter}`);
+      cy.get('input[placeholder="Enter roles and press Enter"]').type(
+        `${role}{enter}`
+      );
 
-      cy.get('button > span').contains("Save").click();
+      cy.get("button > span").contains("Save").click();
 
       cy.get("tbody").get("tr").contains(scopeName).should("be.visible");
 
       // Go to resources page
-      cy.visit(`/publisher/apis/${apiId}/resources`, { timeout: Cypress.config().largeTimeout });
+      cy.visit(`/publisher/apis/${apiId}/resources`, {
+        timeout: Cypress.config().largeTimeout,
+      });
 
       // Open the operation sub section
       cy.get(`#${verb}\\${target}`).click();
@@ -98,10 +103,7 @@ describe("Add assign global scopes for api", () => {
         .contains(scopeName)
         .should("be.visible");
 
-        Utils.deleteAPI(apiId);
+      Utils.deleteAPI(apiId);
     });
-
-    
-
   });
 });
