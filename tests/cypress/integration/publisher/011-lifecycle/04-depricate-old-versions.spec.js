@@ -43,7 +43,6 @@ describe("Depricate old versions of api before publishing", () => {
     cy.get("#undeploy-btn")
       .should("not.have.class", "Mui-disabled")
       .should("exist");
-
   };
 
   before(function () {
@@ -118,3 +117,4 @@ describe("Depricate old versions of api before publishing", () => {
     );
   });
 });
+
