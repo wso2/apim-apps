@@ -107,4 +107,3 @@ describe("Add assign global scopes for api", () => {
     });
   });
 });
-

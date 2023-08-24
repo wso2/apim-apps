@@ -71,4 +71,3 @@ describe("add nested comments", () => {
     Utils.deleteAPI(testApiId);
   });
 });
-

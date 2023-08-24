@@ -48,4 +48,3 @@ describe("Add tags for the api", () => {
     });
   });
 });
-
