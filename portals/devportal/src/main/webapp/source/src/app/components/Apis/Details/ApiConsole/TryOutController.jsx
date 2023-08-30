@@ -454,7 +454,7 @@ function TryOutController(props) {
         isOAuthEnabled = api.securityScheme.includes('oauth2');
         isTestKeyEnabled = api.securityScheme.includes('test_auth');
         if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
-            authorizationHeader = 'apikey';
+            authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
             prefix = '';
         }
         if (isTestKeyEnabled && securitySchemeType === 'TEST') {

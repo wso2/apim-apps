@@ -510,7 +510,7 @@ class ApiConsole extends React.Component {
         if (api && api.securityScheme) {
             isApiKeyEnabled = api.securityScheme.includes('api_key');
             if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
-                authorizationHeader = 'apikey';
+                authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
             }
         }
         let swaggerSpec = swagger;

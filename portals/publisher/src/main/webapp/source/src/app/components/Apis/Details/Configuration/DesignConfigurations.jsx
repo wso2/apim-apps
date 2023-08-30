@@ -195,6 +195,7 @@ function configReducer(state, configAction) {
         case 'description':
         case 'isDefaultVersion':
         case 'authorizationHeader':
+        case 'apiKeyHeader':
         case 'responseCachingEnabled':
         case 'cacheTimeout':
         case 'enableSchemaValidation':
@@ -524,7 +525,7 @@ export default function DesignConfigurations() {
                                         </Grid>
                                     </Box>
                                     <Box py={1}>
-                                        <AccessControl api={apiConfig} configDispatcher={configDispatcher}  
+                                        <AccessControl api={apiConfig} configDispatcher={configDispatcher}
                                             setIsDisabled={setErrorInAccessRoles} />
                                     </Box>
                                     <Box py={1}>
@@ -567,9 +568,9 @@ export default function DesignConfigurations() {
                                     </Box>
                                     <Box pt={2}>
                                         <Button
-                                            disabled={errorInAccessRoles || 
-                                                errorInRoleVisibility || 
-                                                restricted || 
+                                            disabled={errorInAccessRoles ||
+                                                errorInRoleVisibility ||
+                                                restricted ||
                                                 errorInTags ||
                                                 errorInExternalEndpoints}
                                             type='submit'
