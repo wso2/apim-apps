@@ -702,6 +702,9 @@
   "Apis.Details.Configurartion.components.QueryAnalysis.edit": {
     "defaultMessage": "Edit Complexity Values"
   },
+  "Apis.Details.Configuration.ApiKeyHeader.helper.text": {
+    "defaultMessage": "ApiKey header name cannot contain spaces or special characters"
+  },
   "Apis.Details.Configuration.AuthHeader.helper.text": {
     "defaultMessage": "Authorization header name cannot contain spaces or special characters"
   },
@@ -713,6 +716,9 @@
   },
   "Apis.Details.Configuration.Components.MaxBackendTps.maximum.backend.throughput": {
     "defaultMessage": "Backend Throughput"
+  },
+  "Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip": {
+    "defaultMessage": "The header name that is used to send the api key information. \"ApiKey\" is the default header."
   },
   "Apis.Details.Configuration.Configuration.AuthHeader.tooltip": {
     "defaultMessage": "The header name that is used to send the authorization information. \"Authorization\" is the default header."
@@ -728,6 +734,9 @@
   },
   "Apis.Details.Configuration.Configuration.Endpoints.edit.api.endpoints": {
     "defaultMessage": "Edit API Endpoints"
+  },
+  "Apis.Details.Configuration.Configuration.apiKey.header.label": {
+    "defaultMessage": "ApiKey Header"
   },
   "Apis.Details.Configuration.Configuration.auth.header.label": {
     "defaultMessage": "Authorization Header"
@@ -2184,6 +2193,9 @@
   "Apis.Details.LifeCycle.CheckboxLabels.endpoints.provided": {
     "defaultMessage": "Endpoint provided"
   },
+  "Apis.Details.LifeCycle.CheckboxLabels.mandatory.properties.provided": {
+    "defaultMessage": "Mandatory Properties provided"
+  },
   "Apis.Details.LifeCycle.LifeCycle.change.not.allowed": {
     "defaultMessage": "* You are not authorized to change the life cycle state of the API due to insufficient permissions"
   },
@@ -2907,10 +2919,16 @@
   "Apis.Details.Properties.\n                                                            Properties.editable.show.in.devporal": {
     "defaultMessage": "Show in devportal"
   },
+  "Apis.Details.Properties.\n                                                    Properties.editable.show.in.devporal": {
+    "defaultMessage": "Show in devportal"
+  },
+  "Apis.Details.Properties.Properties.\n                                                                            show.add.property.custom.property.name": {
+    "defaultMessage": "{message}"
+  },
   "Apis.Details.Properties.Properties.\n                                                                    show.add.property.invalid.error": {
     "defaultMessage": "Invalid property name"
   },
-  "Apis.Details.Properties.Properties.\n                                                                show.add.property.property.name": {
+  "Apis.Details.Properties.Properties.\n                                                            show.add.property.property.name": {
     "defaultMessage": "Name"
   },
   "Apis.Details.Properties.Properties.\n                                property.name.exists": {

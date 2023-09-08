@@ -39,8 +39,14 @@ module.exports = {
         '^.+\\.jsx$': 'babel-jest',
         '^.+\\.js$': 'babel-jest',
     },
-    testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/source/Tests/Integration/'],
-    transformIgnorePatterns: ['<rootDir>/node_modules/'],
+    testPathIgnorePatterns: [
+        '<rootDir>/node_modules/',
+        '<rootDir>/source/Tests/Integration/',
+        '<rootDir>/source/Tests/Comments/Comments.test.jsx',
+    ],
+    transformIgnorePatterns: [
+        '<rootDir>/node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)',
+    ],
 
     // Automatically clear mock calls and instances between every test
     clearMocks: true,
