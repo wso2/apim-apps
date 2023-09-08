@@ -68,9 +68,22 @@ module.exports = function (env, argv) {
                 AppComponents: path.resolve(__dirname, 'source/src/app/components/'),
                 AppTests: path.resolve(__dirname, 'source/Tests/'),
             },
-            extensions: ['.mjs', '.js', '.jsx'],
+            extensions: ['.js', '.jsx'],
+            fallback: {
+                "fs": false,
+                "tls": false,
+                "net": false,
+                "path": false,
+                "zlib": false,
+                "http": false,
+                "https": false,
+                "stream": false,
+                "process": false,
+                "crypto": false,
+                "crypto-browserify": require.resolve('crypto-browserify'),
+                "buffer": require.resolve('buffer/'),
+            },
         },
-        node: { fs: 'empty' },
         devServer: {
             open: true,
             openPage: 'devportal',
@@ -133,20 +146,33 @@ module.exports = function (env, argv) {
                 },
                 {
                     test: /\.(woff|woff2|eot|ttf|svg)$/,
-                    loader: 'url-loader?limit=100000',
+                    use: [
+                        {
+                            loader: 'url-loader',
+                            options: {
+                                limit: 100000,
+                            },
+                        }
+                    ]
                 },
                 // Until we migrate to webpack 5 https://github.com/jantimon/html-webpack-plugin/issues/1483 ~tmkb
                 // This is added to generate the index.jsp from a hbs template file including the hashed bundle file
                 {
                     test: /\.jsp\.hbs$/,
                     loader: 'underscore-template-loader',
-                    query: {
+                    options: {
                         engine: 'lodash',
                         interpolate: '\\{\\[(.+?)\\]\\}',
                         evaluate: '\\{%([\\s\\S]+?)%\\}',
                         escape: '\\{\\{(.+?)\\}\\}',
                     },
                 },
+                {
+                    test: /\.m?js/,
+                    resolve: {
+                      fullySpecified: false,
+                    },
+                }
             ],
         },
         externals: {
@@ -172,6 +198,10 @@ module.exports = function (env, argv) {
                 // e.g. Output each progress message directly to the console:
                 const pres = Math.round(percentage * 100);
                 if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
+            }),
+            new webpack.ProvidePlugin({
+                Buffer: ['buffer', 'Buffer'],
+                process: 'process/browser',
             }),
         ],
     };

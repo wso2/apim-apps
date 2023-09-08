@@ -347,6 +347,7 @@
   "Manage.Alerts.unsubscribe.success.msg": "Unsubscribed from all alerts successfully.",
   "RolePermissions.Common.AddRoleWizard.add.mapping.button": "Add scope mapping",
   "RolePermissions.Common.AddRoleWizard.add.mapping.title": "Add new scope mapping",
+  "RolePermissions.Common.AddRoleWizard.add.role.warn.empty": "Role name can not be empty!",
   "RolePermissions.Common.AddRoleWizard.add.scope.error": "Something went wrong while adding new scope mapping",
   "RolePermissions.Common.DeletePermission.delete.scope.error": "Something went wrong while deleting the scope assignments",
   "RolePermissions.ListRoles.error.retrieving.perm": "Error while retrieving permission info",

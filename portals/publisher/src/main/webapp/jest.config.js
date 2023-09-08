@@ -48,7 +48,9 @@ module.exports = {
         '<rootDir>/source/Tests/Integration/',
         '<rootDir>/source/src/app/components/Apis/Details/NewOverview/Overview.test.jsx',
         '<rootDir>/source/src/app/components/Apis/Create/GraphQL/ApiCreateGraphQL.test.tsx'],
-    transformIgnorePatterns: ['<rootDir>/node_modules/'],
+    transformIgnorePatterns: [
+        "<rootDir>/node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
+    ],
 
     // Automatically clear mock calls and instances between every test
     clearMocks: true,

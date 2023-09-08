@@ -347,6 +347,7 @@
   "Manage.Alerts.unsubscribe.success.msg": "",
   "RolePermissions.Common.AddRoleWizard.add.mapping.button": "",
   "RolePermissions.Common.AddRoleWizard.add.mapping.title": "",
+  "RolePermissions.Common.AddRoleWizard.add.role.warn.empty": "",
   "RolePermissions.Common.AddRoleWizard.add.scope.error": "",
   "RolePermissions.Common.DeletePermission.delete.scope.error": "",
   "RolePermissions.ListRoles.error.retrieving.perm": "",
