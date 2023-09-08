@@ -80,6 +80,7 @@ module.exports = function (env, argv) {
                 "process": false,
                 "stream": require.resolve("stream-browserify"),
                 "crypto": require.resolve('crypto-browserify'),
+                "crypto-browserify": require.resolve('crypto-browserify'),
                 "buffer": require.resolve('buffer/'),
             },
         },
