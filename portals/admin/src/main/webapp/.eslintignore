@@ -2,3 +2,4 @@
 /node_modules/**
 /coverage/**
 /source/Tests/**
+/source/src/app/components/Shared/ChipInput.js
