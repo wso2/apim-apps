@@ -33,7 +33,7 @@ import { injectIntl, defineMessages } from 'react-intl';
 import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import Box from '@material-ui/core/Box';
-import ChipInput from 'material-ui-chip-input';
+import ChipInput from 'AppComponents/Shared/ChipInput';
 
 
 const styles = theme => ({

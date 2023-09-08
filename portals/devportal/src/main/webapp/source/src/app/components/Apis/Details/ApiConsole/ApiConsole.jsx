@@ -363,7 +363,7 @@ class ApiConsole extends React.Component {
      * @memberof ApiConsole
    */
     convertToPostman(fr) {
-        openapiToPostman.convert({ type: 'string', data: fr },
+        openapiToPostman.convert(fr,
             {}, (err, conversionResult) => {
                 if (!conversionResult.result) {
                     const collection = swaggerToPostman.convert(fr);

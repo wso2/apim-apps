@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import ReactDiffViewer from 'react-diff-viewer';
+import ReactDiffViewer from 'react-diff-viewer-continued';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import ServiceCatalog from 'AppData/ServiceCatalog';
 import CircularProgress from '@material-ui/core/CircularProgress';
