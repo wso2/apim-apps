@@ -24,6 +24,13 @@ import Paper from '@material-ui/core/Paper';
 import { Link, useHistory } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import FormGroup from '@material-ui/core/FormGroup';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { FormattedMessage } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import ArrowForwardIcon from '@material-ui/icons/SettingsEthernet';
@@ -34,6 +41,10 @@ import API from 'AppData/api';
 import Endpoints from './components/Endpoints';
 import KeyManager from './components/KeyManager';
 import APILevelRateLimitingPolicies from './components/APILevelRateLimitingPolicies';
+import {
+    DEFAULT_API_SECURITY_OAUTH2,
+    API_SECURITY_API_KEY
+} from './components/APISecurity/components/apiSecurityConstants';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -95,6 +106,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         height: '100%',
     },
+    error: {
+        color: theme.palette.error.main,
+    }
 }));
 
 /**
@@ -177,6 +191,13 @@ export default function RuntimeConfiguration() {
                     nextState.keyManagers = ['all'];
                 }
                 return nextState;
+            case 'securityScheme':
+                if (value.checked) {
+                    nextState.securityScheme = [...nextState.securityScheme, value.value];
+                } else {
+                    nextState.securityScheme = nextState.securityScheme.filter((item) => item !== value.value);
+                }
+                return nextState;
             default:
                 return state;
         }
@@ -186,6 +207,23 @@ export default function RuntimeConfiguration() {
     const history = useHistory();
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
     const classes = useStyles();
+
+    const Validate = () => {
+
+        if (!apiConfig.securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2)
+            && !apiConfig.securityScheme.includes(API_SECURITY_API_KEY)
+        ) {
+            return (
+                <Typography className={classes.bottomSpace}>
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.components.APISecurity.emptySchemas'
+                        defaultMessage='Please select at least one API security method!'
+                    />
+                </Typography>
+            );
+        }
+        return null;
+    };
 
     /**
      *
@@ -232,27 +270,65 @@ export default function RuntimeConfiguration() {
             <div className={classes.contentWrapper}>
                 <Grid container direction='row' justify='space-around' alignItems='stretch' spacing={8}>
                     <Grid item xs={12} md={7} style={{ marginBottom: 30, position: 'relative' }}>
-                        <Typography className={classes.heading} variant='h6'>
-                            <FormattedMessage
-                                id='Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.client.websocket'
-                                defaultMessage='Client Websocket'
-                            />
-                        </Typography>
-                        <div className={classes.boxFlex}>
-                            <Paper
-                                className={classes.paper}
-                                elevation={0}
-                                style={{ display: 'flex', alignItems: 'center' }}
-                            >
-                                <Box pr={3}>
-                                    <KeyManager api={apiConfig} configDispatcher={configDispatcher} />
-                                </Box>
-                                <Box pr={3}>
-                                    <APILevelRateLimitingPolicies api={apiConfig} configDispatcher={configDispatcher} />
-                                </Box>
-                            </Paper>
-                            <ArrowForwardIcon className={classes.arrowForwardIcon} />
-                        </div>
+                        <WrappedExpansionPanel className={classes.expansionPanel} id='applicationLevel'>
+                            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography className={classes.subHeading} variant='h6' component='h4'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.Components.APISecurity.Components.
+                                            ApplicationLevel.Client.Websocket'
+                                        defaultMessage='Client Websocket'
+                                    />
+                                </Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                                <Typography className={classes.subHeading} variant='h6' component='h4'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.Components.APISecurity.Components.
+                                            ApplicationLevel.Websocket'
+                                        defaultMessage='Application Level Security'
+                                    />
+                                </Typography>
+                                <FormGroup style={{ display: 'flow-root' }}>
+                                    <FormControlLabel
+                                        control={(
+                                            <Checkbox
+                                                disabled={isRestricted(['apim:api_create'], apiConfig)}
+                                                checked={apiConfig.securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2)}
+                                                onChange={({ target: { checked, value } }) => configDispatcher({
+                                                    action: 'securityScheme',
+                                                    value: { checked, value },
+                                                })}
+                                                value={DEFAULT_API_SECURITY_OAUTH2}
+                                                color='primary'
+                                            />
+                                        )}
+                                        label='OAuth2'
+                                    />
+                                    <FormControlLabel
+                                        control={(
+                                            <Checkbox
+                                                checked={apiConfig.securityScheme.includes(API_SECURITY_API_KEY)}
+                                                disabled={isRestricted(['apim:api_create'], apiConfig)}
+                                                onChange={({ target: { checked, value } }) => configDispatcher({
+                                                    action: 'securityScheme',
+                                                    value: { checked, value },
+                                                })}
+                                                value={API_SECURITY_API_KEY}
+                                                color='primary'
+                                                id='api-security-api-key-checkbox'
+                                            />
+                                        )}
+                                        label='Api Key'
+                                    />
+                                </FormGroup>
+                                <KeyManager api={apiConfig} configDispatcher={configDispatcher} />
+                                <span className={classes.error}>
+                                    <Validate />
+                                </span>
+                            </ExpansionPanelDetails>
+                        </WrappedExpansionPanel>
+                        <APILevelRateLimitingPolicies api={apiConfig} configDispatcher={configDispatcher} />
+                        <ArrowForwardIcon className={classes.arrowForwardIcon} />
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography className={classes.heading} variant='h6'>
