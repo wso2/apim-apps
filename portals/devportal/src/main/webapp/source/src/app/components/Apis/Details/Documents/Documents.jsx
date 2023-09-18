@@ -159,7 +159,7 @@ function Documents(props) {
         const promisedApi = restApi.getDocumentsByAPIId(apiId);
         promisedApi
             .then((response) => {
-                const overviewDoc = response.body.list.filter((item) => item.otherTypeName !== '_overview');
+                const overviewDoc = response.body.list.filter((item) => item.otherTypeName !== 'overview');
                 if (api.type === 'HTTP') {
                     const swaggerDoc = { documentId: 'default', name: 'Default', type: '' };
                     overviewDoc.unshift(swaggerDoc);
