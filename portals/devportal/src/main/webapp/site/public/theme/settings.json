@@ -51,5 +51,12 @@
             "Policy 2",
             "Policy 3"
         ]
+    },
+    "apis": {
+        "tileDisplayInfo": {
+            "showMonetizedState": false,
+            "showBusinessDetails": false,
+            "showTechnicalDetails": false
+        }
     }
 }
