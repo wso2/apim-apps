@@ -147,9 +147,6 @@ const styles = (theme) => ({
         textOverflow: 'ellipsis',
         maxWidth: '175px',
     },
-    businessDetail: {
-        display: 'flex'
-    },
     popover: {
         pointerEvents: 'none',
     },
