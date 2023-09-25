@@ -53,6 +53,11 @@
   "apis": {
     "alwaysShowDeploySampleButton": true,
     "showMultiVersionPolicies": false,
+    "tileDisplayInfo": {
+      "showMonetizedState": false,
+      "showBusinessDetails": false,
+      "showTechnicalDetails": false
+    },
     "endpoint": {
       "aws": {
         "regions": {

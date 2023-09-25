@@ -30,6 +30,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import DescriptionTwoToneIcon from '@material-ui/icons/DescriptionTwoTone';
 import LinkIcon from '@material-ui/icons/Link';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
+import Configurations from 'Config';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -42,6 +43,15 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+    defaultCardContent: {
+        height: '111px',
+    },
+    maxCardContent: {
+        height: '208px',
+    },
+    minCardContent: {
+        height: '187px',
     },
 }));
 
@@ -59,6 +69,21 @@ const DocThumb = (props) => {
     } else if (doc.sourceType === 'URL') {
         PrefixIcon = LinkIcon;
     }
+    let configValue;
+    const { tileDisplayInfo } = Configurations.apis;
+    if (tileDisplayInfo.showBusinessDetails === true && tileDisplayInfo.showTechnicalDetails === true) {
+        configValue = 2;
+    } else if (tileDisplayInfo.showBusinessDetails === true || tileDisplayInfo.showTechnicalDetails === true) {
+        configValue = 1;
+    }
+    let cardContentClassName;
+    if (configValue === 1) {
+        cardContentClassName = classes.minCardContent;
+    } else if (configValue === 2) {
+        cardContentClassName = classes.maxCardContent;
+    } else {
+        cardContentClassName = classes.defaultCardContent;
+    }
     return (
         <Link
             underline='none'
@@ -75,7 +100,7 @@ const DocThumb = (props) => {
                 className={classes.card}
             >
                 <CardMedia
-                    width={200}
+                    width={240}
                     component={LetterGenerator}
                     height={140}
                     title='Thumbnail'
@@ -84,7 +109,7 @@ const DocThumb = (props) => {
                     ThumbIcon={thumbIcon}
                     bgColor={false}
                 />
-                <CardContent>
+                <CardContent className={cardContentClassName}>
                     <Grid
                         container
                         direction='column'
@@ -126,6 +151,7 @@ const DocThumb = (props) => {
                 </CardContent>
             </Card>
         </Link>
+        
     );
 };
 
