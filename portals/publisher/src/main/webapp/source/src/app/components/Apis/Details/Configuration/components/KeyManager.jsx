@@ -71,6 +71,7 @@ export default function KeyManager(props) {
         configDispatcher,
         api: { keyManagers, securityScheme },
     } = props;
+    let roleRestrictedKMs = [];
     const classes = useStyles();
     const handleChange = (event) => {
         const newKeyManagers = [...keyManagers];
@@ -88,9 +89,22 @@ export default function KeyManager(props) {
     const { api } = useContext(APIContext);
     useEffect(() => {
         if (!isRestricted(['apim:api_create'], api)) {
-            API.keyManagers().then((response) => setKeyManagersConfigured(response.body.list));
+            API.keyManagers().then((response) => {
+                setKeyManagersConfigured(response.body.list)
+            });
         }
     }, []);
+    useEffect(() => {
+        if('setRoleRestrictedKMs' in props) {
+            roleRestrictedKMs = []
+            keyManagersConfigured.forEach(km => {
+                if (km.isRoleRestricted) {
+                    roleRestrictedKMs.push(km.name);
+                }
+            });
+            props.setRoleRestrictedKMs(roleRestrictedKMs);
+        }
+    }, [keyManagersConfigured]);
     if (!securityScheme.includes('oauth2')) {
         return (
             <>
