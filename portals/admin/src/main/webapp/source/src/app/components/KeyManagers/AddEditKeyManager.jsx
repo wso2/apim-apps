@@ -166,11 +166,6 @@ function reducer(state, newValue) {
         case 'enableOAuthAppCreation':
         case 'enableSelfValidationJWT':
         case 'roles':
-        case 'permissionStatus':
-            return {
-                ...state,
-                permissions: { ...state.permissions, [field]: value },
-            };
         case 'claimMapping':
         case 'additionalProperties':
         case 'availableGrantTypes':
@@ -184,6 +179,11 @@ function reducer(state, newValue) {
             return { ...state, [field]: value };
         case 'all':
             return value;
+        case 'permissionStatus':
+            return {
+                ...state,
+                permissions: { ...state.permissions, [field]: value },
+            };
         default:
             return newValue;
     }
