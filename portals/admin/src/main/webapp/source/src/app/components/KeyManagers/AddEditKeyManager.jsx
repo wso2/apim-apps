@@ -1820,11 +1820,13 @@ function AddEditKeyManager(props) {
                                                     InputLabelProps={{
                                                         shrink: true,
                                                     }}
+                                                    name='KeyManagerPermissions'
                                                     variant='outlined'
                                                     value={validRoles.concat(invalidRoles)}
                                                     alwaysShowPlaceholder={false}
                                                     placeholder='Enter roles and press Enter'
                                                     blurBehavior='clear'
+                                                    data-testid='key-manager-permission-roles'
                                                     InputProps={{
                                                         endAdornment: !roleValidity && (
                                                             <InputAdornment position='end'>
@@ -1871,6 +1873,7 @@ function AddEditKeyManager(props) {
                                                             onDelete={() => {
                                                                 handleRoleDeletion(value);
                                                             }}
+                                                            data-testid={value}
                                                             style={{
                                                                 backgroundColor: invalidRoles.includes(value)
                                                                     ? red[300] : null,
