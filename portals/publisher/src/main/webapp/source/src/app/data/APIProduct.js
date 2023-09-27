@@ -88,12 +88,12 @@ class APIProduct extends Resource {
         return promiseMonetization.then(response => response.body);
     }
 
-    configureMonetizationToApiProduct(id, body) {
+    configureMonetizationToApiProduct(apiId, body) {
         const promised_status = this.client.then(client => {
-            return client.apis['API Monetization'].addAPIMonetization({
-                apiId: id,
-                body,
-            });
+            return client.apis['API Monetization'].addAPIMonetization(
+                { apiId },
+                { requestBody: body },
+            );
         });
         return promised_status;
     }
