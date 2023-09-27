@@ -77,7 +77,7 @@ const styles = (theme) => ({
  * @constructor
  */
 function CreateNewVersionButton(props) {
-    const { api, classes } = props;
+    const { api, classes, isAPIProduct } = props;
     return (
         <>
             {/* allowing create new version based on scopes */}
@@ -86,7 +86,7 @@ function CreateNewVersionButton(props) {
                     <VerticalDivider height={70} />
                     <Link
                         className={classes.createNewVersion}
-                        to={'/apis/' + api.id + '/new_version'}
+                        to={(isAPIProduct ? '/api-products/' : '/apis/') + api.id + '/new_version'}
                         style={{ minWidth: 95 }}
                     >
 
@@ -110,6 +110,7 @@ CreateNewVersionButton.propTypes = {
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
+    isAPIProduct: PropTypes.bool.isRequired,
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
     classes: PropTypes.shape({}).isRequired,
 };

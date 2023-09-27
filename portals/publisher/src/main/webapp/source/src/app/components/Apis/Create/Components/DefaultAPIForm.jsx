@@ -143,7 +143,7 @@ export default function DefaultAPIForm(props) {
     // Check the provided API validity on mount, TODO: Better to use Joi schema here ~tmkb
     useEffect(() => {
         onValidate(Boolean(api.name)
-            && (isAPIProduct || Boolean(api.version))
+            && (Boolean(api.version))
             && Boolean(api.context));
     }, []);
 
@@ -154,10 +154,9 @@ export default function DefaultAPIForm(props) {
                 .reduce((acc, cVal) => acc && cVal); // Aggregate the individual validation states
         // TODO: refactor following redundant validation.
         // The valid state should available in the above reduced state ~tmkb
-        // if isAPIProduct gets true version validation has been skipped
         isFormValid = isFormValid
             && Boolean(api.name)
-            && (isAPIProduct || Boolean(api.version))
+            && Boolean(api.version)
             && Boolean(api.context);
         onValidate(isFormValid, validity);
         setValidity(newState);
@@ -430,7 +429,7 @@ export default function DefaultAPIForm(props) {
                         </>
                     ) : (
                         <>
-                            <Grid item md={12}>
+                            <Grid item md={8} xs={6}>
                                 <TextField
                                     fullWidth
                                     id='context'
@@ -466,6 +465,37 @@ export default function DefaultAPIForm(props) {
                                             }))
                                         || `API Product will be exposed in ${actualContext(api)} context at the gateway`
                                     }
+                                    margin='normal'
+                                    variant='outlined'
+                                />
+                            </Grid>
+                            <Grid item md={4} xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id='version'
+                                    error={Boolean(validity.version)}
+                                    label={(
+                                        <>
+                                            <FormattedMessage
+                                                id='Apis.Create.Components.DefaultAPIForm.api.product.version'
+                                                defaultMessage='Version'
+                                            />
+                                            <sup className={classes.mandatoryStar}>*</sup>
+                                        </>
+                                    )}
+                                    name='version'
+                                    value={api.version}
+                                    onChange={onChange}
+                                    InputProps={{
+                                        id: 'itest-id-apiversion-input',
+                                        onBlur: ({ target: { value } }) => {
+                                            validate('version', value);
+                                        },
+                                    }}
+                                    InputLabelProps={{
+                                        for: 'itest-id-apiversion-input',
+                                    }}
+                                    helperText={validity.version && validity.version.message}
                                     margin='normal'
                                     variant='outlined'
                                 />

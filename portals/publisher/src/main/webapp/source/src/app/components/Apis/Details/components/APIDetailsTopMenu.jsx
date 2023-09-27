@@ -205,7 +205,7 @@ const APIDetailsTopMenu = (props) => {
                 className={classes.backLink}
             >
                 <Box width={70} height={50} marginLeft={1}>
-                    <ThumbnailView api={api} width={70} height={50} imageUpdate={imageUpdate} 
+                    <ThumbnailView api={api} width={70} height={50} imageUpdate={imageUpdate}
                         updateAPI={updateAPI} />
                 </Box>
                 <div style={{ marginLeft: theme.spacing(1), maxWidth: 500 }}>
@@ -218,7 +218,7 @@ const APIDetailsTopMenu = (props) => {
                         <Typography id='itest-api-name-version' variant='h4' component='h1' className={classes.apiName}>
                             {api.name}
                             {' '}
-                            {isAPIProduct ? '' : ':' + api.version}
+                            {api.version}
                         </Typography>
                         <Typography variant='caption' gutterBottom align='left'>
                             <FormattedMessage
@@ -402,8 +402,10 @@ const APIDetailsTopMenu = (props) => {
             )}
             {/* Page error banner */}
             {/* end of Page error banner */}
-            {isAPIProduct || api.isRevision
-                ? null : <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher} api={api} />}
+            {api.isRevision
+                ? null :
+                <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher}
+                    api={api} isAPIProduct={isAPIProduct} />}
             {(isDownloadable) && <VerticalDivider height={70} />}
             <div className={classes.downloadApi}>
                 {(isDownloadable) && (

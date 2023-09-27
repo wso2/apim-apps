@@ -146,7 +146,7 @@ function copyAPIConfig(api) {
         responseCachingEnabled: api.responseCachingEnabled,
         cacheTimeout: api.cacheTimeout,
         visibility: api.visibility,
-        isDefaultVersion: api.isDefaultVersion,
+        isDefaultVersion: api.isDefaultVersion || false,
         enableSchemaValidation: api.enableSchemaValidation,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
@@ -562,9 +562,7 @@ export default function DesignConfigurations() {
                                         )}
                                     </Box>
                                     <Box py={1}>
-                                        {api.apiType !== API.CONSTS.APIProduct && (
-                                            <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
-                                        )}
+                                        <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
                                     </Box>
                                     <Box pt={2}>
                                         <Button

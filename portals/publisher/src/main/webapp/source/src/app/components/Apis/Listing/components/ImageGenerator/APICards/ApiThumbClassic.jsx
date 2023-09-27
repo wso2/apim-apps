@@ -248,19 +248,17 @@ class APIThumb extends Component {
                         </Typography>
                     </div>
                     <div className={classes.thumbInfo}>
-                        {isAPIProduct ? null : (
-                            <div className={classes.row}>
-                                <div className={classes.thumbLeft}>
-                                    <Typography variant='subtitle1'>{api.version}</Typography>
-                                </div>
-
-                                <div className={classes.thumbLeft}>
-                                    <Typography variant='caption' gutterBottom align='left'>
-                                        <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
-                                    </Typography>
-                                </div>
+                        <div className={classes.row}>
+                            <div className={classes.thumbLeft}>
+                                <Typography variant='subtitle1'>{api.version}</Typography>
                             </div>
-                        )}
+
+                            <div className={classes.thumbLeft}>
+                                <Typography variant='caption' gutterBottom align='left'>
+                                    <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
+                                </Typography>
+                            </div>
+                        </div>
                         <div className={classes.row}>
                             <div className={classes.thumbRight}>
                                 <Typography variant='subtitle1' align='right' className={classes.contextBox}>

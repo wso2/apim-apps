@@ -462,11 +462,11 @@ class API extends Resource {
      * @param callback {function} A callback function to invoke after receiving successful response.
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    createNewAPIVersion(version, isDefaultVersion, serviceVersion, callback = null) {
+    createNewAPIVersion(apiId, version, isDefaultVersion, serviceVersion, callback = null) {
         const promise_copy_api = this.client.then(client => {
             return client.apis['APIs'].createNewAPIVersion(
                 {
-                    apiId: this.id,
+                    apiId: this.id || apiId,
                     newVersion: version,
                     serviceVersion: serviceVersion,
                     defaultVersion: isDefaultVersion,
@@ -478,6 +478,32 @@ class API extends Resource {
             return promise_copy_api.then(callback);
         } else {
             return promise_copy_api;
+        }
+    }
+
+
+    /**
+     * Create a new version of a given API Product
+     * @param version {string} new API Product version.
+     * @param isDefaultVersion specifies whether new API Product version is set as default version
+     * @param callback {function} A callback function to invoke after receiving successful response.
+     * @returns {promise} With given callback attached to the success chain else API Product invoke promise.
+     */
+     createNewAPIProductVersion(apiProductId, version, isDefaultVersion, callback = null) {
+        const promise_copy_api_products = this.client.then(client => {
+            return client.apis['API Products'].createNewAPIProductVersion(
+                {
+                    newVersion: version,
+                    apiProductId: apiProductId,
+                    defaultVersion: isDefaultVersion,
+                },
+                this._requestMetaData(),
+            );
+        });
+        if (callback) {
+            return promise_copy_api_products.then(callback);
+        } else {
+            return promise_copy_api_products;
         }
     }
 
@@ -770,7 +796,7 @@ class API extends Resource {
         });
         return promised_update;
     }
-    
+
     /**
      * Update an api via PUT HTTP method, Need to give the updated API object as the argument.
      * @param api {Object} Updated API object(JSON) which needs to be updated
@@ -2875,7 +2901,7 @@ class API extends Resource {
             );
         });
     }
-    
+
     /**
      * Add a common operation policy
      * @param {Object} policySpec policy specification of the common operation policy to upload
@@ -2958,7 +2984,7 @@ class API extends Resource {
             );
         });
     }
-    
+
     /**
      * Get API Operation Policies
      * @param {String} apiId UUID of the API
