@@ -97,9 +97,15 @@ function reducer(state, { field, value }) {
         case 'editDetails':
             return value;
         case 'rateLimitCount':
-            return { ...state, [field]: value };
+            return {
+                ...state,
+                burstLimit: { ...state.burstLimit, [field]: value },
+            };
         case 'rateLimitTimeUnit':
-            return { ...state, [field]: value };
+            return {
+                ...state,
+                burstLimit: { ...state.burstLimit, [field]: value },
+            };
         default:
             return state;
     }
@@ -127,14 +133,19 @@ function AddEdit(props) {
             dataAmount: '',
             dataUnit: 'KB',
         },
-        rateLimitCount: '',
-        rateLimitTimeUnit: 'sec',
+        burstLimit: {
+            rateLimitCount: '',
+            rateLimitTimeUnit: 'sec',
+        },
     });
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        policyName, description, rateLimitCount, rateLimitTimeUnit, defaultLimit: {
+        policyName, description, defaultLimit: {
             requestCount, timeUnit, unitTime, type, dataAmount, dataUnit,
+        },
+        burstLimit: {
+            rateLimitCount, rateLimitTimeUnit,
         },
     } = state;
     const [validationError, setValidationError] = useState([]);
@@ -153,8 +164,10 @@ function AddEdit(props) {
                 dataAmount: '',
                 dataUnit: 'KB',
             },
-            rateLimitCount: '',
-            rateLimitTimeUnit: 'sec',
+            burstLimit: {
+                rateLimitCount: '',
+                rateLimitTimeUnit: 'sec',
+            },
         });
     }, []);
 
@@ -264,8 +277,10 @@ function AddEdit(props) {
                         unitTime: state.defaultLimit.unitTime,
                     },
                 },
-                rateLimitCount: state.rateLimitCount,
-                rateLimitTimeUnit: state.rateLimitTimeUnit,
+                burstLimit: {
+                    rateLimitCount: state.burstLimit.rateLimitCount,
+                    rateLimitTimeUnit: state.burstLimit.rateLimitTimeUnit,
+                },
             };
         } else {
             applicationThrottlingPolicy = {
@@ -280,8 +295,10 @@ function AddEdit(props) {
                         unitTime: state.defaultLimit.unitTime,
                     },
                 },
-                rateLimitCount: state.rateLimitCount,
-                rateLimitTimeUnit: state.rateLimitTimeUnit,
+                burstLimit: {
+                    rateLimitCount: state.burstLimit.rateLimitCount,
+                    rateLimitTimeUnit: state.burstLimit.rateLimitTimeUnit,
+                },
             };
         }
 
@@ -352,8 +369,11 @@ function AddEdit(props) {
                             dataAmount: '',
                             dataUnit: 'KB',
                         },
-                        rateLimitCount: result.body.rateLimitCount,
-                        rateLimitTimeUnit: (result.body.rateLimitCount === 0) ? 'sec' : result.body.rateLimitTimeUnit,
+                        burstLimit: {
+                            rateLimitCount: result.body.burstLimit.rateLimitCount,
+                            rateLimitTimeUnit: (result.body.burstLimit.rateLimitCount === 0) ? 'sec'
+                                : result.body.burstLimit.rateLimitTimeUnit,
+                        },
                     };
                 } else {
                     editState = {
@@ -367,8 +387,11 @@ function AddEdit(props) {
                             dataAmount: result.body.defaultLimit.bandwidth.dataAmount,
                             dataUnit: result.body.defaultLimit.bandwidth.dataUnit,
                         },
-                        rateLimitCount: result.body.rateLimitCount,
-                        rateLimitTimeUnit: (result.body.rateLimitCount === 0) ? 'sec' : result.body.rateLimitTimeUnit,
+                        burstLimit: {
+                            rateLimitCount: result.body.burstLimit.rateLimitCount,
+                            rateLimitTimeUnit: (result.body.burstLimit.rateLimitCount === 0) ? 'sec'
+                                : result.body.burstLimit.rateLimitTimeUnit,
+                        },
                     };
                 }
                 dispatch({ field: 'editDetails', value: editState });
