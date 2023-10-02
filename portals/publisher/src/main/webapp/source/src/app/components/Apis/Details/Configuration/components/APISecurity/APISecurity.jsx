@@ -56,7 +56,6 @@ export default function APISecurity(props) {
         api: { securityScheme, id },
         configDispatcher,
         api,
-        setRoleRestrictedKMs
     } = props;
     const apiContext = useContext(ApiContext);
     const isAPIProduct = apiContext.api.apiType === API.CONSTS.APIProduct;
@@ -151,7 +150,6 @@ export default function APISecurity(props) {
                             api={api}
                             configDispatcher={configDispatcher}
                             id={id}
-                            setRoleRestrictedKMs={setRoleRestrictedKMs}
                         />
                         <Grid item>
                             <span className={classes.error}>

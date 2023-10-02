@@ -243,7 +243,6 @@ export default function ApplicationLevel(props) {
                             <KeyManager
                                 api={api}
                                 configDispatcher={configDispatcher}
-                                setRoleRestrictedKMs={props.setRoleRestrictedKMs}
                             />
                         )}
                         <AuthorizationHeader api={api} configDispatcher={configDispatcher} />

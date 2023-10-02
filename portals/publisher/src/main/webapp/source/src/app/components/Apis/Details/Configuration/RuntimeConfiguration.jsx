@@ -176,7 +176,6 @@ function copyAPIConfig(api) {
  */
 export default function RuntimeConfiguration() {
     const [keyManagersConfigured, setKeyManagersConfigured] = useState([]);
-    const [roleRestrictedKMs, setRoleRestrictedKMs] = useState([]);
     const [saveButtonDisabled, setSaveButtonDisabled] = useState(false);
     /**
      *
@@ -381,24 +380,6 @@ export default function RuntimeConfiguration() {
             );
             return;
         }
-        let isAllKMRoleRestricted = true
-        for (const keyManagerItem of apiConfig.keyManagers) {
-            if (!(roleRestrictedKMs.includes(keyManagerItem))) {
-                isAllKMRoleRestricted = false
-                break
-            }
-        }
-        if (isAllKMRoleRestricted)
-        {
-            Alert.warning(
-                intl.formatMessage(
-                    {
-                        id: 'Apis.Details.Configuration.RuntimeConfiguration.restricted.km.warning',
-                        defaultMessage: 'All the selected Key Managers are Role Restricted',
-                    },
-                ),
-            );
-        }
         setIsUpdating(true);
         updateAPI(apiConfig)
             .catch((error) => {
@@ -437,24 +418,6 @@ export default function RuntimeConfiguration() {
             );
             return;
         }
-        let isAllKMRoleRestricted = true
-        for (const keyManagerItem of apiConfig.keyManagers) {
-            if (!(roleRestrictedKMs.includes(keyManagerItem))) {
-                isAllKMRoleRestricted = false
-                break
-            }
-        }
-        if (isAllKMRoleRestricted)
-        {
-            Alert.warning(
-                intl.formatMessage(
-                    {
-                        id: 'Apis.Details.Configuration.RuntimeConfiguration.restricted.km.warning',
-                        defaultMessage: 'All the selected Key Managers are Role Restricted',
-                    },
-                ),
-            );
-        }
         setIsUpdating(true);
         updateAPI(apiConfig)
             .catch((error) => {
@@ -482,11 +445,7 @@ export default function RuntimeConfiguration() {
             <div className={classes.contentWrapper}>
                 {(apiConfig.advertiseInfo && apiConfig.advertiseInfo.advertised) ? (
                     <Paper className={classes.paper} elevation={0}>
-                        <APISecurity
-                            api={apiConfig}
-                            configDispatcher={configDispatcher}
-                            setRoleRestrictedKMs={setRoleRestrictedKMs}
-                        />
+                        <APISecurity api={apiConfig} configDispatcher={configDispatcher} />
                     </Paper>
                 ) : (
                     <Grid container direction='row' justify='space-around' alignItems='stretch' spacing={8}>
@@ -513,11 +472,7 @@ export default function RuntimeConfiguration() {
                             >
                                 <Grid item xs={12} style={{ marginBottom: 30, position: 'relative' }}>
                                     <Paper className={classes.paper} elevation={0}>
-                                        <APISecurity
-                                            api={apiConfig}
-                                            configDispatcher={configDispatcher}
-                                            setRoleRestrictedKMs={setRoleRestrictedKMs}
-                                        />
+                                        <APISecurity api={apiConfig} configDispatcher={configDispatcher} />
                                         { api.type !== 'WS' && (
                                             <CORSConfiguration api={apiConfig} configDispatcher={configDispatcher} />
                                         )}
