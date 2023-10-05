@@ -20,7 +20,7 @@ import Utils from "@support/utils";
 
 describe("Add key manager", () => {
 
-    const { carbonUsername, carbonPassword, tenant, superTenant } = Utils.getUserInfo();
+    const { publisher, developer, password, carbonUsername, carbonPassword, tenant, superTenant } = Utils.getUserInfo();
 
     const addKeyManager = (usernameLocal, passwordLocal) => {
         cy.loginToAdmin(usernameLocal, passwordLocal);
@@ -36,6 +36,12 @@ describe("Add key manager", () => {
         const claimValueRegex1 = 'claimValueRegex1';
         const claimKey2 = 'claimKey2';
         const claimValueRegex2 = 'claimValueRegex2';
+        const apiVersion = '2.0.0';
+        const apiName = Utils.generateName();
+        const apiContext = apiName;
+        let testApiId;
+        const appName = Utils.generateName();
+        const appDescription = 'app description';
 
         cy.get('[data-testid="Key Managers"]').click();
         cy.get('.MuiButton-label').contains('Add Key Manager').click();
@@ -55,6 +61,15 @@ describe("Add key manager", () => {
             cy.get('input[name="client_id"]').type(clientId);
             cy.get('input[name="client_secret"]').type(clientSecret);
             cy.get('input[name="audience"]').type(audience);
+            // adding permissions
+            cy.get('input[name="KeyManagerPermissions"]').should('not.exist')
+            cy.get('[data-testid="key-manager-permission-select"]').click();
+            cy.get('li[data-value="ALLOW"]').click();
+            cy.get('[data-testid="key-manager-permission-roles"]').should('exist');
+            cy.get('[data-testid="key-manager-permission-roles"]')
+                .type('Internal/subscriber')
+                .type('{downarrow}')
+                .type('{enter}');;
             // adding claims under Token Handling Options for JWT type
             cy.get('#mui-component-select-type').click();
             cy.contains('li', 'JWT').click();
@@ -85,9 +100,57 @@ describe("Add key manager", () => {
         // deleting claimKey1
         cy.contains(claimKey1).parents('tr').find('button').click();
         cy.contains(claimKey1).should('not.exist');
+        // editing permissions
+        cy.get('[data-testid="key-manager-permission-select"]').should('include.text','Allow for role(s)');
+        cy.get('[data-testid="key-manager-permission-roles"]').should('exist')
+        cy.get('[data-testid="key-manager-permission-select"]').click();
+        cy.get('li[data-value="DENY"]').click();
+        cy.get('[data-testid="key-manager-permission-roles"]').should('exist');
+        cy.get('[data-testid="Internal/subscriber"]').should('exist');
+
         cy.get('button.MuiButton-containedPrimary span').contains('Update').click();
+        cy.logoutFromAdminPortal();
+
+
+        //Check if the key manager is visible in developer portal
+        cy.loginToPublisher(publisher, password);
+
+        Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
+            cy.log("API created " + apiName);
+            testApiId = apiId;
+            Utils.publishAPI(apiId).then((result) => {
+                cy.log("API published " + result)
+                cy.logoutFromPublisher();
+                cy.loginToDevportal(developer, password);
+                cy.createApp(appName, appDescription);
+                cy.visit(`/devportal/apis?tenant=carbon.super`);
+                cy.url().should('contain', '/apis?tenant=carbon.super');
+                cy.visit(`/devportal/apis/${apiId}/overview?tenant=carbon.super`);
+                cy.get('#left-menu-credentials').click();
+
+                // Click and select the new application
+                cy.get('#application-subscribe').click();
+                cy.get(`.MuiAutocomplete-popper li`).contains(appName).click();
+                cy.get(`#subscribe-to-api-btn`).click();
+                cy.get(`#subscription-table td`).contains(appName).should('exist');
+                cy.get(`#${appName}-SB`).click();
+                cy.get(`#${km}`).should('not.exist');
+                cy.get(`#${appName}-PK`).click();
+                cy.get(`#${km}`).should('not.exist');
+
+                cy.visit(`/devportal/applications?tenant=carbon.super`);
+                cy.get(`#itest-application-list-table td a`, {timeout: Cypress.config().largeTimeout}).contains(appName).click();
+                cy.get('#production-keys').click();
+                cy.get(`#${km}`).should('not.exist');
+                cy.get('#sandbox-keys').click();
+                cy.get(`#${km}`).should('not.exist');
+            });
+        });
+        cy.logoutFromDevportal();
 
         // delete
+        cy.loginToAdmin(usernameLocal, passwordLocal);
+        cy.visit(`/admin/settings/key-managers/`);
         cy.get(`[data-testid="${km}-actions"] > span:first-child svg`).click();
         cy.get('button > span').contains('Delete').click();
         cy.get('td > div').contains(km).should('not.exist');
