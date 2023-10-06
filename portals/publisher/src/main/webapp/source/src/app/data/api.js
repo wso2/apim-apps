@@ -2165,6 +2165,26 @@ class API extends Resource {
     }
 
     /**
+     * Cleanup pending workflow revision deployment task for API given its id (UUID) and revision id (UUID)
+     * @param apiId {string} UUID of the api
+     * @param revisionID {string} UUID of the revision
+     * @param callback {function} Callback function which needs to be executed in the success call
+     */
+    cancelRevisionDeploymentWorkflow(apiId, revisionID, envName, callback = null) {
+        const promise_deletePendingTask = this.client.then(client => {
+            return client.apis['API Revisions'].deleteAPIRevisionDeploymentPendingTask(
+                {
+                    apiId: apiId,
+                    revisionId: revisionID,
+                    envName: envName
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promise_deletePendingTask;
+    }
+
+    /**
      * Change displayInDevportal.
      *
      * @param {string} apiId Id of the API.
