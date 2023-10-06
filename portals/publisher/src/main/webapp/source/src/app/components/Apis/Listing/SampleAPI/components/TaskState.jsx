@@ -13,11 +13,16 @@ import CircularProgress from '@material-ui/core/CircularProgress';
  */
 export default function TaskState(props) {
     const {
-        completed, errors, inProgress, children, completedMessage, inProgressMessage,
+        pending, completed, errors, inProgress, children, pendingMessage, completedMessage, inProgressMessage,
     } = props;
     let severity;
     let message = children;
-    if (completed) {
+    if (pending) {
+        severity = 'pending';
+        if (pendingMessage) {
+            message = pendingMessage;
+        }
+    } else if (completed) {
         severity = 'success';
         if (completedMessage) {
             message = completedMessage;

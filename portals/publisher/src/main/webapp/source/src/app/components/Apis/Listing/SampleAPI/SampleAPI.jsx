@@ -51,11 +51,11 @@ const useStyles = makeStyles({
 });
 
 const initialTaskStates = {
-    create: { inProgress: true, completed: false, errors: false },
-    update: { inProgress: false, completed: false, errors: false },
-    revision: { inProgress: false, completed: false, errors: false },
-    deploy: { inProgress: false, completed: false, errors: false },
-    publish: { inProgress: false, completed: false, errors: false },
+    create: { inProgress: true, completed: false, pending: false, errors: false },
+    update: { inProgress: false, completed: false, pending: false, errors: false },
+    revision: { inProgress: false, completed: false, pending: false, errors: false },
+    deploy: { inProgress: false, completed: false, pending: false, errors: false },
+    publish: { inProgress: false, completed: false, pending: false, errors: false },
 };
 
 const tasksReducer = (state, action) => {
@@ -94,6 +94,10 @@ const SampleAPI = (props) => {
             throw errors;
         }
         tasksStatusDispatcher({ name, status: { inProgress: false, completed: true } });
+        if (taskResult.body?.[0]?.status === 'CREATED') {
+            tasksStatusDispatcher({ name, status: { pending: true} });
+        }
+
         return taskResult;
     };
     /**
@@ -284,9 +288,16 @@ const SampleAPI = (props) => {
                                         Revision API
                                     </TaskState>
                                     <TaskState
+                                        pending={tasksStatus.deploy.pending}
                                         completed={tasksStatus.deploy.completed}
                                         errors={tasksStatus.deploy.errors}
                                         inProgress={tasksStatus.deploy.inProgress}
+                                        pendingMessage={(
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.popup.deploy.pending'
+                                                defaultMessage='API revision deployment request sent'
+                                            />
+                                        )}
                                         completedMessage={(
                                             <FormattedMessage
                                                 id='Apis.Listing.SampleAPI.popup.deploy.complete'
