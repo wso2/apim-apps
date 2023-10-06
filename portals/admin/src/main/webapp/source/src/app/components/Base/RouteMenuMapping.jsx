@@ -50,6 +50,7 @@ import SubscriptionDeletion from 'AppComponents/Workflow/SubscriptionDeletion';
 import SubscriptionUpdate from 'AppComponents/Workflow/SubscriptionUpdate';
 import RegistrationCreation from 'AppComponents/Workflow/RegistrationCreation';
 import APIStateChange from 'AppComponents/Workflow/APIStateChange';
+import APIRevisionDeployment from 'AppComponents/Workflow/APIRevisionDeployment';
 import UserCreation from 'AppComponents/Workflow/UserCreation';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import SecurityIcon from '@material-ui/icons/Security';
@@ -288,6 +289,12 @@ const RouteMenuMapping = (intl) => [
                 id: 'API Product State Change',
                 path: '/tasks/api-product-state-change',
                 component: () => <APIStateChange isAPIProduct />,
+                icon: <SettingsEthernetIcon />,
+            },
+            {
+                id: 'API Revision Deployment',
+                path: '/tasks/api-revision-deploy',
+                component: APIRevisionDeployment,
                 icon: <SettingsEthernetIcon />,
             },
         ],
