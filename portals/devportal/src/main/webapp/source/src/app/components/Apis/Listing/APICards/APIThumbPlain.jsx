@@ -269,7 +269,7 @@ function APIThumbPlain(props) {
                         <div>
                             <div>
                                 <div>
-                                    <Typography variant='caption' gutterBottom align='left'>
+                                    <Typography variant='body2' gutterBottom align='left'>
                                         <FormattedMessage
                                             defaultMessage='Owners'
                                             id='Apis.Listing.ApiThumb.owners'
@@ -298,44 +298,54 @@ function APIThumbPlain(props) {
                                                 {' : '}
                                             </div>
                                             <div className={classes.truncate}>
-                                                {api.businessInformation.businessOwner}
+                                                {api.businessInformation.businessOwner
+                                                    ? (api.businessInformation.businessOwner)
+                                                    : (
+                                                        <span
+                                                            style={{ color: '#808080', fontWeight: 'bold' }}
+                                                        >
+                                                            Not Provided
+                                                        </span>
+                                                    )}
                                             </div>
                                         </Typography>
-                                        <Popover
-                                            id='mouse-over-popover'
-                                            className={classes.popover}
-                                            classes={{
-                                                paper: classes.paper,
-                                            }}
-                                            open={businessOpenPopover}
-                                            anchorEl={businessAnchorEl}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            transformOrigin={{
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            }}
-                                            onClose={handleBusinessPopoverClose}
-                                            disableRestoreFocus
-                                        >
-                                            <div style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                            }}
+                                        {api.businessInformation.businessOwnerEmail && (
+                                            <Popover
+                                                id='mouse-over-popover'
+                                                className={classes.popover}
+                                                classes={{
+                                                    paper: classes.paper,
+                                                }}
+                                                open={businessOpenPopover}
+                                                anchorEl={businessAnchorEl}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'left',
+                                                }}
+                                                onClose={handleBusinessPopoverClose}
+                                                disableRestoreFocus
                                             >
-                                                <div style={{ display: 'flex' }}>
-                                                    <EmailIcon fontSize='small' />
-                                                    <Typography
-                                                        variant='body2'
-                                                        style={{ marginLeft: '8px' }}
-                                                    >
-                                                        {api.businessInformation.businessOwnerEmail}
-                                                    </Typography>
+                                                <div style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                }}
+                                                >
+                                                    <div style={{ display: 'flex' }}>
+                                                        <EmailIcon fontSize='small' />
+                                                        <Typography
+                                                            variant='body2'
+                                                            style={{ marginLeft: '8px' }}
+                                                        >
+                                                            {api.businessInformation.businessOwnerEmail}
+                                                        </Typography>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </Popover>
+                                            </Popover>
+                                        )}
                                     </div>
                                 )}
                                 {tileDisplayInfo.showTechnicalDetails && (
@@ -360,44 +370,54 @@ function APIThumbPlain(props) {
                                                 {' : '}
                                             </div>
                                             <div className={classes.truncate}>
-                                                {api.businessInformation.technicalOwner}
+                                                {api.businessInformation.technicalOwner
+                                                    ? (api.businessInformation.technicalOwner)
+                                                    : (
+                                                        <span
+                                                            style={{ color: '#808080', fontWeight: 'bold' }}
+                                                        >
+                                                            Not Provided
+                                                        </span>
+                                                    )}
                                             </div>
                                         </Typography>
-                                        <Popover
-                                            id='mouse-over-popover'
-                                            className={classes.popover}
-                                            classes={{
-                                                paper: classes.paper,
-                                            }}
-                                            open={technicalOpenPopover}
-                                            anchorEl={technicalAnchorEl}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            transformOrigin={{
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            }}
-                                            onClose={handleTechnicalPopoverClose}
-                                            disableRestoreFocus
-                                        >
-                                            <div style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                            }}
+                                        {api.businessInformation.technicalOwnerEmail && (
+                                            <Popover
+                                                id='mouse-over-popover'
+                                                className={classes.popover}
+                                                classes={{
+                                                    paper: classes.paper,
+                                                }}
+                                                open={technicalOpenPopover}
+                                                anchorEl={technicalAnchorEl}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'left',
+                                                }}
+                                                onClose={handleTechnicalPopoverClose}
+                                                disableRestoreFocus
                                             >
-                                                <div style={{ display: 'flex' }}>
-                                                    <EmailIcon fontSize='small' />
-                                                    <Typography
-                                                        variant='body2'
-                                                        style={{ marginLeft: '8px' }}
-                                                    >
-                                                        {api.businessInformation.technicalOwnerEmail}
-                                                    </Typography>
+                                                <div style={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                }}
+                                                >
+                                                    <div style={{ display: 'flex' }}>
+                                                        <EmailIcon fontSize='small' />
+                                                        <Typography
+                                                            variant='body2'
+                                                            style={{ marginLeft: '8px' }}
+                                                        >
+                                                            {api.businessInformation.technicalOwnerEmail}
+                                                        </Typography>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </Popover>
+                                            </Popover>
+                                        )}
                                     </div>
                                 )}
                             </div>
