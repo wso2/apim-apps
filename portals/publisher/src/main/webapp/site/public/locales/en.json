@@ -637,12 +637,6 @@
       "value": "Protocol"
     }
   ],
-  "Apis.Details.\n                                                                                Environments.deploy.vhost": [
-    {
-      "type": 0,
-      "value": "VHost"
-    }
-  ],
   "Apis.Details.APIDefinition.APIDefinition.api.definition": [
     {
       "type": 0,
@@ -1611,6 +1605,12 @@
       "value": "Edit Complexity Values"
     }
   ],
+  "Apis.Details.Configuration.ApiKeyHeader.helper.text": [
+    {
+      "type": 0,
+      "value": "ApiKey header name cannot contain spaces or special characters"
+    }
+  ],
   "Apis.Details.Configuration.AuthHeader.helper.text": [
     {
       "type": 0,
@@ -1633,6 +1633,12 @@
     {
       "type": 0,
       "value": "Backend Throughput"
+    }
+  ],
+  "Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip": [
+    {
+      "type": 0,
+      "value": "The header name that is used to send the api key information. \"ApiKey\" is the default header."
     }
   ],
   "Apis.Details.Configuration.Configuration.AuthHeader.tooltip": [
@@ -1663,6 +1669,12 @@
     {
       "type": 0,
       "value": "Edit API Endpoints"
+    }
+  ],
+  "Apis.Details.Configuration.Configuration.apiKey.header.label": [
+    {
+      "type": 0,
+      "value": "ApiKey Header"
     }
   ],
   "Apis.Details.Configuration.Configuration.auth.header.label": [
@@ -4193,12 +4205,6 @@
       "value": "Deployed Revision"
     }
   ],
-  "Apis.Details.Environments.Environments\n                                                                    .select.table": [
-    {
-      "type": 0,
-      "value": "Select Revision"
-    }
-  ],
   "Apis.Details.Environments.Environments\n                                                                    .select.vhost": [
     {
       "type": 0,
@@ -4206,12 +4212,6 @@
     }
   ],
   "Apis.Details.Environments.Environments\n                                                                .deploy.button": [
-    {
-      "type": 0,
-      "value": "Deploy"
-    }
-  ],
-  "Apis.Details.Environments.Environments.\n                                                                deploy.button": [
     {
       "type": 0,
       "value": "Deploy"
@@ -4259,6 +4259,12 @@
       "value": "Name"
     }
   ],
+  "Apis.Details.Environments.Environments.cancel.btn": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "Apis.Details.Environments.Environments.create.cancel": [
     {
       "type": 0,
@@ -4269,6 +4275,12 @@
     {
       "type": 0,
       "value": "Create"
+    }
+  ],
+  "Apis.Details.Environments.Environments.deploy.button": [
+    {
+      "type": 0,
+      "value": "Deploy"
     }
   ],
   "Apis.Details.Environments.Environments.deploy.cancel": [
@@ -4335,6 +4347,12 @@
     {
       "type": 0,
       "value": "Action"
+    }
+  ],
+  "Apis.Details.Environments.Environments.pending.chip": [
+    {
+      "type": 0,
+      "value": "Pending"
     }
   ],
   "Apis.Details.Environments.Environments.revision\n                                                            .description.deploy": [
@@ -4485,6 +4503,12 @@
       "value": "count"
     }
   ],
+  "Apis.Details.Environments.Environments.select.table": [
+    {
+      "type": 0,
+      "value": "Select Revision"
+    }
+  ],
   "Apis.Details.Environments.Environments.solace.platform.environments.heading": [
     {
       "type": 0,
@@ -4501,6 +4525,12 @@
     {
       "type": 0,
       "value": "Gateway URL Visibility"
+    }
+  ],
+  "Apis.Details.Environments.deploy.vhost": [
+    {
+      "type": 0,
+      "value": "VHost"
     }
   ],
   "Apis.Details.ExternalStores.ExternalStores.cancel": [
@@ -4625,6 +4655,12 @@
     {
       "type": 0,
       "value": "Endpoint provided"
+    }
+  ],
+  "Apis.Details.LifeCycle.CheckboxLabels.mandatory.properties.provided": [
+    {
+      "type": 0,
+      "value": "Mandatory Properties provided"
     }
   ],
   "Apis.Details.LifeCycle.LifeCycle.change.not.allowed": [
@@ -6113,13 +6149,25 @@
       "value": "Show in devportal"
     }
   ],
+  "Apis.Details.Properties.\n                                                    Properties.editable.show.in.devporal": [
+    {
+      "type": 0,
+      "value": "Show in devportal"
+    }
+  ],
+  "Apis.Details.Properties.Properties.\n                                                                            show.add.property.custom.property.name": [
+    {
+      "type": 1,
+      "value": "message"
+    }
+  ],
   "Apis.Details.Properties.Properties.\n                                                                    show.add.property.invalid.error": [
     {
       "type": 0,
       "value": "Invalid property name"
     }
   ],
-  "Apis.Details.Properties.Properties.\n                                                                show.add.property.property.name": [
+  "Apis.Details.Properties.Properties.\n                                                            show.add.property.property.name": [
     {
       "type": 0,
       "value": "Name"
@@ -8115,6 +8163,12 @@
     {
       "type": 0,
       "value": "Deploying sample API ..."
+    }
+  ],
+  "Apis.Listing.SampleAPI.popup.deploy.pending": [
+    {
+      "type": 0,
+      "value": "API revision deployment request sent"
     }
   ],
   "Apis.Listing.SampleAPI.popup.publish.complete": [
