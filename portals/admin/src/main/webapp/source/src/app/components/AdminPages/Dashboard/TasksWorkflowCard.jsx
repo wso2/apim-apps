@@ -101,10 +101,13 @@ export default function TasksWorkflowCard() {
         const promiseSubUpdate = restApi.workflowsGet('AM_SUBSCRIPTION_UPDATE');
         const promiseRegProd = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_PRODUCTION');
         const promiseRegSb = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_SANDBOX');
-        Promise.all([promiseUserSign, promiseStateChange, promiseAppCreation, promiseAppDeletion, promiseSubCreation,
-            promiseSubDeletion, promiseSubUpdate, promiseRegProd, promiseRegSb, promiseApiProductStateChange])
+        const promiseRevDeployment = restApi.workflowsGet('AM_REVISION_DEPLOYMENT');
+        Promise.all([promiseUserSign, promiseStateChange, promiseAppCreation, promiseAppDeletion,
+            promiseSubCreation, promiseSubDeletion, promiseSubUpdate, promiseRegProd, promiseRegSb,
+            promiseApiProductStateChange, promiseRevDeployment])
             .then(([resultUserSign, resultStateChange, resultAppCreation, resultAppDeletion, resultSubCreation,
-                resultSubDeletion, resultSubUpdate, resultRegProd, resultRegSb, resultApiProductStateChange]) => {
+                resultSubDeletion, resultSubUpdate, resultRegProd, resultRegSb,
+                resultApiProductStateChange, resultRevDeployment]) => {
                 const userCreation = resultUserSign.body.list;
                 const stateChange = resultStateChange.body.list;
                 const productStateChange = resultApiProductStateChange.body.list;
@@ -113,6 +116,7 @@ export default function TasksWorkflowCard() {
                 const subscriptionCreation = resultSubCreation.body.list;
                 const subscriptionDeletion = resultSubDeletion.body.list;
                 const subscriptionUpdate = resultSubUpdate.body.list;
+                const revisionDeployment = resultRevDeployment.body.list;
                 const registration = resultRegProd.body.list.concat(resultRegSb.body.list);
                 setAllTasksSet({
                     userCreation,
@@ -124,6 +128,7 @@ export default function TasksWorkflowCard() {
                     subscriptionUpdate,
                     registration,
                     productStateChange,
+                    revisionDeployment,
                 });
             });
     };
@@ -279,6 +284,15 @@ export default function TasksWorkflowCard() {
                     defaultMessage: 'API Product State Change',
                 }),
                 count: allTasksSet.productStateChange.length,
+            },
+            {
+                icon: SettingsEthernetIcon,
+                path: '/tasks/api-revision-deploy',
+                name: intl.formatMessage({
+                    id: 'Dashboard.tasksWorkflow.compactTasks.apiRevisionDeployment.name',
+                    defaultMessage: 'API Revision Deployment',
+                }),
+                count: allTasksSet.revisionDeployment.length,
             },
         ];
         return (
@@ -704,6 +718,51 @@ export default function TasksWorkflowCard() {
         });
     };
 
+    const getAPIRevisionDeploymentFewerTaskComponent = () => {
+        // Revision Deployment tasks related component generation
+        return allTasksSet.revisionDeployment.map((task) => {
+            return (
+                <Box display='flex' alignItems='center' mt={1}>
+                    <Box flexGrow={1}>
+                        <Typography variant='subtitle2'>
+                            {'Revision ' + task.properties.revisionId}
+                        </Typography>
+                        <Box display='flex'>
+                            <Typography variant='body2'>
+                                <FormattedMessage
+                                    id='Dashboard.tasksWorkflow.fewerTasks.card.apiRevisionDeployment.
+                                    revisionDeploymentAction.prefix'
+                                    defaultMessage='Deployed to'
+                                />
+                                &nbsp;
+                            </Typography>
+                            <Typography style={{ 'font-weight': 'bold' }} variant='body2'>
+                                {task.properties.apiName}
+                                &nbsp;
+                            </Typography>
+                            <Typography style={{ 'font-weight': 'bold' }} variant='body2'>
+                                {task.properties.environment}
+                                &nbsp;
+                            </Typography>
+                            <Typography variant='body2'>
+                                <FormattedMessage
+                                    id='Dashboard.tasksWorkflow.fewerTasks.card.apiRevisionDeployment.
+                                    revisionDeploymentAction.end'
+                                    defaultMessage='gateway'
+                                />
+                                &nbsp;
+                            </Typography>
+                            <Typography variant='body2'>
+                                {moment(task.createdTime).fromNow()}
+                            </Typography>
+                        </Box>
+                    </Box>
+                    {getApproveRejectButtons(task.referenceId)}
+                </Box>
+            );
+        });
+    };
+
     // Component to be displayed when there are 4 or less remaining tasks
     // Renders some details of the task and approve/reject buttons
     const fewerTasksCard = () => {
@@ -736,6 +795,7 @@ export default function TasksWorkflowCard() {
                     {getRegistrationCreationFewerTaskComponent()}
                     {getStateChangeFewerTaskComponent()}
                     {getAPIProductStateChangeFewerTaskComponent()}
+                    {getAPIRevisionDeploymentFewerTaskComponent()}
                 </CardContent>
             </Card>
         );
