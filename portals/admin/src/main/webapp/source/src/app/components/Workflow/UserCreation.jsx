@@ -54,7 +54,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Alert as MUIAlert } from '@material-ui/lab';
+import { Alert as MUIAlert } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     searchInput: {

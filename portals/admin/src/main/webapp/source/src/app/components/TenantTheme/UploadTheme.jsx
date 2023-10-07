@@ -35,7 +35,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import AlertMui from '@material-ui/lab/Alert';
+import AlertMui from '@mui/material/Alert';
 import Icon from '@material-ui/core/Icon';
 import Utils from 'AppData/Utils';
 

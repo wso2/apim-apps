@@ -19,8 +19,8 @@
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { fade, makeStyles, withStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem from '@material-ui/lab/TreeItem';
+import TreeView from '@mui/lab/TreeView';
+import TreeItem from '@mui/lab/TreeItem';
 import Collapse from '@material-ui/core/Collapse';
 import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
 import Checkbox from '@material-ui/core/Checkbox';

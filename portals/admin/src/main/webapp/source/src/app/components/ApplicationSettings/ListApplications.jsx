@@ -39,7 +39,7 @@ import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import Typography from '@material-ui/core/Typography';
 
 /**

@@ -38,7 +38,7 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles((theme) => ({
     searchBar: {

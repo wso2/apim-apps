@@ -25,7 +25,7 @@ import Box from '@material-ui/core/Box';
 import cloneDeep from 'lodash.clonedeep';
 import { FormattedMessage, useIntl } from 'react-intl';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
-import { Alert as MUIAlert } from '@material-ui/lab';
+import { Alert as MUIAlert } from '@mui/material';
 import PermissionsSelector from './TreeView/PermissionsSelector';
 import AdminTable from './AdminTable/AdminTable';
 import AdminTableHead from './AdminTable/AdminTableHead';

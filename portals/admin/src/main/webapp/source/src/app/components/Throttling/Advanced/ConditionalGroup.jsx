@@ -39,8 +39,8 @@ import AddEditConditionPolicyIp from 'AppComponents/Throttling/Advanced/AddEditC
 import CON_CONSTS from 'AppComponents/Throttling/Advanced/CON_CONSTS';
 import DeleteCondition from 'AppComponents/Throttling/Advanced/DeleteCondition';
 import DeleteConditionGroup from 'AppComponents/Throttling/Advanced/DeleteConditionGroup';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 /**
  * Create UUID
