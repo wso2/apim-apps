@@ -342,7 +342,7 @@ class APIThumb extends Component {
                             <div>
                                 <div className={classes.row}>
                                     <div className={classes.thumbLeft}>
-                                        <Typography variant='caption' gutterBottom align='left'>
+                                        <Typography variant='body2' gutterBottom align='left'>
                                             <FormattedMessage
                                                 defaultMessage='Owners'
                                                 id='Apis.Listing.ApiThumb.owners'
@@ -372,44 +372,54 @@ class APIThumb extends Component {
                                                     {' : '}
                                                 </div>
                                                 <div className={classes.truncate}>
-                                                    {api.businessOwner}
+                                                    {api.businessOwner
+                                                        ? (api.businessOwner)
+                                                        : (
+                                                            <span
+                                                                style={{ color: '#808080', fontWeight: 'bold' }}
+                                                            >
+                                                                Not Provided
+                                                            </span>
+                                                        )}
                                                 </div>
                                             </Typography>
-                                            <Popover
-                                                id='mouse-over-popover'
-                                                className={classes.popover}
-                                                classes={{
-                                                    paper: classes.paper,
-                                                }}
-                                                open={this.state.businessOpenPopover}
-                                                anchorEl={this.state.businessAnchorEl}
-                                                anchorOrigin={{
-                                                    vertical: 'top',
-                                                    horizontal: 'right',
-                                                }}
-                                                transformOrigin={{
-                                                    vertical: 'bottom',
-                                                    horizontal: 'left',
-                                                }}
-                                                onClose={this.handleBusinessPopoverClose}
-                                                disableRestoreFocus
-                                            >
-                                                <div style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column'
-                                                }}
+                                            {api.businessOwnerEmail && (
+                                                <Popover
+                                                    id='mouse-over-popover'
+                                                    className={classes.popover}
+                                                    classes={{
+                                                        paper: classes.paper,
+                                                    }}
+                                                    open={this.state.businessOpenPopover}
+                                                    anchorEl={this.state.businessAnchorEl}
+                                                    anchorOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'right',
+                                                    }}
+                                                    transformOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    }}
+                                                    onClose={this.handleBusinessPopoverClose}
+                                                    disableRestoreFocus
                                                 >
-                                                    <div style={{ display: 'flex' }}>
-                                                        <EmailIcon fontSize='small' />
-                                                        <Typography
-                                                            variant='body2'
-                                                            style={{ marginLeft: '8px' }}
-                                                        >
-                                                            {api.businessOwnerEmail}
-                                                        </Typography>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column'
+                                                    }}
+                                                    >
+                                                        <div style={{ display: 'flex' }}>
+                                                            <EmailIcon fontSize='small' />
+                                                            <Typography
+                                                                variant='body2'
+                                                                style={{ marginLeft: '8px' }}
+                                                            >
+                                                                {api.businessOwnerEmail}
+                                                            </Typography>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </Popover>
+                                                </Popover>
+                                            )}
                                         </div>}
                                     {tileDisplayInfo.showTechnicalDetails &&
                                         <div>
@@ -433,44 +443,54 @@ class APIThumb extends Component {
                                                     {' : '}
                                                 </div>
                                                 <div className={classes.truncate}>
-                                                    {api.technicalOwner}
+                                                    {api.technicalOwner 
+                                                        ? (api.technicalOwner)
+                                                        : (
+                                                            <span
+                                                                style={{ color: '#808080', fontWeight: 'bold' }}
+                                                            >
+                                                                Not Provided
+                                                            </span>
+                                                        )}
                                                 </div>
                                             </Typography>
-                                            <Popover
-                                                id='mouse-over-popover'
-                                                className={classes.popover}
-                                                classes={{
-                                                    paper: classes.paper,
-                                                }}
-                                                open={this.state.technicalOpenPopover}
-                                                anchorEl={this.state.technicalAnchorEl}
-                                                anchorOrigin={{
-                                                    vertical: 'top',
-                                                    horizontal: 'right',
-                                                }}
-                                                transformOrigin={{
-                                                    vertical: 'bottom',
-                                                    horizontal: 'left',
-                                                }}
-                                                onClose={this.handleTechnicalPopoverClose}
-                                                disableRestoreFocus
-                                            >
-                                                <div style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column'
-                                                }}
+                                            {api.technicalOwnerEmail && (
+                                                <Popover
+                                                    id='mouse-over-popover'
+                                                    className={classes.popover}
+                                                    classes={{
+                                                        paper: classes.paper,
+                                                    }}
+                                                    open={this.state.technicalOpenPopover}
+                                                    anchorEl={this.state.technicalAnchorEl}
+                                                    anchorOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'right',
+                                                    }}
+                                                    transformOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    }}
+                                                    onClose={this.handleTechnicalPopoverClose}
+                                                    disableRestoreFocus
                                                 >
-                                                    <div style={{ display: 'flex' }}>
-                                                        <EmailIcon fontSize='small' />
-                                                        <Typography
-                                                            variant='body2'
-                                                            style={{ marginLeft: '8px' }}
-                                                        >
-                                                            {api.technicalOwnerEmail}
-                                                        </Typography>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'column'
+                                                    }}
+                                                    >
+                                                        <div style={{ display: 'flex' }}>
+                                                            <EmailIcon fontSize='small' />
+                                                            <Typography
+                                                                variant='body2'
+                                                                style={{ marginLeft: '8px' }}
+                                                            >
+                                                                {api.technicalOwnerEmail}
+                                                            </Typography>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </Popover>
+                                                </Popover>
+                                            )}
                                         </div>}
                                 </div>
                             </div>
