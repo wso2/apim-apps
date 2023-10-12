@@ -2063,12 +2063,12 @@ export default function Environments() {
                                     spacing={3}
                                 >
                                     {internalGateways && internalGateways.map((row) => (
-                                        <Grid item xs={4} key={row.name}>
+                                        <Grid item xs={4}>
                                             <Card
-                                                className={clsx(SelectedEnvironment 
+                                                className={clsx(SelectedEnvironment
                                                 && SelectedEnvironment.includes(row.name)
-                                                    ? classes.changeCard
-                                                    : classes.noChangeCard, classes.cardHeight)}
+                                                    ? (classes.changeCard)
+                                                    : (classes.noChangeCard), classes.cardHeight)}
                                                 variant='outlined'
                                             >
                                                 <Box height='100%'>
@@ -2092,9 +2092,9 @@ export default function Environments() {
                                                             </Typography>
                                                         )}
                                                         subheader={(
-                                                            <Typography 
-                                                                variant='body2' 
-                                                                color='textSecondary' 
+                                                            <Typography
+                                                                variant='body2'
+                                                                color='textSecondary'
                                                                 gutterBottom
                                                             >
                                                                 {row.type}
@@ -2102,9 +2102,9 @@ export default function Environments() {
                                                         )}
                                                     />
                                                     <CardContent className={classes.cardContentHeight}>
-                                                        <Grid 
-                                                            container 
-                                                            direction='column' 
+                                                        <Grid
+                                                            container
+                                                            direction='column'
                                                             spacing={2}
                                                         >
                                                             <Grid item xs={12}>
@@ -2112,7 +2112,7 @@ export default function Environments() {
                                                                     title={(
                                                                         <>
                                                                             <Typography color='inherit'>
-                                                                                {getVhostHelperText(row.name, 
+                                                                                {getVhostHelperText(row.name,
                                                                                     selectedVhostDeploy)}
                                                                             </Typography>
                                                                         </>
