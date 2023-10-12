@@ -104,6 +104,7 @@ function ListLabels() {
                     return {
                         description: obj.description,
                         apiName: obj.properties.apiName,
+                        apiVersion: obj.properties.apiVersion,
                         environment: obj.properties.environment,
                         revisionId: obj.properties.revisionId,
                         userName: obj.properties.userName,
@@ -222,7 +223,7 @@ function ListLabels() {
         {
             name: 'description',
             label: intl.formatMessage({
-                id: 'Workflow.APIRevisionDeployment.table.header.escription',
+                id: 'Workflow.APIRevisionDeployment.table.header.description',
                 defaultMessage: 'Description',
             }),
             options: {
@@ -231,10 +232,10 @@ function ListLabels() {
             },
         },
         {
-            name: 'revisionId',
+            name: 'apiName',
             label: intl.formatMessage({
-                id: 'Workflow.APIRevisionDeployment.table.header.revisionId',
-                defaultMessage: 'Revision Id',
+                id: 'Workflow.APIRevisionDeployment.table.header.apiName',
+                defaultMessage: 'API',
             }),
             options: {
                 sort: false,
@@ -242,10 +243,21 @@ function ListLabels() {
             },
         },
         {
-            name: 'apiName',
+            name: 'apiVersion',
             label: intl.formatMessage({
-                id: 'Workflow.APIRevisionDeployment.table.header.apiName',
+                id: 'Workflow.APIRevisionDeployment.table.header.apiVersion',
                 defaultMessage: 'API',
+            }),
+            options: {
+                sort: false,
+                filter: true,
+            },
+        },
+        {
+            name: 'revisionId',
+            label: intl.formatMessage({
+                id: 'Workflow.APIRevisionDeployment.table.header.revisionId',
+                defaultMessage: 'Revision Id',
             }),
             options: {
                 sort: false,
