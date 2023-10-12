@@ -781,9 +781,9 @@ export default function Environments() {
                     }
                     console.error(error);
                 }).finally(() => {
-                getRevision();
-                getDeployedEnv();
-            });
+                    getRevision();
+                    getDeployedEnv();
+                });
         }
     }
 
@@ -1512,15 +1512,88 @@ export default function Environments() {
     }
 
     /**
-     * Get the deployment component based on the environment and revision status.
+     * Get the deployment status component based on the environment and revision status.
      * @param {*} row Row
-     * @param {*} allEnvDeployments All deployments of the API with mapping
+     * @param {*} allEnvRevisionMapping All environment revision mapping
      * @returns {JSX.Element} The JSX element representing the deployment component
      */
-    function getDeployedRevisionComponent(row, allEnvDeployments) {
-        const revision = allEnvDeployments[row.name]?.revision;
+    function getDeployedRevisionStatusComponent(row, allEnvRevisionMapping) {
+        
+        const deployingGateway = allEnvRevisionMapping.find(gateway => {
+            return gateway.name === row.name});
+        const gatewayRevisions = deployingGateway?.revisions;
     
-        if (!revision) {
+        if (!gatewayRevisions.length) {
+            // Content to display when there is no revision
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Environments.Environments.status.not.deployed'
+                    defaultMessage='N/A'
+                />
+            );
+        }
+        const pendingDeployment =gatewayRevisions.find(revision => {
+            return revision.deploymentInfo.some(info => info.status === "CREATED" && info.name === row.name);});
+
+        const hasApprovedDeployment =gatewayRevisions.some(revision => {
+            return revision.deploymentInfo.some(info => info.status === "APPROVED" && info.name === row.name);});
+
+        if (pendingDeployment) {
+            // Content to display when revision status is created
+            return (
+                <div>
+                    <Chip
+                        label={
+                            <div style={{ whiteSpace: 'normal', fontSize:'smaller' }}> 
+                                <FormattedMessage
+                                    id='Apis.Details.Environments.Environments.pending.chip'
+                                    defaultMessage='Pending'
+                                />
+                                <br />
+                                {pendingDeployment.displayName}
+                            </div>
+                        }
+                        style={{ backgroundColor: '#FFBF00' }}
+                    />
+                    <Button
+                        className={classes.button1}
+                        variant='outlined'
+                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        onClick={() => cancelRevisionDeploymentWorkflow(pendingDeployment.id, row.name)}
+                        size='small'
+                        id='cancel-btn'
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.cancel.btn'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                </div>
+            );
+        } else if (hasApprovedDeployment ) {
+            // Content to display when revision status is approved
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Environments.Environments.status.deployed'
+                    defaultMessage='Deployed'
+                />
+            );
+        } 
+        return (<div/>);
+    }
+
+    /**
+     * Get the deployment component based on the environment and revision status.
+     * @param {*} row Row
+     * @param {*} allEnvRevisionMapping All environment revision mapping
+     * @returns {JSX.Element} The JSX element representing the deployment component
+     */
+    function getDeployedRevisionComponent(row, allEnvRevisionMapping) {
+        const deployingGateway = allEnvRevisionMapping.find(gateway => {
+            return gateway.name === row.name});
+        const gatewayRevisions = deployingGateway?.revisions;
+    
+        if (!gatewayRevisions.length) {
             // Content to display when there is no revision
             return (
                 <div>
@@ -1580,21 +1653,35 @@ export default function Environments() {
                 </div>
             );
         }
-        const deploymentInfo =revision.deploymentInfo.filter(info => info.name === row.name);
-        if (deploymentInfo.length > 0) {
-            if (deploymentInfo[0]?.status === null || deploymentInfo[0]?.status ==='APPROVED' ) {
-                // Content to display when revision status is approved
-                return (
+        const pendingDeployment =gatewayRevisions.find(revision => {
+            return revision.deploymentInfo.some(info => info.status === "CREATED" && info.name === row.name);});
+
+        const approvedDeployment =gatewayRevisions.find(revision => {
+            return revision.deploymentInfo.some(info => info.status === "APPROVED" && info.name === row.name);});
+
+        const filteredRevisions = allRevisions.filter(item => {
+            if (pendingDeployment && pendingDeployment.displayName === item.displayName) {
+                return false;
+            }
+            if (approvedDeployment && approvedDeployment.displayName === item.displayName) {
+                return false;
+            }
+            return true;
+        });
+    
+        if (approvedDeployment) {
+            return (
+                <div>
                     <div>
                         <Chip
-                            label={revision.displayName}
+                            label={approvedDeployment.displayName}
                             style={{ backgroundColor: '#15B8CF' }}
                         />
                         <Button
                             className={classes.button1}
                             variant='outlined'
                             disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                            onClick={() => undeployRevision(revision.id, row.name)}
+                            onClick={() => undeployRevision(approvedDeployment.id, row.name)}
                             size='small'
                             id='undeploy-btn'
                         >
@@ -1604,41 +1691,128 @@ export default function Environments() {
                             />
                         </Button>
                     </div>
-                );
-            }
-            if (deploymentInfo[0]?.status === 'CREATED') {
-            // Content to display when revision status is created
-                return (
-                    <div>
-                        <Chip
-                            label={
-                                <div style={{ whiteSpace: 'normal', fontSize:'smaller' }}> 
-                                    <FormattedMessage
-                                        id='Apis.Details.Environments.Environments.pending.chip'
-                                        defaultMessage='Pending'
-                                    />
-                                    <br />
-                                    {revision.displayName}
-                                </div>
-                            }
-                            style={{ backgroundColor: '#FFBF00' }}
-                        />
-                        <Button
-                            className={classes.button1}
+                    {filteredRevisions.length > 0 && ( <div>
+                        <TextField
+                            id='revision-selector'
+                            select
+                            label={(
+                                <FormattedMessage
+                                    id='Apis.Details.Environments.Environments.select.table'
+                                    defaultMessage='Select Revision'
+                                />
+                            )}
+                            SelectProps={{
+                                MenuProps: {
+                                    anchorOrigin: {
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    },
+                                    getContentAnchorEl: null,
+                                },
+                            }}
+                            name={row.name}
+                            onChange={handleSelect}
+                            margin='dense'
                             variant='outlined'
-                            disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                            onClick={() => cancelRevisionDeploymentWorkflow(revision.id, row.name)}
-                            size='small'
-                            id='cancel-btn'
+                            style={{ width: '50%' }}
+                            disabled={api.isRevision || !allRevisions || allRevisions.length === 0}
+                        >
+                            {filteredRevisions.map
+                            ((number) => (
+                                <MenuItem 
+                                    value={number.id}>{number.displayName}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <Button
+                            className={classes.button2}
+                            disabled={
+                                api.isRevision ||
+                                !selectedRevision.some((r) => r.env === row.name && r.revision) ||
+                                !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
+                                (api.advertiseInfo && api.advertiseInfo.advertised) ||
+                                isDeployButtonDisabled
+                            }
+                            variant='outlined'
+                            onClick={() =>
+                                deployRevision(
+                                    selectedRevision.find((r) => r.env === row.name).revision,
+                                    row.name,
+                                    selectedVhosts.find((v) => v.env === row.name).vhost,
+                                    selectedRevision.find((r) => r.env === row.name).displayOnDevPortal
+                                )
+                            }
                         >
                             <FormattedMessage
-                                id='Apis.Details.Environments.Environments.cancel.btn'
-                                defaultMessage='Cancel'
+                                id='Apis.Details.Environments.Environments.deploy.button'
+                                defaultMessage='Deploy'
                             />
                         </Button>
-                    </div>
-                );
-            };
+                    </div> 
+                    )}
+                </div>
+            );
+            
+        } else if (pendingDeployment) {
+            // Content to display when there is no revision
+            return (
+                <div>
+                    <TextField
+                        id='revision-selector'
+                        select
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Environments.Environments.select.table'
+                                defaultMessage='Select Revision'
+                            />
+                        )}
+                        SelectProps={{
+                            MenuProps: {
+                                anchorOrigin: {
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                },
+                                getContentAnchorEl: null,
+                            },
+                        }}
+                        name={row.name}
+                        onChange={handleSelect}
+                        margin='dense'
+                        variant='outlined'
+                        style={{ width: '50%' }}
+                        disabled={api.isRevision || !allRevisions || allRevisions.length === 0}
+                    >
+                        {filteredRevisions.map((number) => (
+                            <MenuItem value={number.id}>{number.displayName}</MenuItem>
+                        ))}
+                    </TextField>
+                    <Button
+                        className={classes.button2}
+                        disabled={
+                            api.isRevision ||
+                            !selectedRevision.some((r) => r.env === row.name && r.revision) ||
+                            !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
+                            (api.advertiseInfo && api.advertiseInfo.advertised) ||
+                            isDeployButtonDisabled
+                        }
+                        variant='outlined'
+                        onClick={() =>
+                            deployRevision(
+                                selectedRevision.find((r) => r.env === row.name).revision,
+                                row.name,
+                                selectedVhosts.find((v) => v.env === row.name).vhost,
+                                selectedRevision.find((r) => r.env === row.name).displayOnDevPortal
+                            )
+                        }
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.deploy.button'
+                            defaultMessage='Deploy'
+                        />
+                    </Button>
+                </div>
+            );
+            // Content to display when revision status is approved
         }
         return (<div/>);
     }
@@ -1681,121 +1855,13 @@ export default function Environments() {
         return '';
     }
 
-    /**
- * Get the deployment component based on the environment and revision status.
- * @param {*} row Row
- * @param {*} allEnvDeployments All deployments of the API with mapping
- * @returns {JSX.Element} The JSX element representing the deployment component
- */
-    function getGatewayCard( row ) {
-        return (
-            <Grid item xs={4} key={row.name}>
-                <Card
-                    className={clsx(
-                        SelectedEnvironment && SelectedEnvironment.includes(row.name)
-                            ? classes.changeCard
-                            : classes.noChangeCard,
-                        classes.cardHeight
-                    )}
-                    variant='outlined'
-                >
-                    <Box height='100%'>
-                        <CardHeader
-                            action={(
-                                <Checkbox
-                                    id={row.name.split(' ').join('')}
-                                    value={row.name}
-                                    checked={SelectedEnvironment.includes(row.name)}
-                                    onChange={handleChange}
-                                    color='primary'
-                                    icon={<RadioButtonUncheckedIcon />}
-                                    checkedIcon={<CheckCircleIcon color='primary' />}
-                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                    data-testid={row.displayName + 'gateway-select-btn'}
-                                />
-                            )}
-                            title={<Typography variant='subtitle2'>{row.displayName}</Typography>}
-                            subheader={<Typography variant='body2' color='textSecondary' 
-                                gutterBottom>{row.type}</Typography>}
-                        />
-                        <CardContent className={classes.cardContentHeight}>
-                            <Grid container direction='column' spacing={2}>
-                                <Grid item xs={12}>
-                                    <Tooltip
-                                        title={(
-                                            <Typography color='inherit'>
-                                                {getVhostHelperText(row.name, selectedVhostDeploy)}
-                                            </Typography>
-                                        )}
-                                        placement='bottom'
-                                    >
-                                        <TextField
-                                            id='vhost-selector'
-                                            select
-                                            label={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.Environments.deploy.vhost'
-                                                    defaultMessage='VHost'
-                                                />
-                                            )}
-                                            SelectProps={{
-                                                MenuProps: {
-                                                    anchorOrigin: {
-                                                        vertical: 'bottom',
-                                                        horizontal: 'left',
-                                                    },
-                                                    getContentAnchorEl: null,
-                                                },
-                                            }}
-                                            name={row.name}
-                                            value={selectedVhostDeploy.find(v => v.env === row.name).vhost}
-                                            onChange={handleVhostDeploySelect}
-                                            margin='dense'
-                                            variant='outlined'
-                                            fullWidth
-                                            helperText={getVhostHelperText(row.name, selectedVhostDeploy, true)}
-                                        >
-                                            {row.vhosts.map(vhost => (
-                                                <MenuItem value={api.isWebSocket() ? vhost.wsHost : vhost.host} 
-                                                    key={vhost.host}>
-                                                    {api.isWebSocket() ? vhost.wsHost : vhost.host}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </Tooltip>
-                                </Grid>
-                                <Grid item>
-                                    {allEnvRevision
-                                        .filter(o1 => {
-                                            if (o1.deploymentInfo.some(o2 => o2.name === row.name)) {
-                                                return o1;
-                                            }
-                                            return null;
-                                        })
-                                        .map(o3 => (
-                                            <div key={o3.displayName}>
-                                                <Chip
-                                                    label={o3.displayName}
-                                                    style={{ backgroundColor: '#15B8CF' }}
-                                                />
-                                            </div>
-                                        ))}
-                                </Grid>
-                                <Grid item />
-                            </Grid>
-                        </CardContent>
-                    </Box>
-                </Card>
-            </Grid>
-        );     
-    }
-
     if (isLoading || selectedVhosts === null) {
         return <Progress per={80} message='Loading app settings ...' />;
     }
     // allEnvDeployments represents all deployments of the API with mapping
     // environment -> {revision deployed to env, vhost deployed to env with revision}
     const allEnvDeployments = Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision);
+    const allEnvRevisionMapping = Utils.getAllEnvironmentRevisions(settings.environment, allEnvRevision);
 
     return (
         <>
@@ -1996,27 +2062,135 @@ export default function Environments() {
                                     container
                                     spacing={3}
                                 > 
-                                    {api.apiType === API.CONSTS.API && Object.keys(allEnvDeployments)
-                                        .filter(key => {
-                                            const gateway = allEnvDeployments[key];
-                                            const gatewayRevision = gateway.revision;
-                                            if (!gatewayRevision) {
-                                                return true;
-                                            }
-                                            return gatewayRevision.deploymentInfo?.some(
-                                                deployment =>
-                                                    deployment.name === key &&
-                                            (deployment.status === null || deployment.status !== 'CREATED')
-                                            );
-                                        }).map(key => {
-                                            const gateway = internalGateways.find(selectedGateway => 
-                                                selectedGateway.displayName === key);
-                                            return getGatewayCard(gateway);
-                                        })
-                                    }
-                                    {api.apiType === API.CONSTS.APIProduct && internalGateways && 
-                                    internalGateways.map((row) => (
-                                        getGatewayCard(row)
+                                    {internalGateways && internalGateways.map((row) => (
+                                        <Grid item xs={4} key={row.name}>
+                                            <Card
+                                                className={clsx(
+                                                    SelectedEnvironment && SelectedEnvironment.includes(row.name)
+                                                        ? classes.changeCard
+                                                        : classes.noChangeCard,
+                                                    classes.cardHeight
+                                                )}
+                                                variant='outlined'
+                                            >
+                                                <Box height='100%'>
+                                                    <CardHeader
+                                                        action={(
+                                                            <Checkbox
+                                                                id={row.name.split(' ').join('')}
+                                                                value={row.name}
+                                                                checked={SelectedEnvironment.includes(row.name)}
+                                                                onChange={handleChange}
+                                                                color='primary'
+                                                                icon={<RadioButtonUncheckedIcon />}
+                                                                checkedIcon={<CheckCircleIcon color='primary' />}
+                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                                                data-testid={row.displayName + 'gateway-select-btn'}
+                                                            />
+                                                        )}
+                                                        title={<Typography variant='subtitle2'>
+                                                            {row.displayName}
+                                                        </Typography>}
+                                                        subheader={<Typography variant='body2' color='textSecondary' 
+                                                            gutterBottom>{row.type}</Typography>}
+                                                    />
+                                                    <CardContent className={classes.cardContentHeight}>
+                                                        <Grid container direction='column' spacing={2}>
+                                                            <Grid item xs={12}>
+                                                                <Tooltip
+                                                                    title={(
+                                                                        <Typography color='inherit'>
+                                                                            {getVhostHelperText(row.name, 
+                                                                                selectedVhostDeploy)}
+                                                                        </Typography>
+                                                                    )}
+                                                                    placement='bottom'
+                                                                >
+                                                                    <TextField
+                                                                        id='vhost-selector'
+                                                                        select
+                                                                        label={(
+                                                                            <FormattedMessage
+                                                                                id='Apis.Details.
+                                                                                Environments.deploy.vhost'
+                                                                                defaultMessage='VHost'
+                                                                            />
+                                                                        )}
+                                                                        SelectProps={{
+                                                                            MenuProps: {
+                                                                                anchorOrigin: {
+                                                                                    vertical: 'bottom',
+                                                                                    horizontal: 'left',
+                                                                                },
+                                                                                getContentAnchorEl: null,
+                                                                            },
+                                                                        }}
+                                                                        name={row.name}
+                                                                        value={selectedVhostDeploy.find(
+                                                                            v => v.env === row.name).vhost}
+                                                                        onChange={handleVhostDeploySelect}
+                                                                        margin='dense'
+                                                                        variant='outlined'
+                                                                        fullWidth
+                                                                        helperText={getVhostHelperText(row.name, 
+                                                                            selectedVhostDeploy, true)}
+                                                                    >
+                                                                        {row.vhosts.map(
+                                                                            (vhost) => (
+                                                                                <MenuItem value={api.isWebSocket() 
+                                                                                    ? vhost.wsHost : vhost.host}>
+                                                                                    {api.isWebSocket() 
+                                                                                        ? vhost.wsHost : vhost.host}
+                                                                                </MenuItem>
+                                                                            ),
+                                                                        )}
+                                                                    </TextField>
+                                                                </Tooltip>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                {allEnvRevision
+                                                                    .filter(o1 => {
+                                                                        if (o1.deploymentInfo.some(
+                                                                            o2 => o2.name === row.name && 
+                                                                            o2.status === 'APPROVED')) {
+                                                                            return o1;
+                                                                        }
+                                                                        return null;
+                                                                    })
+                                                                    .map(o3 => (
+                                                                        <div key={o3.displayName}>
+                                                                            <Chip
+                                                                                label={o3.displayName}
+                                                                                style={{ backgroundColor: '#15B8CF' }}
+                                                                            />
+                                                                        </div>
+                                                                    ))}
+                                                            </Grid>
+                                                            <Grid item>
+                                                                {allEnvRevision
+                                                                    .filter(o1 => {
+                                                                        if (o1.deploymentInfo.some(
+                                                                            o2 => o2.name === row.name && 
+                                                                            o2.status === 'CREATED')) {
+                                                                            return o1;
+                                                                        }
+                                                                        return null;
+                                                                    })
+                                                                    .map(o3 => (
+                                                                        <div key={o3.displayName}>
+                                                                            <Chip
+                                                                                label={o3.displayName}
+                                                                                style={{ backgroundColor: '#FFBF00' }}
+                                                                            />
+                                                                        </div>
+                                                                    ))}
+                                                            </Grid>
+                                                            <Grid item />
+                                                        </Grid>
+                                                    </CardContent>
+                                                </Box>
+                                            </Card>
+                                        </Grid>
                                     ))}
                                 </Grid>
                             </Box>
@@ -2343,6 +2517,12 @@ export default function Environments() {
                                             defaultMessage='Gateway Access URL'
                                         />
                                     </TableCell>
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.gateway.status'
+                                            defaultMessage='Deployment Status'
+                                        />
+                                    </TableCell>
                                     {api && api.isDefaultVersion !== true
                                         ? (
                                             <TableCell align='left'>
@@ -2485,8 +2665,11 @@ export default function Environments() {
                                                 </TableCell>
                                             </>
                                         )}
+                                        <TableCell component='th' scope='row'>
+                                            {getDeployedRevisionStatusComponent(row, allEnvRevisionMapping)}
+                                        </TableCell>
                                         <TableCell align='left' style={{ width: '300px' }}>
-                                            {getDeployedRevisionComponent(row, allEnvDeployments)}
+                                            {getDeployedRevisionComponent(row, allEnvRevisionMapping)}
                                         </TableCell>
                                         <TableCell align='left'>
                                             <DisplayDevportal
