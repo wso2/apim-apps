@@ -2061,16 +2061,14 @@ export default function Environments() {
                                 <Grid
                                     container
                                     spacing={3}
-                                > 
+                                >
                                     {internalGateways && internalGateways.map((row) => (
                                         <Grid item xs={4} key={row.name}>
                                             <Card
-                                                className={clsx(
-                                                    SelectedEnvironment && SelectedEnvironment.includes(row.name)
-                                                        ? classes.changeCard
-                                                        : classes.noChangeCard,
-                                                    classes.cardHeight
-                                                )}
+                                                className={clsx(SelectedEnvironment 
+                                                && SelectedEnvironment.includes(row.name)
+                                                    ? classes.changeCard
+                                                    : classes.noChangeCard, classes.cardHeight)}
                                                 variant='outlined'
                                             >
                                                 <Box height='100%'>
@@ -2088,21 +2086,36 @@ export default function Environments() {
                                                                 data-testid={row.displayName + 'gateway-select-btn'}
                                                             />
                                                         )}
-                                                        title={<Typography variant='subtitle2'>
-                                                            {row.displayName}
-                                                        </Typography>}
-                                                        subheader={<Typography variant='body2' color='textSecondary' 
-                                                            gutterBottom>{row.type}</Typography>}
+                                                        title={(
+                                                            <Typography variant='subtitle2'>
+                                                                {row.displayName}
+                                                            </Typography>
+                                                        )}
+                                                        subheader={(
+                                                            <Typography 
+                                                                variant='body2' 
+                                                                color='textSecondary' 
+                                                                gutterBottom
+                                                            >
+                                                                {row.type}
+                                                            </Typography>
+                                                        )}
                                                     />
                                                     <CardContent className={classes.cardContentHeight}>
-                                                        <Grid container direction='column' spacing={2}>
+                                                        <Grid 
+                                                            container 
+                                                            direction='column' 
+                                                            spacing={2}
+                                                        >
                                                             <Grid item xs={12}>
                                                                 <Tooltip
                                                                     title={(
-                                                                        <Typography color='inherit'>
-                                                                            {getVhostHelperText(row.name, 
-                                                                                selectedVhostDeploy)}
-                                                                        </Typography>
+                                                                        <>
+                                                                            <Typography color='inherit'>
+                                                                                {getVhostHelperText(row.name, 
+                                                                                    selectedVhostDeploy)}
+                                                                            </Typography>
+                                                                        </>
                                                                     )}
                                                                     placement='bottom'
                                                                 >
@@ -2127,12 +2140,13 @@ export default function Environments() {
                                                                         }}
                                                                         name={row.name}
                                                                         value={selectedVhostDeploy.find(
-                                                                            v => v.env === row.name).vhost}
+                                                                            (v) => v.env === row.name,
+                                                                        ).vhost}
                                                                         onChange={handleVhostDeploySelect}
                                                                         margin='dense'
                                                                         variant='outlined'
                                                                         fullWidth
-                                                                        helperText={getVhostHelperText(row.name, 
+                                                                        helperText={getVhostHelperText(row.name,
                                                                             selectedVhostDeploy, true)}
                                                                     >
                                                                         {row.vhosts.map(
