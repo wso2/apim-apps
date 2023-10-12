@@ -278,6 +278,9 @@
   "Apis.Create.streaming.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Protocol"
   },
+  "Apis.Details.\n                                                                                Environments.deploy.vhost": {
+    "defaultMessage": "VHost"
+  },
   "Apis.Details.APIDefinition.APIDefinition.api.definition": {
     "defaultMessage": "API Definition"
   },
@@ -2067,6 +2070,9 @@
   "Apis.Details.Environments.Environments.gateway.action": {
     "defaultMessage": "Action"
   },
+  "Apis.Details.Environments.Environments.gateway.status": {
+    "defaultMessage": "Deployment Status"
+  },
   "Apis.Details.Environments.Environments.pending.chip": {
     "defaultMessage": "Pending"
   },
@@ -2136,14 +2142,17 @@
   "Apis.Details.Environments.Environments.solace.platform.environments.heading": {
     "defaultMessage": "Solace Platform Environments"
   },
+  "Apis.Details.Environments.Environments.status.deployed": {
+    "defaultMessage": "Deployed"
+  },
+  "Apis.Details.Environments.Environments.status.not.deployed": {
+    "defaultMessage": "N/A"
+  },
   "Apis.Details.Environments.Environments.undeploy.btn": {
     "defaultMessage": "Undeploy"
   },
   "Apis.Details.Environments.Environments.visibility.in.devportal": {
     "defaultMessage": "Gateway URL Visibility"
-  },
-  "Apis.Details.Environments.deploy.vhost": {
-    "defaultMessage": "VHost"
   },
   "Apis.Details.ExternalStores.ExternalStores.cancel": {
     "defaultMessage": "Cancel"
@@ -3794,6 +3803,15 @@
   },
   "Apis.Listing.ApiThumb.context": {
     "defaultMessage": "Context"
+  },
+  "Apis.Listing.ApiThumb.owners": {
+    "defaultMessage": "Owners"
+  },
+  "Apis.Listing.ApiThumb.owners.business": {
+    "defaultMessage": "Business"
+  },
+  "Apis.Listing.ApiThumb.owners.technical": {
+    "defaultMessage": "Technical"
   },
   "Apis.Listing.ApiThumb.version": {
     "defaultMessage": "Version"

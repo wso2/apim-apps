@@ -637,6 +637,12 @@
       "value": "Protocol"
     }
   ],
+  "Apis.Details.\n                                                                                Environments.deploy.vhost": [
+    {
+      "type": 0,
+      "value": "VHost"
+    }
+  ],
   "Apis.Details.APIDefinition.APIDefinition.api.definition": [
     {
       "type": 0,
@@ -4349,6 +4355,12 @@
       "value": "Action"
     }
   ],
+  "Apis.Details.Environments.Environments.gateway.status": [
+    {
+      "type": 0,
+      "value": "Deployment Status"
+    }
+  ],
   "Apis.Details.Environments.Environments.pending.chip": [
     {
       "type": 0,
@@ -4515,6 +4527,18 @@
       "value": "Solace Platform Environments"
     }
   ],
+  "Apis.Details.Environments.Environments.status.deployed": [
+    {
+      "type": 0,
+      "value": "Deployed"
+    }
+  ],
+  "Apis.Details.Environments.Environments.status.not.deployed": [
+    {
+      "type": 0,
+      "value": "N/A"
+    }
+  ],
   "Apis.Details.Environments.Environments.undeploy.btn": [
     {
       "type": 0,
@@ -4525,12 +4549,6 @@
     {
       "type": 0,
       "value": "Gateway URL Visibility"
-    }
-  ],
-  "Apis.Details.Environments.deploy.vhost": [
-    {
-      "type": 0,
-      "value": "VHost"
     }
   ],
   "Apis.Details.ExternalStores.ExternalStores.cancel": [
@@ -7965,6 +7983,24 @@
     {
       "type": 0,
       "value": "Context"
+    }
+  ],
+  "Apis.Listing.ApiThumb.owners": [
+    {
+      "type": 0,
+      "value": "Owners"
+    }
+  ],
+  "Apis.Listing.ApiThumb.owners.business": [
+    {
+      "type": 0,
+      "value": "Business"
+    }
+  ],
+  "Apis.Listing.ApiThumb.owners.technical": [
+    {
+      "type": 0,
+      "value": "Technical"
     }
   ],
   "Apis.Listing.ApiThumb.version": [
