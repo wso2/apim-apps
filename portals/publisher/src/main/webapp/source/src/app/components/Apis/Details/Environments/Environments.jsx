@@ -1536,7 +1536,8 @@ export default function Environments() {
             return revision.deploymentInfo.some(info => info.status === "CREATED" && info.name === row.name);});
 
         const hasApprovedDeployment =gatewayRevisions.some(revision => {
-            return revision.deploymentInfo.some(info => info.status === "APPROVED" && info.name === row.name);});
+            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") && 
+            info.name === row.name);});
 
         if (pendingDeployment) {
             // Content to display when revision status is created
@@ -1657,7 +1658,8 @@ export default function Environments() {
             return revision.deploymentInfo.some(info => info.status === "CREATED" && info.name === row.name);});
 
         const approvedDeployment =gatewayRevisions.find(revision => {
-            return revision.deploymentInfo.some(info => info.status === "APPROVED" && info.name === row.name);});
+            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") && 
+            info.name === row.name);});
 
         const filteredRevisions = allRevisions.filter(item => {
             if (pendingDeployment && pendingDeployment.displayName === item.displayName) {
@@ -2166,7 +2168,8 @@ export default function Environments() {
                                                                     .filter(o1 => {
                                                                         if (o1.deploymentInfo.some(
                                                                             o2 => o2.name === row.name && 
-                                                                            o2.status === 'APPROVED')) {
+                                                                            (o2.status === null || 
+                                                                                o2.status === 'APPROVED'))) {
                                                                             return o1;
                                                                         }
                                                                         return null;
