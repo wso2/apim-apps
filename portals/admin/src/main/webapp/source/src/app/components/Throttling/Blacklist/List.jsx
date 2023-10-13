@@ -18,16 +18,16 @@
 
 import React, { useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import DescriptionIcon from '@material-ui/icons/Description';
-import Switch from '@material-ui/core/Switch';
-import Link from '@material-ui/core/Link';
+import DescriptionIcon from '@mui/icons-material/Description';
+import Switch from '@mui/material/Switch';
+import Link from '@mui/material/Link';
 import Configurations from 'Config';
 import AddEdit from 'AppComponents/Throttling/Blacklist/AddEdit';
 import Delete from 'AppComponents/Throttling/Blacklist/Delete';

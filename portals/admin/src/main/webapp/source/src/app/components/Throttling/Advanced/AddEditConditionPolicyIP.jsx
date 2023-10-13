@@ -20,18 +20,18 @@
 
 import React, { useState, useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useIntl, FormattedMessage } from 'react-intl';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogContentText from '@mui/material/DialogContentText';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
 import cloneDeep from 'lodash.clonedeep';
-import InputLabel from '@material-ui/core/InputLabel';
-import CreateIcon from '@material-ui/icons/Create';
+import InputLabel from '@mui/material/InputLabel';
+import CreateIcon from '@mui/icons-material/Create';
 
 /**
  * validate ip address

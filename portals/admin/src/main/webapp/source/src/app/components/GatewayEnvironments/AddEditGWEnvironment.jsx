@@ -19,22 +19,22 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
-import FormControl from '@material-ui/core/FormControl';
-import { makeStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@mui/material//Select';
+import InputLabel from '@@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import makeStyles from '@mui/styles/makeStyles';
+import MenuItem from '@@mui/material/MenuItem';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormLabel from '@material-ui/core/FormLabel';
+import Radio from '@@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormLabel from '@mui/material/FormLabel';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 
 const useStyles = makeStyles((theme) => ({

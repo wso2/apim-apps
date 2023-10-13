@@ -16,10 +16,8 @@
  * under the License.
  */
 import React from 'react';
-// import { unwrap } from '@material-ui/core/test-utils';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { createTheme } from '@material-ui/core/styles';
-
+// import { unwrap } from '@mui/material/test-utils';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Themes from 'Themes';
 import LeftMenuItem from './LeftMenuItem';
 
@@ -30,9 +28,9 @@ describe('<LeftMenuItem/> tests', () => {
     test('should render the <LeftMenuItem/> component with light theme styles', () => {
         const { light } = Themes;
         const TestComponent = (
-            <MuiThemeProvider theme={createTheme(light)}>
+            <ThemeProvider theme={createTheme(light)}>
                 <LeftMenuItem />
-            </MuiThemeProvider>
+            </ThemeProvider>
         );
         // mount(TestComponent);
     });

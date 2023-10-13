@@ -17,13 +17,13 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Avatar as AvatarComponent } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import { withStyles } from '@material-ui/core/styles';
+import { Avatar as AvatarComponent } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Toolbar from '@mui/material/Toolbar';
+import withStyles from '@mui/styles/withStyles';
 import Breadcrumbs from 'AppComponents/Base/Header/Breadcrumbs';
 
 const lightColor = 'rgba(255, 255, 255, 0.7)';

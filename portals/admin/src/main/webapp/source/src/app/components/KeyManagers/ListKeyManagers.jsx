@@ -19,33 +19,34 @@
 import React, { useEffect, useState } from 'react';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
+import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
-import Switch from '@material-ui/core/Switch';
-import Button from '@material-ui/core/Button';
+import Switch from '@mui/material/Switch';
+import Button from '@mui/material/Button';
 import {
     Chip, ButtonGroup, ClickAwayListener, MenuItem, MenuList, Popper, Paper,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import Toolbar from '@material-ui/core/Toolbar';
-import Grid from '@material-ui/core/Grid';
-import SearchIcon from '@material-ui/icons/Search';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import AppBar from '@material-ui/core/AppBar';
-import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@mui/material/Toolbar';
+import Grid from '@mui/material/Grid';
+import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import AppBar from '@mui/material/AppBar';
+import { makeStyles } from '@mui/material/styles';
 import MUIDataTable from 'mui-datatables';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import ArrowDropDownIcon from '@mui/material/ArrowDropDown';
 
 const useStyles = makeStyles((theme) => ({
     searchBar: {

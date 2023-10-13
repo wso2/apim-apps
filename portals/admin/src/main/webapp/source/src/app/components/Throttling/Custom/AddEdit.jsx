@@ -20,13 +20,13 @@ import React, {
     useReducer, useState, Suspense, lazy, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
     Typography, Box, Grid, FormHelperText, Button,
-} from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
+} from '@mui/material';
+import { green } from '@mui/material/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { format } from 'sql-formatter';

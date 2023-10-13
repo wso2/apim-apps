@@ -19,20 +19,22 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
-import { Card } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import DnsRoundedIcon from '@material-ui/icons/DnsRounded';
-import PeopleIcon from '@material-ui/icons/People';
-import PermMediaOutlinedIcon from '@material-ui/icons/PhotoSizeSelectActual';
-import PublicIcon from '@material-ui/icons/Public';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
+import { Card } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
+import DnsRoundedIcon from '@mui/icons-material/DnsRounded';
+import PeopleIcon from '@mui/icons-material/People';
+import PermMediaOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActual';
+import PublicIcon from '@mui/icons-material/Public';
+import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
+import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 
 const useStyles = makeStyles((theme) => ({

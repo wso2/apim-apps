@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Icon from '@material-ui/core/Icon';
-import { amber } from '@material-ui/core/colors';
+import withStyles from '@mui/styles/withStyles';
+import Paper from '@mui/material/Paper';
+import Icon from '@mui/material/Icon';
+import { amber } from '@mui/material/colors';
 import VerticalDivider from './VerticalDivider';
 
 const styles = (theme) => ({

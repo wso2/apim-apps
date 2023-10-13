@@ -17,30 +17,30 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import AppsTableContent from 'AppComponents/ApplicationSettings/AppsTableContent';
 import ApplicationTableHead from 'AppComponents/ApplicationSettings/ApplicationTableHead';
-import EditIcon from '@material-ui/icons/Edit';
-import Table from '@material-ui/core/Table';
+import EditIcon from '@mui/icons-material/Edit';
+import Table from '@mui/material/Table';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
-import Tooltip from '@material-ui/core/Tooltip';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
+import TableFooter from '@mui/material/TableFooter';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
 import Alert from '@mui/material/Alert';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 /**
  * Render a list

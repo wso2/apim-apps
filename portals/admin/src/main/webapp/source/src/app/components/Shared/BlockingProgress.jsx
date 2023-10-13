@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Progress from 'AppComponents/Shared/Progress';
 
 const useStyles = makeStyles(() => ({

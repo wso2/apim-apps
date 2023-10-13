@@ -17,15 +17,15 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import Image404 from './Custom404Image';
 
 const ResourceNotFound = (props) => {

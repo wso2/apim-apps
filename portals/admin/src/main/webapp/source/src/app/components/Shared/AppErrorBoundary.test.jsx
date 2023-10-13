@@ -16,9 +16,8 @@
  * under the License.
  */
 import React from 'react';
-import { unwrap } from '@material-ui/core/test-utils';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { createTheme } from '@material-ui/core/styles';
+import { unwrap } from '@mui/material/test-utils';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Themes from 'Themes';
 import AppErrorBoundary from './AppErrorBoundary';
@@ -39,11 +38,11 @@ describe('AppErrorBoundary test', () => {
             throw new Error(message);
         };
         const TestComponent = (
-            <MuiThemeProvider theme={createTheme(light)}>
+            <ThemeProvider theme={createTheme(light)}>
                 <AppErrorBoundary>
                     <TestError />
                 </AppErrorBoundary>
-            </MuiThemeProvider>
+            </ThemeProvider>
         );
 
         const wrapper = mount(TestComponent);

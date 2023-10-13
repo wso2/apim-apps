@@ -16,9 +16,9 @@
  * under the License.
  */
 import React from 'react';
-import { Toolbar, AppBar } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Toolbar, AppBar } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';

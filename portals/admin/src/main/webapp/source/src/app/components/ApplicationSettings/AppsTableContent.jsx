@@ -17,13 +17,13 @@
  */
 
 import React, { Component } from 'react';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 
 /**
  * @inheritdoc

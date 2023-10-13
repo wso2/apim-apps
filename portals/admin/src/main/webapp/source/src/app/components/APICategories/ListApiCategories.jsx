@@ -19,19 +19,19 @@
 import React from 'react';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import DescriptionIcon from '@material-ui/icons/Description';
-import Link from '@material-ui/core/Link';
+import DescriptionIcon from '@mui/icons-material/Description';
+import Link from '@mui/material/Link';
 import Configurations from 'Config';
 import Delete from 'AppComponents/APICategories/DeleteAPICategory';
 import AddEdit from 'AppComponents/APICategories/AddEditAPICategory';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 
 /**
  * API call to get api category list

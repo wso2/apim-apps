@@ -19,17 +19,17 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
-import { Card } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import PolicyIcon from '@material-ui/icons/Policy';
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
+import { Card } from '@mui/material';
+import Box from '@mui/material/Box';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import PolicyIcon from '@mui/icons-material/Policy';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 const useStyles = makeStyles(() => ({

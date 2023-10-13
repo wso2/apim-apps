@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import APICategoriesCard from 'AppComponents/AdminPages/Dashboard/APICategoriesCard';
 import RateLimitingCard from 'AppComponents/AdminPages/Dashboard/RateLimitingCard';

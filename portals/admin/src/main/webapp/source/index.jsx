@@ -21,10 +21,16 @@ import 'react-app-polyfill/stable';
 import 'fastestsmallesttextencoderdecoder'; // Added to fix TextEncoding issue in edge <79
 
 import { hot } from 'react-hot-loader/root'; // Added to do the Hot Module Replacement(HMR)
-import ReactDOM from 'react-dom';
-import React from 'react';
+import { createRoot } from 'react-dom/client';
+import React, { StrictMode } from 'react';
 import Admin from './src/Admin';
 
 // What about production? # https://github.com/gaearon/react-hot-loader#what-about-production
 const HotApp = hot(Admin);
-ReactDOM.render(<HotApp />, document.getElementById('react-root'));
+const rootElement = document.getElementById('react-root');
+const root = createRoot(rootElement);
+root.render(
+    <StrictMode>
+        <HotApp />
+    </StrictMode>,
+);

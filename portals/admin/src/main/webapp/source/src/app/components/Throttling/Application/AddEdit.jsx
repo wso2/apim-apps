@@ -18,14 +18,14 @@
 
 import React, { useReducer, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import TextField from '@mui/material/TextField';
+import DialogContentText from '@mui/material/DialogContentText';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import {
     Typography, RadioGroup, Radio, FormControlLabel, FormControl, Grid, Select, MenuItem,
-} from '@material-ui/core';
+} from '@mui/material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import Joi from '@hapi/joi';

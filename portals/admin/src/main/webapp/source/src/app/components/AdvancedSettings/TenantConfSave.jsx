@@ -22,11 +22,11 @@ import React, {
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
     Box, Grid, Button,
-} from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
+} from '@mui/material';
+import { green } from '@mui/material/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';

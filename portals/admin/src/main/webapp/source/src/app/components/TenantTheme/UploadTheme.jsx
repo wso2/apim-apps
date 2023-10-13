@@ -18,25 +18,25 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     List, Button, ListItemAvatar, Typography, Toolbar, Grid, Paper, ListItem, Avatar, ListItemSecondaryAction, Box,
-} from '@material-ui/core';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+} from '@mui/material';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
-import DescriptionIcon from '@material-ui/icons/Description';
-import Link from '@material-ui/core/Link';
+import DescriptionIcon from '@mui/icons-material/Description';
+import Link from '@mui/material/Link';
 import Configurations from 'Config';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import AlertMui from '@mui/material/Alert';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import Utils from 'AppData/Utils';
 
 const useStyles = makeStyles((theme) => ({

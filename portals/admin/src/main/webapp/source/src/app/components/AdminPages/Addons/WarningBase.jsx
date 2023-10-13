@@ -17,13 +17,13 @@
  * under the License.
  */
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import makeStyles from '@mui/styles/makeStyles';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import WarningIcon from '@material-ui/icons/Warning';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import WarningIcon from '@mui/icons-material/Warning';
 
 const useStyles = makeStyles((theme) => ({
     root: {},

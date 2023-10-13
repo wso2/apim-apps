@@ -19,8 +19,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { ThemeProvider as MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import Hidden from '@material-ui/core/Hidden';
+import { ThemeProvider } from '@mui/styles';
+import { createTheme } from '@mui/material/styles';
+import Hidden from '@mui/material/Hidden';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import User from 'AppData/User';
 import Utils from 'AppData/Utils';
@@ -41,7 +42,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
 import Alert from 'AppComponents/Shared/Alert';
 
-const theme = createMuiTheme(Themes.light);
+const theme = createTheme(Themes.light);
 const { drawerWidth } = Themes.light.custom;
 /**
  * Language.
@@ -192,7 +193,7 @@ class Protected extends Component {
             )
         );
         return (
-            <MuiThemeProvider theme={theme}>
+            <ThemeProvider theme={theme}>
                 <AppErrorBoundary>
                     {settings ? (
                         <AppContextProvider value={{ settings, user, isSuperTenant }}>
@@ -224,7 +225,7 @@ class Protected extends Component {
                         style={{ position: 'absolute', bottom: 0 }}
                     />
                 </AppErrorBoundary>
-            </MuiThemeProvider>
+            </ThemeProvider>
         );
     }
 }

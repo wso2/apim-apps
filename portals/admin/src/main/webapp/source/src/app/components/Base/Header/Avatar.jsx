@@ -5,9 +5,9 @@ import {
     Menu,
     MenuItem,
     Icon,
-} from '@material-ui/core';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import { withStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';

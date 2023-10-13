@@ -18,10 +18,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import PermissionAPI from 'AppData/PermissionScopes';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Progress from 'AppComponents/Shared/Progress';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
 import { FormattedMessage, useIntl } from 'react-intl';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';

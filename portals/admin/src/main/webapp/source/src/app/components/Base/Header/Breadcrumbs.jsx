@@ -18,11 +18,11 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import RouteMenuMapping from 'AppComponents/Base/RouteMenuMapping';
 import { withRouter, Link as RouterLink } from 'react-router-dom';
-import { Breadcrumbs as MUIBreadcrumbs } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { Breadcrumbs as MUIBreadcrumbs } from '@mui/material';
+import Link from '@mui/material/Link';
 
 /**
  * Look for the relevant page ID's naviagation details

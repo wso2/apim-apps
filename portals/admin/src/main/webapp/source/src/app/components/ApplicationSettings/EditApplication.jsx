@@ -19,9 +19,9 @@
 import React, { useReducer, useEffect, useState } from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 
 const useStyles = makeStyles((theme) => ({

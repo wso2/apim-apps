@@ -20,40 +20,40 @@ import {
     FormControlLabel,
     MenuItem,
     Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useReducer, useState } from 'react';
 
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import BlockingProgress from 'AppComponents/Shared/BlockingProgress';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Certificates from 'AppComponents/KeyManagers/Certificates';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@mui/material/Checkbox';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import ClaimMappings from 'AppComponents/KeyManagers/ClaimMapping';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse from '@mui/material/Collapse';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
 import KeyManagerConfiguration from 'AppComponents/KeyManagers/KeyManagerConfiguration';
 import KeyValidations from 'AppComponents/KeyManagers/KeyValidations';
 import PropTypes from 'prop-types';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
 import cloneDeep from 'lodash.clonedeep';
 import clsx from 'clsx';
 import isEmpty from 'lodash.isempty';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import base64url from 'base64url';
 import Error from '@material-ui/icons/Error';
