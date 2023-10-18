@@ -1615,7 +1615,7 @@ export default function Environments() {
                                 {pendingDeployment.displayName}
                             </div>
                         }
-                        style={{ backgroundColor: '#FFBF00' }}
+                        style={{ backgroundColor: '#FFBF00', width: '100px' }}
                     />
                     <Button
                         className={classes.button1}
@@ -1724,7 +1724,7 @@ export default function Environments() {
                 <div>
                     <Chip
                         label={approvedDeployment.displayName}
-                        style={{ backgroundColor: '#15B8CF' }}
+                        style={{ backgroundColor: '#15B8CF', width: '100px' }}
                     />
                     <Button
                         className={classes.button1}
@@ -2135,7 +2135,8 @@ export default function Environments() {
                                                                         <div key={o3.displayName}>
                                                                             <Chip
                                                                                 label={o3.displayName}
-                                                                                style={{ backgroundColor: '#15B8CF' }}
+                                                                                style={{ backgroundColor: '#15B8CF', 
+                                                                                    width: '100px'}}
                                                                             />
                                                                         </div>
                                                                     ))}
@@ -2167,7 +2168,8 @@ export default function Environments() {
                                                                                         {o3.displayName}
                                                                                     </div>
                                                                                 }
-                                                                                style={{ backgroundColor: '#FFBF00' }}
+                                                                                style={{ backgroundColor: '#FFBF00', 
+                                                                                    width: '100px'}}
                                                                             />
                                                                         </div>
                                                                     ))}
