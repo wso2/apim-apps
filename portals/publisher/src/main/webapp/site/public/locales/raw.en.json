@@ -278,6 +278,9 @@
   "Apis.Create.streaming.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Protocol"
   },
+  "Apis.Details.\n                                                                                            Environments.Environments.\n                                                                                            pending.chip": {
+    "defaultMessage": "Pending"
+  },
   "Apis.Details.\n                                                                                Environments.deploy.vhost": {
     "defaultMessage": "VHost"
   },
@@ -2061,8 +2064,8 @@
   "Apis.Details.Environments.Environments.display.in.devportal": {
     "defaultMessage": "Display in Developer Portal"
   },
-  "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": {
-    "defaultMessage": "Deployed Revision"
+  "Apis.Details.Environments.Environments.gateway\n                                                    .deployment.current.revision": {
+    "defaultMessage": "Current Revision"
   },
   "Apis.Details.Environments.Environments.gateway.accessUrl": {
     "defaultMessage": "Gateway Access URL"
@@ -2070,8 +2073,8 @@
   "Apis.Details.Environments.Environments.gateway.action": {
     "defaultMessage": "Action"
   },
-  "Apis.Details.Environments.Environments.gateway.status": {
-    "defaultMessage": "Deployment Status"
+  "Apis.Details.Environments.Environments.gateway.deployment.next.revision": {
+    "defaultMessage": "Next Revision"
   },
   "Apis.Details.Environments.Environments.pending.chip": {
     "defaultMessage": "Pending"
@@ -2142,11 +2145,8 @@
   "Apis.Details.Environments.Environments.solace.platform.environments.heading": {
     "defaultMessage": "Solace Platform Environments"
   },
-  "Apis.Details.Environments.Environments.status.deployed": {
-    "defaultMessage": "Deployed"
-  },
   "Apis.Details.Environments.Environments.status.not.deployed": {
-    "defaultMessage": "N/A"
+    "defaultMessage": "No Revision Deployed"
   },
   "Apis.Details.Environments.Environments.undeploy.btn": {
     "defaultMessage": "Undeploy"

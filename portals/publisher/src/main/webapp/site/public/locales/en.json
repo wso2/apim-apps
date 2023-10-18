@@ -637,6 +637,12 @@
       "value": "Protocol"
     }
   ],
+  "Apis.Details.\n                                                                                            Environments.Environments.\n                                                                                            pending.chip": [
+    {
+      "type": 0,
+      "value": "Pending"
+    }
+  ],
   "Apis.Details.\n                                                                                Environments.deploy.vhost": [
     {
       "type": 0,
@@ -4337,10 +4343,10 @@
       "value": "Display in Developer Portal"
     }
   ],
-  "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": [
+  "Apis.Details.Environments.Environments.gateway\n                                                    .deployment.current.revision": [
     {
       "type": 0,
-      "value": "Deployed Revision"
+      "value": "Current Revision"
     }
   ],
   "Apis.Details.Environments.Environments.gateway.accessUrl": [
@@ -4355,10 +4361,10 @@
       "value": "Action"
     }
   ],
-  "Apis.Details.Environments.Environments.gateway.status": [
+  "Apis.Details.Environments.Environments.gateway.deployment.next.revision": [
     {
       "type": 0,
-      "value": "Deployment Status"
+      "value": "Next Revision"
     }
   ],
   "Apis.Details.Environments.Environments.pending.chip": [
@@ -4527,16 +4533,10 @@
       "value": "Solace Platform Environments"
     }
   ],
-  "Apis.Details.Environments.Environments.status.deployed": [
-    {
-      "type": 0,
-      "value": "Deployed"
-    }
-  ],
   "Apis.Details.Environments.Environments.status.not.deployed": [
     {
       "type": 0,
-      "value": "N/A"
+      "value": "No Revision Deployed"
     }
   ],
   "Apis.Details.Environments.Environments.undeploy.btn": [

@@ -1526,77 +1526,6 @@ export default function Environments() {
         if (!gatewayRevisions.length) {
             // Content to display when there is no revision
             return (
-                <FormattedMessage
-                    id='Apis.Details.Environments.Environments.status.not.deployed'
-                    defaultMessage='N/A'
-                />
-            );
-        }
-        const pendingDeployment =gatewayRevisions.find(revision => {
-            return revision.deploymentInfo.some(info => info.status === "CREATED" && info.name === row.name);});
-
-        const hasApprovedDeployment =gatewayRevisions.some(revision => {
-            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") && 
-            info.name === row.name);});
-
-        if (pendingDeployment) {
-            // Content to display when revision status is created
-            return (
-                <div>
-                    <Chip
-                        label={
-                            <div style={{ whiteSpace: 'normal', fontSize:'smaller' }}> 
-                                <FormattedMessage
-                                    id='Apis.Details.Environments.Environments.pending.chip'
-                                    defaultMessage='Pending'
-                                />
-                                <br />
-                                {pendingDeployment.displayName}
-                            </div>
-                        }
-                        style={{ backgroundColor: '#FFBF00' }}
-                    />
-                    <Button
-                        className={classes.button1}
-                        variant='outlined'
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                        onClick={() => cancelRevisionDeploymentWorkflow(pendingDeployment.id, row.name)}
-                        size='small'
-                        id='cancel-btn'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Environments.Environments.cancel.btn'
-                            defaultMessage='Cancel'
-                        />
-                    </Button>
-                </div>
-            );
-        } else if (hasApprovedDeployment ) {
-            // Content to display when revision status is approved
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Environments.Environments.status.deployed'
-                    defaultMessage='Deployed'
-                />
-            );
-        } 
-        return (<div/>);
-    }
-
-    /**
-     * Get the deployment component based on the environment and revision status.
-     * @param {*} row Row
-     * @param {*} allEnvRevisionMapping All environment revision mapping
-     * @returns {JSX.Element} The JSX element representing the deployment component
-     */
-    function getDeployedRevisionComponent(row, allEnvRevisionMapping) {
-        const deployingGateway = allEnvRevisionMapping.find(gateway => {
-            return gateway.name === row.name});
-        const gatewayRevisions = deployingGateway?.revisions;
-    
-        if (!gatewayRevisions.length) {
-            // Content to display when there is no revision
-            return (
                 <div>
                     <TextField
                         id='revision-selector'
@@ -1670,153 +1599,156 @@ export default function Environments() {
             }
             return true;
         });
-    
-        if (approvedDeployment) {
+
+        if (pendingDeployment) {
+            // Content to display when revision status is created
             return (
                 <div>
-                    <div>
-                        <Chip
-                            label={approvedDeployment.displayName}
-                            style={{ backgroundColor: '#15B8CF' }}
-                        />
-                        <Button
-                            className={classes.button1}
-                            variant='outlined'
-                            disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                            onClick={() => undeployRevision(approvedDeployment.id, row.name)}
-                            size='small'
-                            id='undeploy-btn'
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Environments.Environments.undeploy.btn'
-                                defaultMessage='Undeploy'
-                            />
-                        </Button>
-                    </div>
-                    {filteredRevisions.length > 0 && ( <div>
-                        <TextField
-                            id='revision-selector'
-                            select
-                            label={(
+                    <Chip
+                        label={
+                            <div style={{ whiteSpace: 'normal', fontSize:'smaller' }}> 
                                 <FormattedMessage
-                                    id='Apis.Details.Environments.Environments.select.table'
-                                    defaultMessage='Select Revision'
+                                    id='Apis.Details.Environments.Environments.pending.chip'
+                                    defaultMessage='Pending'
                                 />
-                            )}
-                            SelectProps={{
-                                MenuProps: {
-                                    anchorOrigin: {
-                                        vertical: 'bottom',
-                                        horizontal: 'left',
-                                    },
-                                    getContentAnchorEl: null,
-                                },
-                            }}
-                            name={row.name}
-                            onChange={handleSelect}
-                            margin='dense'
-                            variant='outlined'
-                            style={{ width: '50%' }}
-                            disabled={api.isRevision || !allRevisions || allRevisions.length === 0}
-                        >
-                            {filteredRevisions.map
-                            ((number) => (
-                                <MenuItem 
-                                    value={number.id}>{number.displayName}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <Button
-                            className={classes.button2}
-                            disabled={
-                                api.isRevision ||
-                                !selectedRevision.some((r) => r.env === row.name && r.revision) ||
-                                !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
-                                (api.advertiseInfo && api.advertiseInfo.advertised) ||
-                                isDeployButtonDisabled
-                            }
-                            variant='outlined'
-                            onClick={() =>
-                                deployRevision(
-                                    selectedRevision.find((r) => r.env === row.name).revision,
-                                    row.name,
-                                    selectedVhosts.find((v) => v.env === row.name).vhost,
-                                    selectedRevision.find((r) => r.env === row.name).displayOnDevPortal
-                                )
-                            }
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Environments.Environments.deploy.button'
-                                defaultMessage='Deploy'
-                            />
-                        </Button>
-                    </div> 
-                    )}
-                </div>
-            );
-            
-        } else if (pendingDeployment) {
-            // Content to display when there is no revision
-            return (
-                <div>
-                    <TextField
-                        id='revision-selector'
-                        select
-                        label={(
-                            <FormattedMessage
-                                id='Apis.Details.Environments.Environments.select.table'
-                                defaultMessage='Select Revision'
-                            />
-                        )}
-                        SelectProps={{
-                            MenuProps: {
-                                anchorOrigin: {
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                },
-                                getContentAnchorEl: null,
-                            },
-                        }}
-                        name={row.name}
-                        onChange={handleSelect}
-                        margin='dense'
-                        variant='outlined'
-                        style={{ width: '50%' }}
-                        disabled={api.isRevision || !allRevisions || allRevisions.length === 0}
-                    >
-                        {filteredRevisions.map((number) => (
-                            <MenuItem value={number.id}>{number.displayName}</MenuItem>
-                        ))}
-                    </TextField>
+                                <br />
+                                {pendingDeployment.displayName}
+                            </div>
+                        }
+                        style={{ backgroundColor: '#FFBF00' }}
+                    />
                     <Button
-                        className={classes.button2}
-                        disabled={
-                            api.isRevision ||
-                            !selectedRevision.some((r) => r.env === row.name && r.revision) ||
-                            !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
-                            (api.advertiseInfo && api.advertiseInfo.advertised) ||
-                            isDeployButtonDisabled
-                        }
+                        className={classes.button1}
                         variant='outlined'
-                        onClick={() =>
-                            deployRevision(
-                                selectedRevision.find((r) => r.env === row.name).revision,
-                                row.name,
-                                selectedVhosts.find((v) => v.env === row.name).vhost,
-                                selectedRevision.find((r) => r.env === row.name).displayOnDevPortal
-                            )
-                        }
+                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        onClick={() => cancelRevisionDeploymentWorkflow(pendingDeployment.id, row.name)}
+                        size='small'
+                        id='cancel-btn'
                     >
                         <FormattedMessage
-                            id='Apis.Details.Environments.Environments.deploy.button'
-                            defaultMessage='Deploy'
+                            id='Apis.Details.Environments.Environments.cancel.btn'
+                            defaultMessage='Cancel'
                         />
                     </Button>
                 </div>
             );
-            // Content to display when revision status is approved
         }
-        return (<div/>);
+        return (
+            <div>
+                <TextField
+                    id='revision-selector'
+                    select
+                    label={(
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.select.table'
+                            defaultMessage='Select Revision'
+                        />
+                    )}
+                    SelectProps={{
+                        MenuProps: {
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            getContentAnchorEl: null,
+                        },
+                    }}
+                    name={row.name}
+                    onChange={handleSelect}
+                    margin='dense'
+                    variant='outlined'
+                    style={{ width: '50%' }}
+                    disabled={api.isRevision || !filteredRevisions || filteredRevisions.length === 0}
+                >
+                    {filteredRevisions && filteredRevisions.length !== 0 && filteredRevisions.map((number) => (
+                        <MenuItem value={number.id}>{number.displayName}</MenuItem>
+                    ))}
+                </TextField>
+                <Button
+                    className={classes.button2}
+                    disabled={
+                        api.isRevision ||
+                        !selectedRevision.some((r) => r.env === row.name && r.revision) ||
+                        !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
+                        (api.advertiseInfo && api.advertiseInfo.advertised) ||
+                        isDeployButtonDisabled
+                    }
+                    variant='outlined'
+                    onClick={() =>
+                        deployRevision(
+                            selectedRevision.find((r) => r.env === row.name).revision,
+                            row.name,
+                            selectedVhosts.find((v) => v.env === row.name).vhost,
+                            selectedRevision.find((r) => r.env === row.name).displayOnDevPortal
+                        )
+                    }
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Environments.Environments.deploy.button'
+                        defaultMessage='Deploy'
+                    />
+                </Button>
+            </div>
+        );
+    }
+
+    /**
+     * Get the deployment component based on the environment and revision status.
+     * @param {*} row Row
+     * @param {*} allEnvRevisionMapping All environment revision mapping
+     * @returns {JSX.Element} The JSX element representing the deployment component
+     */
+    function getDeployedRevisionComponent(row, allEnvRevisionMapping) {
+        const deployingGateway = allEnvRevisionMapping.find(gateway => {
+            return gateway.name === row.name});
+        const gatewayRevisions = deployingGateway?.revisions;
+    
+        if (!gatewayRevisions.length) {
+            // Content to display when there is no revision
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Environments.Environments.status.not.deployed'
+                    defaultMessage='No Revision Deployed'
+                />
+            );
+            
+        }
+
+        const approvedDeployment =gatewayRevisions.find(revision => {
+            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") && 
+            info.name === row.name);});
+
+    
+        if (approvedDeployment) {
+            return (
+                <div>
+                    <Chip
+                        label={approvedDeployment.displayName}
+                        style={{ backgroundColor: '#15B8CF' }}
+                    />
+                    <Button
+                        className={classes.button1}
+                        variant='outlined'
+                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        onClick={() => undeployRevision(approvedDeployment.id, row.name)}
+                        size='small'
+                        id='undeploy-btn'
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.undeploy.btn'
+                            defaultMessage='Undeploy'
+                        />
+                    </Button>
+                </div>
+            );
+            
+        }
+        return (
+            <FormattedMessage
+                id='Apis.Details.Environments.Environments.status.not.deployed'
+                defaultMessage='No Revision Deployed'
+            />
+        );
     }
 
     /**
@@ -2067,6 +1999,10 @@ export default function Environments() {
                                     {internalGateways && internalGateways.map((row) => (
                                         <Grid item xs={4}>
                                             <Card
+                                                style={{ opacity: allEnvRevision.some(o1 => {
+                                                    return o1.deploymentInfo.some(o2 => 
+                                                        o2.name === row.name && 
+                                                        o2.status === 'CREATED');})? '0.6' : '1' }}
                                                 className={clsx(SelectedEnvironment
                                                 && SelectedEnvironment.includes(row.name)
                                                     ? (classes.changeCard)
@@ -2075,19 +2011,40 @@ export default function Environments() {
                                             >
                                                 <Box height='100%'>
                                                     <CardHeader
-                                                        action={(
-                                                            <Checkbox
-                                                                id={row.name.split(' ').join('')}
-                                                                value={row.name}
-                                                                checked={SelectedEnvironment.includes(row.name)}
-                                                                onChange={handleChange}
-                                                                color='primary'
-                                                                icon={<RadioButtonUncheckedIcon />}
-                                                                checkedIcon={<CheckCircleIcon color='primary' />}
-                                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                                                data-testid={row.displayName + 'gateway-select-btn'}
-                                                            />
-                                                        )}
+                                                        action={
+                                                            <>
+                                                                {allEnvRevision.some(o1 => {
+                                                                    return o1.deploymentInfo.some(o2 => 
+                                                                        o2.name === row.name && 
+                                                                        o2.status === 'CREATED');})? 
+                                                                    (
+                                                                        <Checkbox
+                                                                            color='primary'
+                                                                            icon={<RadioButtonUncheckedIcon />}
+                                                                            checkedIcon={<
+                                                                                CheckCircleIcon color='primary' />}
+                                                                            disabled
+                                                                        />
+                                                                    ):
+                                                                    (
+                                                                        <Checkbox
+                                                                            id={row.name.split(' ').join('')}
+                                                                            value={row.name}
+                                                                            checked={SelectedEnvironment.
+                                                                                includes(row.name)}
+                                                                            onChange={handleChange}
+                                                                            color='primary'
+                                                                            icon={<RadioButtonUncheckedIcon />}
+                                                                            checkedIcon={<
+                                                                                CheckCircleIcon color='primary' />}
+                                                                            inputProps={{ 
+                                                                                'aria-label': 'secondary checkbox' }}
+                                                                            data-testid={
+                                                                                row.displayName + 'gateway-select-btn'}
+                                                                        />
+                                                                    )
+                                                                }
+                                                            </>}
                                                         title={(
                                                             <Typography variant='subtitle2'>
                                                                 {row.displayName}
@@ -2196,7 +2153,20 @@ export default function Environments() {
                                                                     .map(o3 => (
                                                                         <div key={o3.displayName}>
                                                                             <Chip
-                                                                                label={o3.displayName}
+                                                                                label={
+                                                                                    <div style={{ 
+                                                                                        whiteSpace: 'normal', 
+                                                                                        fontSize:'smaller' }}>
+                                                                                        <FormattedMessage
+                                                                                            id='Apis.Details.
+                                                                                            Environments.Environments.
+                                                                                            pending.chip'
+                                                                                            defaultMessage='Pending'
+                                                                                        />
+                                                                                        <br />
+                                                                                        {o3.displayName}
+                                                                                    </div>
+                                                                                }
                                                                                 style={{ backgroundColor: '#FFBF00' }}
                                                                             />
                                                                         </div>
@@ -2534,19 +2504,13 @@ export default function Environments() {
                                             defaultMessage='Gateway Access URL'
                                         />
                                     </TableCell>
-                                    <TableCell align='left'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Environments.Environments.gateway.status'
-                                            defaultMessage='Deployment Status'
-                                        />
-                                    </TableCell>
                                     {api && api.isDefaultVersion !== true
                                         ? (
                                             <TableCell align='left'>
                                                 <FormattedMessage
                                                     id='Apis.Details.Environments.Environments.gateway
-                                                    .deployed.revision'
-                                                    defaultMessage='Deployed Revision'
+                                                    .deployment.current.revision'
+                                                    defaultMessage='Current Revision'
                                                 />
                                             </TableCell>
                                         )
@@ -2558,6 +2522,12 @@ export default function Environments() {
                                                 />
                                             </TableCell>
                                         )}
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.gateway.deployment.next.revision'
+                                            defaultMessage='Next Revision'
+                                        />
+                                    </TableCell>
                                     <TableCell align='left'>
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.visibility.in.devportal'
@@ -2683,10 +2653,10 @@ export default function Environments() {
                                             </>
                                         )}
                                         <TableCell component='th' scope='row'>
-                                            {getDeployedRevisionStatusComponent(row, allEnvRevisionMapping)}
+                                            {getDeployedRevisionComponent(row, allEnvRevisionMapping)}
                                         </TableCell>
                                         <TableCell align='left' style={{ width: '300px' }}>
-                                            {getDeployedRevisionComponent(row, allEnvRevisionMapping)}
+                                            {getDeployedRevisionStatusComponent(row, allEnvRevisionMapping)}
                                         </TableCell>
                                         <TableCell align='left'>
                                             <DisplayDevportal
