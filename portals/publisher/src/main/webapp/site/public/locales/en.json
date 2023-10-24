@@ -1611,6 +1611,12 @@
       "value": "Edit Complexity Values"
     }
   ],
+  "Apis.Details.Configuration.ApiKeyHeader.helper.text": [
+    {
+      "type": 0,
+      "value": "ApiKey header name cannot contain spaces or special characters"
+    }
+  ],
   "Apis.Details.Configuration.AuthHeader.helper.text": [
     {
       "type": 0,
@@ -1633,6 +1639,12 @@
     {
       "type": 0,
       "value": "Backend Throughput"
+    }
+  ],
+  "Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip": [
+    {
+      "type": 0,
+      "value": "The header name that is used to send the api key information. \"ApiKey\" is the default header."
     }
   ],
   "Apis.Details.Configuration.Configuration.AuthHeader.tooltip": [
@@ -1663,6 +1675,12 @@
     {
       "type": 0,
       "value": "Edit API Endpoints"
+    }
+  ],
+  "Apis.Details.Configuration.Configuration.apiKey.header.label": [
+    {
+      "type": 0,
+      "value": "ApiKey Header"
     }
   ],
   "Apis.Details.Configuration.Configuration.auth.header.label": [
@@ -4627,6 +4645,12 @@
       "value": "Endpoint provided"
     }
   ],
+  "Apis.Details.LifeCycle.CheckboxLabels.mandatory.properties.provided": [
+    {
+      "type": 0,
+      "value": "Mandatory Properties provided"
+    }
+  ],
   "Apis.Details.LifeCycle.LifeCycle.change.not.allowed": [
     {
       "type": 0,
@@ -6113,13 +6137,25 @@
       "value": "Show in devportal"
     }
   ],
+  "Apis.Details.Properties.\n                                                    Properties.editable.show.in.devporal": [
+    {
+      "type": 0,
+      "value": "Show in devportal"
+    }
+  ],
+  "Apis.Details.Properties.Properties.\n                                                                            show.add.property.custom.property.name": [
+    {
+      "type": 1,
+      "value": "message"
+    }
+  ],
   "Apis.Details.Properties.Properties.\n                                                                    show.add.property.invalid.error": [
     {
       "type": 0,
       "value": "Invalid property name"
     }
   ],
-  "Apis.Details.Properties.Properties.\n                                                                show.add.property.property.name": [
+  "Apis.Details.Properties.Properties.\n                                                            show.add.property.property.name": [
     {
       "type": 0,
       "value": "Name"
@@ -7919,6 +7955,24 @@
       "value": "Context"
     }
   ],
+  "Apis.Listing.ApiThumb.owners": [
+    {
+      "type": 0,
+      "value": "Owners"
+    }
+  ],
+  "Apis.Listing.ApiThumb.owners.business": [
+    {
+      "type": 0,
+      "value": "Business"
+    }
+  ],
+  "Apis.Listing.ApiThumb.owners.technical": [
+    {
+      "type": 0,
+      "value": "Technical"
+    }
+  ],
   "Apis.Listing.ApiThumb.version": [
     {
       "type": 0,
@@ -8565,6 +8619,12 @@
       "value": "Policies"
     }
   ],
+  "Base.Header.navbar.GlobalNavBar.global.policies": [
+    {
+      "type": 0,
+      "value": "Global Policies"
+    }
+  ],
   "Base.Header.navbar.GlobalNavBar.scopes": [
     {
       "type": 0,
@@ -8715,6 +8775,24 @@
     {
       "type": 0,
       "value": "Error while validating the imported schema"
+    }
+  ],
+  "GlobalPolicies.Create.CreateGlobalPolicy": [
+    {
+      "type": 0,
+      "value": "Hi, I am the GlobalPolicies.Create.CreateGlobalPolicy component!"
+    }
+  ],
+  "GlobalPolicies.Edit.EditGlobalPolicy": [
+    {
+      "type": 0,
+      "value": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
+    }
+  ],
+  "GlobalPolicies.Listing.listing": [
+    {
+      "type": 0,
+      "value": "Hi, I am the GlobalPolicies.Listing.listing component!"
     }
   ],
   "LoginDenied.logout": [

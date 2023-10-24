@@ -417,6 +417,53 @@ export default function CustomIcon(props) {
                 </g>
             </svg>
         );
+    } else if (icon === 'global-policies') {
+        // a copy of normal policies for now
+        // this needs be changed to a new icon later
+        return (
+            <svg
+                width={width}
+                height={height}
+                viewBox='0 0 18 18'
+                version='1.1'
+                aria-hidden='true'
+                xmlns='http://www.w3.org/2000/svg'
+            >
+                <title>1359ABD8-ABF3-4FE9-8AF4-014881DB78CF</title>
+                <g id='Customer-Portal' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+                    <g
+                        id='apim-policies-icon'
+                        transform='translate(-665.000000, -1898.000000)'
+                        fill={strokeColor}
+                        fillRule='nonzero'
+                    >
+                        <g id='Icon/Control/Burger' fill={strokeColor} transform='translate(665.000000, 1898.000000)'>
+                            <path
+                                d={'M7 1.414V2H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h5v1H2.5a1 1 0 0 0-.8.4L.725'
+                                + ' 8.7a.5.5 0 0 0 0 .6l.975 1.3a1 1 0 0 0 .8.4H7v5h2v-5h5a1 1 0 0 0 1-1V8a1'
+                                + ' 1 0 0 0-1-1H9V6h4.5a1 1 0 0 0 .8-.4l.975-1.3a.5.5 0 0 0 0-.6L14.3 2.4a1'
+                                + ' 1 0 0 0-.8-.4H9v-.586a1 1 0 0 0-2 0zM13.5 3l.75 1-.75 1H2V3h11.5zm.5'
+                                + ' 5v2H2.5l-.75-1 .75-1H14z'}
+                                id='Combined-Shape'
+                            />
+                            {/* <path
+                                fillRule='evenodd'
+                                d={'M8 14.933a.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29'
+                                + '.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9'
+                                + '.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531'
+                                + ' 1.067 8 1.067v13.866zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1'
+                                + '.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787'
+                                + ' 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0'
+                                + ' 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158'
+                                + ' 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545'
+                                + ' 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z'}
+                                id='Combined-Shape'
+                            /> */}
+                        </g>
+                    </g>
+                </g>
+            </svg>
+        );
     }
     return null;
 }
