@@ -4200,6 +4200,12 @@
   "GlobalPolicies.Edit.EditGlobalPolicy": {
     "defaultMessage": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
   },
+  "GlobalPolicies.Listing.table.header.actions.delete": {
+    "defaultMessage": "Delete"
+  },
+  "GlobalPolicies.Listing.table.header.actions.view": {
+    "defaultMessage": "View"
+  },
   "LoginDenied.logout": {
     "defaultMessage": "Logout"
   },

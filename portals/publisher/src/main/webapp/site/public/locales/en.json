@@ -8789,6 +8789,18 @@
       "value": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
     }
   ],
+  "GlobalPolicies.Listing.table.header.actions.delete": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "GlobalPolicies.Listing.table.header.actions.view": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
   "LoginDenied.logout": [
     {
       "type": 0,

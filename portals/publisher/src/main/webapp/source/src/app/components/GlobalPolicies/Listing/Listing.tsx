@@ -23,6 +23,7 @@ import {
     Typography,
     makeStyles,
 } from '@material-ui/core';
+import Icon from '@material-ui/core/Icon';
 // import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage } from 'react-intl';
@@ -37,7 +38,11 @@ import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundErr
 import CONSTS from 'AppData/Constants';
 // import Delete from './DeletePolicy';
 import CommonPolicyGatewaySelector from './CommonPolicyGatewaySelector';
+// import { data } from 'msw/lib/types/context';
 
+/**
+ * Styles for the component
+ */
 const useStyles = makeStyles((theme) => ({
     table: {
         marginLeft: 'auto',
@@ -78,6 +83,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/** 
+ * Policy Interface
+ * Policy the the data model of the policies.
+ */
 interface Policy {
     id: string;
     description: string;
@@ -86,8 +95,8 @@ interface Policy {
 }
 
 /**
- * Global Policies Lisitng Page.
- * @returns {JSX} Listing Page.
+ * Global Policies Lisitng Page
+ * @returns {TSX} Listing Page.
  */
 const Listing: React.FC = () => {
     const classes = useStyles();
@@ -96,18 +105,22 @@ const Listing: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
     const [isAllowedToFilterCCPolicies, setIsAllowedToFilterCCPolicies] = useState(false);
+    // const [expandedRows, setExpandedRows] = useState<{ [key: string]: any | null }>({});
 
     /**
-     * 
      * @param {boolean} isCCEnabled : Indicates whether Choreo Connect is selected or not.
      */
     const handleGatewayTypeSelection = (isCCEnabled: boolean) => {
         setIsAllowedToFilterCCPolicies(isCCEnabled);
     } 
 
+    /**
+     * Get the data from the backend to the compoenent.
+     */
     const fetchCommonPolicies = () => {
         setLoading(true);
         // const promisedPolicies = API.getCommonOperationPolicies();
+
         // hardcoded response
         const promisedPolicies = Promise.resolve({
             count: 1,
@@ -117,7 +130,91 @@ const Listing: React.FC = () => {
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter",
-                    appliedGatewayLabels: ["Synapse"]
+                    appliedGatewayLabels: ["Gateway1", "Gateway2", "Gateway3"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12415",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter2",
+                    appliedGatewayLabels: ["Gateway9", "Gateway7"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12416",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter3",
+                    appliedGatewayLabels: ["Gateway5", "Gateway7"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12417",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter4",
+                    appliedGatewayLabels: ["Gateway1", "Gateway2", "Gateway3"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12418",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter5",
+                    appliedGatewayLabels: ["Gateway2"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12419",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter6",
+                    appliedGatewayLabels: ["Gateway3"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12420",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter7",
+                    appliedGatewayLabels: ["Gateway1", "Gateway2", "Gateway3"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12421",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter8",
+                    appliedGatewayLabels: ["Gateway2"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12422",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "aitem_type_setter9",
+                    appliedGatewayLabels: ["Gateway1"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12423",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter10",
+                    appliedGatewayLabels: ["Gateway5", "Gateway7"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12424",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter11",
+                    appliedGatewayLabels: ["Gateway5", "Gateway6",]
+                },
+                {
+                    id: "121223q41-24141-124124124-12425",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter12",
+                    appliedGatewayLabels: ["Gateway2", "Gateway3"]
+                },
+                {
+                    id: "121223q41-24141-124124124-12426",
+                    description: "Set header value to the request with item type and "
+                    + "response header set with served server name",
+                    displayName: "item_type_setter13",
+                    appliedGatewayLabels: ["Gateway1"]
                 }
             ],
             pagination: {
@@ -129,6 +226,7 @@ const Listing: React.FC = () => {
             }
         });
         // hardcoded response ends
+
         promisedPolicies
             .then((response) => {
                 setPolicies(response.list);
@@ -142,47 +240,92 @@ const Listing: React.FC = () => {
             });
     };
 
-    // Provides the gateway specific policies list.
+    /**
+     * Provides the gateway specific policies list.
+     * @returns {array} Return the policy list after filtering.
+     */
     const getPoliciesList = () => {
-        let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
-        if (isAllowedToFilterCCPolicies) {
-            gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
-        }
-        if (policies) {
-            return policies.filter((policy) => policy.appliedGatewayLabels.includes(gatewayType));
-        }
-        return [];
+        // let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
+        // if (isAllowedToFilterCCPolicies) {
+        //     gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
+        // }
+        // if (policies) {
+        //     return policies.filter((policy) => policy.appliedGatewayLabels.includes(gatewayType));
+        // }
+        // return [];
+        return policies;
     }
 
     useEffect(() => {
         fetchCommonPolicies();
     }, []);
 
-    // policies?.sort((a: string, b:string) => a.displayName.localeCompare(b.displayName));
+    /**
+     * Sorting Policies
+     */
+    policies?.sort((a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName));
 
     const policiesList = getPoliciesList();
 
+    /**
+     * Columns for the MUI table.
+     */
     const columns = [
         {
             name: 'displayName',
-            label: 'Display Name',
+            label: 'Global Policy',
         },
         {
             name: 'appliedGatewayLabels',
-            label: 'Applied Gateway Labels',
-            options: {
-                customBodyRender: (value: string[]) => value.join(', '),
-            },
+            label: 'Deployed Gateways',
         },
         {
             name: 'actions',
             label: 'Actions',
             options: {
-                customBodyRender: () => <Button>Edit</Button>,
+                customBodyRender: () => {
+                    return (
+                        <Box display='flex' flexDirection='row'>
+                            <Button
+                                aria-label='View'
+                            >
+                                <Icon className={classes.icon}>
+                                    visibility
+                                </Icon>
+                                <FormattedMessage
+                                    id='GlobalPolicies.Listing.table.header.actions.view'
+                                    defaultMessage='View'
+                                />
+                            </Button>
+                            <Button
+                                aria-label='View'
+                            >
+                                <Icon className={classes.icon}>
+                                    delete
+                                </Icon>
+                                <FormattedMessage
+                                    id='GlobalPolicies.Listing.table.header.actions.delete'
+                                    defaultMessage='Delete'
+                                />
+                            </Button>
+                        </Box>
+                    );
+                },
+                filter: false,
+                sort: false,
+                label: (
+                    <FormattedMessage
+                        id='CommonPolicies.Listing.table.header.actions.title'
+                        defaultMessage='Actions'
+                    />
+                ),
             },
         },
     ];
 
+    /**
+     * Options for the MUI table.
+     */
     const options: MUIDataTableOptions = {
         filterType: 'multiselect',
         selectableRows: 'none',
@@ -192,21 +335,18 @@ const Listing: React.FC = () => {
         download: false,
         viewColumns: false,
         rowsPerPageOptions: [5, 10, 25, 50, 100],
+        expandableRows: true,
+        expandableRowsHeader: false,
+        expandableRowsOnClick: true,
+        renderExpandableRow: (rowData, rowMeta) => {
+            const gatewayLabels = policiesList[rowMeta.dataIndex].appliedGatewayLabels;
+            return gatewayLabels;
+        },
     };
 
-    // const options = {
-    //     filterType: 'multiselect',
-    //     selectableRows: 'none',
-    //     title: false,
-    //     filter: false,
-    //     sort: false,
-    //     print: false,
-    //     download: false,
-    //     viewColumns: false,
-    //     customToolbar: false,
-    //     rowsPerPageOptions: [5, 10, 25, 50, 100],
-    // };
-
+    /**
+     * If there are no policies, then show the onboarding page.
+     */
     if (policies && policies.length === 0) {
         return (
             <Onboarding
@@ -250,6 +390,9 @@ const Listing: React.FC = () => {
         return <ResourceNotFoundError />;
     }
 
+    /**
+     * MUI Table for the policies.
+     */
     return (
         <div className={classes.heading}>
             <Grid
