@@ -8789,10 +8789,52 @@
       "value": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
     }
   ],
+  "GlobalPolicies.Listing.onboarding.create.new": [
+    {
+      "type": 0,
+      "value": "Let’s get started !"
+    }
+  ],
+  "GlobalPolicies.Listing.onboarding.policies.tooltip": [
+    {
+      "type": 0,
+      "value": "Policies provide the capability to alter the behavior of API resources"
+    }
+  ],
+  "GlobalPolicies.Listing.policies.title.add.new.policy": [
+    {
+      "type": 0,
+      "value": "Add New Policy"
+    }
+  ],
+  "GlobalPolicies.Listing.policies.title.name": [
+    {
+      "type": 0,
+      "value": "Global Policies"
+    }
+  ],
+  "GlobalPolicies.Listing.policies.title.tooltip": [
+    {
+      "type": 0,
+      "value": "This will add policies globaly to the gateways.Please navigate to the Policies tab under any desired APIif you want to add API / operation level policies"
+    }
+  ],
+  "GlobalPolicies.Listing.policies.title.update.not.allowed": [
+    {
+      "type": 0,
+      "value": "*You are not authorized to manage policies due to insufficient permissions"
+    }
+  ],
   "GlobalPolicies.Listing.table.header.actions.delete": [
     {
       "type": 0,
       "value": "Delete"
+    }
+  ],
+  "GlobalPolicies.Listing.table.header.actions.title": [
+    {
+      "type": 0,
+      "value": "Actions"
     }
   ],
   "GlobalPolicies.Listing.table.header.actions.view": [

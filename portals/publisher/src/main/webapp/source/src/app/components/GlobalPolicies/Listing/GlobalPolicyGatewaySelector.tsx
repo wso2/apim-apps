@@ -34,7 +34,7 @@ const SupportedGatewayTypes = {
     CC: 'Choreo Connect',
 };
 
-interface CommonPolicyGatewaySelectorProps {
+interface GlobalPolicyGatewaySelectorProps {
     handleGatewayTypeSelection: (isCCEnabled: boolean) => void;
     isAllowedToFilterCCPolicies: boolean;
 }
@@ -45,7 +45,7 @@ interface CommonPolicyGatewaySelectorProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Radio group for the API Gateway type for policies.
  */
-const CommonPolicyGatewaySelector: FC<CommonPolicyGatewaySelectorProps> = ({
+const GlobalPolicyGatewaySelector: FC<GlobalPolicyGatewaySelectorProps> = ({
     handleGatewayTypeSelection,
     isAllowedToFilterCCPolicies
 }) => {
@@ -135,4 +135,4 @@ const CommonPolicyGatewaySelector: FC<CommonPolicyGatewaySelectorProps> = ({
     );
 }
 
-export default CommonPolicyGatewaySelector;
+export default GlobalPolicyGatewaySelector;

@@ -37,7 +37,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import CONSTS from 'AppData/Constants';
 // import Delete from './DeletePolicy';
-import CommonPolicyGatewaySelector from './CommonPolicyGatewaySelector';
+import GlobalPolicyGatewaySelector from './GlobalPolicyGatewaySelector';
 // import { data } from 'msw/lib/types/context';
 
 /**
@@ -117,9 +117,9 @@ const Listing: React.FC = () => {
     /**
      * Get the data from the backend to the compoenent.
      */
-    const fetchCommonPolicies = () => {
+    const fetchGlobalPolicies = () => {
         setLoading(true);
-        // const promisedPolicies = API.getCommonOperationPolicies();
+        // const promisedPolicies = API.getGlobalOperationPolicies();
 
         // hardcoded response
         const promisedPolicies = Promise.resolve({
@@ -257,7 +257,7 @@ const Listing: React.FC = () => {
     }
 
     useEffect(() => {
-        fetchCommonPolicies();
+        fetchGlobalPolicies();
     }, []);
 
     /**
@@ -315,7 +315,7 @@ const Listing: React.FC = () => {
                 sort: false,
                 label: (
                     <FormattedMessage
-                        id='CommonPolicies.Listing.table.header.actions.title'
+                        id='GlobalPolicies.Listing.table.header.actions.title'
                         defaultMessage='Actions'
                     />
                 ),
@@ -352,13 +352,13 @@ const Listing: React.FC = () => {
             <Onboarding
                 title={
                     <FormattedMessage
-                        id='CommonPolicies.Listing.onboarding.create.new'
+                        id='GlobalPolicies.Listing.onboarding.create.new'
                         defaultMessage='Let’s get started !'
                     />
                 }
                 subTitle={
                     <FormattedMessage
-                        id='CommonPolicies.Listing.onboarding.policies.tooltip'
+                        id='GlobalPolicies.Listing.onboarding.policies.tooltip'
                         defaultMessage={
                             'Policies provide the capability to alter the behavior ' +
                             'of API resources'
@@ -369,7 +369,7 @@ const Listing: React.FC = () => {
                 <OnboardingMenuCard
                     to={CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE}
                     name='Policies'
-                    // iconName={commonPolicyAddIcon}
+                    // iconName={globalPolicyAddIcon}
                     disabled={isRestricted([
                         'apim:api_create',
                         'apim:api_manage',
@@ -410,17 +410,18 @@ const Listing: React.FC = () => {
                     className={classes.mainTitle}
                 >
                     <FormattedMessage
-                        id='CommonPolicies.Listing.policies.title.name'
-                        defaultMessage='Policies'
+                        id='GlobalPolicies.Listing.policies.title.name'
+                        defaultMessage='Global Policies'
                     />
                 </Typography>
                 <Tooltip
                     title={
                         <FormattedMessage
-                            id='CommonPolicies.Listing.policies.title.tooltip'
+                            id='GlobalPolicies.Listing.policies.title.tooltip'
                             defaultMessage={
-                                'You can utilize these policies at the operation level' +
-                                ' by navigating to the Policies tab under any desired API'
+                                'This will add policies globaly to the gateways.' +
+                                'Please navigate to the Policies tab under any desired API' +
+                                'if you want to add API / operation level policies'
                             }
                         />
                     }
@@ -431,10 +432,10 @@ const Listing: React.FC = () => {
                     </IconButton>
                 </Tooltip>
                 <Box pl={1}>
-                    <Button>
+                    <Button color='primary' variant='outlined' size='small' data-testid='add-new-common-policy'>
                         <AddCircle className={classes.buttonIcon} />
                         <FormattedMessage
-                            id='CommonPolicies.Listing.policies.title.add.new.policy'
+                            id='GlobalPolicies.Listing.policies.title.add.new.policy'
                             defaultMessage='Add New Policy'
                         />
                     </Button>
@@ -449,7 +450,7 @@ const Listing: React.FC = () => {
                     <Grid item>
                         <Typography variant='body2' color='primary'>
                             <FormattedMessage
-                                id='CommonPolicies.Listing.policies.title.update.not.allowed'
+                                id='GlobalPolicies.Listing.policies.title.update.not.allowed'
                                 defaultMessage={
                                     '*You are not authorized to manage policies ' +
                                     'due to insufficient permissions'
@@ -468,7 +469,7 @@ const Listing: React.FC = () => {
                 item
             >
                 <Box>
-                    <CommonPolicyGatewaySelector
+                    <GlobalPolicyGatewaySelector
                         handleGatewayTypeSelection={handleGatewayTypeSelection}
                         isAllowedToFilterCCPolicies={isAllowedToFilterCCPolicies}
                     />
