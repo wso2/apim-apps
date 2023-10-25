@@ -8789,12 +8789,6 @@
       "value": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
     }
   ],
-  "GlobalPolicies.Listing.listing": [
-    {
-      "type": 0,
-      "value": "Hi, I am the GlobalPolicies.Listing.listing component!"
-    }
-  ],
   "LoginDenied.logout": [
     {
       "type": 0,
