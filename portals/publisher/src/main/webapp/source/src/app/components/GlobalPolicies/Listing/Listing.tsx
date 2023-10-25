@@ -24,7 +24,7 @@ import {
     makeStyles,
 } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
-// import API from 'AppData/api';
+import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage } from 'react-intl';
 import AddCircle from '@material-ui/icons/AddCircle';
@@ -94,6 +94,19 @@ interface Policy {
     appliedGatewayLabels: string[];
 }
 
+interface Environment {
+    id: string;
+    name: string;
+    displayName: string;
+    type: string;  
+    serverUrl: string;
+    provider: string;
+    showInApiConsole: boolean;
+    vhosts: any;
+    endpointURIs: any;
+    additionalProperties: any;
+}
+
 /**
  * Global Policies Lisitng Page
  * @returns {TSX} Listing Page.
@@ -102,6 +115,7 @@ const Listing: React.FC = () => {
     const classes = useStyles();
     // const { commonPolicyAddIcon } = theme.custom.landingPage.icons;
     const [policies, setPolicies] = useState<Policy[]>([]);
+    const [environments, setEnvironments] = useState<Environment[]>([]);
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
     const [isAllowedToFilterCCPolicies, setIsAllowedToFilterCCPolicies] = useState(false);
@@ -240,6 +254,22 @@ const Listing: React.FC = () => {
             });
     };
 
+    const fetchSettings = () => {
+        setLoading(true);
+        const promisedSettings = API.getSettings();
+        promisedSettings
+            .then((response: any) => {
+                setEnvironments(response.environment);
+            })
+            .catch((error: any) => {
+                console.error(error);
+                setnotFound(true);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
     /**
      * Provides the gateway specific policies list.
      * @returns {array} Return the policy list after filtering.
@@ -258,6 +288,7 @@ const Listing: React.FC = () => {
 
     useEffect(() => {
         fetchGlobalPolicies();
+        fetchSettings();
     }, []);
 
     /**
@@ -338,9 +369,15 @@ const Listing: React.FC = () => {
         expandableRows: true,
         expandableRowsHeader: false,
         expandableRowsOnClick: true,
-        renderExpandableRow: (rowData, rowMeta) => {
-            const gatewayLabels = policiesList[rowMeta.dataIndex].appliedGatewayLabels;
-            return gatewayLabels;
+        // renderExpandableRow: (rowData, rowMeta) => {
+        //     const gatewayLabels = policiesList[rowMeta.dataIndex].appliedGatewayLabels;
+        //     return gatewayLabels;
+        // },
+        renderExpandableRow: () => {
+            const envNames = environments.map((env: any) => {
+                return env.name;
+            });
+            return envNames;
         },
     };
 
