@@ -429,10 +429,10 @@ const Listing: React.FC = () => {
                                             <TableRow 
                                                 key={gateway}
                                             >
-                                                <TableCell style={{ width: '50%' }} component='th' scope='row'>
+                                                <TableCell>
                                                     <Chip label={gateway} variant='outlined' />
                                                 </TableCell>
-                                                <TableCell style={{ width: '50%' }} align='right'>
+                                                <TableCell align='right'>
                                                     {isDeployed(gateway, policy.appliedGatewayLabels) ? (
                                                         <Button variant='contained' color='default'>
                                                             Undeploy
@@ -545,17 +545,6 @@ const Listing: React.FC = () => {
                         />
                     </Button>
                 </Box>      
-                <Grid item>
-                    <Typography variant='body2' color='primary'>
-                        <FormattedMessage
-                            id='GlobalPolicies.Listing.policies.title.update.not.allowed'
-                            defaultMessage={
-                                '*You are not authorized to manage policies ' +
-                                'due to insufficient permissions'
-                            }
-                        />
-                    </Typography>
-                </Grid>
             </Grid>
             <Grid
                 className={classes.table}

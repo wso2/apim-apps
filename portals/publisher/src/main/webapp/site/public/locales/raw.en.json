@@ -4215,9 +4215,6 @@
   "GlobalPolicies.Listing.policies.title.tooltip": {
     "defaultMessage": "This will add policies globaly to the gateways.Please navigate to the Policies tab under any desired APIif you want to add API / operation level policies"
   },
-  "GlobalPolicies.Listing.policies.title.update.not.allowed": {
-    "defaultMessage": "*You are not authorized to manage policies due to insufficient permissions"
-  },
   "GlobalPolicies.Listing.table.header.actions.delete": {
     "defaultMessage": "Delete"
   },
