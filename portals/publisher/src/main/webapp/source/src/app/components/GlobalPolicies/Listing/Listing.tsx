@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     },
     icon: {
         marginRight: theme.spacing(0.5),
-    },
+    }
 }));
 
 /** 
@@ -177,7 +177,7 @@ const Listing: React.FC = () => {
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter5",
-                    appliedGatewayLabels: ["Production Gateway"]
+                    appliedGatewayLabels: []
                 },
                 {
                     id: "121223q41-24141-124124124-12419",
@@ -328,6 +328,26 @@ const Listing: React.FC = () => {
         {
             name: 'appliedGatewayLabels',
             label: 'Deployed Gateways',
+            options: {
+                customBodyRender: (value: string[] | undefined) => {
+                    if (value && value.length > 0) {
+                        return (
+                            <div>
+                                {value.map((gateway: string) => (
+                                    <Chip 
+                                        key={gateway} 
+                                        label={gateway} 
+                                        variant='outlined' 
+                                        style={{ marginRight: '8px' }}
+                                    />
+                                ))}
+                            </div>
+                        );
+                    } else {
+                        return "No deployed gateways";
+                    }
+                }
+            }      
         },
         {
             name: 'actions',
@@ -394,28 +414,44 @@ const Listing: React.FC = () => {
             });
             const rowIndex = rowMeta.dataIndex;
             const policy = policiesList[rowIndex];
-            return (
-                <>
-                    {policy.description}
-                    <TableContainer>
-                        <Table>
-                            <TableBody>
-                                {gatewayList.map((gateway: string) => (
-                                    <TableRow 
-                                        key={gateway}
-                                    >
-                                        <TableCell style={{ width: '50%' }} component='th' scope='row'>
-                                            <Chip label={gateway} variant='outlined' />
-                                        </TableCell>
-                                        <TableCell style={{ width: '50%' }} align='right'>
-                                            <Button>Deploy</Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </>
+            return ( 
+                <TableRow>
+                    <TableCell colSpan={4}>
+                        <Box>
+                            <Typography variant='body2' gutterBottom>
+                                Descrpiton : {policy.description}
+                            </Typography>
+                            
+                            <TableContainer>
+                                <Table>
+                                    <TableBody>
+                                        {gatewayList.map((gateway: string) => (
+                                            <TableRow 
+                                                key={gateway}
+                                            >
+                                                <TableCell style={{ width: '50%' }} component='th' scope='row'>
+                                                    <Chip label={gateway} variant='outlined' />
+                                                </TableCell>
+                                                <TableCell style={{ width: '50%' }} align='right'>
+                                                    {isDeployed(gateway, policy.appliedGatewayLabels) ? (
+                                                        <Button variant='contained' color='default'>
+                                                            Undeploy
+                                                        </Button>
+                                                    ) : (
+                                                        <Button variant='contained' color='primary'>
+                                                            Deploy
+                                                        </Button>
+                                                    )}                                                    
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer> 
+                        </Box>
+                    </TableCell>
+                </TableRow>   
+                
             );
         },
     };
