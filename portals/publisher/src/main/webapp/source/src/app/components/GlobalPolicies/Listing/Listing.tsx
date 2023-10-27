@@ -22,6 +22,12 @@ import {
     Tooltip,
     Typography,
     makeStyles,
+    Chip,
+    TableContainer,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow
 } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
 import API from 'AppData/api';
@@ -29,7 +35,6 @@ import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage } from 'react-intl';
 import AddCircle from '@material-ui/icons/AddCircle';
 import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
-import { isRestricted } from 'AppData/AuthManager';
 import Box from '@material-ui/core/Box';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
@@ -144,91 +149,91 @@ const Listing: React.FC = () => {
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter",
-                    appliedGatewayLabels: ["Gateway1", "Gateway2", "Gateway3"]
+                    appliedGatewayLabels: ["Production Gateway", "Default"]
                 },
                 {
                     id: "121223q41-24141-124124124-12415",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter2",
-                    appliedGatewayLabels: ["Gateway9", "Gateway7"]
+                    appliedGatewayLabels: ["Production Gateway", "Default"]
                 },
                 {
                     id: "121223q41-24141-124124124-12416",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter3",
-                    appliedGatewayLabels: ["Gateway5", "Gateway7"]
+                    appliedGatewayLabels: ["Production Gateway", "Default"]
                 },
                 {
                     id: "121223q41-24141-124124124-12417",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter4",
-                    appliedGatewayLabels: ["Gateway1", "Gateway2", "Gateway3"]
+                    appliedGatewayLabels: ["Production Gateway", "Default"]
                 },
                 {
                     id: "121223q41-24141-124124124-12418",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter5",
-                    appliedGatewayLabels: ["Gateway2"]
+                    appliedGatewayLabels: ["Production Gateway"]
                 },
                 {
                     id: "121223q41-24141-124124124-12419",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter6",
-                    appliedGatewayLabels: ["Gateway3"]
+                    appliedGatewayLabels: ["Production Gateway"]
                 },
                 {
                     id: "121223q41-24141-124124124-12420",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter7",
-                    appliedGatewayLabels: ["Gateway1", "Gateway2", "Gateway3"]
+                    appliedGatewayLabels: ["Production Gateway", "Default"]
                 },
                 {
                     id: "121223q41-24141-124124124-12421",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter8",
-                    appliedGatewayLabels: ["Gateway2"]
+                    appliedGatewayLabels: ["Production Gateway"]
                 },
                 {
                     id: "121223q41-24141-124124124-12422",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "aitem_type_setter9",
-                    appliedGatewayLabels: ["Gateway1"]
+                    appliedGatewayLabels: ["Production Gateway"]
                 },
                 {
                     id: "121223q41-24141-124124124-12423",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter10",
-                    appliedGatewayLabels: ["Gateway5", "Gateway7"]
+                    appliedGatewayLabels: ["Production Gateway", "Default"]
                 },
                 {
                     id: "121223q41-24141-124124124-12424",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter11",
-                    appliedGatewayLabels: ["Gateway5", "Gateway6",]
+                    appliedGatewayLabels: ["Production Gateway", "Default",]
                 },
                 {
                     id: "121223q41-24141-124124124-12425",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter12",
-                    appliedGatewayLabels: ["Gateway2", "Gateway3"]
+                    appliedGatewayLabels: ["Production Gateway", "Default"]
                 },
                 {
                     id: "121223q41-24141-124124124-12426",
                     description: "Set header value to the request with item type and "
                     + "response header set with served server name",
                     displayName: "item_type_setter13",
-                    appliedGatewayLabels: ["Gateway1"]
+                    appliedGatewayLabels: ["Production Gateway"]
                 }
             ],
             pagination: {
@@ -284,6 +289,20 @@ const Listing: React.FC = () => {
         // }
         // return [];
         return policies;
+    }
+
+    /**
+     * Check if the gateway is deployed for the Golbal Policy.
+     * @param {string} gateway : Gateway.
+     * @param {string[]} appliedGatewayLabels : Applied Gateway Labels.
+     * @returns {boolean} Return true if deployed.
+     */
+    const isDeployed = (gateway: string, appliedGatewayLabels: string[]) => {
+        // get global policy's appliedGatewayLabels
+        if (appliedGatewayLabels.includes(gateway)) {
+            return true;
+        }
+        return false;
     }
 
     useEffect(() => {
@@ -369,15 +388,35 @@ const Listing: React.FC = () => {
         expandableRows: true,
         expandableRowsHeader: false,
         expandableRowsOnClick: true,
-        // renderExpandableRow: (rowData, rowMeta) => {
-        //     const gatewayLabels = policiesList[rowMeta.dataIndex].appliedGatewayLabels;
-        //     return gatewayLabels;
-        // },
-        renderExpandableRow: () => {
-            const envNames = environments.map((env: any) => {
+        renderExpandableRow: (rowData, rowMeta) => {
+            const gatewayList = environments.map((env: any) => {
                 return env.name;
             });
-            return envNames;
+            const rowIndex = rowMeta.dataIndex;
+            const policy = policiesList[rowIndex];
+            return (
+                <>
+                    {policy.description}
+                    <TableContainer>
+                        <Table>
+                            <TableBody>
+                                {gatewayList.map((gateway: string) => (
+                                    <TableRow 
+                                        key={gateway}
+                                    >
+                                        <TableCell style={{ width: '50%' }} component='th' scope='row'>
+                                            <Chip label={gateway} variant='outlined' />
+                                        </TableCell>
+                                        <TableCell style={{ width: '50%' }} align='right'>
+                                            <Button>Deploy</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </>
+            );
         },
     };
 
@@ -407,13 +446,6 @@ const Listing: React.FC = () => {
                     to={CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE}
                     name='Policies'
                     // iconName={globalPolicyAddIcon}
-                    disabled={isRestricted([
-                        'apim:api_create',
-                        'apim:api_manage',
-                        'apim:mediation_policy_create',
-                        'apim:mediation_policy_manage',
-                        'apim:api_mediation_policy_manage',
-                    ])}
                 />
             </Onboarding>
         );
@@ -476,26 +508,18 @@ const Listing: React.FC = () => {
                             defaultMessage='Add New Policy'
                         />
                     </Button>
-                </Box>
-                {isRestricted([
-                    'apim:api_create',
-                    'apim:api_manage',
-                    'apim:mediation_policy_create',
-                    'apim:mediation_policy_manage',
-                    'apim:api_mediation_policy_manage',
-                ]) && (
-                    <Grid item>
-                        <Typography variant='body2' color='primary'>
-                            <FormattedMessage
-                                id='GlobalPolicies.Listing.policies.title.update.not.allowed'
-                                defaultMessage={
-                                    '*You are not authorized to manage policies ' +
-                                    'due to insufficient permissions'
-                                }
-                            />
-                        </Typography>
-                    </Grid>
-                )}
+                </Box>      
+                <Grid item>
+                    <Typography variant='body2' color='primary'>
+                        <FormattedMessage
+                            id='GlobalPolicies.Listing.policies.title.update.not.allowed'
+                            defaultMessage={
+                                '*You are not authorized to manage policies ' +
+                                'due to insufficient permissions'
+                            }
+                        />
+                    </Typography>
+                </Grid>
             </Grid>
             <Grid
                 className={classes.table}
@@ -523,6 +547,3 @@ const Listing: React.FC = () => {
 };
 
 export default Listing;
-
-
-
