@@ -132,7 +132,8 @@ const Listing: React.FC = () => {
      */
     const fetchGlobalPolicies = () => {
         setLoading(true);
-        // const promisedPolicies = API.getGlobalOperationPolicies();
+        // const promisedPolicies = API.getGatewayPolicies();
+        console.log("fetching policies: 'GET' '/gateway-policies");
 
         // hardcoded response
         const promisedPolicies = Promise.resolve({
@@ -304,6 +305,102 @@ const Listing: React.FC = () => {
         return false;
     }
 
+    /**
+     * Function to add a label to a specific policy in UI
+     * 
+     * @param {string} policyId : Policy Identifier.
+     * @param {string} newLabel : Newly added enviroment/gateway to applied Gateway Labels.
+     */
+    const addLabelToPolicy = (policyId: string, newLabel: string) => {
+        // Create a copy of the policies array with the updated label
+        const updatedPolicies = policies.map((policy) => {
+            if (policy.id === policyId) {
+                return {
+                    ...policy,
+                    appliedGatewayLabels: [...policy.appliedGatewayLabels, newLabel],
+                };
+            }
+            return policy;
+        });
+
+        // Set the state with the updated policies
+        setPolicies(updatedPolicies);
+    };
+
+    /**
+     * Function to deploy a policy mapping to another enviroment/gateway
+     * 
+     * @param {string} gatewayPolicyMappingId : Policy Identifier.
+     * @param {string} environement : Deploying enviroment/gateway.
+     */
+    const deploy = (gatewayPolicyMappingId: string, environement: string) => {
+        setLoading(true);
+
+        // call the backend API
+        // const requestBody = [
+        //     {
+        //         "mappingUUID": {gatewayPolicyMappingId},
+        //         "gatewayLabel": {environement},
+        //         "gatewayDeployment": true
+        //     }
+        // ];
+        // API.postDeployGatewayPolicies();
+        console.log("deploying policy to specific gateway: 'POST' '/gateway-policies/{gatewayPolicyMappingId}/deploy");
+
+        // If successful, update the policies list for the UI
+        addLabelToPolicy(gatewayPolicyMappingId, environement);
+
+        setLoading(false);
+    }
+
+    /**
+     * Function to remove a label from a specific policy in UI
+     * 
+     * @param {string} policyId : Policy Identifier.
+     * @param {string} labelToRemove : Removing enviroment/gateway from applied Gateway Labels.
+     */
+    const removeLabelFromPolicy = (policyId: string, labelToRemove: string) => {
+        // Create a copy of the policies array with the label removed
+        const updatedPolicies = policies.map((policy) => {
+            if (policy.id === policyId) {
+                return {
+                    ...policy,
+                    appliedGatewayLabels: policy.appliedGatewayLabels.filter((label) => label !== labelToRemove),
+                };
+            }
+            return policy;
+        });
+
+        // Set the state with the updated policies
+        setPolicies(updatedPolicies);
+    };
+
+    /**
+     * Function to undeploy a policy mapping to another enviroment/gateway
+     * 
+     * @param {string} gatewayPolicyMappingId : Policy Identifier.
+     * @param {string} environement : Deploying enviroment/gateway.
+     */
+    const undeploy = (gatewayPolicyMappingId: string, environement: string) => {
+        setLoading(true);
+
+        // call the backend API
+        // const requestBody = [
+        //     {
+        //         "mappingUUID": {gatewayPolicyMappingId},
+        //         "gatewayLabel": {environement},
+        //         "gatewayDeployment": false
+        //     }
+        // ];
+        // API.postDeployGatewayPolicies();
+        console.log("undeploying policy to specifc gateway: 'POST' '/gateway-policies/{gatewayPolicyMappingId}/deploy");
+
+        // If successful, update the policies list for the UI
+        removeLabelFromPolicy(gatewayPolicyMappingId, environement);
+
+        setLoading(false);
+    }
+
     useEffect(() => {
         fetchGlobalPolicies();
         fetchSettings();
@@ -317,7 +414,7 @@ const Listing: React.FC = () => {
      */
     policies?.sort((a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName));
 
-    
+
     const policiesList = getPoliciesList();
 
     /**
@@ -437,11 +534,19 @@ const Listing: React.FC = () => {
                                                 </TableCell>
                                                 <TableCell align='right'>
                                                     {isDeployed(gateway, policy.appliedGatewayLabels) ? (
-                                                        <Button variant='contained' color='default'>
+                                                        <Button 
+                                                            variant='contained' 
+                                                            color='default' 
+                                                            onClick={() => undeploy(policy.id, gateway)}
+                                                        >
                                                             Undeploy
                                                         </Button>
                                                     ) : (
-                                                        <Button variant='contained' color='primary'>
+                                                        <Button 
+                                                            variant='contained' 
+                                                            color='primary'
+                                                            onClick={() => deploy(policy.id, gateway)}
+                                                        >
                                                             Deploy
                                                         </Button>
                                                     )}                                                    
