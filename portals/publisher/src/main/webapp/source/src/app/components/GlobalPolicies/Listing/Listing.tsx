@@ -45,9 +45,6 @@ import CONSTS from 'AppData/Constants';
 import GlobalPolicyGatewaySelector from './GlobalPolicyGatewaySelector';
 // import { data } from 'msw/lib/types/context';
 
-/**
- * Styles for the component
- */
 const useStyles = makeStyles((theme) => ({
     table: {
         marginLeft: 'auto',
@@ -88,10 +85,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-/** 
- * Policy Interface
- * Policy the the data model of the policies.
- */
 interface Policy {
     id: string;
     description: string;
@@ -113,7 +106,7 @@ interface Environment {
 }
 
 /**
- * Global Policies Lisitng Page
+ * Global policies Lisitng Page.
  * @returns {TSX} Listing Page.
  */
 const Listing: React.FC = () => {
@@ -124,9 +117,10 @@ const Listing: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
     const [isAllowedToFilterCCPolicies, setIsAllowedToFilterCCPolicies] = useState(false);
-    // const [expandedRows, setExpandedRows] = useState<{ [key: string]: any | null }>({});
 
     /**
+     * Getting the selected gateway type (Choreo Connect or Synapse).
+     * 
      * @param {boolean} isCCEnabled : Indicates whether Choreo Connect is selected or not.
      */
     const handleGatewayTypeSelection = (isCCEnabled: boolean) => {
@@ -134,7 +128,7 @@ const Listing: React.FC = () => {
     } 
 
     /**
-     * Get the data from the backend to the compoenent.
+     * Fetch the data from the backend to the compoenent.
      */
     const fetchGlobalPolicies = () => {
         setLoading(true);
@@ -259,6 +253,9 @@ const Listing: React.FC = () => {
             });
     };
 
+    /**
+     * Fetch environements publisher settings from the backend to the compoenent.
+     */
     const fetchSettings = () => {
         setLoading(true);
         const promisedSettings = API.getSettings();
@@ -276,7 +273,8 @@ const Listing: React.FC = () => {
     };
 
     /**
-     * Provides the gateway specific policies list.
+     * Provides the gateway specific policies list (In there, we can filter the list).
+     * 
      * @returns {array} Return the policy list after filtering.
      */
     const getPoliciesList = () => {
@@ -293,6 +291,7 @@ const Listing: React.FC = () => {
 
     /**
      * Check if the gateway is deployed for the Golbal Policy.
+     * 
      * @param {string} gateway : Gateway.
      * @param {string[]} appliedGatewayLabels : Applied Gateway Labels.
      * @returns {boolean} Return true if deployed.
@@ -311,10 +310,14 @@ const Listing: React.FC = () => {
     }, []);
 
     /**
-     * Sorting Policies
+     * Sorts an array of Policy objects by their display names in ascending order.
+     *
+     * @param {Policy[]} policies - An array of Policy objects to be sorted.
+     * @returns {Policy[]} The sorted array of Policy objects.
      */
     policies?.sort((a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName));
 
+    
     const policiesList = getPoliciesList();
 
     /**
