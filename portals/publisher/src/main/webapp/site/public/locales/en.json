@@ -8825,16 +8825,10 @@
       "value": "Delete"
     }
   ],
-  "GlobalPolicies.Listing.table.header.actions.title": [
+  "GlobalPolicies.Listing.table.header.actions.edit": [
     {
       "type": 0,
-      "value": "Actions"
-    }
-  ],
-  "GlobalPolicies.Listing.table.header.actions.view": [
-    {
-      "type": 0,
-      "value": "View"
+      "value": "Edit"
     }
   ],
   "LoginDenied.logout": [

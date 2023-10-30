@@ -33,8 +33,16 @@ const GlobalPolicies = () => {
                 path='/global-policies'
                 component={Listing}
             />
-            <Route exact path='/global-policies/create' component={GlobalPoliciesCreate} />
-            <Route exact path='/global-policies/edit' component={GlobalPoliciesEdit} />
+            <Route
+                exact
+                path='/global-policies/:policyId/create'
+                component={GlobalPoliciesCreate}
+            />
+            <Route
+                exact
+                path='/global-policies/:policyId/edit'
+                component={GlobalPoliciesEdit}
+            />
             <Route component={ResourceNotFound} />
         </Switch>
     );

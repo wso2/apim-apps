@@ -34,16 +34,15 @@ import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage } from 'react-intl';
 import AddCircle from '@material-ui/icons/AddCircle';
-import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
+import MUIDataTable, { MUIDataTableOptions, MUIDataTableColumnDef } from 'mui-datatables';
 import Box from '@material-ui/core/Box';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import CONSTS from 'AppData/Constants';
-// import Delete from './DeletePolicy';
+import { Link } from 'react-router-dom';
 import GlobalPolicyGatewaySelector from './GlobalPolicyGatewaySelector';
-// import { data } from 'msw/lib/types/context';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -401,10 +400,30 @@ const Listing: React.FC = () => {
         setLoading(false);
     }
 
+    /**
+     * Function to delete a policy mapping
+     * 
+     * @param {string} gatewayPolicyMappingId : Policy Identifier.
+     */
+    const deletePolicy = (gatewayPolicyMappingId: string) => {
+        setLoading(true);
+        // call the backend API
+        // API.deleteGatewayPolicies();
+        console.log("delete policy: 'DELETE' '/gateway-policies/{gatewayPolicyMappingId}");
+        // If successful, remove it from the UI
+        const updatedPolicies = policies.filter((policy) => policy.id !== gatewayPolicyMappingId);
+        setPolicies(updatedPolicies);
+        setLoading(false);
+    }
+
     useEffect(() => {
         fetchGlobalPolicies();
         fetchSettings();
     }, []);
+
+    const getEditUrl = (policyId: String) => {
+        return `/global-policies/${policyId}/edit`;
+    };
 
     /**
      * Sorts an array of Policy objects by their display names in ascending order.
@@ -420,7 +439,14 @@ const Listing: React.FC = () => {
     /**
      * Columns for the MUI table.
      */
-    const columns = [
+    const columns: MUIDataTableColumnDef[] = [
+        {
+            name: 'id',
+            options: {
+                display: 'excluded',
+                filter: false,
+            },
+        },
         {
             name: 'displayName',
             label: 'Global Policy',
@@ -450,25 +476,28 @@ const Listing: React.FC = () => {
             }      
         },
         {
-            name: 'actions',
-            label: 'Actions',
+            name: 'Actions',
             options: {
-                customBodyRender: () => {
+                customBodyRender: (value: any, tableMeta: any) => {
+                    const policyId = tableMeta.rowData[0];
                     return (
                         <Box display='flex' flexDirection='row'>
                             <Button
-                                aria-label='View'
+                                aria-label='Edit'
+                                component={Link}
+                                to={getEditUrl(policyId)}
                             >
                                 <Icon className={classes.icon}>
-                                    visibility
+                                    edit
                                 </Icon>
                                 <FormattedMessage
-                                    id='GlobalPolicies.Listing.table.header.actions.view'
-                                    defaultMessage='View'
+                                    id='GlobalPolicies.Listing.table.header.actions.edit'
+                                    defaultMessage='Edit'
                                 />
                             </Button>
                             <Button
-                                aria-label='View'
+                                aria-label='Delete'
+                                onClick={() => deletePolicy(policyId)}
                             >
                                 <Icon className={classes.icon}>
                                     delete
@@ -479,16 +508,10 @@ const Listing: React.FC = () => {
                                 />
                             </Button>
                         </Box>
-                    );
+                    );                
                 },
                 filter: false,
                 sort: false,
-                label: (
-                    <FormattedMessage
-                        id='GlobalPolicies.Listing.table.header.actions.title'
-                        defaultMessage='Actions'
-                    />
-                ),
             },
         },
     ];
@@ -507,7 +530,7 @@ const Listing: React.FC = () => {
         rowsPerPageOptions: [5, 10, 25, 50, 100],
         expandableRows: true,
         expandableRowsHeader: false,
-        expandableRowsOnClick: true,
+        expandableRowsOnClick: false,
         renderExpandableRow: (rowData, rowMeta) => {
             const gatewayList = environments.map((env: any) => {
                 return env.name;
