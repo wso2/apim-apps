@@ -8777,12 +8777,6 @@
       "value": "Error while validating the imported schema"
     }
   ],
-  "GlobalPolicies.Create.CreateGlobalPolicy": [
-    {
-      "type": 0,
-      "value": "Hi, I am the GlobalPolicies.Create.CreateGlobalPolicy component!"
-    }
-  ],
   "GlobalPolicies.Edit.EditGlobalPolicy": [
     {
       "type": 0,

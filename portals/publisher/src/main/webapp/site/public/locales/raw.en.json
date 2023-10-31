@@ -4194,9 +4194,6 @@
   "Error.while.validating.the.imported.graphQLSchema": {
     "defaultMessage": "Error while validating the imported schema"
   },
-  "GlobalPolicies.Create.CreateGlobalPolicy": {
-    "defaultMessage": "Hi, I am the GlobalPolicies.Create.CreateGlobalPolicy component!"
-  },
   "GlobalPolicies.Edit.EditGlobalPolicy": {
     "defaultMessage": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
   },

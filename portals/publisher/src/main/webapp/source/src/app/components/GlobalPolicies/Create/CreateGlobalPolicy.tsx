@@ -15,7 +15,7 @@
 // under the License.
 
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import Policies from 'AppComponents/Shared/PolicyMapping/Policies/Policies';
 
 /**
  * Global Policies Creating Page.
@@ -23,10 +23,7 @@ import { FormattedMessage } from 'react-intl';
  */
 const CreateGlobalPolicy: React.FC = () => {
     return (
-        <FormattedMessage
-            id='GlobalPolicies.Create.CreateGlobalPolicy'
-            defaultMessage='Hi, I am the GlobalPolicies.Create.CreateGlobalPolicy component!'
-        />
+        <Policies/>
     );
 };
 
