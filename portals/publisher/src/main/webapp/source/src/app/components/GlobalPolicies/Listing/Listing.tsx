@@ -668,11 +668,18 @@ const Listing: React.FC = () => {
                     </IconButton>
                 </Tooltip>
                 <Box pl={1}>
-                    <Button color='primary' variant='outlined' size='small' data-testid='add-new-common-policy'>
+                    <Button 
+                        color='primary' 
+                        variant='outlined' 
+                        size='small' 
+                        data-testid='add-new-global-policy'
+                        component={Link}
+                        to='/global-policies/create'
+                    >
                         <AddCircle className={classes.buttonIcon} />
                         <FormattedMessage
                             id='GlobalPolicies.Listing.policies.title.add.new.policy'
-                            defaultMessage='Add New Policy'
+                            defaultMessage='Add New Global Policy'
                         />
                     </Button>
                 </Box>      

@@ -4207,7 +4207,7 @@
     "defaultMessage": "Policies provide the capability to alter the behavior of API resources"
   },
   "GlobalPolicies.Listing.policies.title.add.new.policy": {
-    "defaultMessage": "Add New Policy"
+    "defaultMessage": "Add New Global Policy"
   },
   "GlobalPolicies.Listing.policies.title.name": {
     "defaultMessage": "Global Policies"

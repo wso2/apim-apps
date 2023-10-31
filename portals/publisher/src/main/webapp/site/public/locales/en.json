@@ -8804,7 +8804,7 @@
   "GlobalPolicies.Listing.policies.title.add.new.policy": [
     {
       "type": 0,
-      "value": "Add New Policy"
+      "value": "Add New Global Policy"
     }
   ],
   "GlobalPolicies.Listing.policies.title.name": [

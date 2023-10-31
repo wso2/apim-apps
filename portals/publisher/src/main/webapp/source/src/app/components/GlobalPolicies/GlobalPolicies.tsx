@@ -35,7 +35,7 @@ const GlobalPolicies = () => {
             />
             <Route
                 exact
-                path='/global-policies/:policyId/create'
+                path='/global-policies/create'
                 component={GlobalPoliciesCreate}
             />
             <Route
