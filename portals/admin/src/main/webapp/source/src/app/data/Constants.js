@@ -26,7 +26,8 @@ const CONSTS = {
     },
     TENANT_STATE_ACTIVE: 'ACTIVE',
     DEFAULT_MIN_SCOPES_TO_LOGIN: ['apim:api_workflow_view', 'apim:api_workflow_approve', 'apim:tenantInfo',
-        'apim:admin_settings'],
+        'apim:admin_settings', 'apim:tier_view', 'apim:policies_import_export', 'apim:tier_manage', 'apim:bl_manage',
+    ],
 };
 
 export default CONSTS;
