@@ -149,10 +149,11 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                                 color='primary'
                                                 defaultChecked
                                                 id='regularGateway'
-                                                disabled={isRestricted(
-                                                    ['apim:api_create'],
-                                                    apiFromContext,
-                                                )}
+                                                // changedUI.commented
+                                                // disabled={isRestricted(
+                                                //     ['apim:api_create'],
+                                                //     apiFromContext,
+                                                // )}
                                                 inputProps={{
                                                     'aria-label': 'Regular Gateway',
                                                 }}
@@ -166,7 +167,8 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                         control={
                                             <Radio
                                                 color='primary'
-                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                // changedUI.commented
+                                                // disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                                 inputProps={{
                                                     'aria-label': 'Choreo Connect',
                                                 }}
