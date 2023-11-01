@@ -23,16 +23,9 @@ import type { Policy, PolicySpec } from '../Types';
 
 interface PolicyPanelProps {
     children?: React.ReactNode;
-    index: number;
-    selectedTab: number;
-    openAPISpec: any;
     isChoreoConnectEnabled: boolean;
-    isAPILevelTabSelected: boolean;
     allPolicies: PolicySpec[] | null;
     policyList: Policy[];
-    api: any;
-    expandedResource: string | null;
-    setExpandedResource: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 /**
@@ -42,40 +35,19 @@ interface PolicyPanelProps {
  * @returns {TSX} Tab panel.
  */
 const PolicyPanel: FC<PolicyPanelProps> = ({
-    index,
-    selectedTab,
-    openAPISpec,
     isChoreoConnectEnabled,
-    isAPILevelTabSelected,
     allPolicies,
     policyList,
-    api,
-    expandedResource,
-    setExpandedResource,
 }) => {
-    const tabs = ['api-level', 'operation-level'];
-    const currentTab = tabs[index];
 
     return (
-        <div
-            role='tabpanel'
-            hidden={selectedTab !== index}
-            id={`${currentTab}-tabpanel`}
-            aria-labelledby={`${currentTab}-tab`}
-        >
-            <Box py={1} px={3}>
-                <PoliciesSection
-                    openAPISpec={openAPISpec}
-                    isChoreoConnectEnabled={isChoreoConnectEnabled}
-                    isAPILevelTabSelected={isAPILevelTabSelected}
-                    allPolicies={allPolicies}
-                    policyList={policyList}
-                    api={api}
-                    expandedResource={expandedResource}
-                    setExpandedResource={setExpandedResource}
-                />
-            </Box>
-        </div>
+        <Box py={1} px={3}>
+            <PoliciesSection
+                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                allPolicies={allPolicies}
+                policyList={policyList}
+            />
+        </Box>
     );
 };
 

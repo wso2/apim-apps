@@ -68,10 +68,8 @@ const Policies: React.FC = () => {
     // const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
-    const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(false);
     const { showMultiVersionPolicies } = Configurations.apis;
-    const [selectedTab, setSelectedTab] = useState(1);
 
     //
 
@@ -148,9 +146,6 @@ const Policies: React.FC = () => {
 
     useEffect(() => {
         fetchPolicies();
-        if (isChoreoConnectEnabled) {
-            setSelectedTab(1);
-        }
     }, [isChoreoConnectEnabled]); 
 
     /**
@@ -187,18 +182,9 @@ const Policies: React.FC = () => {
                             <Box p={1}>
                                 <Box pt={1} overflow='scroll'>
                                     <PolicyPanel
-                                        index={0}
-                                        selectedTab={selectedTab}
-                                        openAPISpec={null}
                                         isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                        isAPILevelTabSelected
                                         allPolicies={allPolicies}
                                         policyList={policies}
-                                        api={null}
-                                        expandedResource={expandedResource}
-                                        setExpandedResource={
-                                            setExpandedResource
-                                        }
                                     />
                                 </Box>
                             </Box>
