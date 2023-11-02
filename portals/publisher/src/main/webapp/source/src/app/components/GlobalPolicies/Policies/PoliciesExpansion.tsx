@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
@@ -26,6 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import FlowArrow from './components/FlowArrow';
+import ApiOperationContext from './ApiOperationContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
     flowSpecificPolicyAttachGrid: {
@@ -34,6 +35,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
+const defaultPolicyForMigration = {
+    id: '',
+    category: 'Mediation',
+    name: '',
+    displayName: '',
+    version: '',
+    description: '',
+    applicableFlows: [],
+    supportedGateways: ['Synapse'],
+    supportedApiTypes: [],
+    policyAttributes: [],
+    isAPISpecific: true,
+};
 
 interface PoliciesExpansionProps {
     target: any;
@@ -63,6 +77,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
     const classes = useStyles();
+    const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
 
     useEffect(() => {
         const requestList = [];
@@ -83,6 +98,110 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
         setResponseFlowDroppablePolicyList(responseList);
         setFaultFlowDroppablePolicyList(faultList);
     }, [policyList]);
+
+    /**
+     * In here, we are populating the attached policy list for each flow.
+     * This will be triggered once we saved a drag`n`droped policy.
+     * This comes after Policies.tsx updateApiOperations() method.
+     * This will hold data in the UI until we save the policy.
+     */
+    useEffect(() => {
+        (async () => { 
+            const apiPolicies = apiLevelPolicies;
+
+            // Populate request flow attached policy list
+            const requestFlowList: AttachedPolicy[] = [];
+            const requestFlow = apiPolicies.request;
+            for (const requestFlowAttachedPolicy of requestFlow) {
+                const { policyId, policyName, policyVersion, uuid } =
+                    requestFlowAttachedPolicy;
+                if (policyId === null) {
+                    // Handling migration flow
+                    requestFlowList.push({
+                        ...defaultPolicyForMigration,
+                        name: policyName,
+                        displayName: policyName,
+                        applicableFlows: ['request'],
+                        uniqueKey: uuid,
+                    });
+                } else {
+                    const policyObj = allPolicies?.find(
+                        (policy: PolicySpec) => 
+                            policy.name === policyName && 
+                            policy.version === policyVersion,
+                    );
+                    if (policyObj) {
+                        requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+                    } else {
+                        console.error("Cannot find policyObj for policyId: " + policyId);
+                    }
+                }
+            }
+            setRequestFlowPolicyList(requestFlowList);
+
+            // Populate response flow attached policy list
+            const responseFlowList: AttachedPolicy[] = [];
+            const responseFlow = apiPolicies.response;
+            for (const responseFlowAttachedPolicy of responseFlow) {
+                const { policyId, policyName, policyVersion, uuid } =
+                    responseFlowAttachedPolicy;
+                if (policyId === null) {
+                    // Handling migration flow
+                    responseFlowList.push({
+                        ...defaultPolicyForMigration,
+                        name: policyName,
+                        displayName: policyName,
+                        applicableFlows: ['response'],
+                        uniqueKey: uuid,
+                    });
+                } else {
+                    const policyObj = allPolicies?.find(
+                        (policy: PolicySpec) => 
+                            policy.name === policyName && 
+                            policy.version === policyVersion,
+                    );
+                    if (policyObj) {
+                        responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+                    } else {
+                        console.error("Cannot find policyObj for policyId: " + policyId);
+                    }   
+                }
+            }
+            setResponseFlowPolicyList(responseFlowList);
+
+            if (!isChoreoConnectEnabled) {
+                // Populate fault flow attached policy list
+                const faultFlowList: AttachedPolicy[] = [];
+                const faultFlow = apiPolicies.fault;
+                for (const faultFlowAttachedPolicy of faultFlow) {
+                    const { policyId, policyName, policyVersion, uuid } =
+                        faultFlowAttachedPolicy;
+                    if (policyId === null) {
+                        // Handling migration flow
+                        faultFlowList.push({
+                            ...defaultPolicyForMigration,
+                            name: policyName,
+                            displayName: policyName,
+                            applicableFlows: ['fault'],
+                            uniqueKey: uuid,
+                        });
+                    } else {
+                        const policyObj = allPolicies?.find(
+                            (policy: PolicySpec) => 
+                                policy.name === policyName && 
+                                policy.version === policyVersion,
+                        );
+                        if (policyObj) {
+                            faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                        } else {
+                            console.error("Cannot find policyObj for policyId: " + policyId);
+                        }
+                    }
+                }
+                setFaultFlowPolicyList(faultFlowList);
+            }
+        })();
+    }, [apiLevelPolicies]);
 
     return (
         <ExpansionPanelDetails>

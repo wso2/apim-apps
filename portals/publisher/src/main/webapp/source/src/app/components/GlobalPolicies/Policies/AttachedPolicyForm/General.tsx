@@ -68,7 +68,6 @@ interface GeneralProps {
     policySpec: PolicySpec;
     handleDrawerClose: () => void;
     isEditMode: boolean;
-    isAPILevelPolicy: boolean;
 }
 
 const General: FC<GeneralProps> = ({
@@ -81,14 +80,12 @@ const General: FC<GeneralProps> = ({
     policySpec,
     handleDrawerClose,
     isEditMode,
-    isAPILevelPolicy,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
     const [saving, setSaving] = useState(false);
-    const [applyToAll, setApplyToAll] = useState(false);
     const initState: any = {};
-    const { updateApiOperations, updateAllApiOperations } = useContext<any>(ApiOperationContext);
+    const { updateApiOperations } = useContext<any>(ApiOperationContext);
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
 
@@ -137,13 +134,8 @@ const General: FC<GeneralProps> = ({
         // Saving field changes to backend
         const apiPolicyToSave = {...apiPolicy};
         apiPolicyToSave.parameters = updateCandidates;
-        if (!applyToAll) {
-            updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
-        } else {
-            // Apply the same attached policy to all the resources
-            updateAllApiOperations(apiPolicyToSave, currentFlow);
-            setApplyToAll(false);
-        }
+
+        updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
 
         if (setDroppedPolicy) setDroppedPolicy(null);
         setSaving(false);
@@ -264,13 +256,6 @@ const General: FC<GeneralProps> = ({
             return isDisabled;
         }
     };
-
-    /**
-     * Toggle the apply to all option on initial policy drop.
-     */
-    const toggleApplyToAll = () => {
-        setApplyToAll(!applyToAll);
-    }
 
     const hasAttributes = policySpec.policyAttributes.length !== 0;
     const resetDisabled = Object.values(state).filter((value: any) => 
@@ -417,29 +402,6 @@ const General: FC<GeneralProps> = ({
                             )}
                         </Grid>
                     ))}
-                    {setDroppedPolicy && !isAPILevelPolicy && (
-                        <Grid item container justify='flex-start' xs={12}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        id='checkbox-apply-dropped-policy-to-all'
-                                        checked={applyToAll}
-                                        color='primary'
-                                        name='applyPolicyToAll'
-                                        onChange={toggleApplyToAll}
-                                    />
-                                }
-                                label={(
-                                    <Typography variant='subtitle1' color='textPrimary'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.AttachedPolicyForm.General.apply.to.all.resources'
-                                            defaultMessage='Apply to all resources'
-                                        />
-                                    </Typography>
-                                )}
-                            />
-                        </Grid>
-                    )}
                     <Grid item container justify='flex-end' xs={12}>
                         <Button
                             variant='outlined'

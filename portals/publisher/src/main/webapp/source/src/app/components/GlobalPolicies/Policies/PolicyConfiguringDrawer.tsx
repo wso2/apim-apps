@@ -69,8 +69,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     currentFlow,
     target,
     verb,
-    allPolicies,
-    isAPILevelPolicy,
+    allPolicies, 
 }) => {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(!!policyObj);
@@ -166,7 +165,6 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     apiPolicy={apiPolicy}
                     handleDrawerClose={handleDrawerClose}
                     isEditMode={false}
-                    isAPILevelPolicy={isAPILevelPolicy}
                 />
             </Box>
         </Drawer>

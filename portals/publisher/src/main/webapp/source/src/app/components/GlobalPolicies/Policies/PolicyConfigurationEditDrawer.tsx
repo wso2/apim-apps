@@ -169,7 +169,6 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                         apiPolicy={apiPolicy}
                         handleDrawerClose={handleDrawerClose}
                         isEditMode
-                        isAPILevelPolicy={isAPILevelPolicy}
                     />
                 )}
             </Box>

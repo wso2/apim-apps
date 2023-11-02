@@ -26,11 +26,14 @@ import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
+import cloneDeep from 'lodash.clonedeep';
 import PolicyList from './PolicyList';
 import type { Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import PolicyPanel from './components/PolicyPanel';
+import { uuidv4 } from './Utils';
+
 
 const Configurations = require('Config');
 
@@ -61,6 +64,7 @@ const useStyles = makeStyles(() => ({
 
 /**
  * Renders the policy management page.
+ * This is the page which is used to add global policies.
  * @returns {TSX} Policy management page to render.
  */
 const Policies: React.FC = () => {
@@ -70,8 +74,6 @@ const Policies: React.FC = () => {
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(false);
     const { showMultiVersionPolicies } = Configurations.apis;
-
-    //
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -85,16 +87,16 @@ const Policies: React.FC = () => {
         fault: [],
     }
 
-    const [apiLevelPolicies, setApiLevelPolicies] = useState<any>(initApiLevelPolicy);
+    const getInitAPILevelPoliciesState = () => {
+        return initApiLevelPolicy;
+    };
 
-    useEffect(() => {
-        // const currentAPIPolicies = getPolicies();
-        const currentAPIPolicies = [''];
-        setApiLevelPolicies(currentAPIPolicies);
-    }, []);
+    // As we are reusing 30+ components from the API level policies, we are using the same context provider for both.
+    // Even though name is apiLevelPolicies, in these cases, it will be global level policies.
+    const [apiLevelPolicies, setApiLevelPolicies] = useState<ApiLevelPolicy>(getInitAPILevelPoliciesState());
 
     /**
-     * Fetches all common policies & API specific policies.
+     * Fetches all common policies.
      * Sets the allPolicies state: this allPolicies state is used to get policies from any given policy ID.
      * Sets the policies state: policy state is used to display the available policies that are draggable.
      */
@@ -149,10 +151,51 @@ const Policies: React.FC = () => {
     }, [isChoreoConnectEnabled]); 
 
     /**
+     * Triggers as we saved a drag`n`droped policy.
+     * @param {any} updatedOperation Saving info as 
+     * parameters: {headerName: <>, headerValue: <>}, 
+     * policyId: <>,
+     * policyName: <>,
+     * policyVersion: <>.
+     * @param {string} target Target.
+     * @param {string} verb Verb.
+     * @param {string} currentFlow Folow request/response/fault.
+     */
+    const updateApiOperations = (
+        updatedOperation: any, target: string, verb: string, currentFlow: string,
+    ) => {
+        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
+        const flowPolicy = (newApiLevelPolicies)[currentFlow].find(
+            (p: any) =>
+                p.policyId === updatedOperation.policyId &&
+                p.uuid === updatedOperation.uuid,
+        );
+        
+        if (flowPolicy) {
+            // Edit policy
+            flowPolicy.parameters = { ...updatedOperation.parameters };
+        } else {
+            // Add new policy
+            const uuid = uuidv4();
+            (newApiLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid }
+            );
+        }
+        setApiLevelPolicies(newApiLevelPolicies);   
+    }
+
+    /**
      * To memoize the value passed into ApiOperationContextProvider
      */
     const providerValue = useMemo(
-        () => ({apiLevelPolicies}),[apiLevelPolicies],);
+        () => ({
+            apiLevelPolicies,
+            updateApiOperations,
+        }),
+        [
+            apiLevelPolicies,
+            updateApiOperations,
+        ],
+    );
 
     if (!policies) {
         return <Progress per={90} message='Loading Policies ...' />
