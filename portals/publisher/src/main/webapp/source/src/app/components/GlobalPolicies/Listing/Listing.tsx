@@ -132,9 +132,9 @@ const Listing: React.FC = () => {
     const fetchGlobalPolicies = () => {
         setLoading(true);
         // const promisedPolicies = API.getGatewayPolicies();
-        console.log("fetching policies: 'GET' '/gateway-policies");
 
         // hardcoded response
+        console.log("fetching policies: 'GET' '/gateway-policies");
         const promisedPolicies = Promise.resolve({
             count: 1,
             list: [
@@ -238,6 +238,7 @@ const Listing: React.FC = () => {
                 previous: "string"
             }
         });
+        console.log("response", promisedPolicies);
         // hardcoded response ends
 
         promisedPolicies
@@ -336,15 +337,16 @@ const Listing: React.FC = () => {
         setLoading(true);
 
         // call the backend API
-        // const requestBody = [
-        //     {
-        //         "mappingUUID": {gatewayPolicyMappingId},
-        //         "gatewayLabel": {environement},
-        //         "gatewayDeployment": true
-        //     }
-        // ];
+        const requestBody = [
+            {
+                "mappingUUID": {gatewayPolicyMappingId},
+                "gatewayLabel": {environement},
+                "gatewayDeployment": true
+            }
+        ];
         // API.postDeployGatewayPolicies();
         console.log("deploying policy to specific gateway: 'POST' '/gateway-policies/{gatewayPolicyMappingId}/deploy");
+        console.log("request body", requestBody);
 
         // If successful, update the policies list for the UI
         addLabelToPolicy(gatewayPolicyMappingId, environement);
@@ -384,15 +386,16 @@ const Listing: React.FC = () => {
         setLoading(true);
 
         // call the backend API
-        // const requestBody = [
-        //     {
-        //         "mappingUUID": {gatewayPolicyMappingId},
-        //         "gatewayLabel": {environement},
-        //         "gatewayDeployment": false
-        //     }
-        // ];
+        const requestBody = [
+            {
+                "mappingUUID": {gatewayPolicyMappingId},
+                "gatewayLabel": {environement},
+                "gatewayDeployment": false
+            }
+        ];
         // API.postDeployGatewayPolicies();
         console.log("undeploying policy to specifc gateway: 'POST' '/gateway-policies/{gatewayPolicyMappingId}/deploy");
+        console.log("request body", requestBody);
 
         // If successful, update the policies list for the UI
         removeLabelFromPolicy(gatewayPolicyMappingId, environement);

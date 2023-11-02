@@ -17,7 +17,10 @@
  */
 
 import { makeStyles, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import Alert from 'AppComponents/Shared/Alert';
+import TextField from '@material-ui/core/TextField';
 import React, { useState, useEffect, useMemo } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
@@ -27,13 +30,13 @@ import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import cloneDeep from 'lodash.clonedeep';
+import { useHistory } from 'react-router-dom';
 import PolicyList from './PolicyList';
 import type { Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';
 import { ApiOperationContextProvider } from './ApiOperationContext';
 import PolicyPanel from './components/PolicyPanel';
 import { uuidv4 } from './Utils';
-
 
 const Configurations = require('Config');
 
@@ -60,6 +63,9 @@ const useStyles = makeStyles(() => ({
     flowTab: {
         fontSize: 'smaller',
     },
+    textField: {
+        backgroundColor: 'white', 
+    },
 }));
 
 /**
@@ -69,11 +75,14 @@ const useStyles = makeStyles(() => ({
  */
 const Policies: React.FC = () => {
     const classes = useStyles();
-    // const [updating, setUpdating] = useState(false);
+    const history = useHistory();
+    const [loading, setLoading] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(false);
     const { showMultiVersionPolicies } = Configurations.apis;
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -198,6 +207,29 @@ const Policies: React.FC = () => {
     }
 
     /**
+     * Function to save a policy mapping
+     * 
+     */
+    const save = () => {
+        setLoading(true);
+
+        // call the backend API
+        const requestBody = {
+            "id": uuidv4(),
+            "policyMapping": apiLevelPolicies,
+            "description": description,
+            "displayName": name,
+            "appliedGatewayLabels": []
+        };
+        // API.postDeployGatewayPolicies();
+        console.log("creating a new global policy mapping: 'POST' '/gateway-policies");
+        console.log("request body", requestBody);
+
+        setLoading(false);
+        history.goBack();
+    }
+
+    /**
      * To memoize the value passed into ApiOperationContextProvider
      */
     const providerValue = useMemo(
@@ -213,7 +245,15 @@ const Policies: React.FC = () => {
         ],
     );
 
-    if (!policies) {
+    const handleNameChange = (event: any) => {
+        setName(event.target.value);
+    };
+    
+    const handleDescriptionChange = (event: any) => {
+        setDescription(event.target.value);
+    };
+
+    if (!policies || loading) {
         return <Progress per={90} message='Loading Policies ...' />
     }
 
@@ -235,6 +275,32 @@ const Policies: React.FC = () => {
                         removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                     />
                 </Box>
+                <Box m={1} px={1}>
+                    <TextField
+                        fullWidth
+                        required
+                        id='outlined-required'
+                        label='Name'
+                        variant='outlined'
+                        value={name}
+                        onChange={handleNameChange}
+                        className={classes.textField}
+                    />
+                </Box>
+                <Box m={1} px={1}>
+                    <TextField
+                        fullWidth
+                        required
+                        id='outlined-multiline-static'
+                        label='Description'
+                        multiline
+                        rows={3}
+                        variant='outlined'
+                        value={description}
+                        onChange={handleDescriptionChange}
+                        className={classes.textField}
+                    />
+                </Box>  
                 <Box display='flex' flexDirection='row'>
                     <Box width='65%' p={1} height='115vh' className={classes.operationListingBox}>
                         <Paper className={classes.paper}>
@@ -258,6 +324,24 @@ const Policies: React.FC = () => {
                     </Box>
                 </Box>
             </DndProvider>
+            <Grid container direction='row' spacing={1}>
+                <Grid item>
+                    <Box p={1} mt={1}>       
+                        <Button
+                            style={{ width: '200px' }}
+                            type='submit'
+                            variant='contained'
+                            color='primary'
+                            onClick={() => save()}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Policies.SaveOperationPolicies.save'
+                                defaultMessage='Save'
+                            />
+                        </Button> 
+                    </Box>
+                </Grid>
+            </Grid>
         </ApiOperationContextProvider>
     );
 };
