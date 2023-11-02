@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import { makeStyles, Typography } from '@material-ui/core';
+import { Card, CardContent, makeStyles, Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Alert from 'AppComponents/Shared/Alert';
@@ -325,20 +325,24 @@ const Policies: React.FC = () => {
                         />
                     </Box>  
                     <Box display='flex' flexDirection='row'>
-                        <Box width='65%' pr={1} className={classes.operationListingBox}>
-                            <Paper className={classes.paper}>
-                                <Box p={1}>
-                                    <Box pt={1} overflow='scroll'>
-                                        <PolicyPanel
-                                            isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                            allPolicies={allPolicies}
-                                            policyList={policies}
-                                        />
-                                    </Box>
-                                </Box>
+                        <Box width='65%' pr={1}>
+                            <Paper>
+                                <Card variant='outlined'>
+                                    <CardContent>
+                                        <Box p={1}>
+                                            <Box pt={1} overflow='scroll'>
+                                                <PolicyPanel
+                                                    isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                    allPolicies={allPolicies}
+                                                    policyList={policies}
+                                                />
+                                            </Box>
+                                        </Box>
+                                    </CardContent>
+                                </Card>                              
                             </Paper>
                         </Box>
-                        <Box width='35%' pl={1} style={{ maxHeight: '100%'}}>
+                        <Box width='35%' pl={1}>
                             <PolicyList
                                 policyList={policies}
                                 fetchPolicies={fetchPolicies}
@@ -347,7 +351,7 @@ const Policies: React.FC = () => {
                         </Box>
                     </Box>
                 </DndProvider>
-                <Box p={1} mt={2}>       
+                <Box mt={2}>       
                     <Button
                         style={{ width: '200px' }}
                         type='submit'
