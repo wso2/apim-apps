@@ -9749,6 +9749,18 @@
       "value": "The server encountered an internal error or misconfiguration and was unable to complete your request."
     }
   ],
+  "globalPolicies.create.heading": [
+    {
+      "type": 0,
+      "value": "Create A New Global Policy"
+    }
+  ],
+  "globalPolicies.heading": [
+    {
+      "type": 0,
+      "value": "Global Policies"
+    }
+  ],
   "save": [
     {
       "type": 0,

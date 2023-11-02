@@ -25,14 +25,13 @@ import Tab from '@material-ui/core/Tab';
 import CardContent from '@material-ui/core/CardContent';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
-import { AddCircle } from '@material-ui/icons';
-import { Button, makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import CONSTS from 'AppData/Constants';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
     flowTabs: {
         '& button': {
             minWidth: 50,
@@ -43,9 +42,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     addPolicyBtn: {
         marginLeft: 'auto',
-    },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
     },
     paperPosition: {
         // position: 'fixed',
@@ -69,10 +65,6 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
     const [dialogOpen, setDialogOpen] = React.useState(false);
     let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
 
-    const handleAddPolicy = () => {
-        setDialogOpen(true);
-    };
-
     const handleAddPolicyClose = () => {
         setDialogOpen(false);
     };
@@ -83,7 +75,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
 
     return (
         <Paper className={classes.paperPosition}>
-            <Card variant='outlined'>
+            <Card variant='outlined' className={classes.paperPosition}>
                 <CardContent>
                     <Box display='flex'>
                         <Typography variant='subtitle2'>
@@ -92,21 +84,6 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 defaultMessage='Policy List'
                             />
                         </Typography>
-                        <Button
-                            onClick={handleAddPolicy}
-                            disabled={false}
-                            variant='outlined'
-                            color='primary'
-                            data-testid='add-new-api-specific-policy'
-                            size='small'
-                            className={classes.addPolicyBtn}
-                        >
-                            <AddCircle className={classes.buttonIcon} />
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyList.add.new.policy'
-                                defaultMessage='Add New Policy'
-                            />
-                        </Button>
                     </Box>
                     <Box>
                         <Tabs

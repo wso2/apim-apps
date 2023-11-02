@@ -4662,6 +4662,12 @@
   "error.list.500.description": {
     "defaultMessage": "The server encountered an internal error or misconfiguration and was unable to complete your request."
   },
+  "globalPolicies.create.heading": {
+    "defaultMessage": "Create A New Global Policy"
+  },
+  "globalPolicies.heading": {
+    "defaultMessage": "Global Policies"
+  },
   "save": {
     "defaultMessage": "Save"
   },

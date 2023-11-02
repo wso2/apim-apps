@@ -24,13 +24,14 @@ import TextField from '@material-ui/core/TextField';
 import React, { useState, useEffect, useMemo } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
+import Icon from '@material-ui/core/Icon';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import cloneDeep from 'lodash.clonedeep';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import PolicyList from './PolicyList';
 import type { Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';
@@ -40,7 +41,7 @@ import { uuidv4 } from './Utils';
 
 const Configurations = require('Config');
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     gridItem: {
         display: 'flex',
         width: '100%',
@@ -65,6 +66,16 @@ const useStyles = makeStyles(() => ({
     },
     textField: {
         backgroundColor: 'white', 
+    },
+    titleLink: {
+        color: theme.palette.primary.dark,
+        marginRight: theme.spacing(1),
+    },
+    titleWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: theme.spacing(3),
     },
 }));
 
@@ -259,89 +270,98 @@ const Policies: React.FC = () => {
 
     return (
         <ApiOperationContextProvider value={providerValue}>
-            <DndProvider backend={HTML5Backend}>
-                <Box mb={4}>
-                    <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.Policies.title'
-                            defaultMessage='Policies'
-                        />
-                    </Typography>
-                </Box>
-                <Box mb={4} px={1}>
-                    <GatewaySelector
-                        setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
-                        isChoreoConnectEnabled={isChoreoConnectEnabled}
-                        removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
-                    />
-                </Box>
-                <Box m={1} px={1}>
-                    <TextField
-                        fullWidth
-                        required
-                        id='outlined-required'
-                        label='Name'
-                        variant='outlined'
-                        value={name}
-                        onChange={handleNameChange}
-                        className={classes.textField}
-                    />
-                </Box>
-                <Box m={1} px={1}>
-                    <TextField
-                        fullWidth
-                        required
-                        id='outlined-multiline-static'
-                        label='Description'
-                        multiline
-                        rows={3}
-                        variant='outlined'
-                        value={description}
-                        onChange={handleDescriptionChange}
-                        className={classes.textField}
-                    />
-                </Box>  
-                <Box display='flex' flexDirection='row'>
-                    <Box width='65%' p={1} height='115vh' className={classes.operationListingBox}>
-                        <Paper className={classes.paper}>
-                            <Box p={1}>
-                                <Box pt={1} overflow='scroll'>
-                                    <PolicyPanel
-                                        isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                        allPolicies={allPolicies}
-                                        policyList={policies}
+            <Box mt={3} mb={3} ml={5} mr={5}>   
+                <DndProvider backend={HTML5Backend}>
+                    <Grid item md={12}>
+                        <div className={classes.titleWrapper}>
+                            <Link to='/global-policies' className={classes.titleLink}>
+                                <Typography variant='h4' component='h1'>
+                                    <FormattedMessage
+                                        id='globalPolicies.heading'
+                                        defaultMessage='Global Policies'
                                     />
-                                </Box>
-                            </Box>
-                        </Paper>
-                    </Box>
-                    <Box width='35%' p={1}>
-                        <PolicyList
-                            policyList={policies}
-                            fetchPolicies={fetchPolicies}
+                                </Typography>
+                            </Link>
+                            <Icon>keyboard_arrow_right</Icon>
+                            <Typography variant='h4' component='h2'>
+                                <FormattedMessage
+                                    id='globalPolicies.create.heading'
+                                    defaultMessage='Create A New Global Policy'
+                                />
+                            </Typography>
+                        </div>
+                    </Grid>
+                    <Box mb={4}>
+                        <GatewaySelector
+                            setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
                             isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                         />
                     </Box>
-                </Box>
-            </DndProvider>
-            <Grid container direction='row' spacing={1}>
-                <Grid item>
-                    <Box p={1} mt={1}>       
-                        <Button
-                            style={{ width: '200px' }}
-                            type='submit'
-                            variant='contained'
-                            color='primary'
-                            onClick={() => save()}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Policies.SaveOperationPolicies.save'
-                                defaultMessage='Save'
-                            />
-                        </Button> 
+                    <Box mb={2}>
+                        <TextField
+                            fullWidth
+                            required
+                            id='outlined-required'
+                            label='Name'
+                            variant='outlined'
+                            value={name}
+                            onChange={handleNameChange}
+                            className={classes.textField}
+                        />
                     </Box>
-                </Grid>
-            </Grid>
+                    <Box mb={2}>
+                        <TextField
+                            fullWidth
+                            required
+                            id='outlined-multiline-static'
+                            label='Description'
+                            multiline
+                            rows={3}
+                            variant='outlined'
+                            value={description}
+                            onChange={handleDescriptionChange}
+                            className={classes.textField}
+                        />
+                    </Box>  
+                    <Box display='flex' flexDirection='row'>
+                        <Box width='65%' pr={1} className={classes.operationListingBox}>
+                            <Paper className={classes.paper}>
+                                <Box p={1}>
+                                    <Box pt={1} overflow='scroll'>
+                                        <PolicyPanel
+                                            isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                            allPolicies={allPolicies}
+                                            policyList={policies}
+                                        />
+                                    </Box>
+                                </Box>
+                            </Paper>
+                        </Box>
+                        <Box width='35%' pl={1} style={{ maxHeight: '100%'}}>
+                            <PolicyList
+                                policyList={policies}
+                                fetchPolicies={fetchPolicies}
+                                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            />
+                        </Box>
+                    </Box>
+                </DndProvider>
+                <Box p={1} mt={2}>       
+                    <Button
+                        style={{ width: '200px' }}
+                        type='submit'
+                        variant='contained'
+                        color='primary'
+                        onClick={() => save()}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.SaveOperationPolicies.save'
+                            defaultMessage='Save'
+                        />
+                    </Button> 
+                </Box>
+            </Box>
         </ApiOperationContextProvider>
     );
 };
