@@ -151,6 +151,20 @@ const Policies: React.FC = () => {
     }, [isChoreoConnectEnabled]); 
 
     /**
+     * Triggers as we click delete icon in a drag`n`droped the policy.
+     * @param {string} uuid operation uuid
+     * @param {string} target target that needs to be updated
+     * @param {string} verb verb of the operation that neeeds to be updated
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     */
+    const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
+        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
+        const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
+        newApiLevelPolicies[currentFlow].splice(index, 1);
+        setApiLevelPolicies(newApiLevelPolicies);
+    }
+
+    /**
      * Triggers as we saved a drag`n`droped policy.
      * @param {any} updatedOperation Saving info as 
      * parameters: {headerName: <>, headerValue: <>}, 
@@ -190,10 +204,12 @@ const Policies: React.FC = () => {
         () => ({
             apiLevelPolicies,
             updateApiOperations,
+            deleteApiOperation,
         }),
         [
             apiLevelPolicies,
             updateApiOperations,
+            deleteApiOperation,
         ],
     );
 
