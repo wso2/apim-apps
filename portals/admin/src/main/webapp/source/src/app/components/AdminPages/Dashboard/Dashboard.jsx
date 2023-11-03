@@ -31,8 +31,8 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
 export default function Dashboard() {
     const { user: { _scopes } } = useAppContext();
     const hasWorkflowViewPermission = _scopes.includes('apim:api_workflow_view');
-    const hasPolicyViewPermission = _scopes.includes('apim:tier_view');
-    const hasAPICategoryViewPermission = _scopes.includes('apim:admin_operations');
+    const hasPolicyViewPermission = _scopes.includes('apim:admin_tier_view');
+    const hasAPICategoryViewPermission = _scopes.includes('apim:api_category');
     return (
         <ContentBase width='full' title='Dashboard' pageStyle='paperLess'>
             <Grid container spacing={3} justify='center'>
