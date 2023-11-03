@@ -21,7 +21,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import TextField from '@material-ui/core/TextField';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, FC } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Icon from '@material-ui/core/Icon';
@@ -81,12 +81,22 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+interface PolicyProps {
+    isCreateNew: boolean;
+    policyID: string | null;
+}
+
 /**
  * Renders the policy management page.
  * This is the page which is used to add global policies.
+ * @param {boolean} isCreateNew This value is true if form is for create new and false for edit.
+ * @param {string} policyID This value is to indentify the policy (Null if creating a new one). 
  * @returns {TSX} Policy management page to render.
  */
-const Policies: React.FC = () => {
+const Policies: FC<PolicyProps> =  ({
+    isCreateNew, 
+    policyID
+}) => {
     const classes = useStyles();
     const history = useHistory();
     const [loading, setLoading] = useState(false);
@@ -96,6 +106,7 @@ const Policies: React.FC = () => {
     const { showMultiVersionPolicies } = Configurations.apis;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [appliedGatewayLabels, setAppliedGatewayLabels] = useState<string[]>([]);
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -164,12 +175,89 @@ const Policies: React.FC = () => {
         });
     }
 
+    // PolicyID is to identify the policy. ex: AddHeader, RemoveHeader, etc.
+    // But this same policy can be used multiple times with different names/values.
+    // For the frontend, we need different ids for each similar policy to uniquely identify.
+    const assignUUIDs = (input: any) => {
+        const inputResponse: any = cloneDeep(input);
+        if (inputResponse && inputResponse.policyMapping) {
+            const { request, response, fault } = inputResponse.policyMapping;    
+            if (request) {
+                inputResponse.policyMapping.request = request.map((item: any) => ({
+                    ...item,
+                    uuid: uuidv4(),
+                }));
+            }
+            if (response) {
+                inputResponse.policyMapping.response = response.map((item: any) => ({
+                    ...item,
+                    uuid: uuidv4(),
+                }));
+            }
+            if (fault) {
+                inputResponse.policyMapping.fault = fault.map((item: any) => ({
+                    ...item,
+                    uuid: uuidv4(),
+                }));
+            }
+        }  
+        return inputResponse;
+    };
+      
+
+    const fetchGlobalPolicyByID = () => {
+        // // hardcoded response
+        console.log("fetching global policy mapping: 'GET' '/gateway-policies/" + {policyID});
+        const promisedPolicy = Promise.resolve({
+            id: policyID,
+            policyMapping: {
+                request: [
+                    {
+                        policyName: "addHeader",
+                        policyVersion: "v1",
+                        policyId: "f10ee49b-779b-4109-843c-884f9341df91",                     
+                        parameters: {
+                            headerName: 'a',
+                            headerValue: 'a',   
+                        }
+                    }
+                ],
+                response: [],
+                fault: []
+            },
+            description: "Set header value to the request with item type",
+            displayName: "item_type_setter",
+            appliedGatewayLabels: [
+                "gatewayLabel_1"
+            ]
+        });
+        // hardcoded response ends
+
+        promisedPolicy
+            .then((response) => {
+                const responseUpdated = assignUUIDs(response);      
+                setApiLevelPolicies(responseUpdated.policyMapping);
+                setDescription(responseUpdated.description);
+                setName(responseUpdated.displayName);
+                setAppliedGatewayLabels(responseUpdated.appliedGatewayLabels);
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }
+
     const removeAPIPoliciesForGatewayChange = () => {
         setApiLevelPolicies(initApiLevelPolicy);
     }
 
     useEffect(() => {
         fetchPolicies();
+        if (!isCreateNew){
+            fetchGlobalPolicyByID();
+        }
     }, [isChoreoConnectEnabled]); 
 
     /**
@@ -243,6 +331,29 @@ const Policies: React.FC = () => {
     }
 
     /**
+     * Function to update a policy mapping
+     * 
+     */
+    const update = () => {
+        setLoading(true);
+
+        // call the backend API
+        const requestBody = {
+            "id": policyID,
+            "policyMapping": apiLevelPolicies,
+            "description": description,
+            "displayName": name,
+            "appliedGatewayLabels": appliedGatewayLabels
+        };
+        // API.putGatewayPolicies();
+        console.log("Update global policy mapping: 'PUT' '/gateway-policies/" + {policyID});
+        console.log("request body", requestBody);
+
+        setLoading(false);
+        history.goBack();
+    }
+
+    /**
      * To memoize the value passed into ApiOperationContextProvider
      */
     const providerValue = useMemo(
@@ -287,8 +398,8 @@ const Policies: React.FC = () => {
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h2'>
                                 <FormattedMessage
-                                    id='globalPolicies.create.heading'
-                                    defaultMessage='Create A New Global Policy'
+                                    id='globalPolicies.create.edit.heading'
+                                    defaultMessage={isCreateNew ? 'Create A New Global Policy' : 'Edit Global Policy'}
                                 />
                             </Typography>
                         </div>
@@ -356,11 +467,11 @@ const Policies: React.FC = () => {
                         type='submit'
                         variant='contained'
                         color='primary'
-                        onClick={() => save()}
+                        onClick={() => isCreateNew? save() : update()}
                     >
                         <FormattedMessage
-                            id='Apis.Details.Policies.SaveOperationPolicies.save'
-                            defaultMessage='Save'
+                            id='Apis.Details.Policies.SaveOperationPolicies.save.update'
+                            defaultMessage={isCreateNew ? 'Save' : 'Update'}
                         />
                     </Button> 
                 </Box>

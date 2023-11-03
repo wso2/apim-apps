@@ -15,18 +15,21 @@
 // under the License.
 
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import Policies from 'AppComponents/GlobalPolicies/Policies/Policies';
+import { useParams } from 'react-router-dom';
+
+interface RouteParams {
+    policyId: string;
+}
 
 /**
  * Global Policies Editing Page.
  * @returns {JSX} Editing Page.
  */
 const EditGlobalPolicy: React.FC = () => {
+    const { policyId } = useParams<RouteParams>();
     return (
-        <FormattedMessage
-            id='GlobalPolicies.Edit.EditGlobalPolicy'
-            defaultMessage='Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!'
-        />
+        <Policies isCreateNew={false} policyID={policyId}/>
     );
 };
 

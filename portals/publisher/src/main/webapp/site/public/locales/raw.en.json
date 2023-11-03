@@ -2886,6 +2886,8 @@
   "Apis.Details.Policies.SaveOperationPolicies.save": {
     "defaultMessage": "Save"
   },
+  "Apis.Details.Policies.SaveOperationPolicies.save.update": {
+  },
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": {
     "defaultMessage": "Select API Resources"
   },
@@ -4194,9 +4196,6 @@
   "Error.while.validating.the.imported.graphQLSchema": {
     "defaultMessage": "Error while validating the imported schema"
   },
-  "GlobalPolicies.Edit.EditGlobalPolicy": {
-    "defaultMessage": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
-  },
   "GlobalPolicies.Listing.onboarding.create.new": {
     "defaultMessage": "Let’s get started !"
   },
@@ -4662,8 +4661,7 @@
   "error.list.500.description": {
     "defaultMessage": "The server encountered an internal error or misconfiguration and was unable to complete your request."
   },
-  "globalPolicies.create.heading": {
-    "defaultMessage": "Create A New Global Policy"
+  "globalPolicies.create.edit.heading": {
   },
   "globalPolicies.heading": {
     "defaultMessage": "Global Policies"
