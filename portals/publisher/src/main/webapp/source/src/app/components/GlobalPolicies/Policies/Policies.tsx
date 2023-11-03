@@ -46,12 +46,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         width: '100%',
     },
-    operationListingBox: {
-        overflowY: 'scroll',
-    },
-    paper: {
-        padding: '2px',
-    },
     ccTypography: {
         paddingLeft: '10px',
         marginTop: '20px',
@@ -76,6 +70,14 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
+    },
+    operationListingBox: {
+        display: 'flex',
+        overflowY: 'scroll',
+    },
+    paper: {
+        display: 'flex',
+        flexDirection: 'column',
     },
 }));
 
@@ -324,31 +326,28 @@ const Policies: React.FC = () => {
                             className={classes.textField}
                         />
                     </Box>  
-                    <Box display='flex' flexDirection='row'>
-                        <Box width='65%' pr={1}>
-                            <Paper>
-                                <Card variant='outlined'>
-                                    <CardContent>
-                                        <Box p={1}>
-                                            <Box pt={1} overflow='scroll'>
-                                                <PolicyPanel
-                                                    isChoreoConnectEnabled={isChoreoConnectEnabled}
-                                                    allPolicies={allPolicies}
-                                                    policyList={policies}
-                                                />
-                                            </Box>
+                    <Box className={classes.operationListingBox}>  
+                        <Paper className={classes.paper} style={{ flex: 1 }}>
+                            <Card variant='outlined'>
+                                <CardContent>
+                                    <Box height='100vh'>
+                                        <Box pt={1} overflow='scroll'>
+                                            <PolicyPanel
+                                                isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                allPolicies={allPolicies}
+                                                policyList={policies}
+                                            />
                                         </Box>
-                                    </CardContent>
-                                </Card>                              
-                            </Paper>
-                        </Box>
-                        <Box width='35%' pl={1}>
-                            <PolicyList
-                                policyList={policies}
-                                fetchPolicies={fetchPolicies}
-                                isChoreoConnectEnabled={isChoreoConnectEnabled}
-                            />
-                        </Box>
+                                    </Box>
+                                </CardContent>
+                            </Card>                              
+                        </Paper>
+          
+                        <PolicyList
+                            policyList={policies}
+                            fetchPolicies={fetchPolicies}
+                            isChoreoConnectEnabled={isChoreoConnectEnabled}
+                        />                   
                     </Box>
                 </DndProvider>
                 <Box mt={2}>       
