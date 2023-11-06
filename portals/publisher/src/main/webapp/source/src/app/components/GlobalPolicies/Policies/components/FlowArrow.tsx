@@ -22,6 +22,7 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import Box from '@material-ui/core/Box';
 
+/** Shared UI Component */
 const useStyles = makeStyles(() => ({
     arrowColor: {
         backgroundColor: 'black',
@@ -34,17 +35,11 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-interface FlowArrowProps {
+interface FlowArrowSharedProps {
     arrowDirection: string;
 }
 
-/**
- * Tab panel component to render content of a particular tab.
- * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault).
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} Tab panel.
- */
-const FlowArrow: FC<FlowArrowProps> = ({ arrowDirection }) => {
+const FlowArrowShared: FC<FlowArrowSharedProps> = ({ arrowDirection }) => {
     const classes = useStyles();
 
     return (
@@ -67,6 +62,23 @@ const FlowArrow: FC<FlowArrowProps> = ({ arrowDirection }) => {
                 )
             }
         </>
+    );
+}
+/** Shared UI Component Ends */
+
+interface FlowArrowProps {
+    arrowDirection: string;
+}
+
+/**
+ * Tab panel component to render content of a particular tab.
+ * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault).
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} Tab panel.
+ */
+const FlowArrow: FC<FlowArrowProps> = ({ arrowDirection }) => {
+    return (
+        <FlowArrowShared arrowDirection={arrowDirection}/>
     );
 }
 
