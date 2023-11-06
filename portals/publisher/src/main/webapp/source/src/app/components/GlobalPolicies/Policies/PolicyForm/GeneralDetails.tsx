@@ -109,19 +109,19 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
         }
     };
 
-        /**
+    /**
      * Function to handle supported Api Type related checkbox changes
      * @param {React.ChangeEvent<HTMLInputElement>} event event
      */
-         const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-            if (dispatch) {
-                dispatch({
-                    type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
-                    name: event.target.name,
-                    checked: event.target.checked,
-                });
-            }
-        };
+    const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
+                name: event.target.name,
+                checked: event.target.checked,
+            });
+        }
+    };
 
     return (
         <Box display='flex' flexDirection='row' mt={1}>
@@ -214,9 +214,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                         inputProps={{
                             readOnly: isViewMode,
                             style: isViewMode ? { cursor: 'auto' } : {},
-                        }}
-                        InputProps={{
-                            startAdornment: <InputAdornment position="start">v</InputAdornment>,
+                            startAdornment: <InputAdornment position='start'>v</InputAdornment>,
                         }}
                     />
                     <TextField
