@@ -152,7 +152,7 @@ class AuthManager {
         } else if (val === 'keyManagers') {
             value = Configurations.app.roles.keyManagers;
         } else if (val === 'categoriesManager') {
-            value = Configurations.app.roles.workflowManager;
+            value = Configurations.app.roles.categoriesManager;
         } else if (val === 'gatewayManager') {
             value = Configurations.app.roles.gatewayManager;
         }
