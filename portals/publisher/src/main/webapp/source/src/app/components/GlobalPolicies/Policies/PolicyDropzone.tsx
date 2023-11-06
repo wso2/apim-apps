@@ -23,8 +23,8 @@ import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import clsx from 'clsx';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
-import AttachedPolicyList from './AttachedPolicyList';
-import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
+import AttachedPolicyList from './UIComponents/AttachedPolicyList';
+import PolicyConfiguringDrawer from './UIComponents/PolicyConfiguringDrawer';
 
 const useStyles = makeStyles((theme: Theme) => ({
     dropzoneDiv: {

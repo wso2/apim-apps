@@ -15,7 +15,7 @@
 // under the License.
 
 import React from 'react';
-import Policies from 'AppComponents/GlobalPolicies/Policies/Policies';
+import Policies from 'AppComponents/GlobalPolicies/Policies/UIComponents/Policies';
 import { useParams } from 'react-router-dom';
 
 interface RouteParams {

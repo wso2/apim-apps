@@ -33,11 +33,11 @@ import { Progress } from 'AppComponents/Shared';
 import cloneDeep from 'lodash.clonedeep';
 import { useHistory, Link } from 'react-router-dom';
 import PolicyList from './PolicyList';
-import type { Policy, PolicySpec, ApiLevelPolicy } from './Types';
+import type { Policy, PolicySpec, ApiLevelPolicy } from '../Types';
 import GatewaySelector from './GatewaySelector';
-import { ApiOperationContextProvider } from './ApiOperationContext';
-import PolicyPanel from './components/PolicyPanel';
-import { uuidv4 } from './Utils';
+import { ApiOperationContextProvider } from '../ApiOperationContext';
+import PolicyPanel from './PolicyPanel';
+import { uuidv4 } from '../Utils';
 
 const Configurations = require('Config');
 

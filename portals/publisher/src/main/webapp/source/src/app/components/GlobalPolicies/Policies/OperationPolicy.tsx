@@ -30,7 +30,7 @@ import Utils from 'AppData/Utils';
 import Badge from '@material-ui/core/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
-import PoliciesExpansion from './PoliciesExpansion';
+import PoliciesExpansion from './UIComponents/PoliciesExpansion';
 import type { Policy, PolicySpec } from './Types'
 
 interface OperationPolicyProps {

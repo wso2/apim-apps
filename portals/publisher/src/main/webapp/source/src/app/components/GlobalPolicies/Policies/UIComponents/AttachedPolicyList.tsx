@@ -30,9 +30,9 @@ import {
     SortableContext,
 } from '@dnd-kit/sortable';
 
-import AttachedPolicyCard from './AttachedPolicyCard';
-import type { AttachedPolicy, PolicySpec } from './Types';
-import ApiOperationContext from './ApiOperationContext';
+import AttachedPolicyCard from '../AttachedPolicyCard';
+import type { AttachedPolicy, PolicySpec } from '../Types';
+import ApiOperationContext from '../ApiOperationContext';
 
 interface AttachedPolicyListProps {
     currentPolicyList: AttachedPolicy[];

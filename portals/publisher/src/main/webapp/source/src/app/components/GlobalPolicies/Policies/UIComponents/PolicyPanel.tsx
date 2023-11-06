@@ -18,7 +18,7 @@
 
 import { Box } from '@material-ui/core';
 import React, { FC } from 'react';
-import PoliciesSection from '../PoliciesSection';
+import PoliciesSection from './PoliciesSection';
 import type { Policy, PolicySpec } from '../Types';
 
 interface PolicyPanelProps {

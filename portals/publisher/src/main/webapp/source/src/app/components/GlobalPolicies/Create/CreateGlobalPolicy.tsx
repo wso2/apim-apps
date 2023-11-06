@@ -15,7 +15,7 @@
 // under the License.
 
 import React from 'react';
-import Policies from 'AppComponents/GlobalPolicies/Policies/Policies';
+import Policies from 'AppComponents/GlobalPolicies/Policies/UIComponents/Policies';
 
 /**
  * Global Policies Creating Page.

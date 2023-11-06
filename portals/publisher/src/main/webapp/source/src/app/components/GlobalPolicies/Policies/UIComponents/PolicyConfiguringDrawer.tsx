@@ -33,8 +33,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import { Progress } from 'AppComponents/Shared';
-import General from './AttachedPolicyForm/General';
-import { PolicySpec, ApiPolicy, Policy } from './Types';
+import General from './General';
+import { PolicySpec, ApiPolicy, Policy } from '../Types';
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {

@@ -32,7 +32,7 @@ import Utils from 'AppData/Utils';
 import { FormattedMessage } from 'react-intl';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import type { AttachedPolicy, PolicySpec } from './Types';
-import PolicyConfigurationEditDrawer from './PolicyConfigurationEditDrawer';
+import PolicyConfigurationEditDrawer from './UIComponents/PolicyConfigurationEditDrawer';
 import ApiOperationContext from './ApiOperationContext';
 
 const useStyles = makeStyles(() => ({

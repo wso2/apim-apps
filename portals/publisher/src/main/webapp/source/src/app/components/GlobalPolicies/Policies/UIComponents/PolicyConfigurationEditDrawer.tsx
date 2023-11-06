@@ -33,10 +33,10 @@ import {
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
-import General from './AttachedPolicyForm/General';
-import type { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';
+import General from './General';
+import type { PolicySpec, ApiPolicy, AttachedPolicy } from '../Types';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import ApiOperationContext from './ApiOperationContext';
+import ApiOperationContext from '../ApiOperationContext';
 import API from 'AppData/api';
 
 const useStyles = makeStyles((theme: Theme) => ({

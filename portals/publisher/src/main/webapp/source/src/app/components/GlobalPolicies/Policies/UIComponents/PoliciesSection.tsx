@@ -19,7 +19,7 @@
 import { Grid } from '@material-ui/core';
 import React, { FC } from 'react';
 import Box from '@material-ui/core/Box';
-import type { Policy, PolicySpec } from './Types';
+import type { Policy, PolicySpec } from '../Types';
 import PoliciesExpansion from './PoliciesExpansion';
 
 interface PolicySectionProps {

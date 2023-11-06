@@ -27,9 +27,9 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core';
 import CONSTS from 'AppData/Constants';
-import type { Policy } from './Types';
-import TabPanel from './components/TabPanel';
-import CreatePolicy from './CreatePolicy';
+import type { Policy } from '../Types';
+import TabPanel from '../components/TabPanel';
+import CreatePolicy from '../CreatePolicy';
 
 const useStyles = makeStyles(() => ({
     flowTabs: {

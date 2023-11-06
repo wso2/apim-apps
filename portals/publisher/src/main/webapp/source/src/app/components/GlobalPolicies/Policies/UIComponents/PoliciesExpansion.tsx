@@ -23,10 +23,10 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
-import PolicyDropzone from './PolicyDropzone';
-import type { AttachedPolicy, Policy, PolicySpec } from './Types';
-import FlowArrow from './components/FlowArrow';
-import ApiOperationContext from './ApiOperationContext';
+import PolicyDropzone from '../PolicyDropzone';
+import type { AttachedPolicy, Policy, PolicySpec } from '../Types';
+import FlowArrow from '../components/FlowArrow';
+import ApiOperationContext from '../ApiOperationContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
     flowSpecificPolicyAttachGrid: {

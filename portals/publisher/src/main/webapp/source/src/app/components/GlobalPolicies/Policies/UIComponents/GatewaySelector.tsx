@@ -35,8 +35,6 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { isRestricted } from 'AppData/AuthManager';
-import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { FormattedMessage } from 'react-intl';
 
 const SupportedGatewayTypes = {
@@ -60,7 +58,6 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
     isChoreoConnectEnabled,
     removeAPIPoliciesForGatewayChange
 }) => {
-    const [apiFromContext] = useAPI();
     let selectedGatewayType;
 
     const [isDialogBoxVisible, setIsDialogBoxVisible] = useState(false);
