@@ -30,6 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import FormControl from '@material-ui/core/FormControl';
 import { ACTIONS } from './PolicyCreateForm';
 
+/** Shared UI Component */
 const useStyles = makeStyles((theme: Theme) => ({
     mandatoryStar: {
         color: theme.palette.error.main,
@@ -41,87 +42,38 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-interface GeneralDetailsProps {
+interface GeneralDetailsSharedProps {
     displayName: string | null;
     version: string | null;
     description: string;
     applicableFlows: string[];
     supportedApiTypes: string[];
-    dispatch?: React.Dispatch<any>;
     isViewMode: boolean;
+    nameError: boolean;
+    versionError: boolean;
+    handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    applicableFlowsError: boolean;
+    handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    supportedApiTypesError: boolean;
+    handleApiTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-/**
- * Renders the general details section.
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} General details of the policy.
- */
-const GeneralDetails: FC<GeneralDetailsProps> = ({
+const GeneralDetailsShared: FC<GeneralDetailsSharedProps> = ({
     displayName,
     version,
     description,
     applicableFlows,
     supportedApiTypes,
-    dispatch,
     isViewMode,
+    nameError,
+    versionError,
+    handleInputChange,
+    applicableFlowsError,
+    handleChange,
+    supportedApiTypesError,
+    handleApiTypeChange
 }) => {
     const classes = useStyles();
-
-    // Validates whether atleast one flow (i.e. request, response or fault) is selected
-    // True if none of the flows are selected.
-    const applicableFlowsError = applicableFlows.length === 0;
-
-    // Validates whether atleast one Api Type (i.e. HTTP, SOAP or SOAPTOREST) is selected
-    // True if none of the API types are selected.
-    const supportedApiTypesError = supportedApiTypes.length === 0;
-
-    // Name validation
-    const nameError = displayName === '';
-
-    // Version validation
-    const versionError = version === '';
-
-    /**
-     * Function to handle text field inputs
-     * @param {React.ChangeEvent<HTMLInputElement>} event event
-     */
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (dispatch) {
-            dispatch({
-                type: ACTIONS.UPDATE_POLICY_METADATA,
-                field: event.target.name,
-                value: event.target.value,
-            });
-        }
-    };
-
-    /**
-     * Function to handle applicable flows related checkbox changes
-     * @param {React.ChangeEvent<HTMLInputElement>} event event
-     */
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (dispatch) {
-            dispatch({
-                type: ACTIONS.UPDATE_APPLICALBLE_FLOWS,
-                name: event.target.name,
-                checked: event.target.checked,
-            });
-        }
-    };
-
-    /**
-     * Function to handle supported Api Type related checkbox changes
-     * @param {React.ChangeEvent<HTMLInputElement>} event event
-     */
-    const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (dispatch) {
-            dispatch({
-                type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
-                name: event.target.name,
-                checked: event.target.checked,
-            });
-        }
-    };
 
     return (
         <Box display='flex' flexDirection='row' mt={1}>
@@ -406,6 +358,106 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                 </Box>
             </Box>
         </Box>
+    );
+}
+/** Shared UI Component Ends */
+
+interface GeneralDetailsProps {
+    displayName: string | null;
+    version: string | null;
+    description: string;
+    applicableFlows: string[];
+    supportedApiTypes: string[];
+    dispatch?: React.Dispatch<any>;
+    isViewMode: boolean;
+}
+
+/**
+ * Renders the general details section.
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} General details of the policy.
+ */
+const GeneralDetails: FC<GeneralDetailsProps> = ({
+    displayName,
+    version,
+    description,
+    applicableFlows,
+    supportedApiTypes,
+    dispatch,
+    isViewMode,
+}) => {
+    // Validates whether atleast one flow (i.e. request, response or fault) is selected
+    // True if none of the flows are selected.
+    const applicableFlowsError = applicableFlows.length === 0;
+
+    // Validates whether atleast one Api Type (i.e. HTTP, SOAP or SOAPTOREST) is selected
+    // True if none of the API types are selected.
+    const supportedApiTypesError = supportedApiTypes.length === 0;
+
+    // Name validation
+    const nameError = displayName === '';
+
+    // Version validation
+    const versionError = version === '';
+
+    /**
+     * Function to handle text field inputs
+     * @param {React.ChangeEvent<HTMLInputElement>} event event
+     */
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_POLICY_METADATA,
+                field: event.target.name,
+                value: event.target.value,
+            });
+        }
+    };
+
+    /**
+     * Function to handle applicable flows related checkbox changes
+     * @param {React.ChangeEvent<HTMLInputElement>} event event
+     */
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_APPLICALBLE_FLOWS,
+                name: event.target.name,
+                checked: event.target.checked,
+            });
+        }
+    };
+
+    /**
+     * Function to handle supported Api Type related checkbox changes
+     * @param {React.ChangeEvent<HTMLInputElement>} event event
+     */
+    const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
+                name: event.target.name,
+                checked: event.target.checked,
+            });
+        }
+    };
+
+    return (
+        <GeneralDetailsShared 
+            displayName={displayName}
+            version={version}
+            description={description}
+            applicableFlows={applicableFlows}
+            supportedApiTypes={supportedApiTypes}
+            isViewMode={isViewMode}
+            nameError={nameError}
+            versionError={versionError}
+            handleInputChange={handleInputChange}
+            applicableFlowsError={applicableFlowsError}
+            handleChange={handleChange}
+            supportedApiTypesError={supportedApiTypesError}
+            handleApiTypeChange={handleApiTypeChange}
+        />
     );
 };
 
