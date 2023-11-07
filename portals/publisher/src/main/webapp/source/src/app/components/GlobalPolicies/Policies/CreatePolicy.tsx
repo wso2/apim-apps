@@ -34,6 +34,7 @@ import CONSTS from 'AppData/Constants';
 import type { CreatePolicySpec } from './Types';
 import PolicyCreateForm from './PolicyForm/PolicyCreateForm';
 
+/** Shared UI Component */
 const useStyles = makeStyles((theme: Theme) => ({
     link: {
         color: theme.palette.primary.dark,
@@ -42,74 +43,30 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-interface CreatePolicyProps {
+interface CreatePolicySharedProps {
     handleDialogClose: () => void;
     dialogOpen: boolean;
-    fetchPolicies: () => void;
+    stopPropagation: any;
+    onSave: (policySpecification: CreatePolicySpec) => void;
+    synapsePolicyDefinitionFile: any[];
+    setSynapsePolicyDefinitionFile: any;
+    ccPolicyDefinitionFile: any[];
+    setCcPolicyDefinitionFile: any;
+    saving: any;
 }
 
-/**
- * Renders the UI to create a new policy.
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} Policy create UI.
- */
-const CreatePolicy: React.FC<CreatePolicyProps> = ({
+const CreatePolicyShared: React.FC<CreatePolicySharedProps> = ({
     handleDialogClose,
     dialogOpen,
-    fetchPolicies,
+    stopPropagation,
+    onSave,
+    synapsePolicyDefinitionFile,
+    setSynapsePolicyDefinitionFile,
+    ccPolicyDefinitionFile,
+    setCcPolicyDefinitionFile,
+    saving
 }) => {
     const classes = useStyles();
-    const { api } = useContext<any>(ApiContext);
-    const [saving, setSaving] = useState(false);
-    const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
-    const [ccPolicyDefinitionFile, setCcPolicyDefinitionFile] = useState<any[]>([]);
-
-    const savePolicy = (
-        policySpecContent: CreatePolicySpec,
-        synapsePolicyDefinition: any,
-        ccPolicyDefinition: any,
-    ) => {
-        setSaving(true);
-        const promisedCommonPolicyAdd = API.addOperationPolicy(
-            policySpecContent,
-            api.id,
-            synapsePolicyDefinition,
-            ccPolicyDefinition,
-        );
-        promisedCommonPolicyAdd
-            .then(() => {
-                Alert.info('Policy created successfully!');
-                setSynapsePolicyDefinitionFile([]);
-                setCcPolicyDefinitionFile([]);
-                handleDialogClose();
-                fetchPolicies();
-            })
-            .catch((error) => {
-                handleDialogClose();
-                console.error(error);
-                Alert.error('Something went wrong while creating policy');
-            })
-            .finally(() => {
-                setSaving(false);
-            });
-    };
-
-    const onSave = (policySpecification: CreatePolicySpec) => {
-        const synapseFile = synapsePolicyDefinitionFile.length !== 0 ? synapsePolicyDefinitionFile : null;
-        const ccFile = ccPolicyDefinitionFile.length !== 0 ? ccPolicyDefinitionFile : null;
-        savePolicy(
-            policySpecification,
-            synapseFile,
-            ccFile,
-        );
-        handleDialogClose();
-    };
-
-    const stopPropagation = (
-        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    ) => {
-        e.stopPropagation();
-    };
 
     return (
         <>
@@ -181,6 +138,90 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                 </Box>
             </Dialog>
         </>
+    );
+}
+/** Shared UI Component Ends */
+
+interface CreatePolicyProps {
+    handleDialogClose: () => void;
+    dialogOpen: boolean;
+    fetchPolicies: () => void;
+}
+
+/**
+ * Renders the UI to create a new policy.
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} Policy create UI.
+ */
+const CreatePolicy: React.FC<CreatePolicyProps> = ({
+    handleDialogClose,
+    dialogOpen,
+    fetchPolicies,
+}) => {
+    const { api } = useContext<any>(ApiContext);
+    const [saving, setSaving] = useState(false);
+    const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
+    const [ccPolicyDefinitionFile, setCcPolicyDefinitionFile] = useState<any[]>([]);
+
+    const savePolicy = (
+        policySpecContent: CreatePolicySpec,
+        synapsePolicyDefinition: any,
+        ccPolicyDefinition: any,
+    ) => {
+        setSaving(true);
+        const promisedCommonPolicyAdd = API.addOperationPolicy(
+            policySpecContent,
+            api.id,
+            synapsePolicyDefinition,
+            ccPolicyDefinition,
+        );
+        promisedCommonPolicyAdd
+            .then(() => {
+                Alert.info('Policy created successfully!');
+                setSynapsePolicyDefinitionFile([]);
+                setCcPolicyDefinitionFile([]);
+                handleDialogClose();
+                fetchPolicies();
+            })
+            .catch((error) => {
+                handleDialogClose();
+                console.error(error);
+                Alert.error('Something went wrong while creating policy');
+            })
+            .finally(() => {
+                setSaving(false);
+            });
+    };
+
+    const onSave = (policySpecification: CreatePolicySpec) => {
+        const synapseFile = synapsePolicyDefinitionFile.length !== 0 ? synapsePolicyDefinitionFile : null;
+        const ccFile = ccPolicyDefinitionFile.length !== 0 ? ccPolicyDefinitionFile : null;
+        savePolicy(
+            policySpecification,
+            synapseFile,
+            ccFile,
+        );
+        handleDialogClose();
+    };
+
+    const stopPropagation = (
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    ) => {
+        e.stopPropagation();
+    };
+
+    return (
+        <CreatePolicyShared
+            handleDialogClose={handleDialogClose}
+            dialogOpen={dialogOpen}
+            stopPropagation={stopPropagation}
+            onSave={onSave}
+            synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
+            setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
+            ccPolicyDefinitionFile={ccPolicyDefinitionFile}
+            setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
+            saving={saving}
+        />
     );
 };
 
