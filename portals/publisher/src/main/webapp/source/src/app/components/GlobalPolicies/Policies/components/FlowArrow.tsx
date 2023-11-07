@@ -17,54 +17,7 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import Box from '@material-ui/core/Box';
-
-/** Shared UI Component */
-const useStyles = makeStyles(() => ({
-    arrowColor: {
-        backgroundColor: 'black',
-        opacity: 0.4,
-    },
-    iconSize: {
-        fontSize: '2em',
-        color: 'black',
-        opacity: 0.4,
-    }
-}));
-
-interface FlowArrowSharedProps {
-    arrowDirection: string;
-}
-
-const FlowArrowShared: FC<FlowArrowSharedProps> = ({ arrowDirection }) => {
-    const classes = useStyles();
-
-    return (
-        <>
-            {arrowDirection === 'left'
-                ?  (
-                    <Box display='flex' flexDirection='row' alignItems='center' pl={2} pt={1}>
-                        <Box width='90%' mb={0.5} height={4} className={classes.arrowColor} />
-                        <Box width='10%'>
-                            <ArrowForwardIosIcon className={classes.iconSize} />
-                        </Box>
-                    </Box>
-                ) : (
-                    <Box display='flex' flexDirection='row' alignItems='center' pr={2} pl={3} pt={1}>
-                        <Box width='5%'>
-                            <ArrowBackIosIcon className={classes.iconSize} />
-                        </Box>
-                        <Box width='90%' mb={0.5} height={4} className={classes.arrowColor} />
-                    </Box>
-                )
-            }
-        </>
-    );
-}
-/** Shared UI Component Ends */
+import FlowArrowShared from 'AppComponents/Shared/PoliciesUI/FlowArrow';
 
 interface FlowArrowProps {
     arrowDirection: string;
