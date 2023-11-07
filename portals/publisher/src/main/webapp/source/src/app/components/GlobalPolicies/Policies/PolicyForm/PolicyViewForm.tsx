@@ -29,6 +29,7 @@ import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 import uuidv4 from '../Utils';
 
+/** Shared UI Component */
 const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
@@ -39,27 +40,18 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-interface PolicyViewFormProps {
+interface PolicyViewFormSharedProps {
     policySpec: PolicySpec;
     onDone: () => void;
+    getPolicyAttributes: () => any;
 }
 
-/**
- * Renders the policy view form.
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} Right drawer for policy configuration.
- */
-const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
+const PolicyViewFormShared: FC<PolicyViewFormSharedProps> = ({ 
+    policySpec, 
+    onDone,
+    getPolicyAttributes,
+}) => {
     const classes = useStyles();
-
-    const getPolicyAttributes = () => {
-        const policyAttributeList = policySpec.policyAttributes.map(
-            (attribute: PolicySpecAttribute) => {
-                return { ...attribute, id: uuidv4() };
-            },
-        );
-        return policyAttributeList;
-    };
 
     return (
         <Paper elevation={0} className={classes.root}>
@@ -95,6 +87,36 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                 </Button>
             </Box>
         </Paper>
+    );
+};
+/** Shared UI Component Ends */
+
+interface PolicyViewFormProps {
+    policySpec: PolicySpec;
+    onDone: () => void;
+}
+
+/**
+ * Renders the policy view form.
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} Right drawer for policy configuration.
+ */
+const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
+    const getPolicyAttributes = () => {
+        const policyAttributeList = policySpec.policyAttributes.map(
+            (attribute: PolicySpecAttribute) => {
+                return { ...attribute, id: uuidv4() };
+            },
+        );
+        return policyAttributeList;
+    };
+
+    return (
+        <PolicyViewFormShared
+            policySpec={policySpec}
+            onDone={onDone}
+            getPolicyAttributes={getPolicyAttributes}
+        />
     );
 };
 
