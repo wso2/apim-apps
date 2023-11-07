@@ -37,6 +37,7 @@ import Icon from '@material-ui/core/Icon';
 import { HelpOutline } from '@material-ui/icons';
 import { GATEWAY_TYPE_LABELS } from './SourceDetails';
 
+/** Shared UI Component */
 const useStyles = makeStyles((theme: Theme) => ({
     dropZoneWrapper: {
         border: '1px dashed ' + theme.palette.primary.main,
@@ -73,10 +74,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-interface UploadPolicyDropzoneProps {
+interface UploadPolicyDropzoneSharedProps {
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
     gateway: string;
+    handleDrop: (policyDefinition: any) => void;
 }
 
 /**
@@ -84,16 +86,13 @@ interface UploadPolicyDropzoneProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Policy file upload managing UI.
  */
-const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
+const UploadPolicyDropzoneShared: FC<UploadPolicyDropzoneSharedProps> = ({
     policyDefinitionFile,
     setPolicyDefinitionFile,
     gateway,
+    handleDrop,
 }) => {
     const classes = useStyles();
-
-    const handleDrop = (policyDefinition: any) => {
-        setPolicyDefinitionFile(policyDefinition);
-    };
 
     const renderPolicyFileDropzone = () => {
         return (
@@ -201,6 +200,38 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                 )}
             </Box>
         </>
+    );
+};
+/** Shared UI Component ends */
+
+interface UploadPolicyDropzoneProps {
+    policyDefinitionFile: any[];
+    setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
+    gateway: string;
+}
+
+/**
+ * Handles the policy file upload.
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} Policy file upload managing UI.
+ */
+const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
+    policyDefinitionFile,
+    setPolicyDefinitionFile,
+    gateway,
+}) => {
+
+    const handleDrop = (policyDefinition: any) => {
+        setPolicyDefinitionFile(policyDefinition);
+    };
+
+    return (
+        <UploadPolicyDropzoneShared 
+            policyDefinitionFile={policyDefinitionFile}
+            setPolicyDefinitionFile={setPolicyDefinitionFile}
+            gateway={gateway}
+            handleDrop={handleDrop}
+        />
     );
 };
 
