@@ -36,6 +36,7 @@ import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { ACTIONS } from './PolicyCreateForm';
 import UploadPolicyDropzone from './UploadPolicyDropzone';
 
+/** Shared UI Component */
 const useStyles = makeStyles((theme: Theme) => ({
     mandatoryStar: {
         color: theme.palette.error.main,
@@ -52,16 +53,16 @@ export const GATEWAY_TYPE_LABELS = {
     CC: 'Choreo Connect'
 }
 
-interface SourceDetailsProps {
+interface SourceDetailsSharedProps {
     supportedGateways: string[];
     synapsePolicyDefinitionFile?: any[];
     setSynapsePolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
     ccPolicyDefinitionFile?: any[];
     setCcPolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
-    dispatch?: React.Dispatch<any>;
     isViewMode?: boolean;
-    policyId?: string;
-    isAPISpecific?: boolean;
+    handlePolicyDownload?: () => void;
+    supportedGatewaysError: any;
+    handleChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 /**
@@ -69,83 +70,18 @@ interface SourceDetailsProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} General details of the policy.
  */
-const SourceDetails: FC<SourceDetailsProps> = ({
+const SourceDetailsShared: FC<SourceDetailsSharedProps> = ({
     supportedGateways,
     synapsePolicyDefinitionFile,
     setSynapsePolicyDefinitionFile,
     ccPolicyDefinitionFile,
     setCcPolicyDefinitionFile,
-    dispatch,
     isViewMode,
-    policyId,
-    isAPISpecific,
+    handlePolicyDownload,
+    supportedGatewaysError,
+    handleChange,
 }) => {
     const classes = useStyles();
-    const { api } = useContext<any>(ApiContext);
-
-    // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
-    // True if none of the available gateways are selected.
-    const supportedGatewaysError = supportedGateways.length === 0;
-
-    /**
-     * Function to handle supported gateways related checkbox changes
-     * @param {React.ChangeEvent<HTMLInputElement>} event event
-     */
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (dispatch) {
-            dispatch({
-                type: ACTIONS.UPDATE_SUPPORTED_GATEWAYS,
-                name:
-                    event.target.name === 'regularGateway'
-                        ? CONSTS.GATEWAY_TYPE.synapse
-                        : CONSTS.GATEWAY_TYPE.choreoConnect,
-                checked: event.target.checked,
-            });
-        }
-    };
-
-    /**
-     * Hanlde policy download
-     */
-    const handlePolicyDownload = () => {
-        if (policyId) {
-            if (isAPISpecific) {
-                const apiPolicyContentPromise = API.getOperationPolicyContent(
-                    policyId,
-                    api.id,
-                );
-                apiPolicyContentPromise
-                    .then((apiPolicyResponse) => {
-                        Utils.forceDownload(apiPolicyResponse);
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        Alert.error(
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error'
-                                defaultMessage='Something went wrong while downloading the policy'
-                            />,
-                        );
-                    });
-            } else {
-                const commonPolicyContentPromise =
-                    API.getCommonOperationPolicyContent(policyId);
-                commonPolicyContentPromise
-                    .then((commonPolicyResponse) => {
-                        Utils.forceDownload(commonPolicyResponse);
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        Alert.error(
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error'
-                                defaultMessage='Something went wrong while downloading the policy'
-                            />,
-                        );
-                    });
-            }
-        }
-    };
 
     /**
      * Renders the policy file upload related section
@@ -221,7 +157,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
         );
     }
 
-    return (
+    return (   
         <Box display='flex' flexDirection='row' mt={1} data-testid='gateway-details-panel'>
             <Box width='40%' pt={3} mb={2}>
                 <Box width='90%'>
@@ -333,6 +269,116 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                 {isViewMode && renderPolicyDownload()}
             </Box>
         </Box>
+    );
+};
+/** Shared UI Component Ends */
+
+interface SourceDetailsProps {
+    supportedGateways: string[];
+    synapsePolicyDefinitionFile?: any[];
+    setSynapsePolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
+    ccPolicyDefinitionFile?: any[];
+    setCcPolicyDefinitionFile?: React.Dispatch<React.SetStateAction<any[]>>;
+    dispatch?: React.Dispatch<any>;
+    isViewMode?: boolean;
+    policyId?: string;
+    isAPISpecific?: boolean;
+}
+
+/**
+ * Renders the general details section.
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} General details of the policy.
+ */
+const SourceDetails: FC<SourceDetailsProps> = ({
+    supportedGateways,
+    synapsePolicyDefinitionFile,
+    setSynapsePolicyDefinitionFile,
+    ccPolicyDefinitionFile,
+    setCcPolicyDefinitionFile,
+    dispatch,
+    isViewMode,
+    policyId,
+    isAPISpecific,
+}) => {
+    const { api } = useContext<any>(ApiContext);
+
+    // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
+    // True if none of the available gateways are selected.
+    const supportedGatewaysError = supportedGateways.length === 0;
+
+    /**
+     * Function to handle supported gateways related checkbox changes
+     * @param {React.ChangeEvent<HTMLInputElement>} event event
+     */
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_SUPPORTED_GATEWAYS,
+                name:
+                    event.target.name === 'regularGateway'
+                        ? CONSTS.GATEWAY_TYPE.synapse
+                        : CONSTS.GATEWAY_TYPE.choreoConnect,
+                checked: event.target.checked,
+            });
+        }
+    };
+
+    /**
+     * Hanlde policy download
+     */
+    const handlePolicyDownload = () => {
+        if (policyId) {
+            if (isAPISpecific) {
+                const apiPolicyContentPromise = API.getOperationPolicyContent(
+                    policyId,
+                    api.id,
+                );
+                apiPolicyContentPromise
+                    .then((apiPolicyResponse) => {
+                        Utils.forceDownload(apiPolicyResponse);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.apiSpecificPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
+                    });
+            } else {
+                const commonPolicyContentPromise =
+                    API.getCommonOperationPolicyContent(policyId);
+                commonPolicyContentPromise
+                    .then((commonPolicyResponse) => {
+                        Utils.forceDownload(commonPolicyResponse);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        Alert.error(
+                            <FormattedMessage
+                                id='Apis.Details.Policies.PolicyForm.SourceDetails.commonPolicy.download.error'
+                                defaultMessage='Something went wrong while downloading the policy'
+                            />,
+                        );
+                    });
+            }
+        }
+    };
+
+    return(
+        <SourceDetailsShared
+            supportedGateways={supportedGateways}
+            synapsePolicyDefinitionFile={synapsePolicyDefinitionFile}
+            setSynapsePolicyDefinitionFile={setSynapsePolicyDefinitionFile}
+            ccPolicyDefinitionFile={ccPolicyDefinitionFile}
+            setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
+            isViewMode={isViewMode}
+            handlePolicyDownload={handlePolicyDownload}
+            supportedGatewaysError={supportedGatewaysError}
+            handleChange={handleChange}
+        />
     );
 };
 
