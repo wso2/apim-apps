@@ -397,10 +397,17 @@ const Policies: FC<PolicyProps> =  ({
                             </Link>
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h2'>
-                                <FormattedMessage
-                                    id='globalPolicies.create.edit.heading'
-                                    defaultMessage={isCreateNew ? 'Create A New Global Policy' : 'Edit Global Policy'}
-                                />
+                                {isCreateNew ? 
+                                    <FormattedMessage
+                                        id='globalPolicies.create.create.heading'
+                                        defaultMessage='Create A New Global Policy'
+                                    />
+                                    : 
+                                    <FormattedMessage
+                                        id='globalPolicies.create.edit.heading'
+                                        defaultMessage='Edit Global Policy'
+                                    />
+                                }
                             </Typography>
                         </div>
                     </Grid>
@@ -469,10 +476,17 @@ const Policies: FC<PolicyProps> =  ({
                         color='primary'
                         onClick={() => isCreateNew? save() : update()}
                     >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.SaveOperationPolicies.save.update'
-                            defaultMessage={isCreateNew ? 'Save' : 'Update'}
-                        />
+                        {isCreateNew ? 
+                            <FormattedMessage
+                                id='Apis.Details.Policies.SaveOperationPolicies.save'
+                                defaultMessage='Save'
+                            />
+                            :
+                            <FormattedMessage
+                                id='Apis.Details.Policies.SaveOperationPolicies.update'
+                                defaultMessage='Update'
+                            />
+                        }
                     </Button> 
                 </Box>
             </Box>

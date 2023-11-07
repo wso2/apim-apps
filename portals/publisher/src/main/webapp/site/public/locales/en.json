@@ -6071,6 +6071,12 @@
       "value": "Save"
     }
   ],
+  "Apis.Details.Policies.SaveOperationPolicies.update": [
+    {
+      "type": 0,
+      "value": "Update"
+    }
+  ],
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": [
     {
       "type": 0,
@@ -8777,12 +8783,6 @@
       "value": "Error while validating the imported schema"
     }
   ],
-  "GlobalPolicies.Edit.EditGlobalPolicy": [
-    {
-      "type": 0,
-      "value": "Hi, I am the GlobalPolicies.Edit.EditGlobalPolicy component!"
-    }
-  ],
   "GlobalPolicies.Listing.onboarding.create.new": [
     {
       "type": 0,
@@ -9749,10 +9749,16 @@
       "value": "The server encountered an internal error or misconfiguration and was unable to complete your request."
     }
   ],
-  "globalPolicies.create.heading": [
+  "globalPolicies.create.create.heading": [
     {
       "type": 0,
       "value": "Create A New Global Policy"
+    }
+  ],
+  "globalPolicies.create.edit.heading": [
+    {
+      "type": 0,
+      "value": "Edit Global Policy"
     }
   ],
   "globalPolicies.heading": [
