@@ -92,3 +92,26 @@ export type ApiLevelPolicy = {
     response?: any[];
     fault?: any[];
 };
+
+export type PolicyAttribute = {
+    id: string;
+    name: string;
+    displayName: string;
+    version: string;
+    description: string;
+    required: boolean;
+    type: string;
+    validationRegex: string;
+    defaultValue: any;
+    allowedValues: string[];
+};
+
+export type NewPolicyState = {
+    displayName: string | null;
+    version: string | null;
+    description: string;
+    applicableFlows: string[];
+    supportedGateways: string[];
+    supportedApiTypes: string[];
+    policyAttributes: any;
+};
