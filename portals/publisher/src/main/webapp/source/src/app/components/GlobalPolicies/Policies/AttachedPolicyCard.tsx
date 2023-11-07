@@ -35,6 +35,7 @@ import type { AttachedPolicy, PolicySpec } from './Types';
 import PolicyConfigurationEditDrawer from './UIComponents/PolicyConfigurationEditDrawer';
 import ApiOperationContext from './ApiOperationContext';
 
+/** Shared UI Component */
 const useStyles = makeStyles(() => ({
     actionsBox: {
         display: 'flex',
@@ -42,6 +43,133 @@ const useStyles = makeStyles(() => ({
         marginTop: '1em',
     },
 }));
+
+interface AttachedPolicyCardSharedProps {
+    policyObj: AttachedPolicy;
+    currentFlow: string;
+    verb: string;
+    target: string;
+    allPolicies: PolicySpec[] | null;
+    isAPILevelPolicy: boolean;
+    drawerOpen: any;
+    handleDrawerOpen: () => void;
+    handlePolicyDownload: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    handleDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    setDrawerOpen: React.Dispatch<React.SetStateAction<any>>;
+}
+
+/**
+ * Renders a single sortable policy card.
+ * @param {any} AttachedPolicyCardProps Input props from parent components.
+ * @returns {TSX} Sortable attached policy card UI.
+ */
+const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
+    policyObj,
+    currentFlow,
+    verb,
+    target,
+    allPolicies,
+    isAPILevelPolicy,
+    drawerOpen,
+    handleDrawerOpen,
+    handlePolicyDownload,
+    handleDelete,
+    setDrawerOpen
+}) => {
+    const classes = useStyles();
+    const policyColor = Utils.stringToColor(policyObj.displayName);
+    const policyBackgroundColor = drawerOpen
+        ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)`
+        : 'rgba(0, 0, 0, 0)';
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: policyObj.uniqueKey.toString() });
+    
+    const style: CSSProperties = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        border: '2px solid',
+        height: '90%',
+        cursor: 'move',
+        borderRadius: '0.3em',
+        padding: '0.2em',
+        borderColor: policyColor,
+        marginLeft: '0.2em',
+        marginRight: '0.2em',
+        backgroundColor: policyBackgroundColor,
+        opacity: isDragging ? 0.5 : 1,
+    };
+    return (
+        <>
+            <div
+                ref={setNodeRef}
+                style={style}
+                {...attributes}
+                {...listeners}
+                onClick={handleDrawerOpen}
+                onKeyDown={handleDrawerOpen}
+            >
+                <Tooltip
+                    key={policyObj.id}
+                    title={`${policyObj.displayName} : ${policyObj.version}`}
+                    placement='top'
+                >
+                    <Avatar
+                        style={{
+                            margin: '0.2em',
+                            backgroundColor: policyColor,
+                        }}
+                    >
+                        {Utils.stringAvatar(
+                            policyObj.displayName.toUpperCase(),
+                        )}
+                    </Avatar>
+                </Tooltip>
+                <Box className={classes.actionsBox}>
+                    <IconButton
+                        key={`${policyObj.id}-download`}
+                        aria-label='Download policy'
+                        size='small'
+                        onClick={handlePolicyDownload}
+                        disableFocusRipple
+                        disableRipple
+                        disabled={policyObj.id === ''} // Disabling policy download for migrated policy
+                    >
+                        <CloudDownloadIcon />
+                    </IconButton>
+                    <IconButton
+                        key={`${policyObj.id}-delete`}
+                        aria-label='delete attached policy'
+                        size='small'
+                        onClick={handleDelete}
+                        disableFocusRipple
+                        disableRipple
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Box>
+            </div>
+            {drawerOpen && (
+                <PolicyConfigurationEditDrawer
+                    policyObj={policyObj}
+                    drawerOpen={drawerOpen}
+                    setDrawerOpen={setDrawerOpen}
+                    currentFlow={currentFlow}
+                    target={target}
+                    verb={verb}
+                    allPolicies={allPolicies}
+                    isAPILevelPolicy={isAPILevelPolicy}
+                />
+            )}
+        </>
+    );
+}
+/** Shared UI Component ends */
 
 interface AttachedPolicyCardProps {
     policyObj: AttachedPolicy;
@@ -69,36 +197,11 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     allPolicies,
     isAPILevelPolicy,
 }) => {
-    const classes = useStyles();
+    
     const { api } = useContext<any>(ApiContext);
     const { deleteApiOperation } = useContext<any>(ApiOperationContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const policyColor = Utils.stringToColor(policyObj.displayName);
-    const policyBackgroundColor = drawerOpen
-        ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)`
-        : 'rgba(0, 0, 0, 0)';
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-    } = useSortable({ id: policyObj.uniqueKey.toString() });
-    const style: CSSProperties = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        border: '2px solid',
-        height: '90%',
-        cursor: 'move',
-        borderRadius: '0.3em',
-        padding: '0.2em',
-        borderColor: policyColor,
-        marginLeft: '0.2em',
-        marginRight: '0.2em',
-        backgroundColor: policyBackgroundColor,
-        opacity: isDragging ? 0.5 : 1,
-    };
+    
 
     /**
      * Handle policy delete
@@ -176,68 +279,19 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     };
 
     return (
-        <>
-            <div
-                ref={setNodeRef}
-                style={style}
-                {...attributes}
-                {...listeners}
-                onClick={handleDrawerOpen}
-                onKeyDown={handleDrawerOpen}
-            >
-                <Tooltip
-                    key={policyObj.id}
-                    title={`${policyObj.displayName} : ${policyObj.version}`}
-                    placement='top'
-                >
-                    <Avatar
-                        style={{
-                            margin: '0.2em',
-                            backgroundColor: policyColor,
-                        }}
-                    >
-                        {Utils.stringAvatar(
-                            policyObj.displayName.toUpperCase(),
-                        )}
-                    </Avatar>
-                </Tooltip>
-                <Box className={classes.actionsBox}>
-                    <IconButton
-                        key={`${policyObj.id}-download`}
-                        aria-label='Download policy'
-                        size='small'
-                        onClick={handlePolicyDownload}
-                        disableFocusRipple
-                        disableRipple
-                        disabled={policyObj.id === ''} // Disabling policy download for migrated policy
-                    >
-                        <CloudDownloadIcon />
-                    </IconButton>
-                    <IconButton
-                        key={`${policyObj.id}-delete`}
-                        aria-label='delete attached policy'
-                        size='small'
-                        onClick={handleDelete}
-                        disableFocusRipple
-                        disableRipple
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                </Box>
-            </div>
-            {drawerOpen && (
-                <PolicyConfigurationEditDrawer
-                    policyObj={policyObj}
-                    drawerOpen={drawerOpen}
-                    setDrawerOpen={setDrawerOpen}
-                    currentFlow={currentFlow}
-                    target={target}
-                    verb={verb}
-                    allPolicies={allPolicies}
-                    isAPILevelPolicy={isAPILevelPolicy}
-                />
-            )}
-        </>
+        <AttachedPolicyCardShared
+            policyObj={policyObj}
+            currentFlow={currentFlow}
+            verb={verb}
+            target={target}
+            allPolicies={allPolicies}
+            isAPILevelPolicy={isAPILevelPolicy}
+            drawerOpen={drawerOpen}
+            handleDrawerOpen={handleDrawerOpen}
+            handlePolicyDownload={handlePolicyDownload}
+            handleDelete={handleDelete}
+            setDrawerOpen={setDrawerOpen}
+        />
     );
 };
 
