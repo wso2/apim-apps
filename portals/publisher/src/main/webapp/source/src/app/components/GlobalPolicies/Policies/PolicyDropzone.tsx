@@ -26,6 +26,7 @@ import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './UIComponents/AttachedPolicyList';
 import PolicyConfiguringDrawer from './UIComponents/PolicyConfiguringDrawer';
 
+/** Shared UI Component */
 const useStyles = makeStyles((theme: Theme) => ({
     dropzoneDiv: {
         border: '1px dashed',
@@ -60,47 +61,38 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-interface PolicyDropzoneProps {
+interface PolicyDropzoneSharedProps {
     policyDisplayStartDirection: string;
     currentPolicyList: AttachedPolicy[];
     setCurrentPolicyList: React.Dispatch<
         React.SetStateAction<AttachedPolicy[]>
     >;
-    droppablePolicyList: string[];
     currentFlow: string;
     target: string;
     verb: string;
     allPolicies: PolicySpec[] | null;
     isAPILevelPolicy: boolean;
+    drop: any;
+    canDrop: any;
+    droppedPolicy: Policy | null;
+    setDroppedPolicy: any;
 }
 
-/**
- * Renders the dropzone which accepts policy cards that are dragged and dropped.
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} List of policies local to the API segment.
- */
-const PolicyDropzone: FC<PolicyDropzoneProps> = ({
+const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
     policyDisplayStartDirection,
     currentPolicyList,
     setCurrentPolicyList,
-    droppablePolicyList,
     currentFlow,
     target,
     verb,
     allPolicies,
     isAPILevelPolicy,
+    drop,
+    canDrop,
+    droppedPolicy,
+    setDroppedPolicy
 }) => {
     const classes = useStyles();
-    const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
-
-    const [{ canDrop }, drop] = useDrop({
-        accept: droppablePolicyList,
-        drop: (item: any) => setDroppedPolicy(item.droppedPolicy),
-        collect: (monitor) => ({
-            canDrop: monitor.canDrop(),
-        }),
-    });
-
     return (
         <>
             <Grid container>
@@ -148,6 +140,65 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                 />
             )}
         </>
+    );
+}
+/** Shared UI Component ends */
+
+interface PolicyDropzoneProps {
+    policyDisplayStartDirection: string;
+    currentPolicyList: AttachedPolicy[];
+    setCurrentPolicyList: React.Dispatch<
+        React.SetStateAction<AttachedPolicy[]>
+    >;
+    droppablePolicyList: string[];
+    currentFlow: string;
+    target: string;
+    verb: string;
+    allPolicies: PolicySpec[] | null;
+    isAPILevelPolicy: boolean;
+}
+
+/**
+ * Renders the dropzone which accepts policy cards that are dragged and dropped.
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} List of policies local to the API segment.
+ */
+const PolicyDropzone: FC<PolicyDropzoneProps> = ({
+    policyDisplayStartDirection,
+    currentPolicyList,
+    setCurrentPolicyList,
+    droppablePolicyList,
+    currentFlow,
+    target,
+    verb,
+    allPolicies,
+    isAPILevelPolicy,
+}) => {
+    const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
+
+    const [{ canDrop }, drop] = useDrop({
+        accept: droppablePolicyList,
+        drop: (item: any) => setDroppedPolicy(item.droppedPolicy),
+        collect: (monitor) => ({
+            canDrop: monitor.canDrop(),
+        }),
+    });
+
+    return (
+        <PolicyDropzoneShared
+            policyDisplayStartDirection={policyDisplayStartDirection}
+            currentPolicyList={currentPolicyList}
+            setCurrentPolicyList={setCurrentPolicyList}
+            currentFlow={currentFlow}
+            target={target}
+            verb={verb}
+            allPolicies={allPolicies}
+            isAPILevelPolicy={isAPILevelPolicy}
+            drop={drop}
+            canDrop={canDrop}
+            droppedPolicy={droppedPolicy}
+            setDroppedPolicy={setDroppedPolicy}
+        />
     );
 };
 
