@@ -49,12 +49,12 @@ interface GeneralDetailsSharedProps {
     applicableFlows: string[];
     supportedApiTypes: string[];
     isViewMode: boolean;
-    nameError: boolean;
-    versionError: boolean;
+    nameError: any;
+    versionError: any;
     handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    applicableFlowsError: boolean;
+    applicableFlowsError: any;
     handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    supportedApiTypesError: boolean;
+    supportedApiTypesError: any;
     handleApiTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
