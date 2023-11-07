@@ -31,6 +31,74 @@ import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import type { Policy, PolicySpec } from './Types';
 import PolicyViewForm from './PolicyForm/PolicyViewForm';
 
+/** Shared UI Component */
+interface ViewPolicySharedProps {
+    handleDialogClose: () => void;
+    dialogOpen: boolean;
+    policyObj: Policy;
+    isLocalToAPI: boolean;
+    stopPropagation: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    toggleOpen: () => void;
+    policySpec: PolicySpec;
+}
+
+const ViewPolicyShared: React.FC<ViewPolicySharedProps> = ({
+    handleDialogClose,
+    dialogOpen,
+    policyObj,
+    stopPropagation,
+    toggleOpen,
+    policySpec,
+}) => {
+    return (
+        <>
+            <Dialog
+                maxWidth='md'
+                open={dialogOpen}
+                aria-labelledby='form-dialog-title'
+                onClose={handleDialogClose}
+                onClick={stopPropagation}
+                fullWidth
+            >
+                <Box
+                    display='flex'
+                    justifyContent='space-between'
+                    alignItems='center'
+                    flexDirection='row'
+                    px={3}
+                    pt={3}
+                >
+                    <Box display='flex'>
+                        <Typography variant='h4' component='h2'>
+                            {policyObj.displayName}
+                        </Typography>
+                    </Box>
+                    <Box display='flex'>
+                        <IconButton
+                            color='inherit'
+                            onClick={toggleOpen}
+                            aria-label='Close'
+                        >
+                            <Icon>close</Icon>
+                        </IconButton>
+                    </Box>
+                </Box>
+                <DialogContent>
+                    <Box my={2}>
+                        <DialogContentText>
+                            <PolicyViewForm
+                                policySpec={policySpec}
+                                onDone={toggleOpen}
+                            />
+                        </DialogContentText>
+                    </Box>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+};
+/** Shared UI Component ends */
+
 interface ViewPolicyProps {
     handleDialogClose: () => void;
     dialogOpen: boolean;
@@ -116,50 +184,15 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
     }
 
     return (
-        <>
-            <Dialog
-                maxWidth='md'
-                open={dialogOpen}
-                aria-labelledby='form-dialog-title'
-                onClose={handleDialogClose}
-                onClick={stopPropagation}
-                fullWidth
-            >
-                <Box
-                    display='flex'
-                    justifyContent='space-between'
-                    alignItems='center'
-                    flexDirection='row'
-                    px={3}
-                    pt={3}
-                >
-                    <Box display='flex'>
-                        <Typography variant='h4' component='h2'>
-                            {policyObj.displayName}
-                        </Typography>
-                    </Box>
-                    <Box display='flex'>
-                        <IconButton
-                            color='inherit'
-                            onClick={toggleOpen}
-                            aria-label='Close'
-                        >
-                            <Icon>close</Icon>
-                        </IconButton>
-                    </Box>
-                </Box>
-                <DialogContent>
-                    <Box my={2}>
-                        <DialogContentText>
-                            <PolicyViewForm
-                                policySpec={policySpec}
-                                onDone={toggleOpen}
-                            />
-                        </DialogContentText>
-                    </Box>
-                </DialogContent>
-            </Dialog>
-        </>
+        <ViewPolicyShared
+            handleDialogClose={handleDialogClose}
+            dialogOpen={dialogOpen}
+            policyObj={policyObj}
+            isLocalToAPI={isLocalToAPI}
+            stopPropagation={stopPropagation}
+            toggleOpen={toggleOpen}
+            policySpec={policySpec}
+        />
     );
 };
 
