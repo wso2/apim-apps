@@ -16,53 +16,10 @@
  * under the License.
  */
 
-import { Box } from '@material-ui/core';
 import React, { FC } from 'react';
-import DraggablePolicyCard from '../DraggablePolicyCard';
+import TabPanelShared from 'AppComponents/Shared/PoliciesUI/TabPanel';
 import type { Policy } from '../Types';
-
-/** Shared UI Component */
-interface TabPanelSharedProps {
-    children?: React.ReactNode;
-    currentFlow: string;
-    index: number;
-    policyList: Policy[];
-    selectedTab: number;
-    fetchPolicies: () => void;
-}
-
-const TabPanelShared: FC<TabPanelSharedProps> = ({
-    selectedTab,
-    index,
-    currentFlow,
-    policyList,
-    fetchPolicies,
-}) => {
-    return (
-        <div
-            role='tabpanel'
-            hidden={selectedTab !== index}
-            id={`${currentFlow}-tabpanel`}
-            aria-labelledby={`${currentFlow}-tab`}
-        >
-            <Box py={1} px={3}>
-                {selectedTab === index &&
-                    policyList?.map((singlePolicy: Policy) => {
-                        return (
-                            <DraggablePolicyCard
-                                key={singlePolicy.id}
-                                policyObj={singlePolicy}
-                                showCopyIcon
-                                isLocalToAPI={singlePolicy.isAPISpecific}
-                                fetchPolicies={fetchPolicies}
-                            />
-                        );
-                    })}
-            </Box>
-        </div>
-    );
-}
-/** Shared UI Component Ends */
+import DraggablePolicyCard from '../DraggablePolicyCard';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -94,6 +51,7 @@ const TabPanel: FC<TabPanelProps> = ({
             currentFlow={currentFlow}
             policyList={policyList}
             fetchPolicies={fetchPolicies}
+            DraggablePolicyCard={DraggablePolicyCard}
         />
     );
 };
