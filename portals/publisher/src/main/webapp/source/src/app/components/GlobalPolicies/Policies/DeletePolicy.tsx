@@ -31,51 +31,24 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 
-interface DeletePolicyProps {
+/** Shared UI Component */
+interface DeletePolicySharedProps {
     policyId: string;
     policyName: string;
-    fetchPolicies: () => void;
+    toggleOpen: () => void;
+    handleClose: () => void;
+    open: boolean;
+    handleDelete: () => void;
 }
 
-/**
- * Renders the policy configuring drawer.
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} Right drawer for policy configuration.
- */
-const DeletePolicy: FC<DeletePolicyProps> = ({
+const DeletePolicyShared: FC<DeletePolicySharedProps> = ({
     policyId,
     policyName,
-    fetchPolicies,
+    toggleOpen,
+    handleClose,
+    open,
+    handleDelete
 }) => {
-    const { api } = useContext<any>(ApiContext);
-    const [open, setOpen] = useState(false);
-    const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
-    const toggleOpen = () => {
-        setOpen(!open);
-    };
-
-    const handleDelete = () => {
-        const promisedCommonPolicyDelete = API.deleteOperationPolicy(
-            api.id,
-            policyId,
-        );
-        promisedCommonPolicyDelete
-            .then(() => {
-                Alert.info(`${policyName} policy deleted successfully!`);
-                setOpenLocal(!open);
-                fetchPolicies();
-            })
-            .catch((error) => {
-                console.error(error);
-                Alert.error('Error occurred while deleteting policy');
-                setOpenLocal(!open);
-            });
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
     return (
         <>
             <Tooltip
@@ -142,6 +115,64 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 </DialogActions>
             </Dialog>
         </>
+    );
+}
+/** Shared UI Component ends */
+
+interface DeletePolicyProps {
+    policyId: string;
+    policyName: string;
+    fetchPolicies: () => void;
+}
+
+/**
+ * Renders the policy configuring drawer.
+ * @param {JSON} props Input props from parent components.
+ * @returns {TSX} Right drawer for policy configuration.
+ */
+const DeletePolicy: FC<DeletePolicyProps> = ({
+    policyId,
+    policyName,
+    fetchPolicies,
+}) => {
+    const { api } = useContext<any>(ApiContext);
+    const [open, setOpen] = useState(false);
+    const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
+    const toggleOpen = () => {
+        setOpen(!open);
+    };
+
+    const handleDelete = () => {
+        const promisedCommonPolicyDelete = API.deleteOperationPolicy(
+            api.id,
+            policyId,
+        );
+        promisedCommonPolicyDelete
+            .then(() => {
+                Alert.info(`${policyName} policy deleted successfully!`);
+                setOpenLocal(!open);
+                fetchPolicies();
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error('Error occurred while deleteting policy');
+                setOpenLocal(!open);
+            });
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    return (
+        <DeletePolicyShared
+            policyId={policyId}
+            policyName={policyName}
+            toggleOpen={toggleOpen}
+            handleClose={handleClose}
+            open={open}
+            handleDelete={handleDelete}
+        />
     );
 };
 
