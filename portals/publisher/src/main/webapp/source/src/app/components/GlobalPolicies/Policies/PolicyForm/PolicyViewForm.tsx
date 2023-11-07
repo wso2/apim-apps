@@ -17,79 +17,12 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import { FormattedMessage } from 'react-intl';
+import PolicyViewFormShared from 'AppComponents/Shared/PoliciesUI/PolicyViewForm';
 import type { PolicySpec, PolicySpecAttribute } from '../Types';
 import PolicyAttributes from './PolicyAttributes';
 import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 import uuidv4 from '../Utils';
-
-/** Shared UI Component */
-const useStyles = makeStyles(() => ({
-    root: {
-        flexGrow: 1,
-        marginTop: 10,
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 20,
-    },
-}));
-
-interface PolicyViewFormSharedProps {
-    policySpec: PolicySpec;
-    onDone: () => void;
-    getPolicyAttributes: () => any;
-}
-
-const PolicyViewFormShared: FC<PolicyViewFormSharedProps> = ({ 
-    policySpec, 
-    onDone,
-    getPolicyAttributes,
-}) => {
-    const classes = useStyles();
-
-    return (
-        <Paper elevation={0} className={classes.root}>
-            {/* General details of policy */}
-            <GeneralDetails
-                displayName={policySpec.displayName}
-                version={policySpec.version}
-                description={policySpec.description}
-                applicableFlows={policySpec.applicableFlows}
-                supportedApiTypes={policySpec.supportedApiTypes}
-                isViewMode
-            />
-            <Divider light />
-            {/* Gateway specific details of policy */}
-            <SourceDetails
-                supportedGateways={policySpec.supportedGateways}
-                isViewMode
-                policyId={policySpec.id}
-                isAPISpecific={policySpec.isAPISpecific}
-            />
-            <Divider light />
-            {/* Attributes of policy */}
-            <PolicyAttributes
-                policyAttributes={getPolicyAttributes()}
-                isViewMode
-            />
-            <Box>
-                <Button variant='contained' color='primary' data-testid='done-view-policy-file' onClick={onDone}>
-                    <FormattedMessage
-                        id='Apis.Details.Policies.PolicyForm.PolicyViewForm.done'
-                        defaultMessage='Done'
-                    />
-                </Button>
-            </Box>
-        </Paper>
-    );
-};
-/** Shared UI Component Ends */
 
 interface PolicyViewFormProps {
     policySpec: PolicySpec;
@@ -116,6 +49,9 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
             policySpec={policySpec}
             onDone={onDone}
             getPolicyAttributes={getPolicyAttributes}
+            PolicyAttributes={PolicyAttributes}
+            GeneralDetails={GeneralDetails}
+            SourceDetails={SourceDetails}
         />
     );
 };
