@@ -36,7 +36,7 @@ import API from 'AppData/api';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import General from './General';
 import type { PolicySpec, ApiPolicy, AttachedPolicy } from '../Types';
-import ApiOperationContext from '../ApiOperationContext';
+import GlobalPolicyContext from '../GlobalPolicyContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
@@ -78,8 +78,8 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
-    const { apiOperations } = useContext<any>(ApiOperationContext);
-    const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
+    const { apiOperations } = useContext<any>(GlobalPolicyContext);
+    const { apiLevelPolicies } = useContext<any>(GlobalPolicyContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {

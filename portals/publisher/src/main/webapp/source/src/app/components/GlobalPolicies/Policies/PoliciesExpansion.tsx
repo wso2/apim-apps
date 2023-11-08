@@ -21,7 +21,7 @@ import PoliciesExpansionShared from 'AppComponents/Shared/PoliciesUI/PoliciesExp
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import FlowArrow from './Components/FlowArrow';
-import ApiOperationContext from './ApiOperationContext';
+import GlobalPolicyContext from './GlobalPolicyContext';
 
 const defaultPolicyForMigration = {
     id: '',
@@ -64,7 +64,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
-    const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
+    const { apiLevelPolicies } = useContext<any>(GlobalPolicyContext);
 
     useEffect(() => {
         const requestList = [];

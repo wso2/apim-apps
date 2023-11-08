@@ -35,7 +35,7 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
-import ApiOperationContext from "../ApiOperationContext";
+import GlobalPolicyContext from "../GlobalPolicyContext";
 
 const useStyles = makeStyles(theme => ({
     resetBtn: {
@@ -85,7 +85,7 @@ const General: FC<GeneralProps> = ({
     const classes = useStyles();
     const [saving, setSaving] = useState(false);
     const initState: any = {};
-    const { updateApiOperations } = useContext<any>(ApiOperationContext);
+    const { updateApiOperations } = useContext<any>(GlobalPolicyContext);
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
 

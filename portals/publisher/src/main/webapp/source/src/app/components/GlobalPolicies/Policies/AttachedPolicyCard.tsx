@@ -25,7 +25,7 @@ import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import AttachedPolicyCardShared from 'AppComponents/Shared/PoliciesUI/AttachedPolicyCard';
 import type { AttachedPolicy, PolicySpec } from './Types';
 import PolicyConfigurationEditDrawer from './GlobalComponents/PolicyConfigurationEditDrawer';
-import ApiOperationContext from './ApiOperationContext';
+import GlobalPolicyContext from './GlobalPolicyContext';
 
 interface AttachedPolicyCardProps {
     policyObj: AttachedPolicy;
@@ -55,7 +55,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 }) => {
     
     const { api } = useContext<any>(ApiContext);
-    const { deleteApiOperation } = useContext<any>(ApiOperationContext);
+    const { deleteApiOperation } = useContext<any>(GlobalPolicyContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
     
 

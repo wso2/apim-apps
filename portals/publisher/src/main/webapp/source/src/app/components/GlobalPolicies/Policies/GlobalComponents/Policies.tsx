@@ -35,7 +35,7 @@ import { useHistory, Link } from 'react-router-dom';
 import PolicyList from './PolicyList';
 import type { Policy, PolicySpec, ApiLevelPolicy } from '../Types';
 import GatewaySelector from './GatewaySelector';
-import { ApiOperationContextProvider } from '../ApiOperationContext';
+import { GlobalPolicyContextProvider } from '../GlobalPolicyContext';
 import PolicyPanel from './PolicyPanel';
 import { uuidv4 } from '../Utils';
 
@@ -354,7 +354,7 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     /**
-     * To memoize the value passed into ApiOperationContextProvider
+     * To memoize the value passed into GlobalPolicyContextProvider
      */
     const providerValue = useMemo(
         () => ({
@@ -382,7 +382,7 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     return (
-        <ApiOperationContextProvider value={providerValue}>
+        <GlobalPolicyContextProvider value={providerValue}>
             <Box mt={3} mb={3} ml={5} mr={5}>   
                 <DndProvider backend={HTML5Backend}>
                     <Grid item md={12}>
@@ -490,7 +490,7 @@ const Policies: FC<PolicyProps> =  ({
                     </Button> 
                 </Box>
             </Box>
-        </ApiOperationContextProvider>
+        </GlobalPolicyContextProvider>
     );
 };
 

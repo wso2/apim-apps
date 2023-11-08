@@ -27,7 +27,7 @@ import AttachedPolicyListShared from 'AppComponents/Shared/PoliciesUI/AttachedPo
 import AttachedPolicyCard from './AttachedPolicyCard';
 
 import type { AttachedPolicy, PolicySpec } from './Types';
-import ApiOperationContext from './ApiOperationContext';
+import GlobalPolicyContext from './GlobalPolicyContext';
 
 
 interface AttachedPolicyListProps {
@@ -61,7 +61,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
         policyDisplayStartDirection === 'left'
             ? currentPolicyList
             : reversedPolicyList;
-    const { rearrangeApiOperations } = useContext<any>(ApiOperationContext);
+    const { rearrangeApiOperations } = useContext<any>(GlobalPolicyContext);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {

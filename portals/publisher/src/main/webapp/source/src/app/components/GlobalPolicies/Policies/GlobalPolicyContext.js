@@ -18,7 +18,12 @@
 
 import React, { useContext } from 'react';
 
-const ApiOperationContext = React.createContext({});
-export const useApiOperationContext = () => useContext(ApiOperationContext);
-export const ApiOperationContextProvider = ApiOperationContext.Provider;
-export default ApiOperationContext;
+const GlobalPolicyContext = React.createContext({});
+export const useGlobalPolicyContext = () => useContext(GlobalPolicyContext);
+export const GlobalPolicyContextProvider = GlobalPolicyContext.Provider;
+export default GlobalPolicyContext;
+
+// const ApiOperationContext = React.createContext({});
+// export const useApiOperationContext = () => useContext(ApiOperationContext);
+// export const ApiOperationContextProvider = ApiOperationContext.Provider;
+// export default ApiOperationContext;
