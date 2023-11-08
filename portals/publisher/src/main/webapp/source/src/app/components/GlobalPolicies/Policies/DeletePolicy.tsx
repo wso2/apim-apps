@@ -17,107 +17,10 @@
  */
 
 import React, { useState, FC, useContext } from 'react';
-import { FormattedMessage } from 'react-intl';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Button from '@material-ui/core/Button';
-import DialogContent from '@material-ui/core/DialogContent';
-import Tooltip from '@material-ui/core/Tooltip';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-
-/** Shared UI Component */
-interface DeletePolicySharedProps {
-    policyId: string;
-    policyName: string;
-    toggleOpen: () => void;
-    handleClose: () => void;
-    open: boolean;
-    handleDelete: () => void;
-}
-
-const DeletePolicyShared: FC<DeletePolicySharedProps> = ({
-    policyId,
-    policyName,
-    toggleOpen,
-    handleClose,
-    open,
-    handleDelete
-}) => {
-    return (
-        <>
-            <Tooltip
-                placement='top'
-                title={
-                    <FormattedMessage
-                        id='Apis.Details.Policies.DeletePolicy.delete.title'
-                        defaultMessage='Delete'
-                    />
-                }
-            >
-                <IconButton
-                    onClick={toggleOpen}
-                    aria-label={'delete ' + policyName}
-                >
-                    <DeleteIcon />
-                </IconButton>
-            </Tooltip>
-            <Dialog
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                open={open}
-                onClose={handleClose}
-            >
-                <DialogTitle>
-                    <FormattedMessage
-                        id='Apis.Details.Policies.DeletePolicy.delete.confirm'
-                        defaultMessage='Confirm Delete'
-                    />
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.DeletePolicy.delete.confirm.content'
-                            defaultMessage='Are you sure you want to delete {policy} policy ?'
-                            values={{ policy: policyName }}
-                        />
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        id={'cancel-delete-' + policyId}
-                        onClick={handleClose}
-                        color='primary'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.DeletePolicy.cancel'
-                            defaultMessage='Cancel'
-                        />
-                    </Button>
-                    <Button
-                        id={'delete-' + policyId}
-                        onClick={handleDelete}
-                        color='primary'
-                        variant='outlined'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.DeletePolicy.confirm'
-                            defaultMessage='Delete'
-                        />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
-}
-/** Shared UI Component ends */
+import DeletePolicyShared from 'AppComponents/Shared/PoliciesUI/DeletePolicy';
 
 interface DeletePolicyProps {
     policyId: string;
