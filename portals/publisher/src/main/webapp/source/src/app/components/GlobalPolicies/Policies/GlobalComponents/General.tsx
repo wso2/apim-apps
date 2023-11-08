@@ -34,7 +34,7 @@ import {
 } from '@material-ui/core';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
-import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
+import { PolicySpec, GlobalPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
 import GlobalPolicyContext from "../GlobalPolicyContext";
 
 const useStyles = makeStyles(theme => ({
@@ -64,7 +64,7 @@ interface GeneralProps {
     currentFlow: string;
     target: string;
     verb: string;
-    apiPolicy: ApiPolicy;
+    globalPolicy: GlobalPolicy;
     policySpec: PolicySpec;
     handleDrawerClose: () => void;
     isEditMode: boolean;
@@ -76,7 +76,7 @@ const General: FC<GeneralProps> = ({
     currentFlow,
     target,
     verb,
-    apiPolicy,
+    globalPolicy,
     policySpec,
     handleDrawerClose,
     isEditMode,
@@ -106,7 +106,7 @@ const General: FC<GeneralProps> = ({
     }
 
     const getValueOfPolicyParam = (policyParamName: string) => {
-        return apiPolicy.parameters[policyParamName];
+        return globalPolicy.parameters[policyParamName];
     }
 
     /**
@@ -132,10 +132,10 @@ const General: FC<GeneralProps> = ({
         });
 
         // Saving field changes to backend
-        const apiPolicyToSave = {...apiPolicy};
-        apiPolicyToSave.parameters = updateCandidates;
+        const globalPolicyToSave = {...globalPolicy};
+        globalPolicyToSave.parameters = updateCandidates;
 
-        updateGlobalOperations(apiPolicyToSave, target, verb, currentFlow);
+        updateGlobalOperations(globalPolicyToSave, target, verb, currentFlow);
 
         if (setDroppedPolicy) setDroppedPolicy(null);
         setSaving(false);

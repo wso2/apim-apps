@@ -89,13 +89,13 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         event.stopPropagation();
         event.preventDefault();
         if (policyObj.isAPISpecific) {
-            const apiPolicyContentPromise = API.getOperationPolicyContent(
+            const globalPolicyContentPromise = API.getOperationPolicyContent(
                 policyObj.id,
                 api.id,
             );
-            apiPolicyContentPromise
-                .then((apiPolicyResponse) => {
-                    Utils.forceDownload(apiPolicyResponse);
+            globalPolicyContentPromise
+                .then((globalPolicyResponse) => {
+                    Utils.forceDownload(globalPolicyResponse);
                 })
                 .catch((error) => {
                     console.error(error);

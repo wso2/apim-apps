@@ -84,13 +84,13 @@ const SourceDetails: FC<SourceDetailsProps> = ({
     const handlePolicyDownload = () => {
         if (policyId) {
             if (isAPISpecific) {
-                const apiPolicyContentPromise = API.getOperationPolicyContent(
+                const globalPolicyContentPromise = API.getOperationPolicyContent(
                     policyId,
                     api.id,
                 );
-                apiPolicyContentPromise
-                    .then((apiPolicyResponse) => {
-                        Utils.forceDownload(apiPolicyResponse);
+                globalPolicyContentPromise
+                    .then((globalPolicyResponse) => {
+                        Utils.forceDownload(globalPolicyResponse);
                     })
                     .catch((error) => {
                         console.error(error);

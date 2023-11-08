@@ -34,7 +34,7 @@ import { Progress } from 'AppComponents/Shared';
 import cloneDeep from 'lodash.clonedeep';
 import { useHistory, Link } from 'react-router-dom';
 import PolicyList from './PolicyList';
-import type { Policy, PolicySpec, ApiLevelPolicy } from '../Types';
+import type { Policy, PolicySpec, GlobalLevelPolicy } from '../Types';
 import GatewaySelector from './GatewaySelector';
 import { GlobalPolicyContextProvider } from '../GlobalPolicyContext';
 import PolicyPanel from './PolicyPanel';
@@ -115,19 +115,20 @@ const Policies: FC<PolicyProps> =  ({
         setIsChoreoConnectEnabled(isCCEnabled);
     }
 
-    const initApiLevelPolicy: ApiLevelPolicy = {
+    const initGlobalLevelPolicy: GlobalLevelPolicy = {
         request: [],
         response: [],
         fault: [],
     }
 
-    const getInitAPILevelPoliciesState = () => {
-        return initApiLevelPolicy;
+    const getInitGlobalLevelPoliciesState = () => {
+        return initGlobalLevelPolicy;
     };
 
     // As we are reusing 30+ components from the API level policies, we are using the same context provider for both.
     // Even though name is globalLevelPolicies, in these cases, it will be global level policies.
-    const [globalLevelPolicies, setGlobalLevelPolicies] = useState<ApiLevelPolicy>(getInitAPILevelPoliciesState());
+    const [globalLevelPolicies, 
+        setGlobalLevelPolicies] = useState<GlobalLevelPolicy>(getInitGlobalLevelPoliciesState());
 
     /**
      * Fetches all common policies.
@@ -205,7 +206,6 @@ const Policies: FC<PolicyProps> =  ({
         return inputResponse;
     };
       
-
     const fetchGlobalPolicyByID = () => {
         // // hardcoded response
         console.log("fetching global policy mapping: 'GET' '/gateway-policies/" + {policyID});
@@ -251,7 +251,7 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     const removeAPIPoliciesForGatewayChange = () => {
-        setGlobalLevelPolicies(initApiLevelPolicy);
+        setGlobalLevelPolicies(initGlobalLevelPolicy);
     }
 
     useEffect(() => {
@@ -269,10 +269,10 @@ const Policies: FC<PolicyProps> =  ({
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
     const deleteGlobalOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
-        const newApiLevelPolicies: any = cloneDeep(globalLevelPolicies);
-        const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
-        newApiLevelPolicies[currentFlow].splice(index, 1);
-        setGlobalLevelPolicies(newApiLevelPolicies);
+        const newGlobalLevelPolicies: any = cloneDeep(globalLevelPolicies);
+        const index = newGlobalLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
+        newGlobalLevelPolicies[currentFlow].splice(index, 1);
+        setGlobalLevelPolicies(newGlobalLevelPolicies);
     }
 
     /**
@@ -289,8 +289,8 @@ const Policies: FC<PolicyProps> =  ({
     const updateGlobalOperations = (
         updatedOperation: any, target: string, verb: string, currentFlow: string,
     ) => {
-        const newApiLevelPolicies: any = cloneDeep(globalLevelPolicies);
-        const flowPolicy = (newApiLevelPolicies)[currentFlow].find(
+        const newGlobalLevelPolicies: any = cloneDeep(globalLevelPolicies);
+        const flowPolicy = (newGlobalLevelPolicies)[currentFlow].find(
             (p: any) =>
                 p.policyId === updatedOperation.policyId &&
                 p.uuid === updatedOperation.uuid,
@@ -302,10 +302,10 @@ const Policies: FC<PolicyProps> =  ({
         } else {
             // Add new policy
             const uuid = uuidv4();
-            (newApiLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid }
+            (newGlobalLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid }
             );
         }
-        setGlobalLevelPolicies(newApiLevelPolicies);   
+        setGlobalLevelPolicies(newGlobalLevelPolicies);   
     }
 
     /**

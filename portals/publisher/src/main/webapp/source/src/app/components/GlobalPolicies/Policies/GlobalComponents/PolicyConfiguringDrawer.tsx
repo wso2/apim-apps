@@ -34,7 +34,7 @@ import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
 import { Progress } from 'AppComponents/Shared';
 import General from './General';
-import { PolicySpec, ApiPolicy, Policy } from '../Types';
+import { PolicySpec, GlobalPolicy, Policy } from '../Types';
 
 const useStyles = makeStyles((theme: Theme) => ({
     drawerPaper: {
@@ -90,7 +90,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
         return <Progress />;
     }
 
-    const apiPolicy: ApiPolicy = {
+    const globalPolicy: GlobalPolicy = {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
         policyVersion: policyObj?.version,
@@ -162,7 +162,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     target={target}
                     verb={verb}
                     policySpec={policySpec}
-                    apiPolicy={apiPolicy}
+                    globalPolicy={globalPolicy}
                     handleDrawerClose={handleDrawerClose}
                     isEditMode={false}
                 />

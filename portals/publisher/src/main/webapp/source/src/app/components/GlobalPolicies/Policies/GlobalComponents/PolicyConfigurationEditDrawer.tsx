@@ -35,7 +35,7 @@ import Divider from '@material-ui/core/Divider';
 import API from 'AppData/api';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import General from './General';
-import type { PolicySpec, ApiPolicy, AttachedPolicy } from '../Types';
+import type { PolicySpec, GlobalPolicy, AttachedPolicy } from '../Types';
 import GlobalPolicyContext from '../GlobalPolicyContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -105,7 +105,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
         currentFlow
     ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 
-    const apiPolicy: ApiPolicy = operationFlowPolicy || {
+    const globalPolicy: GlobalPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,
         policyId: policyObj?.id,
         policyVersion: policyObj?.version,
@@ -157,7 +157,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                         target={target}
                         verb={verb}
                         policySpec={policySpec}
-                        apiPolicy={apiPolicy}
+                        globalPolicy={globalPolicy}
                         handleDrawerClose={handleDrawerClose}
                         isEditMode
                     />

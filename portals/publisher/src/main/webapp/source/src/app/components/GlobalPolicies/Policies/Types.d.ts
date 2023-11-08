@@ -79,7 +79,7 @@ export type CreatePolicySpec = {
     policyAttributes: PolicySpecAttribute[];
 };
 
-export type ApiPolicy = {
+export type GlobalPolicy = {
     policyName?: string;
     policyId?: string;
     policyVersion?: string;
@@ -87,7 +87,7 @@ export type ApiPolicy = {
     uuid?: string;
 };
 
-export type ApiLevelPolicy = {
+export type GlobalLevelPolicy = {
     request?: any[];
     response?: any[];
     fault?: any[];
