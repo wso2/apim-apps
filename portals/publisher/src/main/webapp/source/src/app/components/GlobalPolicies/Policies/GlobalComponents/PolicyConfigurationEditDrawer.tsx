@@ -74,11 +74,9 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     allPolicies,
     drawerOpen,
     setDrawerOpen,
-    isAPILevelPolicy,
 }) => {
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
-    const { apiOperations } = useContext<any>(GlobalPolicyContext);
     const { globalLevelPolicies } = useContext<any>(GlobalPolicyContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
@@ -103,13 +101,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
             }
         })();
     }, [policyObj]);
-
-    const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
-        (op: any) =>
-            op.target === target &&
-            op.verb.toLowerCase() === verb.toLowerCase(),
-    ) : null;
-    const operationFlowPolicy = ((isAPILevelPolicy) ? globalLevelPolicies : operationInAction.operationPolicies)[
+    const operationFlowPolicy = (globalLevelPolicies)[
         currentFlow
     ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 

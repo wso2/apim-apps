@@ -89,7 +89,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     /**
      * In here, we are populating the attached policy list for each flow.
      * This will be triggered once we saved a drag`n`droped policy.
-     * This comes after Policies.tsx updateApiOperations() method.
+     * This comes after Policies.tsx updateGlobalOperations() method.
      * This will hold data in the UI until we save the policy.
      */
     useEffect(() => {

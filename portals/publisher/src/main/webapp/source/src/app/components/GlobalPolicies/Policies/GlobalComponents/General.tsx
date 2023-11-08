@@ -85,7 +85,7 @@ const General: FC<GeneralProps> = ({
     const classes = useStyles();
     const [saving, setSaving] = useState(false);
     const initState: any = {};
-    const { updateApiOperations } = useContext<any>(GlobalPolicyContext);
+    const { updateGlobalOperations } = useContext<any>(GlobalPolicyContext);
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
 
@@ -135,7 +135,7 @@ const General: FC<GeneralProps> = ({
         const apiPolicyToSave = {...apiPolicy};
         apiPolicyToSave.parameters = updateCandidates;
 
-        updateApiOperations(apiPolicyToSave, target, verb, currentFlow);
+        updateGlobalOperations(apiPolicyToSave, target, verb, currentFlow);
 
         if (setDroppedPolicy) setDroppedPolicy(null);
         setSaving(false);

@@ -285,7 +285,7 @@ const Policies: FC<PolicyProps> =  ({
      * @param {string} verb Verb.
      * @param {string} currentFlow Folow request/response/fault.
      */
-    const updateApiOperations = (
+    const updateGlobalOperations = (
         updatedOperation: any, target: string, verb: string, currentFlow: string,
     ) => {
         const newApiLevelPolicies: any = cloneDeep(globalLevelPolicies);
@@ -359,12 +359,12 @@ const Policies: FC<PolicyProps> =  ({
     const providerValue = useMemo(
         () => ({
             globalLevelPolicies,
-            updateApiOperations,
+            updateGlobalOperations,
             deleteGlobalOperation,
         }),
         [
             globalLevelPolicies,
-            updateApiOperations,
+            updateGlobalOperations,
             deleteGlobalOperation,
         ],
     );
