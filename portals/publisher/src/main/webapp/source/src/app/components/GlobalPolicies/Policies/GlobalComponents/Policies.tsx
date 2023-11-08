@@ -28,6 +28,7 @@ import Icon from '@material-ui/core/Icon';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
+import { arrayMove } from '@dnd-kit/sortable';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import cloneDeep from 'lodash.clonedeep';
@@ -308,6 +309,23 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     /**
+     * Function to rearrange the API Operation ordering
+     * @param {string} oldIndex original index of the policy
+     * @param {string} newIndex new index of the policy
+     * @param {string} target target that needs to be updated
+     * @param {string} verb verb of the operation that neeeds to be updated
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     */
+    const rearrangeGlobalOperations = (
+        oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
+    ) => { 
+        const newAPIPolicies: any = cloneDeep(globalLevelPolicies);
+        const policyArray = newAPIPolicies[currentFlow];
+        newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+        setGlobalLevelPolicies(newAPIPolicies);   
+    };
+
+    /**
      * Function to save a policy mapping
      * 
      */
@@ -361,11 +379,13 @@ const Policies: FC<PolicyProps> =  ({
             globalLevelPolicies,
             updateGlobalOperations,
             deleteGlobalOperation,
+            rearrangeGlobalOperations
         }),
         [
             globalLevelPolicies,
             updateGlobalOperations,
             deleteGlobalOperation,
+            rearrangeGlobalOperations
         ],
     );
 

@@ -61,7 +61,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
         policyDisplayStartDirection === 'left'
             ? currentPolicyList
             : reversedPolicyList;
-    const { rearrangeApiOperations } = useContext<any>(GlobalPolicyContext);
+    const { rearrangeGlobalOperations } = useContext<any>(GlobalPolicyContext);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -83,7 +83,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
                 (item) => item.uniqueKey === over?.id,
             );
 
-            rearrangeApiOperations(
+            rearrangeGlobalOperations(
                 oldIndex,
                 newIndex,
                 target,
