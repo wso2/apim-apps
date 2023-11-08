@@ -24,7 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import AttachedPolicyCardShared from 'AppComponents/Shared/PoliciesUI/AttachedPolicyCard';
 import type { AttachedPolicy, PolicySpec } from './Types';
-import PolicyConfigurationEditDrawer from './UIComponents/PolicyConfigurationEditDrawer';
+import PolicyConfigurationEditDrawer from './GlobalComponents/PolicyConfigurationEditDrawer';
 import ApiOperationContext from './ApiOperationContext';
 
 interface AttachedPolicyCardProps {

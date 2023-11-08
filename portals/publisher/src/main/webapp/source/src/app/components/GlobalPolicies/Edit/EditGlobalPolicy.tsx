@@ -17,7 +17,7 @@
 */
 
 import React from 'react';
-import Policies from 'AppComponents/GlobalPolicies/Policies/UIComponents/Policies';
+import Policies from 'AppComponents/GlobalPolicies/Policies/GlobalComponents/Policies';
 import { useParams } from 'react-router-dom';
 
 interface RouteParams {

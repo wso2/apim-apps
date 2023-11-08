@@ -20,7 +20,7 @@ import React, { FC, useContext, useEffect, useState } from 'react';
 import PoliciesExpansionShared from 'AppComponents/Shared/PoliciesUI/PoliciesExpansion';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
-import FlowArrow from './components/FlowArrow';
+import FlowArrow from './Components/FlowArrow';
 import ApiOperationContext from './ApiOperationContext';
 
 const defaultPolicyForMigration = {
