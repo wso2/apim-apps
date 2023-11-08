@@ -16,185 +16,11 @@
  * under the License.
  */
 
-import React, { CSSProperties, useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Utils from 'AppData/Utils';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import IconButton from '@material-ui/core/IconButton';
-import { FormattedMessage } from 'react-intl';
-import { useDrag } from 'react-dnd';
+import React, { useState } from 'react';
+import DraggablePolicyCardShared from 'AppComponents/Shared/PoliciesUI/DraggablePolicyCard';
 import type { Policy } from './Types';
 import ViewPolicy from './ViewPolicy';
 import DeletePolicy from './DeletePolicy';
-
-/** Shared UI Component */
-const useStyles = makeStyles(() => ({
-    policyCardText: {
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-    },
-    listItem: {
-        maxHeight: '100%',
-        overflow: 'auto',
-    },
-    policyActions: {
-        visibility: 'hidden',
-        '&:hover': {
-            visibility: 'inherit',
-        },
-    },
-}));
-
-const style: CSSProperties = {
-    border: '2px solid',
-    marginTop: '0.4rem',
-    cursor: 'move',
-    borderRadius: '0.3em',
-};
-
-interface DraggablePolicyCardSharedProps {
-    policyObj: Policy;
-    showCopyIcon?: boolean;
-    isLocalToAPI: boolean;
-    fetchPolicies: () => void;
-    setHovered: any;
-    hovered: boolean;
-    handleViewPolicy: () => void;
-    dialogOpen: boolean;
-    handleViewPolicyClose: () => void;
-}
-
-const DraggablePolicyCardShared: React.FC<DraggablePolicyCardSharedProps> = ({
-    policyObj,
-    showCopyIcon,
-    isLocalToAPI,
-    fetchPolicies,
-    setHovered,
-    hovered,
-    handleViewPolicy,
-    dialogOpen,
-    handleViewPolicyClose
-}) => {
-    const classes = useStyles();
-
-    const [{ isDragging }, drag] = useDrag(
-        () => ({
-            type: `policyCard-${policyObj.id}`,
-            item: { droppedPolicy: policyObj },
-            options: {
-                dropEffect: showCopyIcon ? 'copy' : 'move',
-            },
-            collect: (monitor) => ({
-                isDragging: monitor.isDragging(),
-            }),
-        }),
-        [showCopyIcon],
-    );
-
-    const containerStyle = useMemo(
-        () => ({
-            ...style,
-            opacity: isDragging ? 0.4 : 1,
-            borderColor: Utils.stringToColor(policyObj.displayName),
-            width: '100%',
-        }),
-        [isDragging],
-    );
-
-    return (
-        <>
-            <Box display='flex' flexDirection='row' alignItems='center'>
-                <div ref={drag} style={containerStyle}>
-                    <ListItem
-                        key={policyObj.id}
-                        className={classes.listItem}
-                        onMouseOver={() => setHovered(true)}
-                        onMouseOut={() => setHovered(false)}
-                    >
-                        <ListItemAvatar>
-                            <Avatar
-                                style={{
-                                    backgroundColor: Utils.stringToColor(
-                                        policyObj.displayName,
-                                    ),
-                                }}
-                            >
-                                {Utils.stringAvatar(
-                                    policyObj.displayName.toUpperCase(),
-                                )}
-                            </Avatar>
-                        </ListItemAvatar>
-                        <Box
-                            display='flex-inline'
-                            flexDirection='column'
-                            sx={{ flexGrow: 1 }}
-                            className={classes.policyCardText}
-                        >
-                            <ListItemText
-                                id={policyObj.displayName}
-                                primary={policyObj.displayName}
-                                classes={{
-                                    primary: classes.policyCardText,
-                                }}
-                            />
-                            <ListItemText
-                                id={policyObj.version}
-                                secondary={policyObj.version}
-                                classes={{
-                                    secondary: classes.policyCardText,
-                                }}
-                            />
-                        </Box>
-                        <Box
-                            display='flex'
-                            justifyContent='flex-end'
-                            className={!hovered ? classes.policyActions : ''}
-                        >
-                            <Tooltip
-                                placement='top'
-                                title={
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
-                                        defaultMessage='View'
-                                    />
-                                }
-                            >
-                                <IconButton
-                                    onClick={handleViewPolicy}
-                                    aria-label={'view-' + policyObj.name}
-                                >
-                                    <VisibilityIcon />
-                                </IconButton>
-                            </Tooltip>
-                            {isLocalToAPI && (
-                                <DeletePolicy
-                                    policyId={policyObj.id}
-                                    policyName={policyObj.displayName}
-                                    fetchPolicies={fetchPolicies}
-                                />
-                            )}
-                        </Box>
-                    </ListItem>
-                </div>
-            </Box>
-            <ViewPolicy
-                dialogOpen={dialogOpen}
-                handleDialogClose={handleViewPolicyClose}
-                policyObj={policyObj}
-                isLocalToAPI={isLocalToAPI}
-            />
-        </>
-    );
-}
-
-/** Shared UI Component ends */
 
 interface DraggablePolicyCardProps {
     policyObj: Policy;
@@ -237,6 +63,8 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
             handleViewPolicy={handleViewPolicy}
             dialogOpen={dialogOpen}
             handleViewPolicyClose={handleViewPolicyClose}
+            ViewPolicy={ViewPolicy} 
+            DeletePolicy={DeletePolicy}
         />
     );
 };
