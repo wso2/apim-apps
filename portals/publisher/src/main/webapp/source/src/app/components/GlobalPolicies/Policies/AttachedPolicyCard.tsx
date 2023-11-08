@@ -55,7 +55,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 }) => {
     
     const { api } = useContext<any>(ApiContext);
-    const { deleteApiOperation } = useContext<any>(GlobalPolicyContext);
+    const { deleteGlobalOperation } = useContext<any>(GlobalPolicyContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
     
 
@@ -71,7 +71,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             (policy) => policy.uniqueKey === policyObj.uniqueKey,
         );
         setCurrentPolicyList(filteredList);
-        deleteApiOperation(
+        deleteGlobalOperation(
             policyToDelete?.uniqueKey,
             target,
             verb,

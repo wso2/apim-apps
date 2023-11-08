@@ -79,7 +79,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     const classes = useStyles();
     const { api } = useContext<any>(ApiContext);
     const { apiOperations } = useContext<any>(GlobalPolicyContext);
-    const { apiLevelPolicies } = useContext<any>(GlobalPolicyContext);
+    const { globalLevelPolicies } = useContext<any>(GlobalPolicyContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {
@@ -109,7 +109,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
             op.target === target &&
             op.verb.toLowerCase() === verb.toLowerCase(),
     ) : null;
-    const operationFlowPolicy = ((isAPILevelPolicy) ? apiLevelPolicies : operationInAction.operationPolicies)[
+    const operationFlowPolicy = ((isAPILevelPolicy) ? globalLevelPolicies : operationInAction.operationPolicies)[
         currentFlow
     ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 

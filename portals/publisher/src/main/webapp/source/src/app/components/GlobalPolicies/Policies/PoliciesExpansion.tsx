@@ -64,7 +64,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
-    const { apiLevelPolicies } = useContext<any>(GlobalPolicyContext);
+    const { globalLevelPolicies } = useContext<any>(GlobalPolicyContext);
 
     useEffect(() => {
         const requestList = [];
@@ -94,7 +94,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
      */
     useEffect(() => {
         (async () => { 
-            const apiPolicies = apiLevelPolicies;
+            const apiPolicies = globalLevelPolicies;
 
             // Populate request flow attached policy list
             const requestFlowList: AttachedPolicy[] = [];
@@ -188,7 +188,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 setFaultFlowPolicyList(faultFlowList);
             }
         })();
-    }, [apiLevelPolicies]);
+    }, [globalLevelPolicies]);
 
     return (
         <PoliciesExpansionShared

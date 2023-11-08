@@ -125,8 +125,8 @@ const Policies: FC<PolicyProps> =  ({
     };
 
     // As we are reusing 30+ components from the API level policies, we are using the same context provider for both.
-    // Even though name is apiLevelPolicies, in these cases, it will be global level policies.
-    const [apiLevelPolicies, setApiLevelPolicies] = useState<ApiLevelPolicy>(getInitAPILevelPoliciesState());
+    // Even though name is globalLevelPolicies, in these cases, it will be global level policies.
+    const [globalLevelPolicies, setGlobalLevelPolicies] = useState<ApiLevelPolicy>(getInitAPILevelPoliciesState());
 
     /**
      * Fetches all common policies.
@@ -236,7 +236,7 @@ const Policies: FC<PolicyProps> =  ({
         promisedPolicy
             .then((response) => {
                 const responseUpdated = assignUUIDs(response);      
-                setApiLevelPolicies(responseUpdated.policyMapping);
+                setGlobalLevelPolicies(responseUpdated.policyMapping);
                 setDescription(responseUpdated.description);
                 setName(responseUpdated.displayName);
                 setAppliedGatewayLabels(responseUpdated.appliedGatewayLabels);
@@ -250,7 +250,7 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     const removeAPIPoliciesForGatewayChange = () => {
-        setApiLevelPolicies(initApiLevelPolicy);
+        setGlobalLevelPolicies(initApiLevelPolicy);
     }
 
     useEffect(() => {
@@ -267,11 +267,11 @@ const Policies: FC<PolicyProps> =  ({
      * @param {string} verb verb of the operation that neeeds to be updated
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
-    const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
-        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
+    const deleteGlobalOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
+        const newApiLevelPolicies: any = cloneDeep(globalLevelPolicies);
         const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
         newApiLevelPolicies[currentFlow].splice(index, 1);
-        setApiLevelPolicies(newApiLevelPolicies);
+        setGlobalLevelPolicies(newApiLevelPolicies);
     }
 
     /**
@@ -288,7 +288,7 @@ const Policies: FC<PolicyProps> =  ({
     const updateApiOperations = (
         updatedOperation: any, target: string, verb: string, currentFlow: string,
     ) => {
-        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
+        const newApiLevelPolicies: any = cloneDeep(globalLevelPolicies);
         const flowPolicy = (newApiLevelPolicies)[currentFlow].find(
             (p: any) =>
                 p.policyId === updatedOperation.policyId &&
@@ -304,7 +304,7 @@ const Policies: FC<PolicyProps> =  ({
             (newApiLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid }
             );
         }
-        setApiLevelPolicies(newApiLevelPolicies);   
+        setGlobalLevelPolicies(newApiLevelPolicies);   
     }
 
     /**
@@ -317,7 +317,7 @@ const Policies: FC<PolicyProps> =  ({
         // call the backend API
         const requestBody = {
             "id": uuidv4(),
-            "policyMapping": apiLevelPolicies,
+            "policyMapping": globalLevelPolicies,
             "description": description,
             "displayName": name,
             "appliedGatewayLabels": []
@@ -340,7 +340,7 @@ const Policies: FC<PolicyProps> =  ({
         // call the backend API
         const requestBody = {
             "id": policyID,
-            "policyMapping": apiLevelPolicies,
+            "policyMapping": globalLevelPolicies,
             "description": description,
             "displayName": name,
             "appliedGatewayLabels": appliedGatewayLabels
@@ -358,14 +358,14 @@ const Policies: FC<PolicyProps> =  ({
      */
     const providerValue = useMemo(
         () => ({
-            apiLevelPolicies,
+            globalLevelPolicies,
             updateApiOperations,
-            deleteApiOperation,
+            deleteGlobalOperation,
         }),
         [
-            apiLevelPolicies,
+            globalLevelPolicies,
             updateApiOperations,
-            deleteApiOperation,
+            deleteGlobalOperation,
         ],
     );
 
