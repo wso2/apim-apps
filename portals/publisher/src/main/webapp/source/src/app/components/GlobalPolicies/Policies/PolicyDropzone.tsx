@@ -20,7 +20,7 @@ import React, { FC, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import PolicyDropzoneShared from 'AppComponents/Shared/PoliciesUI/PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
-import AttachedPolicyList from './UIComponents/AttachedPolicyList';
+import AttachedPolicyList from './AttachedPolicyList';
 import PolicyConfiguringDrawer from './UIComponents/PolicyConfiguringDrawer';
 
 interface PolicyDropzoneProps {
