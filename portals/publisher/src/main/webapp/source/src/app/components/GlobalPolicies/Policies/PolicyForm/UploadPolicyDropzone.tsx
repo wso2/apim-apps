@@ -35,7 +35,7 @@ import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import Icon from '@material-ui/core/Icon';
 import { HelpOutline } from '@material-ui/icons';
-import { GATEWAY_TYPE_LABELS } from './SourceDetails';
+import { GATEWAY_TYPE_LABELS } from 'AppComponents/Shared/PoliciesUI/SourceDetails';
 
 /** Shared UI Component */
 const useStyles = makeStyles((theme: Theme) => ({
