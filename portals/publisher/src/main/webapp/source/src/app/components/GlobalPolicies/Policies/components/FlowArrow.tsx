@@ -24,10 +24,9 @@ interface FlowArrowProps {
 }
 
 /**
- * Tab panel component to render content of a particular tab.
- * Renders the available policy list under the relevant flow related tab (i.e. request, response or fault).
+ * Flow Arrow component.
  * @param {JSON} props Input props from parent components.
- * @returns {TSX} Tab panel.
+ * @returns {TSX} Flow Arrow component.
  */
 const FlowArrow: FC<FlowArrowProps> = ({ arrowDirection }) => {
     return (

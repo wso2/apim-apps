@@ -70,12 +70,16 @@ interface GeneralProps {
     isEditMode: boolean;
 }
 
+/**
+ * This component renders the form of adding a global policy as a global level policy.
+ * This is used inside the PolicyConfigurationEditDrawer component.
+ * @param {GeneralProps} props The props passed to the component.
+ * @returns {TSX} Returns the JSX element.
+ */
 const General: FC<GeneralProps> = ({
     policyObj,
     setDroppedPolicy,
     currentFlow,
-    target,
-    verb,
     globalPolicy,
     policySpec,
     handleDrawerClose,
@@ -110,8 +114,9 @@ const General: FC<GeneralProps> = ({
     }
 
     /**
-     * This function is triggered when the form is submitted for save
-     * @param {React.FormEvent<HTMLFormElement>} event Form submit event
+     * This function is triggered when the form is submitted for save.
+     * This handle the dynamic nature of the form, where the form fields are generated based on the policy spec.
+     * @param {React.FormEvent<HTMLFormElement>} event Form submit event.
      */
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -131,11 +136,10 @@ const General: FC<GeneralProps> = ({
             }
         });
 
-        // Saving field changes to backend
         const globalPolicyToSave = {...globalPolicy};
         globalPolicyToSave.parameters = updateCandidates;
 
-        updateGlobalOperations(globalPolicyToSave, target, verb, currentFlow);
+        updateGlobalOperations(globalPolicyToSave, currentFlow);
 
         if (setDroppedPolicy) setDroppedPolicy(null);
         setSaving(false);

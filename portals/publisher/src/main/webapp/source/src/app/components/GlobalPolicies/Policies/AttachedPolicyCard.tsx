@@ -73,8 +73,6 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
         setCurrentPolicyList(filteredList);
         deleteGlobalOperation(
             policyToDelete?.uniqueKey,
-            target,
-            verb,
             currentFlow,
         );
         event.stopPropagation();

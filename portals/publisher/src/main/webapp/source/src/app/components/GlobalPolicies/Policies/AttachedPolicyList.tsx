@@ -86,8 +86,6 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
             rearrangeGlobalOperations(
                 oldIndex,
                 newIndex,
-                target,
-                verb,
                 currentFlow,
             );
         }

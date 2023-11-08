@@ -59,7 +59,7 @@ interface PolicyConfiguringDrawerProps {
 }
 
 /**
- * Renders the policy configuring drawer.
+ * Renders the policy configuring drawer. (Right drawer for adding a policy)
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Right drawer for policy configuration.
  */

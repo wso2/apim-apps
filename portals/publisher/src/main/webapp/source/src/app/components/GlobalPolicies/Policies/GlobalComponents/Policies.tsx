@@ -40,25 +40,7 @@ import { GlobalPolicyContextProvider } from '../GlobalPolicyContext';
 import PolicyPanel from './PolicyPanel';
 import { uuidv4 } from '../Utils';
 
-const Configurations = require('Config');
-
 const useStyles = makeStyles((theme) => ({
-    gridItem: {
-        display: 'flex',
-        width: '100%',
-    },
-    ccTypography: {
-        paddingLeft: '10px',
-        marginTop: '20px',
-    },
-    flowTabs: {
-        '& button': {
-            minWidth: 50,
-        },
-    },
-    flowTab: {
-        fontSize: 'smaller',
-    },
     textField: {
         backgroundColor: 'white', 
     },
@@ -88,8 +70,7 @@ interface PolicyProps {
 }
 
 /**
- * Renders the policy management page.
- * This is the page which is used to add global policies.
+ * Renders the Global Policy management page.
  * @param {boolean} isCreateNew This value is true if form is for create new and false for edit.
  * @param {string} policyID This value is to indentify the policy (Null if creating a new one). 
  * @returns {TSX} Policy management page to render.
@@ -104,34 +85,30 @@ const Policies: FC<PolicyProps> =  ({
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(false);
-    const { showMultiVersionPolicies } = Configurations.apis;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [appliedGatewayLabels, setAppliedGatewayLabels] = useState<string[]>([]);
 
-    // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
-    // value as true to render other UI changes specific to the Choreo Connect.
+    // If Choreo Connect radio button is selected in GatewaySelector, it will be true 
+    // to render other UI changes specific to the Choreo Connect.
     const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
         setIsChoreoConnectEnabled(isCCEnabled);
     }
 
+    // Global Level Policy - global level policy mapping. It will be initially empty.
     const initGlobalLevelPolicy: GlobalLevelPolicy = {
         request: [],
         response: [],
         fault: [],
     }
-
     const getInitGlobalLevelPoliciesState = () => {
         return initGlobalLevelPolicy;
     };
-
-    // As we are reusing 30+ components from the API level policies, we are using the same context provider for both.
-    // Even though name is globalLevelPolicies, in these cases, it will be global level policies.
     const [globalLevelPolicies, 
         setGlobalLevelPolicies] = useState<GlobalLevelPolicy>(getInitGlobalLevelPoliciesState());
 
     /**
-     * Fetches all common policies.
+     * Fetches all common policies to front-end.
      * Sets the allPolicies state: this allPolicies state is used to get policies from any given policy ID.
      * Sets the policies state: policy state is used to display the available policies that are draggable.
      */
@@ -140,37 +117,24 @@ const Policies: FC<PolicyProps> =  ({
         Promise.all([commonPoliciesPromise]).then((response) => {
             const [commonPoliciesResponse] = response;
             const commonPolicies = commonPoliciesResponse.body.list;
-            const mergedList = [...commonPolicies];
+            setAllPolicies(commonPolicies);
 
-            // Get all common policies and API specific policies
-            setAllPolicies(mergedList);
-
-            let unionByPolicyDisplayName;
-            if (showMultiVersionPolicies) {
-                // Get the union of policies depending on the policy display name and version
-                unionByPolicyDisplayName = [...mergedList
-                    .reduce((map, obj) => map.set(obj.name + obj.version, obj), new Map()).values()];
-            } else {
-                // Get the union of policies depending on the policy display name
-                unionByPolicyDisplayName = [...mergedList
-                    .reduce((map, obj) => map.set(obj.name, obj), new Map()).values()];
-            }
-            unionByPolicyDisplayName.sort(
+            // Sort the policies list
+            commonPolicies.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
+            // Filter the policies based on the gateway type
             let filteredByGatewayTypeList = null;
             if (!isChoreoConnectEnabled) {
                 // Get synpase gateway supported policies
-                filteredByGatewayTypeList = unionByPolicyDisplayName.filter(
+                filteredByGatewayTypeList = commonPolicies.filter(
                     (policy: Policy) => policy.supportedGateways.includes('Synapse'));
             } else {
                 // Get CC gateway supported policies
-                filteredByGatewayTypeList = unionByPolicyDisplayName.filter(
+                filteredByGatewayTypeList = commonPolicies.filter(
                     (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'));
             }
-
             setPolicies(filteredByGatewayTypeList);
-
         }).catch((error) => {
             console.error(error);
             Alert.error('Error occurred while retrieving the policy list');
@@ -263,12 +227,10 @@ const Policies: FC<PolicyProps> =  ({
 
     /**
      * Triggers as we click delete icon in a drag`n`droped the policy.
-     * @param {string} uuid operation uuid
-     * @param {string} target target that needs to be updated
-     * @param {string} verb verb of the operation that neeeds to be updated
-     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     * @param {string} uuid operation uuid.
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault.
      */
-    const deleteGlobalOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
+    const deleteGlobalOperation = (uuid: string, currentFlow: string) => {
         const newGlobalLevelPolicies: any = cloneDeep(globalLevelPolicies);
         const index = newGlobalLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
         newGlobalLevelPolicies[currentFlow].splice(index, 1);
@@ -282,12 +244,10 @@ const Policies: FC<PolicyProps> =  ({
      * policyId: <>,
      * policyName: <>,
      * policyVersion: <>.
-     * @param {string} target Target.
-     * @param {string} verb Verb.
      * @param {string} currentFlow Folow request/response/fault.
      */
     const updateGlobalOperations = (
-        updatedOperation: any, target: string, verb: string, currentFlow: string,
+        updatedOperation: any, currentFlow: string,
     ) => {
         const newGlobalLevelPolicies: any = cloneDeep(globalLevelPolicies);
         const flowPolicy = (newGlobalLevelPolicies)[currentFlow].find(
@@ -309,15 +269,13 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     /**
-     * Function to rearrange the API Operation ordering
-     * @param {string} oldIndex original index of the policy
-     * @param {string} newIndex new index of the policy
-     * @param {string} target target that needs to be updated
-     * @param {string} verb verb of the operation that neeeds to be updated
-     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
+     * Function to rearrange the API Operation ordering.
+     * @param {string} oldIndex original index of the policy.
+     * @param {string} newIndex new index of the policy.
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault.
      */
     const rearrangeGlobalOperations = (
-        oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
+        oldIndex: number, newIndex: number, currentFlow: string,
     ) => { 
         const newAPIPolicies: any = cloneDeep(globalLevelPolicies);
         const policyArray = newAPIPolicies[currentFlow];
@@ -326,8 +284,7 @@ const Policies: FC<PolicyProps> =  ({
     };
 
     /**
-     * Function to save a policy mapping
-     * 
+     * Function to save a policy mapping.
      */
     const save = () => {
         setLoading(true);
@@ -349,8 +306,7 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     /**
-     * Function to update a policy mapping
-     * 
+     * Function to update a policy mapping.
      */
     const update = () => {
         setLoading(true);
@@ -372,7 +328,7 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     /**
-     * To memoize the value passed into GlobalPolicyContextProvider
+     * To memoize the value passed into GlobalPolicyContextProvider.
      */
     const providerValue = useMemo(
         () => ({
