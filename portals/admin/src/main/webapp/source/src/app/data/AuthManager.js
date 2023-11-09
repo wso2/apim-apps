@@ -144,17 +144,17 @@ class AuthManager {
     static hasPermission = (scopes, val) => {
         let value;
         if (val === 'workflowManager') {
-            value = Configurations.app.roles.workflowManager;
+            value = CONSTS.Roles.WORKFLOW_MANAGER;
         } else if (val === 'settingsManager') {
-            value = Configurations.app.roles.settingsManager;
+            value = CONSTS.Roles.SETTINGS_MANAGER;
         } else if (val === 'policyManager') {
-            value = Configurations.app.roles.policyManager;
+            value = CONSTS.Roles.POLICY_MANAGER;
         } else if (val === 'keyManagers') {
-            value = Configurations.app.roles.keyManagers;
+            value = CONSTS.Roles.KEY_MANAGER;
         } else if (val === 'categoriesManager') {
-            value = Configurations.app.roles.categoriesManager;
+            value = CONSTS.Roles.CATEGORY_MANAGER;
         } else if (val === 'gatewayManager') {
-            value = Configurations.app.roles.gatewayManager;
+            value = CONSTS.Roles.GATEWAY_MANAGER;
         }
         for (let i = 0; i < value.length; i++) {
             if (!scopes.includes(value[i])) {
