@@ -19,7 +19,7 @@
 import React, { FC } from 'react';
 import TabPanelShared from 'AppComponents/Shared/PoliciesUI/TabPanel';
 import type { Policy } from '../Types';
-import DraggablePolicyCard from '../DraggablePolicyCard';
+import DraggablePolicyCard from '../GlobalComponents/DraggablePolicyCard';
 
 interface TabPanelProps {
     children?: React.ReactNode;

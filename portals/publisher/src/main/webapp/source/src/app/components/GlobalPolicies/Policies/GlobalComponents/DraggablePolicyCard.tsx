@@ -16,11 +16,12 @@
 * under the License.
 */
 
-import React, { CSSProperties, useMemo } from 'react';
+import React, { useState, CSSProperties, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
+import { Link } from 'react-router-dom';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -29,7 +30,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import IconButton from '@material-ui/core/IconButton';
 import { FormattedMessage } from 'react-intl';
 import { useDrag } from 'react-dnd';
-import type { Policy } from './Types';
+import type { Policy } from '../Types';
 
 const useStyles = makeStyles(() => ({
     policyCardText: {
@@ -56,33 +57,25 @@ const style: CSSProperties = {
     borderRadius: '0.3em',
 };
 
-interface DraggablePolicyCardSharedProps {
+interface DraggablePolicyCardProps {
     policyObj: Policy;
     showCopyIcon?: boolean;
     isLocalToAPI: boolean;
     fetchPolicies: () => void;
-    setHovered: any;
-    hovered: boolean;
-    handleViewPolicy: () => void;
-    dialogOpen: boolean;
-    handleViewPolicyClose: () => void;
-    ViewPolicy: any;
-    DeletePolicy: any;
 }
 
-const DraggablePolicyCardShared: React.FC<DraggablePolicyCardSharedProps> = ({
+/**
+ * Renders a single draggable policy block.
+ * @param {any} DraggablePolicyCardProps Input props from parent components.
+ * @returns {TSX} Draggable Policy card UI.
+ */
+const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     policyObj,
     showCopyIcon,
     isLocalToAPI,
-    fetchPolicies,
-    setHovered,
-    hovered,
-    handleViewPolicy,
-    dialogOpen,
-    handleViewPolicyClose,
-    ViewPolicy,
-    DeletePolicy
 }) => {
+    const [hovered, setHovered] = useState(false);
+
     const classes = useStyles();
 
     const [{ isDragging }, drag] = useDrag(
@@ -108,6 +101,11 @@ const DraggablePolicyCardShared: React.FC<DraggablePolicyCardSharedProps> = ({
         }),
         [isDragging],
     );
+
+    // If the policy is local to the API, we don't need to render the draggable card since this is global policies.
+    if (isLocalToAPI) {
+        return null;
+    }
 
     return (
         <>
@@ -158,41 +156,29 @@ const DraggablePolicyCardShared: React.FC<DraggablePolicyCardSharedProps> = ({
                             justifyContent='flex-end'
                             className={!hovered ? classes.policyActions : ''}
                         >
-                            <Tooltip
-                                placement='top'
-                                title={
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
-                                        defaultMessage='View'
-                                    />
-                                }
-                            >
-                                <IconButton
-                                    onClick={handleViewPolicy}
-                                    aria-label={'view-' + policyObj.name}
-                                >
-                                    <VisibilityIcon />
-                                </IconButton>
-                            </Tooltip>
-                            {isLocalToAPI && (
-                                <DeletePolicy
-                                    policyId={policyObj.id}
-                                    policyName={policyObj.displayName}
-                                    fetchPolicies={fetchPolicies}
-                                />
-                            )}
+                            <Link to={`/policies/${policyObj.id}/view`}>
+                                <Tooltip
+                                    placement='top'
+                                    title={
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
+                                            defaultMessage='View'
+                                        />
+                                    }
+                                >                         
+                                    <IconButton
+                                        aria-label={'view-' + policyObj.name}
+                                    >
+                                        <VisibilityIcon />
+                                    </IconButton>      
+                                </Tooltip>
+                            </Link>
                         </Box>
                     </ListItem>
                 </div>
             </Box>
-            <ViewPolicy
-                dialogOpen={dialogOpen}
-                handleDialogClose={handleViewPolicyClose}
-                policyObj={policyObj}
-                isLocalToAPI={isLocalToAPI}
-            />
         </>
     );
-}
+};
 
-export default DraggablePolicyCardShared;
+export default DraggablePolicyCard;
