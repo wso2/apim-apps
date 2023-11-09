@@ -26,8 +26,8 @@ import {
 import AttachedPolicyListShared from 'AppComponents/Shared/PoliciesUI/AttachedPolicyList';
 import AttachedPolicyCard from './AttachedPolicyCard';
 
-import type { AttachedPolicy, PolicySpec } from './Types';
-import GlobalPolicyContext from './GlobalPolicyContext';
+import type { AttachedPolicy, PolicySpec } from '../Types';
+import GlobalPolicyContext from '../GlobalPolicyContext';
 
 
 interface AttachedPolicyListProps {

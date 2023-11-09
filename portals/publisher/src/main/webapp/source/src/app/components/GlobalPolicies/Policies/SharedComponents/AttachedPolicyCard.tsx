@@ -23,9 +23,9 @@ import Utils from 'AppData/Utils';
 import { FormattedMessage } from 'react-intl';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import AttachedPolicyCardShared from 'AppComponents/Shared/PoliciesUI/AttachedPolicyCard';
-import type { AttachedPolicy, PolicySpec } from './Types';
-import PolicyConfigurationEditDrawer from './GlobalComponents/PolicyConfigurationEditDrawer';
-import GlobalPolicyContext from './GlobalPolicyContext';
+import type { AttachedPolicy, PolicySpec } from '../Types';
+import PolicyConfigurationEditDrawer from '../GlobalSpecificComponents/PolicyConfigurationEditDrawer';
+import GlobalPolicyContext from '../GlobalPolicyContext';
 
 interface AttachedPolicyCardProps {
     policyObj: AttachedPolicy;

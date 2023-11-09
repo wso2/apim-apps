@@ -28,7 +28,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core';
 import CONSTS from 'AppData/Constants';
 import type { Policy } from '../Types';
-import TabPanel from '../Components/TabPanel';
+import TabPanel from '../SharedComponents/TabPanel';
 
 const useStyles = makeStyles(() => ({
     flowTabs: {

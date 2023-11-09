@@ -19,9 +19,9 @@
 import React, { FC, useContext, useEffect, useState } from 'react';
 import PoliciesExpansionShared from 'AppComponents/Shared/PoliciesUI/PoliciesExpansion';
 import PolicyDropzone from './PolicyDropzone';
-import type { AttachedPolicy, Policy, PolicySpec } from './Types';
-import FlowArrow from './Components/FlowArrow';
-import GlobalPolicyContext from './GlobalPolicyContext';
+import type { AttachedPolicy, Policy, PolicySpec } from '../Types';
+import FlowArrow from './FlowArrow';
+import GlobalPolicyContext from '../GlobalPolicyContext';
 
 const defaultPolicyForMigration = {
     id: '',
