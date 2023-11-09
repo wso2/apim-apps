@@ -17,12 +17,27 @@
 */
 
 import React, { FC } from 'react';
-import PolicyViewFormShared from 'AppComponents/Shared/PoliciesUI/PolicyViewForm';
+import { makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import { FormattedMessage } from 'react-intl';
 import type { PolicySpec, PolicySpecAttribute } from '../Types';
 import PolicyAttributes from './PolicyAttributes';
 import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 import uuidv4 from '../Utils';
+
+const useStyles = makeStyles(() => ({
+    root: {
+        flexGrow: 1,
+        marginTop: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 20,
+    },
+}));
 
 interface PolicyViewFormProps {
     policySpec: PolicySpec;
@@ -35,6 +50,8 @@ interface PolicyViewFormProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
+    const classes = useStyles();
+
     const getPolicyAttributes = () => {
         const policyAttributeList = policySpec.policyAttributes.map(
             (attribute: PolicySpecAttribute) => {
@@ -45,14 +62,35 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
     };
 
     return (
-        <PolicyViewFormShared
-            policySpec={policySpec}
-            onDone={onDone}
-            getPolicyAttributes={getPolicyAttributes}
-            PolicyAttributes={PolicyAttributes}
-            GeneralDetails={GeneralDetails}
-            SourceDetails={SourceDetails}
-        />
+        <Paper elevation={0} className={classes.root}>
+            {/* General details of policy */}
+            <GeneralDetails
+                displayName={policySpec.displayName}
+                version={policySpec.version}
+                description={policySpec.description}
+                applicableFlows={policySpec.applicableFlows}
+                supportedApiTypes={policySpec.supportedApiTypes}
+            />
+            <Divider light />
+            {/* Gateway specific details of policy */}
+            <SourceDetails
+                supportedGateways={policySpec.supportedGateways}
+                policyId={policySpec.id}
+            />
+            <Divider light />
+            {/* Attributes of policy */}
+            <PolicyAttributes
+                policyAttributes={getPolicyAttributes()}
+            />
+            <Box>
+                <Button variant='contained' color='primary' data-testid='done-view-policy-file' onClick={onDone}>
+                    <FormattedMessage
+                        id='Apis.Details.Policies.PolicyForm.PolicyViewForm.done'
+                        defaultMessage='Done'
+                    />
+                </Button>
+            </Box>
+        </Paper>
     );
 };
 
