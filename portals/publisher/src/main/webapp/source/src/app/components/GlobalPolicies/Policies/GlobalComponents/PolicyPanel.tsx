@@ -29,8 +29,8 @@ interface PolicyPanelProps {
 }
 
 /**
- * Tab panel component to render content of a particular tab.
- * Renders the policy section under the relevant tab (i.e. API Level or Operation Level).
+ * Renders the policy section of the policy management page.
+ * This inculdes the dropping zone. The policies are rendered in the PoliciesSection component.
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Tab panel.
  */

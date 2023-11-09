@@ -16,11 +16,10 @@
 * under the License.
 */
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
-import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import ViewPolicyShared from 'AppComponents/Shared/PoliciesUI/ViewPolicy';
 import type { Policy, PolicySpec } from './Types';
 import PolicyViewForm from './PolicyForm/PolicyViewForm';
@@ -43,33 +42,11 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
     policyObj,
     isLocalToAPI,
 }) => {
-    const { api } = useContext<any>(ApiContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (dialogOpen && isLocalToAPI) {
-            setLoading(true);
-            const promisedPolicyGet = API.getOperationPolicy(
-                policyObj.id,
-                api.id,
-            );
-            promisedPolicyGet
-                .then((response) => {
-                    setPolicySpec(response.body);
-                })
-                .catch((error) => {
-                    console.error(error);
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error('Something went wrong while retrieving policy details');
-                    }
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        } else if (dialogOpen && !isLocalToAPI) {
+        if (dialogOpen && !isLocalToAPI) {
             const promisedCommonPolicyGet = API.getCommonOperationPolicy(
                 policyObj.id,
             );

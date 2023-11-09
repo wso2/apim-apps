@@ -29,7 +29,7 @@ interface PolicySectionProps {
 }
 
 /**
- * Renders the policy management page.
+ * Renders the policy management page (Basically the PoliciesExpansion component).
  * @returns {TSX} Policy management page to render.
  */
 const PoliciesSection: FC<PolicySectionProps> = ({

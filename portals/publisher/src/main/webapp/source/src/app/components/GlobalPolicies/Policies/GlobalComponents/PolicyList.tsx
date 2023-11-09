@@ -29,7 +29,6 @@ import { makeStyles } from '@material-ui/core';
 import CONSTS from 'AppData/Constants';
 import type { Policy } from '../Types';
 import TabPanel from '../Components/TabPanel';
-import CreatePolicy from '../CreatePolicy';
 
 const useStyles = makeStyles(() => ({
     flowTabs: {
@@ -65,12 +64,7 @@ interface PolicyListPorps {
 const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoConnectEnabled}) => {
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
-    const [dialogOpen, setDialogOpen] = React.useState(false);
     let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
-
-    const handleAddPolicyClose = () => {
-        setDialogOpen(false);
-    };
 
     if (isChoreoConnectEnabled) {
         gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
@@ -163,11 +157,6 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                     </Box>
                 </CardContent>
             </Card>
-            <CreatePolicy
-                dialogOpen={dialogOpen}
-                handleDialogClose={handleAddPolicyClose}
-                fetchPolicies={fetchPolicies}
-            />
         </Paper>
     );
 };

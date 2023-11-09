@@ -66,6 +66,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
 
     const { globalLevelPolicies } = useContext<any>(GlobalPolicyContext);
 
+    // This is where the applicable (droppable) flows are set for each policy.
     useEffect(() => {
         const requestList = [];
         const responseList = [];

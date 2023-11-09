@@ -20,7 +20,6 @@ import React, { useState } from 'react';
 import DraggablePolicyCardShared from 'AppComponents/Shared/PoliciesUI/DraggablePolicyCard';
 import type { Policy } from './Types';
 import ViewPolicy from './ViewPolicy';
-import DeletePolicy from './DeletePolicy';
 
 interface DraggablePolicyCardProps {
     policyObj: Policy;
@@ -52,6 +51,11 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
         setDialogOpen(false);
     };
 
+    // If the policy is local to the API, we don't need to render the draggable card since this is global policies.
+    if (isLocalToAPI) {
+        return null;
+    }
+
     return (
         <DraggablePolicyCardShared
             policyObj={policyObj}
@@ -64,7 +68,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
             dialogOpen={dialogOpen}
             handleViewPolicyClose={handleViewPolicyClose}
             ViewPolicy={ViewPolicy} 
-            DeletePolicy={DeletePolicy}
+            DeletePolicy={null}
         />
     );
 };
