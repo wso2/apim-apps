@@ -72,7 +72,6 @@ interface GeneralProps {
 
 /**
  * This component renders the form of adding a global policy as a global level policy.
- * This is used inside the PolicyConfigurationEditDrawer component.
  * @param {GeneralProps} props The props passed to the component.
  * @returns {TSX} Returns the JSX element.
  */

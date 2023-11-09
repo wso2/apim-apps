@@ -66,19 +66,6 @@ export type PolicySpec = {
     md5?: string;
 };
 
-export type CreatePolicySpec = {
-    id?: string;
-    category: string;
-    name: string;
-    displayName: string;
-    version: string;
-    description: string;
-    applicableFlows: string[];
-    supportedGateways: string[];
-    supportedApiTypes: string[];
-    policyAttributes: PolicySpecAttribute[];
-};
-
 export type GlobalPolicy = {
     policyName?: string;
     policyId?: string;
