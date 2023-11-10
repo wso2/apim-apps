@@ -6071,12 +6071,6 @@
       "value": "Save"
     }
   ],
-  "Apis.Details.Policies.SaveOperationPolicies.update": [
-    {
-      "type": 0,
-      "value": "Update"
-    }
-  ],
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": [
     {
       "type": 0,
@@ -8783,16 +8777,138 @@
       "value": "Error while validating the imported schema"
     }
   ],
+  "Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.description.title": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": [
+    {
+      "type": 0,
+      "value": "Oops! Looks like this policy does not have a description"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.provided": [
+    {
+      "type": 1,
+      "value": "description"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.reset": [
+    {
+      "type": 0,
+      "value": "Reset"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.saving": [
+    {
+      "type": 0,
+      "value": "Saving"
+    }
+  ],
+  "Global.Details.Policies.DraggablePolicyCard.policy.view": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.content": [
+    {
+      "type": 0,
+      "value": "Changing the gateway type will remove all existing policies"
+    }
+  ],
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": [
+    {
+      "type": 0,
+      "value": "Proceed"
+    }
+  ],
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.title": [
+    {
+      "type": 0,
+      "value": "Change Gateway Type"
+    }
+  ],
+  "Global.Details.Policies.PolicyConfigurationEditDrawer.title": [
+    {
+      "type": 0,
+      "value": "Configure "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    }
+  ],
+  "Global.Details.Policies.PolicyConfiguringDrawer.title": [
+    {
+      "type": 0,
+      "value": "Configure "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    }
+  ],
+  "Global.Details.Policies.PolicyList.title": [
+    {
+      "type": 0,
+      "value": "Policy List"
+    }
+  ],
+  "Global.Details.Policies.SaveOperationPolicies.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "Global.Details.Policies.SaveOperationPolicies.update": [
+    {
+      "type": 0,
+      "value": "Update"
+    }
+  ],
   "GlobalPolicies.Listing.onboarding.create.new": [
     {
       "type": 0,
-      "value": "Let’s get started !"
+      "value": "Let’s get started!"
     }
   ],
   "GlobalPolicies.Listing.onboarding.policies.tooltip": [
     {
       "type": 0,
-      "value": "Policies provide the capability to alter the behavior of API resources"
+      "value": "Currently there are no policies to show"
     }
   ],
   "GlobalPolicies.Listing.policies.title.add.new.policy": [

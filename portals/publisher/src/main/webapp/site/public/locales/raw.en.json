@@ -2886,9 +2886,6 @@
   "Apis.Details.Policies.SaveOperationPolicies.save": {
     "defaultMessage": "Save"
   },
-  "Apis.Details.Policies.SaveOperationPolicies.update": {
-    "defaultMessage": "Update"
-  },
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": {
     "defaultMessage": "Select API Resources"
   },
@@ -4197,11 +4194,68 @@
   "Error.while.validating.the.imported.graphQLSchema": {
     "defaultMessage": "Error while validating the imported schema"
   },
+  "Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Global.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.title": {
+    "defaultMessage": "Description"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": {
+    "defaultMessage": "Oops! Looks like this policy does not have a description"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.provided": {
+    "defaultMessage": "{description}"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.reset": {
+    "defaultMessage": "Reset"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.save": {
+    "defaultMessage": "Save"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.saving": {
+    "defaultMessage": "Saving"
+  },
+  "Global.Details.Policies.DraggablePolicyCard.policy.view": {
+    "defaultMessage": "View"
+  },
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.content": {
+    "defaultMessage": "Changing the gateway type will remove all existing policies"
+  },
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": {
+    "defaultMessage": "Proceed"
+  },
+  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.title": {
+    "defaultMessage": "Change Gateway Type"
+  },
+  "Global.Details.Policies.PolicyConfigurationEditDrawer.title": {
+    "defaultMessage": "Configure {policy}"
+  },
+  "Global.Details.Policies.PolicyConfiguringDrawer.title": {
+    "defaultMessage": "Configure {policy}"
+  },
+  "Global.Details.Policies.PolicyList.title": {
+    "defaultMessage": "Policy List"
+  },
+  "Global.Details.Policies.SaveOperationPolicies.save": {
+    "defaultMessage": "Save"
+  },
+  "Global.Details.Policies.SaveOperationPolicies.update": {
+    "defaultMessage": "Update"
+  },
   "GlobalPolicies.Listing.onboarding.create.new": {
-    "defaultMessage": "Let’s get started !"
+    "defaultMessage": "Let’s get started!"
   },
   "GlobalPolicies.Listing.onboarding.policies.tooltip": {
-    "defaultMessage": "Policies provide the capability to alter the behavior of API resources"
+    "defaultMessage": "Currently there are no policies to show"
   },
   "GlobalPolicies.Listing.policies.title.add.new.policy": {
     "defaultMessage": "Add New Global Policy"
