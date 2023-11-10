@@ -13,6 +13,7 @@ import RouteMenuMapping from 'AppComponents/Base/RouteMenuMapping';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import Configurations from 'Config';
+import CONSTS from 'AppData/Constants';
 import NavigatorChildren from './NavigatorChildren';
 
 const styles = (theme) => ({
@@ -88,12 +89,12 @@ function Navigator(props) {
         return true;
     };
 
-    const isWorkflowManager = hasPermission(Configurations.app.roles.workflowManager);
-    const isSettingsManager = hasPermission(Configurations.app.roles.settingsManager);
-    const isPolicyManager = hasPermission(Configurations.app.roles.policyManager);
-    const iskeyManagers = hasPermission(Configurations.app.roles.keyManagers);
-    const isAPICategory = hasPermission(Configurations.app.roles.categoriesManager);
-    const isGatewayManager = hasPermission(Configurations.app.roles.gatewayManager);
+    const isWorkflowManager = hasPermission(CONSTS.Roles.WORKFLOW_MANAGER);
+    const isSettingsManager = hasPermission(CONSTS.Roles.SETTINGS_MANAGER);
+    const isPolicyManager = hasPermission(CONSTS.Roles.POLICY_MANAGER);
+    const iskeyManagers = hasPermission(CONSTS.Roles.KEY_MANAGER);
+    const isAPICategory = hasPermission(CONSTS.Roles.CATEGORY_MANAGER);
+    const isGatewayManager = hasPermission(CONSTS.Roles.GATEWAY_MANAGER);
 
     const entireArray = [];
     const checkRouteMenuMapping = routeMenuMapping;

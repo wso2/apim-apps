@@ -19,16 +19,6 @@
       "enabled": true,
       "timeout": 2000
     },
-    "docUrl": "https://apim.docs.wso2.com/en/4.2.0/",
-    "roles": {
-      "workflowManager": ["apim:api_workflow_view", "apim:api_workflow_approve", "apim:tenantInfo", "openid", "apim:admin_settings"],
-      "policyManager": ["apim:tier_view","apim:policies_import_export", "apim:tier_manage", "apim:tenantInfo",
-         "apim:bl_view", "apim:bl_manage", "openid", "apim:admin_settings"],
-      "categoriesManager": ["apim:api_category", "openid", "apim:tenantInfo", "apim:admin_settings"],
-      "keyManagers": ["apim:keymanagers_manage", "openid", "apim:tenantInfo", "apim:admin_settings"],
-      "gatewayManager": ["apim:environment_manage", "openid", "apim:admin_settings", "apim:environment_read"],
-      "settingsManager": ["apim:app_owner_change", "apim:app_import_export", "apim:admin_application_view","apim:scope_manage", "openid", 
-                          "apim:admin_settings", "apim:tenantInfo"]
-      }
+    "docUrl": "https://apim.docs.wso2.com/en/4.2.0/"
   }
 }
