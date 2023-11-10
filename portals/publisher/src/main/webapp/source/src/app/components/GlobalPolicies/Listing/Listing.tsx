@@ -31,6 +31,7 @@ import {
     TableCell,
     TableRow
 } from '@material-ui/core';
+import Alert from 'AppComponents/Shared/Alert';
 import Icon from '@material-ui/core/Icon';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
@@ -247,8 +248,9 @@ const Listing: React.FC = () => {
             .then((response) => {
                 setPolicies(response.list);
             })
-            .catch((error) => {
-                console.error(error);
+            .catch((/* error */) => {
+                // console.error(error);
+                Alert.error('Error while fetching policies');
                 setnotFound(true);
             })
             .finally(() => {
@@ -266,8 +268,9 @@ const Listing: React.FC = () => {
             .then((response: any) => {
                 setEnvironments(response.environment);
             })
-            .catch((error: any) => {
-                console.error(error);
+            .catch((/* error */) => {
+                // console.error(error);
+                Alert.error('Error while fetching settings');
                 setnotFound(true);
             })
             .finally(() => {

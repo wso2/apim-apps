@@ -17,6 +17,7 @@
 */
 
 import React, { FC, useContext, useEffect, useState } from 'react';
+import { Alert } from 'AppComponents/Shared';
 import PoliciesExpansionShared from 'AppComponents/Shared/PoliciesUI/PoliciesExpansion';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from '../Types';
@@ -121,7 +122,8 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     if (policyObj) {
                         requestFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
-                        console.error("Cannot find policyObj for policyId: " + policyId);
+                        // console.error("Cannot find policyObj for policyId: " + policyId);
+                        Alert.error("Cannot find policyObj for policyId: " + policyId);
                     }
                 }
             }
@@ -151,7 +153,8 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     if (policyObj) {
                         responseFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
-                        console.error("Cannot find policyObj for policyId: " + policyId);
+                        // console.error("Cannot find policyObj for policyId: " + policyId);
+                        Alert.error("Cannot find policyObj for policyId: " + policyId);
                     }   
                 }
             }
@@ -182,7 +185,8 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         if (policyObj) {
                             faultFlowList.push({ ...policyObj, uniqueKey: uuid });
                         } else {
-                            console.error("Cannot find policyObj for policyId: " + policyId);
+                            // console.error("Cannot find policyObj for policyId: " + policyId);
+                            Alert.error("Cannot find policyObj for policyId: " + policyId);
                         }
                     }
                 }

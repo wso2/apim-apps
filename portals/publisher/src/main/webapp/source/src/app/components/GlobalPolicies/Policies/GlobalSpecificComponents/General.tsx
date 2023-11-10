@@ -32,6 +32,7 @@ import {
     FormControl,
     FormHelperText,
 } from '@material-ui/core';
+import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import { PolicySpec, GlobalPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
@@ -172,8 +173,9 @@ const General: FC<GeneralProps> = ({
                             defaultMessage: 'Please enter a valid input',
                         });
                     }
-                } catch(e) {
-                    console.error(e);
+                } catch {
+                    // console.error(error);
+                    Alert.error('Error while validating the regex');
                 }
             }
         }
