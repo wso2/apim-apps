@@ -135,8 +135,8 @@ const Policies: FC<PolicyProps> =  ({
                     (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'));
             }
             setPolicies(filteredByGatewayTypeList);
-        }).catch((error) => {
-            console.error(error);
+        }).catch((/* error */) => {
+            // console.error(error);
             Alert.error('Error occurred while retrieving the policy list');
         });
     }
@@ -206,8 +206,9 @@ const Policies: FC<PolicyProps> =  ({
                 setName(responseUpdated.displayName);
                 setAppliedGatewayLabels(responseUpdated.appliedGatewayLabels);
             })
-            .catch((error) => {
-                console.error(error);
+            .catch((/* error */) => {
+                // console.error(error);
+                Alert.error('Error occurred while retrieving the policy');
             })
             .finally(() => {
                 setLoading(false);
@@ -236,6 +237,21 @@ const Policies: FC<PolicyProps> =  ({
         newGlobalLevelPolicies[currentFlow].splice(index, 1);
         setGlobalLevelPolicies(newGlobalLevelPolicies);
     }
+
+    /**
+     * Function to rearrange the API Operation ordering.
+     * @param {string} oldIndex original index of the policy.
+     * @param {string} newIndex new index of the policy.
+     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault.
+     */
+    const rearrangeGlobalOperations = (
+        oldIndex: number, newIndex: number, currentFlow: string,
+    ) => { 
+        const newAPIPolicies: any = cloneDeep(globalLevelPolicies);
+        const policyArray = newAPIPolicies[currentFlow];
+        newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+        setGlobalLevelPolicies(newAPIPolicies);   
+    };
 
     /**
      * Triggers as we saved a drag`n`droped policy.
@@ -269,19 +285,27 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     /**
-     * Function to rearrange the API Operation ordering.
-     * @param {string} oldIndex original index of the policy.
-     * @param {string} newIndex new index of the policy.
-     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault.
+     * Function to validate before saving or updating.
+     * @returns {boolean} true if all the required fields are filled.
      */
-    const rearrangeGlobalOperations = (
-        oldIndex: number, newIndex: number, currentFlow: string,
-    ) => { 
-        const newAPIPolicies: any = cloneDeep(globalLevelPolicies);
-        const policyArray = newAPIPolicies[currentFlow];
-        newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
-        setGlobalLevelPolicies(newAPIPolicies);   
-    };
+    const validate = () => {
+        let isValidate = true;
+        if (name === '') {
+            Alert.error('Policy name cannot be empty');
+            isValidate = false;
+        }
+        if (description === '') {
+            Alert.error('Policy description cannot be empty');
+            isValidate = false;
+        }
+        if ((!globalLevelPolicies.request || globalLevelPolicies.request.length === 0) &&
+            (!globalLevelPolicies.response || globalLevelPolicies.response.length === 0) &&
+            (!globalLevelPolicies.fault || globalLevelPolicies.fault.length === 0)) {
+            Alert.error('Policy mapping cannot be empty');
+            isValidate = false;
+        }
+        return isValidate;
+    }
 
     /**
      * Function to save a policy mapping.
@@ -289,20 +313,24 @@ const Policies: FC<PolicyProps> =  ({
     const save = () => {
         setLoading(true);
 
-        // call the backend API
-        const requestBody = {
-            "id": uuidv4(),
-            "policyMapping": globalLevelPolicies,
-            "description": description,
-            "displayName": name,
-            "appliedGatewayLabels": []
-        };
-        // API.postDeployGatewayPolicies();
-        console.log("creating a new global policy mapping: 'POST' '/gateway-policies");
-        console.log("request body", requestBody);
+        if (validate()){
+            // call the backend API
+            const requestBody = {
+                "id": uuidv4(),
+                "policyMapping": globalLevelPolicies,
+                "description": description,
+                "displayName": name,
+                "appliedGatewayLabels": []
+            };
+            // API.postDeployGatewayPolicies();
+            console.log("creating a new global policy mapping: 'POST' '/gateway-policies");
+            console.log("request body", requestBody);
+
+            setLoading(false);
+            history.goBack();
+        }
 
         setLoading(false);
-        history.goBack();
     }
 
     /**
@@ -311,20 +339,23 @@ const Policies: FC<PolicyProps> =  ({
     const update = () => {
         setLoading(true);
 
-        // call the backend API
-        const requestBody = {
-            "id": policyID,
-            "policyMapping": globalLevelPolicies,
-            "description": description,
-            "displayName": name,
-            "appliedGatewayLabels": appliedGatewayLabels
-        };
-        // API.putGatewayPolicies();
-        console.log("Update global policy mapping: 'PUT' '/gateway-policies/" + {policyID});
-        console.log("request body", requestBody);
+        if (validate()){
+            // call the backend API
+            const requestBody = {
+                "id": policyID,
+                "policyMapping": globalLevelPolicies,
+                "description": description,
+                "displayName": name,
+                "appliedGatewayLabels": appliedGatewayLabels
+            };
+            // API.putGatewayPolicies();
+            console.log("Update global policy mapping: 'PUT' '/gateway-policies/" + {policyID});
+            console.log("request body", requestBody);
 
+            setLoading(false);
+            history.goBack();
+        }
         setLoading(false);
-        history.goBack();
     }
 
     /**
