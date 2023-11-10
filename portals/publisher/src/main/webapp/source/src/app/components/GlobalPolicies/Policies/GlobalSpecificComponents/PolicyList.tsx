@@ -79,7 +79,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                             <Box display='flex'>
                                 <Typography variant='subtitle2'>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyList.title'
+                                        id='Global.Details.Policies.PolicyList.title'
                                         defaultMessage='Policy List'
                                     />
                                 </Typography>

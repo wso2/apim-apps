@@ -280,7 +280,7 @@ const General: FC<GeneralProps> = ({
                             <div className={classes.resetBtn}>
                                 <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.AttachedPolicyForm.General.reset'
+                                        id='Global.Details.Policies.AttachedPolicyForm.General.reset'
                                         defaultMessage='Reset'
                                     />
                                 </Button>
@@ -289,23 +289,22 @@ const General: FC<GeneralProps> = ({
                         <div>
                             <Typography variant='subtitle2' color='textPrimary'>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.AttachedPolicyForm.General.description.title'
+                                    id='Global.Details.Policies.AttachedPolicyForm.General.description.title'
                                     defaultMessage='Description'
                                 />
                             </Typography>
                             <Typography variant='caption' color='textPrimary'>
                                 {policySpec.description ? (
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.AttachedPolicyForm.General.description.value.provided'
+                                        id={'Global.Details.Policies.AttachedPolicyForm.General.description.value.' +
+                                        'provided'}
                                         defaultMessage='{description}'
                                         values={{ description: policySpec.description }}
                                     />
                                 ) : (
                                     <FormattedMessage
-                                        id={
-                                            'Apis.Details.Policies.AttachedPolicyForm.General.description.value.' +
-                                            'not.provided'
-                                        }
+                                        id={'Global.Details.Policies.AttachedPolicyForm.General.description.value.' +
+                                            'not.provided'}
                                         defaultMessage='Oops! Looks like this policy does not have a description'
                                     />
                                 )}                            
@@ -415,7 +414,7 @@ const General: FC<GeneralProps> = ({
                             className={classes.btn}
                         >
                             <FormattedMessage
-                                id='Apis.Details.Policies.AttachedPolicyForm.General.cancel'
+                                id='Global.Details.Policies.AttachedPolicyForm.General.cancel'
                                 defaultMessage='Cancel'
                             />
                         </Button>
@@ -430,13 +429,13 @@ const General: FC<GeneralProps> = ({
                                 ? <>
                                     <CircularProgress size='small' />
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.AttachedPolicyForm.General.saving'
+                                        id='Global.Details.Policies.AttachedPolicyForm.General.saving'
                                         defaultMessage='Saving'
                                     />
                                 </>
                                 : <>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.AttachedPolicyForm.General.save'
+                                        id='Global.Details.Policies.AttachedPolicyForm.General.save'
                                         defaultMessage='Save'
                                     />
                                 </>

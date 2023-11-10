@@ -45,7 +45,6 @@ import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCa
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
-import CONSTS from 'AppData/Constants';
 import { Link } from 'react-router-dom';
 import GlobalPolicyGatewaySelector from './GlobalPolicyGatewaySelector';
 
@@ -613,23 +612,19 @@ const Listing: React.FC = () => {
                 title={
                     <FormattedMessage
                         id='GlobalPolicies.Listing.onboarding.create.new'
-                        defaultMessage='Let’s get started !'
+                        defaultMessage='Let’s get started!'
                     />
                 }
                 subTitle={
                     <FormattedMessage
                         id='GlobalPolicies.Listing.onboarding.policies.tooltip'
-                        defaultMessage={
-                            'Policies provide the capability to alter the behavior ' +
-                            'of API resources'
-                        }
+                        defaultMessage='Currently there are no policies to show'
                     />
                 }
             >
                 <OnboardingMenuCard
-                    to={CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE}
-                    name='Policies'
-                    // iconName={globalPolicyAddIcon}
+                    to='global-policies/create'
+                    name='Global Policies'
                 />
             </Onboarding>
         );

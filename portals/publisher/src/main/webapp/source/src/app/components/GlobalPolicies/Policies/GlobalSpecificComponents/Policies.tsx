@@ -485,12 +485,12 @@ const Policies: FC<PolicyProps> =  ({
                     >
                         {isCreateNew ? 
                             <FormattedMessage
-                                id='Apis.Details.Policies.SaveOperationPolicies.save'
+                                id='Global.Details.Policies.SaveOperationPolicies.save'
                                 defaultMessage='Save'
                             />
                             :
                             <FormattedMessage
-                                id='Apis.Details.Policies.SaveOperationPolicies.update'
+                                id='Global.Details.Policies.SaveOperationPolicies.update'
                                 defaultMessage='Update'
                             />
                         }

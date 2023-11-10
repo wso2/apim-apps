@@ -133,7 +133,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                             primary={
                                 <Typography variant='subtitle2'>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.PolicyConfigurationEditDrawer.title'
+                                        id='Global.Details.Policies.PolicyConfigurationEditDrawer.title'
                                         defaultMessage='Configure {policy}'
                                         values={{
                                             policy: policyObj?.displayName + ' : ' + policyObj?.version,

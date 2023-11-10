@@ -180,7 +180,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                 <DialogTitle>
                     <Typography variant='subtitle2'>
                         <FormattedMessage
-                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title'
+                            id='Global.Details.Policies.GatewaySelector.change.gateway.confirm.title'
                             defaultMessage='Change Gateway Type'
                         />
                     </Typography>
@@ -188,11 +188,8 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                 <DialogContent>
                     <Typography>
                         <FormattedMessage
-                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content'
-                            defaultMessage={
-                                'Changing the gateway type will remove all existing policies ' +
-                                'added to the API'
-                            }
+                            id='Global.Details.Policies.GatewaySelector.change.gateway.confirm.content'
+                            defaultMessage='Changing the gateway type will remove all existing policies'
                         />
                     </Typography>
                 </DialogContent>
@@ -203,7 +200,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                         variant='outlined'
                     >
                         <FormattedMessage
-                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel'
+                            id='Global.Details.Policies.GatewaySelector.change.gateway.confirm.cancel'
                             defaultMessage='Cancel'
                         />
                     </Button>
@@ -213,7 +210,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                         variant='contained'
                     >
                         <FormattedMessage
-                            id='Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed'
+                            id='Global.Details.Policies.GatewaySelector.change.gateway.confirm.proceed'
                             defaultMessage='Proceed'
                         />
                     </Button>

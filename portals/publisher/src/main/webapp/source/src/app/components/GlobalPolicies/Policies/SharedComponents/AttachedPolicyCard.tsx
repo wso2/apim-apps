@@ -99,7 +99,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     // console.error(error);
                     Alert.error(
                         <FormattedMessage
-                            id='Apis.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error'
+                            id='Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error'
                             defaultMessage='Something went wrong while downloading the policy'
                         />,
                     );
@@ -116,7 +116,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     // console.error(error);
                     Alert.error(
                         <FormattedMessage
-                            id='Apis.Details.Policies.AttachedPolicyCard.commonPolicy.download.error'
+                            id='Global.Details.Policies.AttachedPolicyCard.commonPolicy.download.error'
                             defaultMessage='Something went wrong while downloading the policy'
                         />,
                     );
