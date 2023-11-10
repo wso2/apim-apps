@@ -29,9 +29,11 @@ import {
     Table,
     TableBody,
     TableCell,
-    TableRow
+    TableRow,
+    Paper
 } from '@material-ui/core';
-import Alert from 'AppComponents/Shared/Alert';
+import Alert from '@material-ui/lab/Alert';
+import APIMAlert from 'AppComponents/Shared/Alert';
 import Icon from '@material-ui/core/Icon';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
@@ -250,7 +252,7 @@ const Listing: React.FC = () => {
             })
             .catch((/* error */) => {
                 // console.error(error);
-                Alert.error('Error while fetching policies');
+                APIMAlert.error('Error while fetching policies');
                 setnotFound(true);
             })
             .finally(() => {
@@ -270,7 +272,7 @@ const Listing: React.FC = () => {
             })
             .catch((/* error */) => {
                 // console.error(error);
-                Alert.error('Error while fetching settings');
+                APIMAlert.error('Error while fetching settings');
                 setnotFound(true);
             })
             .finally(() => {
@@ -444,6 +446,13 @@ const Listing: React.FC = () => {
 
     const policiesList = getPoliciesList();
 
+    const shortName = (name: string) => {
+        if (name.length > 20) {
+            return `${name.substring(0, 20)}...`;
+        }
+        return name;
+    }
+
     /**
      * Columns for the MUI table.
      */
@@ -548,24 +557,24 @@ const Listing: React.FC = () => {
             return ( 
                 <TableRow>
                     <TableCell colSpan={4}>
-                        <Box>
-                            <Typography variant='body2' gutterBottom>
-                                Descrpiton : {policy.description}
-                            </Typography>
+                        <Paper>
+                            <Alert severity='info'>{policy.description}</Alert>
                             
-                            <TableContainer>
+                            <TableContainer style={{ maxWidth: '400px'}}>
                                 <Table>
                                     <TableBody>
                                         {gatewayList.map((gateway: string) => (
-                                            <TableRow 
-                                                key={gateway}
-                                            >
+                                            <TableRow key={gateway}>
                                                 <TableCell>
-                                                    <Chip label={gateway} variant='outlined' />
+                                                    <Tooltip title={gateway} placement='bottom-start'>
+                                                        <Chip style={{width: '200px', justifyContent: 'center'}} 
+                                                            label={shortName(gateway)} variant='outlined' 
+                                                        />
+                                                    </Tooltip>
                                                 </TableCell>
-                                                <TableCell align='right'>
+                                                <TableCell>
                                                     {isDeployed(gateway, policy.appliedGatewayLabels) ? (
-                                                        <Button 
+                                                        <Button style={{ width: '112px' }}
                                                             variant='contained' 
                                                             color='default' 
                                                             onClick={() => undeploy(policy.id, gateway)}
@@ -573,7 +582,7 @@ const Listing: React.FC = () => {
                                                             Undeploy
                                                         </Button>
                                                     ) : (
-                                                        <Button 
+                                                        <Button style={{ width: '112px' }}
                                                             variant='contained' 
                                                             color='primary'
                                                             onClick={() => deploy(policy.id, gateway)}
@@ -587,7 +596,7 @@ const Listing: React.FC = () => {
                                     </TableBody>
                                 </Table>
                             </TableContainer> 
-                        </Box>
+                        </Paper>
                     </TableCell>
                 </TableRow>   
                 
