@@ -30,7 +30,12 @@ import {
     TableBody,
     TableCell,
     TableRow,
-    Paper
+    Paper,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogContentText
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import APIMAlert from 'AppComponents/Shared/Alert';
@@ -120,6 +125,9 @@ const Listing: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
     const [isAllowedToFilterCCPolicies, setIsAllowedToFilterCCPolicies] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedPolicyName, setSelectedPolicyName] = useState('');
+    const [selectedPolicyId, setSelectedPolicyId] = useState('');
 
     /**
      * Getting the selected gateway type (Choreo Connect or Synapse).
@@ -415,6 +423,7 @@ const Listing: React.FC = () => {
      * @param {string} gatewayPolicyMappingId : Policy Identifier.
      */
     const deletePolicy = (gatewayPolicyMappingId: string) => {
+        setIsDialogOpen(false);
         setLoading(true);
         // call the backend API
         // API.deleteGatewayPolicies();
@@ -496,6 +505,14 @@ const Listing: React.FC = () => {
             options: {
                 customBodyRender: (value: any, tableMeta: any) => {
                     const policyId = tableMeta.rowData[0];
+                    const policyName = tableMeta.rowData[1];
+
+                    const handleDeleteClick = () => {
+                        setSelectedPolicyId(policyId);
+                        setSelectedPolicyName(policyName);
+                        setIsDialogOpen(true);
+                    };
+
                     return (
                         <Box display='flex' flexDirection='row'>
                             <Button
@@ -511,18 +528,39 @@ const Listing: React.FC = () => {
                                     defaultMessage='Edit'
                                 />
                             </Button>
-                            <Button
-                                aria-label='Delete'
-                                onClick={() => deletePolicy(policyId)}
-                            >
-                                <Icon className={classes.icon}>
-                                    delete
-                                </Icon>
-                                <FormattedMessage
-                                    id='GlobalPolicies.Listing.table.header.actions.delete'
-                                    defaultMessage='Delete'
-                                />
-                            </Button>
+                            <>
+                                <Button
+                                    aria-label='Delete'
+                                    onClick={handleDeleteClick}
+                                >
+                                    <Icon className={classes.icon}>
+                                        delete
+                                    </Icon>
+                                    <FormattedMessage
+                                        id='GlobalPolicies.Listing.table.header.actions.delete'
+                                        defaultMessage='Delete'
+                                    />
+                                </Button>
+                                <Dialog open={isDialogOpen} 
+                                    BackdropProps={{ style: { backgroundColor: 'rgba(0, 0, 0, 0.08)' }}}
+                                    PaperProps={{ style: { boxShadow: 'none' } }}
+                                >
+                                    <DialogTitle>Confirm Delete</DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText>
+                                            Are you sure you want to delete {selectedPolicyName}?
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={() => setIsDialogOpen(false)} color='primary'>
+                                            Cancel
+                                        </Button>
+                                        <Button onClick={() => deletePolicy(selectedPolicyId)} color='primary'>
+                                            Delete
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </>
                         </Box>
                     );                
                 },
