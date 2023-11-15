@@ -3089,6 +3089,21 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * Delete a global policy
+     * @param {String} gatewayPolicyMappingId UUID of the global policy to delete
+     * @returns {Promise} Response
+     */
+    static deleteGatewayPolicyByPolicyId(gatewayPolicyMappingId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].deleteGatewayPolicyByPolicyId(
+                {gatewayPolicyMappingId},
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 API.CONSTS = {

@@ -289,12 +289,20 @@ const Listing: React.FC = () => {
         setIsDialogOpen(false);
         setLoading(true);
         // call the backend API
-        // API.deleteGatewayPolicies();
-        console.log("delete policy: 'DELETE' '/gateway-policies/{gatewayPolicyMappingId}");
-        // If successful, remove it from the UI
-        const updatedPolicies = policies.filter((policy) => policy.id !== gatewayPolicyMappingId);
-        setPolicies(updatedPolicies);
-        setLoading(false);
+        const promise = API.deleteGatewayPolicyByPolicyId(gatewayPolicyMappingId);
+        promise
+            .then(() => {
+                // If successful, remove it from the UI
+                const updatedPolicies = policies.filter((policy) => policy.id !== gatewayPolicyMappingId);
+                setPolicies(updatedPolicies);
+                APIMAlert.success('Policy deleted successfully');
+                setLoading(false);
+            })
+            .catch((/* error */) => {
+                // console.error(error);
+                APIMAlert.error('Error while deleting the policy');
+                setLoading(false);
+            });
     }
 
     useEffect(() => {
