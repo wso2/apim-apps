@@ -99,6 +99,11 @@ interface Policy {
     appliedGatewayLabels: string[];
 }
 
+interface Deployment {
+    gatewayLabel: string; 
+    gatewayDeployment: boolean;
+}
+
 interface Environment {
     id: string;
     name: string;
@@ -182,6 +187,37 @@ const Listing: React.FC = () => {
         return false;
     }
 
+    // Get the applied gateway labels as an array list for a specific policy by ID
+    const getAppliedGatewayLabelsById = (id: string) => {
+        const policy = policies.find(item => item.id === id);
+        return policy ? policy.appliedGatewayLabels : [];
+    }
+
+    // Get the deployment array for a specific policy by ID
+    // [{"gatewayLabel": "Default","gatewayDeployment": false},{"gatewayLabel": "GateWay1","gatewayDeployment": false}]
+    const getDeploymentArray = (policyId: string) => {
+        const appliedGatewayList = getAppliedGatewayLabelsById(policyId);
+        const allGatewayList = environments.map((env: any) => {
+            return env.name;
+        });
+        return allGatewayList.map(gatewayLabel => ({
+            gatewayLabel,
+            gatewayDeployment: appliedGatewayList.includes(gatewayLabel),
+        }));
+    }
+
+    // Toggle the deployment status of a specific gateway for a specific policy
+    // If false, it will become true (depolying) and vice versa (undeploying)
+    const toggleGatewayDeployment = (deploymentArray: Deployment[], environment: string) => {
+        const updatedArray = deploymentArray.map(item => {
+            if (item.gatewayLabel === environment) {
+                return { ...item, gatewayDeployment: !item.gatewayDeployment };
+            }
+            return item;
+        });
+        return updatedArray;
+    };
+
     /**
      * Function to add a label to a specific policy in UI
      * 
@@ -203,33 +239,6 @@ const Listing: React.FC = () => {
         // Set the state with the updated policies
         setPolicies(updatedPolicies);
     };
-
-    /**
-     * Function to deploy a policy mapping to another enviroment/gateway
-     * 
-     * @param {string} gatewayPolicyMappingId : Policy Identifier.
-     * @param {string} environement : Deploying enviroment/gateway.
-     */
-    const deploy = (gatewayPolicyMappingId: string, environement: string) => {
-        setLoading(true);
-
-        // call the backend API
-        const requestBody = [
-            {
-                "mappingUUID": {gatewayPolicyMappingId},
-                "gatewayLabel": {environement},
-                "gatewayDeployment": true
-            }
-        ];
-        // API.postDeployGatewayPolicies();
-        console.log("deploying policy to specific gateway: 'POST' '/gateway-policies/{gatewayPolicyMappingId}/deploy");
-        console.log("request body", requestBody);
-
-        // If successful, update the policies list for the UI
-        addLabelToPolicy(gatewayPolicyMappingId, environement);
-
-        setLoading(false);
-    }
 
     /**
      * Function to remove a label from a specific policy in UI
@@ -258,25 +267,40 @@ const Listing: React.FC = () => {
      * 
      * @param {string} gatewayPolicyMappingId : Policy Identifier.
      * @param {string} environement : Deploying enviroment/gateway.
+     * @param {boolean} deploying : Deploying or undeploying.
      */
-    const undeploy = (gatewayPolicyMappingId: string, environement: string) => {
+    const deployOrUndeploy = (gatewayPolicyMappingId: string, environement: string, deploying: boolean) => {
         setLoading(true);
-
+        const deploymentArray = getDeploymentArray(gatewayPolicyMappingId);
+        const updatedDeploymentArray = toggleGatewayDeployment(deploymentArray, environement);
         // call the backend API
-        const requestBody = [
-            {
-                "mappingUUID": {gatewayPolicyMappingId},
-                "gatewayLabel": {environement},
-                "gatewayDeployment": false
-            }
-        ];
-        // API.postDeployGatewayPolicies();
-        console.log("undeploying policy to specifc gateway: 'POST' '/gateway-policies/{gatewayPolicyMappingId}/deploy");
-        console.log("request body", requestBody);
-
-        // If successful, update the policies list for the UI
-        removeLabelFromPolicy(gatewayPolicyMappingId, environement);
-
+        const promise = API.engageGlobalPolicy(gatewayPolicyMappingId, updatedDeploymentArray);
+        promise
+            .then((response) => {
+                if (response.status === 200 || response.status === 201) {
+                    setLoading(false);
+                    if (deploying) {
+                        APIMAlert.success('Policy deployed successfully');    
+                        // If successful, update the policies list for the UI 
+                        addLabelToPolicy(gatewayPolicyMappingId, environement);                
+                    } else {
+                        APIMAlert.success('Policy undeployed successfully');    
+                        // If successful, update the policies list for the UI 
+                        removeLabelFromPolicy(gatewayPolicyMappingId, environement);                
+                    }           
+                }
+                else {
+                    APIMAlert.error(response.body.message);
+                }                
+            })
+            .catch((/* error */) => {
+                // console.error(error);
+                if (deploying) {
+                    APIMAlert.error('Error occurred while deploying the policy');
+                } else {
+                    APIMAlert.error('Error occurred while undeploying the policy');
+                }
+            })         
         setLoading(false);
     }
 
@@ -485,7 +509,7 @@ const Listing: React.FC = () => {
                                                         <Button style={{ width: '112px' }}
                                                             variant='contained' 
                                                             color='default' 
-                                                            onClick={() => undeploy(policy.id, gateway)}
+                                                            onClick={() => deployOrUndeploy(policy.id, gateway, false)}
                                                         >
                                                             Undeploy
                                                         </Button>
@@ -493,7 +517,7 @@ const Listing: React.FC = () => {
                                                         <Button style={{ width: '112px' }}
                                                             variant='contained' 
                                                             color='primary'
-                                                            onClick={() => deploy(policy.id, gateway)}
+                                                            onClick={() => deployOrUndeploy(policy.id, gateway, true)}
                                                         >
                                                             Deploy
                                                         </Button>

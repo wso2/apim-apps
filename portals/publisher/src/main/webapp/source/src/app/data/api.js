@@ -3122,9 +3122,29 @@ class API extends Resource {
         const requestBody = {
             requestBody: body,
         };
-        console.log(body);
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].updateGatewayPoliciesToFlows(
+                {gatewayPolicyMappingId},
+                requestBody,
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Deploy the global policy for an gateway environment
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @param {Object} body policy schema which holds the deployed and undeployed gateyway environments
+     * @returns {Promise} Response
+     */
+    static engageGlobalPolicy(gatewayPolicyMappingId, body) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        console.log(body);
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].engageGlobalPolicy(
                 {gatewayPolicyMappingId},
                 requestBody,
                 this._requestMetaData(),
