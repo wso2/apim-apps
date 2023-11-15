@@ -137,15 +137,14 @@ const Listing: React.FC = () => {
         promisedPolicies
             .then((response: any) => {
                 setPolicies(response.body.list);
+                setLoading(false);
             })
             .catch((/* error */) => {
                 // console.error(error);
                 APIMAlert.error('Error while fetching policies');
                 setnotFound(true);
-            })
-            .finally(() => {
                 setLoading(false);
-            });
+            })
     };
 
     /**
@@ -167,23 +166,6 @@ const Listing: React.FC = () => {
                 setLoading(false);
             });
     };
-
-    /**
-     * Provides the gateway specific policies list (In there, we can filter the list).
-     * 
-     * @returns {array} Return the policy list after filtering.
-     */
-    const getPoliciesList = () => {
-        // let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
-        // if (isAllowedToFilterCCPolicies) {
-        //     gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
-        // }
-        // if (policies) {
-        //     return policies.filter((policy) => policy.appliedGatewayLabels.includes(gatewayType));
-        // }
-        // return [];
-        return policies;
-    }
 
     /**
      * Check if the gateway is deployed for the Golbal Policy.
@@ -333,7 +315,7 @@ const Listing: React.FC = () => {
     policies?.sort((a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName));
 
 
-    const policiesList = getPoliciesList();
+    const policiesList = policies;
 
     const shortName = (name: string) => {
         if (name.length > 20) {
@@ -525,7 +507,7 @@ const Listing: React.FC = () => {
     /**
      * If there are no policies, then show the onboarding page.
      */
-    if (policies && policies.length === 0) {
+    if (policies && policies.length === 0 && !loading) {
         return (
             <Onboarding
                 title={
@@ -550,7 +532,7 @@ const Listing: React.FC = () => {
     }
 
     if (loading) {
-        return <Progress per={90} message='Loading Policies ...' />;
+        return <Progress per={90} message='Loading Global Policies ...' />;
     }
 
     if (notFound || !policies) {
