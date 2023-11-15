@@ -4224,18 +4224,6 @@
   "Global.Details.Policies.DraggablePolicyCard.policy.view": {
     "defaultMessage": "View"
   },
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.content": {
-    "defaultMessage": "Changing the gateway type will remove all existing policies"
-  },
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": {
-    "defaultMessage": "Proceed"
-  },
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.title": {
-    "defaultMessage": "Change Gateway Type"
-  },
   "Global.Details.Policies.PolicyConfigurationEditDrawer.title": {
     "defaultMessage": "Configure {policy}"
   },

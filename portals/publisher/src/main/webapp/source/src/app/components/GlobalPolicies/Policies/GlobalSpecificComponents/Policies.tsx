@@ -35,7 +35,6 @@ import cloneDeep from 'lodash.clonedeep';
 import { useHistory, Link } from 'react-router-dom';
 import PolicyList from './PolicyList';
 import type { Policy, PolicySpec, GlobalLevelPolicy } from '../Types';
-import GatewaySelector from './GatewaySelector';
 import { GlobalPolicyContextProvider } from '../GlobalPolicyContext';
 import PolicyPanel from './PolicyPanel';
 import { uuidv4 } from '../Utils';
@@ -84,16 +83,9 @@ const Policies: FC<PolicyProps> =  ({
     const [loading, setLoading] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
-    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(false);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [appliedGatewayLabels, setAppliedGatewayLabels] = useState<string[]>([]);
-
-    // If Choreo Connect radio button is selected in GatewaySelector, it will be true 
-    // to render other UI changes specific to the Choreo Connect.
-    const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
-        setIsChoreoConnectEnabled(isCCEnabled);
-    }
 
     // Global Level Policy - global level policy mapping. It will be initially empty.
     const initGlobalLevelPolicy: GlobalLevelPolicy = {
@@ -123,18 +115,7 @@ const Policies: FC<PolicyProps> =  ({
             commonPolicies.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
-            // Filter the policies based on the gateway type
-            let filteredByGatewayTypeList = null;
-            if (!isChoreoConnectEnabled) {
-                // Get synpase gateway supported policies
-                filteredByGatewayTypeList = commonPolicies.filter(
-                    (policy: Policy) => policy.supportedGateways.includes('Synapse'));
-            } else {
-                // Get CC gateway supported policies
-                filteredByGatewayTypeList = commonPolicies.filter(
-                    (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'));
-            }
-            setPolicies(filteredByGatewayTypeList);
+            setPolicies(commonPolicies);
         }).catch((/* error */) => {
             // console.error(error);
             Alert.error('Error occurred while retrieving the policy list');
@@ -242,16 +223,12 @@ const Policies: FC<PolicyProps> =  ({
             });
     }
 
-    const removeAPIPoliciesForGatewayChange = () => {
-        setGlobalLevelPolicies(initGlobalLevelPolicy);
-    }
-
     useEffect(() => {
         fetchPolicies();
         if (!isCreateNew){
             fetchGlobalPolicyByID();
         }
-    }, [isChoreoConnectEnabled]); 
+    }, []); 
 
     /**
      * Triggers as we click delete icon in a drag`n`droped the policy.
@@ -454,13 +431,6 @@ const Policies: FC<PolicyProps> =  ({
                             </Typography>
                         </div>
                     </Grid>
-                    <Box mb={4}>
-                        <GatewaySelector
-                            setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
-                            isChoreoConnectEnabled={isChoreoConnectEnabled}
-                            removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
-                        />
-                    </Box>
                     <Box mb={2}>
                         <TextField
                             fullWidth
@@ -494,7 +464,6 @@ const Policies: FC<PolicyProps> =  ({
                                     <Box height='100vh'>
                                         <Box pt={1} overflow='scroll'>
                                             <PolicyPanel
-                                                isChoreoConnectEnabled={isChoreoConnectEnabled}
                                                 allPolicies={allPolicies}
                                                 policyList={policies}
                                             />
@@ -507,7 +476,6 @@ const Policies: FC<PolicyProps> =  ({
                         <PolicyList
                             policyList={policies}
                             fetchPolicies={fetchPolicies}
-                            isChoreoConnectEnabled={isChoreoConnectEnabled}
                         />                   
                     </Box>
                 </DndProvider>

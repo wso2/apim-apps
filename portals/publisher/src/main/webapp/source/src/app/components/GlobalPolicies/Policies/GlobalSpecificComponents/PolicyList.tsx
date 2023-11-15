@@ -53,7 +53,6 @@ const useStyles = makeStyles(() => ({
 interface PolicyListPorps {
     policyList: Policy[];
     fetchPolicies: () => void;
-    isChoreoConnectEnabled: boolean;
 }
 
 /**
@@ -61,14 +60,10 @@ interface PolicyListPorps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} List of policies local to the API segment.
  */
-const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoConnectEnabled}) => {
+const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies}) => {
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
-    let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
-
-    if (isChoreoConnectEnabled) {
-        gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
-    }
+    const gatewayType = CONSTS.GATEWAY_TYPE.synapse;
 
     return (
         <Paper className={classes.paper} style={{ flex: '0 0 auto', marginLeft: '20px' }}>
@@ -104,13 +99,11 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                         id='response-tab'
                                         aria-controls='response-tabpanel'
                                     />
-                                    {!isChoreoConnectEnabled && (
-                                        <Tab
-                                            label={<span className={classes.flowTab}>Fault</span>}
-                                            id='fault-tab'
-                                            aria-controls='fault-tabpanel'
-                                        />)
-                                    }
+                                    <Tab
+                                        label={<span className={classes.flowTab}>Fault</span>}
+                                        id='fault-tab'
+                                        aria-controls='fault-tabpanel'
+                                    />
                                 </Tabs>
                                 <Box pt={1} overflow='scroll'>
                                     <TabPanel
@@ -141,16 +134,14 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                         selectedTab={selectedTab}
                                         fetchPolicies={fetchPolicies}
                                     />
-                                    {!isChoreoConnectEnabled && (
-                                        <TabPanel
-                                            policyList={policyList.filter((policy) =>
-                                                policy.applicableFlows.includes('fault'),
-                                            )}
-                                            index={2}
-                                            selectedTab={selectedTab}
-                                            fetchPolicies={fetchPolicies}
-                                        />
-                                    )}
+                                    <TabPanel
+                                        policyList={policyList.filter((policy) =>
+                                            policy.applicableFlows.includes('fault'),
+                                        )}
+                                        index={2}
+                                        selectedTab={selectedTab}
+                                        fetchPolicies={fetchPolicies}
+                                    />
                                 </Box>
                             </Box>
                         </div>

@@ -23,7 +23,6 @@ import type { Policy, PolicySpec } from '../Types';
 
 interface PolicyPanelProps {
     children?: React.ReactNode;
-    isChoreoConnectEnabled: boolean;
     allPolicies: PolicySpec[] | null;
     policyList: Policy[];
 }
@@ -35,7 +34,6 @@ interface PolicyPanelProps {
  * @returns {TSX} Tab panel.
  */
 const PolicyPanel: FC<PolicyPanelProps> = ({
-    isChoreoConnectEnabled,
     allPolicies,
     policyList,
 }) => {
@@ -43,7 +41,6 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
     return (
         <Box py={1} px={3}>
             <PoliciesSection
-                isChoreoConnectEnabled={isChoreoConnectEnabled}
                 allPolicies={allPolicies}
                 policyList={policyList}
             />

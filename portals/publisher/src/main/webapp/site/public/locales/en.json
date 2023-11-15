@@ -8837,30 +8837,6 @@
       "value": "View"
     }
   ],
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": [
-    {
-      "type": 0,
-      "value": "Cancel"
-    }
-  ],
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.content": [
-    {
-      "type": 0,
-      "value": "Changing the gateway type will remove all existing policies"
-    }
-  ],
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": [
-    {
-      "type": 0,
-      "value": "Proceed"
-    }
-  ],
-  "Global.Details.Policies.GatewaySelector.change.gateway.confirm.title": [
-    {
-      "type": 0,
-      "value": "Change Gateway Type"
-    }
-  ],
   "Global.Details.Policies.PolicyConfigurationEditDrawer.title": [
     {
       "type": 0,

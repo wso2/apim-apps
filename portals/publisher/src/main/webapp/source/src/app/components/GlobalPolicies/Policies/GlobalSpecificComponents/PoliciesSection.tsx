@@ -23,7 +23,6 @@ import type { Policy, PolicySpec } from '../Types';
 import PoliciesExpansion from '../SharedComponents/PoliciesExpansion';
 
 interface PolicySectionProps {
-    isChoreoConnectEnabled: boolean;
     allPolicies: PolicySpec[] | null;
     policyList: Policy[];
 }
@@ -33,7 +32,6 @@ interface PolicySectionProps {
  * @returns {TSX} Policy management page to render.
  */
 const PoliciesSection: FC<PolicySectionProps> = ({
-    isChoreoConnectEnabled,
     allPolicies,
     policyList,
 }) => {
@@ -51,7 +49,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                             target={null}
                             verb='None'
                             allPolicies={allPolicies}
-                            isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            isChoreoConnectEnabled={false}
                             policyList={policyList}
                             isAPILevelPolicy
                         />

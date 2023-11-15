@@ -51,7 +51,6 @@ import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import { Link } from 'react-router-dom';
-import GlobalPolicyGatewaySelector from './GlobalPolicyGatewaySelector';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -124,20 +123,10 @@ const Listing: React.FC = () => {
     const [environments, setEnvironments] = useState<Environment[]>([]);
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
-    const [isAllowedToFilterCCPolicies, setIsAllowedToFilterCCPolicies] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedPolicyName, setSelectedPolicyName] = useState('');
     const [selectedPolicyId, setSelectedPolicyId] = useState('');
-
-    /**
-     * Getting the selected gateway type (Choreo Connect or Synapse).
-     * 
-     * @param {boolean} isCCEnabled : Indicates whether Choreo Connect is selected or not.
-     */
-    const handleGatewayTypeSelection = (isCCEnabled: boolean) => {
-        setIsAllowedToFilterCCPolicies(isCCEnabled);
-    } 
-
+  
     /**
      * Fetch the data from the backend to the compoenent.
      */
@@ -634,12 +623,6 @@ const Listing: React.FC = () => {
                 lg={11}
                 item
             >
-                <Box>
-                    <GlobalPolicyGatewaySelector
-                        handleGatewayTypeSelection={handleGatewayTypeSelection}
-                        isAllowedToFilterCCPolicies={isAllowedToFilterCCPolicies}
-                    />
-                </Box>
                 <MUIDataTable
                     title={false}
                     data={policiesList}
