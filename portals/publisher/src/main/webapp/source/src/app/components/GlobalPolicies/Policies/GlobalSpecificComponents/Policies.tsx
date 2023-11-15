@@ -179,36 +179,12 @@ const Policies: FC<PolicyProps> =  ({
     };
 
     const fetchGlobalPolicyByID = () => {
-        // // hardcoded response
-        console.log("fetching global policy mapping: 'GET' '/gateway-policies/" + {policyID});
-        const promisedPolicy = Promise.resolve({
-            id: policyID,
-            policyMapping: {
-                request: [
-                    {
-                        policyName: "addHeader",
-                        policyVersion: "v1",
-                        policyId: "f10ee49b-779b-4109-843c-884f9341df91",                     
-                        parameters: {
-                            headerName: 'a',
-                            headerValue: 'a',   
-                        }
-                    }
-                ],
-                response: [],
-                fault: []
-            },
-            description: "Set header value to the request with item type",
-            displayName: "item_type_setter",
-            appliedGatewayLabels: [
-                "gatewayLabel_1"
-            ]
-        });
-        // hardcoded response ends
-
+        setLoading(true);
+        const gatewayPolicyMappingId = String(policyID);
+        const promisedPolicy = API.getGatewayPolicyMappingContentByPolicyMappingId(gatewayPolicyMappingId);
         promisedPolicy
             .then((response) => {
-                const responseUpdated = assignUUIDs(response);      
+                const responseUpdated = assignUUIDs(response.body);      
                 setGlobalLevelPolicies(responseUpdated.policyMapping);
                 setDescription(responseUpdated.description);
                 setName(responseUpdated.displayName);
@@ -225,7 +201,7 @@ const Policies: FC<PolicyProps> =  ({
 
     useEffect(() => {
         fetchPolicies();
-        if (!isCreateNew){
+        if (!isCreateNew && policyID){
             fetchGlobalPolicyByID();
         }
     }, []); 
@@ -270,6 +246,7 @@ const Policies: FC<PolicyProps> =  ({
         updatedOperation: any, currentFlow: string,
     ) => {
         const newGlobalLevelPolicies: any = cloneDeep(globalLevelPolicies);
+        // Check whether the policy operation already exists
         const flowPolicy = (newGlobalLevelPolicies)[currentFlow].find(
             (p: any) =>
                 p.policyId === updatedOperation.policyId &&
@@ -277,10 +254,10 @@ const Policies: FC<PolicyProps> =  ({
         );
         
         if (flowPolicy) {
-            // Edit policy
+            // Edit policy operation if already exists
             flowPolicy.parameters = { ...updatedOperation.parameters };
         } else {
-            // Add new policy
+            // Add new policy operation
             const uuid = uuidv4();
             (newGlobalLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid }
             );
@@ -354,19 +331,31 @@ const Policies: FC<PolicyProps> =  ({
 
         if (validate()){
             // call the backend API
+            const policyMapping = removeUUIDs(globalLevelPolicies);
             const requestBody = {
                 "id": policyID,
-                "policyMapping": globalLevelPolicies,
+                "policyMapping": policyMapping,
                 "description": description,
                 "displayName": name,
                 "appliedGatewayLabels": appliedGatewayLabels
             };
-            // API.putGatewayPolicies();
-            console.log("Update global policy mapping: 'PUT' '/gateway-policies/" + {policyID});
-            console.log("request body", requestBody);
-
-            setLoading(false);
-            history.goBack();
+            const gatewayPolicyMappingId = String(policyID);
+            const promise = API.updateGatewayPoliciesToFlows(gatewayPolicyMappingId, requestBody);
+            promise
+                .then((response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setLoading(false);
+                        Alert.success('Policy mapping updated successfully');                    
+                        history.goBack();
+                    }
+                    else {
+                        Alert.error(response.body.message);
+                    }                
+                })
+                .catch((/* error */) => {
+                    // console.error(error);
+                    Alert.error('Error occurred while updating the policy mapping');
+                })
         }
         setLoading(false);
     }

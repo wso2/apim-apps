@@ -3056,11 +3056,7 @@ class API extends Resource {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].getAllGatewayPolicies(
-                {
-                    limit,
-                    offset,
-                    query
-                },
+                { limit, offset, query },
                 this._requestMetaData(),
             );
         });
@@ -3073,19 +3069,14 @@ class API extends Resource {
      */
     static addGatewayPoliciesToFlows(body) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        const payload = {
-            'Content-Type': 'multipart/form-data'
-        };
         const requestBody = {
             requestBody: body,
         };
         return apiClient.then(client => {
             return client.apis['Gateway Policies'].addGatewayPoliciesToFlows(
-                payload,
+                {},
                 requestBody,
-                this._requestMetaData({
-                    'Content-Type': 'multipart/form-data',
-                }),
+                tthis._requestMetaData(),
             );
         });
     }
@@ -3100,6 +3091,42 @@ class API extends Resource {
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].deleteGatewayPolicyByPolicyId(
                 {gatewayPolicyMappingId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the global policy by ID
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @returns {Promise} Response containing the information of the requested global policy
+     */
+    static getGatewayPolicyMappingContentByPolicyMappingId(gatewayPolicyMappingId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].getGatewayPolicyMappingContentByPolicyMappingId(
+                {gatewayPolicyMappingId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update the global policy by ID
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @param {Object} body policy schema which holds the updated data
+     * @returns {Promise} Response containing the information of the requested global policy
+     */
+    static updateGatewayPoliciesToFlows(gatewayPolicyMappingId, body) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        console.log(body);
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].updateGatewayPoliciesToFlows(
+                {gatewayPolicyMappingId},
+                requestBody,
                 this._requestMetaData(),
             );
         });
