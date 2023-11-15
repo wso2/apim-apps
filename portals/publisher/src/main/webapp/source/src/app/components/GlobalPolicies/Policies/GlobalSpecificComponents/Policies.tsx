@@ -170,6 +170,33 @@ const Policies: FC<PolicyProps> =  ({
         return inputResponse;
     };
       
+    // remove uuids from the policy mapping
+    const removeUUIDs = (input: any) => {
+        const inputWithoutUUIDs: any = cloneDeep(input);
+        if (inputWithoutUUIDs) {
+            const { request, response, fault } = inputWithoutUUIDs;
+            if (request) {
+                inputWithoutUUIDs.request = request.map((item: any) => {
+                    const { uuid, ...rest } = item;
+                    return rest;
+                });
+            }
+            if (response) {
+                inputWithoutUUIDs.response = response.map((item: any) => {
+                    const { uuid, ...rest } = item;
+                    return rest;
+                });
+            }
+            if (fault) {
+                inputWithoutUUIDs.fault = fault.map((item: any) => {
+                    const { uuid, ...rest } = item;
+                    return rest;
+                });
+            }
+        }
+        return inputWithoutUUIDs;
+    };
+
     const fetchGlobalPolicyByID = () => {
         // // hardcoded response
         console.log("fetching global policy mapping: 'GET' '/gateway-policies/" + {policyID});
@@ -315,22 +342,31 @@ const Policies: FC<PolicyProps> =  ({
 
         if (validate()){
             // call the backend API
+            const policyMapping = removeUUIDs(globalLevelPolicies);
             const requestBody = {
                 "id": uuidv4(),
-                "policyMapping": globalLevelPolicies,
+                "policyMapping": policyMapping,
                 "description": description,
                 "displayName": name,
                 "appliedGatewayLabels": []
             };
-            // API.postDeployGatewayPolicies();
-            console.log("creating a new global policy mapping: 'POST' '/gateway-policies");
-            console.log("request body", requestBody);
-
-            setLoading(false);
-            history.goBack();
+            const promise = API.addGatewayPoliciesToFlows(requestBody);
+            promise
+                .then((response) => {
+                    setLoading(false);
+                    if (response.status === 200 || response.status === 201) {
+                        Alert.success('Policy mapping added successfully');                    
+                        history.goBack();
+                    }
+                    else {
+                        Alert.error(response.body.message);
+                    }                
+                })
+                .catch((/* error */) => {
+                    // console.error(error);
+                    Alert.error('Error occurred while adding the policy mapping');
+                })
         }
-
-        setLoading(false);
     }
 
     /**

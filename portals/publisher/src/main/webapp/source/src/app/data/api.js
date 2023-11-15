@@ -3045,6 +3045,50 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get all global policies
+     * @param {number} limit Limit of the global policy list which needs to be retrieved
+     * @param {number} offset Offset of the global policy list which needs to be retrieved
+     * @param {String} query Search attribute by using an "gatewayLabel:" modifier
+     * @returns {Promise} Promise containing global policies list
+     */
+    static getAllGatewayPolicies(limit = null, offset = 0, query = null) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].getAllGatewayPolicies(
+                {
+                    limit,
+                    offset,
+                    query
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a new global policy
+     * @param {Object} body policy schema which holds the newly added data
+     * @returns {Promise} Promise containing the added global policy
+     */
+    static addGatewayPoliciesToFlows(body) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const payload = {
+            'Content-Type': 'multipart/form-data'
+        };
+        const requestBody = {
+            requestBody: body,
+        };
+        return apiClient.then(client => {
+            return client.apis['Gateway Policies'].addGatewayPoliciesToFlows(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
 }
 
 API.CONSTS = {
