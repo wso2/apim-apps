@@ -39,15 +39,17 @@ const useStyles = makeStyles(() => ({
     flowTab: {
         fontSize: 'smaller',
     },
-    addPolicyBtn: {
-        marginLeft: 'auto',
-    },
     paper: {
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
         width: '35%',
     },
+    policyList: {
+        overflowY: 'auto', 
+        maxHeight: '100%', 
+        paddingRight: '20px'
+    }
 }));
 
 interface PolicyListPorps {
@@ -70,7 +72,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies}) => {
             <Card variant='outlined'>
                 <CardContent>
                     <Box height='100vh'>
-                        <div style={{ overflowY: 'auto', maxHeight: '100%', paddingRight: '20px' }}>
+                        <div className={classes.policyList}>
                             <Box display='flex'>
                                 <Typography variant='subtitle2'>
                                     <FormattedMessage

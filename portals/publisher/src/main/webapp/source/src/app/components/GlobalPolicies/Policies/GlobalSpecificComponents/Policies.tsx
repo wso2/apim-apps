@@ -60,7 +60,11 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         display: 'flex',
         flexDirection: 'column',
+        flex: 1
     },
+    button: {
+        width: '200px'
+    }
 }));
 
 interface PolicyProps {
@@ -447,7 +451,7 @@ const Policies: FC<PolicyProps> =  ({
                         />
                     </Box>  
                     <Box className={classes.operationListingBox}>  
-                        <Paper className={classes.paper} style={{ flex: 1 }}>
+                        <Paper className={classes.paper}>
                             <Card variant='outlined'>
                                 <CardContent>
                                     <Box height='100vh'>
@@ -470,7 +474,7 @@ const Policies: FC<PolicyProps> =  ({
                 </DndProvider>
                 <Box mt={2}>       
                     <Button
-                        style={{ width: '200px' }}
+                        className={classes.button}
                         type='submit'
                         variant='contained'
                         color='primary'

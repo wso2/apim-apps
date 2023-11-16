@@ -88,9 +88,28 @@ const useStyles = makeStyles((theme) => ({
     buttonIcon: {
         marginRight: theme.spacing(1),
     },
+    button: {
+        width: '112px',
+    },
     icon: {
         marginRight: theme.spacing(0.5),
-    }
+    },
+    chip: {
+        marginRight: '8px'
+    },
+    gatewayChip: {
+        width: '200px', 
+        justifyContent: 'center'
+    },
+    dialogBackdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.08)'
+    },
+    dialogPaper: {
+        boxShadow: 'none'
+    },
+    tableContainer: {
+        maxWidth: '400px'
+    },
 }));
 
 interface Policy {
@@ -387,7 +406,7 @@ const Listing: React.FC = () => {
                                         key={gateway} 
                                         label={gateway} 
                                         variant='outlined' 
-                                        style={{ marginRight: '8px' }}
+                                        className={classes.chip}
                                     />
                                 ))}
                             </div>
@@ -449,8 +468,8 @@ const Listing: React.FC = () => {
                                     />
                                 </Button>
                                 <Dialog open={isDialogOpen} 
-                                    BackdropProps={{ style: { backgroundColor: 'rgba(0, 0, 0, 0.08)' }}}
-                                    PaperProps={{ style: { boxShadow: 'none' } }}
+                                    BackdropProps={{ className: classes.dialogBackdrop }}
+                                    PaperProps={{ className: classes.dialogPaper }}
                                 >
                                     <DialogTitle>Confirm Delete</DialogTitle>
                                     <DialogContent>
@@ -504,21 +523,21 @@ const Listing: React.FC = () => {
                         <Paper>
                             <Alert severity='info'>{policy.description}</Alert>
                             
-                            <TableContainer style={{ maxWidth: '400px'}}>
+                            <TableContainer className={classes.tableContainer}>
                                 <Table>
                                     <TableBody>
                                         {gatewayList.map((gateway: string) => (
                                             <TableRow key={gateway}>
                                                 <TableCell>
                                                     <Tooltip title={gateway} placement='bottom-start'>
-                                                        <Chip style={{width: '200px', justifyContent: 'center'}} 
+                                                        <Chip className={classes.gatewayChip}
                                                             label={shortName(gateway)} variant='outlined' 
                                                         />
                                                     </Tooltip>
                                                 </TableCell>
                                                 <TableCell>
                                                     {isDeployed(gateway, policy.appliedGatewayLabels) ? (
-                                                        <Button style={{ width: '112px' }}
+                                                        <Button className={classes.button}
                                                             variant='contained' 
                                                             color='default' 
                                                             onClick={() => deployOrUndeploy(policy.id, gateway, false)}
@@ -526,7 +545,7 @@ const Listing: React.FC = () => {
                                                             Undeploy
                                                         </Button>
                                                     ) : (
-                                                        <Button style={{ width: '112px' }}
+                                                        <Button className={classes.button}
                                                             variant='contained' 
                                                             color='primary'
                                                             onClick={() => deployOrUndeploy(policy.id, gateway, true)}
