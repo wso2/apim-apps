@@ -4243,7 +4243,7 @@
     "defaultMessage": "Let’s get started!"
   },
   "GlobalPolicies.Listing.onboarding.policies.tooltip": {
-    "defaultMessage": "Currently there are no policies to show"
+    "defaultMessage": "Global Policies provide you the ability to deploy policy mappings to whole gateways and not just one single API. Click below to create your first Global Policy"
   },
   "GlobalPolicies.Listing.policies.title.add.new.policy": {
     "defaultMessage": "Add New Global Policy"

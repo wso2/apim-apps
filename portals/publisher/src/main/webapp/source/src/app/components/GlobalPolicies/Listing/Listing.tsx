@@ -35,7 +35,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    DialogContentText
+    DialogContentText,
+    useTheme 
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import APIMAlert from 'AppComponents/Shared/Alert';
@@ -131,7 +132,9 @@ const Listing: React.FC = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedPolicyName, setSelectedPolicyName] = useState('');
     const [selectedPolicyId, setSelectedPolicyId] = useState('');
-  
+
+    const theme : any = useTheme();
+    const { globalPolicyAddIcon } = theme.custom.landingPage.icons;
     /**
      * Fetch the data from the backend to the compoenent.
      */
@@ -326,7 +329,7 @@ const Listing: React.FC = () => {
                 // console.error(error);
                 APIMAlert.error('Error while deleting the policy');
                 setLoading(false);
-            });
+            });    
     }
 
     useEffect(() => {
@@ -403,9 +406,18 @@ const Listing: React.FC = () => {
                     const policyName = tableMeta.rowData[1];
 
                     const handleDeleteClick = () => {
-                        setSelectedPolicyId(policyId);
-                        setSelectedPolicyName(policyName);
-                        setIsDialogOpen(true);
+                        // If there is active depoloyments, we need to block the deletion
+                        const appliedGatewayList = getAppliedGatewayLabelsById(policyId);
+                        if (appliedGatewayList.length > 0){
+                            APIMAlert.error((appliedGatewayList.length === 1) ? 
+                                'An active deployment is available' 
+                                : 'Active deployments are available');
+                        }
+                        else {
+                            setSelectedPolicyId(policyId);
+                            setSelectedPolicyName(policyName);
+                            setIsDialogOpen(true);
+                        }
                     };
 
                     return (
@@ -551,13 +563,16 @@ const Listing: React.FC = () => {
                 subTitle={
                     <FormattedMessage
                         id='GlobalPolicies.Listing.onboarding.policies.tooltip'
-                        defaultMessage='Currently there are no policies to show'
+                        defaultMessage='Global Policies provide you the ability to deploy policy mappings to
+                        whole gateways and not just one single API. Click below to create your first Global Policy'
                     />
                 }
             >
                 <OnboardingMenuCard
+                    id='itest-id-create-global-policy'
                     to='global-policies/create'
                     name='Global Policies'
+                    iconName={globalPolicyAddIcon}
                 />
             </Onboarding>
         );

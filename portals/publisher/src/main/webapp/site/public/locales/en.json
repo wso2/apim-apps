@@ -8884,7 +8884,7 @@
   "GlobalPolicies.Listing.onboarding.policies.tooltip": [
     {
       "type": 0,
-      "value": "Currently there are no policies to show"
+      "value": "Global Policies provide you the ability to deploy policy mappings to whole gateways and not just one single API. Click below to create your first Global Policy"
     }
   ],
   "GlobalPolicies.Listing.policies.title.add.new.policy": [
