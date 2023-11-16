@@ -26,7 +26,7 @@ interface RouteParams {
 
 /**
  * Global Policies Editing Page.
- * @returns {JSX} Editing Page.
+ * @returns {JSX} - Editing Page.
  */
 const EditGlobalPolicy: React.FC = () => {
     const { policyId } = useParams<RouteParams>();

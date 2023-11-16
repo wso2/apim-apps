@@ -139,11 +139,10 @@ interface Environment {
 
 /**
  * Global policies Lisitng Page.
- * @returns {TSX} Listing Page.
+ * @returns {TSX} - Listing Page.
  */
 const Listing: React.FC = () => {
     const classes = useStyles();
-    // const { commonPolicyAddIcon } = theme.custom.landingPage.icons;
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [environments, setEnvironments] = useState<Environment[]>([]);
     const [loading, setLoading] = useState(false);
@@ -151,9 +150,9 @@ const Listing: React.FC = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedPolicyName, setSelectedPolicyName] = useState('');
     const [selectedPolicyId, setSelectedPolicyId] = useState('');
-
     const theme : any = useTheme();
     const { globalPolicyAddIcon } = theme.custom.landingPage.icons;
+
     /**
      * Fetch the data from the backend to the compoenent.
      */
@@ -176,6 +175,7 @@ const Listing: React.FC = () => {
 
     /**
      * Fetch environements publisher settings from the backend to the compoenent.
+     * This data has been used to get the full gateway environment list.
      */
     const fetchSettings = () => {
         setLoading(true);
@@ -196,27 +196,33 @@ const Listing: React.FC = () => {
 
     /**
      * Check if the gateway is deployed for the Golbal Policy.
-     * 
-     * @param {string} gateway : Gateway.
-     * @param {string[]} appliedGatewayLabels : Applied Gateway Labels.
-     * @returns {boolean} Return true if deployed.
+     * @param {string} gateway - Gateway.
+     * @param {string[]} appliedGatewayLabels - Applied Gateway Labels.
+     * @returns {boolean} - Return true if deployed.
      */
     const isDeployed = (gateway: string, appliedGatewayLabels: string[]) => {
-        // get global policy's appliedGatewayLabels
         if (appliedGatewayLabels.includes(gateway)) {
             return true;
         }
         return false;
     }
 
-    // Get the applied gateway labels as an array list for a specific policy by ID
+    /**
+    * Get the applied gateway labels as an array list for a specific policy by ID.
+    * @param {string} id - Policy Identifier.
+    * @returns {string[]} - Applied Gateway labels list.
+    */
     const getAppliedGatewayLabelsById = (id: string) => {
         const policy = policies.find(item => item.id === id);
         return policy ? policy.appliedGatewayLabels : [];
     }
 
-    // Get the deployment array for a specific policy by ID
-    // [{"gatewayLabel": "Default","gatewayDeployment": false},{"gatewayLabel": "GateWay1","gatewayDeployment": false}]
+    /**
+    * Get the deployment array for a specific policy by ID. Below is an example.
+    * [{"gatewayLabel": "A","gatewayDeployment": false},{"B": "GateWay1","gatewayDeployment": false}].
+    * @param {string} policyId - Policy Identifier.
+    * @returns {Deployment[]} - Deployment array.
+    */
     const getDeploymentArray = (policyId: string) => {
         const appliedGatewayList = getAppliedGatewayLabelsById(policyId);
         const allGatewayList = environments.map((env: any) => {
@@ -228,8 +234,13 @@ const Listing: React.FC = () => {
         }));
     }
 
-    // Toggle the deployment status of a specific gateway for a specific policy
-    // If false, it will become true (depolying) and vice versa (undeploying)
+    /**
+     * Toggle the deployment status of a specific gateway for a specific policy.
+     * If false, it will become true (depolying) and vice versa (undeploying).
+     * @param {Deployment[]} deploymentArray - Array which contains Labels and it's boolean value.
+     * @param {string} environment - Gateway environment which is required to be toggled.
+     * @returns {Deployment[]} - Output array.
+     */
     const toggleGatewayDeployment = (deploymentArray: Deployment[], environment: string) => {
         const updatedArray = deploymentArray.map(item => {
             if (item.gatewayLabel === environment) {
@@ -241,13 +252,11 @@ const Listing: React.FC = () => {
     };
 
     /**
-     * Function to add a label to a specific policy in UI
-     * 
-     * @param {string} policyId : Policy Identifier.
-     * @param {string} newLabel : Newly added enviroment/gateway to applied Gateway Labels.
+     * Function to add a label to a specific policy in UI.
+     * @param {string} policyId - Policy Identifier.
+     * @param {string} newLabel - Newly added enviroment/gateway to applied Gateway Labels.
      */
     const addLabelToPolicy = (policyId: string, newLabel: string) => {
-        // Create a copy of the policies array with the updated label
         const updatedPolicies = policies.map((policy) => {
             if (policy.id === policyId) {
                 return {
@@ -257,19 +266,15 @@ const Listing: React.FC = () => {
             }
             return policy;
         });
-
-        // Set the state with the updated policies
         setPolicies(updatedPolicies);
     };
 
     /**
-     * Function to remove a label from a specific policy in UI
-     * 
-     * @param {string} policyId : Policy Identifier.
-     * @param {string} labelToRemove : Removing enviroment/gateway from applied Gateway Labels.
+     * Function to remove a label from a specific policy in UI.
+     * @param {string} policyId - Policy Identifier.
+     * @param {string} labelToRemove - Removing enviroment/gateway from applied Gateway Labels.
      */
     const removeLabelFromPolicy = (policyId: string, labelToRemove: string) => {
-        // Create a copy of the policies array with the label removed
         const updatedPolicies = policies.map((policy) => {
             if (policy.id === policyId) {
                 return {
@@ -279,23 +284,22 @@ const Listing: React.FC = () => {
             }
             return policy;
         });
-
-        // Set the state with the updated policies
         setPolicies(updatedPolicies);
     };
 
     /**
-     * Function to undeploy a policy mapping to another enviroment/gateway
-     * 
-     * @param {string} gatewayPolicyMappingId : Policy Identifier.
-     * @param {string} environement : Deploying enviroment/gateway.
-     * @param {boolean} deploying : Deploying or undeploying.
+     * Function to undeploy a policy mapping to another enviroment/gateway.
+     * @param {string} gatewayPolicyMappingId - Policy Identifier.
+     * @param {string} environement - Deploying enviroment/gateway.
+     * @param {boolean} deploying - Deploying or undeploying.
      */
     const deployOrUndeploy = (gatewayPolicyMappingId: string, environement: string, deploying: boolean) => {
         setLoading(true);
         const deploymentArray = getDeploymentArray(gatewayPolicyMappingId);
         const updatedDeploymentArray = toggleGatewayDeployment(deploymentArray, environement);
-        // call the backend API
+        /**
+         * call the backend API and handle the response
+         */
         const promise = API.engageGlobalPolicy(gatewayPolicyMappingId, updatedDeploymentArray);
         promise
             .then((response) => {
@@ -303,11 +307,15 @@ const Listing: React.FC = () => {
                     setLoading(false);
                     if (deploying) {
                         APIMAlert.success('Policy deployed successfully');    
-                        // If successful, update the policies list for the UI 
+                        /**
+                         * If successful, add to the state rather than getting from backend.
+                         */
                         addLabelToPolicy(gatewayPolicyMappingId, environement);                
                     } else {
                         APIMAlert.success('Policy undeployed successfully');    
-                        // If successful, update the policies list for the UI 
+                        /**
+                         * If successful, remove from the state rather than getting from backend.
+                         */
                         removeLabelFromPolicy(gatewayPolicyMappingId, environement);                
                     }           
                 }
@@ -328,17 +336,20 @@ const Listing: React.FC = () => {
 
     /**
      * Function to delete a policy mapping
-     * 
-     * @param {string} gatewayPolicyMappingId : Policy Identifier.
+     * @param {string} gatewayPolicyMappingId - Policy Identifier.
      */
     const deletePolicy = (gatewayPolicyMappingId: string) => {
         setIsDialogOpen(false);
         setLoading(true);
-        // call the backend API
+        /**
+         * call the backend API and handle the response
+         */
         const promise = API.deleteGatewayPolicyByPolicyId(gatewayPolicyMappingId);
         promise
             .then(() => {
-                // If successful, remove it from the UI
+                /**
+                 * If successful, remove from the state rather than getting from backend.
+                 */
                 const updatedPolicies = policies.filter((policy) => policy.id !== gatewayPolicyMappingId);
                 setPolicies(updatedPolicies);
                 APIMAlert.success('Policy deleted successfully');
@@ -356,21 +367,30 @@ const Listing: React.FC = () => {
         fetchSettings();
     }, []);
 
-    const getEditUrl = (policyId: String) => {
+    /**
+     * Get the Global Policy edit link.
+     * @param {string} policyId - Policy Identifier.
+     * @returns {string} - Url for the Global Policy edit.
+     */
+    const getEditUrl = (policyId: string) => {
         return `/global-policies/${policyId}/edit`;
     };
 
     /**
      * Sorts an array of Policy objects by their display names in ascending order.
-     *
      * @param {Policy[]} policies - An array of Policy objects to be sorted.
-     * @returns {Policy[]} The sorted array of Policy objects.
+     * @returns {Policy[]} - The sorted array of Policy objects.
      */
     policies?.sort((a: Policy, b: Policy) => a.displayName.localeCompare(b.displayName));
 
 
     const policiesList = policies;
 
+    /**
+     * Make a short version for 20+ character strings.
+     * @param {string} name - Any string (Ex: Gateway Label)
+     * @returns {string} - First 20 characters and if exceeded, three dots for the rest.
+     */
     const shortName = (name: string) => {
         if (name.length > 20) {
             return `${name.substring(0, 20)}...`;
@@ -393,6 +413,9 @@ const Listing: React.FC = () => {
             name: 'displayName',
             label: 'Global Policy',
         },
+        /**
+         * Deployed Gateway Column.
+         */
         {
             name: 'appliedGatewayLabels',
             label: 'Deployed Gateways',
@@ -417,6 +440,9 @@ const Listing: React.FC = () => {
                 }
             }      
         },
+        /**
+         * Action Column.
+         */
         {
             name: 'Actions',
             options: {
@@ -424,6 +450,9 @@ const Listing: React.FC = () => {
                     const policyId = tableMeta.rowData[0];
                     const policyName = tableMeta.rowData[1];
 
+                    /**
+                     * Handle deletion. If verifications are passed, it will open the dialog box for the confirmation.
+                     */
                     const handleDeleteClick = () => {
                         // If there is active depoloyments, we need to block the deletion
                         const appliedGatewayList = getAppliedGatewayLabelsById(policyId);
@@ -467,6 +496,9 @@ const Listing: React.FC = () => {
                                         defaultMessage='Delete'
                                     />
                                 </Button>
+                                {/**
+                                 * Dialog box (Modal or Pop up) which as for the confirmation to delete.
+                                 */}
                                 <Dialog open={isDialogOpen} 
                                     BackdropProps={{ className: classes.dialogBackdrop }}
                                     PaperProps={{ className: classes.dialogPaper }}
@@ -512,10 +544,17 @@ const Listing: React.FC = () => {
         expandableRowsHeader: false,
         expandableRowsOnClick: false,
         renderExpandableRow: (rowData, rowMeta) => {
+            /**
+             * Expandable area where you can deploy and undeploy.
+             */
             const gatewayList = environments.map((env: any) => {
                 return env.name;
             });
             const rowIndex = rowMeta.dataIndex;
+
+            /**
+             * Expanded row's policy information.
+             */
             const policy = policiesList[rowIndex];
             return ( 
                 <TableRow>

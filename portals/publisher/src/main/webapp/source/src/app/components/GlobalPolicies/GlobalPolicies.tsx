@@ -25,7 +25,7 @@ import GlobalPoliciesEdit from './Edit/EditGlobalPolicy';
 
 /**
  * `Route` elements for shared Global Policies UI.
- * @returns {TSX} Shared Global Policies routes.
+ * @returns {TSX} - Shared Global Policies routes.
  */
 const GlobalPolicies = () => {
     return (

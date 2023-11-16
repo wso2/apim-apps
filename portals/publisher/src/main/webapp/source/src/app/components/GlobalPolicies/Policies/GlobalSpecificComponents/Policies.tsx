@@ -74,9 +74,9 @@ interface PolicyProps {
 
 /**
  * Renders the Global Policy management page.
- * @param {boolean} isCreateNew This value is true if form is for create new and false for edit.
- * @param {string} policyID This value is to indentify the policy (Null if creating a new one). 
- * @returns {TSX} Policy management page to render.
+ * @param {boolean} isCreateNew - This value is true if form is for create new and false for edit.
+ * @param {string} policyID - This value is to indentify the policy (Null if creating a new one). 
+ * @returns {TSX} - Policy management page to render.
  */
 const Policies: FC<PolicyProps> =  ({
     isCreateNew, 
@@ -91,7 +91,9 @@ const Policies: FC<PolicyProps> =  ({
     const [description, setDescription] = useState('');
     const [appliedGatewayLabels, setAppliedGatewayLabels] = useState<string[]>([]);
 
-    // Global Level Policy - global level policy mapping. It will be initially empty.
+    /**
+     * Global level policy mapping. It will be initially empty.
+     */
     const initGlobalLevelPolicy: GlobalLevelPolicy = {
         request: [],
         response: [],
@@ -104,18 +106,19 @@ const Policies: FC<PolicyProps> =  ({
         setGlobalLevelPolicies] = useState<GlobalLevelPolicy>(getInitGlobalLevelPoliciesState());
 
     /**
-     * Fetches all common policies to front-end.
-     * Sets the allPolicies state: this allPolicies state is used to get policies from any given policy ID.
-     * Sets the policies state: policy state is used to display the available policies that are draggable.
+     * Fetches all common policies to front-end to show in the Policy List.
      */
     const fetchPolicies = () => {
         const commonPoliciesPromise = API.getCommonOperationPolicies();
         Promise.all([commonPoliciesPromise]).then((response) => {
             const [commonPoliciesResponse] = response;
             const commonPolicies = commonPoliciesResponse.body.list;
+            /**
+             * Similar to policies in Global Policies scenario.
+             * But as we are reusing PoliciesExpansion, both PolicySpec[] and Policy[] types are required.
+             */
             setAllPolicies(commonPolicies);
 
-            // Sort the policies list
             commonPolicies.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
@@ -126,9 +129,13 @@ const Policies: FC<PolicyProps> =  ({
         });
     }
 
-    // PolicyID is to identify the policy. ex: AddHeader, RemoveHeader, etc.
-    // But this same policy can be used multiple times with different names/values.
-    // For the frontend, we need different ids for each similar policy to uniquely identify.
+    /**
+     * Assign UUIDs to the input.
+     * Each Policy operation requires a uuid to identify (Since two operations can have same policy ID).
+     * This requires for the UI so assigning this is required after getting data from the backend. 
+     * @param {any} input - Policy List.
+     * @returns {any} - Policy list which has UUIDs for each operations.
+     */
     const assignUUIDs = (input: any) => {
         const inputResponse: any = cloneDeep(input);
         if (inputResponse && inputResponse.policyMapping) {
@@ -155,7 +162,13 @@ const Policies: FC<PolicyProps> =  ({
         return inputResponse;
     };
       
-    // remove uuids from the policy mapping
+    /**
+     * Remove UUIDs from the input.
+     * Each Policy operation has a uuid to identify (Since two operations can have same policy ID).
+     * This requires for the UI so removing this is required before sending to backend to overcome backend validation.
+     * @param {any} input - Global Level Policies which has UUIDs for each operations.
+     * @returns {any} - Global Level Policies which does not have UUIDs for each operations.
+     */
     const removeUUIDs = (input: any) => {
         const inputWithoutUUIDs: any = cloneDeep(input);
         if (inputWithoutUUIDs) {
@@ -182,9 +195,16 @@ const Policies: FC<PolicyProps> =  ({
         return inputWithoutUUIDs;
     };
 
+    /**
+     * If this is the editng page (isCreateNew:False), fetching the data from backend.
+     */
     const fetchGlobalPolicyByID = () => {
         setLoading(true);
         const gatewayPolicyMappingId = String(policyID);
+
+        /**
+         * Backend Call and handle the response.
+         */
         const promisedPolicy = API.getGatewayPolicyMappingContentByPolicyMappingId(gatewayPolicyMappingId);
         promisedPolicy
             .then((response) => {
@@ -211,9 +231,10 @@ const Policies: FC<PolicyProps> =  ({
     }, []); 
 
     /**
+     * A Context Operation for Policy Panel UI.
      * Triggers as we click delete icon in a drag`n`droped the policy.
-     * @param {string} uuid operation uuid.
-     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault.
+     * @param {string} uuid - Operation uuid.
+     * @param {string} currentFlow - Which flow needs to be udpated: request, response or fault.
      */
     const deleteGlobalOperation = (uuid: string, currentFlow: string) => {
         const newGlobalLevelPolicies: any = cloneDeep(globalLevelPolicies);
@@ -223,10 +244,11 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     /**
+     * A Context Operation for Policy Panel UI.
      * Function to rearrange the API Operation ordering.
-     * @param {string} oldIndex original index of the policy.
-     * @param {string} newIndex new index of the policy.
-     * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault.
+     * @param {string} oldIndex - Original index of the policy.
+     * @param {string} newIndex - New index of the policy.
+     * @param {string} currentFlow - Which flow needs to be udpated: request, response or fault.
      */
     const rearrangeGlobalOperations = (
         oldIndex: number, newIndex: number, currentFlow: string,
@@ -238,19 +260,18 @@ const Policies: FC<PolicyProps> =  ({
     };
 
     /**
-     * Triggers as we saved a drag`n`droped policy.
-     * @param {any} updatedOperation Saving info as 
-     * parameters: {headerName: <>, headerValue: <>}, 
-     * policyId: <>,
-     * policyName: <>,
-     * policyVersion: <>.
-     * @param {string} currentFlow Folow request/response/fault.
+     * A Context Operation for Policy Panel UI.
+     * Triggers as we saved a drag`n`droped policy or edit a already dragged one.
+     * @param {any} updatedOperation - Saved info as parameters: {headerName: <>, headerValue: <>}, policyId: <>, etc.
+     * @param {string} currentFlow - Folow request/response/fault.
      */
     const updateGlobalOperations = (
         updatedOperation: any, currentFlow: string,
     ) => {
         const newGlobalLevelPolicies: any = cloneDeep(globalLevelPolicies);
-        // Check whether the policy operation already exists
+        /**
+        * Check whether the policy operation already exists.
+        */
         const flowPolicy = (newGlobalLevelPolicies)[currentFlow].find(
             (p: any) =>
                 p.policyId === updatedOperation.policyId &&
@@ -258,10 +279,14 @@ const Policies: FC<PolicyProps> =  ({
         );
         
         if (flowPolicy) {
-            // Edit policy operation if already exists
+            /**
+            * Edit the already dragged and dropped policy.
+            */
             flowPolicy.parameters = { ...updatedOperation.parameters };
         } else {
-            // Add new policy operation
+            /**
+            * Save the newly dragged and dropped policy.
+            */
             const uuid = uuidv4();
             (newGlobalLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid }
             );
@@ -271,7 +296,7 @@ const Policies: FC<PolicyProps> =  ({
 
     /**
      * Function to validate before saving or updating.
-     * @returns {boolean} true if all the required fields are filled.
+     * @returns {boolean} - True if all the required fields are filled.
      */
     const validate = () => {
         let isValidate = true;
@@ -294,13 +319,21 @@ const Policies: FC<PolicyProps> =  ({
 
     /**
      * Function to save a policy mapping.
+     * Triggers if we click save button.
      */
     const save = () => {
         setLoading(true);
 
         if (validate()){
-            // call the backend API
+            /**
+             * Remove UUIDs before sending to backend.
+             * If not, as backend is not expecting UUIDs, backend validation will fail.
+             */
             const policyMapping = removeUUIDs(globalLevelPolicies);
+
+            /**
+             * Backend Call and handle the response.
+             */
             const requestBody = {
                 "id": uuidv4(),
                 "policyMapping": policyMapping,
@@ -329,13 +362,21 @@ const Policies: FC<PolicyProps> =  ({
 
     /**
      * Function to update a policy mapping.
+     * Triggers if we click update button.
      */
     const update = () => {
         setLoading(true);
 
         if (validate()){
-            // call the backend API
+            /**
+             * Remove UUIDs before sending to backend.
+             * If not, as backend is not expecting UUIDs, backend validation will fail.
+             */
             const policyMapping = removeUUIDs(globalLevelPolicies);
+
+            /**
+             * Backend Call and handle the response.
+             */
             const requestBody = {
                 "id": policyID,
                 "policyMapping": policyMapping,
@@ -382,14 +423,25 @@ const Policies: FC<PolicyProps> =  ({
         ],
     );
 
+    /**
+     * Handle Name field changes.
+     * @param {any} event changing event.
+     */
     const handleNameChange = (event: any) => {
         setName(event.target.value);
     };
     
+    /**
+     * Handle Description field changes.
+     * @param {any} event changing event.
+     */
     const handleDescriptionChange = (event: any) => {
         setDescription(event.target.value);
     };
 
+    /**
+     * Loading screen if loading is true or there is no policies yet.
+     */
     if (!policies || loading) {
         return <Progress per={90} message='Loading Policies ...' />
     }
@@ -398,6 +450,9 @@ const Policies: FC<PolicyProps> =  ({
         <GlobalPolicyContextProvider value={providerValue}>
             <Box mt={3} mb={3} ml={5} mr={5}>   
                 <DndProvider backend={HTML5Backend}>
+                    {/**
+                    * Breadcrumb Navigation.
+                    */}
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
                             <Link to='/global-policies' className={classes.titleLink}>
@@ -424,6 +479,10 @@ const Policies: FC<PolicyProps> =  ({
                             </Typography>
                         </div>
                     </Grid>
+
+                    {/**
+                    * Name & Description Fields.
+                    */}
                     <Box mb={2}>
                         <TextField
                             fullWidth
@@ -450,7 +509,11 @@ const Policies: FC<PolicyProps> =  ({
                             className={classes.textField}
                         />
                     </Box>  
+                    
                     <Box className={classes.operationListingBox}>  
+                        {/**
+                        * Left side panel where we can droped policies.
+                        */}
                         <Paper className={classes.paper}>
                             <Card variant='outlined'>
                                 <CardContent>
@@ -466,13 +529,20 @@ const Policies: FC<PolicyProps> =  ({
                             </Card>                              
                         </Paper>
           
+                        {/**
+                        * Right side policy list.
+                        */}
                         <PolicyList
                             policyList={policies}
                             fetchPolicies={fetchPolicies}
                         />                   
                     </Box>
                 </DndProvider>
-                <Box mt={2}>       
+
+                {/**
+                * Edit & Save buttons.
+                */}
+                <Box mt={2}>      
                     <Button
                         className={classes.button}
                         type='submit'

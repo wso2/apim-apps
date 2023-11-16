@@ -19,7 +19,7 @@ import Policies from 'AppComponents/GlobalPolicies/Policies/GlobalSpecificCompon
 
 /**
  * Global Policies Creating Page.
- * @returns {JSX} Creating Page.
+ * @returns {JSX} - Creating Page.
  */
 const CreateGlobalPolicy: React.FC = () => {
     return (
