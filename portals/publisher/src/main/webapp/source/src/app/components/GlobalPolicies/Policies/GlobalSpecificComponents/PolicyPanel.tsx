@@ -30,8 +30,8 @@ interface PolicyPanelProps {
 /**
  * Renders the policy section of the policy management page.
  * This inculdes the dropping zone. The policies are rendered in the PoliciesSection component.
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} Tab panel.
+ * @param {JSON} props - Input props from parent components.
+ * @returns {TSX} - Policy Panel.
  */
 const PolicyPanel: FC<PolicyPanelProps> = ({
     allPolicies,

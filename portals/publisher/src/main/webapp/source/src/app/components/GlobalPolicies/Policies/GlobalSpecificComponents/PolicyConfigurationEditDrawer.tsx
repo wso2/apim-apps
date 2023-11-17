@@ -32,8 +32,6 @@ import {
 import IconButton from '@material-ui/core/IconButton';
 import { Settings, Close } from '@material-ui/icons';
 import Divider from '@material-ui/core/Divider';
-import API from 'AppData/api';
-import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import General from './General';
 import type { PolicySpec, GlobalPolicy, AttachedPolicy } from '../Types';
 import GlobalPolicyContext from '../GlobalPolicyContext';
@@ -63,8 +61,8 @@ interface PolicyConfigurationEditDrawerProps {
 
 /**
  * Renders the policy configuration edit drawer. (Right drawer for editing an added policy).
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} Right drawer for policy configuration.
+ * @param {JSON} props - Input props from parent components.
+ * @returns {TSX} - Right drawer for policy configuration.
  */
 const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     policyObj,
@@ -76,31 +74,27 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     setDrawerOpen,
 }) => {
     const classes = useStyles();
-    const { api } = useContext<any>(ApiContext);
     const { globalLevelPolicies } = useContext<any>(GlobalPolicyContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {
-        (async () => {
-            if (policyObj) {
-                let policySpecVal = allPolicies?.find(
-                    (policy: PolicySpec) => policy.name === policyObj.name,
-                );
-
-                // If this policy is a deleted common policy we need to do an API call to get the policy specification
-                if (!policySpecVal) {
-                    const policyResponse = await API.getOperationPolicy(
-                        policyObj.id,
-                        api.id,
-                    );
-                    policySpecVal = policyResponse.body;
-                }
-
-                setPolicySpec(policySpecVal);
-                setDrawerOpen(true);
-            }
-        })();
+        /**
+         * Find the right policy spec (attributes + etc) using the policy Object ID.
+         * If the policy is already deleted from common policies, it will not be found in Policy Section.
+         */
+        if (policyObj) {
+            setPolicySpec(
+                allPolicies?.find(
+                    (policy: PolicySpec) => policy.id === policyObj.id,
+                ),
+            );
+            setDrawerOpen(true);
+        }
     }, [policyObj]);
+
+    /**
+     * Find the editing operation flow policy
+     */
     const operationFlowPolicy = (globalLevelPolicies)[
         currentFlow
     ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);

@@ -55,6 +55,11 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
 }) => {
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
 
+    /**
+     * Drop handler for the dropzone.
+     * This will set the dropped policy to the state.
+     * This data will be sent to the lower level components.
+     */
     const [{ canDrop }, drop] = useDrop({
         accept: droppablePolicyList,
         drop: (item: any) => setDroppedPolicy(item.droppedPolicy),

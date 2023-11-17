@@ -73,8 +73,8 @@ interface GeneralProps {
 
 /**
  * This component renders the form of adding a global policy as a global level policy.
- * @param {GeneralProps} props The props passed to the component.
- * @returns {TSX} Returns the JSX element.
+ * @param {GeneralProps} props - The props passed to the component.
+ * @returns {TSX} - Returns the JSX element.
  */
 const General: FC<GeneralProps> = ({
     policyObj,
@@ -116,7 +116,7 @@ const General: FC<GeneralProps> = ({
     /**
      * This function is triggered when the form is submitted for save.
      * This handle the dynamic nature of the form, where the form fields are generated based on the policy spec.
-     * @param {React.FormEvent<HTMLFormElement>} event Form submit event.
+     * @param {React.FormEvent<HTMLFormElement>} event - Form submit event.
      */
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -148,8 +148,8 @@ const General: FC<GeneralProps> = ({
 
     /**
      * Function to get the error string, if there are any errors. Empty string to indicate the absence of errors.
-     * @param {PolicySpecAttribute} specInCheck The policy attribute that needs to be checked for any errors.
-     * @returns {string} String with the error message, where empty string indicates that there are no errors. 
+     * @param {PolicySpecAttribute} specInCheck - The policy attribute that needs to be checked for any errors.
+     * @returns {string} - String with the error message, where empty string indicates that there are no errors. 
      */
     const getError = (specInCheck: PolicySpecAttribute) => {
         let error = '';
@@ -210,7 +210,7 @@ const General: FC<GeneralProps> = ({
     /**
      * Function to check whether there are any errors in the form.
      * If there are errors, we disable the save button.
-     * @returns {boolean} Boolean value indicating whether or not the form has any errors.
+     * @returns {boolean} - Boolean value indicating whether or not the form has any errors.
      */
     const formHasErrors = () => {
         let formHasAnError = false;
@@ -224,7 +224,7 @@ const General: FC<GeneralProps> = ({
 
     /**
      * Function to check if the form content is in state that needs to be saved.
-     * @returns {boolean} Whether or not the save button should be disabled.
+     * @returns {boolean} - Whether or not the save button should be disabled.
      */
     const isSaveDisabled = () => {
         if (!isEditMode) {
@@ -311,6 +311,9 @@ const General: FC<GeneralProps> = ({
                             </Typography>
                         </div>
                     </Grid>
+                    {/**
+                     * This will render the dynamical form fields based on the policy spec.
+                     */}
                     {policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
                         <Grid item xs={12}>
 

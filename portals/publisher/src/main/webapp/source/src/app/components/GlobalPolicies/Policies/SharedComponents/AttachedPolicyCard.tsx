@@ -126,8 +126,10 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
 
     const handleDrawerOpen = () => {
         if (policyObj.id !== '') {
-            // Drawer will only appear for policies that have an ID
-            // Note that a migrated policy will have an empty string as the ID at the initial stage
+            /**
+             * Drawer will only appear for policies that have an ID.
+             * Note that a migrated policy will have an empty string as the ID at the initial stage.
+             */
             setDrawerOpen(true);
         }
     };

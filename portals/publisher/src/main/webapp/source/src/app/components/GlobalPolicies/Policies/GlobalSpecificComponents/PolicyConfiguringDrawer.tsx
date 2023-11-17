@@ -60,8 +60,8 @@ interface PolicyConfiguringDrawerProps {
 
 /**
  * Renders the policy configuring drawer. (Right drawer for adding a policy)
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} Right drawer for policy configuration.
+ * @param {JSON} props - Input props from parent components.
+ * @returns {TSX} - Right drawer for policy configuration.
  */
 const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     policyObj,
@@ -76,6 +76,9 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
     useEffect(() => {
+        /**
+         * Find the right policy spec (attributes + etc) using the policy Object ID.
+         */
         if (policyObj) {
             setPolicySpec(
                 allPolicies?.find(
@@ -103,8 +106,8 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     };
 
     /**
-     * Converts the PolicyObj prop of type Policy to AttachedPolicy
-     * @returns {AttachedPolicy} Returns a policy object of type AttachedPolicy
+     * Converts the PolicyObj prop of type Policy to AttachedPolicy.
+     * @returns {AttachedPolicy} - Returns a policy object of type AttachedPolicy.
      */
     const getPolicyOfTypeAttachedPolicy = () => {
         if (policyObj) {

@@ -59,8 +59,8 @@ interface PolicyListPorps {
 
 /**
  * Renders the local policy list.
- * @param {JSON} props Input props from parent components.
- * @returns {TSX} List of policies local to the API segment.
+ * @param {JSON} props - Input props from parent components.
+ * @returns {TSX} - List of policies local to the API segment.
  */
 const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies}) => {
     const classes = useStyles();

@@ -55,19 +55,25 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     policyList,
     isAPILevelPolicy,
 }) => {
-    // Policies attached for each request, response and fault flow
+    /**
+     * Policies attached for each request, response and fault flow.
+     */
     const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);
     const [responseFlowPolicyList, setResponseFlowPolicyList] = useState<AttachedPolicy[]>([]);
     const [faultFlowPolicyList, setFaultFlowPolicyList] = useState<AttachedPolicy[]>([]);
 
-    // Droppable policy identifier list for each request, response and fault flow
+    /**
+     * Droppable policy identifier list for each request, response and fault flow.
+     */
     const [requestFlowDroppablePolicyList, setRequestFlowDroppablePolicyList] = useState<string[]>([]);
     const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
     const { globalLevelPolicies } = useContext<any>(GlobalPolicyContext);
 
-    // This is where the applicable (droppable) flows are set for each policy.
+    /**
+     * This is where the applicable (droppable) flows are set for each policy.
+     */
     useEffect(() => {
         const requestList = [];
         const responseList = [];
@@ -98,14 +104,18 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
         (async () => { 
             const apiPolicies = globalLevelPolicies;
 
-            // Populate request flow attached policy list
+            /** 
+             * Populate request flow attached policy list.
+             */
             const requestFlowList: AttachedPolicy[] = [];
             const requestFlow = apiPolicies.request;
             for (const requestFlowAttachedPolicy of requestFlow) {
                 const { policyId, policyName, policyVersion, uuid } =
                     requestFlowAttachedPolicy;
                 if (policyId === null) {
-                    // Handling migration flow
+                    /**
+                     * Handling migration flow.
+                     */
                     requestFlowList.push({
                         ...defaultPolicyForMigration,
                         name: policyName,
@@ -129,14 +139,18 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             }
             setRequestFlowPolicyList(requestFlowList);
 
-            // Populate response flow attached policy list
+            /**
+             * Populate response flow attached policy list.
+             */
             const responseFlowList: AttachedPolicy[] = [];
             const responseFlow = apiPolicies.response;
             for (const responseFlowAttachedPolicy of responseFlow) {
                 const { policyId, policyName, policyVersion, uuid } =
                     responseFlowAttachedPolicy;
                 if (policyId === null) {
-                    // Handling migration flow
+                    /**
+                     * Handling migration flow.
+                     */
                     responseFlowList.push({
                         ...defaultPolicyForMigration,
                         name: policyName,
@@ -161,14 +175,18 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             setResponseFlowPolicyList(responseFlowList);
 
             if (!isChoreoConnectEnabled) {
-                // Populate fault flow attached policy list
+                /**
+                 * Populate fault flow attached policy list.
+                 */
                 const faultFlowList: AttachedPolicy[] = [];
                 const faultFlow = apiPolicies.fault;
                 for (const faultFlowAttachedPolicy of faultFlow) {
                     const { policyId, policyName, policyVersion, uuid } =
                         faultFlowAttachedPolicy;
                     if (policyId === null) {
-                        // Handling migration flow
+                        /**
+                         * Handling migration flow.
+                         */
                         faultFlowList.push({
                             ...defaultPolicyForMigration,
                             name: policyName,

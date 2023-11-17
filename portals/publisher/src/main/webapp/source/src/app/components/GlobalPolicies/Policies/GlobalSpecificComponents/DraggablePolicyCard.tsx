@@ -66,8 +66,8 @@ interface DraggablePolicyCardProps {
 
 /**
  * Renders a single draggable policy block.
- * @param {any} DraggablePolicyCardProps Input props from parent components.
- * @returns {TSX} Draggable Policy card UI.
+ * @param {any} DraggablePolicyCardProps - Input props from parent components.
+ * @returns {TSX} - Draggable Policy card UI.
  */
 const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     policyObj,
@@ -75,9 +75,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     isLocalToAPI,
 }) => {
     const [hovered, setHovered] = useState(false);
-
     const classes = useStyles();
-
     const [{ isDragging }, drag] = useDrag(
         () => ({
             type: `policyCard-${policyObj.id}`,
@@ -91,7 +89,6 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
         }),
         [showCopyIcon],
     );
-
     const containerStyle = useMemo(
         () => ({
             ...style,
@@ -102,7 +99,11 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
         [isDragging],
     );
 
-    // If the policy is local to the API, we don't need to render the draggable card since this is global policies.
+    /**
+     * Policy List of the Global Policies component only contains global policies (No policies local to API).
+     * Policy Lists each single Policy's isAPISpecific will be false in that case. 
+     * This additional layer is added to avoid rendering if something went wrong.
+     */
     if (isLocalToAPI) {
         return null;
     }
