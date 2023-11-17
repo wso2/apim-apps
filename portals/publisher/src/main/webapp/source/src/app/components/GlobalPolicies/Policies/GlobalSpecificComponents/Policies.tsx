@@ -358,6 +358,7 @@ const Policies: FC<PolicyProps> =  ({
                     Alert.error('Error occurred while adding the policy mapping');
                 })
         }
+        setLoading(false);
     }
 
     /**
