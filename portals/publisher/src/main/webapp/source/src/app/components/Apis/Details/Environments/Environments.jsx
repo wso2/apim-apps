@@ -799,10 +799,10 @@ export default function Environments() {
         }];
         if (api.apiType !== API.CONSTS.APIProduct) {
             restApi.deployRevision(api.id, revisionId, body).then((response) => {
-                if (response && response.obj && response.obj.length>0){
-                    if ( response.obj[0]?.status === null ||  response.obj[0]?.status === 'APPROVED'){
+                if (response && response.obj && response.obj.length > 0) {
+                    if (response.obj[0]?.status === null || response.obj[0]?.status === 'APPROVED') {
                         Alert.info('Deploy revision successfully');
-                    } else if ( response.obj[0]?.status === 'CREATED'){
+                    } else if (response.obj[0]?.status === 'CREATED') {
                         Alert.info('Deploy revision request sent successfully');
                     }
                 }
@@ -1518,11 +1518,12 @@ export default function Environments() {
      * @returns {JSX.Element} The JSX element representing the deployment component
      */
     function getDeployedRevisionStatusComponent(row, allEnvRevisionMapping) {
-        
+
         const deployingGateway = allEnvRevisionMapping.find(gateway => {
-            return gateway.name === row.name});
+            return gateway.name === row.name
+        });
         const gatewayRevisions = deployingGateway?.revisions;
-    
+
         if (!gatewayRevisions.length) {
             // Content to display when there is no revision
             return (
@@ -1549,7 +1550,7 @@ export default function Environments() {
                         onChange={handleSelect}
                         margin='dense'
                         variant='outlined'
-                        style={{ width: '50%' }}
+                        style={{width: '50%'}}
                         disabled={api.isRevision || !allRevisions || allRevisions.length === 0}
                     >
                         {allRevisions && allRevisions.length !== 0 && allRevisions.map((number) => (
@@ -1583,12 +1584,14 @@ export default function Environments() {
                 </div>
             );
         }
-        const pendingDeployment =gatewayRevisions.find(revision => {
-            return revision.deploymentInfo.some(info => info.status === "CREATED" && info.name === row.name);});
+        const pendingDeployment = gatewayRevisions.find(revision => {
+            return revision.deploymentInfo.some(info => info.status === "CREATED" && info.name === row.name);
+        });
 
-        const approvedDeployment =gatewayRevisions.find(revision => {
-            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") && 
-            info.name === row.name);});
+        const approvedDeployment = gatewayRevisions.find(revision => {
+            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") &&
+                info.name === row.name);
+        });
 
         const filteredRevisions = allRevisions.filter(item => {
             if (pendingDeployment && pendingDeployment.displayName === item.displayName) {
@@ -1606,16 +1609,16 @@ export default function Environments() {
                 <div>
                     <Chip
                         label={
-                            <div style={{ whiteSpace: 'normal', fontSize:'smaller' }}> 
+                            <div style={{whiteSpace: 'normal', fontSize: 'smaller'}}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.pending.chip'
                                     defaultMessage='Pending'
                                 />
-                                <br />
+                                <br/>
                                 {pendingDeployment.displayName}
                             </div>
                         }
-                        style={{ backgroundColor: '#FFBF00', width: '100px' }}
+                        style={{backgroundColor: '#FFBF00', width: '100px'}}
                     />
                     <Button
                         className={classes.button1}
@@ -1657,7 +1660,7 @@ export default function Environments() {
                     onChange={handleSelect}
                     margin='dense'
                     variant='outlined'
-                    style={{ width: '50%' }}
+                    style={{width: '50%'}}
                     disabled={api.isRevision || !filteredRevisions || filteredRevisions.length === 0}
                 >
                     {filteredRevisions && filteredRevisions.length !== 0 && filteredRevisions.map((number) => (
@@ -1700,9 +1703,10 @@ export default function Environments() {
      */
     function getDeployedRevisionComponent(row, allEnvRevisionMapping) {
         const deployingGateway = allEnvRevisionMapping.find(gateway => {
-            return gateway.name === row.name});
+            return gateway.name === row.name
+        });
         const gatewayRevisions = deployingGateway?.revisions;
-    
+
         if (!gatewayRevisions.length) {
             // Content to display when there is no revision
             return (
@@ -1711,20 +1715,21 @@ export default function Environments() {
                     defaultMessage='No Revision Deployed'
                 />
             );
-            
+
         }
 
-        const approvedDeployment =gatewayRevisions.find(revision => {
-            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") && 
-            info.name === row.name);});
+        const approvedDeployment = gatewayRevisions.find(revision => {
+            return revision.deploymentInfo.some(info => (info.status === null || info.status === "APPROVED") &&
+                info.name === row.name);
+        });
 
-    
+
         if (approvedDeployment) {
             return (
                 <div>
                     <Chip
                         label={approvedDeployment.displayName}
-                        style={{ backgroundColor: '#15B8CF', width: '100px' }}
+                        style={{backgroundColor: '#15B8CF', width: '100px'}}
                     />
                     <Button
                         className={classes.button1}
@@ -1741,7 +1746,7 @@ export default function Environments() {
                     </Button>
                 </div>
             );
-            
+
         }
         return (
             <FormattedMessage
@@ -1999,10 +2004,13 @@ export default function Environments() {
                                     {internalGateways && internalGateways.map((row) => (
                                         <Grid item xs={4}>
                                             <Card
-                                                style={{ opacity: allEnvRevision.some(o1 => {
-                                                    return o1.deploymentInfo.some(o2 => 
-                                                        o2.name === row.name && 
-                                                        o2.status === 'CREATED');})? '0.6' : '1' }}
+                                                style={{
+                                                    opacity: allEnvRevision.some(o1 => {
+                                                        return o1.deploymentInfo.some(o2 =>
+                                                            o2.name === row.name &&
+                                                            o2.status === 'CREATED');
+                                                    }) ? '0.6' : '1'
+                                                }}
                                                 className={clsx(SelectedEnvironment
                                                 && SelectedEnvironment.includes(row.name)
                                                     ? (classes.changeCard)
@@ -2014,31 +2022,33 @@ export default function Environments() {
                                                         action={
                                                             <>
                                                                 {allEnvRevision.some(o1 => {
-                                                                    return o1.deploymentInfo.some(o2 => 
-                                                                        o2.name === row.name && 
-                                                                        o2.status === 'CREATED');})? 
+                                                                    return o1.deploymentInfo.some(o2 =>
+                                                                        o2.name === row.name &&
+                                                                        o2.status === 'CREATED');
+                                                                }) ?
                                                                     (
                                                                         <Checkbox
                                                                             color='primary'
-                                                                            icon={<RadioButtonUncheckedIcon />}
+                                                                            icon={<RadioButtonUncheckedIcon/>}
                                                                             checkedIcon={<
-                                                                                CheckCircleIcon color='primary' />}
+                                                                                CheckCircleIcon color='primary'/>}
                                                                             disabled
                                                                         />
-                                                                    ):
+                                                                    ) :
                                                                     (
                                                                         <Checkbox
                                                                             id={row.name.split(' ').join('')}
                                                                             value={row.name}
-                                                                            checked={SelectedEnvironment.
-                                                                                includes(row.name)}
+                                                                            checked={
+                                                                                SelectedEnvironment.includes(row.name)}
                                                                             onChange={handleChange}
                                                                             color='primary'
-                                                                            icon={<RadioButtonUncheckedIcon />}
+                                                                            icon={<RadioButtonUncheckedIcon/>}
                                                                             checkedIcon={<
-                                                                                CheckCircleIcon color='primary' />}
-                                                                            inputProps={{ 
-                                                                                'aria-label': 'secondary checkbox' }}
+                                                                                CheckCircleIcon color='primary'/>}
+                                                                            inputProps={{
+                                                                                'aria-label': 'secondary checkbox'
+                                                                            }}
                                                                             data-testid={
                                                                                 row.displayName + 'gateway-select-btn'}
                                                                         />
@@ -2110,9 +2120,9 @@ export default function Environments() {
                                                                     >
                                                                         {row.vhosts.map(
                                                                             (vhost) => (
-                                                                                <MenuItem value={api.isWebSocket() 
+                                                                                <MenuItem value={api.isWebSocket()
                                                                                     ? vhost.wsHost : vhost.host}>
-                                                                                    {api.isWebSocket() 
+                                                                                    {api.isWebSocket()
                                                                                         ? vhost.wsHost : vhost.host}
                                                                                 </MenuItem>
                                                                             ),
@@ -2124,9 +2134,9 @@ export default function Environments() {
                                                                 {allEnvRevision
                                                                     .filter(o1 => {
                                                                         if (o1.deploymentInfo.some(
-                                                                            o2 => o2.name === row.name && 
-                                                                            (o2.status === null || 
-                                                                                o2.status === 'APPROVED'))) {
+                                                                            o2 => o2.name === row.name &&
+                                                                                (o2.status === null ||
+                                                                                    o2.status === 'APPROVED'))) {
                                                                             return o1;
                                                                         }
                                                                         return null;
@@ -2135,8 +2145,10 @@ export default function Environments() {
                                                                         <div key={o3.displayName}>
                                                                             <Chip
                                                                                 label={o3.displayName}
-                                                                                style={{ backgroundColor: '#15B8CF', 
-                                                                                    width: '100px'}}
+                                                                                style={{
+                                                                                    backgroundColor: '#15B8CF',
+                                                                                    width: '100px'
+                                                                                }}
                                                                             />
                                                                         </div>
                                                                     ))}
@@ -2145,8 +2157,8 @@ export default function Environments() {
                                                                 {allEnvRevision
                                                                     .filter(o1 => {
                                                                         if (o1.deploymentInfo.some(
-                                                                            o2 => o2.name === row.name && 
-                                                                            o2.status === 'CREATED')) {
+                                                                            o2 => o2.name === row.name &&
+                                                                                o2.status === 'CREATED')) {
                                                                             return o1;
                                                                         }
                                                                         return null;
@@ -2155,26 +2167,29 @@ export default function Environments() {
                                                                         <div key={o3.displayName}>
                                                                             <Chip
                                                                                 label={
-                                                                                    <div style={{ 
-                                                                                        whiteSpace: 'normal', 
-                                                                                        fontSize:'smaller' }}>
+                                                                                    <div style={{
+                                                                                        whiteSpace: 'normal',
+                                                                                        fontSize: 'smaller'
+                                                                                    }}>
                                                                                         <FormattedMessage
                                                                                             id='Apis.Details.
                                                                                             Environments.Environments.
                                                                                             pending.chip'
                                                                                             defaultMessage='Pending'
                                                                                         />
-                                                                                        <br />
+                                                                                        <br/>
                                                                                         {o3.displayName}
                                                                                     </div>
                                                                                 }
-                                                                                style={{ backgroundColor: '#FFBF00', 
-                                                                                    width: '100px'}}
+                                                                                style={{
+                                                                                    backgroundColor: '#FFBF00',
+                                                                                    width: '100px'
+                                                                                }}
                                                                             />
                                                                         </div>
                                                                     ))}
                                                             </Grid>
-                                                            <Grid item />
+                                                            <Grid item/>
                                                         </Grid>
                                                     </CardContent>
                                                 </Box>

@@ -435,7 +435,7 @@ function ListLabels() {
                 content={(
                     <FormattedMessage
                         id='Workflow.APIRevisionDeployment.permission.denied.content'
-                        defaultMessage={'You dont have enough permission to view Revision Deployment - '
+                        defaultMessage={'You do not have enough permission to view Revision Deployment - '
                         + 'Approval Tasks. Please contact the site administrator.'}
                     />
                 )}
