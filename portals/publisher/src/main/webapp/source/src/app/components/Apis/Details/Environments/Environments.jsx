@@ -810,7 +810,7 @@ export default function Environments() {
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
-                    Alert.error('Something went wrong while deploy the revision');
+                    Alert.error('Something went wrong while deploying the revision');
                 }
                 console.error(error);
             }).finally(() => {
