@@ -334,6 +334,12 @@ const Listing: React.FC = () => {
         setLoading(false);
     }
 
+    const getAllDepoloyedGateways = () => {
+        const allGateways = policies.map((policy) => 
+            getAppliedGatewayLabelsById(policy.id)).reduce((acc, val) => acc.concat(val), []);
+        return allGateways;
+    }
+
     /**
      * Function to delete a policy mapping
      * @param {string} gatewayPolicyMappingId - Policy Identifier.
@@ -489,7 +495,7 @@ const Listing: React.FC = () => {
                                     onClick={handleDeleteClick}
                                 >
                                     <Icon className={classes.icon}>
-                                        delete
+                                        delete_forever
                                     </Icon>
                                     <FormattedMessage
                                         id='GlobalPolicies.Listing.table.header.actions.delete'
@@ -556,6 +562,7 @@ const Listing: React.FC = () => {
              * Expanded row's policy information.
              */
             const policy = policiesList[rowIndex];
+            const allDepoloyedGateways = getAllDepoloyedGateways();
             return ( 
                 <TableRow>
                     <TableCell colSpan={4}>
@@ -565,36 +572,65 @@ const Listing: React.FC = () => {
                             <TableContainer className={classes.tableContainer}>
                                 <Table>
                                     <TableBody>
-                                        {gatewayList.map((gateway: string) => (
-                                            <TableRow key={gateway}>
-                                                <TableCell>
-                                                    <Tooltip title={gateway} placement='bottom-start'>
-                                                        <Chip className={classes.gatewayChip}
-                                                            label={shortName(gateway)} variant='outlined' 
-                                                        />
+                                        {gatewayList.map((gateway: string) => {
+                                            let button;
+
+                                            if (isDeployed(gateway, policy.appliedGatewayLabels)) {
+                                                button = (
+                                                    <Button
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color='default'
+                                                        onClick={() => deployOrUndeploy(policy.id, gateway, false)}
+                                                    >
+                                                        Undeploy
+                                                    </Button>
+                                                );
+                                            } else if (allDepoloyedGateways.includes(gateway)) {
+                                                button = (
+                                                    <Tooltip 
+                                                        title='Another global policy has been already 
+                                                        deployed in this gateway' 
+                                                    >
+                                                        <span>
+                                                            <Button
+                                                                className={classes.button}
+                                                                variant='contained'
+                                                                color='default'
+                                                                disabled
+                                                            >
+                                                                Deploy
+                                                            </Button>
+                                                        </span>
                                                     </Tooltip>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {isDeployed(gateway, policy.appliedGatewayLabels) ? (
-                                                        <Button className={classes.button}
-                                                            variant='contained' 
-                                                            color='default' 
-                                                            onClick={() => deployOrUndeploy(policy.id, gateway, false)}
-                                                        >
-                                                            Undeploy
-                                                        </Button>
-                                                    ) : (
-                                                        <Button className={classes.button}
-                                                            variant='contained' 
-                                                            color='primary'
-                                                            onClick={() => deployOrUndeploy(policy.id, gateway, true)}
-                                                        >
-                                                            Deploy
-                                                        </Button>
-                                                    )}                                                    
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
+                                                );
+                                            } else {
+                                                button = (
+                                                    <Button
+                                                        className={classes.button}
+                                                        variant='contained'
+                                                        color='primary'
+                                                        onClick={() => deployOrUndeploy(policy.id, gateway, true)}
+                                                    >
+                                                        Deploy
+                                                    </Button>
+                                                );
+                                            }
+                                            return ( 
+                                                <TableRow key={gateway}>
+                                                    <TableCell>
+                                                        <Tooltip title={gateway}>
+                                                            <Chip className={classes.gatewayChip}
+                                                                label={shortName(gateway)} variant='outlined' 
+                                                            />
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {button}                                  
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
                                     </TableBody>
                                 </Table>
                             </TableContainer> 
