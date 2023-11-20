@@ -141,21 +141,48 @@ class AuthManager {
         Utils.getCookie(User.CONST.WSO2_AM_REFRESH_TOKEN_1, currentEnv);
     }
 
-    static hasBasicLoginPermission(scopes) {
-        if (scopes.includes('apim:admin')) {
-            return true;
-        } else {
-            let { minScopesToLogin } = Configurations.app;
-            if (!minScopesToLogin) {
-                minScopesToLogin = CONSTS.DEFAULT_MIN_SCOPES_TO_LOGIN;
-            }
-            for (let i = 0; i < minScopesToLogin.length; i++) {
-                if (!scopes.includes(minScopesToLogin[i])) {
-                    return false;
-                }
-            }
-            return true;
+    static hasPermission = (scopes, val) => {
+        let value;
+        if (val === 'workflowManager') {
+            value = CONSTS.Roles.WORKFLOW_MANAGER;
+        } else if (val === 'settingsManager') {
+            value = CONSTS.Roles.SETTINGS_MANAGER;
+        } else if (val === 'policyManager') {
+            value = CONSTS.Roles.POLICY_MANAGER;
+        } else if (val === 'keyManagers') {
+            value = CONSTS.Roles.KEY_MANAGER;
+        } else if (val === 'categoriesManager') {
+            value = CONSTS.Roles.CATEGORY_MANAGER;
+        } else if (val === 'gatewayManager') {
+            value = CONSTS.Roles.GATEWAY_MANAGER;
         }
+        for (let i = 0; i < value.length; i++) {
+            if (!scopes.includes(value[i])) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    /**
+     *
+     * @param {*} scopes
+     * @returns
+     */
+    static hasBasicLoginPermission(scopes) {
+        const workflowManager = 'workflowManager';
+        const settingsManager = 'settingsManager';
+        const policyManager = 'policyManager';
+        const keyManagers = 'keyManagers';
+        const categoriesManager = 'categoriesManager';
+        const gatewayManager = 'gatewayManager';
+        return (scopes.includes('apim:admin')
+        || this.hasPermission(scopes, workflowManager)
+        || this.hasPermission(scopes, settingsManager)
+        || this.hasPermission(scopes, policyManager)
+        || this.hasPermission(scopes, keyManagers)
+        || this.hasPermission(scopes, categoriesManager)
+        || this.hasPermission(scopes, gatewayManager));
     }
 
     /**
