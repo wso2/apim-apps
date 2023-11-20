@@ -76,6 +76,10 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
 }) => {
     const [hovered, setHovered] = useState(false);
     const classes = useStyles();
+    /**
+     * React DnD Library has been used here.
+     * React DnD hook to make the policy card draggable.
+     */
     const [{ isDragging }, drag] = useDrag(
         () => ({
             type: `policyCard-${policyObj.id}`,

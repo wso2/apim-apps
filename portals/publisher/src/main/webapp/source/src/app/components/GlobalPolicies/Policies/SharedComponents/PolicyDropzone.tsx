@@ -56,6 +56,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
 
     /**
+     * React DnD Library has been used here.
      * Drop handler for the dropzone.
      * This will set the dropped policy to the state.
      * This data will be sent to the lower level components.

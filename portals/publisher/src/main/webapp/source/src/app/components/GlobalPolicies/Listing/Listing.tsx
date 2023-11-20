@@ -159,7 +159,7 @@ const Listing: React.FC = () => {
     const fetchGlobalPolicies = () => {
         setLoading(true);
         // Due to a bug in current backend, we pass 0, 10 as a workaround for now
-        const promisedPolicies = API.getAllGatewayPolicies(0,  10);
+        const promisedPolicies = API.getAllGatewayPolicies(0,  30);
         promisedPolicies
             .then((response: any) => {
                 setPolicies(response.body.list);
@@ -323,8 +323,8 @@ const Listing: React.FC = () => {
                     APIMAlert.error(response.body.message);
                 }                
             })
-            .catch((/* error */) => {
-                // console.error(error);
+            .catch((error) => {
+                console.error(error);
                 if (deploying) {
                     APIMAlert.error('Error occurred while deploying the policy');
                 } else {

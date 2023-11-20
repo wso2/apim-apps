@@ -3142,7 +3142,6 @@ class API extends Resource {
         const requestBody = {
             requestBody: body,
         };
-        console.log(body);
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].engageGlobalPolicy(
                 {gatewayPolicyMappingId},
