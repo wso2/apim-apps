@@ -92,17 +92,32 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies}) => {
                                     className={classes.flowTabs}
                                 >
                                     <Tab
-                                        label={<span className={classes.flowTab}>Request</span>}
+                                        label={<span className={classes.flowTab}>
+                                            <FormattedMessage
+                                                id='Request.Details.Policies.PolicyList.Title'
+                                                defaultMessage='Request'
+                                            />
+                                        </span>}
                                         id='request-tab'
                                         aria-controls='request-tabpanel'
                                     />
                                     <Tab
-                                        label={<span className={classes.flowTab}>Response</span>}
+                                        label={<span className={classes.flowTab}>
+                                            <FormattedMessage
+                                                id='Response.Details.Policies.PolicyList.Title'
+                                                defaultMessage='Response'
+                                            />
+                                        </span>}
                                         id='response-tab'
                                         aria-controls='response-tabpanel'
                                     />
                                     <Tab
-                                        label={<span className={classes.flowTab}>Fault</span>}
+                                        label={<span className={classes.flowTab}>
+                                            <FormattedMessage
+                                                id='Fault.Details.Policies.PolicyList.Title'
+                                                defaultMessage='Fault'
+                                            />
+                                        </span>}
                                         id='fault-tab'
                                         aria-controls='fault-tabpanel'
                                     />

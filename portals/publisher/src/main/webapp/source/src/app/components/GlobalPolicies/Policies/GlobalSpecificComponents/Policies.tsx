@@ -27,7 +27,7 @@ import Box from '@material-ui/core/Box';
 import Icon from '@material-ui/core/Icon';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import { arrayMove } from '@dnd-kit/sortable';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
@@ -90,6 +90,7 @@ const Policies: FC<PolicyProps> =  ({
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [appliedGatewayLabels, setAppliedGatewayLabels] = useState<string[]>([]);
+    const intl = useIntl();
 
     /**
      * Global level policy mapping. It will be initially empty.
@@ -124,8 +125,11 @@ const Policies: FC<PolicyProps> =  ({
             
             setPolicies(commonPolicies);
         }).catch((/* error */) => {
-            // console.error(error);
-            Alert.error('Error occurred while retrieving the policy list');
+            // console.error(error); 
+            Alert.error(intl.formatMessage({
+                id: 'Error.Retrieve.Policy.List',
+                defaultMessage: 'Error occurred while retrieving the policy list',
+            }));
         });
     }
 
@@ -216,7 +220,10 @@ const Policies: FC<PolicyProps> =  ({
             })
             .catch((/* error */) => {
                 // console.error(error);
-                Alert.error('Error occurred while retrieving the policy');
+                Alert.error(intl.formatMessage({
+                    id: 'Error.Retrieve.Policy',
+                    defaultMessage: 'Error occurred while retrieving the policy',
+                }));
             })
             .finally(() => {
                 setLoading(false);
@@ -301,17 +308,26 @@ const Policies: FC<PolicyProps> =  ({
     const validate = () => {
         let isValidate = true;
         if (name === '') {
-            Alert.error('Policy name cannot be empty');
+            Alert.error(intl.formatMessage({
+                id: 'Policy.Name.Cannot.Be.Empty',
+                defaultMessage: 'Policy name cannot be empty',
+            }));
             isValidate = false;
         }
         if (description === '') {
-            Alert.error('Policy description cannot be empty');
+            Alert.error(intl.formatMessage({
+                id: 'Policy.Description.Cannot.Be.Empty',
+                defaultMessage: 'Policy description cannot be empty',
+            }));
             isValidate = false;
         }
         if ((!globalLevelPolicies.request || globalLevelPolicies.request.length === 0) &&
             (!globalLevelPolicies.response || globalLevelPolicies.response.length === 0) &&
             (!globalLevelPolicies.fault || globalLevelPolicies.fault.length === 0)) {
-            Alert.error('Policy mapping cannot be empty');
+            Alert.error(intl.formatMessage({
+                id: 'Policy.Mapping.Cannot.Be.Empty',
+                defaultMessage: 'Policy mapping cannot be empty',
+            }));
             isValidate = false;
         }
         return isValidate;
@@ -346,7 +362,10 @@ const Policies: FC<PolicyProps> =  ({
                 .then((response) => {
                     setLoading(false);
                     if (response.status === 200 || response.status === 201) {
-                        Alert.success('Policy mapping added successfully');                    
+                        Alert.success(intl.formatMessage({
+                            id: 'Policy.Mapping.Added.Successfully',
+                            defaultMessage: 'Policy mapping added successfully',
+                        }));                 
                         history.goBack();
                     }
                     else {
@@ -355,7 +374,10 @@ const Policies: FC<PolicyProps> =  ({
                 })
                 .catch((/* error */) => {
                     // console.error(error);
-                    Alert.error('Error occurred while adding the policy mapping');
+                    Alert.error(intl.formatMessage({
+                        id: 'Adding.Policy.Mapping.Error',
+                        defaultMessage: 'Error occurred while adding the policy mapping',
+                    }));    
                 })
         }
         setLoading(false);
@@ -391,7 +413,10 @@ const Policies: FC<PolicyProps> =  ({
                 .then((response) => {
                     if (response.status === 200 || response.status === 201) {
                         setLoading(false);
-                        Alert.success('Policy mapping updated successfully');                    
+                        Alert.success(intl.formatMessage({
+                            id: 'Policy.Mapping.Update.Success',
+                            defaultMessage: 'Policy mapping updated successfully',
+                        }));                  
                         history.goBack();
                     }
                     else {
@@ -400,7 +425,10 @@ const Policies: FC<PolicyProps> =  ({
                 })
                 .catch((/* error */) => {
                     // console.error(error);
-                    Alert.error('Error occurred while updating the policy mapping');
+                    Alert.error(intl.formatMessage({
+                        id: 'Policy.Mapping.Update.Error',
+                        defaultMessage: 'Error occurred while updating the policy mapping',
+                    }));  
                 })
         }
         setLoading(false);

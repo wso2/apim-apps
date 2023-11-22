@@ -43,7 +43,7 @@ import APIMAlert from 'AppComponents/Shared/Alert';
 import Icon from '@material-ui/core/Icon';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import AddCircle from '@material-ui/icons/AddCircle';
 import MUIDataTable, { MUIDataTableOptions, MUIDataTableColumnDef } from 'mui-datatables';
 import Box from '@material-ui/core/Box';
@@ -152,6 +152,7 @@ const Listing: React.FC = () => {
     const [selectedPolicyId, setSelectedPolicyId] = useState('');
     const theme : any = useTheme();
     const { globalPolicyAddIcon } = theme.custom.landingPage.icons;
+    const intl = useIntl();
 
     /**
      * Fetch the data from the backend to the compoenent.
@@ -167,7 +168,10 @@ const Listing: React.FC = () => {
             })
             .catch((/* error */) => {
                 // console.error(error);
-                APIMAlert.error('Error while fetching policies');
+                APIMAlert.error(intl.formatMessage({
+                    id: 'Fetching.Policies.Error',
+                    defaultMessage: 'Error while fetching policies',
+                }));
                 setnotFound(true);
                 setLoading(false);
             })
@@ -186,7 +190,10 @@ const Listing: React.FC = () => {
             })
             .catch((/* error */) => {
                 // console.error(error);
-                APIMAlert.error('Error while fetching settings');
+                APIMAlert.error(intl.formatMessage({
+                    id: 'Fetching.Policies.Settings',
+                    defaultMessage: 'Error while fetching settings',
+                }));
                 setnotFound(true);
             })
             .finally(() => {
@@ -306,13 +313,19 @@ const Listing: React.FC = () => {
                 if (response.status === 200 || response.status === 201) {
                     setLoading(false);
                     if (deploying) {
-                        APIMAlert.success('Policy deployed successfully');    
+                        APIMAlert.success(intl.formatMessage({
+                            id: 'Policy.Deploy.Successful',
+                            defaultMessage: 'Policy deployed successfully',
+                        }));    
                         /**
                          * If successful, add to the state rather than getting from backend.
                          */
                         addLabelToPolicy(gatewayPolicyMappingId, environement);                
                     } else {
-                        APIMAlert.success('Policy undeployed successfully');    
+                        APIMAlert.success(intl.formatMessage({
+                            id: 'Policy.Undeploy.Successful',
+                            defaultMessage: 'Policy undeployed successfully',
+                        }));    
                         /**
                          * If successful, remove from the state rather than getting from backend.
                          */
@@ -323,12 +336,18 @@ const Listing: React.FC = () => {
                     APIMAlert.error(response.body.message);
                 }                
             })
-            .catch((error) => {
-                console.error(error);
+            .catch((/* error */) => {
+                // console.error(error);
                 if (deploying) {
-                    APIMAlert.error('Error occurred while deploying the policy');
+                    APIMAlert.error(intl.formatMessage({
+                        id: 'Error.Deploy.Policy',
+                        defaultMessage: 'Error occurred while deploying the policy',
+                    }));
                 } else {
-                    APIMAlert.error('Error occurred while undeploying the policy');
+                    APIMAlert.error(intl.formatMessage({
+                        id: 'Error.Undeploy.Policy',
+                        defaultMessage: 'Error occurred while undeploying the policy',
+                    }));
                 }
             })         
         setLoading(false);
@@ -358,12 +377,18 @@ const Listing: React.FC = () => {
                  */
                 const updatedPolicies = policies.filter((policy) => policy.id !== gatewayPolicyMappingId);
                 setPolicies(updatedPolicies);
-                APIMAlert.success('Policy deleted successfully');
+                APIMAlert.success(intl.formatMessage({
+                    id: 'Policy.Delete.Successful',
+                    defaultMessage: 'Policy deleted successfully',
+                }));
                 setLoading(false);
             })
             .catch((/* error */) => {
                 // console.error(error);
-                APIMAlert.error('Error while deleting the policy');
+                APIMAlert.error(intl.formatMessage({
+                    id: 'Policy.Delete.Error',
+                    defaultMessage: 'Error while deleting the policy',
+                }));
                 setLoading(false);
             });    
     }
@@ -417,14 +442,20 @@ const Listing: React.FC = () => {
         },
         {
             name: 'displayName',
-            label: 'Global Policy',
+            label: intl.formatMessage({
+                id: 'Global.Policy.Listing.Table.Header.Name',
+                defaultMessage: 'Global Policy',
+            }),
         },
         /**
          * Deployed Gateway Column.
          */
         {
             name: 'appliedGatewayLabels',
-            label: 'Deployed Gateways',
+            label: intl.formatMessage({
+                id: 'Deployed.Gateway.Listing.Table.Header.Name',
+                defaultMessage: 'Deployed Gateways',
+            }),
             options: {
                 customBodyRender: (value: string[] | undefined) => {
                     if (value && value.length > 0) {
@@ -441,7 +472,10 @@ const Listing: React.FC = () => {
                             </div>
                         );
                     } else {
-                        return "No deployed gateways";
+                        return intl.formatMessage({
+                            id: 'Deployed.Gateway.Listing.Table.Not.Available',
+                            defaultMessage: 'No Deployed Gateways',
+                        });
                     }
                 }
             }      
@@ -462,10 +496,16 @@ const Listing: React.FC = () => {
                     const handleDeleteClick = () => {
                         // If there is active depoloyments, we need to block the deletion
                         const appliedGatewayList = getAppliedGatewayLabelsById(policyId);
-                        if (appliedGatewayList.length > 0){
+                        if (appliedGatewayList.length > 0){      
                             APIMAlert.error((appliedGatewayList.length === 1) ? 
-                                'An active deployment is available' 
-                                : 'Active deployments are available');
+                                intl.formatMessage({
+                                    id: 'Active.Development.Available',
+                                    defaultMessage: 'An active deployment is available',
+                                }) 
+                                : intl.formatMessage({
+                                    id: 'Active.Developments.Available',
+                                    defaultMessage: 'Active deployments are available',
+                                }));
                         }
                         else {
                             setSelectedPolicyId(policyId);
@@ -485,7 +525,7 @@ const Listing: React.FC = () => {
                                     edit
                                 </Icon>
                                 <FormattedMessage
-                                    id='GlobalPolicies.Listing.table.header.actions.edit'
+                                    id='GlobalPolicies.Listing.Table.Header.Actions.Edit'
                                     defaultMessage='Edit'
                                 />
                             </Button>
@@ -509,18 +549,33 @@ const Listing: React.FC = () => {
                                     BackdropProps={{ className: classes.dialogBackdrop }}
                                     PaperProps={{ className: classes.dialogPaper }}
                                 >
-                                    <DialogTitle>Confirm Delete</DialogTitle>
+                                    <DialogTitle>
+                                        <FormattedMessage
+                                            id='Confirm.Delete'
+                                            defaultMessage='Confirm Delete'
+                                        />
+                                    </DialogTitle>
                                     <DialogContent>
                                         <DialogContentText>
-                                            Are you sure you want to delete {selectedPolicyName}?
+                                            <FormattedMessage
+                                                id='Confirm.Delete.Verify'
+                                                defaultMessage='Are you sure you want to delete the policy '
+                                            />
+                                            {selectedPolicyName}?
                                         </DialogContentText>
                                     </DialogContent>
                                     <DialogActions>
                                         <Button onClick={() => setIsDialogOpen(false)} color='primary'>
-                                            Cancel
+                                            <FormattedMessage
+                                                id='Cancel'
+                                                defaultMessage='Cancel'
+                                            />
                                         </Button>
                                         <Button onClick={() => deletePolicy(selectedPolicyId)} color='primary'>
-                                            Delete
+                                            <FormattedMessage
+                                                id='Delete'
+                                                defaultMessage='Delete'
+                                            />
                                         </Button>
                                     </DialogActions>
                                 </Dialog>
@@ -583,15 +638,23 @@ const Listing: React.FC = () => {
                                                         color='default'
                                                         onClick={() => deployOrUndeploy(policy.id, gateway, false)}
                                                     >
-                                                        Undeploy
+                                                        <FormattedMessage
+                                                            id='Undeploy'
+                                                            defaultMessage='Undeploy'
+                                                        />
                                                     </Button>
                                                 );
                                             } else if (allDepoloyedGateways.includes(gateway)) {
                                                 button = (
                                                     <Tooltip 
-                                                        title='Another global policy has been already 
-                                                        deployed in this gateway' 
-                                                    >
+                                                        title={(
+                                                            <FormattedMessage
+                                                                id='Policy.Already.Deployed'
+                                                                defaultMessage='Another global policy has been 
+                                                                already deployed in this gateway'
+                                                            />
+                                                        )} 
+                                                    >                                                    
                                                         <span>
                                                             <Button
                                                                 className={classes.button}
@@ -599,7 +662,10 @@ const Listing: React.FC = () => {
                                                                 color='default'
                                                                 disabled
                                                             >
-                                                                Deploy
+                                                                <FormattedMessage
+                                                                    id='Deploy'
+                                                                    defaultMessage='Deploy'
+                                                                />
                                                             </Button>
                                                         </span>
                                                     </Tooltip>
@@ -612,7 +678,10 @@ const Listing: React.FC = () => {
                                                         color='primary'
                                                         onClick={() => deployOrUndeploy(policy.id, gateway, true)}
                                                     >
-                                                        Deploy
+                                                        <FormattedMessage
+                                                            id='Deploy'
+                                                            defaultMessage='Deploy'
+                                                        />
                                                     </Button>
                                                 );
                                             }
@@ -665,14 +734,19 @@ const Listing: React.FC = () => {
                 <OnboardingMenuCard
                     id='itest-id-create-global-policy'
                     to='global-policies/create'
-                    name='Global Policies'
+                    name={(
+                        <FormattedMessage
+                            id='Global.Policies'
+                            defaultMessage='Global Policies'
+                        />
+                    )} 
                     iconName={globalPolicyAddIcon}
                 />
             </Onboarding>
         );
     }
 
-    if (loading) {
+    if (loading) {      
         return <Progress per={90} message='Loading Global Policies ...' />;
     }
 

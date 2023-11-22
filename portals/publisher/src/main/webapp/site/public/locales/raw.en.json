@@ -8,6 +8,9 @@
   "APIs.details.endpoints.certificate.usage.cancel": {
     "defaultMessage": "Cancel"
   },
+  "Adding.Policy.Mapping.Error": {
+    "defaultMessage": "Error occurred while adding the policy mapping"
+  },
   "Api.category.dropdown.tooltip": {
     "defaultMessage": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
   },
@@ -4125,6 +4128,12 @@
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
   },
+  "Cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Cannot.find.policyObj.for.policyId": {
+    "defaultMessage": "Cannot find policyObj for policyId:"
+  },
   "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": {
     "defaultMessage": "Create New Policy"
   },
@@ -4185,14 +4194,56 @@
   "CommonPolicies.ViewPolicy.policies.title": {
     "defaultMessage": "Policies"
   },
+  "Confirm.Delete": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "Confirm.Delete.Verify": {
+    "defaultMessage": "Are you sure you want to delete the policy"
+  },
   "Connection.Timeout": {
     "defaultMessage": "Connection Timeout"
+  },
+  "Delete": {
+    "defaultMessage": "Delete"
+  },
+  "Deploy": {
+    "defaultMessage": "Deploy"
+  },
+  "Deployed.Gateway.Listing.Table.Header.Name": {
+    "defaultMessage": "Deployed Gateways"
+  },
+  "Deployed.Gateway.Listing.Table.not.available": {
+    "defaultMessage": "No Deployed Gateways"
   },
   "Endpoint.Suspension.State": {
     "defaultMessage": "Endpoint Suspension State"
   },
+  "Error.Deploy.Policy": {
+    "defaultMessage": "Error occurred while deploying the policy"
+  },
+  "Error.Retrieve.Policy": {
+    "defaultMessage": "Error occurred while retrieving the policy"
+  },
+  "Error.Retrieve.Policy.List": {
+    "defaultMessage": "Error occurred while retrieving the policy list"
+  },
+  "Error.Undeploy.Policy": {
+    "defaultMessage": "Error occurred while undeploying the policy"
+  },
+  "Error.Validating.Regex": {
+    "defaultMessage": "Error while validating the regex"
+  },
   "Error.while.validating.the.imported.graphQLSchema": {
     "defaultMessage": "Error while validating the imported schema"
+  },
+  "Fault.Details.Policies.PolicyList.title": {
+    "defaultMessage": "Fault"
+  },
+  "Fetching.Policies.Error": {
+    "defaultMessage": "Error while fetching policies"
+  },
+  "Fetching.Policies.Settings": {
+    "defaultMessage": "Error while fetching settings"
   },
   "Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": {
     "defaultMessage": "Something went wrong while downloading the policy"
@@ -4239,6 +4290,12 @@
   "Global.Details.Policies.SaveOperationPolicies.update": {
     "defaultMessage": "Update"
   },
+  "Global.Policies": {
+    "defaultMessage": "Global Policies"
+  },
+  "Global.Policy.Listing.Table.Header.Name": {
+    "defaultMessage": "Global Policy"
+  },
   "GlobalPolicies.Listing.onboarding.create.new": {
     "defaultMessage": "Let’s get started!"
   },
@@ -4268,6 +4325,45 @@
   },
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
+  },
+  "Policy.Already.Deployed": {
+    "defaultMessage": "Another global policy has been already deployed in this gateway"
+  },
+  "Policy.Deploy.Successful": {
+    "defaultMessage": "Policy deployed successfully"
+  },
+  "Policy.Description.Cannot.Be.Empty": {
+    "defaultMessage": "Policy description cannot be empty"
+  },
+  "Policy.Mapping.Added.Successfully": {
+    "defaultMessage": "Policy mapping added successfully"
+  },
+  "Policy.Mapping.Cannot.Be.Empty": {
+    "defaultMessage": "Policy mapping cannot be empty"
+  },
+  "Policy.Mapping.Update.Error": {
+    "defaultMessage": "Error occurred while updating the policy mapping"
+  },
+  "Policy.Mapping.Update.Success": {
+    "defaultMessage": "Policy mapping updated successfully"
+  },
+  "Policy.Name.Cannot.Be.Empty": {
+    "defaultMessage": "Policy name cannot be empty"
+  },
+  "Policy.Undeploy.Successful": {
+    "defaultMessage": "Policy undeployed successfully"
+  },
+  "Policy.delete.error": {
+    "defaultMessage": "Error while deleting the policy"
+  },
+  "Policy.delete.successful": {
+    "defaultMessage": "Policy deleted successfully"
+  },
+  "Request.Details.Policies.PolicyList.title": {
+    "defaultMessage": "Request"
+  },
+  "Response.Details.Policies.PolicyList.title": {
+    "defaultMessage": "Response"
   },
   "Scopes.Create.CreateScope.cancel": {
     "defaultMessage": "Cancel"
@@ -4647,6 +4743,9 @@
   "ServiceCatalog.ServicesTableView.ServicesTableView.version": {
     "defaultMessage": "Version"
   },
+  "Undeploy": {
+    "defaultMessage": "Undeploy"
+  },
   "UnexpectedError.logout": {
     "defaultMessage": "Logout"
   },
@@ -4655,6 +4754,12 @@
   },
   "UnexpectedError.title": {
     "defaultMessage": "Internal Server Error"
+  },
+  "active.development.available": {
+    "defaultMessage": "An active deployment is available"
+  },
+  "active.developments.available": {
+    "defaultMessage": "Active deployments are available"
   },
   "api.console.security.heading": {
     "defaultMessage": "Security"

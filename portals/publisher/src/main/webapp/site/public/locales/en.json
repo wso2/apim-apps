@@ -17,6 +17,12 @@
       "value": "Cancel"
     }
   ],
+  "Adding.Policy.Mapping.Error": [
+    {
+      "type": 0,
+      "value": "Error occurred while adding the policy mapping"
+    }
+  ],
   "Api.category.dropdown.tooltip": [
     {
       "type": 0,
@@ -8631,6 +8637,18 @@
       "value": "Scopes"
     }
   ],
+  "Cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Cannot.find.policyObj.for.policyId": [
+    {
+      "type": 0,
+      "value": "Cannot find policyObj for policyId:"
+    }
+  ],
   "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": [
     {
       "type": 0,
@@ -8759,10 +8777,46 @@
       "value": "Policies"
     }
   ],
+  "Confirm.Delete": [
+    {
+      "type": 0,
+      "value": "Confirm Delete"
+    }
+  ],
+  "Confirm.Delete.Verify": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete the policy"
+    }
+  ],
   "Connection.Timeout": [
     {
       "type": 0,
       "value": "Connection Timeout"
+    }
+  ],
+  "Delete": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "Deploy": [
+    {
+      "type": 0,
+      "value": "Deploy"
+    }
+  ],
+  "Deployed.Gateway.Listing.Table.Header.Name": [
+    {
+      "type": 0,
+      "value": "Deployed Gateways"
+    }
+  ],
+  "Deployed.Gateway.Listing.Table.not.available": [
+    {
+      "type": 0,
+      "value": "No Deployed Gateways"
     }
   ],
   "Endpoint.Suspension.State": [
@@ -8771,10 +8825,58 @@
       "value": "Endpoint Suspension State"
     }
   ],
+  "Error.Deploy.Policy": [
+    {
+      "type": 0,
+      "value": "Error occurred while deploying the policy"
+    }
+  ],
+  "Error.Retrieve.Policy": [
+    {
+      "type": 0,
+      "value": "Error occurred while retrieving the policy"
+    }
+  ],
+  "Error.Retrieve.Policy.List": [
+    {
+      "type": 0,
+      "value": "Error occurred while retrieving the policy list"
+    }
+  ],
+  "Error.Undeploy.Policy": [
+    {
+      "type": 0,
+      "value": "Error occurred while undeploying the policy"
+    }
+  ],
+  "Error.Validating.Regex": [
+    {
+      "type": 0,
+      "value": "Error while validating the regex"
+    }
+  ],
   "Error.while.validating.the.imported.graphQLSchema": [
     {
       "type": 0,
       "value": "Error while validating the imported schema"
+    }
+  ],
+  "Fault.Details.Policies.PolicyList.title": [
+    {
+      "type": 0,
+      "value": "Fault"
+    }
+  ],
+  "Fetching.Policies.Error": [
+    {
+      "type": 0,
+      "value": "Error while fetching policies"
+    }
+  ],
+  "Fetching.Policies.Settings": [
+    {
+      "type": 0,
+      "value": "Error while fetching settings"
     }
   ],
   "Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": [
@@ -8875,6 +8977,18 @@
       "value": "Update"
     }
   ],
+  "Global.Policies": [
+    {
+      "type": 0,
+      "value": "Global Policies"
+    }
+  ],
+  "Global.Policy.Listing.Table.Header.Name": [
+    {
+      "type": 0,
+      "value": "Global Policy"
+    }
+  ],
   "GlobalPolicies.Listing.onboarding.create.new": [
     {
       "type": 0,
@@ -8933,6 +9047,84 @@
     {
       "type": 0,
       "value": "Error 403 : Forbidden"
+    }
+  ],
+  "Policy.Already.Deployed": [
+    {
+      "type": 0,
+      "value": "Another global policy has been already deployed in this gateway"
+    }
+  ],
+  "Policy.Deploy.Successful": [
+    {
+      "type": 0,
+      "value": "Policy deployed successfully"
+    }
+  ],
+  "Policy.Description.Cannot.Be.Empty": [
+    {
+      "type": 0,
+      "value": "Policy description cannot be empty"
+    }
+  ],
+  "Policy.Mapping.Added.Successfully": [
+    {
+      "type": 0,
+      "value": "Policy mapping added successfully"
+    }
+  ],
+  "Policy.Mapping.Cannot.Be.Empty": [
+    {
+      "type": 0,
+      "value": "Policy mapping cannot be empty"
+    }
+  ],
+  "Policy.Mapping.Update.Error": [
+    {
+      "type": 0,
+      "value": "Error occurred while updating the policy mapping"
+    }
+  ],
+  "Policy.Mapping.Update.Success": [
+    {
+      "type": 0,
+      "value": "Policy mapping updated successfully"
+    }
+  ],
+  "Policy.Name.Cannot.Be.Empty": [
+    {
+      "type": 0,
+      "value": "Policy name cannot be empty"
+    }
+  ],
+  "Policy.Undeploy.Successful": [
+    {
+      "type": 0,
+      "value": "Policy undeployed successfully"
+    }
+  ],
+  "Policy.delete.error": [
+    {
+      "type": 0,
+      "value": "Error while deleting the policy"
+    }
+  ],
+  "Policy.delete.successful": [
+    {
+      "type": 0,
+      "value": "Policy deleted successfully"
+    }
+  ],
+  "Request.Details.Policies.PolicyList.title": [
+    {
+      "type": 0,
+      "value": "Request"
+    }
+  ],
+  "Response.Details.Policies.PolicyList.title": [
+    {
+      "type": 0,
+      "value": "Response"
     }
   ],
   "Scopes.Create.CreateScope.cancel": [
@@ -9727,6 +9919,12 @@
       "value": "Version"
     }
   ],
+  "Undeploy": [
+    {
+      "type": 0,
+      "value": "Undeploy"
+    }
+  ],
   "UnexpectedError.logout": [
     {
       "type": 0,
@@ -9743,6 +9941,18 @@
     {
       "type": 0,
       "value": "Internal Server Error"
+    }
+  ],
+  "active.development.available": [
+    {
+      "type": 0,
+      "value": "An active deployment is available"
+    }
+  ],
+  "active.developments.available": [
+    {
+      "type": 0,
+      "value": "Active deployments are available"
     }
   ],
   "api.console.security.heading": [

@@ -19,6 +19,7 @@
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { Alert } from 'AppComponents/Shared';
 import PoliciesExpansionShared from 'AppComponents/Shared/PoliciesUI/PoliciesExpansion';
+import { useIntl } from 'react-intl';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from '../Types';
 import FlowArrow from './FlowArrow';
@@ -70,6 +71,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
     const { globalLevelPolicies } = useContext<any>(GlobalPolicyContext);
+    const intl = useIntl();
 
     /**
      * This is where the applicable (droppable) flows are set for each policy.
@@ -133,7 +135,10 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         requestFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
                         // console.error("Cannot find policyObj for policyId: " + policyId);
-                        Alert.error("Cannot find policyObj for policyId: " + policyId);
+                        Alert.error(intl.formatMessage({
+                            id: 'Cannot.Find.PolicyObj.For.PolicyId',
+                            defaultMessage: 'Cannot find policyObj for policyId: ',
+                        }) + policyId);
                     }
                 }
             }
@@ -168,7 +173,10 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         responseFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
                         // console.error("Cannot find policyObj for policyId: " + policyId);
-                        Alert.error("Cannot find policyObj for policyId: " + policyId);
+                        Alert.error(intl.formatMessage({
+                            id: 'Cannot.Find.PolicyObj.For.PolicyId',
+                            defaultMessage: 'Cannot find policyObj for policyId: ',
+                        }) + policyId);
                     }   
                 }
             }
@@ -204,7 +212,10 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                             faultFlowList.push({ ...policyObj, uniqueKey: uuid });
                         } else {
                             // console.error("Cannot find policyObj for policyId: " + policyId);
-                            Alert.error("Cannot find policyObj for policyId: " + policyId);
+                            Alert.error(intl.formatMessage({
+                                id: 'Cannot.Find.PolicyObj.For.PolicyId',
+                                defaultMessage: 'Cannot find policyObj for policyId: ',
+                            }) + policyId);
                         }
                     }
                 }

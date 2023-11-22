@@ -175,7 +175,10 @@ const General: FC<GeneralProps> = ({
                     }
                 } catch {
                     // console.error(error);
-                    Alert.error('Error while validating the regex');
+                    Alert.error(intl.formatMessage({
+                        id: 'Error.Validating.Regex',
+                        defaultMessage: 'Error while validating the regex',
+                    }));
                 }
             }
         }
