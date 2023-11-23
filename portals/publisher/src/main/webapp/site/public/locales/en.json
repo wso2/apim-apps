@@ -8825,6 +8825,12 @@
       "value": "Deploy"
     }
   ],
+  "Deployed.Gateway.Listing.Table.Header.Description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
   "Deployed.Gateway.Listing.Table.Header.Name": [
     {
       "type": 0,

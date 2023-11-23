@@ -38,7 +38,6 @@ import {
     DialogContentText,
     useTheme 
 } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
 import APIMAlert from 'AppComponents/Shared/Alert';
 import Icon from '@material-ui/core/Icon';
 import API from 'AppData/api';
@@ -110,6 +109,10 @@ const useStyles = makeStyles((theme) => ({
     tableContainer: {
         maxWidth: '400px'
     },
+    noDeployedGateways: {
+        color: 'grey', 
+        fontStyle: 'italic'
+    }
 }));
 
 interface Policy {
@@ -475,6 +478,40 @@ const Listing: React.FC = () => {
                             </div>
                         );
                     } else {
+                        return (
+                            <p className={classes.noDeployedGateways}>
+                                <FormattedMessage
+                                    id='Deployed.Gateway.Listing.Table.Not.Available'
+                                    defaultMessage='No Deployed Gateways'
+                                />
+                            </p>
+                        );
+                    }
+                }
+            }      
+        },
+        /**
+         * Description Column.
+         */
+        {
+            name: 'description',
+            label: intl.formatMessage({
+                id: 'Deployed.Gateway.Listing.Table.Header.Description',
+                defaultMessage: 'Description',
+            }),
+            options: {
+                customBodyRender: (value: string) => {
+                    if (value) {
+                        return (
+                            <div>
+                                <Tooltip title={value}>
+                                    <Icon className={classes.icon}>
+                                        info
+                                    </Icon>
+                                </Tooltip>
+                            </div>
+                        );
+                    } else {
                         return intl.formatMessage({
                             id: 'Deployed.Gateway.Listing.Table.Not.Available',
                             defaultMessage: 'No Deployed Gateways',
@@ -626,10 +663,8 @@ const Listing: React.FC = () => {
             const allDepoloyedGateways = getAllDepoloyedGateways();
             return ( 
                 <TableRow>
-                    <TableCell colSpan={4}>
-                        <Paper>
-                            <Alert severity='info'>{policy.description}</Alert>
-                            
+                    <TableCell colSpan={5}>
+                        <Paper>                        
                             <TableContainer className={classes.tableContainer}>
                                 <Table>
                                     <TableBody>
