@@ -369,7 +369,10 @@ const Policies: FC<PolicyProps> =  ({
                         history.goBack();
                     }
                     else {
-                        Alert.error(response.body.message);
+                        Alert.error(intl.formatMessage({
+                            id: 'Adding.Policy.Mapping.Error',
+                            defaultMessage: 'Error occurred while adding the policy mapping',
+                        })); 
                     }                
                 })
                 .catch((/* error */) => {
@@ -420,7 +423,10 @@ const Policies: FC<PolicyProps> =  ({
                         history.goBack();
                     }
                     else {
-                        Alert.error(response.body.message);
+                        Alert.error(intl.formatMessage({
+                            id: 'Policy.Mapping.Update.Error',
+                            defaultMessage: 'Error occurred while updating the policy mapping',
+                        })); 
                     }                
                 })
                 .catch((/* error */) => {

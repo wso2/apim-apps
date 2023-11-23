@@ -17,6 +17,24 @@
       "value": "Cancel"
     }
   ],
+  "Actions": [
+    {
+      "type": 0,
+      "value": "Actions"
+    }
+  ],
+  "Active.Development.Available": [
+    {
+      "type": 0,
+      "value": "An active deployment is available"
+    }
+  ],
+  "Active.Developments.Available": [
+    {
+      "type": 0,
+      "value": "Active deployments are available"
+    }
+  ],
   "Adding.Policy.Mapping.Error": [
     {
       "type": 0,
@@ -8643,7 +8661,7 @@
       "value": "Cancel"
     }
   ],
-  "Cannot.find.policyObj.for.policyId": [
+  "Cannot.Find.PolicyObj.For.PolicyId": [
     {
       "type": 0,
       "value": "Cannot find policyObj for policyId:"
@@ -8813,7 +8831,7 @@
       "value": "Deployed Gateways"
     }
   ],
-  "Deployed.Gateway.Listing.Table.not.available": [
+  "Deployed.Gateway.Listing.Table.Not.Available": [
     {
       "type": 0,
       "value": "No Deployed Gateways"
@@ -8861,7 +8879,7 @@
       "value": "Error while validating the imported schema"
     }
   ],
-  "Fault.Details.Policies.PolicyList.title": [
+  "Fault.Details.Policies.PolicyList.Title": [
     {
       "type": 0,
       "value": "Fault"
@@ -8989,6 +9007,12 @@
       "value": "Global Policy"
     }
   ],
+  "GlobalPolicies.Listing.Table.Header.Actions.Edit": [
+    {
+      "type": 0,
+      "value": "Edit"
+    }
+  ],
   "GlobalPolicies.Listing.onboarding.create.new": [
     {
       "type": 0,
@@ -9025,12 +9049,6 @@
       "value": "Delete"
     }
   ],
-  "GlobalPolicies.Listing.table.header.actions.edit": [
-    {
-      "type": 0,
-      "value": "Edit"
-    }
-  ],
   "LoginDenied.logout": [
     {
       "type": 0,
@@ -9053,6 +9071,18 @@
     {
       "type": 0,
       "value": "Another global policy has been already deployed in this gateway"
+    }
+  ],
+  "Policy.Delete.Error": [
+    {
+      "type": 0,
+      "value": "Error while deleting the policy"
+    }
+  ],
+  "Policy.Delete.Successful": [
+    {
+      "type": 0,
+      "value": "Policy deleted successfully"
     }
   ],
   "Policy.Deploy.Successful": [
@@ -9103,25 +9133,13 @@
       "value": "Policy undeployed successfully"
     }
   ],
-  "Policy.delete.error": [
-    {
-      "type": 0,
-      "value": "Error while deleting the policy"
-    }
-  ],
-  "Policy.delete.successful": [
-    {
-      "type": 0,
-      "value": "Policy deleted successfully"
-    }
-  ],
-  "Request.Details.Policies.PolicyList.title": [
+  "Request.Details.Policies.PolicyList.Title": [
     {
       "type": 0,
       "value": "Request"
     }
   ],
-  "Response.Details.Policies.PolicyList.title": [
+  "Response.Details.Policies.PolicyList.Title": [
     {
       "type": 0,
       "value": "Response"
@@ -9941,18 +9959,6 @@
     {
       "type": 0,
       "value": "Internal Server Error"
-    }
-  ],
-  "active.development.available": [
-    {
-      "type": 0,
-      "value": "An active deployment is available"
-    }
-  ],
-  "active.developments.available": [
-    {
-      "type": 0,
-      "value": "Active deployments are available"
     }
   ],
   "api.console.security.heading": [

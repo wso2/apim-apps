@@ -333,7 +333,10 @@ const Listing: React.FC = () => {
                     }           
                 }
                 else {
-                    APIMAlert.error(response.body.message);
+                    APIMAlert.error(intl.formatMessage({
+                        id: 'Error.Deploy.Policy',
+                        defaultMessage: 'Error occurred while deploying the policy',
+                    }));
                 }                
             })
             .catch((/* error */) => {
@@ -427,7 +430,7 @@ const Listing: React.FC = () => {
             return `${name.substring(0, 20)}...`;
         }
         return name;
-    }
+    };
 
     /**
      * Columns for the MUI table.
@@ -484,7 +487,10 @@ const Listing: React.FC = () => {
          * Action Column.
          */
         {
-            name: 'Actions',
+            name: intl.formatMessage({
+                id: 'Actions',
+                defaultMessage: 'Actions',
+            }),
             options: {
                 customBodyRender: (value: any, tableMeta: any) => {
                     const policyId = tableMeta.rowData[0];
