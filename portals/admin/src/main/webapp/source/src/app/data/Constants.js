@@ -26,7 +26,22 @@ const CONSTS = {
     },
     TENANT_STATE_ACTIVE: 'ACTIVE',
     DEFAULT_MIN_SCOPES_TO_LOGIN: ['apim:api_workflow_view', 'apim:api_workflow_approve', 'apim:tenantInfo',
-        'apim:admin_settings'],
+        'apim:admin_settings', 'apim:tier_view', 'apim:policies_import_export', 'apim:tier_manage', 'apim:bl_manage',
+    ],
+    Roles: {
+        WORKFLOW_MANAGER: ['apim:api_workflow_view', 'apim:api_workflow_approve', 'apim:tenantInfo', 'openid',
+            'apim:admin_settings',
+        ],
+        POLICY_MANAGER: ['apim:admin_tier_view', 'apim:admin_tier_manage', 'apim:tenantInfo',
+            'apim:bl_view', 'apim:bl_manage', 'openid', 'apim:admin_settings',
+        ],
+        CATEGORY_MANAGER: ['apim:api_category', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
+        KEY_MANAGER: ['apim:keymanagers_manage', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
+        GATEWAY_MANAGER: ['apim:environment_manage', 'openid', 'apim:admin_settings', 'apim:environment_read'],
+        SETTINGS_MANAGER: ['apim:app_owner_change', 'apim:admin_application_view',
+            'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo',
+        ],
+    },
 };
 
 export default CONSTS;

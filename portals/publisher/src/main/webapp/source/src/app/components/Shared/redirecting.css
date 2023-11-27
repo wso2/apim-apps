@@ -31,7 +31,7 @@ html, body {
 }
 
 #react-root {
-    height: 100%;
+    min-height: 100%;
 }
 
 @media (max-width: 601px) {

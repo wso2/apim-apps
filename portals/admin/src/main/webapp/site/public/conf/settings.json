@@ -19,12 +19,6 @@
       "enabled": true,
       "timeout": 2000
     },
-    "docUrl": "https://apim.docs.wso2.com/en/4.2.0/",
-    "minScopesToLogin": [
-      "apim:api_workflow_view",
-      "apim:api_workflow_approve",
-      "apim:tenantInfo",
-      "apim:admin_settings"
-    ]
+    "docUrl": "https://apim.docs.wso2.com/en/4.2.0/"
   }
 }
