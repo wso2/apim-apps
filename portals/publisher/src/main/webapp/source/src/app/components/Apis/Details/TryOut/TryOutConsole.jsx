@@ -145,7 +145,7 @@ const TryOutConsole = () => {
         }
     }, [publisherSettings]);
 
-    const isAPIProduct = api.type === 'APIPRODUCT';
+    const isAPIProduct = api.apiType === 'APIPRODUCT';
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
     const setServersSpec = (spec, serverUrl) => {
         let schemes;
