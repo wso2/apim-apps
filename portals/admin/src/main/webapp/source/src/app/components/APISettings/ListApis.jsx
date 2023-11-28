@@ -72,17 +72,17 @@ export default function ListApis() {
     const [totalApps, setTotalApps] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
-    const [owner, setOwner] = useState('');
+    const [provider, setProvider] = useState('');
 
     /**
     * API call to get api list
     * @returns {Promise}.
     */
-    function apiCall(pageNo, user = owner) {
+    function apiCall(pageNo, user = provider) {
         setLoading(true);
         const restApi = new API();
         return restApi
-            .getApplicationList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, user })
+            .getApiList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, user })
             .then((result) => {
                 setApiList(result.body.list);
                 const { pagination: { total } } = result.body;
@@ -129,7 +129,7 @@ export default function ListApis() {
 
     function clearSearch() {
         setPage(0);
-        setOwner('');
+        setProvider('');
         apiCall(page, '').then((result) => {
             setApiList(result);
         });
@@ -140,7 +140,7 @@ export default function ListApis() {
         if (newQuery === '') {
             clearSearch();
         } else {
-            setOwner(newQuery);
+            setProvider(newQuery);
         }
     }
 
@@ -166,22 +166,22 @@ export default function ListApis() {
                                     fullWidth
                                     id='search-label'
                                     label={intl.formatMessage({
-                                        defaultMessage: 'Search Api by Api Owner',
+                                        defaultMessage: 'Search Api by Api Provider',
                                         id: 'Apis.Listing.Listing.apis.search.label',
                                     })}
                                     placeholder={intl.formatMessage({
-                                        defaultMessage: 'Api Owner',
+                                        defaultMessage: 'Api Provider',
                                         id: 'Apis.Listing.Listing.search.placeholder',
                                     })}
                                     InputProps={{
                                         disableUnderline: true,
                                         className: classes.searchInput,
                                     }}
-                                    value={owner}
+                                    value={provider}
                                     onChange={setQuery}
                                 // onKeyPress={this.handleSearchKeyPress}
                                 />
-                                { owner.length > 0
+                                { provider.length > 0
                                 && (
                                     <Tooltip
                                         title={
@@ -236,7 +236,7 @@ export default function ListApis() {
                             rowsPerPage={rowsPerPage}
                             editComponentProps={{
                                 icon: <EditIcon aria-label='edit-api-settings' />,
-                                title: 'Change Api Owner',
+                                title: 'Change Api Provider',
                                 apiList,
                             }}
                             EditComponent={EditApi}

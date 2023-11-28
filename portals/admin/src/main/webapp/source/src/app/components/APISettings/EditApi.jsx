@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 function reducer(state, { field, value }) {
     switch (field) {
         case 'name':
-        case 'owner':
+        case 'provider':
             return { ...state, [field]: value };
         case 'editDetails':
             return value;
@@ -47,7 +47,7 @@ function reducer(state, { field, value }) {
     }
 }
 /**
- * Render a pop-up dialog to change ownership of an Api
+ * Render a pop-up dialog to change providership of an Api
  * @param {JSON} props props passed from parent
  * @returns {JSX}.
  */
@@ -59,45 +59,45 @@ function EditApi(props) {
     } = props;
     const [initialState, setInitialState] = useState({
         name: '',
-        owner: '',
+        provider: '',
     });
 
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { name, owner } = state;
+    const { name, provider } = state;
 
     useEffect(() => {
         setInitialState({
             name: '',
-            owner: '',
+            provider: '',
         });
     }, []);
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const validateOwner = () => {
+    const validateProvider = () => {
         let validationError = 'Something went wrong when validating user';
 
         const apisWithSameName = apiList.filter(
-            (app) => app.name === name && app.owner === owner,
+            (app) => app.name === name && app.provider === provider,
         );
 
         const promiseValidation = new Promise((resolve, reject) => {
             if (apisWithSameName.length > 0) {
-                validationError = `${owner} already has an api with name: ${name}`;
+                validationError = `${provider} already has an api with name: ${name}`;
                 reject(validationError);
             }
             const basicScope = 'apim:subscribe';
-            restApi.getUserScope(owner, basicScope)
+            restApi.getUserScope(provider, basicScope)
                 .then(() => {
-                    // This api returns 200 when only the $owner has the $basicScope.
+                    // This api returns 200 when only the $provider has the $basicScope.
                     resolve();
                 }).catch((error) => {
                     const { response } = error;
-                    // This api returns 404 when the $owner is not found.
+                    // This api returns 404 when the $provider is not found.
                     // error codes: 901502, 901500 for user not found and scope not found
                     if (response?.body?.code === 901502 || response?.body?.code === 901500) {
-                        validationError = `${owner} is not a valid Subscriber`;
+                        validationError = `${provider} is not a valid Subscriber`;
                     }
                 }).finally(() => {
                     if (validationError) {
@@ -110,35 +110,33 @@ function EditApi(props) {
     };
 
     const formSaveCallback = () => {
-        return validateOwner().then(() => {
-            return restApi.updateApiOwner(dataRow.apiId, owner)
-                .then(() => {
-                    return (
-                        <FormattedMessage
-                            id='AdminPages.ApiSettings.EditApi.form.edit.successful'
-                            defaultMessage='Api owner changed successfully'
-                        />
-                    );
-                })
-                .catch((error) => {
-                    const { response } = error;
-                    if (response?.body?.code === 500) {
-                        const notValidSubscriber = 'Error while updating ownership to ' + owner;
-                        throw notValidSubscriber;
-                    } else {
-                        const updateError = 'Something went wrong when updating owner';
-                        throw updateError;
-                    }
-                })
-                .finally(() => {
-                    updateList();
-                });
-        });
+        return restApi.updateApiProvider(dataRow.id, provider)
+            .then(() => {
+                return (
+                    <FormattedMessage
+                        id='AdminPages.ApiSettings.EditApi.form.edit.successful'
+                        defaultMessage='Api provider changed successfully'
+                    />
+                );
+            })
+            .catch((error) => {
+                const { response } = error;
+                if (response?.body?.code === 500) {
+                    const notValidSubscriber = 'Error while updating providership to ' + provider;
+                    throw notValidSubscriber;
+                } else {
+                    const updateError = 'Something went wrong when updating provider';
+                    throw updateError;
+                }
+            })
+            .finally(() => {
+                updateList();
+            });
     };
     const dialogOpenCallback = () => {
         if (dataRow) {
-            const { name: originalName, owner: originalOwner } = dataRow;
-            dispatch({ field: 'editDetails', value: { name: originalName, owner: originalOwner } });
+            const { name: originalName, provider: originalProvider } = dataRow;
+            dispatch({ field: 'editDetails', value: { name: originalName, provider: originalProvider } });
         }
     };
     return (
@@ -170,16 +168,16 @@ function EditApi(props) {
             <TextField
                 autoFocus
                 margin='dense'
-                name='owner'
-                value={owner}
+                name='provider'
+                value={provider}
                 onChange={onChange}
-                label='Owner'
+                label='Provider'
                 fullWidth
                 helperText={(
                     <FormattedMessage
                         id='AdminPages.ApiSettings.EditApi.form.helperText'
-                        defaultMessage={'Enter a new Owner. '
-                        + 'Make sure the new owner has logged into the Developer Portal at least once'}
+                        defaultMessage={'Enter a new Provider. '
+                        + 'Make sure the new provider has logged into the Developer Portal at least once'}
                     />
                 )}
                 variant='outlined'
@@ -195,8 +193,8 @@ EditApi.defaultProps = {
 EditApi.propTypes = {
     updateList: PropTypes.func.isRequired,
     dataRow: PropTypes.shape({
-        apiId: PropTypes.string.isRequired,
-        owner: PropTypes.string.isRequired,
+        id: PropTypes.string.isRequired,
+        provider: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
     }).isRequired,
     icon: PropTypes.element,

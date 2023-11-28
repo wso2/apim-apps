@@ -421,6 +421,17 @@ class API extends Resource {
     }
 
     /**
+     * Get a list of apis from all users
+     */
+    getApiList(params) {
+        return this.client.then((client) => {
+            return client.apis['APIs'].getAllAPIs(
+                params, this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get Subscription Throttling Policies
      */
     getSubscritionPolicyList() {
@@ -440,6 +451,18 @@ class API extends Resource {
                 'Application'
             ].post_applications__applicationId__change_owner(
                 { owner: owner, applicationId: id },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+     /**
+     * Update an api's owner
+     */
+     updateApiProvider(apiId, provider) {
+        return this.client.then((client) => {
+            return client.apis["Api Provider Change"].providerProviderNameApisApiIdPut(
+                { providerName: provider, apiId: apiId },
                 this._requestMetaData(),
             );
         });
