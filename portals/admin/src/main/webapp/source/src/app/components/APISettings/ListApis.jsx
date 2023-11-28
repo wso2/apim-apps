@@ -78,11 +78,11 @@ export default function ListApis() {
     * API call to get api list
     * @returns {Promise}.
     */
-    function apiCall(pageNo, user = provider) {
+    function apiCall(pageNo, query = provider) {
         setLoading(true);
         const restApi = new API();
         return restApi
-            .getApiList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, user })
+            .getApiList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, query })
             .then((result) => {
                 setApiList(result.body.list);
                 const { pagination: { total } } = result.body;
