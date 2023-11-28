@@ -75,40 +75,6 @@ function EditApi(props) {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const validateProvider = () => {
-        let validationError = 'Something went wrong when validating user';
-
-        const apisWithSameName = apiList.filter(
-            (app) => app.name === name && app.provider === provider,
-        );
-
-        const promiseValidation = new Promise((resolve, reject) => {
-            if (apisWithSameName.length > 0) {
-                validationError = `${provider} already has an api with name: ${name}`;
-                reject(validationError);
-            }
-            const basicScope = 'apim:subscribe';
-            restApi.getUserScope(provider, basicScope)
-                .then(() => {
-                    // This api returns 200 when only the $provider has the $basicScope.
-                    resolve();
-                }).catch((error) => {
-                    const { response } = error;
-                    // This api returns 404 when the $provider is not found.
-                    // error codes: 901502, 901500 for user not found and scope not found
-                    if (response?.body?.code === 901502 || response?.body?.code === 901500) {
-                        validationError = `${provider} is not a valid Subscriber`;
-                    }
-                }).finally(() => {
-                    if (validationError) {
-                        reject(validationError);
-                    }
-                });
-        });
-
-        return promiseValidation;
-    };
-
     const formSaveCallback = () => {
         return restApi.updateApiProvider(dataRow.id, provider)
             .then(() => {
@@ -120,12 +86,18 @@ function EditApi(props) {
                 );
             })
             .catch((error) => {
+                let validationError = 'Something went wrong when validating the user';
                 const { response } = error;
+                    // This api returns 404 when the $provider is not found.
+                    // error codes: 901502, 901500 for user not found and scope not found
+                    if (response?.body?.code === 901502 || response?.body?.code === 901500) {
+                        validationError = `${provider} is not a valid User`;
+                    }
                 if (response?.body?.code === 500) {
-                    const notValidSubscriber = 'Error while updating providership to ' + provider;
-                    throw notValidSubscriber;
+                    const notValidUser = 'Error while updating the provider name to ' + provider;
+                    throw notValidUser;
                 } else {
-                    const updateError = 'Something went wrong when updating provider';
+                    const updateError = validationError;
                     throw updateError;
                 }
             })

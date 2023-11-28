@@ -141,6 +141,7 @@ class ApisTableContent extends Component {
                             <StyledTableCell align='left'>
                                 {app.name}
                             </StyledTableCell>
+                            <StyledTableCell align='left'>{app.version}</StyledTableCell>
                             <StyledTableCell align='left'>{app.provider}</StyledTableCell>
                             <StyledTableCell align='left'>
                                 <EditApi

@@ -45,6 +45,16 @@ const apisTableHead = (props) => {
             sorting: true,
         },
         {
+            id: 'version',
+            numeric: false,
+            disablePadding: true,
+            label: (<FormattedMessage
+                id='Apis.Listing.apiTableHead.version'
+                defaultMessage='Version'
+            />),
+            sorting: true,
+        },
+        {
             id: 'provider',
             numeric: false,
             disablePadding: false,
