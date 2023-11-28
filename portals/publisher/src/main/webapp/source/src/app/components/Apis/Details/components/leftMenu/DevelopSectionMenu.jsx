@@ -173,7 +173,7 @@ export default function DevelopSectionMenu(props) {
                                 id: 'Apis.Details.index.business.info',
                                 defaultMessage: 'business info',
                             })}
-                            to={pathPrefix + 'business info'}
+                            to={pathPrefix + 'business-info'}
                             Icon={<BusinessIcon />}
                             id='left-menu-itembusinessinfo'
                         />

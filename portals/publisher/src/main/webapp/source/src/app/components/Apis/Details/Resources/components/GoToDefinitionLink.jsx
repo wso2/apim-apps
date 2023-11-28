@@ -43,7 +43,7 @@ export default function GoToDefinitionLink(props) {
     const classes = useStyles();
     return (
         <Box m={1}>
-            <Link to={`/apis/${api.id}/api definition`}>
+            <Link to={`/apis/${api.id}/api-definition`}>
                 <Typography className={classes.link} variant='caption'>
                     {message}
                     <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />
