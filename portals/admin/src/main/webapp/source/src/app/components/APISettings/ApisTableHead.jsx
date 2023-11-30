@@ -64,16 +64,6 @@ const apisTableHead = (props) => {
             />),
             sorting: true,
         },
-        {
-            id: 'actions',
-            numeric: false,
-            disablePadding: false,
-            label: (<FormattedMessage
-                id='Apis.Listing.apiTableHead.actions'
-                defaultMessage='Actions'
-            />),
-            sorting: false,
-        },
     ];
     const { order, orderBy } = props;
     return (

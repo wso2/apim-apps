@@ -302,7 +302,7 @@ const RouteMenuMapping = (intl) => [
             {
                 id: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.applications',
-                    defaultMessage: 'Applications',
+                    defaultMessage: 'Change Application Owner',
                 }),
                 path: '/settings/applications',
                 component: ListApplications,
@@ -311,7 +311,7 @@ const RouteMenuMapping = (intl) => [
             {
                 id: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.apis',
-                    defaultMessage: 'Apis',
+                    defaultMessage: 'Change Api Provider',
                 }),
                 path: '/settings/apis',
                 component: ListApis,

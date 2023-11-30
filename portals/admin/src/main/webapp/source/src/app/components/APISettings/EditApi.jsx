@@ -55,7 +55,7 @@ function EditApi(props) {
     const classes = useStyles();
     const restApi = new API();
     const {
-        updateList, dataRow, icon, triggerButtonText, title, apiList,
+        updateList, dataRow, icon, triggerButtonText, title,
     } = props;
     const [initialState, setInitialState] = useState({
         name: '',
@@ -88,11 +88,11 @@ function EditApi(props) {
             .catch((error) => {
                 let validationError = 'Something went wrong when validating the user';
                 const { response } = error;
-                    // This api returns 404 when the $provider is not found.
-                    // error codes: 901502, 901500 for user not found and scope not found
-                    if (response?.body?.code === 901502 || response?.body?.code === 901500) {
-                        validationError = `${provider} is not a valid User`;
-                    }
+                // This api returns 404 when the $provider is not found.
+                // error codes: 901502, 901500 for user not found and scope not found
+                if (response?.body?.code === 901502 || response?.body?.code === 901500) {
+                    validationError = `${provider} is not a valid User`;
+                }
                 if (response?.body?.code === 500) {
                     const notValidUser = 'Error while updating the provider name to ' + provider;
                     throw notValidUser;
@@ -172,7 +172,6 @@ EditApi.propTypes = {
     icon: PropTypes.element,
     triggerButtonText: PropTypes.shape({}).isRequired,
     title: PropTypes.shape({}).isRequired,
-    apiList: PropTypes.shape([]).isRequired,
 };
 
 export default EditApi;

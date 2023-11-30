@@ -166,11 +166,11 @@ export default function ListApis() {
                                     fullWidth
                                     id='search-label'
                                     label={intl.formatMessage({
-                                        defaultMessage: 'Search Api by Api Provider',
+                                        defaultMessage: 'Search by Api',
                                         id: 'Apis.Listing.Listing.apis.search.label',
                                     })}
                                     placeholder={intl.formatMessage({
-                                        defaultMessage: 'Api Provider',
+                                        defaultMessage: 'Api Name',
                                         id: 'Apis.Listing.Listing.search.placeholder',
                                     })}
                                     InputProps={{
