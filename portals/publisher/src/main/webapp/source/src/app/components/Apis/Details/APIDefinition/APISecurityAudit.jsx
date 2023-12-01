@@ -192,7 +192,7 @@ class APISecurityAudit extends Component {
                     id: 'Apis.Details.APIDefinition.AuditApi.GetReportError',
                     defaultMessage: 'Something went wrong while retrieving the API Security Report',
                 }));
-                const redirectUrl = '/apis/' + apiId + '/api definition';
+                const redirectUrl = '/apis/' + apiId + '/api-definition';
                 history.push(redirectUrl);
             });
     }

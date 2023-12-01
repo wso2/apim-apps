@@ -127,6 +127,7 @@ export default function ProvideOpenAPI(props) {
                     info.content = content;
                     inputsDispatcher({ action: 'preSetAPI', value: info });
                     setValidity({ ...isValid, url: null });
+                    setValidationErrors([]);
                 } else {
                     setValidity({ ...isValid, url: { message: 'OpenAPI content validation failed!' } });
                     setValidationErrors(errors);
