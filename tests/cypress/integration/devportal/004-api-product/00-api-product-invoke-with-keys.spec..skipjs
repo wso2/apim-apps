@@ -27,6 +27,7 @@ describe("Invoke API Product", () => {
     const appName = Utils.generateName();
     const appDescription = 'Testing app ';
     const productName = Utils.generateName();
+    const productVersion = '1.0.0';
     it("Invoke API Product using Oauth 2 and API Key", {
         retries: {
             runMode: 3,
@@ -74,6 +75,7 @@ describe("Invoke API Product", () => {
                 // fill the form
                 cy.get('#itest-id-apiname-input').type(productName);
                 cy.get('#context').type(productName);
+                cy.get('#itest-id-apiversion-input').type(productVersion);
                 cy.get('#itest-id-apiname-input').click();
 
 

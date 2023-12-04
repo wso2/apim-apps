@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,25 +18,28 @@
 
 import Utils from "@support/utils";
 
-describe("Mock the api response and test it", () => {
+describe("Create new API product version", () => {
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
       });
     const { publisher, password, } = Utils.getUserInfo();
+    const apiName = Utils.generateName();
     const productName = Utils.generateName();
     const productVersion = '1.0.0';
-    const apiName = Utils.generateName();
+    const newVersion = '2.0.0';
     let testApiID;
+
     beforeEach(function () {
         cy.loginToPublisher(publisher, password);
     })
 
-    it("Mock the api response and test it", {
+    it("Create new API product version", {
         retries: {
             runMode: 3,
             openMode: 0,
         },
     }, () => {
+        // create a new api
         cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout});
         cy.get('#open-api-file-select-radio').click();
 
@@ -53,7 +58,6 @@ describe("Mock the api response and test it", () => {
             cy.get('#itest-id-apicontext-input').type(apiName);
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
-            // finish the wizard
             cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({force:true});
 
             cy.url().should('contains', 'overview').then(url => {
@@ -62,8 +66,6 @@ describe("Mock the api response and test it", () => {
                 // validate
                 cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout});
                 cy.get('#itest-api-name-version').contains(version);
-
-                //Get the api id;
 
                 // Go to api product create page
                 cy.visit(`/publisher/api-products/create`);
@@ -83,7 +85,7 @@ describe("Mock the api response and test it", () => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
                     cy.get(`#checkbox-list-label-${testApiID}`).click();
                     cy.wait('@getSwagger');
-                    // Wait until the api is saved
+                    // wait until the api is saved
                     cy.get('#resource-wrapper').children().should('have.length.gte', 1);
 
                     // add all resources
@@ -95,45 +97,28 @@ describe("Mock the api response and test it", () => {
                         cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
                         cy.get('#itest-api-name-version').contains(productName);
 
-                        // Need to update the underline api and update the api product again.
-                        // ==================================================================== //
+                        // create new version of the api product
                         cy.log(testApiID, productID);
-                        cy.visit(`/publisher/apis/${testApiID}/resources`);
+                        cy.visit(`/publisher/api-products/${productID}/overview`);
+                        cy.get('#create-new-version-btn').click();
+                        cy.get('#newVersion').click();
+                        cy.get('#newVersion').type(newVersion);
+                        cy.intercept('**/api-products/**').as('apiGet');
+                        cy.get('#createBtn').click();
+                        cy.wait('@apiGet', { timeout: 30000 }).then(() => {
+                            // validate
+                            cy.get('#itest-api-name-version', { timeout: 30000 }).should('be.visible');
+                            cy.get('#itest-api-name-version').contains(`${productName}`);
+                            cy.get('#itest-api-name-version').contains(`${newVersion}`);
+                        })
+                        // delete api product verions
+                        cy.get(`#itest-id-deleteapi-icon-button`).click();
+                        cy.get(`#itest-id-deleteconf`).click();
 
-                        // Add a new resource to the underline api
-                        // Typing the resource name
-                        const target = '/test';
-                        cy.get('#operation-target', { timeout: Cypress.config().largeTimeout });
-                        cy.get('#operation-target').type(target);
-                        cy.get('#add-operation-selection-dropdown').click();
-
-                        cy.get('#add-operation-get').click();
-                        cy.get('body').click();
-
-                        cy.get('#add-operation-button').click();
-                        cy.get('#resources-save-operations').click();
-
-                        // Validating if the resource exists after saving
-                        cy.get(`#get\\${target}`).should('be.visible');
-
-                        // Go to api product
-                        cy.visit(`/publisher/api-products/${productID}/resources/edit`);
-
-                        // Add the newly created resource and save
-                        cy.get('#resource-wrapper', { timeout: Cypress.config().largeTimeout });
-                        cy.get('#resource-wrapper')
-                            .last()
-                            .scrollIntoView()
-                            .click();
-                        cy.get('#add-selected-resources').click();
-                        cy.get('#save-product-resources').click();
-
-                        // Deleting the api and api product
                         cy.visit(`/publisher/api-products/${productID}/overview`);
                         cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
                         cy.get(`#itest-id-deleteapi-icon-button`).click();
                         cy.get(`#itest-id-deleteconf`).click();
-
                     });
                 });
             });

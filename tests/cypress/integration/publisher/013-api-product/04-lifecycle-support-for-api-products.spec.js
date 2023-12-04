@@ -18,6 +18,7 @@ import Utils from "@support/utils";
 
 describe("Life cycle support for API Products", () => {
     const { publisher, password, } = Utils.getUserInfo();
+    const productVersion = '1.0.0';
     let productName;
     let apiName;
 
@@ -70,6 +71,7 @@ describe("Life cycle support for API Products", () => {
                 productName = Utils.generateName();
                 cy.get('#itest-id-apiname-input').type(productName);
                 cy.get('#context').type(productName);
+                cy.get('#itest-id-apiversion-input').type(productVersion);
                 cy.get('#itest-id-apiname-input').click();
 
                 cy.intercept('**/swagger').as('swaggerGet');

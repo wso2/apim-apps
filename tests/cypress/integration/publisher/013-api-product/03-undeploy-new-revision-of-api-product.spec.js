@@ -19,6 +19,7 @@ import Utils from "@support/utils";
 describe("Mock the api response and test it", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const productName = Utils.generateName();
+    const productVersion = '1.0.0';
     const apiName = Utils.generateName();
     let testApiID;
     beforeEach(function () {
@@ -69,6 +70,7 @@ describe("Mock the api response and test it", () => {
                 // fill the form
                 cy.get('#itest-id-apiname-input').type(productName);
                 cy.get('#context').type(productName);
+                cy.get('#itest-id-apiversion-input').type(productVersion);
                 cy.get('#itest-id-apiname-input').click();
 
                 cy.intercept('**/swagger').as('swaggerGet');
