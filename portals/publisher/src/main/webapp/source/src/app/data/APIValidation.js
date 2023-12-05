@@ -121,7 +121,7 @@ const documentSchema = Joi.extend((joi) => ({
 }));
 
 const definition = {
-    apiName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
+    apiName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$[\]/]*$/).required()
         .error((errors) => {
             return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, 50) }));
         }),
