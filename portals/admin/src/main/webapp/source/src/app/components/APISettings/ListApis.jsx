@@ -20,7 +20,6 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
-import EditApi from 'AppComponents/APISettings/EditApi';
 import ApisTableContent from 'AppComponents/APISettings/ApisTableContent';
 import ApisTableHead from 'AppComponents/APISettings/ApisTableHead';
 import Table from '@material-ui/core/Table';
@@ -236,7 +235,7 @@ export default function ListApis() {
                             editComponentProps={{
                                 apiList,
                             }}
-                            apiCall={apiCall}
+                            updateApiList={apiCall}
                         />
                         <TableFooter>
                             <TableRow>
