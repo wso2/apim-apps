@@ -149,6 +149,20 @@ function TransportLevel(props) {
         });
     };
 
+    const handleMutualSSLChange = (event) => {
+        const { checked } = event.target;
+        if (checked) {
+            configDispatcher({
+                action: 'transport',
+                event: { checked: false, value: 'http' },
+            });
+        }
+        configDispatcher({
+            action: 'securityScheme',
+            event: { checked, value: API_SECURITY_MUTUAL_SSL },
+        });
+    };
+
     // Get the client certificates from backend.
     useEffect(() => {
         API.getAllClientCertificates(id).then((resp) => {
@@ -192,11 +206,7 @@ function TransportLevel(props) {
                                 <Checkbox
                                     disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                     checked={isMutualSSLEnabled}
-                                    onChange={({ target: { checked, value } }) => configDispatcher({
-                                        action: 'securityScheme',
-                                        event: { checked, value },
-                                    })}
-                                    value={API_SECURITY_MUTUAL_SSL}
+                                    onChange={handleMutualSSLChange}
                                     color='primary'
                                     id='mutual-ssl-checkbox'
                                 />
