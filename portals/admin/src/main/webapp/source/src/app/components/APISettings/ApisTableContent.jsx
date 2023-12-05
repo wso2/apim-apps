@@ -1,37 +1,15 @@
-/*
-* Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
-*
-* WSO2 LLC. licenses this file to you under the Apache License,
-* Version 2.0 (the "License"); you may not use this file except
-* in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
-
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import { IconButton } from '@material-ui/core';
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     fullHeight: {
         height: '100%',
     },
@@ -66,7 +44,8 @@ const styles = (theme) => ({
             'white-space': 'normal',
         },
     },
-});
+}));
+
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.black,
@@ -90,78 +69,37 @@ const StyledTableRow = withStyles((theme) => ({
     },
 }))(TableRow);
 
-/**
- *
- *
- * @class ApisTableContent
- * @extends {Component}
- */
-class ApisTableContent extends Component {
-    /**
-     * @inheritdoc
-     */
-    constructor(props) {
-        super(props);
-        this.state = {
-            notFound: false,
-        };
-        this.handleAppEdit = this.handleAppEdit.bind(this);
+const ApisTableContent = ({ apis }) => {
+    const [notFound, setNotFound] = useState(false);
+    const classes = useStyles();
+
+    if (notFound) {
+        return <ResourceNotFound />;
     }
 
-    handleAppEdit = (app) => {
-        const { EditComponent, editComponentProps, apiCall } = this.props;
-        return (
-            <>
-                {EditComponent && (
-                    <EditComponent
-                        dataRow={app}
-                        updateList={apiCall}
-                        {...editComponentProps}
-                    />
-                )}
-            </>
-        );
-    };
-
-    /**
-     * @inheritdoc
-     * @memberof ApisTableContent
-     */
-    render() {
-        const {
-            apis, classes, editComponentProps, apiCall,
-        } = this.props;
-        const { notFound } = this.state;
-
-        if (notFound) {
-            return <ResourceNotFound />;
-        }
-        return (
-            <TableBody className={classes.fullHeight}>
-                {apis && apis.map((app) => {
-                    return (
-                        <StyledTableRow className={classes.tableRow} key={app.apiId}>
-                            <StyledTableCell align='left'>
-                                {app.name}
-                            </StyledTableCell>
-                            <StyledTableCell align='left'>{app.version}</StyledTableCell>
-                            <StyledTableCell align='left'>
-                                {app.provider}
-                                {/* <Tooltip title='Change Api Provider'> */}
-                                <IconButton color="primary" onClick={()=>console.log("123")}>
-                                    <EditIcon aria-label='edit-api-settings' />
-                                </IconButton>
-                                {/* </Tooltip> */}
-                            </StyledTableCell>
-                        </StyledTableRow>
-                    );
-                })}
-            </TableBody>
-        );
-    }
-}
-ApisTableContent.propTypes = {
-    toggleDeleteConfirmation: PropTypes.func.isRequired,
-    apis: PropTypes.instanceOf(Map).isRequired,
+    return (
+        <TableBody className={classes.fullHeight}>
+            {apis && apis.map((api) => (
+                <StyledTableRow className={classes.tableRow} key={api.apiId}>
+                    <StyledTableCell align='left'>
+                        {api.name}
+                    </StyledTableCell>
+                    <StyledTableCell align='left'>{api.version}</StyledTableCell>
+                    <StyledTableCell align='left'>
+                        {api.provider}
+                        <IconButton color="primary" onClick={() => console.log("123")}>
+                            <EditIcon aria-label='edit-api-settings' />
+                        </IconButton>
+                    </StyledTableCell>
+                </StyledTableRow>
+            ))}
+        </TableBody>
+    );
 };
-export default withStyles(styles)(ApisTableContent);
+
+ApisTableContent.propTypes = {
+    apis: PropTypes.instanceOf(Map).isRequired,
+    classes: PropTypes.object.isRequired,
+};
+
+export default ApisTableContent;

@@ -236,7 +236,6 @@ export default function ListApis() {
                             editComponentProps={{
                                 apiList,
                             }}
-                            EditComponent={EditApi}
                             apiCall={apiCall}
                         />
                         <TableFooter>
