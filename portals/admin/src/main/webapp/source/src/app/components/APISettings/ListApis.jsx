@@ -23,7 +23,6 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import EditApi from 'AppComponents/APISettings/EditApi';
 import ApisTableContent from 'AppComponents/APISettings/ApisTableContent';
 import ApisTableHead from 'AppComponents/APISettings/ApisTableHead';
-import EditIcon from '@material-ui/icons/Edit';
 import Table from '@material-ui/core/Table';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import TableFooter from '@material-ui/core/TableFooter';
@@ -231,16 +230,10 @@ export default function ListApis() {
                     <Table id='itest-api-list-table'>
                         <ApisTableHead />
                         <ApisTableContent
-                            apps={apiList}
+                            apis={apiList}
                             page={page}
                             rowsPerPage={rowsPerPage}
                             editComponentProps={{
-                                icon: (
-                                    <Tooltip title='Change Api Provider'>
-                                        <EditIcon aria-label='edit-api-settings' />
-                                    </Tooltip>
-                                ),
-                                title: 'Change Api Provider',
                                 apiList,
                             }}
                             EditComponent={EditApi}

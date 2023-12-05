@@ -23,7 +23,10 @@ import TableRow from '@material-ui/core/TableRow';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import EditApi from 'AppComponents/APISettings/EditApi';
+import Tooltip from '@material-ui/core/Tooltip';
+import EditIcon from '@material-ui/icons/Edit';
+import { IconButton } from '@material-ui/core';
+
 /**
  * @inheritdoc
  * @param {*} theme theme object
@@ -126,7 +129,7 @@ class ApisTableContent extends Component {
      */
     render() {
         const {
-            apps, classes, editComponentProps, apiCall,
+            apis, classes, editComponentProps, apiCall,
         } = this.props;
         const { notFound } = this.state;
 
@@ -135,7 +138,7 @@ class ApisTableContent extends Component {
         }
         return (
             <TableBody className={classes.fullHeight}>
-                {apps && apps.map((app) => {
+                {apis && apis.map((app) => {
                     return (
                         <StyledTableRow className={classes.tableRow} key={app.apiId}>
                             <StyledTableCell align='left'>
@@ -144,11 +147,11 @@ class ApisTableContent extends Component {
                             <StyledTableCell align='left'>{app.version}</StyledTableCell>
                             <StyledTableCell align='left'>
                                 {app.provider}
-                                <EditApi
-                                    dataRow={app}
-                                    updateList={apiCall}
-                                    {...editComponentProps}
-                                />
+                                {/* <Tooltip title='Change Api Provider'> */}
+                                <IconButton color="primary" onClick={()=>console.log("123")}>
+                                    <EditIcon aria-label='edit-api-settings' />
+                                </IconButton>
+                                {/* </Tooltip> */}
                             </StyledTableCell>
                         </StyledTableRow>
                     );
@@ -159,6 +162,6 @@ class ApisTableContent extends Component {
 }
 ApisTableContent.propTypes = {
     toggleDeleteConfirmation: PropTypes.func.isRequired,
-    apps: PropTypes.instanceOf(Map).isRequired,
+    apis: PropTypes.instanceOf(Map).isRequired,
 };
 export default withStyles(styles)(ApisTableContent);
