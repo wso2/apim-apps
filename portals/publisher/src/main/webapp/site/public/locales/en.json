@@ -9073,12 +9073,6 @@
       "value": "Error 403 : Forbidden"
     }
   ],
-  "Policy.Already.Deployed": [
-    {
-      "type": 0,
-      "value": "Another global policy has been already deployed in this gateway"
-    }
-  ],
   "Policy.Delete.Error": [
     {
       "type": 0,
@@ -9469,6 +9463,12 @@
     {
       "type": 0,
       "value": "List of APIs"
+    }
+  ],
+  "Select.Gateways": [
+    {
+      "type": 0,
+      "value": "Select Gateways to Deploy"
     }
   ],
   "ServiceCatalog.CreateApi.api.context.label": [
@@ -9941,12 +9941,6 @@
     {
       "type": 0,
       "value": "Version"
-    }
-  ],
-  "Undeploy": [
-    {
-      "type": 0,
-      "value": "Undeploy"
     }
   ],
   "UnexpectedError.logout": [

@@ -16,6 +16,8 @@
 * under the License.
 */
 
+/* eslint-disable react/jsx-props-no-spreading */
+
 import React, { useState, useEffect } from 'react';
 import {
     Button,
@@ -25,21 +27,20 @@ import {
     Typography,
     makeStyles,
     Chip,
-    TableContainer,
-    Table,
-    TableBody,
     TableCell,
     TableRow,
-    Paper,
     Dialog,
+    TextField,
     DialogTitle,
     DialogContent,
     DialogActions,
     DialogContentText,
     useTheme 
 } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import APIMAlert from 'AppComponents/Shared/Alert';
 import Icon from '@material-ui/core/Icon';
+import CloudOffRoundedIcon from '@material-ui/icons/CloudOffRounded';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useIntl, FormattedMessage } from 'react-intl';
@@ -89,16 +90,15 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         width: '112px',
+        height: '37px',
     },
     icon: {
         marginRight: theme.spacing(0.5),
     },
     chip: {
-        marginRight: '8px'
-    },
-    gatewayChip: {
-        width: '200px', 
-        justifyContent: 'center'
+        marginRight: '8px',
+        marginBottom: '4px',
+        marginTop: '4px',
     },
     dialogBackdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.08)'
@@ -106,13 +106,10 @@ const useStyles = makeStyles((theme) => ({
     dialogPaper: {
         boxShadow: 'none'
     },
-    tableContainer: {
-        maxWidth: '400px'
-    },
     noDeployedGateways: {
         color: 'grey', 
         fontStyle: 'italic'
-    }
+    },
 }));
 
 interface Policy {
@@ -140,6 +137,11 @@ interface Environment {
     additionalProperties: any;
 }
 
+interface SelectedGateway {
+    id: string;
+    gatewayLabels: string[];
+}
+
 /**
  * Global policies Lisitng Page.
  * @returns {TSX} - Listing Page.
@@ -147,6 +149,7 @@ interface Environment {
 const Listing: React.FC = () => {
     const classes = useStyles();
     const [policies, setPolicies] = useState<Policy[]>([]);
+    const [selectedGateways, setSelectedGateways] = useState<SelectedGateway[]>([]);
     const [environments, setEnvironments] = useState<Environment[]>([]);
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
@@ -158,6 +161,45 @@ const Listing: React.FC = () => {
     const intl = useIntl();
 
     /**
+     * Empty array to store the policies
+     * @param {Policy[]} inputPolicies - Policies.
+     * @returns {Policy[]} - Initial object array to hold selected gateways from the dropdown.
+     */
+    const getInitialSelectedGateways = (inputPolicies: Policy[]): SelectedGateway[] => {
+        const selectedGatewaysList: SelectedGateway[] = [];
+    
+        inputPolicies.forEach((policy) => {
+            const { id } = policy;
+            const selectedGatewayValue: SelectedGateway = {
+                id,
+                gatewayLabels: [],
+            };
+            selectedGatewaysList.push(selectedGatewayValue);
+        });
+
+        return selectedGatewaysList;
+    };
+
+    /**
+     * After deploying or undeploying, we need to clean the selected gateways list.
+     * @param {string} policyId - Policy ID.
+     * @returns {SelectedGateway[]} - Deployed policies' selected gateways should be empty. 
+     */
+    const cleanSeletectedGateways = (policyId: string): SelectedGateway[] => {
+        const updatedSelectedGateways: SelectedGateway[] = selectedGateways.map((data) => {
+            if (data.id === policyId) {
+                return {
+                    ...data,
+                    gatewayLabels: [],
+                };
+            }
+            return data;
+        });
+        
+        return updatedSelectedGateways;
+    };
+
+    /**
      * Fetch the data from the backend to the compoenent.
      */
     const fetchGlobalPolicies = () => {
@@ -167,6 +209,7 @@ const Listing: React.FC = () => {
         promisedPolicies
             .then((response: any) => {
                 setPolicies(response.body.list);
+                setSelectedGateways(getInitialSelectedGateways(response.body.list));
                 setLoading(false);
             })
             .catch((/* error */) => {
@@ -205,19 +248,6 @@ const Listing: React.FC = () => {
     };
 
     /**
-     * Check if the gateway is deployed for the Golbal Policy.
-     * @param {string} gateway - Gateway.
-     * @param {string[]} appliedGatewayLabels - Applied Gateway Labels.
-     * @returns {boolean} - Return true if deployed.
-     */
-    const isDeployed = (gateway: string, appliedGatewayLabels: string[]) => {
-        if (appliedGatewayLabels.includes(gateway)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
     * Get the applied gateway labels as an array list for a specific policy by ID.
     * @param {string} id - Policy Identifier.
     * @returns {string[]} - Applied Gateway labels list.
@@ -225,6 +255,16 @@ const Listing: React.FC = () => {
     const getAppliedGatewayLabelsById = (id: string) => {
         const policy = policies.find(item => item.id === id);
         return policy ? policy.appliedGatewayLabels : [];
+    }
+
+    /**
+    * Get the applied gateway labels as an array list for a specific policy by ID.
+    * @param {string} id - Policy Identifier.
+    * @returns {string[]} - Applied Gateway labels list.
+    */
+    const getSelectedGatewayLabelsById = (id: string) => {
+        const policy = selectedGateways.find(item => item.id === id);
+        return policy ? policy.gatewayLabels : [];
     }
 
     /**
@@ -264,19 +304,20 @@ const Listing: React.FC = () => {
     /**
      * Function to add a label to a specific policy in UI.
      * @param {string} policyId - Policy Identifier.
-     * @param {string} newLabel - Newly added enviroment/gateway to applied Gateway Labels.
+     * @param {string[]} newLabels - Newly added enviroment/gateway to applied Gateway Labels.
      */
-    const addLabelToPolicy = (policyId: string, newLabel: string) => {
-        const updatedPolicies = policies.map((policy) => {
+    const addLabelsToPolicy = (policyId: string, newLabels: string[]) => {
+        const updatedPolicies: Policy[] = policies.map((policy) => {
             if (policy.id === policyId) {
                 return {
                     ...policy,
-                    appliedGatewayLabels: [...policy.appliedGatewayLabels, newLabel],
+                    appliedGatewayLabels: [...policy.appliedGatewayLabels, ...newLabels],
                 };
             }
             return policy;
         });
         setPolicies(updatedPolicies);
+        setSelectedGateways(cleanSeletectedGateways(policyId));
     };
 
     /**
@@ -295,6 +336,7 @@ const Listing: React.FC = () => {
             return policy;
         });
         setPolicies(updatedPolicies);
+        setSelectedGateways(cleanSeletectedGateways(policyId));
     };
 
     /**
@@ -303,7 +345,7 @@ const Listing: React.FC = () => {
      * @param {string} environement - Deploying enviroment/gateway.
      * @param {boolean} deploying - Deploying or undeploying.
      */
-    const deployOrUndeploy = (gatewayPolicyMappingId: string, environement: string, deploying: boolean) => {
+    const undeploy = (gatewayPolicyMappingId: string, environement: string) => {
         setLoading(true);
         const deploymentArray = getDeploymentArray(gatewayPolicyMappingId);
         const updatedDeploymentArray = toggleGatewayDeployment(deploymentArray, environement);
@@ -314,26 +356,15 @@ const Listing: React.FC = () => {
         promise
             .then((response) => {
                 if (response.status === 200 || response.status === 201) {
-                    setLoading(false);
-                    if (deploying) {
-                        APIMAlert.success(intl.formatMessage({
-                            id: 'Policy.Deploy.Successful',
-                            defaultMessage: 'Policy deployed successfully',
-                        }));    
-                        /**
-                         * If successful, add to the state rather than getting from backend.
-                         */
-                        addLabelToPolicy(gatewayPolicyMappingId, environement);                
-                    } else {
-                        APIMAlert.success(intl.formatMessage({
-                            id: 'Policy.Undeploy.Successful',
-                            defaultMessage: 'Policy undeployed successfully',
-                        }));    
-                        /**
-                         * If successful, remove from the state rather than getting from backend.
-                         */
-                        removeLabelFromPolicy(gatewayPolicyMappingId, environement);                
-                    }           
+                    setLoading(false);                  
+                    APIMAlert.success(intl.formatMessage({
+                        id: 'Policy.Undeploy.Successful',
+                        defaultMessage: 'Policy undeployed successfully',
+                    }));    
+                    /**
+                     * If successful, remove from the state rather than getting from backend.
+                     */
+                    removeLabelFromPolicy(gatewayPolicyMappingId, environement);                                
                 }
                 else {
                     APIMAlert.error(intl.formatMessage({
@@ -344,17 +375,67 @@ const Listing: React.FC = () => {
             })
             .catch((/* error */) => {
                 // console.error(error);
-                if (deploying) {
+                APIMAlert.error(intl.formatMessage({
+                    id: 'Error.Undeploy.Policy',
+                    defaultMessage: 'Error occurred while undeploying the policy',
+                }));
+            })         
+        setLoading(false);
+    }
+
+    /**
+     * Function to undeploy a policy mapping to another enviroment/gateway.
+     * @param {string} gatewayPolicyMappingId - Policy Identifier.
+     * @param {string[]} deployingGateways - Deploying enviroment/gateway.
+     * @param {boolean} deploying - Deploying or undeploying.
+     */
+    const deploy = (gatewayPolicyMappingId: string, deployingGateways: string[]) => {
+        setLoading(true);
+        const deploymentArray = getDeploymentArray(gatewayPolicyMappingId);
+
+        /**
+         * Iterate through the selected gateways and update the deployment array.
+         */
+        const updatedDeploymentArray = deploymentArray.map(({ gatewayLabel, gatewayDeployment }) => {
+            if (deployingGateways.includes(gatewayLabel) && gatewayDeployment === false) {
+                return { gatewayLabel, gatewayDeployment: true };
+            }
+            return { gatewayLabel, gatewayDeployment };
+        });
+        
+        /**
+         * call the backend API and handle the response
+         */
+        const promise = API.engageGlobalPolicy(gatewayPolicyMappingId, updatedDeploymentArray);
+        promise
+            .then((response) => {
+                if (response.status === 200 || response.status === 201) {
+                    setLoading(false);              
+                    APIMAlert.success(intl.formatMessage({
+                        id: 'Policy.Deploy.Successful',
+                        defaultMessage: 'Policy deployed successfully',
+                    }));    
+                    /**
+                     * If successful, add to the state rather than getting from backend.
+                     */
+                    addLabelsToPolicy(
+                        gatewayPolicyMappingId, 
+                        deployingGateways
+                    );                                         
+                }
+                else {
                     APIMAlert.error(intl.formatMessage({
                         id: 'Error.Deploy.Policy',
                         defaultMessage: 'Error occurred while deploying the policy',
                     }));
-                } else {
-                    APIMAlert.error(intl.formatMessage({
-                        id: 'Error.Undeploy.Policy',
-                        defaultMessage: 'Error occurred while undeploying the policy',
-                    }));
-                }
+                }                
+            })
+            .catch((/* error */) => {
+                // console.error(error);
+                APIMAlert.error(intl.formatMessage({
+                    id: 'Error.Deploy.Policy',
+                    defaultMessage: 'Error occurred while deploying the policy',
+                }));             
             })         
         setLoading(false);
     }
@@ -383,6 +464,8 @@ const Listing: React.FC = () => {
                  */
                 const updatedPolicies = policies.filter((policy) => policy.id !== gatewayPolicyMappingId);
                 setPolicies(updatedPolicies);
+                // Remove from the selected gateways list as well
+                setSelectedGateways(selectedGateways.filter((gateway) => gateway.id !== gatewayPolicyMappingId));
                 APIMAlert.success(intl.formatMessage({
                     id: 'Policy.Delete.Successful',
                     defaultMessage: 'Policy deleted successfully',
@@ -424,18 +507,6 @@ const Listing: React.FC = () => {
     const policiesList = policies;
 
     /**
-     * Make a short version for 20+ character strings.
-     * @param {string} name - Any string (Ex: Gateway Label)
-     * @returns {string} - First 20 characters and if exceeded, three dots for the rest.
-     */
-    const shortName = (name: string) => {
-        if (name.length > 20) {
-            return `${name.substring(0, 20)}...`;
-        }
-        return name;
-    };
-
-    /**
      * Columns for the MUI table.
      */
     const columns: MUIDataTableColumnDef[] = [
@@ -463,17 +534,23 @@ const Listing: React.FC = () => {
                 defaultMessage: 'Deployed Gateways',
             }),
             options: {
-                customBodyRender: (value: string[] | undefined) => {
+                customBodyRender: (value: string[] | undefined, tableMeta: any) => {
+                    const policyId = tableMeta.rowData[0];
                     if (value && value.length > 0) {
                         return (
                             <div>
                                 {value.map((gateway: string) => (
-                                    <Chip 
-                                        key={gateway} 
-                                        label={gateway} 
-                                        variant='outlined' 
-                                        className={classes.chip}
-                                    />
+                                    <>
+                                        <Chip 
+                                            key={gateway} 
+                                            label={gateway} 
+                                            variant='outlined' 
+                                            className={classes.chip}
+                                            onDelete={() => undeploy(policyId, gateway)}
+                                            deleteIcon={<CloudOffRoundedIcon/>}
+
+                                        />
+                                    </>
                                 ))}
                             </div>
                         );
@@ -500,23 +577,16 @@ const Listing: React.FC = () => {
                 defaultMessage: 'Description',
             }),
             options: {
-                customBodyRender: (value: string) => {
-                    if (value) {
-                        return (
-                            <div>
-                                <Tooltip title={value}>
-                                    <Icon className={classes.icon}>
-                                        info
-                                    </Icon>
-                                </Tooltip>
-                            </div>
-                        );
-                    } else {
-                        return intl.formatMessage({
-                            id: 'Deployed.Gateway.Listing.Table.Not.Available',
-                            defaultMessage: 'No Deployed Gateways',
-                        });
-                    }
+                customBodyRender: (value: string) => {                
+                    return (
+                        <div>
+                            <Tooltip title={value}>
+                                <Icon className={classes.icon}>
+                                    info_outlined
+                                </Icon>
+                            </Tooltip>
+                        </div>
+                    );
                 }
             }      
         },
@@ -537,7 +607,9 @@ const Listing: React.FC = () => {
                      * Handle deletion. If verifications are passed, it will open the dialog box for the confirmation.
                      */
                     const handleDeleteClick = () => {
-                        // If there is active depoloyments, we need to block the deletion
+                        /**
+                         * If there is active depoloyments, we need to block the deletion.
+                         */
                         const appliedGatewayList = getAppliedGatewayLabelsById(policyId);
                         if (appliedGatewayList.length > 0){      
                             APIMAlert.error((appliedGatewayList.length === 1) ? 
@@ -660,94 +732,83 @@ const Listing: React.FC = () => {
              * Expanded row's policy information.
              */
             const policy = policiesList[rowIndex];
+            /**
+             * Gateways which are deployed by any policy. These cannot be deployed again.
+             */
             const allDepoloyedGateways = getAllDepoloyedGateways();
+            /**
+             * Gateways except the ones which are already deployed.
+             */
+            const gatewaysWithoutAppliedLabels = 
+                gatewayList.filter((item) => !policy.appliedGatewayLabels.includes(item));
+            const deployableGateways = 
+                gatewaysWithoutAppliedLabels.filter((item) => !allDepoloyedGateways.includes(item));
+
+            const handleSelectChange = (id: string) => (
+                event: React.ChangeEvent<{}>,
+                value: string[],
+            ) => {
+                const newSelectedGateways = selectedGateways.map((data) => {
+                    if (data.id === id) {
+                        return {
+                            ...data,
+                            gatewayLabels: value,
+                        };
+                    }
+                    return data;
+                });
+                setSelectedGateways(newSelectedGateways);
+            };
+
             return ( 
                 <TableRow>
-                    <TableCell colSpan={5}>
-                        <Paper>                        
-                            <TableContainer className={classes.tableContainer}>
-                                <Table>
-                                    <TableBody>
-                                        {gatewayList.map((gateway: string) => {
-                                            let button;
-
-                                            if (isDeployed(gateway, policy.appliedGatewayLabels)) {
-                                                button = (
-                                                    <Button
-                                                        className={classes.button}
-                                                        variant='contained'
-                                                        color='default'
-                                                        onClick={() => deployOrUndeploy(policy.id, gateway, false)}
-                                                    >
-                                                        <FormattedMessage
-                                                            id='Undeploy'
-                                                            defaultMessage='Undeploy'
-                                                        />
-                                                    </Button>
-                                                );
-                                            } else if (allDepoloyedGateways.includes(gateway)) {
-                                                button = (
-                                                    <Tooltip 
-                                                        title={(
-                                                            <FormattedMessage
-                                                                id='Policy.Already.Deployed'
-                                                                defaultMessage='Another global policy has been 
-                                                                already deployed in this gateway'
-                                                            />
-                                                        )} 
-                                                    >                                                    
-                                                        <span>
-                                                            <Button
-                                                                className={classes.button}
-                                                                variant='contained'
-                                                                color='default'
-                                                                disabled
-                                                            >
-                                                                <FormattedMessage
-                                                                    id='Deploy'
-                                                                    defaultMessage='Deploy'
-                                                                />
-                                                            </Button>
-                                                        </span>
-                                                    </Tooltip>
-                                                );
-                                            } else {
-                                                button = (
-                                                    <Button
-                                                        className={classes.button}
-                                                        variant='contained'
-                                                        color='primary'
-                                                        onClick={() => deployOrUndeploy(policy.id, gateway, true)}
-                                                    >
-                                                        <FormattedMessage
-                                                            id='Deploy'
-                                                            defaultMessage='Deploy'
-                                                        />
-                                                    </Button>
-                                                );
-                                            }
-                                            return ( 
-                                                <TableRow key={gateway}>
-                                                    <TableCell>
-                                                        <Tooltip title={gateway}>
-                                                            <Chip className={classes.gatewayChip}
-                                                                label={shortName(gateway)} variant='outlined' 
-                                                            />
-                                                        </Tooltip>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {button}                                  
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer> 
-                        </Paper>
+                    <TableCell colSpan={5}>       
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6} md={4}>
+                                <div>
+                                    <Autocomplete
+                                        multiple
+                                        id='multi-select'
+                                        options={deployableGateways}
+                                        value={getSelectedGatewayLabelsById(policy.id)}
+                                        onChange={handleSelectChange(policy.id)}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                // Prop spreading is forbidden in eslint, However, it is used here
+                                                // as MUI AutoComplete component requires Prop spreading
+                                                {...params}
+                                                size='small'
+                                                variant='outlined'
+                                                label={intl.formatMessage({
+                                                    id: 'Select.Gateways',
+                                                    defaultMessage: 'Select Gateways to Deploy',
+                                                })}
+                                                placeholder={intl.formatMessage({
+                                                    id: 'Select.Gateways',
+                                                    defaultMessage: 'Select Gateways to Deploy',
+                                                })}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={2}>
+                                <Button
+                                    className={classes.button}
+                                    variant='contained'
+                                    color='primary'
+                                    fullWidth
+                                    onClick={() => deploy(policy.id, getSelectedGatewayLabelsById(policy.id))}
+                                >
+                                    <FormattedMessage
+                                        id='Deploy'
+                                        defaultMessage='Deploy'
+                                    />
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </TableCell>
-                </TableRow>   
-                
+                </TableRow>                
             );
         },
     };
