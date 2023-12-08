@@ -4209,6 +4209,12 @@
   "Confirm.Delete.Verify": {
     "defaultMessage": "Are you sure you want to delete the policy"
   },
+  "Confirm.Deploy": {
+    "defaultMessage": "Confirm Deploy"
+  },
+  "Confirm.Deploy.Verify": {
+    "defaultMessage": "Are you sure you want to depoly the policy in the selected gateways?"
+  },
   "Connection.Timeout": {
     "defaultMessage": "Connection Timeout"
   },
@@ -4217,6 +4223,9 @@
   },
   "Deploy": {
     "defaultMessage": "Deploy"
+  },
+  "Deploy.Helper": {
+    "defaultMessage": "If a Global Policy is deployed to a Gateway,respective gateway will not be available for deploymnet for ths policy. Please undeploy other global policy first."
   },
   "Deployed.Gateway.Listing.Table.Header.Description": {
     "defaultMessage": "Description"

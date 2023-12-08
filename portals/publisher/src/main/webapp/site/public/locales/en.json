@@ -8807,6 +8807,18 @@
       "value": "Are you sure you want to delete the policy"
     }
   ],
+  "Confirm.Deploy": [
+    {
+      "type": 0,
+      "value": "Confirm Deploy"
+    }
+  ],
+  "Confirm.Deploy.Verify": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to depoly the policy in the selected gateways?"
+    }
+  ],
   "Connection.Timeout": [
     {
       "type": 0,
@@ -8823,6 +8835,12 @@
     {
       "type": 0,
       "value": "Deploy"
+    }
+  ],
+  "Deploy.Helper": [
+    {
+      "type": 0,
+      "value": "If a Global Policy is deployed to a Gateway,respective gateway will not be available for deploymnet for ths policy. Please undeploy other global policy first."
     }
   ],
   "Deployed.Gateway.Listing.Table.Header.Description": [

@@ -41,6 +41,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import APIMAlert from 'AppComponents/Shared/Alert';
 import Icon from '@material-ui/core/Icon';
 import CloudOffRoundedIcon from '@material-ui/icons/CloudOffRounded';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useIntl, FormattedMessage } from 'react-intl';
@@ -110,6 +111,9 @@ const useStyles = makeStyles((theme) => ({
         color: 'grey', 
         fontStyle: 'italic'
     },
+    iconSmall: {
+        fontSize: '16px'
+    },
 }));
 
 interface Policy {
@@ -153,9 +157,12 @@ const Listing: React.FC = () => {
     const [environments, setEnvironments] = useState<Environment[]>([]);
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isDeployDialogOpen, setIsDeployDialogOpen] = useState(false);
+    const [isUndeployDialogOpen, setIsUndeployDialogOpen] = useState(false);
     const [selectedPolicyName, setSelectedPolicyName] = useState('');
     const [selectedPolicyId, setSelectedPolicyId] = useState('');
+    const [deployingGateway, setDeployingGateway] = useState('');
     const theme : any = useTheme();
     const { globalPolicyAddIcon } = theme.custom.landingPage.icons;
     const intl = useIntl();
@@ -346,6 +353,7 @@ const Listing: React.FC = () => {
      * @param {boolean} deploying - Deploying or undeploying.
      */
     const undeploy = (gatewayPolicyMappingId: string, environement: string) => {
+        setIsUndeployDialogOpen(false);
         setLoading(true);
         const deploymentArray = getDeploymentArray(gatewayPolicyMappingId);
         const updatedDeploymentArray = toggleGatewayDeployment(deploymentArray, environement);
@@ -390,6 +398,7 @@ const Listing: React.FC = () => {
      * @param {boolean} deploying - Deploying or undeploying.
      */
     const deploy = (gatewayPolicyMappingId: string, deployingGateways: string[]) => {
+        setIsDeployDialogOpen(false);
         setLoading(true);
         const deploymentArray = getDeploymentArray(gatewayPolicyMappingId);
 
@@ -451,7 +460,7 @@ const Listing: React.FC = () => {
      * @param {string} gatewayPolicyMappingId - Policy Identifier.
      */
     const deletePolicy = (gatewayPolicyMappingId: string) => {
-        setIsDialogOpen(false);
+        setIsDeleteDialogOpen(false);
         setLoading(true);
         /**
          * call the backend API and handle the response
@@ -507,15 +516,147 @@ const Listing: React.FC = () => {
     const policiesList = policies;
 
     /**
+     * Dialog box (Modal or Pop up) which as for the confirmation to delete.
+     * @returns {JSX.Element} - Delete Dialog.
+     */
+    const deleteDialog = () => {
+        return (
+            <Dialog open={isDeleteDialogOpen} 
+                BackdropProps={{ className: classes.dialogBackdrop }}
+                PaperProps={{ className: classes.dialogPaper }}
+            >
+                <DialogTitle>
+                    <FormattedMessage
+                        id='Confirm.Delete'
+                        defaultMessage='Confirm Deletion'
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <FormattedMessage
+                            id='Confirm.Delete.Verify'
+                            defaultMessage='Are you sure you want to delete the policy '
+                        />
+                        {selectedPolicyName}?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsDeleteDialogOpen(false)} color='primary'>
+                        <FormattedMessage
+                            id='Cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button onClick={() => deletePolicy(selectedPolicyId)} color='primary'>
+                        <FormattedMessage
+                            id='Delete'
+                            defaultMessage='Delete'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
+    /**
+     * Dialog box (Modal or Pop up) which as for the confirmation to deploy.
+     * @param {string} policyID - Policy ID.
+     * @param {string[]} deployingGatewayList - Deploying Gateway List.
+     * @returns {JSX.Element} - Delete Dialog.
+     */
+    const deployDialog = (policyID: string, deployingGatewayList: string[]) => {
+        return (
+            <Dialog open={isDeployDialogOpen} 
+                BackdropProps={{ className: classes.dialogBackdrop }}
+                PaperProps={{ className: classes.dialogPaper }}
+            >
+                <DialogTitle>
+                    <FormattedMessage
+                        id='Confirm.Deploy'
+                        defaultMessage='Confirm Deployment'
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <FormattedMessage
+                            id='Confirm.Deploy.Verify'
+                            defaultMessage='Are you sure you want to depoly the policy in the selected gateways?'
+                        />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsDeployDialogOpen(false)} color='primary'>
+                        <FormattedMessage
+                            id='Cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button onClick={() => deploy(policyID, deployingGatewayList)} color='primary'>
+                        <FormattedMessage
+                            id='Deploy'
+                            defaultMessage='Deploy'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
+    /**
+     * Dialog box (Modal or Pop up) which as for the confirmation to deploy.
+     * @param {string} policyID - Policy ID.
+     * @param {string} gateway - Undeploying Gateway.
+     * @returns {JSX.Element} - Delete Dialog.
+     */
+    const undeployDialog = (policyID: string, gateway: string) => {
+        return (
+            <Dialog open={isUndeployDialogOpen} 
+                BackdropProps={{ className: classes.dialogBackdrop }}
+                PaperProps={{ className: classes.dialogPaper }}
+            >
+                <DialogTitle>
+                    <FormattedMessage
+                        id='Confirm.UnDeploy'
+                        defaultMessage='Confirm Undeployment'
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <FormattedMessage
+                            id='Confirm.Deploy.Verify'
+                            defaultMessage='Are you sure you want to undepoly the policy?'
+                        />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsUndeployDialogOpen(false)} color='primary'>
+                        <FormattedMessage
+                            id='Cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button onClick={() => undeploy(policyID, gateway)} color='primary'>
+                        <FormattedMessage
+                            id='Undeploy'
+                            defaultMessage='Undeploy'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
+    /**
      * Columns for the MUI table.
      */
     const columns: MUIDataTableColumnDef[] = [
         {
             name: 'id',
-            options: {
-                display: 'excluded',
+            options: { 
                 filter: false,
-            },
+                display: false, 
+                viewColumns: false,
+            }
         },
         {
             name: 'displayName',
@@ -536,22 +677,29 @@ const Listing: React.FC = () => {
             options: {
                 customBodyRender: (value: string[] | undefined, tableMeta: any) => {
                     const policyId = tableMeta.rowData[0];
+
+                    const handleUndeployClick = (gateway: string) => {
+                        setDeployingGateway(gateway);
+                        setIsUndeployDialogOpen(true);   
+                    }
+
                     if (value && value.length > 0) {
                         return (
                             <div>
-                                {value.map((gateway: string) => (
-                                    <>
-                                        <Chip 
-                                            key={gateway} 
-                                            label={gateway} 
-                                            variant='outlined' 
-                                            className={classes.chip}
-                                            onDelete={() => undeploy(policyId, gateway)}
-                                            deleteIcon={<CloudOffRoundedIcon/>}
-
-                                        />
-                                    </>
-                                ))}
+                                {value.slice().sort((a, b) => 
+                                    a.localeCompare(b, undefined, { sensitivity: 'base' })).map((gateway: string) => 
+                                    (
+                                        <>
+                                            <Chip 
+                                                key={gateway} 
+                                                label={gateway} 
+                                                variant='outlined' 
+                                                className={classes.chip}
+                                                onDelete={() => handleUndeployClick(gateway)}
+                                                deleteIcon={<CloudOffRoundedIcon/>}
+                                            />
+                                        </>))}
+                                {undeployDialog(policyId, deployingGateway)}
                             </div>
                         );
                     } else {
@@ -580,10 +728,10 @@ const Listing: React.FC = () => {
                 customBodyRender: (value: string) => {                
                     return (
                         <div>
-                            <Tooltip title={value}>
-                                <Icon className={classes.icon}>
-                                    info_outlined
-                                </Icon>
+                            <Tooltip title={value}>       
+                                <IconButton size='small' aria-label='description-text'>
+                                    <InfoOutlinedIcon/>
+                                </IconButton>
                             </Tooltip>
                         </div>
                     );
@@ -625,7 +773,7 @@ const Listing: React.FC = () => {
                         else {
                             setSelectedPolicyId(policyId);
                             setSelectedPolicyName(policyName);
-                            setIsDialogOpen(true);
+                            setIsDeleteDialogOpen(true);
                         }
                     };
 
@@ -660,40 +808,7 @@ const Listing: React.FC = () => {
                                 {/**
                                  * Dialog box (Modal or Pop up) which as for the confirmation to delete.
                                  */}
-                                <Dialog open={isDialogOpen} 
-                                    BackdropProps={{ className: classes.dialogBackdrop }}
-                                    PaperProps={{ className: classes.dialogPaper }}
-                                >
-                                    <DialogTitle>
-                                        <FormattedMessage
-                                            id='Confirm.Delete'
-                                            defaultMessage='Confirm Delete'
-                                        />
-                                    </DialogTitle>
-                                    <DialogContent>
-                                        <DialogContentText>
-                                            <FormattedMessage
-                                                id='Confirm.Delete.Verify'
-                                                defaultMessage='Are you sure you want to delete the policy '
-                                            />
-                                            {selectedPolicyName}?
-                                        </DialogContentText>
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={() => setIsDialogOpen(false)} color='primary'>
-                                            <FormattedMessage
-                                                id='Cancel'
-                                                defaultMessage='Cancel'
-                                            />
-                                        </Button>
-                                        <Button onClick={() => deletePolicy(selectedPolicyId)} color='primary'>
-                                            <FormattedMessage
-                                                id='Delete'
-                                                defaultMessage='Delete'
-                                            />
-                                        </Button>
-                                    </DialogActions>
-                                </Dialog>
+                                {deleteDialog()}
                             </>
                         </Box>
                     );                
@@ -762,35 +877,52 @@ const Listing: React.FC = () => {
 
             return ( 
                 <TableRow>
-                    <TableCell colSpan={5}>       
+                    <TableCell colSpan={1}/> 
+                    <TableCell colSpan={4}>      
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6} md={4}>
-                                <div>
-                                    <Autocomplete
-                                        multiple
-                                        id='multi-select'
-                                        options={deployableGateways}
-                                        value={getSelectedGatewayLabelsById(policy.id)}
-                                        onChange={handleSelectChange(policy.id)}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                // Prop spreading is forbidden in eslint, However, it is used here
-                                                // as MUI AutoComplete component requires Prop spreading
-                                                {...params}
-                                                size='small'
-                                                variant='outlined'
-                                                label={intl.formatMessage({
-                                                    id: 'Select.Gateways',
-                                                    defaultMessage: 'Select Gateways to Deploy',
-                                                })}
-                                                placeholder={intl.formatMessage({
-                                                    id: 'Select.Gateways',
-                                                    defaultMessage: 'Select Gateways to Deploy',
-                                                })}
-                                            />
-                                        )}
-                                    />
-                                </div>
+                                <Grid container spacing={2} alignItems='center'>
+                                    <Grid item xs={11}>
+                                        <Autocomplete
+                                            multiple
+                                            id='multi-select'
+                                            options={
+                                                deployableGateways.slice().sort((a, b) => 
+                                                    a.localeCompare(b, undefined, { sensitivity: 'base' }))}
+                                            value={getSelectedGatewayLabelsById(policy.id)}
+                                            onChange={handleSelectChange(policy.id)}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    // Prop spreading is forbidden in eslint, However, it is used here
+                                                    // as MUI AutoComplete component requires Prop spreading
+                                                    {...params}
+                                                    size='small'
+                                                    variant='outlined'
+                                                    label={intl.formatMessage({
+                                                        id: 'Select.Gateways',
+                                                        defaultMessage: 'Select Gateways to Deploy',
+                                                    })}
+                                                    placeholder={intl.formatMessage({
+                                                        id: 'Select.Gateways',
+                                                        defaultMessage: 'Select Gateways to Deploy',
+                                                    })}
+                                                />
+                                            )}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={1}>
+                                        <Tooltip title={intl.formatMessage({
+                                            id: 'Deploy.Helper',
+                                            defaultMessage: 'If a Global Policy is deployed to a Gateway,' +
+                                            'respective gateway will not be available for deploymnet for ths policy. ' +
+                                            'Please undeploy other global policy first.',
+                                        })}>
+                                            <IconButton size='small' aria-label='deploy-helper-text'>
+                                                <HelpOutlineIcon fontSize='small' />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                             <Grid item xs={12} sm={6} md={2}>
                                 <Button
@@ -798,13 +930,15 @@ const Listing: React.FC = () => {
                                     variant='contained'
                                     color='primary'
                                     fullWidth
-                                    onClick={() => deploy(policy.id, getSelectedGatewayLabelsById(policy.id))}
+                                    disabled={getSelectedGatewayLabelsById(policy.id).length < 1}
+                                    onClick={() => setIsDeployDialogOpen(true)}
                                 >
                                     <FormattedMessage
                                         id='Deploy'
                                         defaultMessage='Deploy'
                                     />
                                 </Button>
+                                {deployDialog(policy.id, getSelectedGatewayLabelsById(policy.id))}
                             </Grid>
                         </Grid>
                     </TableCell>
