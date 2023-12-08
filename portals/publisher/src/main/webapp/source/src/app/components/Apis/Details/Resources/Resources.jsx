@@ -504,7 +504,8 @@ export default function Resources(props) {
 
     useEffect(() => {
         if (api.apitype !== 'APIProduct') {
-            API.getAllScopes()
+            const maxScopeLimit = Configurations.apis.maxScopeCount;
+            API.getAllScopes(0, maxScopeLimit)
                 .then((response) => {
                     if (response.body && response.body.list) {
                         const sharedScopesList = [];
