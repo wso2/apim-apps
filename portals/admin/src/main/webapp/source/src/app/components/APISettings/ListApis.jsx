@@ -82,10 +82,10 @@ export default function ListApis() {
         return restApi
             .getApiList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, query })
             .then((result) => {
-                setApiList(result.body.list);
+                setApiList(result.body.apis);
                 const { pagination: { total } } = result.body;
                 setTotalApps(total);
-                return result.body.list;
+                return result.body.apis;
             })
             .catch((error) => {
                 throw error;

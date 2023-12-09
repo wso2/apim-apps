@@ -12,6 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import EditIcon from '@material-ui/icons/Edit';
 import { FormattedMessage } from 'react-intl';
 import { IconButton } from '@material-ui/core';
+import SaveIcon from '@material-ui/icons/Save';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles((theme) => ({
     fullHeight: {
@@ -104,40 +106,60 @@ const ApisTableContent = ({ apis, updateApiList }) => {
             newRows.delete(apiId);
             return newRows;
         });
+        setProvider('');
     };
 
     const handleSubmitClick = (apiId, apiProvider) => {
-        return restApi.updateApiProvider(apiId, apiProvider)
-            .then(() => {
-                return (
-                    Alert.success(
-                        <FormattedMessage
-                            id='AdminPages.ApiSettings.EditApi.form.edit.successful'
-                            defaultMessage='Api provider changed successfully'
-                        />,
-                    )
-                );
-            })
-            .catch((error) => {
-                let validationError = 'Something went wrong when validating the user';
-                const { response } = error;
-                // This api returns 404 when the $provider is not found.
-                // error codes: 901502, 901500 for user not found and scope not found
-                if (response?.body?.code === 901502 || response?.body?.code === 901500) {
-                    validationError = `${provider} is not a valid User`;
-                }
-                if (response?.body?.code === 500) {
-                    const notValidUser = 'Error while updating the provider name to ' + provider;
-                    throw notValidUser;
-                } else {
-                    const updateError = validationError;
-                    throw updateError;
-                }
-            })
-            .finally(() => {
-                updateApiList();
-                handleCancelClick(apiId);
-            });
+        if (apiProvider == '') {
+            Alert.error(
+                <FormattedMessage
+                    id='AdminPages.ApiSettings.EditApi.form.edit.error'
+                    defaultMessage="API provider should not be empty."
+                />,
+            )
+        } else {
+            return restApi.updateApiProvider(apiId, apiProvider)
+                .then(() => {
+                    return (
+                        Alert.success(
+                            <FormattedMessage
+                                id='AdminPages.ApiSettings.EditApi.form.edit.successful'
+                                defaultMessage='Api provider changed successfully'
+                            />,
+                        )
+                    );
+                })
+                .catch((error) => {
+                    let validationError = 'Something went wrong when validating the user';
+                    const { response } = error;
+                    // This api returns 404 when the $provider is not found.
+                    // error codes: 901502, 901500 for user not found and scope not found
+                    if (response?.body?.code === 901502 || response?.body?.code === 901500) {
+                        validationError = `${provider} is not a valid User`;
+                    }
+                    if (response?.body?.code === 500) {
+                        const notValidUser = 'Error while updating the provider name to ' + provider;
+                        Alert.error(
+                            <FormattedMessage
+                                id='AdminPages.ApiSettings.EditApi.form.edit.error'
+                                defaultMessage={notValidUser}
+                            />,
+                        )
+                    } else {
+                        const updateError = validationError;
+                        Alert.error(
+                            <FormattedMessage
+                                id='AdminPages.ApiSettings.EditApi.form.edit.error'
+                                defaultMessage={updateError}
+                            />,
+                        )
+                    }
+                })
+                .finally(() => {
+                    updateApiList();
+                    handleCancelClick(apiId);
+                });
+        }
     };
 
     return (
@@ -147,45 +169,38 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                     <StyledTableCell align='left'>
                         {api.name}
                     </StyledTableCell>
-                    <StyledTableCell align='left'>{api.version}</StyledTableCell>
+                    <StyledTableCell align='left'>
+                        <div style={{marginLeft: 10}}>
+                            {api.version}
+                        </div>
+                    </StyledTableCell>
                     <StyledTableCell align='left'>
                         {!editableRows.has(api.id) && (
-                            <>
+                            <div style={{marginLeft:10}}>
                                 {api.provider}
                                 <IconButton color='primary' onClick={() => handleEditClick(api.id)}>
                                     <EditIcon aria-label='edit-api-settings' />
                                 </IconButton>
-                            </>
+                            </div>
                         )}
                         {editableRows.has(api.id) && (
-                            <>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'left', justifyContent: 'left', marginLeft: 10 }}>
                                 <TextField
                                     id='standard-basic'
-                                    label='Enter Provider Name'
+                                    label='Provider Name'
                                     variant='standard'
                                     size='small'
                                     defaultValue={api.provider}
-                                    value={provider}
+                                    style={{maxHeight: '10px', marginTop: '-5px', maxWidth: '120px'}}
                                     onChange={(e) => { setProvider(e.target.value); }}
                                 />
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    size='small'
-                                    className={classes.button}
-                                    onClick={() => handleSubmitClick(api.id, provider)}
-                                >
-                                    Submit
-                                </Button>
-                                <Button
-                                    variant='outlined'
-                                    size='small'
-                                    className={classes.button}
-                                    onClick={() => handleCancelClick(api.id)}
-                                >
-                                    Cancel
-                                </Button>
-                            </>
+                                <IconButton color='primary' onClick={() => handleSubmitClick(api.id, provider)}>
+                                    <SaveIcon aria-label='edit-api-settings' />
+                                </IconButton>
+                                <IconButton onClick={() => handleCancelClick(api.id)}>
+                                    <CancelIcon aria-label='edit-api-settings' />
+                                </IconButton>
+                            </div>
                         )}
                     </StyledTableCell>
                 </StyledTableRow>

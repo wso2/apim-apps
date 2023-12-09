@@ -43,6 +43,7 @@ const apisTableHead = (props) => {
                 defaultMessage='Name'
             />),
             sorting: true,
+            width: 200,
         },
         {
             id: 'version',
@@ -53,6 +54,7 @@ const apisTableHead = (props) => {
                 defaultMessage='Version'
             />),
             sorting: true,
+            width: 100,
         },
         {
             id: 'provider',
@@ -63,6 +65,7 @@ const apisTableHead = (props) => {
                 defaultMessage='Provider'
             />),
             sorting: true,
+            width: 130
         },
     ];
     const { order, orderBy } = props;
@@ -75,6 +78,8 @@ const apisTableHead = (props) => {
                             key={column.id}
                             align='left'
                             sortDirection={orderBy === column.id ? order : false}
+                            width={column.width}
+                            style={{marginLeft:50}}
                         >
                             {column.sorting ? (
                                 <TableSortLabel
