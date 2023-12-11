@@ -65,7 +65,7 @@ const apisTableHead = (props) => {
                 defaultMessage='Provider'
             />),
             sorting: true,
-            width: 130
+            width: 130,
         },
     ];
     const { order, orderBy } = props;
@@ -79,7 +79,7 @@ const apisTableHead = (props) => {
                             align='left'
                             sortDirection={orderBy === column.id ? order : false}
                             width={column.width}
-                            style={{marginLeft:50}}
+                            style={{ marginLeft: 50 }}
                         >
                             {column.sorting ? (
                                 <TableSortLabel

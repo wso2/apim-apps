@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import API from 'AppData/api';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Alert from 'AppComponents/Shared/Alert';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import EditIcon from '@material-ui/icons/Edit';
 import { FormattedMessage } from 'react-intl';
@@ -110,13 +109,15 @@ const ApisTableContent = ({ apis, updateApiList }) => {
     };
 
     const handleSubmitClick = (apiId, apiProvider) => {
-        if (apiProvider == '') {
-            Alert.error(
-                <FormattedMessage
-                    id='AdminPages.ApiSettings.EditApi.form.edit.error'
-                    defaultMessage="API provider should not be empty."
-                />,
-            )
+        if (apiProvider === '') {
+            return (
+                Alert.error(
+                    <FormattedMessage
+                        id='AdminPages.ApiSettings.EditApi.form.edit.error'
+                        defaultMessage='API provider should not be empty.'
+                    />,
+                )
+            );
         } else {
             return restApi.updateApiProvider(apiId, apiProvider)
                 .then(() => {
@@ -124,35 +125,33 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                         Alert.success(
                             <FormattedMessage
                                 id='AdminPages.ApiSettings.EditApi.form.edit.successful'
-                                defaultMessage='Api provider changed successfully'
+                                defaultMessage='API provider changed successfully'
                             />,
                         )
                     );
                 })
                 .catch((error) => {
-                    let validationError = 'Something went wrong when validating the user';
                     const { response } = error;
                     // This api returns 404 when the $provider is not found.
                     // error codes: 901502, 901500 for user not found and scope not found
                     if (response?.body?.code === 901502 || response?.body?.code === 901500) {
-                        validationError = `${provider} is not a valid User`;
-                    }
-                    if (response?.body?.code === 500) {
-                        const notValidUser = 'Error while updating the provider name to ' + provider;
-                        Alert.error(
-                            <FormattedMessage
-                                id='AdminPages.ApiSettings.EditApi.form.edit.error'
-                                defaultMessage={notValidUser}
-                            />,
-                        )
+                        return (
+                            Alert.error(
+                                <FormattedMessage
+                                    id='AdminPages.ApiSettings.EditApi.form.edit.other.error'
+                                    defaultMessage='Given Username is not valid.'
+                                />,
+                            )
+                        );
                     } else {
-                        const updateError = validationError;
-                        Alert.error(
-                            <FormattedMessage
-                                id='AdminPages.ApiSettings.EditApi.form.edit.error'
-                                defaultMessage={updateError}
-                            />,
-                        )
+                        return (
+                            Alert.error(
+                                <FormattedMessage
+                                    id='AdminPages.ApiSettings.EditApi.form.edit.user.notvalid'
+                                    defaultMessage='Error while updating the provider name.'
+                                />,
+                            )
+                        );
                     }
                 })
                 .finally(() => {
@@ -170,28 +169,35 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                         {api.name}
                     </StyledTableCell>
                     <StyledTableCell align='left'>
-                        <div style={{marginLeft: 10}}>
+                        <div style={{ marginLeft: 10 }}>
                             {api.version}
                         </div>
                     </StyledTableCell>
                     <StyledTableCell align='left'>
                         {!editableRows.has(api.id) && (
-                            <div style={{marginLeft:10}}>
-                                {api.provider}
+                            <div style={{ marginLeft: 10 }}>
+                                { api.provider }
                                 <IconButton color='primary' onClick={() => handleEditClick(api.id)}>
                                     <EditIcon aria-label='edit-api-settings' />
                                 </IconButton>
                             </div>
                         )}
-                        {editableRows.has(api.id) && (
-                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'left', justifyContent: 'left', marginLeft: 10 }}>
+                        { editableRows.has(api.id) && (
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'left',
+                                justifyContent: 'left',
+                                marginLeft: 10,
+                            }}
+                            >
                                 <TextField
                                     id='standard-basic'
                                     label='Provider Name'
                                     variant='standard'
                                     size='small'
                                     defaultValue={api.provider}
-                                    style={{maxHeight: '10px', marginTop: '-5px', maxWidth: '120px'}}
+                                    style={{ maxHeight: '10px', marginTop: '-5px', maxWidth: '120px' }}
                                     onChange={(e) => { setProvider(e.target.value); }}
                                 />
                                 <IconButton color='primary' onClick={() => handleSubmitClick(api.id, provider)}>

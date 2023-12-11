@@ -311,7 +311,7 @@ const RouteMenuMapping = (intl) => [
             {
                 id: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.apis',
-                    defaultMessage: 'Change Api Provider',
+                    defaultMessage: 'Change API Provider',
                 }),
                 path: '/settings/apis',
                 component: ListApis,

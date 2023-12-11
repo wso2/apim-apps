@@ -164,7 +164,7 @@ export default function ListApis() {
                                     fullWidth
                                     id='search-label'
                                     label={intl.formatMessage({
-                                        defaultMessage: 'Search by Api',
+                                        defaultMessage: 'Search by API',
                                         id: 'Apis.Listing.Listing.apis.search.label',
                                     })}
                                     placeholder={intl.formatMessage({
