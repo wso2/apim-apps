@@ -32,7 +32,7 @@ function getMessage(errorType, maxLength) {
         case 'any.empty':
             return 'should not be empty';
         case 'string.regex.base':
-            return 'should not contain spaces or special characters';
+            return 'Api name should not contain trailing or leading spaces, special characters, and consecutive spaces';
         case 'string.max':
             return 'has exceeded the maximum number of ' + maxLength + ' characters';
         default:
@@ -121,9 +121,9 @@ const documentSchema = Joi.extend((joi) => ({
 }));
 
 const definition = {
-    apiName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$[\]/]*$/).required()
+    apiName: Joi.string().max(50).regex(/^(?!.*\s{2})(?!.*[~!@#;:%^*()+={}|\\<>"',&$[\]/]).*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, 50) }));
+            return errors.map((error) => ({ ...error, message: getMessage(error.type, 50) }));
         }),
     apiVersion: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&/$[\]\s]+$/).required().error((errors) => {
         const tmpErrors = [...errors];
