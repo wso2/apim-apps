@@ -84,9 +84,9 @@ export default function Transports(props) {
                         <FormControlLabel
                             control={(
                                 <Checkbox
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                    disabled={isRestricted(['apim:api_create'], apiFromContext) || isMutualSSLEnabled}
                                     checked={api.transport
-                                        ? api.transport.includes('http') : null}
+                                        ? api.transport.includes('http') && !isMutualSSLEnabled : null}
                                     onChange={({ target: { checked } }) => configDispatcher({
                                         action: 'transport',
                                         event: { checked, value: 'http' },

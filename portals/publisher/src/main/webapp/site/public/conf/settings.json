@@ -84,7 +84,9 @@
           "sa-east-1": "sa-east-1: South America (São Paulo)"
         }
       }
-    }
+    },
+    "maxSubscriptionLimit": 2000,
+    "maxScopeCount": 2000
   }
 }
 
