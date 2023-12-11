@@ -39,7 +39,7 @@ const CONSTS = {
         KEY_MANAGER: ['apim:keymanagers_manage', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         GATEWAY_MANAGER: ['apim:environment_manage', 'openid', 'apim:admin_settings', 'apim:environment_read'],
         SETTINGS_MANAGER: ['apim:app_owner_change', 'apim:admin_application_view',
-            'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo',
+            'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo', 'apim:api_provider_change',
         ],
     },
 };
