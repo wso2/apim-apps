@@ -19,6 +19,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
+import { isRestricted } from 'AppData/AuthManager';
 import Listing from './Listing/Listing';
 import GlobalPoliciesCreate from './Create/CreateGlobalPolicy';
 import GlobalPoliciesEdit from './Edit/EditGlobalPolicy';
@@ -30,21 +31,27 @@ import GlobalPoliciesEdit from './Edit/EditGlobalPolicy';
 const GlobalPolicies = () => {
     return (
         <Switch>
-            <Route
-                exact
-                path='/global-policies'
-                component={Listing}
-            />
-            <Route
-                exact
-                path='/global-policies/create'
-                component={GlobalPoliciesCreate}
-            />
-            <Route
-                exact
-                path='/global-policies/:policyId/edit'
-                component={GlobalPoliciesEdit}
-            />
+            {!isRestricted(['apim:gateway_policy_manage', 'apim:gateway_policy_view']) && 
+                <Route
+                    exact
+                    path='/global-policies'
+                    component={Listing}
+                />
+            }
+            {!isRestricted(['apim:gateway_policy_manage']) && 
+                <>
+                    <Route
+                        exact
+                        path='/global-policies/create'
+                        component={GlobalPoliciesCreate}
+                    />
+                    <Route
+                        exact
+                        path='/global-policies/:policyId/edit'
+                        component={GlobalPoliciesEdit}
+                    />
+                </>
+            }        
             <Route component={ResourceNotFound} />
         </Switch>
     );

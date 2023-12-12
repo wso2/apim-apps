@@ -42,6 +42,7 @@ import APIMAlert from 'AppComponents/Shared/Alert';
 import Icon from '@material-ui/core/Icon';
 import CloudOffRoundedIcon from '@material-ui/icons/CloudOffRounded';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useIntl, FormattedMessage } from 'react-intl';
@@ -212,7 +213,7 @@ const Listing: React.FC = () => {
     const fetchGlobalPolicies = () => {
         setLoading(true);
         // Due to a bug in current backend, we pass 0, 10 as a workaround for now
-        const promisedPolicies = API.getAllGatewayPolicies(0,  30);
+        const promisedPolicies = API.getAllGatewayPolicies();
         promisedPolicies
             .then((response: any) => {
                 setPolicies(response.body.list);
@@ -623,7 +624,7 @@ const Listing: React.FC = () => {
                 <DialogContent>
                     <DialogContentText>
                         <FormattedMessage
-                            id='Confirm.Deploy.Verify'
+                            id='Confirm.Undeploy.Verify'
                             defaultMessage='Are you sure you want to undepoly the policy?'
                         />
                     </DialogContentText>
@@ -664,6 +665,27 @@ const Listing: React.FC = () => {
                 id: 'Global.Policy.Listing.Table.Header.Name',
                 defaultMessage: 'Global Policy',
             }),
+            options: {
+                customBodyRender: (value: string, tableMeta: any) => {        
+                    const policyDescription = tableMeta.rowData[3];          
+                    return (
+                        <div>
+                            <Grid container alignItems='center'>
+                                <Grid item>
+                                    {value}
+                                </Grid>
+                                <Grid item>
+                                    <Tooltip title={policyDescription}>       
+                                        <IconButton size='small' aria-label='description-text'>
+                                            <InfoOutlinedIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </Grid>
+                            </Grid>
+                        </div>
+                    );
+                }
+            }      
         },
         /**
          * Deployed Gateway Column.
@@ -696,7 +718,9 @@ const Listing: React.FC = () => {
                                                 variant='outlined' 
                                                 className={classes.chip}
                                                 onDelete={() => handleUndeployClick(gateway)}
-                                                deleteIcon={<CloudOffRoundedIcon/>}
+                                                deleteIcon={
+                                                    !isRestricted(['apim:gateway_policy_manage']) 
+                                                        ? <CloudOffRoundedIcon/> :<></>}
                                             />
                                         </>))}
                                 {undeployDialog(policyId, deployingGateway)}
@@ -725,17 +749,7 @@ const Listing: React.FC = () => {
                 defaultMessage: 'Description',
             }),
             options: {
-                customBodyRender: (value: string) => {                
-                    return (
-                        <div>
-                            <Tooltip title={value}>       
-                                <IconButton size='small' aria-label='description-text'>
-                                    <InfoOutlinedIcon/>
-                                </IconButton>
-                            </Tooltip>
-                        </div>
-                    );
-                }
+                display: false,
             }      
         },
         /**
@@ -747,6 +761,7 @@ const Listing: React.FC = () => {
                 defaultMessage: 'Actions',
             }),
             options: {
+                display: !isRestricted(['apim:gateway_policy_manage']),
                 customBodyRender: (value: any, tableMeta: any) => {
                     const policyId = tableMeta.rowData[0];
                     const policyName = tableMeta.rowData[1];
@@ -831,7 +846,7 @@ const Listing: React.FC = () => {
         download: false,
         viewColumns: false,
         rowsPerPageOptions: [5, 10, 25, 50, 100],
-        expandableRows: true,
+        expandableRows: !isRestricted(['apim:gateway_policy_manage']),
         expandableRowsHeader: false,
         expandableRowsOnClick: false,
         renderExpandableRow: (rowData, rowMeta) => {
@@ -1031,22 +1046,24 @@ const Listing: React.FC = () => {
                         <HelpOutlineIcon fontSize='small' />
                     </IconButton>
                 </Tooltip>
-                <Box pl={1}>
-                    <Button 
-                        color='primary' 
-                        variant='outlined' 
-                        size='small' 
-                        data-testid='add-new-global-policy'
-                        component={Link}
-                        to='/global-policies/create'
-                    >
-                        <AddCircle className={classes.buttonIcon} />
-                        <FormattedMessage
-                            id='GlobalPolicies.Listing.policies.title.add.new.policy'
-                            defaultMessage='Add New Global Policy'
-                        />
-                    </Button>
-                </Box>      
+                {!isRestricted(['apim:gateway_policy_manage']) 
+                    ? <Box pl={1}>
+                        <Button 
+                            color='primary' 
+                            variant='outlined' 
+                            size='small' 
+                            data-testid='add-new-global-policy'
+                            component={Link}
+                            to='/global-policies/create'
+                        >
+                            <AddCircle className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='GlobalPolicies.Listing.policies.title.add.new.policy'
+                                defaultMessage='Add New Global Policy'
+                            />
+                        </Button>
+                    </Box>  
+                    :null}
             </Grid>
             <Grid
                 className={classes.table}

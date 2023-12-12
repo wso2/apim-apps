@@ -4204,16 +4204,22 @@
     "defaultMessage": "Policies"
   },
   "Confirm.Delete": {
-    "defaultMessage": "Confirm Delete"
+    "defaultMessage": "Confirm Deletion"
   },
   "Confirm.Delete.Verify": {
     "defaultMessage": "Are you sure you want to delete the policy"
   },
   "Confirm.Deploy": {
-    "defaultMessage": "Confirm Deploy"
+    "defaultMessage": "Confirm Deployment"
   },
   "Confirm.Deploy.Verify": {
     "defaultMessage": "Are you sure you want to depoly the policy in the selected gateways?"
+  },
+  "Confirm.UnDeploy": {
+    "defaultMessage": "Confirm Undeployment"
+  },
+  "Confirm.Undeploy.Verify": {
+    "defaultMessage": "Are you sure you want to undepoly the policy?"
   },
   "Connection.Timeout": {
     "defaultMessage": "Connection Timeout"
@@ -4763,6 +4769,9 @@
   },
   "ServiceCatalog.ServicesTableView.ServicesTableView.version": {
     "defaultMessage": "Version"
+  },
+  "Undeploy": {
+    "defaultMessage": "Undeploy"
   },
   "UnexpectedError.logout": {
     "defaultMessage": "Logout"
