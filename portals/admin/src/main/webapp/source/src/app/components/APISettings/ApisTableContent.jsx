@@ -54,6 +54,21 @@ const useStyles = makeStyles((theme) => ({
             'white-space': 'normal',
         },
     },
+    tableActionBtnContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'left',
+        justifyContent: 'left',
+        marginLeft: 10,
+    },
+    textfield: {
+        maxHeight: '10px',
+        marginTop: '-5px',
+        maxWidth: '120px',
+    },
+    tableCell: {
+        marginLeft: 10,
+    },
 }));
 
 const StyledTableCell = withStyles((theme) => ({
@@ -169,13 +184,13 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                         {api.name}
                     </StyledTableCell>
                     <StyledTableCell align='left'>
-                        <div style={{ marginLeft: 10 }}>
+                        <div className={classes.tableCell}>
                             {api.version}
                         </div>
                     </StyledTableCell>
                     <StyledTableCell align='left'>
                         {!editableRows.has(api.id) && (
-                            <div style={{ marginLeft: 10 }}>
+                            <div className={classes.tableCell}>
                                 { api.provider }
                                 <IconButton color='primary' onClick={() => handleEditClick(api.id)}>
                                     <EditIcon aria-label='edit-api-settings' />
@@ -183,21 +198,14 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                             </div>
                         )}
                         { editableRows.has(api.id) && (
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'left',
-                                justifyContent: 'left',
-                                marginLeft: 10,
-                            }}
-                            >
+                            <div className={classes.tableActionBtnContainer}>
                                 <TextField
                                     id='standard-basic'
                                     label='Provider Name'
                                     variant='standard'
                                     size='small'
                                     defaultValue={api.provider}
-                                    style={{ maxHeight: '10px', marginTop: '-5px', maxWidth: '120px' }}
+                                    className={classes.textfield}
                                     onChange={(e) => { setProvider(e.target.value); }}
                                 />
                                 <IconButton color='primary' onClick={() => handleSubmitClick(api.id, provider)}>
