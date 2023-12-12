@@ -23,6 +23,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import Listing from './Listing/Listing';
 import GlobalPoliciesCreate from './Create/CreateGlobalPolicy';
 import GlobalPoliciesEdit from './Edit/EditGlobalPolicy';
+import GlobalPoliciesView from './View/ViewGlobalPolicy';
 
 /**
  * `Route` elements for shared Global Policies UI.
@@ -52,6 +53,13 @@ const GlobalPolicies = () => {
                     />
                 </>
             }        
+            {!isRestricted(['apim:gateway_policy_view']) && 
+                <Route
+                    exact
+                    path='/global-policies/:policyId/view'
+                    component={GlobalPoliciesView}
+                />
+            }  
             <Route component={ResourceNotFound} />
         </Switch>
     );

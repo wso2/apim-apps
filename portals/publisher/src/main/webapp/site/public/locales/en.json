@@ -9049,6 +9049,12 @@
       "value": "Edit"
     }
   ],
+  "GlobalPolicies.Listing.Table.Header.Actions.View": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
   "GlobalPolicies.Listing.onboarding.create.new": [
     {
       "type": 0,

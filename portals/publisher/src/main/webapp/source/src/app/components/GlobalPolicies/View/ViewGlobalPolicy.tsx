@@ -28,11 +28,11 @@ interface RouteParams {
  * Global Policies Editing Page.
  * @returns {JSX} - Editing Page.
  */
-const EditGlobalPolicy: React.FC = () => {
+const ViewGlobalPolicy: React.FC = () => {
     const { policyId } = useParams<RouteParams>();
     return (
-        <Policies isCreateNew={false} policyID={policyId} disabled={false}/>
+        <Policies isCreateNew={false} policyID={policyId} disabled/>
     );
 };
 
-export default EditGlobalPolicy;
+export default ViewGlobalPolicy;

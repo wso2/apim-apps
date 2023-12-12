@@ -23,7 +23,7 @@ import Policies from 'AppComponents/GlobalPolicies/Policies/GlobalSpecificCompon
  */
 const CreateGlobalPolicy: React.FC = () => {
     return (
-        <Policies isCreateNew policyID={null}/>
+        <Policies isCreateNew policyID={null} disabled={false}/>
     );
 };
 

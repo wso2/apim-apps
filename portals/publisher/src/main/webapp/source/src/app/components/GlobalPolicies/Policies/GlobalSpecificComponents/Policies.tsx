@@ -70,17 +70,20 @@ const useStyles = makeStyles((theme) => ({
 interface PolicyProps {
     isCreateNew: boolean;
     policyID: string | null;
+    disabled: boolean;
 }
 
 /**
  * Renders the Global Policy management page.
  * @param {boolean} isCreateNew - This value is true if form is for create new and false for edit.
  * @param {string} policyID - This value is to indentify the policy (Null if creating a new one). 
+ * @param {boolean} disabled - This value is to disable the form (True if viewing the policy).
  * @returns {TSX} - Policy management page to render.
  */
 const Policies: FC<PolicyProps> =  ({
     isCreateNew, 
-    policyID
+    policyID,
+    disabled,
 }) => {
     const classes = useStyles();
     const history = useHistory();
@@ -583,6 +586,7 @@ const Policies: FC<PolicyProps> =  ({
                         type='submit'
                         variant='contained'
                         color='primary'
+                        disabled={disabled}
                         onClick={() => isCreateNew? save() : update()}
                     >
                         {isCreateNew ? 

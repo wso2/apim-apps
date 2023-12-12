@@ -4326,6 +4326,9 @@
   "GlobalPolicies.Listing.Table.Header.Actions.Edit": {
     "defaultMessage": "Edit"
   },
+  "GlobalPolicies.Listing.Table.Header.Actions.View": {
+    "defaultMessage": "View"
+  },
   "GlobalPolicies.Listing.onboarding.create.new": {
     "defaultMessage": "Let’s get started!"
   },

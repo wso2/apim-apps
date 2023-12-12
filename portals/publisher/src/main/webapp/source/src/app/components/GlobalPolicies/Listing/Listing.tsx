@@ -507,6 +507,15 @@ const Listing: React.FC = () => {
     };
 
     /**
+     * Get the Global Policy view link.
+     * @param {string} policyId - Policy Identifier.
+     * @returns {string} - Url for the Global Policy view.
+     */
+    const getViewUrl = (policyId: string) => {
+        return `/global-policies/${policyId}/view`;
+    };
+
+    /**
      * Sorts an array of Policy objects by their display names in ascending order.
      * @param {Policy[]} policies - An array of Policy objects to be sorted.
      * @returns {Policy[]} - The sorted array of Policy objects.
@@ -720,7 +729,7 @@ const Listing: React.FC = () => {
                                                 onDelete={() => handleUndeployClick(gateway)}
                                                 deleteIcon={
                                                     !isRestricted(['apim:gateway_policy_manage']) 
-                                                        ? <CloudOffRoundedIcon/> :<></>}
+                                                        ? <CloudOffRoundedIcon/> : <></>}
                                             />
                                         </>))}
                                 {undeployDialog(policyId, deployingGateway)}
@@ -761,7 +770,6 @@ const Listing: React.FC = () => {
                 defaultMessage: 'Actions',
             }),
             options: {
-                display: !isRestricted(['apim:gateway_policy_manage']),
                 customBodyRender: (value: any, tableMeta: any) => {
                     const policyId = tableMeta.rowData[0];
                     const policyName = tableMeta.rowData[1];
@@ -791,42 +799,62 @@ const Listing: React.FC = () => {
                             setIsDeleteDialogOpen(true);
                         }
                     };
-
-                    return (
-                        <Box display='flex' flexDirection='row'>
-                            <Button
-                                aria-label='Edit'
-                                component={Link}
-                                to={getEditUrl(policyId)}
-                            >
-                                <Icon className={classes.icon}>
-                                    edit
-                                </Icon>
-                                <FormattedMessage
-                                    id='GlobalPolicies.Listing.Table.Header.Actions.Edit'
-                                    defaultMessage='Edit'
-                                />
-                            </Button>
-                            <>
+                    if (!isRestricted(['apim:gateway_policy_manage'])){
+                        return (
+                            <Box display='flex' flexDirection='row'>
                                 <Button
-                                    aria-label='Delete'
-                                    onClick={handleDeleteClick}
+                                    aria-label='Edit'
+                                    component={Link}
+                                    to={getEditUrl(policyId)}
                                 >
                                     <Icon className={classes.icon}>
-                                        delete_forever
+                                        edit
                                     </Icon>
                                     <FormattedMessage
-                                        id='GlobalPolicies.Listing.table.header.actions.delete'
-                                        defaultMessage='Delete'
+                                        id='GlobalPolicies.Listing.Table.Header.Actions.Edit'
+                                        defaultMessage='Edit'
                                     />
                                 </Button>
-                                {/**
-                                 * Dialog box (Modal or Pop up) which as for the confirmation to delete.
-                                 */}
-                                {deleteDialog()}
-                            </>
-                        </Box>
-                    );                
+                                <>
+                                    <Button
+                                        aria-label='Delete'
+                                        onClick={handleDeleteClick}
+                                    >
+                                        <Icon className={classes.icon}>
+                                            delete_forever
+                                        </Icon>
+                                        <FormattedMessage
+                                            id='GlobalPolicies.Listing.table.header.actions.delete'
+                                            defaultMessage='Delete'
+                                        />
+                                    </Button>
+                                    {/**
+                                     * Dialog box (Modal or Pop up) which as for the confirmation to delete.
+                                     */}
+                                    {deleteDialog()}
+                                </>
+                            </Box>
+                        );  
+                    }
+                    else {
+                        return (
+                            <Box display='flex' flexDirection='row'>
+                                <Button
+                                    aria-label='View'
+                                    component={Link}
+                                    to={getViewUrl(policyId)}
+                                >
+                                    <Icon className={classes.icon}>
+                                        visibility
+                                    </Icon>
+                                    <FormattedMessage
+                                        id='GlobalPolicies.Listing.Table.Header.Actions.View'
+                                        defaultMessage='View'
+                                    />
+                                </Button>
+                            </Box>
+                        );  
+                    }                 
                 },
                 filter: false,
                 sort: false,
@@ -893,7 +921,7 @@ const Listing: React.FC = () => {
             return ( 
                 <TableRow>
                     <TableCell colSpan={1}/> 
-                    <TableCell colSpan={4}>      
+                    <TableCell colSpan={3}>      
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6} md={4}>
                                 <Grid container spacing={2} alignItems='center'>
