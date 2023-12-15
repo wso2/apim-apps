@@ -60,9 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface PolicyDropzoneSharedProps {
     policyDisplayStartDirection: string;
     currentPolicyList: AttachedPolicy[];
-    setCurrentPolicyList: React.Dispatch<
-        React.SetStateAction<AttachedPolicy[]>
-    >;
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     currentFlow: string;
     target: string;
     verb: string;

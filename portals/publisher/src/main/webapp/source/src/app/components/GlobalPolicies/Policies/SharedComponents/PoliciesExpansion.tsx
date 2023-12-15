@@ -134,7 +134,6 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     if (policyObj) {
                         requestFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
-                        // console.error("Cannot find policyObj for policyId: " + policyId);
                         Alert.error(intl.formatMessage({
                             id: 'Cannot.Find.PolicyObj.For.PolicyId',
                             defaultMessage: 'Cannot find policyObj for policyId: ',
@@ -172,7 +171,6 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     if (policyObj) {
                         responseFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
-                        // console.error("Cannot find policyObj for policyId: " + policyId);
                         Alert.error(intl.formatMessage({
                             id: 'Cannot.Find.PolicyObj.For.PolicyId',
                             defaultMessage: 'Cannot find policyObj for policyId: ',
@@ -211,7 +209,6 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         if (policyObj) {
                             faultFlowList.push({ ...policyObj, uniqueKey: uuid });
                         } else {
-                            // console.error("Cannot find policyObj for policyId: " + policyId);
                             Alert.error(intl.formatMessage({
                                 id: 'Cannot.Find.PolicyObj.For.PolicyId',
                                 defaultMessage: 'Cannot find policyObj for policyId: ',

@@ -57,10 +57,7 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
     isAPILevelPolicy,
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
-    const policyListToDisplay =
-        policyDisplayStartDirection === 'left'
-            ? currentPolicyList
-            : reversedPolicyList;
+    const policyListToDisplay = (policyDisplayStartDirection === 'left') ? currentPolicyList : reversedPolicyList;
     const { rearrangeGlobalOperations } = useContext<any>(GlobalPolicyContext);
 
     const sensors = useSensors(

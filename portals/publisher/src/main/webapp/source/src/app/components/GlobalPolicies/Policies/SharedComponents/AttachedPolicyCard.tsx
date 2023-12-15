@@ -95,8 +95,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 .then((globalPolicyResponse) => {
                     Utils.forceDownload(globalPolicyResponse);
                 })
-                .catch((/* error */) => {
-                    // console.error(error);
+                .catch(() => {
                     Alert.error(
                         <FormattedMessage
                             id='Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error'
@@ -112,8 +111,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                 .then((commonPolicyResponse) => {
                     Utils.forceDownload(commonPolicyResponse);
                 })
-                .catch((/* error */) => {
-                    // console.error(error);
+                .catch(() => {
                     Alert.error(
                         <FormattedMessage
                             id='Global.Details.Policies.AttachedPolicyCard.commonPolicy.download.error'

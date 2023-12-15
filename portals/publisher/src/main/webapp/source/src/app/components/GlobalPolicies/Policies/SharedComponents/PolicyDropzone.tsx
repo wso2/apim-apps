@@ -26,9 +26,7 @@ import PolicyConfiguringDrawer from '../GlobalSpecificComponents/PolicyConfiguri
 interface PolicyDropzoneProps {
     policyDisplayStartDirection: string;
     currentPolicyList: AttachedPolicy[];
-    setCurrentPolicyList: React.Dispatch<
-        React.SetStateAction<AttachedPolicy[]>
-    >;
+    setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     droppablePolicyList: string[];
     currentFlow: string;
     target: string;

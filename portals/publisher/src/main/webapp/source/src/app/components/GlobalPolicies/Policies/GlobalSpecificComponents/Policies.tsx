@@ -127,8 +127,7 @@ const Policies: FC<PolicyProps> =  ({
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
             setPolicies(commonPolicies);
-        }).catch((/* error */) => {
-            // console.error(error); 
+        }).catch(() => {
             Alert.error(intl.formatMessage({
                 id: 'Error.Retrieve.Policy.List',
                 defaultMessage: 'Error occurred while retrieving the policy list',
@@ -221,8 +220,7 @@ const Policies: FC<PolicyProps> =  ({
                 setName(responseUpdated.displayName);
                 setAppliedGatewayLabels(responseUpdated.appliedGatewayLabels);
             })
-            .catch((/* error */) => {
-                // console.error(error);
+            .catch(() => {
                 Alert.error(intl.formatMessage({
                     id: 'Error.Retrieve.Policy',
                     defaultMessage: 'Error occurred while retrieving the policy',
@@ -298,8 +296,7 @@ const Policies: FC<PolicyProps> =  ({
             * Save the newly dragged and dropped policy.
             */
             const uuid = uuidv4();
-            (newGlobalLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid }
-            );
+            (newGlobalLevelPolicies)[currentFlow].push({ ...updatedOperation, uuid });
         }
         setGlobalLevelPolicies(newGlobalLevelPolicies);   
     }
@@ -378,8 +375,7 @@ const Policies: FC<PolicyProps> =  ({
                         })); 
                     }                
                 })
-                .catch((/* error */) => {
-                    // console.error(error);
+                .catch(() => {
                     Alert.error(intl.formatMessage({
                         id: 'Adding.Policy.Mapping.Error',
                         defaultMessage: 'Error occurred while adding the policy mapping',
@@ -432,8 +428,7 @@ const Policies: FC<PolicyProps> =  ({
                         })); 
                     }                
                 })
-                .catch((/* error */) => {
-                    // console.error(error);
+                .catch(() => {
                     Alert.error(intl.formatMessage({
                         id: 'Policy.Mapping.Update.Error',
                         defaultMessage: 'Error occurred while updating the policy mapping',
@@ -506,12 +501,12 @@ const Policies: FC<PolicyProps> =  ({
                                 {isCreateNew ? 
                                     <FormattedMessage
                                         id='globalPolicies.create.create.heading'
-                                        defaultMessage='Create A New Global Policy'
+                                        defaultMessage='Create a new global policy'
                                     />
                                     : 
                                     <FormattedMessage
                                         id='globalPolicies.create.edit.heading'
-                                        defaultMessage='Edit Global Policy'
+                                        defaultMessage='Edit global policy'
                                     />
                                 }
                             </Typography>
@@ -526,7 +521,10 @@ const Policies: FC<PolicyProps> =  ({
                             fullWidth
                             required
                             id='outlined-required'
-                            label='Name'
+                            label={intl.formatMessage({
+                                id: 'Polcies.TextField.Name',
+                                defaultMessage: 'Name',
+                            })}
                             variant='outlined'
                             value={name}
                             onChange={handleNameChange}
@@ -538,7 +536,10 @@ const Policies: FC<PolicyProps> =  ({
                             fullWidth
                             required
                             id='outlined-multiline-static'
-                            label='Description'
+                            label={intl.formatMessage({
+                                id: 'Polcies.TextField.Description',
+                                defaultMessage: 'Description',
+                            })}
                             multiline
                             rows={3}
                             variant='outlined'
@@ -550,7 +551,7 @@ const Policies: FC<PolicyProps> =  ({
                     
                     <Box className={classes.operationListingBox}>  
                         {/**
-                        * Left side panel where we can droped policies.
+                        * Left side panel where we can drop policies.
                         */}
                         <Paper className={classes.paper}>
                             <Card variant='outlined'>

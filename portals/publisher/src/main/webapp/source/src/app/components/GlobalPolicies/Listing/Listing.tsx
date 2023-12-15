@@ -212,7 +212,6 @@ const Listing: React.FC = () => {
      */
     const fetchGlobalPolicies = () => {
         setLoading(true);
-        // Due to a bug in current backend, we pass 0, 10 as a workaround for now
         const promisedPolicies = API.getAllGatewayPolicies();
         promisedPolicies
             .then((response: any) => {
@@ -220,8 +219,7 @@ const Listing: React.FC = () => {
                 setSelectedGateways(getInitialSelectedGateways(response.body.list));
                 setLoading(false);
             })
-            .catch((/* error */) => {
-                // console.error(error);
+            .catch(() => {
                 APIMAlert.error(intl.formatMessage({
                     id: 'Fetching.Policies.Error',
                     defaultMessage: 'Error while fetching policies',
@@ -242,8 +240,7 @@ const Listing: React.FC = () => {
             .then((response: any) => {
                 setEnvironments(response.environment);
             })
-            .catch((/* error */) => {
-                // console.error(error);
+            .catch(() => {
                 APIMAlert.error(intl.formatMessage({
                     id: 'Fetching.Policies.Settings',
                     defaultMessage: 'Error while fetching settings',
@@ -382,8 +379,7 @@ const Listing: React.FC = () => {
                     }));
                 }                
             })
-            .catch((/* error */) => {
-                // console.error(error);
+            .catch(() => {
                 APIMAlert.error(intl.formatMessage({
                     id: 'Error.Undeploy.Policy',
                     defaultMessage: 'Error occurred while undeploying the policy',
@@ -440,8 +436,7 @@ const Listing: React.FC = () => {
                     }));
                 }                
             })
-            .catch((/* error */) => {
-                // console.error(error);
+            .catch(() => {
                 APIMAlert.error(intl.formatMessage({
                     id: 'Error.Deploy.Policy',
                     defaultMessage: 'Error occurred while deploying the policy',
@@ -482,8 +477,7 @@ const Listing: React.FC = () => {
                 }));
                 setLoading(false);
             })
-            .catch((/* error */) => {
-                // console.error(error);
+            .catch(() => {
                 APIMAlert.error(intl.formatMessage({
                     id: 'Policy.Delete.Error',
                     defaultMessage: 'Error while deleting the policy',
@@ -942,12 +936,12 @@ const Listing: React.FC = () => {
                                                     size='small'
                                                     variant='outlined'
                                                     label={intl.formatMessage({
-                                                        id: 'Select.Gateways',
-                                                        defaultMessage: 'Select Gateways to Deploy',
+                                                        id: 'Select.Gateways.Label',
+                                                        defaultMessage: 'Select gateways to deploy',
                                                     })}
                                                     placeholder={intl.formatMessage({
-                                                        id: 'Select.Gateways',
-                                                        defaultMessage: 'Select Gateways to Deploy',
+                                                        id: 'Select.Gateways.Placeholder',
+                                                        defaultMessage: 'Select gateways to deploy',
                                                     })}
                                                 />
                                             )}
