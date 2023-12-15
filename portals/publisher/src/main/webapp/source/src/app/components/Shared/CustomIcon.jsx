@@ -427,7 +427,7 @@ export default function CustomIcon(props) {
                 aria-hidden='true'
                 xmlns='http://www.w3.org/2000/svg'
             >
-                <title>File with Documents Icon</title>
+                <title>Global Policies</title>
                 <g id='File-Icon' stroke={strokeColor} strokeWidth='1' fill='none' fillRule='evenodd'>
                     <g
                         id='file-with-documents'
