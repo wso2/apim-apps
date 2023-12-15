@@ -136,7 +136,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     } else {
                         Alert.error(intl.formatMessage({
                             id: 'Cannot.Find.PolicyObj.For.PolicyId',
-                            defaultMessage: 'Cannot find policyObj for policyId: ',
+                            defaultMessage: 'Cannot find policy for Id: ',
                         }) + policyId);
                     }
                 }
@@ -173,7 +173,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     } else {
                         Alert.error(intl.formatMessage({
                             id: 'Cannot.Find.PolicyObj.For.PolicyId',
-                            defaultMessage: 'Cannot find policyObj for policyId: ',
+                            defaultMessage: 'Cannot find policy for Id: ',
                         }) + policyId);
                     }   
                 }
@@ -211,7 +211,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         } else {
                             Alert.error(intl.formatMessage({
                                 id: 'Cannot.Find.PolicyObj.For.PolicyId',
-                                defaultMessage: 'Cannot find policyObj for policyId: ',
+                                defaultMessage: 'Cannot find policy for Id: ',
                             }) + policyId);
                         }
                     }

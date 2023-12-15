@@ -23,13 +23,13 @@
       "value": "Actions"
     }
   ],
-  "Active.Development.Available": [
+  "Active.Deployment.Available": [
     {
       "type": 0,
       "value": "An active deployment is available"
     }
   ],
-  "Active.Developments.Available": [
+  "Active.Deployments.Available": [
     {
       "type": 0,
       "value": "Active deployments are available"
@@ -8664,7 +8664,7 @@
   "Cannot.Find.PolicyObj.For.PolicyId": [
     {
       "type": 0,
-      "value": "Cannot find policyObj for policyId:"
+      "value": "Cannot find policy for Id:"
     }
   ],
   "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": [
@@ -8804,7 +8804,7 @@
   "Confirm.Delete.Verify": [
     {
       "type": 0,
-      "value": "Are you sure you want to delete the policy"
+      "value": "Are you sure you want to delete the policy?"
     }
   ],
   "Confirm.Deploy": [
@@ -8852,7 +8852,7 @@
   "Deploy.Helper": [
     {
       "type": 0,
-      "value": "If a Global Policy is deployed to a Gateway,respective gateway will not be available for deploymnet for ths policy. Please undeploy other global policy first."
+      "value": "If another global policy is already deployed to a gateway, that gateway will not be available for deployment of this policy. Please undeploy the previously deployed global policy first."
     }
   ],
   "Deployed.Gateway.Listing.Table.Header.Description": [
@@ -8870,7 +8870,7 @@
   "Deployed.Gateway.Listing.Table.Not.Available": [
     {
       "type": 0,
-      "value": "No Deployed Gateways"
+      "value": "No deployed gateways"
     }
   ],
   "Endpoint.Suspension.State": [
@@ -9064,13 +9064,13 @@
   "GlobalPolicies.Listing.onboarding.policies.tooltip": [
     {
       "type": 0,
-      "value": "Global Policies provide you the ability to deploy policy mappings to whole gateways and not just one single API. Click below to create your first Global Policy"
+      "value": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy"
     }
   ],
   "GlobalPolicies.Listing.policies.title.add.new.policy": [
     {
       "type": 0,
-      "value": "Add New Global Policy"
+      "value": "Add new global policy"
     }
   ],
   "GlobalPolicies.Listing.policies.title.name": [
@@ -9082,7 +9082,7 @@
   "GlobalPolicies.Listing.policies.title.tooltip": [
     {
       "type": 0,
-      "value": "This will add policies globaly to the gateways.Please navigate to the Policies tab under any desired APIif you want to add API / operation level policies"
+      "value": "This will add policies globally to the gateways. Please navigate to the Policies tab under any desired API if you want to add API / operation level policies"
     }
   ],
   "GlobalPolicies.Listing.table.header.actions.delete": [

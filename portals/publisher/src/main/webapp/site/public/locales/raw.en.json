@@ -11,10 +11,10 @@
   "Actions": {
     "defaultMessage": "Actions"
   },
-  "Active.Development.Available": {
+  "Active.Deployment.Available": {
     "defaultMessage": "An active deployment is available"
   },
-  "Active.Developments.Available": {
+  "Active.Deployments.Available": {
     "defaultMessage": "Active deployments are available"
   },
   "Adding.Policy.Mapping.Error": {
@@ -4141,7 +4141,7 @@
     "defaultMessage": "Cancel"
   },
   "Cannot.Find.PolicyObj.For.PolicyId": {
-    "defaultMessage": "Cannot find policyObj for policyId:"
+    "defaultMessage": "Cannot find policy for Id:"
   },
   "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": {
     "defaultMessage": "Create New Policy"
@@ -4207,7 +4207,7 @@
     "defaultMessage": "Confirm Deletion"
   },
   "Confirm.Delete.Verify": {
-    "defaultMessage": "Are you sure you want to delete the policy"
+    "defaultMessage": "Are you sure you want to delete the policy?"
   },
   "Confirm.Deploy": {
     "defaultMessage": "Confirm Deployment"
@@ -4231,7 +4231,7 @@
     "defaultMessage": "Deploy"
   },
   "Deploy.Helper": {
-    "defaultMessage": "If a Global Policy is deployed to a Gateway,respective gateway will not be available for deploymnet for ths policy. Please undeploy other global policy first."
+    "defaultMessage": "If another global policy is already deployed to a gateway, that gateway will not be available for deployment of this policy. Please undeploy the previously deployed global policy first."
   },
   "Deployed.Gateway.Listing.Table.Header.Description": {
     "defaultMessage": "Description"
@@ -4240,7 +4240,7 @@
     "defaultMessage": "Deployed Gateways"
   },
   "Deployed.Gateway.Listing.Table.Not.Available": {
-    "defaultMessage": "No Deployed Gateways"
+    "defaultMessage": "No deployed gateways"
   },
   "Endpoint.Suspension.State": {
     "defaultMessage": "Endpoint Suspension State"
@@ -4333,16 +4333,16 @@
     "defaultMessage": "Let’s get started!"
   },
   "GlobalPolicies.Listing.onboarding.policies.tooltip": {
-    "defaultMessage": "Global Policies provide you the ability to deploy policy mappings to whole gateways and not just one single API. Click below to create your first Global Policy"
+    "defaultMessage": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy"
   },
   "GlobalPolicies.Listing.policies.title.add.new.policy": {
-    "defaultMessage": "Add New Global Policy"
+    "defaultMessage": "Add new global policy"
   },
   "GlobalPolicies.Listing.policies.title.name": {
     "defaultMessage": "Global Policies"
   },
   "GlobalPolicies.Listing.policies.title.tooltip": {
-    "defaultMessage": "This will add policies globaly to the gateways.Please navigate to the Policies tab under any desired APIif you want to add API / operation level policies"
+    "defaultMessage": "This will add policies globally to the gateways. Please navigate to the Policies tab under any desired API if you want to add API / operation level policies"
   },
   "GlobalPolicies.Listing.table.header.actions.delete": {
     "defaultMessage": "Delete"

@@ -539,7 +539,7 @@ const Listing: React.FC = () => {
                     <DialogContentText>
                         <FormattedMessage
                             id='Confirm.Delete.Verify'
-                            defaultMessage='Are you sure you want to delete the policy '
+                            defaultMessage='Are you sure you want to delete the policy?'
                         />
                         {selectedPolicyName}?
                     </DialogContentText>
@@ -734,7 +734,7 @@ const Listing: React.FC = () => {
                             <p className={classes.noDeployedGateways}>
                                 <FormattedMessage
                                     id='Deployed.Gateway.Listing.Table.Not.Available'
-                                    defaultMessage='No Deployed Gateways'
+                                    defaultMessage='No deployed gateways'
                                 />
                             </p>
                         );
@@ -779,11 +779,11 @@ const Listing: React.FC = () => {
                         if (appliedGatewayList.length > 0){      
                             APIMAlert.error((appliedGatewayList.length === 1) ? 
                                 intl.formatMessage({
-                                    id: 'Active.Development.Available',
+                                    id: 'Active.Deployment.Available',
                                     defaultMessage: 'An active deployment is available',
                                 }) 
                                 : intl.formatMessage({
-                                    id: 'Active.Developments.Available',
+                                    id: 'Active.Deployments.Available',
                                     defaultMessage: 'Active deployments are available',
                                 }));
                         }
@@ -950,9 +950,9 @@ const Listing: React.FC = () => {
                                     <Grid item xs={1}>
                                         <Tooltip title={intl.formatMessage({
                                             id: 'Deploy.Helper',
-                                            defaultMessage: 'If a Global Policy is deployed to a Gateway,' +
-                                            'respective gateway will not be available for deploymnet for ths policy. ' +
-                                            'Please undeploy other global policy first.',
+                                            defaultMessage: 'If another global policy is already deployed ' +
+                                            'to a gateway, that gateway will not be available for deployment of ' +
+                                            'this policy. Please undeploy the previously deployed global policy first.',
                                         })}>
                                             <IconButton size='small' aria-label='deploy-helper-text'>
                                                 <HelpOutlineIcon fontSize='small' />
@@ -999,8 +999,9 @@ const Listing: React.FC = () => {
                 subTitle={
                     <FormattedMessage
                         id='GlobalPolicies.Listing.onboarding.policies.tooltip'
-                        defaultMessage='Global Policies provide you the ability to deploy policy mappings to
-                        whole gateways and not just one single API. Click below to create your first Global Policy'
+                        defaultMessage='Global policies provide you the ability to deploy policy mappings to 
+                        all the APIs deployed in a specific gateway and not just one single 
+                        API. Click below to create your first global policy'
                     />
                 }
             >
@@ -1056,8 +1057,8 @@ const Listing: React.FC = () => {
                         <FormattedMessage
                             id='GlobalPolicies.Listing.policies.title.tooltip'
                             defaultMessage={
-                                'This will add policies globaly to the gateways.' +
-                                'Please navigate to the Policies tab under any desired API' +
+                                'This will add policies globally to the gateways. ' +
+                                'Please navigate to the Policies tab under any desired API ' +
                                 'if you want to add API / operation level policies'
                             }
                         />
@@ -1081,7 +1082,7 @@ const Listing: React.FC = () => {
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
                                 id='GlobalPolicies.Listing.policies.title.add.new.policy'
-                                defaultMessage='Add New Global Policy'
+                                defaultMessage='Add new global policy'
                             />
                         </Button>
                     </Box>  
