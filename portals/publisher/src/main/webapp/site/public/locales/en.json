@@ -9109,6 +9109,18 @@
       "value": "Error 403 : Forbidden"
     }
   ],
+  "Polcies.TextField.Description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Polcies.TextField.Name": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "Policy.Delete.Error": [
     {
       "type": 0,
@@ -9501,10 +9513,16 @@
       "value": "List of APIs"
     }
   ],
-  "Select.Gateways": [
+  "Select.Gateways.Label": [
     {
       "type": 0,
-      "value": "Select Gateways to Deploy"
+      "value": "Select gateways to deploy"
+    }
+  ],
+  "Select.Gateways.Placeholder": [
+    {
+      "type": 0,
+      "value": "Select gateways to deploy"
     }
   ],
   "ServiceCatalog.CreateApi.api.context.label": [
@@ -10102,13 +10120,13 @@
   "globalPolicies.create.create.heading": [
     {
       "type": 0,
-      "value": "Create A New Global Policy"
+      "value": "Create a new global policy"
     }
   ],
   "globalPolicies.create.edit.heading": [
     {
       "type": 0,
-      "value": "Edit Global Policy"
+      "value": "Edit global policy"
     }
   ],
   "globalPolicies.heading": [
