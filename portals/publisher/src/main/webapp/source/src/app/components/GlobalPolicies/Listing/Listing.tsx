@@ -551,7 +551,11 @@ const Listing: React.FC = () => {
                             defaultMessage='Cancel'
                         />
                     </Button>
-                    <Button onClick={() => deletePolicy(selectedPolicyId)} color='primary'>
+                    <Button
+                        onClick={() => deletePolicy(selectedPolicyId)}
+                        color='primary'
+                        data-testid='policy-mapping-delete-confirmation-button'
+                    >
                         <FormattedMessage
                             id='Delete'
                             defaultMessage='Delete'
@@ -595,7 +599,11 @@ const Listing: React.FC = () => {
                             defaultMessage='Cancel'
                         />
                     </Button>
-                    <Button onClick={() => deploy(policyID, deployingGatewayList)} color='primary'>
+                    <Button
+                        onClick={() => deploy(policyID, deployingGatewayList)}
+                        color='primary'
+                        data-testid='deploy-to-gateway-button'
+                    >
                         <FormattedMessage
                             id='Deploy'
                             defaultMessage='Deploy'
@@ -639,7 +647,11 @@ const Listing: React.FC = () => {
                             defaultMessage='Cancel'
                         />
                     </Button>
-                    <Button onClick={() => undeploy(policyID, gateway)} color='primary'>
+                    <Button
+                        onClick={() => undeploy(policyID, gateway)}
+                        color='primary'
+                        data-testid='undeploy-from-gateway-button'
+                    >
                         <FormattedMessage
                             id='Undeploy'
                             defaultMessage='Undeploy'
@@ -724,6 +736,7 @@ const Listing: React.FC = () => {
                                                 deleteIcon={
                                                     !isRestricted(['apim:gateway_policy_manage']) 
                                                         ? <CloudOffRoundedIcon/> : <></>}
+                                                id={`gateway-chip-${gateway}`}
                                             />
                                         </>))}
                                 {undeployDialog(policyId, deployingGateway)}
@@ -799,6 +812,7 @@ const Listing: React.FC = () => {
                                 <Button
                                     aria-label='Edit'
                                     component={Link}
+                                    data-testid = 'policy-mapping-edit-button'
                                     to={getEditUrl(policyId)}
                                 >
                                     <Icon className={classes.icon}>
@@ -813,6 +827,7 @@ const Listing: React.FC = () => {
                                     <Button
                                         aria-label='Delete'
                                         onClick={handleDeleteClick}
+                                        data-testid = 'policy-mapping-delete-button'
                                     >
                                         <Icon className={classes.icon}>
                                             delete_forever
@@ -967,6 +982,7 @@ const Listing: React.FC = () => {
                                     variant='contained'
                                     color='primary'
                                     fullWidth
+                                    data-testid= 'policy-mapping-deploy-button'
                                     disabled={getSelectedGatewayLabelsById(policy.id).length < 1}
                                     onClick={() => setIsDeployDialogOpen(true)}
                                 >
