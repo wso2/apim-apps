@@ -85,7 +85,8 @@
         }
       }
     },
-    "maxSubscriptionLimit": 2000
+    "maxSubscriptionLimit": 2000,
+    "maxScopeCount": 2000
   }
 }
 
