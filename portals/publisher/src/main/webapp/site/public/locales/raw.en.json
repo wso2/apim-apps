@@ -278,6 +278,9 @@
   "Apis.Create.streaming.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Protocol"
   },
+  "Apis.Details.\n                                                                                            Environments.Environments.\n                                                                                            pending.chip": {
+    "defaultMessage": "Pending"
+  },
   "Apis.Details.\n                                                                                Environments.deploy.vhost": {
     "defaultMessage": "VHost"
   },
@@ -702,6 +705,9 @@
   "Apis.Details.Configurartion.components.QueryAnalysis.edit": {
     "defaultMessage": "Edit Complexity Values"
   },
+  "Apis.Details.Configuration.ApiKeyHeader.helper.text": {
+    "defaultMessage": "ApiKey header name cannot contain spaces or special characters"
+  },
   "Apis.Details.Configuration.AuthHeader.helper.text": {
     "defaultMessage": "Authorization header name cannot contain spaces or special characters"
   },
@@ -713,6 +719,9 @@
   },
   "Apis.Details.Configuration.Components.MaxBackendTps.maximum.backend.throughput": {
     "defaultMessage": "Backend Throughput"
+  },
+  "Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip": {
+    "defaultMessage": "The header name that is used to send the api key information. \"ApiKey\" is the default header."
   },
   "Apis.Details.Configuration.Configuration.AuthHeader.tooltip": {
     "defaultMessage": "The header name that is used to send the authorization information. \"Authorization\" is the default header."
@@ -728,6 +737,9 @@
   },
   "Apis.Details.Configuration.Configuration.Endpoints.edit.api.endpoints": {
     "defaultMessage": "Edit API Endpoints"
+  },
+  "Apis.Details.Configuration.Configuration.apiKey.header.label": {
+    "defaultMessage": "ApiKey Header"
   },
   "Apis.Details.Configuration.Configuration.auth.header.label": {
     "defaultMessage": "Authorization Header"
@@ -1989,16 +2001,10 @@
   "Apis.Details.Environments.\n                                                        Environments.gateway.deployed.revision": {
     "defaultMessage": "Deployed Revision"
   },
-  "Apis.Details.Environments.Environments\n                                                                    .select.table": {
-    "defaultMessage": "Select Revision"
-  },
   "Apis.Details.Environments.Environments\n                                                                    .select.vhost": {
     "defaultMessage": "Select Access URL"
   },
   "Apis.Details.Environments.Environments\n                                                                .deploy.button": {
-    "defaultMessage": "Deploy"
-  },
-  "Apis.Details.Environments.Environments.\n                                                                deploy.button": {
     "defaultMessage": "Deploy"
   },
   "Apis.Details.Environments.Environments.APIGateways": {
@@ -2022,11 +2028,17 @@
   "Apis.Details.Environments.Environments.api.gateways.name": {
     "defaultMessage": "Name"
   },
+  "Apis.Details.Environments.Environments.cancel.btn": {
+    "defaultMessage": "Cancel"
+  },
   "Apis.Details.Environments.Environments.create.cancel": {
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Environments.Environments.create.create": {
     "defaultMessage": "Create"
+  },
+  "Apis.Details.Environments.Environments.deploy.button": {
+    "defaultMessage": "Deploy"
   },
   "Apis.Details.Environments.Environments.deploy.cancel": {
     "defaultMessage": "Cancel"
@@ -2052,14 +2064,20 @@
   "Apis.Details.Environments.Environments.display.in.devportal": {
     "defaultMessage": "Display in Developer Portal"
   },
-  "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": {
-    "defaultMessage": "Deployed Revision"
+  "Apis.Details.Environments.Environments.gateway\n                                                    .deployment.current.revision": {
+    "defaultMessage": "Current Revision"
   },
   "Apis.Details.Environments.Environments.gateway.accessUrl": {
     "defaultMessage": "Gateway Access URL"
   },
   "Apis.Details.Environments.Environments.gateway.action": {
     "defaultMessage": "Action"
+  },
+  "Apis.Details.Environments.Environments.gateway.deployment.next.revision": {
+    "defaultMessage": "Next Revision"
+  },
+  "Apis.Details.Environments.Environments.pending.chip": {
+    "defaultMessage": "Pending"
   },
   "Apis.Details.Environments.Environments.revision\n                                                            .description.deploy": {
     "defaultMessage": "Add a description to the revision"
@@ -2121,8 +2139,14 @@
   "Apis.Details.Environments.Environments.select.rev.warning": {
     "defaultMessage": "Please delete a revision as the number of revisions have reached a maximum of {count}"
   },
+  "Apis.Details.Environments.Environments.select.table": {
+    "defaultMessage": "Select Revision"
+  },
   "Apis.Details.Environments.Environments.solace.platform.environments.heading": {
     "defaultMessage": "Solace Platform Environments"
+  },
+  "Apis.Details.Environments.Environments.status.not.deployed": {
+    "defaultMessage": "No Revision Deployed"
   },
   "Apis.Details.Environments.Environments.undeploy.btn": {
     "defaultMessage": "Undeploy"
@@ -2183,6 +2207,9 @@
   },
   "Apis.Details.LifeCycle.CheckboxLabels.endpoints.provided": {
     "defaultMessage": "Endpoint provided"
+  },
+  "Apis.Details.LifeCycle.CheckboxLabels.mandatory.properties.provided": {
+    "defaultMessage": "Mandatory Properties provided"
   },
   "Apis.Details.LifeCycle.LifeCycle.change.not.allowed": {
     "defaultMessage": "* You are not authorized to change the life cycle state of the API due to insufficient permissions"
@@ -2907,10 +2934,16 @@
   "Apis.Details.Properties.\n                                                            Properties.editable.show.in.devporal": {
     "defaultMessage": "Show in devportal"
   },
+  "Apis.Details.Properties.\n                                                    Properties.editable.show.in.devporal": {
+    "defaultMessage": "Show in devportal"
+  },
+  "Apis.Details.Properties.Properties.\n                                                                            show.add.property.custom.property.name": {
+    "defaultMessage": "{message}"
+  },
   "Apis.Details.Properties.Properties.\n                                                                    show.add.property.invalid.error": {
     "defaultMessage": "Invalid property name"
   },
-  "Apis.Details.Properties.Properties.\n                                                                show.add.property.property.name": {
+  "Apis.Details.Properties.Properties.\n                                                            show.add.property.property.name": {
     "defaultMessage": "Name"
   },
   "Apis.Details.Properties.Properties.\n                                property.name.exists": {
@@ -3771,6 +3804,15 @@
   "Apis.Listing.ApiThumb.context": {
     "defaultMessage": "Context"
   },
+  "Apis.Listing.ApiThumb.owners": {
+    "defaultMessage": "Owners"
+  },
+  "Apis.Listing.ApiThumb.owners.business": {
+    "defaultMessage": "Business"
+  },
+  "Apis.Listing.ApiThumb.owners.technical": {
+    "defaultMessage": "Technical"
+  },
   "Apis.Listing.ApiThumb.version": {
     "defaultMessage": "Version"
   },
@@ -3869,6 +3911,9 @@
   },
   "Apis.Listing.SampleAPI.popup.deploy.inprogress": {
     "defaultMessage": "Deploying sample API ..."
+  },
+  "Apis.Listing.SampleAPI.popup.deploy.pending": {
+    "defaultMessage": "API revision deployment request sent"
   },
   "Apis.Listing.SampleAPI.popup.publish.complete": {
     "defaultMessage": "API published successfully!"

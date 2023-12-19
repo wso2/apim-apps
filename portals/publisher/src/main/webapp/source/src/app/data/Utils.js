@@ -624,6 +624,22 @@ class Utils {
         });
         return allEnvDeployments;
     }
+
+    /**
+     * Simply split the token by dots `.` and parse it as a JSON object
+     * @param {Array} environments - Array of environment objects
+     * @param {Array} allEnvRevisions - Array of revision objects
+     * @returns {Array} - Array of environment objects with corresponding revision objects
+     */
+    static getAllEnvironmentRevisions(environments, allEnvRevisions) {
+        return environments.map(environment => ({
+            ...environment,
+            revisions: allEnvRevisions
+                .filter(revision =>
+                    revision.deploymentInfo.some(info => info.name === environment.name)
+                )
+        }));
+    }
 }
 
 Utils.CONST = {

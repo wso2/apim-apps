@@ -128,11 +128,12 @@ const TryOutConsole = () => {
             api.getDeployedRevisions(api.id).then((deploymentsResponse) => {
                 tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, completed: true } });
                 const currentDeployments = deploymentsResponse.body;
-                const currentDeploymentsWithDisplayName = currentDeployments.map((deploy) => {
-                    const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
-                    const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
-                    return { ...deploy, displayName };
-                });
+                const currentDeploymentsWithDisplayName = currentDeployments
+                    .filter(deploy => deploy.status !== 'CREATED').map((deploy) => {
+                        const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
+                        const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
+                        return { ...deploy, displayName };
+                    });
                 setDeployments(currentDeploymentsWithDisplayName);
                 if (currentDeploymentsWithDisplayName && currentDeploymentsWithDisplayName.length > 0) {
                     const [initialDeploymentSelection] = currentDeploymentsWithDisplayName;

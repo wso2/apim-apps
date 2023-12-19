@@ -199,7 +199,24 @@ export default function CustomizedStepper() {
 
     useEffect(() => {
         api.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id).then((result) => {
-            setDeploymentsAvailable(result.body.count > 0);
+            if (api.apiType === API.CONSTS.APIProduct){
+                setDeploymentsAvailable(result.body.count > 0);
+            } else {
+                let hasApprovedDeployment = false;
+                result.body.list.forEach((revision) => {
+                    if (revision.deploymentInfo) {
+                        for (const deployment of revision.deploymentInfo) {
+                            if (deployment.status === 'APPROVED') {
+                                hasApprovedDeployment = true;
+                                break;
+                            }
+                        }
+                    }
+                });
+                setDeploymentsAvailable(hasApprovedDeployment);
+
+            }
+
         });
     }, []);
 
