@@ -217,7 +217,7 @@ const APIDetailsTopMenu = (props) => {
                     >
                         <Typography id='itest-api-name-version' variant='h4' component='h1' className={classes.apiName}>
                             {api.name}
-                            {' : '}
+                            {' :'}
                             {api.version}
                         </Typography>
                         <Typography variant='caption' gutterBottom align='left'>
