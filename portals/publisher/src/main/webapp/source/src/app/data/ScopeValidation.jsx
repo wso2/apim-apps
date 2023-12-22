@@ -31,6 +31,7 @@ const resourcePath = {
     API_GW_CONFIG: '/apis/{apiId}/gateway-config',
     API_THUMBNAIL: '/apis/{apiId}/thumbnail',
     API_COPY: '/apis/copy-api',
+    API_PRODUCT_COPY: '/api-products/copy-api-products',
     API_LC_HISTORY: '/apis/{apiId}/lifecycle-history',
     API_CHANGE_LC: '/apis/change-lifecycle',
     API_LC: '/apis/{apiId}/lifecycle',

@@ -104,7 +104,7 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": [
     {
       "type": 0,
-      "value": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
+      "value": "Create an API Product by providing a Name, a Context, a Version, Resources, and Business Plans (optional)."
     }
   ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": [
@@ -220,6 +220,12 @@
     }
   ],
   "Apis.Create.Components.DefaultAPIForm.version": [
+    {
+      "type": 0,
+      "value": "Version"
+    }
+  ],
+  "Apis.Create.Components.DefaultAPIForm.api.product.version": [
     {
       "type": 0,
       "value": "Version"
@@ -1357,6 +1363,18 @@
     {
       "type": 0,
       "value": "Selected Rate Limiting Policy will be applied to all the requests of this API."
+    }
+  ],
+  "Apis.Details.APIProduct.NewVersion.NewVersion.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while creating a new version!. Error:"
+    }
+  ],
+  "Apis.Details.APIProduct.NewVersion.NewVersion.success": [
+    {
+      "type": 0,
+      "value": "Successfully created new version"
     }
   ],
   "Apis.Details.AccessControl.roles.help": [

@@ -51,7 +51,7 @@
     "defaultMessage": "Add Resources"
   },
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": {
-    "defaultMessage": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
+    "defaultMessage": "Create an API Product by providing a Name, a Context, a Version, Resources, and Business Plans (optional)."
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": {
     "defaultMessage": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
@@ -97,6 +97,9 @@
   },
   "Apis.Create.Components.DefaultAPIForm.api.product.context": {
     "defaultMessage": "Context"
+  },
+  "Apis.Create.Components.DefaultAPIForm.api.product.version": {
+    "defaultMessage": "Version"
   },
   "Apis.Create.Components.DefaultAPIForm.name": {
     "defaultMessage": "Name"
@@ -581,6 +584,12 @@
   },
   "Apis.Details.APILevelRateLimitingPolicies.components.Configuration.tooltip": {
     "defaultMessage": "Selected Rate Limiting Policy will be applied to all the requests of this API."
+  },
+  "Apis.Details.APIProduct.NewVersion.NewVersion.error": {
+    "defaultMessage": "Something went wrong while creating a new version!. Error:"
+  },
+  "Apis.Details.APIProduct.NewVersion.NewVersion.success": {
+    "defaultMessage": "Successfully created new version"
   },
   "Apis.Details.AccessControl.roles.help": {
     "defaultMessage": "Enter valid role and press enter"

@@ -972,6 +972,10 @@ class Details extends Component {
                                         component={() => <Properties api={api} />}
                                     />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
+                                    <Route
+                                        path={Details.subPaths.NEW_VERSION_PRODUCT}
+                                        component={() => <CreateNewVersion />} />
+
                                     <Route path={Details.subPaths.SUBSCRIPTIONS} component={() => <Subscriptions />} />
                                     <Route
                                         path={Details.subPaths.MONETIZATION}
@@ -1047,6 +1051,7 @@ Details.subPaths = {
     PROPERTIES: '/apis/:api_uuid/properties',
     PROPERTIES_PRODUCT: '/api-products/:apiprod_uuid/properties',
     NEW_VERSION: '/apis/:api_uuid/new_version',
+    NEW_VERSION_PRODUCT: '/api-products/:api_uuid/new_version',
     MONETIZATION: '/apis/:api_uuid/monetization',
     MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
