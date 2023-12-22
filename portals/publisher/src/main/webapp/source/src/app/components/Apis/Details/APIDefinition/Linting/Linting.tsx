@@ -53,6 +53,7 @@ const spectralFunctions: { [key: string]: any} = {
     "undefined": spectralFunc.undefined,
     "unreferencedReusableObject": spectralFunc.unreferencedReusableObject,
     "xor": spectralFunc.xor,
+    "schema": spectralFunc.schema,
 }
 
 export const spectralSeverityMap: { [key: number]: JSX.Element } = {
