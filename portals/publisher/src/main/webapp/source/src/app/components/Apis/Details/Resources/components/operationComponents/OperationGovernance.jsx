@@ -19,9 +19,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
@@ -32,12 +35,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import LaunchIcon from '@material-ui/icons/Launch';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import { Link } from 'react-router-dom';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { getOperationScopes } from '../../operationUtils';
+
+const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
+const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
 /**
  *
@@ -235,106 +240,66 @@ export default function OperationGovernance(props) {
             </Grid>
             <Grid item md={6} />
             <Grid item md={1} />
-            <Grid item md={5}>
-                { operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
-                    <TextField
-                        select
-                        SelectProps={{
-                            multiple: true,
-                            renderValue: (selected) => (Array.isArray(selected) ? selected.join(', ') : selected),
+            <Grid item md={7}>
+                {operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
+                    <Autocomplete
+                        multiple
+                        limitTags={5}
+                        id='checkboxes-tags-demo'
+                        options={[...filteredApiScopes, ...sharedScopes]}
+                        groupBy={(option) => option.shared ? 'Shared Scopes' : 'API Scopes'}
+                        disableCloseOnSelect
+                        value={operationScopes.map((scope) => ({ scope: { name: scope } }))}
+                        getOptionLabel={(option) => option.scope.name}
+                        getOptionSelected={(option, value) => option.scope.name === value.scope.name}
+                        onChange={(event, newValue) => {
+                            const selectedScopes = newValue.map((val) => val.scope.name);
+                            operationsDispatcher({
+                                action: 'scopes',
+                                data: { target, verb, value: selectedScopes ? [selectedScopes] : [] },
+                            });
                         }}
-                        disabled={disableUpdate}
-                        fullWidth
-                        label={api.scopes.length !== 0 || sharedScopes ? intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.operationComponents.'
-                            + 'OperationGovernance.operation.scope.label.default',
-                            defaultMessage: 'Operation scope',
-                        }) : intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.operationComponents.'
-                            + 'OperationGovernance.operation.scope.label.notAvailable',
-                            defaultMessage: 'No scope available',
-                        })}
-                        value={operationScopes}
-                        onChange={({ target: { value } }) => operationsDispatcher({
-                            action: 'scopes',
-                            data: { target, verb, value: value ? [value] : [] },
-                        })}
-                        helperText={(
-                            <FormattedMessage
-                                id={'Apis.Details.Resources.components.operationComponents.'
-                                + 'OperationGovernance.operation.scope.helperText'}
-                                defaultMessage='Select a scope to control permissions to this operation'
-                            />
+                        renderOption={(option, { selected }) => (
+                            <>
+                                <Checkbox
+                                    icon={icon}
+                                    checkedIcon={checkedIcon}
+                                    style={{ marginRight: 8 }}
+                                    checked={selected}
+                                />
+                                {option.scope.name}
+                            </>
                         )}
-                        margin='dense'
-                        variant='outlined'
-                        id={verb + target + '-operation-scope-select'}
-                    >
-                        <ListSubheader>
-                            <FormattedMessage
-                                id={'Apis.Details.Resources.components.operationComponents.'
-                                + 'OperationGovernance.operation.scope.select.local'}
-                                defaultMessage='API Scopes'
-                            />
-                        </ListSubheader>
-                        {filteredApiScopes.length !== 0 ? filteredApiScopes.map((apiScope) => (
-                            <MenuItem
-                                id={verb + target + '-operation-scope-' + apiScope.scope.name}
-                                key={apiScope.scope.name}
-                                value={apiScope.scope.name}
-                                dense
-                            >
-                                <Checkbox checked={operationScopes.includes(apiScope.scope.name)} color='primary' />
-                                {apiScope.scope.name}
-                            </MenuItem>
-                        )) : (
-                            <MenuItem
-                                value=''
-                                disabled
-                            >
-                                <em>
+                        style={{ width: 500 }}
+                        renderInput={(params) => (
+                            <TextField {...params}
+                                disabled={disableUpdate}
+                                fullWidth
+                                label={api.scopes.length !== 0 || sharedScopes ? intl.formatMessage({
+                                    id: 'Apis.Details.Resources.components.operationComponents.'
+                                        + 'OperationGovernance.operation.scope.label.default',
+                                    defaultMessage: 'Operation scope',
+                                }) : intl.formatMessage({
+                                    id: 'Apis.Details.Resources.components.operationComponents.'
+                                        + 'OperationGovernance.operation.scope.label.notAvailable',
+                                    defaultMessage: 'No scope available',
+                                })}
+                                placeholder='Search scopes'
+                                helperText={(
                                     <FormattedMessage
                                         id={'Apis.Details.Resources.components.operationComponents.'
-                                    + 'OperationGovernance.operation.no.api.scope.available'}
-                                        defaultMessage='No API scopes available'
+                                            + 'OperationGovernance.operation.scope.helperText'}
+                                        defaultMessage='Select a scope to control permissions to this operation'
                                     />
-                                </em>
-                            </MenuItem>
+                                )}
+                                margin='dense'
+                                variant='outlined'
+                                id={verb + target + '-operation-scope-select'} />
                         )}
-                        <ListSubheader>
-                            <FormattedMessage
-                                id={'Apis.Details.Resources.components.operationComponents.'
-                                + 'OperationGovernance.operation.scope.select.shared'}
-                                defaultMessage='Shared Scopes'
-                            />
-                        </ListSubheader>
-                        {sharedScopes && sharedScopes.length !== 0 ? sharedScopes.map((sharedScope) => (
-                            <MenuItem
-                                key={sharedScope.scope.name}
-                                value={sharedScope.scope.name}
-                                dense
-                            >
-                                <Checkbox checked={operationScopes.includes(sharedScope.scope.name)} color='primary' />
-                                {sharedScope.scope.name}
-                            </MenuItem>
-                        )) : (
-                            <MenuItem
-                                value=''
-                                disabled
-                            >
-                                <em>
-                                    <FormattedMessage
-                                        id={'Apis.Details.Resources.components.operationComponents.'
-                                    + 'OperationGovernance.operation.no.sharedpi.scope.available'}
-                                        defaultMessage='No shared scopes available'
-                                    />
-                                </em>
-                            </MenuItem>
-                        )}
-                    </TextField>
-                ) : null }
+                    />
+                ) : null}
             </Grid>
-            <Grid item md={5} style={{ marginTop: '14px' }}>
+            <Grid item md={3} style={{ marginTop: '14px' }}>
                 { operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? !disableUpdate && (
                     <Link to={`/apis/${api.id}/scopes/create`} target='_blank'>
                         <Typography style={{ marginLeft: '10px' }} color='primary' display='inline' variant='caption'>
