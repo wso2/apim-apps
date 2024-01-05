@@ -248,6 +248,7 @@ export default function OperationGovernance(props) {
                         id='checkboxes-tags-demo'
                         options={[...filteredApiScopes, ...sharedScopes]}
                         groupBy={(option) => option.shared ? 'Shared Scopes' : 'API Scopes'}
+                        noOptionsText='No scopes available'
                         disableCloseOnSelect
                         value={operationScopes.map((scope) => ({ scope: { name: scope } }))}
                         getOptionLabel={(option) => option.scope.name}
