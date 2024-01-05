@@ -96,6 +96,16 @@ function reducer(state, { field, value }) {
             };
         case 'editDetails':
             return value;
+        case 'rateLimitCount':
+            return {
+                ...state,
+                burstLimit: { ...state.burstLimit, [field]: value },
+            };
+        case 'rateLimitTimeUnit':
+            return {
+                ...state,
+                burstLimit: { ...state.burstLimit, [field]: value },
+            };
         default:
             return state;
     }
@@ -123,12 +133,19 @@ function AddEdit(props) {
             dataAmount: '',
             dataUnit: 'KB',
         },
+        burstLimit: {
+            rateLimitCount: '',
+            rateLimitTimeUnit: 'sec',
+        },
     });
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
         policyName, description, defaultLimit: {
             requestCount, timeUnit, unitTime, type, dataAmount, dataUnit,
+        },
+        burstLimit: {
+            rateLimitCount, rateLimitTimeUnit,
         },
     } = state;
     const [validationError, setValidationError] = useState([]);
@@ -146,6 +163,10 @@ function AddEdit(props) {
                 type: 'REQUESTCOUNTLIMIT',
                 dataAmount: '',
                 dataUnit: 'KB',
+            },
+            burstLimit: {
+                rateLimitCount: '',
+                rateLimitTimeUnit: 'sec',
             },
         });
     }, []);
@@ -256,6 +277,10 @@ function AddEdit(props) {
                         unitTime: state.defaultLimit.unitTime,
                     },
                 },
+                burstLimit: {
+                    rateLimitCount: state.burstLimit.rateLimitCount,
+                    rateLimitTimeUnit: state.burstLimit.rateLimitTimeUnit,
+                },
             };
         } else {
             applicationThrottlingPolicy = {
@@ -269,6 +294,10 @@ function AddEdit(props) {
                         timeUnit: state.defaultLimit.timeUnit,
                         unitTime: state.defaultLimit.unitTime,
                     },
+                },
+                burstLimit: {
+                    rateLimitCount: state.burstLimit.rateLimitCount,
+                    rateLimitTimeUnit: state.burstLimit.rateLimitTimeUnit,
                 },
             };
         }
@@ -340,6 +369,11 @@ function AddEdit(props) {
                             dataAmount: '',
                             dataUnit: 'KB',
                         },
+                        burstLimit: {
+                            rateLimitCount: result.body.burstLimit.rateLimitCount,
+                            rateLimitTimeUnit: (result.body.burstLimit.rateLimitCount === 0) ? 'sec'
+                                : result.body.burstLimit.rateLimitTimeUnit,
+                        },
                     };
                 } else {
                     editState = {
@@ -352,6 +386,11 @@ function AddEdit(props) {
                             type: result.body.defaultLimit.type,
                             dataAmount: result.body.defaultLimit.bandwidth.dataAmount,
                             dataUnit: result.body.defaultLimit.bandwidth.dataUnit,
+                        },
+                        burstLimit: {
+                            rateLimitCount: result.body.burstLimit.rateLimitCount,
+                            rateLimitTimeUnit: (result.body.burstLimit.rateLimitCount === 0) ? 'sec'
+                                : result.body.burstLimit.rateLimitTimeUnit,
                         },
                     };
                 }
@@ -560,6 +599,53 @@ function AddEdit(props) {
                     </FormControl>
                 </Grid>
             </FormControl>
+            {/* Burst Control (Rate Limiting) */}
+            <DialogContentText>
+                <Typography variant='h6' className={classes.quotaHeading}>
+                    <FormattedMessage
+                        id='Admin.Throttling.Application.Throttling.Policy.add.burst.limits.details'
+                        defaultMessage='Burst Control (Rate Limiting)'
+                    />
+                </Typography>
+                <Typography color='inherit' variant='caption' component='p'>
+                    <FormattedMessage
+                        id='Admin.Throttling.Application.AddEdit.burst.control.add.description'
+                        defaultMessage='Define Burst Control Limits (optional)'
+                    />
+                </Typography>
+            </DialogContentText>
+            <Grid className={classes.unitTime}>
+                <TextField
+                    margin='dense'
+                    name='rateLimitCount'
+                    value={rateLimitCount}
+                    type='number'
+                    onChange={onChange}
+                    label={(
+                        <FormattedMessage
+                            id='Throttling.Application.AddEdit.form.request.rate'
+                            defaultMessage='Request Rate'
+                        />
+                    )}
+                    fullWidth
+                    helperText={intl.formatMessage({
+                        id: 'Throttling.Application.AddEdit.burst.control.limit',
+                        defaultMessage: 'Number of requests for burst control',
+                    })}
+                    variant='outlined'
+                />
+                <FormControl className={classes.unitTimeSelection}>
+                    <Select
+                        name='rateLimitTimeUnit'
+                        value={rateLimitTimeUnit}
+                        fullWidth
+                        onChange={onChange}
+                    >
+                        <MenuItem value='sec'>Requests/sec</MenuItem>
+                        <MenuItem value='min'>Requests/min</MenuItem>
+                    </Select>
+                </FormControl>
+            </Grid>
         </FormDialogBase>
     );
 }
