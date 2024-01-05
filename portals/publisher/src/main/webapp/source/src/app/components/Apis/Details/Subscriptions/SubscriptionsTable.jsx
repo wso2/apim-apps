@@ -41,6 +41,8 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeValidation';
 import AuthManager from 'AppData/AuthManager';
+import { Autocomplete } from '@material-ui/lab';
+import { TextField } from '@material-ui/core';
 import Invoice from './Invoice';
 
 const styles = (theme) => ({
@@ -695,6 +697,33 @@ class SubscriptionsTable extends Component {
                         return null;
                     },
                     filter: true,
+                    display: true,
+                    filterType: 'custom',
+                    filterOptions: {
+                        logic: (sub, filters) => {
+                            if (filters.length) return !filters.includes(sub);
+                            return false;
+                        },
+                        display: (filterList, onChange, index, column) => {
+                            return (<Autocomplete
+                                id={`autocomplete-filter-${column.name}`}
+                                options={Array.from(new Set(subscriptions.map((sub) => sub.subscriber)))}
+                                value={filterList[index][0] ? filterList[index][0] : null}
+                                onChange={(event, newValue) => {
+                                    const updatedFilterList = [...filterList];
+                                    updatedFilterList[index] = newValue ? [newValue] : [];
+                                    onChange(updatedFilterList[index], index, column);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        margin='dense'
+                                        {...params}
+                                        label={column.name}
+                                    />
+                                )}
+                            />);
+                        },
+                    },
                 },
             },
             {
