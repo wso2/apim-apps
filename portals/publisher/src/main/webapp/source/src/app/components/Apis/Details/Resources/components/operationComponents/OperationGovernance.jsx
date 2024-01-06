@@ -245,7 +245,7 @@ export default function OperationGovernance(props) {
                     <Autocomplete
                         multiple
                         limitTags={5}
-                        id='checkboxes-tags-demo'
+                        id={verb + target + '-operation-scope-autocomplete'}
                         options={[...filteredApiScopes, ...sharedScopes]}
                         groupBy={(option) => option.shared ? 'Shared Scopes' : 'API Scopes'}
                         noOptionsText='No scopes available'
@@ -263,6 +263,7 @@ export default function OperationGovernance(props) {
                         renderOption={(option, { selected }) => (
                             <>
                                 <Checkbox
+                                    id={verb + target + '-operation-scope-' + option.scope.name}
                                     icon={icon}
                                     checkedIcon={checkedIcon}
                                     style={{ marginRight: 8 }}
