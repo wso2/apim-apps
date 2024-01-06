@@ -736,6 +736,34 @@ class SubscriptionsTable extends Component {
                 ),
                 options: {
                     sort: false,
+                    filter: true,
+                    display: true,
+                    filterType: 'custom',
+                    filterOptions: {
+                        logic: (app, filters) => {
+                            if (filters.length) return !filters.includes(app);
+                            return false;
+                        },
+                        display: (filterList, onChange, index, column) => {
+                            return (<Autocomplete
+                                id={`autocomplete-filter-${column.name}`}
+                                options={Array.from(new Set(subscriptions.map((sub) => sub.name)))}
+                                value={filterList[index][0] ? filterList[index][0] : null}
+                                onChange={(event, newValue) => {
+                                    const updatedFilterList = [...filterList];
+                                    updatedFilterList[index] = newValue ? [newValue] : [];
+                                    onChange(updatedFilterList[index], index, column);
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        margin='dense'
+                                        {...params}
+                                        label='Application'
+                                    />
+                                )}
+                            />);
+                        },
+                    },
                 },
             },
             {
