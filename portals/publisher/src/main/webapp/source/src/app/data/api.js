@@ -3091,6 +3091,111 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get all global policies
+     * @param {number} limit Limit of the global policy list which needs to be retrieved
+     * @param {number} offset Offset of the global policy list which needs to be retrieved
+     * @param {String} query Search attribute by using an "gatewayLabel:" modifier
+     * @returns {Promise} Promise containing global policies list
+     */
+    static getAllGatewayPolicies(limit = null, offset = 0, query = null) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].getAllGatewayPolicies(
+                { limit, offset, query },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a new global policy
+     * @param {Object} body policy schema which holds the newly added data
+     * @returns {Promise} Promise containing the added global policy
+     */
+    static addGatewayPoliciesToFlows(body) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        return apiClient.then(client => {
+            return client.apis['Gateway Policies'].addGatewayPoliciesToFlows(
+                {},
+                requestBody,
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a global policy
+     * @param {String} gatewayPolicyMappingId UUID of the global policy to delete
+     * @returns {Promise} Response
+     */
+    static deleteGatewayPolicyByPolicyId(gatewayPolicyMappingId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].deleteGatewayPolicyByPolicyId(
+                {gatewayPolicyMappingId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the global policy by ID
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @returns {Promise} Response containing the information of the requested global policy
+     */
+    static getGatewayPolicyMappingContentByPolicyMappingId(gatewayPolicyMappingId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].getGatewayPolicyMappingContentByPolicyMappingId(
+                {gatewayPolicyMappingId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update the global policy by ID
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @param {Object} body policy schema which holds the updated data
+     * @returns {Promise} Response containing the information of the requested global policy
+     */
+    static updateGatewayPoliciesToFlows(gatewayPolicyMappingId, body) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].updateGatewayPoliciesToFlows(
+                {gatewayPolicyMappingId},
+                requestBody,
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Deploy the global policy for an gateway environment
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @param {Object} body policy schema which holds the deployed and undeployed gateyway environments
+     * @returns {Promise} Response
+     */
+    static engageGlobalPolicy(gatewayPolicyMappingId, body) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].engageGlobalPolicy(
+                {gatewayPolicyMappingId},
+                requestBody,
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 API.CONSTS = {

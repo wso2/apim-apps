@@ -22,7 +22,7 @@ import List from '@material-ui/core/List';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { useTheme } from '@material-ui/styles';
 import { FormattedMessage } from 'react-intl';
-import AuthManager from 'AppData/AuthManager';
+import AuthManager, { isRestricted } from 'AppData/AuthManager';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 
@@ -118,6 +118,19 @@ function GlobalNavLinks(props) {
                         defaultMessage='Policies'
                     />
                 </GlobalNavLink>
+                {(!isRestricted(['apim:gateway_policy_manage', 'apim:gateway_policy_view']))
+                    && (
+                        <GlobalNavLink
+                            id='global-policies'
+                            to='/global-policies'
+                            type='global-policies'
+                            title='Global Policies'
+                            active={selected === 'global-policies'}
+                        >
+                            <FormattedMessage id='Base.Header.navbar.GlobalNavBar.global.policies' 
+                                defaultMessage='Global Policies'/>
+                        </GlobalNavLink>
+                    )}
                 {analyticsMenuEnabled && (
                     <>
                         <Divider />

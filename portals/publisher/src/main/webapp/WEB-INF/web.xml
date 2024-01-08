@@ -126,6 +126,7 @@
         <url-pattern>/scopes/*</url-pattern>
         <url-pattern>/settings/*</url-pattern>
         <url-pattern>/policies/*</url-pattern>
+        <url-pattern>/global-policies/*</url-pattern>
         <url-pattern>/api-products/*</url-pattern>
         <url-pattern>/service-catalog/*</url-pattern>
         <url-pattern>/login/*</url-pattern>

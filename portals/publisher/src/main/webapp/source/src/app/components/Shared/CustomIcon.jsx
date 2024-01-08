@@ -417,6 +417,32 @@ export default function CustomIcon(props) {
                 </g>
             </svg>
         );
+    } else if (icon === 'global-policies') {
+        return (
+            <svg
+                width={width}
+                height={height}
+                viewBox='0 0 18 18'
+                version='1.1'
+                aria-hidden='true'
+                xmlns='http://www.w3.org/2000/svg'
+            >
+                <title>Global Policies</title>
+                <g id='File-Icon' stroke={strokeColor} strokeWidth='1' fill='none' fillRule='evenodd'>
+                    <g
+                        id='file-with-documents'
+                        transform='translate(-665.000000, -1898.000000)'
+                    >
+                        <g id='Icon/File' transform='translate(665.000000, 1898.000000)'>
+                            <rect x='3' y='2' width='12' height='14' rx='2'/>
+                            <line x1='5' y1='6' x2='13' y2='6' id='Line'/>
+                            <line x1='5' y1='9' x2='13' y2='9' id='Line'/>
+                            <line x1='5' y1='12' x2='11' y2='12' id='Line'/>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+        );
     }
     return null;
 }

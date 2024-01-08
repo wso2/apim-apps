@@ -8,6 +8,18 @@
   "APIs.details.endpoints.certificate.usage.cancel": {
     "defaultMessage": "Cancel"
   },
+  "Actions": {
+    "defaultMessage": "Actions"
+  },
+  "Active.Deployment.Available": {
+    "defaultMessage": "An active deployment is available"
+  },
+  "Active.Deployments.Available": {
+    "defaultMessage": "Active deployments are available"
+  },
+  "Adding.Policy.Mapping.Error": {
+    "defaultMessage": "Error occurred while adding the policy mapping"
+  },
   "Api.category.dropdown.tooltip": {
     "defaultMessage": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
   },
@@ -4146,8 +4158,17 @@
   "Base.Header.navbar.GlobalNavBar.common.policies": {
     "defaultMessage": "Policies"
   },
+  "Base.Header.navbar.GlobalNavBar.global.policies": {
+    "defaultMessage": "Global Policies"
+  },
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
+  },
+  "Cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Cannot.Find.PolicyObj.For.PolicyId": {
+    "defaultMessage": "Cannot find policy for Id:"
   },
   "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": {
     "defaultMessage": "Create New Policy"
@@ -4209,14 +4230,149 @@
   "CommonPolicies.ViewPolicy.policies.title": {
     "defaultMessage": "Policies"
   },
+  "Confirm.Delete": {
+    "defaultMessage": "Confirm Deletion"
+  },
+  "Confirm.Delete.Verify": {
+    "defaultMessage": "Are you sure you want to delete the policy?"
+  },
+  "Confirm.Deploy": {
+    "defaultMessage": "Confirm Deployment"
+  },
+  "Confirm.Deploy.Verify": {
+    "defaultMessage": "Are you sure you want to depoly the policy in the selected gateways?"
+  },
+  "Confirm.UnDeploy": {
+    "defaultMessage": "Confirm Undeployment"
+  },
+  "Confirm.Undeploy.Verify": {
+    "defaultMessage": "Are you sure you want to undepoly the policy?"
+  },
   "Connection.Timeout": {
     "defaultMessage": "Connection Timeout"
+  },
+  "Delete": {
+    "defaultMessage": "Delete"
+  },
+  "Deploy": {
+    "defaultMessage": "Deploy"
+  },
+  "Deploy.Helper": {
+    "defaultMessage": "If another global policy is already deployed to a gateway, that gateway will not be available for deployment of this policy. Please undeploy the previously deployed global policy first."
+  },
+  "Deployed.Gateway.Listing.Table.Header.Description": {
+    "defaultMessage": "Description"
+  },
+  "Deployed.Gateway.Listing.Table.Header.Name": {
+    "defaultMessage": "Deployed Gateways"
+  },
+  "Deployed.Gateway.Listing.Table.Not.Available": {
+    "defaultMessage": "No deployed gateways"
   },
   "Endpoint.Suspension.State": {
     "defaultMessage": "Endpoint Suspension State"
   },
+  "Error.Deploy.Policy": {
+    "defaultMessage": "Error occurred while deploying the policy"
+  },
+  "Error.Retrieve.Policy": {
+    "defaultMessage": "Error occurred while retrieving the policy"
+  },
+  "Error.Retrieve.Policy.List": {
+    "defaultMessage": "Error occurred while retrieving the policy list"
+  },
+  "Error.Undeploy.Policy": {
+    "defaultMessage": "Error occurred while undeploying the policy"
+  },
+  "Error.Validating.Regex": {
+    "defaultMessage": "Error while validating the regex"
+  },
   "Error.while.validating.the.imported.graphQLSchema": {
     "defaultMessage": "Error while validating the imported schema"
+  },
+  "Fault.Details.Policies.PolicyList.Title": {
+    "defaultMessage": "Fault"
+  },
+  "Fetching.Policies.Error": {
+    "defaultMessage": "Error while fetching policies"
+  },
+  "Fetching.Policies.Settings": {
+    "defaultMessage": "Error while fetching settings"
+  },
+  "Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Global.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.title": {
+    "defaultMessage": "Description"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": {
+    "defaultMessage": "Oops! Looks like this policy does not have a description"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.provided": {
+    "defaultMessage": "{description}"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.reset": {
+    "defaultMessage": "Reset"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.save": {
+    "defaultMessage": "Save"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.saving": {
+    "defaultMessage": "Saving"
+  },
+  "Global.Details.Policies.DraggablePolicyCard.policy.view": {
+    "defaultMessage": "View"
+  },
+  "Global.Details.Policies.PolicyConfigurationEditDrawer.title": {
+    "defaultMessage": "Configure {policy}"
+  },
+  "Global.Details.Policies.PolicyConfiguringDrawer.title": {
+    "defaultMessage": "Configure {policy}"
+  },
+  "Global.Details.Policies.PolicyList.title": {
+    "defaultMessage": "Policy List"
+  },
+  "Global.Details.Policies.SaveOperationPolicies.save": {
+    "defaultMessage": "Save"
+  },
+  "Global.Details.Policies.SaveOperationPolicies.update": {
+    "defaultMessage": "Update"
+  },
+  "Global.Policies": {
+    "defaultMessage": "Global Policies"
+  },
+  "Global.Policy.Listing.Table.Header.Name": {
+    "defaultMessage": "Global Policy"
+  },
+  "GlobalPolicies.Listing.Table.Header.Actions.Edit": {
+    "defaultMessage": "Edit"
+  },
+  "GlobalPolicies.Listing.Table.Header.Actions.View": {
+    "defaultMessage": "View"
+  },
+  "GlobalPolicies.Listing.onboarding.create.new": {
+    "defaultMessage": "Let’s get started!"
+  },
+  "GlobalPolicies.Listing.onboarding.policies.tooltip": {
+    "defaultMessage": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy"
+  },
+  "GlobalPolicies.Listing.policies.title.add.new.policy": {
+    "defaultMessage": "Add new global policy"
+  },
+  "GlobalPolicies.Listing.policies.title.name": {
+    "defaultMessage": "Global Policies"
+  },
+  "GlobalPolicies.Listing.policies.title.tooltip": {
+    "defaultMessage": "This will add policies globally to the gateways. Please navigate to the Policies tab under any desired API if you want to add API / operation level policies"
+  },
+  "GlobalPolicies.Listing.table.header.actions.delete": {
+    "defaultMessage": "Delete"
   },
   "LoginDenied.logout": {
     "defaultMessage": "Logout"
@@ -4226,6 +4382,48 @@
   },
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
+  },
+  "Polcies.TextField.Description": {
+    "defaultMessage": "Description"
+  },
+  "Polcies.TextField.Name": {
+    "defaultMessage": "Name"
+  },
+  "Policy.Delete.Error": {
+    "defaultMessage": "Error while deleting the policy"
+  },
+  "Policy.Delete.Successful": {
+    "defaultMessage": "Policy deleted successfully"
+  },
+  "Policy.Deploy.Successful": {
+    "defaultMessage": "Policy deployed successfully"
+  },
+  "Policy.Description.Cannot.Be.Empty": {
+    "defaultMessage": "Policy description cannot be empty"
+  },
+  "Policy.Mapping.Added.Successfully": {
+    "defaultMessage": "Policy mapping added successfully"
+  },
+  "Policy.Mapping.Cannot.Be.Empty": {
+    "defaultMessage": "Policy mapping cannot be empty"
+  },
+  "Policy.Mapping.Update.Error": {
+    "defaultMessage": "Error occurred while updating the policy mapping"
+  },
+  "Policy.Mapping.Update.Success": {
+    "defaultMessage": "Policy mapping updated successfully"
+  },
+  "Policy.Name.Cannot.Be.Empty": {
+    "defaultMessage": "Policy name cannot be empty"
+  },
+  "Policy.Undeploy.Successful": {
+    "defaultMessage": "Policy undeployed successfully"
+  },
+  "Request.Details.Policies.PolicyList.Title": {
+    "defaultMessage": "Request"
+  },
+  "Response.Details.Policies.PolicyList.Title": {
+    "defaultMessage": "Response"
   },
   "Scopes.Create.CreateScope.cancel": {
     "defaultMessage": "Cancel"
@@ -4382,6 +4580,12 @@
   },
   "Scopes.Usage.UsageViewAPI.api.usage": {
     "defaultMessage": "List of APIs"
+  },
+  "Select.Gateways.Label": {
+    "defaultMessage": "Select gateways to deploy"
+  },
+  "Select.Gateways.Placeholder": {
+    "defaultMessage": "Select gateways to deploy"
   },
   "ServiceCatalog.CreateApi.api.context.label": {
     "defaultMessage": "Context"
@@ -4605,6 +4809,9 @@
   "ServiceCatalog.ServicesTableView.ServicesTableView.version": {
     "defaultMessage": "Version"
   },
+  "Undeploy": {
+    "defaultMessage": "Undeploy"
+  },
   "UnexpectedError.logout": {
     "defaultMessage": "Logout"
   },
@@ -4661,6 +4868,15 @@
   },
   "error.list.500.description": {
     "defaultMessage": "The server encountered an internal error or misconfiguration and was unable to complete your request."
+  },
+  "globalPolicies.create.create.heading": {
+    "defaultMessage": "Create a new global policy"
+  },
+  "globalPolicies.create.edit.heading": {
+    "defaultMessage": "Edit global policy"
+  },
+  "globalPolicies.heading": {
+    "defaultMessage": "Global Policies"
   },
   "save": {
     "defaultMessage": "Save"

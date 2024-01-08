@@ -251,6 +251,7 @@ export default {
                 scopesAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 commonPolicyAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 apiproductAddIcon: '/site/public/images/landing-icons/apiproduct.svg',
+                globalPolicyAddIcon: '/site/public/images/landing-icons/globalpolicies.svg'
             },
             menu: {
                 primary: '#34679D',
