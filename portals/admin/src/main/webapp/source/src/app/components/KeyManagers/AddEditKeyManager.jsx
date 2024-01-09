@@ -47,7 +47,7 @@ import KeyValidations from 'AppComponents/KeyManagers/KeyValidations';
 import PropTypes from 'prop-types';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import cloneDeep from 'lodash.clonedeep';
@@ -201,10 +201,13 @@ function AddEditKeyManager(props) {
     const [isResidentKeyManager, setIsResidentKeyManager] = useState(false);
     const [isTokenTypeSelected, setIsTokenTypeSelected] = useState(true);
     const { match: { params: { id } }, history } = props;
-    const { settings } = useAppContext();
     const [validRoles, setValidRoles] = useState([]);
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
+    const { settings, isSuperTenant, user: { _scopes } } = useAppContext();
+    const location = useLocation();
+    const { isGlobal } = (location && location.state) || false;
+    const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -328,7 +331,8 @@ function AddEditKeyManager(props) {
     };
     useEffect(() => {
         if (id) {
-            restApi.keyManagerGet(id).then((result) => {
+            const api = isGlobal ? restApi.globalKeyManagerGet(id) : restApi.keyManagerGet(id);
+            api.then((result) => {
                 let editState;
                 if (result.body.name !== null) {
                     const newTokenValidation = (result.body.tokenValidation.length === 0)
@@ -515,12 +519,15 @@ function AddEditKeyManager(props) {
                     permissionType: state.permissions.permissionStatus,
                     roles: validRoles,
                 },
+            global: isGlobal,
         };
 
         if (id) {
-            promisedAddKeyManager = restApi.updateKeyManager(id, keymanager);
+            promisedAddKeyManager = isGlobal ?
+                restApi.updateGlobalKeyManager(id, keymanager) : restApi.updateKeyManager(id, keymanager);
         } else {
-            promisedAddKeyManager = restApi.addKeyManager(keymanager);
+            promisedAddKeyManager = isGlobal ?
+                restApi.addGlobalKeyManager(keymanager) : restApi.addKeyManager(keymanager);
             promisedAddKeyManager
                 .then(() => {
                     return (intl.formatMessage({
@@ -616,18 +623,29 @@ function AddEditKeyManager(props) {
         setExpanded(!expanded);
     };
 
+    let pageTitle;
+    if (isGlobal) {
+        pageTitle = id ? `${intl.formatMessage({
+            id: 'KeyManagers.AddEditKeyManager.title.editGlobal',
+            defaultMessage: 'Global Key Manager - Edit ',
+        })} ${name}` : intl.formatMessage({
+            id: 'KeyManagers.AddEditKeyManager.title.newGlobal',
+            defaultMessage: 'Global Key Manager - Create new',
+        });
+    } else {
+        pageTitle = id ? `${intl.formatMessage({
+            id: 'KeyManagers.AddEditKeyManager.title.edit',
+            defaultMessage: 'Key Manager - Edit ',
+        })} ${name}` : intl.formatMessage({
+            id: 'KeyManagers.AddEditKeyManager.title.new',
+            defaultMessage: 'Key Manager - Create new',
+        });
+    }
+
     return (
         <ContentBase
             pageStyle='half'
-            title={
-                id ? `${intl.formatMessage({
-                    id: 'KeyManagers.AddEditKeyManager.title.edit',
-                    defaultMessage: 'Key Manager - Edit ',
-                })} ${name}` : intl.formatMessage({
-                    id: 'KeyManagers.AddEditKeyManager.title.new',
-                    defaultMessage: 'Key Manager - Create new',
-                })
-            }
+            title={pageTitle}
             help={<div />}
         >
             {importingConfig && (
@@ -2161,7 +2179,13 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box component='span' m={1}>
-                            <Button id='keymanager-add' variant='contained' color='primary' onClick={formSaveCallback}>
+                            <Button
+                                id='keymanager-add'
+                                variant='contained'
+                                color='primary'
+                                onClick={formSaveCallback}
+                                disabled={isGlobal && !isSuperAdmin}
+                            >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
                                         {id ? (

@@ -813,6 +813,14 @@ class API extends Resource {
         });
     }
 
+    getGlobalKeyManagersList() {
+        return this.client.then((client) => {
+            return client.apis['Global Key Manager (Collection)'].get_global_key_managers(
+                this._requestMetaData(),
+            );
+        });
+    }
+
     /**
      * Discover keymanager from well known url
      */
@@ -836,9 +844,7 @@ class API extends Resource {
             );
         });
     }
-        /**
-     * Get details of an Application Throttling Policy
-     */
+
     keyManagerGet(keyManagerId) {
         return this.client.then((client) => {
             return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId_(
@@ -849,6 +855,20 @@ class API extends Resource {
     }
 
     /**
+     * Get global keymanager
+     * @param keyManagerId keymanager id
+     * @returns {*}
+     */
+        globalKeyManagerGet(keyManagerId) {
+            return this.client.then((client) => {
+                return client.apis['Global Key Manager (Individual)'].get_global_key_managers__keyManagerId_(
+                    { keyManagerId: keyManagerId },
+                    this._requestMetaData(),
+                );
+            });
+        }
+
+    /**
      * Add an Key Manager
      */
     addKeyManager(body) {
@@ -857,6 +877,24 @@ class API extends Resource {
                 'Content-Type': 'application/json',
             };
             return client.apis['Key Manager (Collection)'].post_key_managers(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a Global Key Manager
+     * @param body
+     * @returns {*}
+     */
+       addGlobalKeyManager(body) {
+        return this.client.then((client) => {
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Global Key Manager (Collection)'].post_global_key_managers(
                 payload,
                 { requestBody: body },
                 this._requestMetaData(),
@@ -880,6 +918,27 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+         * Update a Global Key Manager
+         * @param keyManagerId
+         * @param body
+         * @returns {*}
+         */
+    updateGlobalKeyManager(keyManagerId, body) {
+        return this.client.then((client) => {
+            const payload = {
+                keyManagerId: keyManagerId,
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Global Key Manager (Individual)'].put_global_key_managers__keyManagerId_(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
     /**
      * Delete an Key Manager
      */
@@ -891,6 +950,21 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * Delete a Global Key Manager
+     * @param keyManagerId
+     * @returns {*}
+     */
+        deleteGlobalKeyManager(keyManagerId) {
+            return this.client.then((client) => {
+                return client.apis['Global Key Manager (Individual)'].delete_global_key_managers__keyManagerId_(
+                    {keyManagerId:keyManagerId},
+                    this._requestMetaData(),
+                );
+            });
+        }
+    
 
     /**
      * Get list of workflow pending requests

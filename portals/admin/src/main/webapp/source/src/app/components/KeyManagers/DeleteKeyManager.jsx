@@ -23,6 +23,7 @@ import { FormattedMessage } from 'react-intl';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 /**
  * Render delete dialog box.
@@ -30,14 +31,16 @@ import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
  * @returns {JSX} Loading animation.
  */
 function Delete({ updateList, dataRow }) {
-    const { id, type } = dataRow;
+    const { id, type, isGlobal } = dataRow;
+    const { isSuperTenant, user: { _scopes } } = useAppContext();
+    const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
 
     const formSaveCallback = () => {
         // todo: don't create a new promise
         const promiseAPICall = new Promise((resolve, reject) => {
             const restApi = new API();
-            restApi
-                .deleteKeyManager(id)
+            const api = isGlobal ? restApi.deleteGlobalKeyManager(id) : restApi.deleteKeyManager(id);
+            api
                 .then(() => {
                     resolve(
                         <FormattedMessage
@@ -65,7 +68,7 @@ function Delete({ updateList, dataRow }) {
             triggerIconProps={{
                 color: 'primary',
                 component: 'span',
-                disabled: type === 'default',
+                disabled: type === 'default' || (isGlobal && !isSuperAdmin),
             }}
         >
             <DialogContentText>
