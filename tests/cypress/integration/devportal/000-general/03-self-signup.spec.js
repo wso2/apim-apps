@@ -53,14 +53,16 @@ describe("Self SignUp", () => {
     customUserRoleAddedConfigJson.SelfSignUp.SignUpRoles.push(internalTestRole);
 
     it.only("Test - Default self-signup behaviour of the super tenant", () => {
-        cy.addNewUserUsingSelfSignUp(superTenant1Username, password, firstName, lastName, getSuperTenantEmail(superTenant1Username), superTenant);
+        cy.addNewUserUsingSelfSignUp(superTenant1Username, password, firstName, lastName,
+            getSuperTenantEmail(superTenant1Username), superTenant);
         cy.addExistingUserUsingSelfSignUp(superTenant1Username, superTenant);
         cy.portalLogin(superTenant1Username, password, devPortal, superTenant);
         cy.logoutFromDevportal();
     });
 
     it.only("Test - Default self-signup behaviour of the wso2 tenant", () => {
-        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant1Username, testTenant), password, firstName, lastName, Utils.getTenantUser(tenant1Username, testTenant), testTenant);
+        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant1Username, testTenant), password, firstName, lastName,
+            Utils.getTenantUser(tenant1Username, testTenant), testTenant);
         cy.addExistingUserUsingSelfSignUp(Utils.getTenantUser(tenant1Username, testTenant), testTenant);
         cy.portalLogin(Utils.getTenantUser(tenant1Username, testTenant), password, devPortal, testTenant);
         cy.logoutFromDevportal();
@@ -107,7 +109,8 @@ describe("Self SignUp", () => {
 
     it.only("Test - Remove self signup config from the advance configuration and create a new user for the super tenant", () => {
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, selfSignupDisabledConfigJson);
-        cy.addNewUserUsingSelfSignUp(superTenant2Username, password, firstName, lastName, getSuperTenantEmail(superTenant2Username), superTenant);
+        cy.addNewUserUsingSelfSignUp(superTenant2Username, password, firstName, lastName,
+            getSuperTenantEmail(superTenant2Username), superTenant);
         cy.portalLogin(superTenant2Username, password, devPortal, superTenant);
         cy.contains('Error 403 : Forbidden').should('exist');
         cy.contains('You don\'t have sufficient privileges to access the Developer Portal.').should('exist');
@@ -116,7 +119,8 @@ describe("Self SignUp", () => {
 
     it.only("Test - Remove self signup config from the advance configuration and create a new user for the wso2 tenant", () => {
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, selfSignupDisabledConfigJson);
-        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant2Username, testTenant), password, firstName, lastName, Utils.getTenantUser(tenant2Username, testTenant), testTenant);
+        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant2Username, testTenant), password, firstName, lastName,
+            Utils.getTenantUser(tenant2Username, testTenant), testTenant);
         cy.portalLogin(Utils.getTenantUser(tenant2Username, testTenant), password, devPortal, testTenant);
         cy.contains('Error 403 : Forbidden').should('exist');
         cy.contains('You don\'t have sufficient privileges to access the Developer Portal.').should('exist');
@@ -146,7 +150,8 @@ describe("Self SignUp", () => {
     it.only("Test - Enable self signup back for the super tenant", () => {
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, tenantConfigJson);
         cy.enableSelfSignUpInCarbonPortal(carbonUsername, carbonPassword, superTenant);
-        cy.addNewUserUsingSelfSignUp(superTenant4Username, password, firstName, lastName, getSuperTenantEmail(superTenant4Username), superTenant);
+        cy.addNewUserUsingSelfSignUp(superTenant4Username, password, firstName, lastName,
+            getSuperTenantEmail(superTenant4Username), superTenant);
         cy.portalLogin(superTenant4Username, password, devPortal, superTenant);
         cy.logoutFromDevportal();
     });
@@ -154,7 +159,8 @@ describe("Self SignUp", () => {
     it.only("Test - Enable self signup back for the wso2 tenant", () => {
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, tenantConfigJson);
         cy.enableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
-        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant4Username, testTenant), password, firstName, lastName, Utils.getTenantUser(tenant4Username, testTenant), testTenant);
+        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant4Username, testTenant), password, firstName, lastName,
+            Utils.getTenantUser(tenant4Username, testTenant), testTenant);
         cy.portalLogin(Utils.getTenantUser(tenant4Username, testTenant), password, devPortal, testTenant);
         cy.logoutFromDevportal();
     });
@@ -164,8 +170,10 @@ describe("Self SignUp", () => {
         cy.addNewRole(userRole,domain);
         cy.carbonLogout();
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, customUserRoleAddedConfigJson);
-        cy.addNewUserUsingSelfSignUp(superTenant5Username, password, firstName, lastName, getSuperTenantEmail(superTenant5Username), superTenant);
-        cy.checkUserHasGivenRoles(carbonUsername, carbonPassword, superTenant, superTenant5Username, [internalSubscriberRole, internalTestRole]);
+        cy.addNewUserUsingSelfSignUp(superTenant5Username, password, firstName, lastName,
+            getSuperTenantEmail(superTenant5Username), superTenant);
+        cy.checkUserHasGivenRoles(carbonUsername, carbonPassword, superTenant, superTenant5Username,
+            [internalSubscriberRole, internalTestRole]);
     });
 
     it.only("Test - Assign custom user roles to a tenant user", () => {
@@ -173,8 +181,10 @@ describe("Self SignUp", () => {
         cy.addNewRole(userRole,domain);
         cy.carbonLogout();
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, customUserRoleAddedConfigJson);
-        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant5Username, testTenant), password, firstName, lastName, Utils.getTenantUser(tenant5Username, testTenant), testTenant);
-        cy.checkUserHasGivenRoles(tenantAdminUsername, tenantAdminPassword, testTenant, tenant5Username, [internalSubscriberRole, internalTestRole]);
+        cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant5Username, testTenant), password, firstName, lastName,
+            Utils.getTenantUser(tenant5Username, testTenant), testTenant);
+        cy.checkUserHasGivenRoles(tenantAdminUsername, tenantAdminPassword, testTenant, tenant5Username,
+            [internalSubscriberRole, internalTestRole]);
     });
 
     it.only("Test - Create a user for a unregistered tenant", () => {
