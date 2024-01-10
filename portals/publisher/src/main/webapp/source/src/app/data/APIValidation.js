@@ -27,12 +27,16 @@ import queryString from 'query-string';
  * @param {string} errorType The joi error type
  * @return {string} simplified error message.
  * */
-function getMessage(errorType, maxLength) {
+function getMessage(errorType, isApiName, maxLength) {
     switch (errorType) {
         case 'any.empty':
             return 'should not be empty';
         case 'string.regex.base':
-            return 'Api name should not contain trailing or leading spaces, special characters, and consecutive spaces';
+            if(isApiName){
+                return 'should not contain trailing or leading spaces, special characters, and consecutive spaces';
+            }else{
+                return 'should not contain spaces or special characters';
+            }
         case 'string.max':
             return 'has exceeded the maximum number of ' + maxLength + ' characters';
         default:
@@ -123,36 +127,37 @@ const documentSchema = Joi.extend((joi) => ({
 const definition = {
     apiName: Joi.string().max(50).regex(/^(?!.*\s{2})(?!.*[~!@#;:%^*()+={}|\\<>"',&$[\]/]).*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: getMessage(error.type, 50) }));
+            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, true, 50) }));
         }),
     apiVersion: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&/$[\]\s]+$/).required().error((errors) => {
         const tmpErrors = [...errors];
         errors.forEach((err, index) => {
             const tmpError = { ...err };
-            tmpError.message = 'API Version ' + getMessage(err.type);
+            tmpError.message = 'API Version ' + getMessage(err.type, false);
             tmpErrors[index] = tmpError;
         });
         return tmpErrors;
     }),
     apiContext: Joi.string().max(200).regex(/(?!.*\/t\/.*|.*\/t$)^[^~!@#:%^&*+=|\\<>"',&\s[\]]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Context ' + getMessage(error.type, 200) }));
+            return errors.map((error) => ({ ...error, message: 'Context ' + getMessage(error.type, false, 200) }));
         }),
     gatewayVendor: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, 50) }));
+            return errors.map((error) => ({ ...error, message: 'Name ' + getMessage(error.type, false, 50) }));
         }),
     documentName: Joi.string().max(50).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$+[\]/]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Document name ' + getMessage(error.type, 50) }));
+            return errors.map((error) => ({ ...error, message: 'Document name ' + getMessage(error.type, false, 50) }));
         }),
     authorizationHeader: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Authorization Header ' + getMessage(error.type) }));
+            return errors.map((error) => ({ ...error, message: 'Authorization Header ' 
+                + getMessage(error.type, false) }));
         }),
     apiKeyHeader: Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Api Key Header ' + getMessage(error.type) }));
+            return errors.map((error) => ({ ...error, message: 'Api Key Header ' + getMessage(error.type, false) }));
         }),
     role: roleSchema.systemRole().role(),
     scope: scopeSchema.scopes().scope(),
@@ -160,7 +165,7 @@ const definition = {
         const tmpErrors = [...errors];
         errors.forEach((err, index) => {
             const tmpError = { ...err };
-            tmpError.message = 'URL ' + getMessage(err.type);
+            tmpError.message = 'URL ' + getMessage(err.type, false);
             tmpErrors[index] = tmpError;
         });
         return tmpErrors;
@@ -171,14 +176,14 @@ const definition = {
             const tmpError = { ...err };
             const errType = err.type;
             tmpError.message = errType === 'string.uriCustomScheme' ? 'Invalid WebSocket URL'
-                : 'WebSocket URL ' + getMessage(errType);
+                : 'WebSocket URL ' + getMessage(errType, false);
             tmpErrors[index] = tmpError;
         });
         return tmpErrors;
     }),
     alias: Joi.string().max(30).regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+[\]/]*$/).required()
         .error((errors) => {
-            return errors.map((error) => ({ ...error, message: 'Alias ' + getMessage(error.type, 30) }));
+            return errors.map((error) => ({ ...error, message: 'Alias ' + getMessage(error.type, false, 30) }));
         }),
     userRole: userRoleSchema.userRole().role(),
     apiParameter: apiSchema.api().isAPIParameterExist(),
