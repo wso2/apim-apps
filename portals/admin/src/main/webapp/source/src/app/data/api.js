@@ -461,7 +461,7 @@ class API extends Resource {
      */
      updateApiProvider(apiId, provider) {
         return this.client.then((client) => {
-            return client.apis["Api Provider Change"].providerNamePost(
+            return client.apis['Api Provider Change'].providerNamePost(
                 { provider: provider, apiId: apiId },
                 this._requestMetaData(),
             );

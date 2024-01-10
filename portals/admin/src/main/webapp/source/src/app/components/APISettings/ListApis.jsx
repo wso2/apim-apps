@@ -177,7 +177,6 @@ export default function ListApis() {
                                     }}
                                     value={provider}
                                     onChange={setQuery}
-                                // onKeyPress={this.handleSearchKeyPress}
                                 />
                                 { provider.length > 0
                                 && (
