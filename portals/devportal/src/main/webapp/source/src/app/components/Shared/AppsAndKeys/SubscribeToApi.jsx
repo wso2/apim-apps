@@ -225,7 +225,7 @@ const subscribeToApi = (props) => {
                             />
                         </InputLabel>
                         <Autocomplete
-                            id="application-policy"
+                            id='application-policy'
                             aria-describedby='policies-helper-text'
                             options={sortedThrottlingPolicyList}
                             disableClearable
