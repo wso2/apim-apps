@@ -66,8 +66,10 @@ describe("Gateway Policies", () => {
         // update policy mapping
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
         cy.get('[data-testid=policy-mapping-edit-button]').click();
-        cy.wait(4000);
-        cy.get('div[title="Add Header : v1"]').click();
+        cy.get('div[title="Add Header : v1"]')
+        .scrollIntoView()
+        .should('be.visible')
+        .click();
         cy.get('#headerValue', { timeout: Cypress.config().largeTimeout }).click();
         cy.get('[data-testid=policy-attached-details-save]').should('be.disabled');
         const newText = 'RequestHeaderValueNew';
@@ -81,8 +83,10 @@ describe("Gateway Policies", () => {
         cy.wait(2000);
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
         cy.get('[data-testid=policy-mapping-edit-button]').click();
-        cy.wait(4000);
-        cy.get('div[title="Add Header : v1"]').click();
+        cy.get('div[title="Add Header : v1"]')
+        .scrollIntoView()
+        .should('be.visible')
+        .click();
         cy.get('#headerValue', { timeout: Cypress.config().largeTimeout }).click();
         cy.get('#headerValue').should('have.value', newText);
 
