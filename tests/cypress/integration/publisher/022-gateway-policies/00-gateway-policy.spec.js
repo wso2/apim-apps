@@ -57,7 +57,8 @@ describe("Gateway Policies", () => {
         cy.get('td button') // Get all buttons within <td> elements
             .first() // Select the first button found
             .click();
-        cy.get('input[placeholder="Select Gateways to Deploy"]').click();
+        cy.get('#multi-select').should('exist').should('be.visible');
+        cy.get('#multi-select').click();
         cy.contains('Default').click();
         cy.get('[data-testid=policy-mapping-deploy-button]').click();
         cy.get('[data-testid=deploy-to-gateway-button]', { timeout: Cypress.config().largeTimeout }).click();
@@ -77,6 +78,12 @@ describe("Gateway Policies", () => {
             .should('be.visible')
             .click();
         cy.wait(2000);
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.get('[data-testid=policy-mapping-edit-button]').click();
+        cy.get('div[title="Add Header : v1"]').click();
+        cy.get('#headerValue', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#headerValue').should('have.value', newText);
+
 
         // undeploy policy mapping
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
@@ -90,6 +97,8 @@ describe("Gateway Policies", () => {
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
         cy.get('[data-testid=policy-mapping-delete-button]').click();
         cy.get('[data-testid=policy-mapping-delete-confirmation-button]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.contains('Global policy mapping 1').should('not.exist');
 
         cy.logoutFromPublisher();
     });
