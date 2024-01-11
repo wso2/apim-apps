@@ -112,6 +112,9 @@ const styles = theme => ({
     },
     appDropDown: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
+        '&:hover': {
+            backgroundColor: 'unset',
+        },
     },
 });
 
