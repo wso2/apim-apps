@@ -655,7 +655,6 @@ class SubscriptionsTable extends Component {
                 ),
                 options: {
                     sort: false,
-                    filterType: 'textField',
                     customBodyRender: (value, tableMeta) => {
                         if (tableMeta.rowData) {
                             let claimsObject;
