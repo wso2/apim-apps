@@ -19,8 +19,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { ThemeProvider } from '@mui/styles';
-import { createTheme } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/styles';
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
 import Hidden from '@mui/material/Hidden';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import User from 'AppData/User';
@@ -42,7 +42,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
 import Alert from 'AppComponents/Shared/Alert';
 
-const theme = createTheme(Themes.light);
+const theme = createTheme(adaptV4Theme(Themes.light));
 const { drawerWidth } = Themes.light.custom;
 /**
  * Language.
@@ -185,7 +185,7 @@ class Protected extends Component {
                                 }}
                             />
                         </Hidden>
-                        <Hidden xsDown implementation='css'>
+                        <Hidden smDown implementation='css'>
                             <Navigator PaperProps={{ style: { width: drawerWidth } }} />
                         </Hidden>
                     </>
@@ -193,39 +193,41 @@ class Protected extends Component {
             )
         );
         return (
-            <ThemeProvider theme={theme}>
-                <AppErrorBoundary>
-                    {settings ? (
-                        <AppContextProvider value={{ settings, user, isSuperTenant }}>
-                            <Base header={header} leftMenu={leftMenu}>
-                                <Route>
-                                    <Switch>
-                                        <Redirect exact from='/' to='/dashboard' />
-                                        <Route
-                                            path='/dashboard'
-                                            component={Dashboard}
-                                        />
-                                        {allRoutes.map((r) => {
-                                            return <Route path={r.path} component={r.component} />;
-                                        })}
-                                        <Route component={ResourceNotFound} />
-                                    </Switch>
-                                </Route>
-                            </Base>
-                        </AppContextProvider>
-                    ) : (
-                        <Progress message='Loading Settings ...' />
-                    )}
-                    <iframe
-                        title='iframeOP'
-                        id='iframeOP'
-                        src={checkSessionURL}
-                        width='0%'
-                        height='0%'
-                        style={{ position: 'absolute', bottom: 0 }}
-                    />
-                </AppErrorBoundary>
-            </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={theme}>
+                    <AppErrorBoundary>
+                        {settings ? (
+                            <AppContextProvider value={{ settings, user, isSuperTenant }}>
+                                <Base header={header} leftMenu={leftMenu}>
+                                    <Route>
+                                        <Switch>
+                                            <Redirect exact from='/' to='/dashboard' />
+                                            <Route
+                                                path='/dashboard'
+                                                component={Dashboard}
+                                            />
+                                            {allRoutes.map((r) => {
+                                                return <Route path={r.path} component={r.component} />;
+                                            })}
+                                            <Route component={ResourceNotFound} />
+                                        </Switch>
+                                    </Route>
+                                </Base>
+                            </AppContextProvider>
+                        ) : (
+                            <Progress message='Loading Settings ...' />
+                        )}
+                        <iframe
+                            title='iframeOP'
+                            id='iframeOP'
+                            src={checkSessionURL}
+                            width='0%'
+                            height='0%'
+                            style={{ position: 'absolute', bottom: 0 }}
+                        />
+                    </AppErrorBoundary>
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
     }
 }

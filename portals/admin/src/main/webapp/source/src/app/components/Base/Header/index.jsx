@@ -72,6 +72,7 @@ function Header(props) {
                                 aria-label='open drawer'
                                 onClick={() => handleDrawerToggle()}
                                 className={classes.menuButton}
+                                size='large'
                             >
                                 <MenuIcon />
                             </IconButton>

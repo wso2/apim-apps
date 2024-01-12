@@ -169,6 +169,7 @@ export default function ClaimMappings(props) {
                                         />
                                     )}
                                     onClick={handleAddToList}
+                                    size='large'
                                 >
                                     <AddCircleIcon />
                                 </IconButton>
@@ -176,6 +177,7 @@ export default function ClaimMappings(props) {
                                     id='delete'
                                     aria-label='Clear'
                                     onClick={clearValues}
+                                    size='large'
                                 >
                                     <ClearIcon />
                                 </IconButton>
@@ -207,6 +209,7 @@ export default function ClaimMappings(props) {
                                     id='delete'
                                     aria-label='Remove'
                                     onClick={() => { onDelete(remoteClaim); }}
+                                    size='large'
                                 >
                                     <DeleteIcon />
                                 </IconButton>

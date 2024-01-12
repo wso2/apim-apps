@@ -516,7 +516,6 @@ const ManageAlerts = (props) => {
                                                         <Button
                                                             disabled={isInProgress.subscribing}
                                                             variant='contained'
-                                                            color='default'
                                                             role='button'
                                                         >
                                                             {isInProgress.unSubscribing

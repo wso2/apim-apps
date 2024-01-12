@@ -120,7 +120,7 @@ export default function PermissionsSelector(props) {
                 fullWidth
                 maxWidth='md'
                 open={open}
-                disableBackdropClick={isSaving}
+                // disableBackdropClick={isSaving}
                 onClose={handleClose}
                 aria-labelledby='select-permissions-for-role'
             >

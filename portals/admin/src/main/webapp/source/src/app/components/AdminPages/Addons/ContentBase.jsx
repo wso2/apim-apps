@@ -67,7 +67,7 @@ function ContentBase(props) {
             <Grid
                 container
                 direction='row'
-                justify='center'
+                justifyContent='center'
                 alignItems='flex-start'
             >
                 <Grid item xs={12}>

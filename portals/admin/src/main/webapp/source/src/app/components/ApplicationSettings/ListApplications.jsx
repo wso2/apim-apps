@@ -195,7 +195,7 @@ export default function ListApplications() {
                                             aria-label='delete'
                                             className={classes.clearSearch}
                                             onClick={clearSearch}
-                                        >
+                                            size='large'>
                                             <HighlightOffRoundedIcon />
                                         </IconButton>
                                     </Tooltip>
@@ -257,8 +257,8 @@ export default function ListApplications() {
                                     nextIconButtonProps={{
                                         'aria-label': 'Next Page',
                                     }}
-                                    onChangePage={handleChangePage}
-                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
                                 />
                             </TableRow>
                         </TableFooter>

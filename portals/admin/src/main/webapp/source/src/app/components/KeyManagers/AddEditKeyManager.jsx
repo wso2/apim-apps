@@ -56,10 +56,10 @@ import isEmpty from 'lodash.isempty';
 import makeStyles from '@mui/styles/makeStyles';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import base64url from 'base64url';
-import Error from '@material-ui/icons/Error';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Chip from '@material-ui/core/Chip';
-import { red } from '@material-ui/core/colors/';
+import Error from '@mui/icons-material/Error';
+import InputAdornment from '@mui/material/InputAdornment';
+import Chip from '@mui/material/Chip';
+import { red } from '@mui/material/colors/';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -749,7 +749,7 @@ function AddEditKeyManager(props) {
                                 id='description'
                                 multiline
                                 rows={4}
-                                rowsMax={10}
+                                maxRows={10}
                                 margin='dense'
                                 name='description'
                                 label={(
@@ -2087,7 +2087,7 @@ function AddEditKeyManager(props) {
                                         onClick={handleExpandClick}
                                         aria-expanded={expanded}
                                         aria-label='show more'
-                                    >
+                                        size='large'>
                                         <ExpandMoreIcon />
                                     </IconButton>
                                 </Box>
@@ -2141,7 +2141,7 @@ function AddEditKeyManager(props) {
                                             onClick={handleExpandClick}
                                             aria-expanded={expanded}
                                             aria-label='show more'
-                                        >
+                                            size='large'>
                                             <ExpandMoreIcon />
                                         </IconButton>
                                     </Box>

@@ -44,7 +44,7 @@ function HelpBase({ children }) {
     return (
         <div>
             <Tooltip title='Help'>
-                <IconButton color='inherit' onClick={handleClick}>
+                <IconButton color='inherit' onClick={handleClick} size='large'>
                     <HelpIcon />
                 </IconButton>
             </Tooltip>

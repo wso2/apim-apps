@@ -44,7 +44,7 @@ function AddItem(props) {
                 open
                 onClose={onClose}
                 aria-labelledby='form-dialog-title'
-                disableBackdropClick={disableBackdropClick}
+                // disableBackdropClick={disableBackdropClick}
             >
                 <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
                 <DialogContent dividers>

@@ -492,7 +492,7 @@ function ListLabels() {
                                         />
                                     )}
                                     >
-                                        <IconButton onClick={fetchData}>
+                                        <IconButton onClick={fetchData} size='large'>
                                             <RefreshIcon className={classes.block} color='inherit' />
                                         </IconButton>
                                     </Tooltip>

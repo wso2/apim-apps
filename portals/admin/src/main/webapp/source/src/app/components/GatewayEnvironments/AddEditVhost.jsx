@@ -176,7 +176,7 @@ function AddEditVhost(props) {
                                 </Grid>
                                 {/* Remove VHost Button */}
                                 <Grid item xs={3}>
-                                    <Grid container justify='flex-end'>
+                                    <Grid container justifyContent='flex-end'>
                                         <Button
                                             name={vhost.key}
                                             variant='outlined'

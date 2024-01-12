@@ -157,10 +157,7 @@ export default function Certificates(props) {
                                         defaultMessage='Drag and Drop files here {break} or {break}'
                                         values={{ break: <br /> }}
                                     />
-                                    <Button
-                                        color='default'
-                                        variant='contained'
-                                    >
+                                    <Button variant='contained'>
                                         <FormattedMessage
                                             id='KeyManagers.Certificates.browse.files.to.upload'
                                             defaultMessage='Browse File to Upload'

@@ -301,6 +301,7 @@ function UploadTheme() {
                                                 setThemeFile(null);
                                                 setIsFileAccepted(false);
                                             }}
+                                            size='large'
                                         >
                                             <DeleteIcon />
                                         </IconButton>

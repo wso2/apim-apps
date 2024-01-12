@@ -98,6 +98,7 @@ class Avatar extends Component {
                      color='inherit'
                      onClick={this.handleClick}
                      className={classes.userLink}
+                     size='large'
                  >
                      <AccountCircle className={classes.accountIcon} />
                      {' '}

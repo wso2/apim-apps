@@ -1478,6 +1478,7 @@ function AddEdit(props) {
                                                         <IconButton
                                                             id={index}
                                                             onClick={handleAttributeDelete}
+                                                            size='large'
                                                         >
                                                             <DeleteForeverIcon />
                                                         </IconButton>

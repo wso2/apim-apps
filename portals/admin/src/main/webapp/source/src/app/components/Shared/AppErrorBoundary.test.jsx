@@ -17,7 +17,7 @@
  */
 import React from 'react';
 import { unwrap } from '@mui/material/test-utils';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from '@mui/material/styles';
 
 import Themes from 'Themes';
 import AppErrorBoundary from './AppErrorBoundary';
@@ -38,11 +38,13 @@ describe('AppErrorBoundary test', () => {
             throw new Error(message);
         };
         const TestComponent = (
-            <ThemeProvider theme={createTheme(light)}>
-                <AppErrorBoundary>
-                    <TestError />
-                </AppErrorBoundary>
-            </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={createTheme(adaptV4Theme(light))}>
+                    <AppErrorBoundary>
+                        <TestError />
+                    </AppErrorBoundary>
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
 
         const wrapper = mount(TestComponent);

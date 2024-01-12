@@ -60,7 +60,7 @@ function ListAddOns(props) {
     return (
         <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
             <Toolbar>
-                <Grid container spacing={2} direction='row' justify='flex-end' alignItems='center'>
+                <Grid container spacing={2} direction='row' justifyContent='flex-end' alignItems='center'>
                     <Grid item>
                         {searchActive && (<SearchIcon className={classes.block} color='inherit' />)}
                     </Grid>
@@ -86,7 +86,7 @@ function ListAddOns(props) {
                             />
                         )}
                         >
-                            <IconButton onClick={onRefresh}>
+                            <IconButton onClick={onRefresh} size='large'>
                                 <RefreshIcon
                                     className={classes.block}
                                     color='inherit'

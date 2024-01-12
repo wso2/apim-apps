@@ -1,4 +1,4 @@
-import grey from '@material-ui/core/colors/grey';
+import { grey } from '@mui/material/colors';
 
 export default {
     palette: {

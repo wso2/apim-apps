@@ -176,7 +176,7 @@ function ListBase(props) {
                                 return (
                                     <div data-testid={`${itemName}-actions`}>
                                         <RouterLink to={editComponentProps.routeTo + artifactId}>
-                                            <IconButton color='primary' component='span'>
+                                            <IconButton color='primary' component='span' size='large'>
                                                 <EditIcon aria-label={`edit-policies+${artifactId}`} />
                                             </IconButton>
                                         </RouterLink>
@@ -326,7 +326,7 @@ function ListBase(props) {
                                         />
                                     )}
                                     >
-                                        <IconButton onClick={fetchData}>
+                                        <IconButton onClick={fetchData} size='large'>
                                             <RefreshIcon
                                                 aria-label='refresh-advanced-policies'
                                                 className={classes.block}

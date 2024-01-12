@@ -23,7 +23,7 @@ const variantComponent = {
 };
 
 const styles = (theme) => {
-    const light = theme.palette.type === 'light';
+    const light = theme.palette.mode === 'light';
     const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';
 
     return {

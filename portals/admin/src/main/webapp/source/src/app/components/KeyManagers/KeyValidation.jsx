@@ -256,6 +256,7 @@ export default function KeyValidation(props) {
                                                 />
                                             )}
                                             onClick={handleAddToList}
+                                            size='large'
                                         >
                                             <AddCircleIcon />
                                         </IconButton>
@@ -263,6 +264,7 @@ export default function KeyValidation(props) {
                                             id='delete'
                                             aria-label='Clear'
                                             onClick={clearValues}
+                                            size='large'
                                         >
                                             <ClearIcon />
                                         </IconButton>
@@ -296,6 +298,7 @@ export default function KeyValidation(props) {
                                                 <IconButton
                                                     id='delete'
                                                     onClick={() => { onDelete(key); }}
+                                                    size='large'
                                                 >
                                                     <DeleteIcon />
                                                 </IconButton>

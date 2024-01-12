@@ -324,7 +324,7 @@ export default function ListRoles() {
                             >
                                 {mapping.aliases.map((alias) => (
                                     <Box
-                                        borderRadius={16}
+                                        borderRadius='16px'
                                         borderColor='info.main'
                                         display='inline-block'
                                         border={1}

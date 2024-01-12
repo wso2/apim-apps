@@ -32,6 +32,7 @@ export default function CustomInputField(props) {
                         onClick={() => setShowPassword(!showPassword)}
                         onMouseDown={() => setShowPassword(!showPassword)}
                         edge='end'
+                        size='large'
                     >
                         {showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>

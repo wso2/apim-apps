@@ -109,8 +109,8 @@ export default function AdminTable(props) {
                         count={dataIDs.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
-                        onChangePage={handleChangePage}
-                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </TableContainer>
 

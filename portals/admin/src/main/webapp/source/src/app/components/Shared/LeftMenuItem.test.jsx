@@ -17,7 +17,7 @@
  */
 import React from 'react';
 // import { unwrap } from '@mui/material/test-utils';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from '@mui/material/styles';
 import Themes from 'Themes';
 import LeftMenuItem from './LeftMenuItem';
 
@@ -28,9 +28,11 @@ describe('<LeftMenuItem/> tests', () => {
     test('should render the <LeftMenuItem/> component with light theme styles', () => {
         const { light } = Themes;
         const TestComponent = (
-            <ThemeProvider theme={createTheme(light)}>
-                <LeftMenuItem />
-            </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={createTheme(adaptV4Theme(light))}>
+                    <LeftMenuItem />
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
         // mount(TestComponent);
     });

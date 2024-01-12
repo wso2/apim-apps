@@ -74,7 +74,7 @@ function FormDialogBase({
     return (
         <>
             {icon && (
-                <IconButton {...triggerIconProps} onClick={handleClickOpen}>
+                <IconButton {...triggerIconProps} onClick={handleClickOpen} size='large'>
                     {icon}
                 </IconButton>
             )}
