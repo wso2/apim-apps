@@ -523,11 +523,11 @@ function AddEditKeyManager(props) {
         };
 
         if (id) {
-            promisedAddKeyManager = isGlobal ?
-                restApi.updateGlobalKeyManager(id, keymanager) : restApi.updateKeyManager(id, keymanager);
+            promisedAddKeyManager = isGlobal
+                ? restApi.updateGlobalKeyManager(id, keymanager) : restApi.updateKeyManager(id, keymanager);
         } else {
-            promisedAddKeyManager = isGlobal ?
-                restApi.addGlobalKeyManager(keymanager) : restApi.addKeyManager(keymanager);
+            promisedAddKeyManager = isGlobal
+                ? restApi.addGlobalKeyManager(keymanager) : restApi.addKeyManager(keymanager);
             promisedAddKeyManager
                 .then(() => {
                     return (intl.formatMessage({
