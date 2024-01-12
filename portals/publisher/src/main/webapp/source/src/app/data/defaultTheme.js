@@ -193,7 +193,7 @@ export default {
                 b: '#605F42',
                 c: '#474675',
                 d: '#F39137',
-                e: '#ffd454',
+                e: '#A38836',
                 f: '#308BB7',
                 g: '#1B3FA3',
                 h: '#559839',
@@ -251,6 +251,7 @@ export default {
                 scopesAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 commonPolicyAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 apiproductAddIcon: '/site/public/images/landing-icons/apiproduct.svg',
+                globalPolicyAddIcon: '/site/public/images/landing-icons/globalpolicies.svg'
             },
             menu: {
                 primary: '#34679D',

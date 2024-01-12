@@ -128,11 +128,12 @@ const TryOutConsole = () => {
             api.getDeployedRevisions(api.id).then((deploymentsResponse) => {
                 tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, completed: true } });
                 const currentDeployments = deploymentsResponse.body;
-                const currentDeploymentsWithDisplayName = currentDeployments.map((deploy) => {
-                    const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
-                    const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
-                    return { ...deploy, displayName };
-                });
+                const currentDeploymentsWithDisplayName = currentDeployments
+                    .filter(deploy => deploy.status !== 'CREATED').map((deploy) => {
+                        const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
+                        const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
+                        return { ...deploy, displayName };
+                    });
                 setDeployments(currentDeploymentsWithDisplayName);
                 if (currentDeploymentsWithDisplayName && currentDeploymentsWithDisplayName.length > 0) {
                     const [initialDeploymentSelection] = currentDeploymentsWithDisplayName;
@@ -145,7 +146,6 @@ const TryOutConsole = () => {
         }
     }, [publisherSettings]);
 
-    const isAPIProduct = api.type === 'APIPRODUCT';
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
     const setServersSpec = (spec, serverUrl) => {
         let schemes;
@@ -185,18 +185,12 @@ const TryOutConsole = () => {
                     }
                     if (transportPort !== -1) {
                         const baseURL = `${transport}://${selectedDeployment.vhost}:${transportPort}`;
-                        let url;
-                        if (isAPIProduct) {
-                            url = `${baseURL}${pathSeparator}`
-                                + `${selectedDeploymentVhost.httpContext}${api.context}`;
-                        } else {
-                            url = `${baseURL}${pathSeparator}`
+                        let url = `${baseURL}${pathSeparator}`
                             + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`;
-                            if (`${api.context}`.includes('{version}')) {
-                                url = `${baseURL}${pathSeparator}`
+                        if (`${api.context}`.includes('{version}')) {
+                            url = `${baseURL}${pathSeparator}`
                                         + `${selectedDeploymentVhost.httpContext}${api.context}`
                                             .replaceAll('{version}', `${api.version}`);
-                            }
                         }
                         return {url};
                     }
@@ -215,16 +209,15 @@ const TryOutConsole = () => {
                 }
                 const host = `${selectedDeploymentVhost.host}:${transportPort}`;
                 let basePath;
-                if (isAPIProduct) {
-                    basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}`;
-                } else {
-                    basePath = `${pathSeparator}${selectedDeploymentVhost.
-                        httpContext}${api.context}/${api.version}`;
-                    if (`${api.context}`.includes('{version}')) {
-                        basePath = `${pathSeparator}${selectedDeploymentVhost.httpContext}${api.context}`
-                            .replaceAll('{version}', `${api.version}`);
-                    }
+
+                basePath = `${pathSeparator}${selectedDeploymentVhost.
+                    httpContext}${api.context}/${api.version}`;
+
+                if (`${api.context}`.includes('{version}')) {
+                    basePath = `${pathSeparator}${selectedDeploymentVhost
+                        .httpContext}${api.context}`.replaceAll('{version}', `${api.version}`);
                 }
+
                 let schemes = api.transport.slice().sort((a, b) => ((a > b) ? -1 : 1));
                 if (selectedDeploymentVhost.httpPort === -1){
                     schemes = schemes.filter(item => item !== 'http');

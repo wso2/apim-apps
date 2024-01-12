@@ -136,6 +136,11 @@ const useStyles = makeStyles((theme) => ({
  * @returns {Object} Deep copy of an object
  */
 function copyAPIConfig(api) {
+    let isDefaultVersion = false;
+    // to set isDefaultVersion of migrated APIProducts as true
+    if (api.apiType === API.CONSTS.APIProduct && api.isDefaultVersion == null) {
+        isDefaultVersion = true;
+    }
     const copiedConfig = {
         id: api.id,
         name: api.name,
@@ -146,7 +151,7 @@ function copyAPIConfig(api) {
         responseCachingEnabled: api.responseCachingEnabled,
         cacheTimeout: api.cacheTimeout,
         visibility: api.visibility,
-        isDefaultVersion: api.isDefaultVersion,
+        isDefaultVersion: api.isDefaultVersion || isDefaultVersion,
         enableSchemaValidation: api.enableSchemaValidation,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
@@ -562,9 +567,7 @@ export default function DesignConfigurations() {
                                         )}
                                     </Box>
                                     <Box py={1}>
-                                        {api.apiType !== API.CONSTS.APIProduct && (
-                                            <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
-                                        )}
+                                        <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
                                     </Box>
                                     <Box pt={2}>
                                         <Button

@@ -377,9 +377,9 @@ function ConditionalGroup(props) {
                             <AlertTitle>Warning</AlertTitle>
                             <FormattedMessage
                                 id='Throttling.Advanced.ConditionalGroup.alert'
-                                defaultMessage='Publishing Query Params, Header Data and JWT token isn&apos; t
-                                configured. If a policy configured with any of these conditions, it won&apos; t be
-                                applied.'
+                                defaultMessage='To add rate limiting with different
+                                parameters for Query Params, Header Data and JWT token claim,
+                                you must enable them in the deployment.toml file.'
                             />
                         </Alert>
                     </Box>

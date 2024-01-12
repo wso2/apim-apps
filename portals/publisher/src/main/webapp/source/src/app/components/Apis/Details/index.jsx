@@ -376,7 +376,7 @@ class Details extends Component {
                     defaultMessage: 'API definition',
                 })}
                 route='api definition'
-                to={pathPrefix + 'api definition'}
+                to={pathPrefix + 'api-definition'}
                 Icon={<CodeIcon />}
                 id='left-menu-itemAPIdefinition'
             />
@@ -972,6 +972,10 @@ class Details extends Component {
                                         component={() => <Properties api={api} />}
                                     />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
+                                    <Route
+                                        path={Details.subPaths.NEW_VERSION_PRODUCT}
+                                        component={() => <CreateNewVersion />} />
+
                                     <Route path={Details.subPaths.SUBSCRIPTIONS} component={() => <Subscriptions />} />
                                     <Route
                                         path={Details.subPaths.MONETIZATION}
@@ -1017,9 +1021,9 @@ Details.subPaths = {
     BASE_PRODUCT: '/api-products/:apiprod_uuid',
     OVERVIEW: '/apis/:api_uuid/overview',
     OVERVIEW_PRODUCT: '/api-products/:apiprod_uuid/overview',
-    API_DEFINITION: '/apis/:api_uuid/api definition',
+    API_DEFINITION: '/apis/:api_uuid/api-definition',
     WSDL: '/apis/:api_uuid/wsdl',
-    API_DEFINITION_PRODUCT: '/api-products/:apiprod_uuid/api definition',
+    API_DEFINITION_PRODUCT: '/api-products/:apiprod_uuid/api-definition',
     SCHEMA_DEFINITION: '/apis/:api_uuid/schema definition',
     LIFE_CYCLE: '/apis/:api_uuid/lifecycle',
     LIFE_CYCLE_PRODUCT: '/api-products/:apiprod_uuid/lifecycle',
@@ -1042,11 +1046,12 @@ Details.subPaths = {
     SUBSCRIPTIONS: '/apis/:api_uuid/subscriptions',
     SECURITY: '/apis/:api_uuid/security',
     COMMENTS: '/apis/:api_uuid/comments',
-    BUSINESS_INFO: '/apis/:api_uuid/business info',
-    BUSINESS_INFO_PRODUCT: '/api-products/:apiprod_uuid/business info',
+    BUSINESS_INFO: '/apis/:api_uuid/business-info',
+    BUSINESS_INFO_PRODUCT: '/api-products/:apiprod_uuid/business-info',
     PROPERTIES: '/apis/:api_uuid/properties',
     PROPERTIES_PRODUCT: '/api-products/:apiprod_uuid/properties',
     NEW_VERSION: '/apis/:api_uuid/new_version',
+    NEW_VERSION_PRODUCT: '/api-products/:api_uuid/new_version',
     MONETIZATION: '/apis/:api_uuid/monetization',
     MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',

@@ -116,6 +116,18 @@ export default function StoreVisibility(props) {
         });
     };
 
+    const handleChangeVisibility = (event) => {
+        if (event.target.value === 'PUBLIC') {
+            setRoleValidity(true);
+            // set role exist to true to avoid SAVE button getting frozen.
+            setRoleExists(true);
+        }
+        if (event.target.value === 'RESTRICTED' && api.visibleRoles.length === 0) {
+            setRoleValidity(false);
+        }
+        configDispatcher({ action: 'visibility', value: event.target.value });
+    }
+
     return (
         <>
             <Box style={{ position: 'relative' }}>
@@ -131,7 +143,7 @@ export default function StoreVisibility(props) {
                     )}
                     value={api.visibility}
                     name='storeVisibility'
-                    onChange={({ target: { value } }) => configDispatcher({ action: 'visibility', value })}
+                    onChange={handleChangeVisibility}
                     SelectProps={{
                         MenuProps: {
                             className: classes.menu,

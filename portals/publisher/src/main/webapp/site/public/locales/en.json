@@ -17,6 +17,30 @@
       "value": "Cancel"
     }
   ],
+  "Actions": [
+    {
+      "type": 0,
+      "value": "Actions"
+    }
+  ],
+  "Active.Deployment.Available": [
+    {
+      "type": 0,
+      "value": "An active deployment is available"
+    }
+  ],
+  "Active.Deployments.Available": [
+    {
+      "type": 0,
+      "value": "Active deployments are available"
+    }
+  ],
+  "Adding.Policy.Mapping.Error": [
+    {
+      "type": 0,
+      "value": "Error occurred while adding the policy mapping"
+    }
+  ],
   "Api.category.dropdown.tooltip": [
     {
       "type": 0,
@@ -104,7 +128,7 @@
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": [
     {
       "type": 0,
-      "value": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
+      "value": "Create an API Product by providing a Name, a Context, a Version, Resources, and Business Plans (optional)."
     }
   ],
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": [
@@ -220,6 +244,12 @@
     }
   ],
   "Apis.Create.Components.DefaultAPIForm.version": [
+    {
+      "type": 0,
+      "value": "Version"
+    }
+  ],
+  "Apis.Create.Components.DefaultAPIForm.api.product.version": [
     {
       "type": 0,
       "value": "Version"
@@ -635,6 +665,12 @@
     {
       "type": 0,
       "value": "Protocol"
+    }
+  ],
+  "Apis.Details.\n                                                                                            Environments.Environments.\n                                                                                            pending.chip": [
+    {
+      "type": 0,
+      "value": "Pending"
     }
   ],
   "Apis.Details.\n                                                                                Environments.deploy.vhost": [
@@ -1353,6 +1389,18 @@
       "value": "Selected Rate Limiting Policy will be applied to all the requests of this API."
     }
   ],
+  "Apis.Details.APIProduct.NewVersion.NewVersion.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while creating a new version!. Error:"
+    }
+  ],
+  "Apis.Details.APIProduct.NewVersion.NewVersion.success": [
+    {
+      "type": 0,
+      "value": "Successfully created new version"
+    }
+  ],
   "Apis.Details.AccessControl.roles.help": [
     {
       "type": 0,
@@ -1611,6 +1659,12 @@
       "value": "Edit Complexity Values"
     }
   ],
+  "Apis.Details.Configuration.ApiKeyHeader.helper.text": [
+    {
+      "type": 0,
+      "value": "ApiKey header name cannot contain spaces or special characters"
+    }
+  ],
   "Apis.Details.Configuration.AuthHeader.helper.text": [
     {
       "type": 0,
@@ -1633,6 +1687,12 @@
     {
       "type": 0,
       "value": "Backend Throughput"
+    }
+  ],
+  "Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip": [
+    {
+      "type": 0,
+      "value": "The header name that is used to send the api key information. \"ApiKey\" is the default header."
     }
   ],
   "Apis.Details.Configuration.Configuration.AuthHeader.tooltip": [
@@ -1663,6 +1723,12 @@
     {
       "type": 0,
       "value": "Edit API Endpoints"
+    }
+  ],
+  "Apis.Details.Configuration.Configuration.apiKey.header.label": [
+    {
+      "type": 0,
+      "value": "ApiKey Header"
     }
   ],
   "Apis.Details.Configuration.Configuration.auth.header.label": [
@@ -4193,12 +4259,6 @@
       "value": "Deployed Revision"
     }
   ],
-  "Apis.Details.Environments.Environments\n                                                                    .select.table": [
-    {
-      "type": 0,
-      "value": "Select Revision"
-    }
-  ],
   "Apis.Details.Environments.Environments\n                                                                    .select.vhost": [
     {
       "type": 0,
@@ -4206,12 +4266,6 @@
     }
   ],
   "Apis.Details.Environments.Environments\n                                                                .deploy.button": [
-    {
-      "type": 0,
-      "value": "Deploy"
-    }
-  ],
-  "Apis.Details.Environments.Environments.\n                                                                deploy.button": [
     {
       "type": 0,
       "value": "Deploy"
@@ -4259,6 +4313,12 @@
       "value": "Name"
     }
   ],
+  "Apis.Details.Environments.Environments.cancel.btn": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "Apis.Details.Environments.Environments.create.cancel": [
     {
       "type": 0,
@@ -4269,6 +4329,12 @@
     {
       "type": 0,
       "value": "Create"
+    }
+  ],
+  "Apis.Details.Environments.Environments.deploy.button": [
+    {
+      "type": 0,
+      "value": "Deploy"
     }
   ],
   "Apis.Details.Environments.Environments.deploy.cancel": [
@@ -4319,10 +4385,10 @@
       "value": "Display in Developer Portal"
     }
   ],
-  "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": [
+  "Apis.Details.Environments.Environments.gateway\n                                                    .deployment.current.revision": [
     {
       "type": 0,
-      "value": "Deployed Revision"
+      "value": "Current Revision"
     }
   ],
   "Apis.Details.Environments.Environments.gateway.accessUrl": [
@@ -4335,6 +4401,18 @@
     {
       "type": 0,
       "value": "Action"
+    }
+  ],
+  "Apis.Details.Environments.Environments.gateway.deployment.next.revision": [
+    {
+      "type": 0,
+      "value": "Next Revision"
+    }
+  ],
+  "Apis.Details.Environments.Environments.pending.chip": [
+    {
+      "type": 0,
+      "value": "Pending"
     }
   ],
   "Apis.Details.Environments.Environments.revision\n                                                            .description.deploy": [
@@ -4485,10 +4563,22 @@
       "value": "count"
     }
   ],
+  "Apis.Details.Environments.Environments.select.table": [
+    {
+      "type": 0,
+      "value": "Select Revision"
+    }
+  ],
   "Apis.Details.Environments.Environments.solace.platform.environments.heading": [
     {
       "type": 0,
       "value": "Solace Platform Environments"
+    }
+  ],
+  "Apis.Details.Environments.Environments.status.not.deployed": [
+    {
+      "type": 0,
+      "value": "No Revision Deployed"
     }
   ],
   "Apis.Details.Environments.Environments.undeploy.btn": [
@@ -4625,6 +4715,12 @@
     {
       "type": 0,
       "value": "Endpoint provided"
+    }
+  ],
+  "Apis.Details.LifeCycle.CheckboxLabels.mandatory.properties.provided": [
+    {
+      "type": 0,
+      "value": "Mandatory Properties provided"
     }
   ],
   "Apis.Details.LifeCycle.LifeCycle.change.not.allowed": [
@@ -6113,13 +6209,25 @@
       "value": "Show in devportal"
     }
   ],
+  "Apis.Details.Properties.\n                                                    Properties.editable.show.in.devporal": [
+    {
+      "type": 0,
+      "value": "Show in devportal"
+    }
+  ],
+  "Apis.Details.Properties.Properties.\n                                                                            show.add.property.custom.property.name": [
+    {
+      "type": 1,
+      "value": "message"
+    }
+  ],
   "Apis.Details.Properties.Properties.\n                                                                    show.add.property.invalid.error": [
     {
       "type": 0,
       "value": "Invalid property name"
     }
   ],
-  "Apis.Details.Properties.Properties.\n                                                                show.add.property.property.name": [
+  "Apis.Details.Properties.Properties.\n                                                            show.add.property.property.name": [
     {
       "type": 0,
       "value": "Name"
@@ -7919,6 +8027,24 @@
       "value": "Context"
     }
   ],
+  "Apis.Listing.ApiThumb.owners": [
+    {
+      "type": 0,
+      "value": "Owners"
+    }
+  ],
+  "Apis.Listing.ApiThumb.owners.business": [
+    {
+      "type": 0,
+      "value": "Business"
+    }
+  ],
+  "Apis.Listing.ApiThumb.owners.technical": [
+    {
+      "type": 0,
+      "value": "Technical"
+    }
+  ],
   "Apis.Listing.ApiThumb.version": [
     {
       "type": 0,
@@ -8115,6 +8241,12 @@
     {
       "type": 0,
       "value": "Deploying sample API ..."
+    }
+  ],
+  "Apis.Listing.SampleAPI.popup.deploy.pending": [
+    {
+      "type": 0,
+      "value": "API revision deployment request sent"
     }
   ],
   "Apis.Listing.SampleAPI.popup.publish.complete": [
@@ -8565,10 +8697,28 @@
       "value": "Policies"
     }
   ],
+  "Base.Header.navbar.GlobalNavBar.global.policies": [
+    {
+      "type": 0,
+      "value": "Global Policies"
+    }
+  ],
   "Base.Header.navbar.GlobalNavBar.scopes": [
     {
       "type": 0,
       "value": "Scopes"
+    }
+  ],
+  "Cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Cannot.Find.PolicyObj.For.PolicyId": [
+    {
+      "type": 0,
+      "value": "Cannot find policy for Id:"
     }
   ],
   "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": [
@@ -8699,10 +8849,82 @@
       "value": "Policies"
     }
   ],
+  "Confirm.Delete": [
+    {
+      "type": 0,
+      "value": "Confirm Deletion"
+    }
+  ],
+  "Confirm.Delete.Verify": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete the policy?"
+    }
+  ],
+  "Confirm.Deploy": [
+    {
+      "type": 0,
+      "value": "Confirm Deployment"
+    }
+  ],
+  "Confirm.Deploy.Verify": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to depoly the policy in the selected gateways?"
+    }
+  ],
+  "Confirm.UnDeploy": [
+    {
+      "type": 0,
+      "value": "Confirm Undeployment"
+    }
+  ],
+  "Confirm.Undeploy.Verify": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to undepoly the policy?"
+    }
+  ],
   "Connection.Timeout": [
     {
       "type": 0,
       "value": "Connection Timeout"
+    }
+  ],
+  "Delete": [
+    {
+      "type": 0,
+      "value": "Delete"
+    }
+  ],
+  "Deploy": [
+    {
+      "type": 0,
+      "value": "Deploy"
+    }
+  ],
+  "Deploy.Helper": [
+    {
+      "type": 0,
+      "value": "If another global policy is already deployed to a gateway, that gateway will not be available for deployment of this policy. Please undeploy the previously deployed global policy first."
+    }
+  ],
+  "Deployed.Gateway.Listing.Table.Header.Description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Deployed.Gateway.Listing.Table.Header.Name": [
+    {
+      "type": 0,
+      "value": "Deployed Gateways"
+    }
+  ],
+  "Deployed.Gateway.Listing.Table.Not.Available": [
+    {
+      "type": 0,
+      "value": "No deployed gateways"
     }
   ],
   "Endpoint.Suspension.State": [
@@ -8711,10 +8933,216 @@
       "value": "Endpoint Suspension State"
     }
   ],
+  "Error.Deploy.Policy": [
+    {
+      "type": 0,
+      "value": "Error occurred while deploying the policy"
+    }
+  ],
+  "Error.Retrieve.Policy": [
+    {
+      "type": 0,
+      "value": "Error occurred while retrieving the policy"
+    }
+  ],
+  "Error.Retrieve.Policy.List": [
+    {
+      "type": 0,
+      "value": "Error occurred while retrieving the policy list"
+    }
+  ],
+  "Error.Undeploy.Policy": [
+    {
+      "type": 0,
+      "value": "Error occurred while undeploying the policy"
+    }
+  ],
+  "Error.Validating.Regex": [
+    {
+      "type": 0,
+      "value": "Error while validating the regex"
+    }
+  ],
   "Error.while.validating.the.imported.graphQLSchema": [
     {
       "type": 0,
       "value": "Error while validating the imported schema"
+    }
+  ],
+  "Fault.Details.Policies.PolicyList.Title": [
+    {
+      "type": 0,
+      "value": "Fault"
+    }
+  ],
+  "Fetching.Policies.Error": [
+    {
+      "type": 0,
+      "value": "Error while fetching policies"
+    }
+  ],
+  "Fetching.Policies.Settings": [
+    {
+      "type": 0,
+      "value": "Error while fetching settings"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": [
+    {
+      "type": 0,
+      "value": "Something went wrong while downloading the policy"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.description.title": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": [
+    {
+      "type": 0,
+      "value": "Oops! Looks like this policy does not have a description"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.provided": [
+    {
+      "type": 1,
+      "value": "description"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.reset": [
+    {
+      "type": 0,
+      "value": "Reset"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "Global.Details.Policies.AttachedPolicyForm.General.saving": [
+    {
+      "type": 0,
+      "value": "Saving"
+    }
+  ],
+  "Global.Details.Policies.DraggablePolicyCard.policy.view": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
+  "Global.Details.Policies.PolicyConfigurationEditDrawer.title": [
+    {
+      "type": 0,
+      "value": "Configure "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    }
+  ],
+  "Global.Details.Policies.PolicyConfiguringDrawer.title": [
+    {
+      "type": 0,
+      "value": "Configure "
+    },
+    {
+      "type": 1,
+      "value": "policy"
+    }
+  ],
+  "Global.Details.Policies.PolicyList.title": [
+    {
+      "type": 0,
+      "value": "Policy List"
+    }
+  ],
+  "Global.Details.Policies.SaveOperationPolicies.save": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "Global.Details.Policies.SaveOperationPolicies.update": [
+    {
+      "type": 0,
+      "value": "Update"
+    }
+  ],
+  "Global.Policies": [
+    {
+      "type": 0,
+      "value": "Global Policies"
+    }
+  ],
+  "Global.Policy.Listing.Table.Header.Name": [
+    {
+      "type": 0,
+      "value": "Global Policy"
+    }
+  ],
+  "GlobalPolicies.Listing.Table.Header.Actions.Edit": [
+    {
+      "type": 0,
+      "value": "Edit"
+    }
+  ],
+  "GlobalPolicies.Listing.Table.Header.Actions.View": [
+    {
+      "type": 0,
+      "value": "View"
+    }
+  ],
+  "GlobalPolicies.Listing.onboarding.create.new": [
+    {
+      "type": 0,
+      "value": "Let’s get started!"
+    }
+  ],
+  "GlobalPolicies.Listing.onboarding.policies.tooltip": [
+    {
+      "type": 0,
+      "value": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy"
+    }
+  ],
+  "GlobalPolicies.Listing.policies.title.add.new.policy": [
+    {
+      "type": 0,
+      "value": "Add new global policy"
+    }
+  ],
+  "GlobalPolicies.Listing.policies.title.name": [
+    {
+      "type": 0,
+      "value": "Global Policies"
+    }
+  ],
+  "GlobalPolicies.Listing.policies.title.tooltip": [
+    {
+      "type": 0,
+      "value": "This will add policies globally to the gateways. Please navigate to the Policies tab under any desired API if you want to add API / operation level policies"
+    }
+  ],
+  "GlobalPolicies.Listing.table.header.actions.delete": [
+    {
+      "type": 0,
+      "value": "Delete"
     }
   ],
   "LoginDenied.logout": [
@@ -8733,6 +9161,90 @@
     {
       "type": 0,
       "value": "Error 403 : Forbidden"
+    }
+  ],
+  "Polcies.TextField.Description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Polcies.TextField.Name": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
+  "Policy.Delete.Error": [
+    {
+      "type": 0,
+      "value": "Error while deleting the policy"
+    }
+  ],
+  "Policy.Delete.Successful": [
+    {
+      "type": 0,
+      "value": "Policy deleted successfully"
+    }
+  ],
+  "Policy.Deploy.Successful": [
+    {
+      "type": 0,
+      "value": "Policy deployed successfully"
+    }
+  ],
+  "Policy.Description.Cannot.Be.Empty": [
+    {
+      "type": 0,
+      "value": "Policy description cannot be empty"
+    }
+  ],
+  "Policy.Mapping.Added.Successfully": [
+    {
+      "type": 0,
+      "value": "Policy mapping added successfully"
+    }
+  ],
+  "Policy.Mapping.Cannot.Be.Empty": [
+    {
+      "type": 0,
+      "value": "Policy mapping cannot be empty"
+    }
+  ],
+  "Policy.Mapping.Update.Error": [
+    {
+      "type": 0,
+      "value": "Error occurred while updating the policy mapping"
+    }
+  ],
+  "Policy.Mapping.Update.Success": [
+    {
+      "type": 0,
+      "value": "Policy mapping updated successfully"
+    }
+  ],
+  "Policy.Name.Cannot.Be.Empty": [
+    {
+      "type": 0,
+      "value": "Policy name cannot be empty"
+    }
+  ],
+  "Policy.Undeploy.Successful": [
+    {
+      "type": 0,
+      "value": "Policy undeployed successfully"
+    }
+  ],
+  "Request.Details.Policies.PolicyList.Title": [
+    {
+      "type": 0,
+      "value": "Request"
+    }
+  ],
+  "Response.Details.Policies.PolicyList.Title": [
+    {
+      "type": 0,
+      "value": "Response"
     }
   ],
   "Scopes.Create.CreateScope.cancel": [
@@ -9053,6 +9565,18 @@
     {
       "type": 0,
       "value": "List of APIs"
+    }
+  ],
+  "Select.Gateways.Label": [
+    {
+      "type": 0,
+      "value": "Select gateways to deploy"
+    }
+  ],
+  "Select.Gateways.Placeholder": [
+    {
+      "type": 0,
+      "value": "Select gateways to deploy"
     }
   ],
   "ServiceCatalog.CreateApi.api.context.label": [
@@ -9527,6 +10051,12 @@
       "value": "Version"
     }
   ],
+  "Undeploy": [
+    {
+      "type": 0,
+      "value": "Undeploy"
+    }
+  ],
   "UnexpectedError.logout": [
     {
       "type": 0,
@@ -9639,6 +10169,24 @@
     {
       "type": 0,
       "value": "The server encountered an internal error or misconfiguration and was unable to complete your request."
+    }
+  ],
+  "globalPolicies.create.create.heading": [
+    {
+      "type": 0,
+      "value": "Create a new global policy"
+    }
+  ],
+  "globalPolicies.create.edit.heading": [
+    {
+      "type": 0,
+      "value": "Edit global policy"
+    }
+  ],
+  "globalPolicies.heading": [
+    {
+      "type": 0,
+      "value": "Global Policies"
     }
   ],
   "save": [

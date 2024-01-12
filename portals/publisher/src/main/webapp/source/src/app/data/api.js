@@ -462,11 +462,11 @@ class API extends Resource {
      * @param callback {function} A callback function to invoke after receiving successful response.
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    createNewAPIVersion(version, isDefaultVersion, serviceVersion, callback = null) {
+    createNewAPIVersion(apiId, version, isDefaultVersion, serviceVersion, callback = null) {
         const promise_copy_api = this.client.then(client => {
             return client.apis['APIs'].createNewAPIVersion(
                 {
-                    apiId: this.id,
+                    apiId: this.id || apiId,
                     newVersion: version,
                     serviceVersion: serviceVersion,
                     defaultVersion: isDefaultVersion,
@@ -478,6 +478,32 @@ class API extends Resource {
             return promise_copy_api.then(callback);
         } else {
             return promise_copy_api;
+        }
+    }
+
+
+    /**
+     * Create a new version of a given API Product
+     * @param version {string} new API Product version.
+     * @param isDefaultVersion specifies whether new API Product version is set as default version
+     * @param callback {function} A callback function to invoke after receiving successful response.
+     * @returns {promise} With given callback attached to the success chain else API Product invoke promise.
+     */
+     createNewAPIProductVersion(apiProductId, version, isDefaultVersion, callback = null) {
+        const promise_copy_api_products = this.client.then(client => {
+            return client.apis['API Products'].createNewAPIProductVersion(
+                {
+                    newVersion: version,
+                    apiProductId: apiProductId,
+                    defaultVersion: isDefaultVersion,
+                },
+                this._requestMetaData(),
+            );
+        });
+        if (callback) {
+            return promise_copy_api_products.then(callback);
+        } else {
+            return promise_copy_api_products;
         }
     }
 
@@ -770,7 +796,7 @@ class API extends Resource {
         });
         return promised_update;
     }
-    
+
     /**
      * Update an api via PUT HTTP method, Need to give the updated API object as the argument.
      * @param api {Object} Updated API object(JSON) which needs to be updated
@@ -2165,6 +2191,26 @@ class API extends Resource {
     }
 
     /**
+     * Cleanup pending workflow revision deployment task for API given its id (UUID) and revision id (UUID)
+     * @param apiId {string} UUID of the api
+     * @param revisionID {string} UUID of the revision
+     * @param callback {function} Callback function which needs to be executed in the success call
+     */
+    cancelRevisionDeploymentWorkflow(apiId, revisionID, envName, callback = null) {
+        const promise_deletePendingTask = this.client.then(client => {
+            return client.apis['API Revisions'].deleteAPIRevisionDeploymentPendingTask(
+                {
+                    apiId: apiId,
+                    revisionId: revisionID,
+                    envName: envName
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promise_deletePendingTask;
+    }
+
+    /**
      * Change displayInDevportal.
      *
      * @param {string} apiId Id of the API.
@@ -2875,7 +2921,7 @@ class API extends Resource {
             );
         });
     }
-    
+
     /**
      * Add a common operation policy
      * @param {Object} policySpec policy specification of the common operation policy to upload
@@ -2958,7 +3004,7 @@ class API extends Resource {
             );
         });
     }
-    
+
     /**
      * Get API Operation Policies
      * @param {String} apiId UUID of the API
@@ -3045,6 +3091,111 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get all global policies
+     * @param {number} limit Limit of the global policy list which needs to be retrieved
+     * @param {number} offset Offset of the global policy list which needs to be retrieved
+     * @param {String} query Search attribute by using an "gatewayLabel:" modifier
+     * @returns {Promise} Promise containing global policies list
+     */
+    static getAllGatewayPolicies(limit = null, offset = 0, query = null) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].getAllGatewayPolicies(
+                { limit, offset, query },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a new global policy
+     * @param {Object} body policy schema which holds the newly added data
+     * @returns {Promise} Promise containing the added global policy
+     */
+    static addGatewayPoliciesToFlows(body) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        return apiClient.then(client => {
+            return client.apis['Gateway Policies'].addGatewayPoliciesToFlows(
+                {},
+                requestBody,
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a global policy
+     * @param {String} gatewayPolicyMappingId UUID of the global policy to delete
+     * @returns {Promise} Response
+     */
+    static deleteGatewayPolicyByPolicyId(gatewayPolicyMappingId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].deleteGatewayPolicyByPolicyId(
+                {gatewayPolicyMappingId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the global policy by ID
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @returns {Promise} Response containing the information of the requested global policy
+     */
+    static getGatewayPolicyMappingContentByPolicyMappingId(gatewayPolicyMappingId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].getGatewayPolicyMappingContentByPolicyMappingId(
+                {gatewayPolicyMappingId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update the global policy by ID
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @param {Object} body policy schema which holds the updated data
+     * @returns {Promise} Response containing the information of the requested global policy
+     */
+    static updateGatewayPoliciesToFlows(gatewayPolicyMappingId, body) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].updateGatewayPoliciesToFlows(
+                {gatewayPolicyMappingId},
+                requestBody,
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Deploy the global policy for an gateway environment
+     * @param {String} gatewayPolicyMappingId UUID of the global policy
+     * @param {Object} body policy schema which holds the deployed and undeployed gateyway environments
+     * @returns {Promise} Response
+     */
+    static engageGlobalPolicy(gatewayPolicyMappingId, body) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const requestBody = {
+            requestBody: body,
+        };
+        return restApiClient.then(client => {
+            return client.apis['Gateway Policies'].engageGlobalPolicy(
+                {gatewayPolicyMappingId},
+                requestBody,
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 API.CONSTS = {

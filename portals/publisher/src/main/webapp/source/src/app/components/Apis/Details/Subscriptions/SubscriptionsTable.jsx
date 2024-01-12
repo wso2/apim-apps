@@ -18,13 +18,8 @@
 
 import React, { Component } from 'react';
 import { FormattedMessage, injectIntl, defineMessages } from 'react-intl';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
@@ -32,7 +27,6 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
@@ -40,6 +34,7 @@ import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import InfoIcon from '@material-ui/icons/Info';
 import UserIcon from '@material-ui/icons/Person';
+import Configurations from 'Config';
 
 
 import Alert from 'AppComponents/Shared/Alert';
@@ -156,92 +151,6 @@ const subscriptionStatus = {
 };
 
 /**
- * Table pagination for subscriptions table
- *
- * @param props props used for SubscriptionTablePagination
- * @returns {*}
- */
-function SubscriptionTablePagination(props) {
-    const {
-        count, page, rowsPerPage, onChangePage,
-    } = props;
-
-    /**
-     * handleFirstPageButtonClick loads data of the first page
-     * */
-    function handleFirstPageButtonClick() {
-        if (onChangePage) {
-            onChangePage(0);
-        }
-    }
-
-    /**
-     * handleBackButtonClick load data of the prev page
-     * */
-    function handleBackButtonClick() {
-        if (onChangePage) {
-            onChangePage(page - 1);
-        }
-    }
-
-    /**
-     * handleNextButtonClick load data of the next page
-     * */
-    function handleNextButtonClick() {
-        if (onChangePage) {
-            onChangePage(page + 1);
-        }
-    }
-
-    /**
-     * handleLastPageButtonClick load data of the last page
-     * */
-    function handleLastPageButtonClick() {
-        if (onChangePage) {
-            onChangePage(Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-        }
-    }
-
-    return (
-        <div
-            style={{ display: 'flex' }}
-        >
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-            >
-                <FirstPageIcon />
-            </IconButton>
-            <IconButton
-                onClick={handleBackButtonClick}
-                disabled={page === 0}
-            >
-                <KeyboardArrowLeft />
-            </IconButton>
-            <IconButton
-                onClick={handleNextButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-            >
-                <KeyboardArrowRight />
-            </IconButton>
-            <IconButton
-                onClick={handleLastPageButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-            >
-                <LastPageIcon />
-            </IconButton>
-        </div>
-    );
-}
-
-SubscriptionTablePagination.propTypes = {
-    count: PropTypes.number.isRequired,
-    page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
-    onChangePage: PropTypes.func.isRequired,
-};
-
-/**
  * Lists all subscriptions.
  *
  * @class SubscriptionsTable
@@ -253,11 +162,9 @@ class SubscriptionsTable extends Component {
         this.api = props.api;
         this.state = {
             subscriptions: null,
-            totalSubscription: 0,
             page: 0,
             rowsPerPage: 5,
             searchQuery: null,
-            rowsPerPageOptions: [5, 10, 25, 50, 100],
             emptyColumnHeight: 60,
             policies: [],
             subscriberClaims: null,
@@ -578,7 +485,13 @@ class SubscriptionsTable extends Component {
         const api = new API();
         const { page, rowsPerPage, searchQuery } = this.state;
         const { intl } = this.props;
-        const promisedSubscriptions = api.subscriptions(this.api.id, page * rowsPerPage, rowsPerPage, searchQuery);
+        const { maxSubscriptionLimit } = Configurations.apis;
+        const promisedSubscriptions = api.subscriptions(
+            this.api.id, 
+            page * rowsPerPage, 
+            maxSubscriptionLimit, 
+            searchQuery
+        );
         promisedSubscriptions
             .then((response) => {
                 for (let i = 0; i < response.body.list.length; i++) {
@@ -605,7 +518,6 @@ class SubscriptionsTable extends Component {
                 }
                 this.setState({
                     subscriptions: response.body.list,
-                    totalSubscription: response.body.pagination.total,
                 });
             })
             .catch((errorMessage) => {
@@ -704,8 +616,7 @@ class SubscriptionsTable extends Component {
      */
     render() {
         const {
-            subscriptions, page, rowsPerPage, totalSubscription, rowsPerPageOptions, emptyColumnHeight,
-            subscriberClaims,
+            subscriptions, rowsPerPage, emptyColumnHeight, subscriberClaims,
         } = this.state;
         const { classes, api } = this.props;
         if (!subscriptions) {
@@ -742,6 +653,7 @@ class SubscriptionsTable extends Component {
                 ),
                 options: {
                     sort: false,
+                    filterType: 'textField',
                     customBodyRender: (value, tableMeta) => {
                         if (tableMeta.rowData) {
                             let claimsObject;
@@ -908,20 +820,7 @@ class SubscriptionsTable extends Component {
             search: false,
             selectableRows: 'none',
             rowsPerPageOptions: [5, 10, 25, 50, 100],
-            customFooter: (count, muiPage, muiRowsPerPage, changeRowsPerPage) => {
-                return (
-                    <TablePagination
-                        rowsPerPageOptions={rowsPerPageOptions}
-                        colSpan={6}
-                        count={totalSubscription}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onChangePage={this.handleChangePage}
-                        onChangeRowsPerPage={(e) => this.handleChangeRowsPerPage(e, changeRowsPerPage)}
-                        ActionsComponent={SubscriptionTablePagination}
-                    />
-                );
-            },
+            rowsPerPage,
         };
         const subMails = {};
         const emails = subscriberClaims && Object.entries(subscriberClaims).map(([, v]) => {

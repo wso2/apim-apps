@@ -37,6 +37,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import FormLabel from '@material-ui/core/FormLabel';
 import Alert from 'AppComponents/Shared/Alert';
+import API from 'AppData/api';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const styles = (theme) => ({
@@ -114,15 +115,17 @@ class CreateNewVersion extends React.Component {
 
     componentDidMount() {
         const { api } = this.props;
-        if (api.serviceInfo !== null) {
-            const promisedServices = ServiceCatalog.getServiceByName(api.serviceInfo);
-            promisedServices.then((data) => {
-                const array = data.list.map((item) => item.version);
-                this.setState({ versionList: array });
-            }).catch((error) => {
-                console.error(error);
-                Alert.error('Error while loading services version');
-            });
+        if (api.serviceInfo !== undefined) {
+            if (api.serviceInfo !== null) {
+                const promisedServices = ServiceCatalog.getServiceByName(api.serviceInfo);
+                promisedServices.then((data) => {
+                    const array = data.list.map((item) => item.version);
+                    this.setState({ versionList: array });
+                }).catch((error) => {
+                    console.error(error);
+                    Alert.error('Error while loading services version');
+                });
+            }
         }
     }
 
@@ -168,28 +171,53 @@ class CreateNewVersion extends React.Component {
             return;
         }
         const isDefaultVersionBool = isDefaultVersion === 'yes';
+        const apiClient = new API();
         const { intl } = this.props;
-        api.createNewAPIVersion(newVersion, isDefaultVersionBool, serviceVersion)
-            .then((response) => {
-                this.setState({
-                    redirectToReferrer: true,
-                    apiId: response.obj.id,
+        if (api.apiType === 'APIPRODUCT') {
+            apiClient.createNewAPIProductVersion(api.id ,newVersion, isDefaultVersionBool)
+                .then((response) => {
+                    this.setState({
+                        redirectToReferrer: true,
+                        apiId: response.obj.id,
+                    });
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.APIProduct.NewVersion.NewVersion.success',
+                        defaultMessage: 'Successfully created new version ',
+                    }) + newVersion);
+                })
+                .catch((error) => {
+                    if (error.status === 409) {
+                        this.setState({ valid: { version: { alreadyExists: true } } });
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.APIProduct.NewVersion.NewVersion.error',
+                            defaultMessage: 'Something went wrong while creating a new version!. Error: ',
+                        }) + error.status);
+                    }
                 });
-                Alert.info(intl.formatMessage({
-                    id: 'Apis.Details.NewVersion.NewVersion.success',
-                    defaultMessage: 'Successfully created new version ',
-                }) + newVersion);
-            })
-            .catch((error) => {
-                if (error.status === 409) {
-                    this.setState({ valid: { version: { alreadyExists: true } } });
-                } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.NewVersion.NewVersion.error',
-                        defaultMessage: 'Something went wrong while creating a new version!. Error: ',
-                    }) + error.status);
-                }
-            });
+        } else {
+            apiClient.createNewAPIVersion(api.id, newVersion, isDefaultVersionBool, serviceVersion)
+                .then((response) => {
+                    this.setState({
+                        redirectToReferrer: true,
+                        apiId: response.obj.id,
+                    });
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.NewVersion.NewVersion.success',
+                        defaultMessage: 'Successfully created new version ',
+                    }) + newVersion);
+                })
+                .catch((error) => {
+                    if (error.status === 409) {
+                        this.setState({ valid: { version: { alreadyExists: true } } });
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.NewVersion.NewVersion.error',
+                            defaultMessage: 'Something went wrong while creating a new version!. Error: ',
+                        }) + error.status);
+                    }
+                });
+        }
     }
 
     /**
@@ -224,7 +252,7 @@ class CreateNewVersion extends React.Component {
             isDefaultVersion, newVersion, redirectToReferrer, apiId, valid, serviceVersion, versionList,
         } = this.state;
         if (redirectToReferrer) {
-            return <Redirect to={'/apis/' + apiId + '/overview'} />;
+            return <Redirect to={(api.apiType === 'APIPRODUCT' ? '/api-products/' : '/apis/') + apiId + '/overview'} />;
         }
 
         let helperText = '';

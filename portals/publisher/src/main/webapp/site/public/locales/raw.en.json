@@ -8,6 +8,18 @@
   "APIs.details.endpoints.certificate.usage.cancel": {
     "defaultMessage": "Cancel"
   },
+  "Actions": {
+    "defaultMessage": "Actions"
+  },
+  "Active.Deployment.Available": {
+    "defaultMessage": "An active deployment is available"
+  },
+  "Active.Deployments.Available": {
+    "defaultMessage": "Active deployments are available"
+  },
+  "Adding.Policy.Mapping.Error": {
+    "defaultMessage": "Error occurred while adding the policy mapping"
+  },
   "Api.category.dropdown.tooltip": {
     "defaultMessage": "Allow to group APIs that have similar attributes. There has to be pre-defined API categories in the environment in order to be attached to an API."
   },
@@ -51,7 +63,7 @@
     "defaultMessage": "Add Resources"
   },
   "Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading": {
-    "defaultMessage": "Create an API Product by providing a Name, a Context, Resources, and Business Plans (optional)."
+    "defaultMessage": "Create an API Product by providing a Name, a Context, a Version, Resources, and Business Plans (optional)."
   },
   "Apis.Create.AsyncAPI.ApiCreateAsyncAPI.advertiseOnly.warning": {
     "defaultMessage": "API Manager only supports the streaming APIs of types WebSocket, SSE and WebSub. Please create one of the supported types if you want to deploy it in the gateway."
@@ -97,6 +109,9 @@
   },
   "Apis.Create.Components.DefaultAPIForm.api.product.context": {
     "defaultMessage": "Context"
+  },
+  "Apis.Create.Components.DefaultAPIForm.api.product.version": {
+    "defaultMessage": "Version"
   },
   "Apis.Create.Components.DefaultAPIForm.name": {
     "defaultMessage": "Name"
@@ -277,6 +292,9 @@
   },
   "Apis.Create.streaming.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Protocol"
+  },
+  "Apis.Details.\n                                                                                            Environments.Environments.\n                                                                                            pending.chip": {
+    "defaultMessage": "Pending"
   },
   "Apis.Details.\n                                                                                Environments.deploy.vhost": {
     "defaultMessage": "VHost"
@@ -579,6 +597,12 @@
   "Apis.Details.APILevelRateLimitingPolicies.components.Configuration.tooltip": {
     "defaultMessage": "Selected Rate Limiting Policy will be applied to all the requests of this API."
   },
+  "Apis.Details.APIProduct.NewVersion.NewVersion.error": {
+    "defaultMessage": "Something went wrong while creating a new version!. Error:"
+  },
+  "Apis.Details.APIProduct.NewVersion.NewVersion.success": {
+    "defaultMessage": "Successfully created new version"
+  },
   "Apis.Details.AccessControl.roles.help": {
     "defaultMessage": "Enter valid role and press enter"
   },
@@ -702,6 +726,9 @@
   "Apis.Details.Configurartion.components.QueryAnalysis.edit": {
     "defaultMessage": "Edit Complexity Values"
   },
+  "Apis.Details.Configuration.ApiKeyHeader.helper.text": {
+    "defaultMessage": "ApiKey header name cannot contain spaces or special characters"
+  },
   "Apis.Details.Configuration.AuthHeader.helper.text": {
     "defaultMessage": "Authorization header name cannot contain spaces or special characters"
   },
@@ -713,6 +740,9 @@
   },
   "Apis.Details.Configuration.Components.MaxBackendTps.maximum.backend.throughput": {
     "defaultMessage": "Backend Throughput"
+  },
+  "Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip": {
+    "defaultMessage": "The header name that is used to send the api key information. \"ApiKey\" is the default header."
   },
   "Apis.Details.Configuration.Configuration.AuthHeader.tooltip": {
     "defaultMessage": "The header name that is used to send the authorization information. \"Authorization\" is the default header."
@@ -728,6 +758,9 @@
   },
   "Apis.Details.Configuration.Configuration.Endpoints.edit.api.endpoints": {
     "defaultMessage": "Edit API Endpoints"
+  },
+  "Apis.Details.Configuration.Configuration.apiKey.header.label": {
+    "defaultMessage": "ApiKey Header"
   },
   "Apis.Details.Configuration.Configuration.auth.header.label": {
     "defaultMessage": "Authorization Header"
@@ -1989,16 +2022,10 @@
   "Apis.Details.Environments.\n                                                        Environments.gateway.deployed.revision": {
     "defaultMessage": "Deployed Revision"
   },
-  "Apis.Details.Environments.Environments\n                                                                    .select.table": {
-    "defaultMessage": "Select Revision"
-  },
   "Apis.Details.Environments.Environments\n                                                                    .select.vhost": {
     "defaultMessage": "Select Access URL"
   },
   "Apis.Details.Environments.Environments\n                                                                .deploy.button": {
-    "defaultMessage": "Deploy"
-  },
-  "Apis.Details.Environments.Environments.\n                                                                deploy.button": {
     "defaultMessage": "Deploy"
   },
   "Apis.Details.Environments.Environments.APIGateways": {
@@ -2022,11 +2049,17 @@
   "Apis.Details.Environments.Environments.api.gateways.name": {
     "defaultMessage": "Name"
   },
+  "Apis.Details.Environments.Environments.cancel.btn": {
+    "defaultMessage": "Cancel"
+  },
   "Apis.Details.Environments.Environments.create.cancel": {
     "defaultMessage": "Cancel"
   },
   "Apis.Details.Environments.Environments.create.create": {
     "defaultMessage": "Create"
+  },
+  "Apis.Details.Environments.Environments.deploy.button": {
+    "defaultMessage": "Deploy"
   },
   "Apis.Details.Environments.Environments.deploy.cancel": {
     "defaultMessage": "Cancel"
@@ -2052,14 +2085,20 @@
   "Apis.Details.Environments.Environments.display.in.devportal": {
     "defaultMessage": "Display in Developer Portal"
   },
-  "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": {
-    "defaultMessage": "Deployed Revision"
+  "Apis.Details.Environments.Environments.gateway\n                                                    .deployment.current.revision": {
+    "defaultMessage": "Current Revision"
   },
   "Apis.Details.Environments.Environments.gateway.accessUrl": {
     "defaultMessage": "Gateway Access URL"
   },
   "Apis.Details.Environments.Environments.gateway.action": {
     "defaultMessage": "Action"
+  },
+  "Apis.Details.Environments.Environments.gateway.deployment.next.revision": {
+    "defaultMessage": "Next Revision"
+  },
+  "Apis.Details.Environments.Environments.pending.chip": {
+    "defaultMessage": "Pending"
   },
   "Apis.Details.Environments.Environments.revision\n                                                            .description.deploy": {
     "defaultMessage": "Add a description to the revision"
@@ -2121,8 +2160,14 @@
   "Apis.Details.Environments.Environments.select.rev.warning": {
     "defaultMessage": "Please delete a revision as the number of revisions have reached a maximum of {count}"
   },
+  "Apis.Details.Environments.Environments.select.table": {
+    "defaultMessage": "Select Revision"
+  },
   "Apis.Details.Environments.Environments.solace.platform.environments.heading": {
     "defaultMessage": "Solace Platform Environments"
+  },
+  "Apis.Details.Environments.Environments.status.not.deployed": {
+    "defaultMessage": "No Revision Deployed"
   },
   "Apis.Details.Environments.Environments.undeploy.btn": {
     "defaultMessage": "Undeploy"
@@ -2183,6 +2228,9 @@
   },
   "Apis.Details.LifeCycle.CheckboxLabels.endpoints.provided": {
     "defaultMessage": "Endpoint provided"
+  },
+  "Apis.Details.LifeCycle.CheckboxLabels.mandatory.properties.provided": {
+    "defaultMessage": "Mandatory Properties provided"
   },
   "Apis.Details.LifeCycle.LifeCycle.change.not.allowed": {
     "defaultMessage": "* You are not authorized to change the life cycle state of the API due to insufficient permissions"
@@ -2907,10 +2955,16 @@
   "Apis.Details.Properties.\n                                                            Properties.editable.show.in.devporal": {
     "defaultMessage": "Show in devportal"
   },
+  "Apis.Details.Properties.\n                                                    Properties.editable.show.in.devporal": {
+    "defaultMessage": "Show in devportal"
+  },
+  "Apis.Details.Properties.Properties.\n                                                                            show.add.property.custom.property.name": {
+    "defaultMessage": "{message}"
+  },
   "Apis.Details.Properties.Properties.\n                                                                    show.add.property.invalid.error": {
     "defaultMessage": "Invalid property name"
   },
-  "Apis.Details.Properties.Properties.\n                                                                show.add.property.property.name": {
+  "Apis.Details.Properties.Properties.\n                                                            show.add.property.property.name": {
     "defaultMessage": "Name"
   },
   "Apis.Details.Properties.Properties.\n                                property.name.exists": {
@@ -3771,6 +3825,15 @@
   "Apis.Listing.ApiThumb.context": {
     "defaultMessage": "Context"
   },
+  "Apis.Listing.ApiThumb.owners": {
+    "defaultMessage": "Owners"
+  },
+  "Apis.Listing.ApiThumb.owners.business": {
+    "defaultMessage": "Business"
+  },
+  "Apis.Listing.ApiThumb.owners.technical": {
+    "defaultMessage": "Technical"
+  },
   "Apis.Listing.ApiThumb.version": {
     "defaultMessage": "Version"
   },
@@ -3869,6 +3932,9 @@
   },
   "Apis.Listing.SampleAPI.popup.deploy.inprogress": {
     "defaultMessage": "Deploying sample API ..."
+  },
+  "Apis.Listing.SampleAPI.popup.deploy.pending": {
+    "defaultMessage": "API revision deployment request sent"
   },
   "Apis.Listing.SampleAPI.popup.publish.complete": {
     "defaultMessage": "API published successfully!"
@@ -4092,8 +4158,17 @@
   "Base.Header.navbar.GlobalNavBar.common.policies": {
     "defaultMessage": "Policies"
   },
+  "Base.Header.navbar.GlobalNavBar.global.policies": {
+    "defaultMessage": "Global Policies"
+  },
   "Base.Header.navbar.GlobalNavBar.scopes": {
     "defaultMessage": "Scopes"
+  },
+  "Cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Cannot.Find.PolicyObj.For.PolicyId": {
+    "defaultMessage": "Cannot find policy for Id:"
   },
   "CommonPolicies.CreatePolicy.breadcrumb.create.new.policy": {
     "defaultMessage": "Create New Policy"
@@ -4155,14 +4230,149 @@
   "CommonPolicies.ViewPolicy.policies.title": {
     "defaultMessage": "Policies"
   },
+  "Confirm.Delete": {
+    "defaultMessage": "Confirm Deletion"
+  },
+  "Confirm.Delete.Verify": {
+    "defaultMessage": "Are you sure you want to delete the policy?"
+  },
+  "Confirm.Deploy": {
+    "defaultMessage": "Confirm Deployment"
+  },
+  "Confirm.Deploy.Verify": {
+    "defaultMessage": "Are you sure you want to depoly the policy in the selected gateways?"
+  },
+  "Confirm.UnDeploy": {
+    "defaultMessage": "Confirm Undeployment"
+  },
+  "Confirm.Undeploy.Verify": {
+    "defaultMessage": "Are you sure you want to undepoly the policy?"
+  },
   "Connection.Timeout": {
     "defaultMessage": "Connection Timeout"
+  },
+  "Delete": {
+    "defaultMessage": "Delete"
+  },
+  "Deploy": {
+    "defaultMessage": "Deploy"
+  },
+  "Deploy.Helper": {
+    "defaultMessage": "If another global policy is already deployed to a gateway, that gateway will not be available for deployment of this policy. Please undeploy the previously deployed global policy first."
+  },
+  "Deployed.Gateway.Listing.Table.Header.Description": {
+    "defaultMessage": "Description"
+  },
+  "Deployed.Gateway.Listing.Table.Header.Name": {
+    "defaultMessage": "Deployed Gateways"
+  },
+  "Deployed.Gateway.Listing.Table.Not.Available": {
+    "defaultMessage": "No deployed gateways"
   },
   "Endpoint.Suspension.State": {
     "defaultMessage": "Endpoint Suspension State"
   },
+  "Error.Deploy.Policy": {
+    "defaultMessage": "Error occurred while deploying the policy"
+  },
+  "Error.Retrieve.Policy": {
+    "defaultMessage": "Error occurred while retrieving the policy"
+  },
+  "Error.Retrieve.Policy.List": {
+    "defaultMessage": "Error occurred while retrieving the policy list"
+  },
+  "Error.Undeploy.Policy": {
+    "defaultMessage": "Error occurred while undeploying the policy"
+  },
+  "Error.Validating.Regex": {
+    "defaultMessage": "Error while validating the regex"
+  },
   "Error.while.validating.the.imported.graphQLSchema": {
     "defaultMessage": "Error while validating the imported schema"
+  },
+  "Fault.Details.Policies.PolicyList.Title": {
+    "defaultMessage": "Fault"
+  },
+  "Fetching.Policies.Error": {
+    "defaultMessage": "Error while fetching policies"
+  },
+  "Fetching.Policies.Settings": {
+    "defaultMessage": "Error while fetching settings"
+  },
+  "Global.Details.Policies.AttachedPolicyCard.apiSpecificPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Global.Details.Policies.AttachedPolicyCard.commonPolicy.download.error": {
+    "defaultMessage": "Something went wrong while downloading the policy"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.title": {
+    "defaultMessage": "Description"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": {
+    "defaultMessage": "Oops! Looks like this policy does not have a description"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.description.value.provided": {
+    "defaultMessage": "{description}"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.reset": {
+    "defaultMessage": "Reset"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.save": {
+    "defaultMessage": "Save"
+  },
+  "Global.Details.Policies.AttachedPolicyForm.General.saving": {
+    "defaultMessage": "Saving"
+  },
+  "Global.Details.Policies.DraggablePolicyCard.policy.view": {
+    "defaultMessage": "View"
+  },
+  "Global.Details.Policies.PolicyConfigurationEditDrawer.title": {
+    "defaultMessage": "Configure {policy}"
+  },
+  "Global.Details.Policies.PolicyConfiguringDrawer.title": {
+    "defaultMessage": "Configure {policy}"
+  },
+  "Global.Details.Policies.PolicyList.title": {
+    "defaultMessage": "Policy List"
+  },
+  "Global.Details.Policies.SaveOperationPolicies.save": {
+    "defaultMessage": "Save"
+  },
+  "Global.Details.Policies.SaveOperationPolicies.update": {
+    "defaultMessage": "Update"
+  },
+  "Global.Policies": {
+    "defaultMessage": "Global Policies"
+  },
+  "Global.Policy.Listing.Table.Header.Name": {
+    "defaultMessage": "Global Policy"
+  },
+  "GlobalPolicies.Listing.Table.Header.Actions.Edit": {
+    "defaultMessage": "Edit"
+  },
+  "GlobalPolicies.Listing.Table.Header.Actions.View": {
+    "defaultMessage": "View"
+  },
+  "GlobalPolicies.Listing.onboarding.create.new": {
+    "defaultMessage": "Let’s get started!"
+  },
+  "GlobalPolicies.Listing.onboarding.policies.tooltip": {
+    "defaultMessage": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy"
+  },
+  "GlobalPolicies.Listing.policies.title.add.new.policy": {
+    "defaultMessage": "Add new global policy"
+  },
+  "GlobalPolicies.Listing.policies.title.name": {
+    "defaultMessage": "Global Policies"
+  },
+  "GlobalPolicies.Listing.policies.title.tooltip": {
+    "defaultMessage": "This will add policies globally to the gateways. Please navigate to the Policies tab under any desired API if you want to add API / operation level policies"
+  },
+  "GlobalPolicies.Listing.table.header.actions.delete": {
+    "defaultMessage": "Delete"
   },
   "LoginDenied.logout": {
     "defaultMessage": "Logout"
@@ -4172,6 +4382,48 @@
   },
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
+  },
+  "Polcies.TextField.Description": {
+    "defaultMessage": "Description"
+  },
+  "Polcies.TextField.Name": {
+    "defaultMessage": "Name"
+  },
+  "Policy.Delete.Error": {
+    "defaultMessage": "Error while deleting the policy"
+  },
+  "Policy.Delete.Successful": {
+    "defaultMessage": "Policy deleted successfully"
+  },
+  "Policy.Deploy.Successful": {
+    "defaultMessage": "Policy deployed successfully"
+  },
+  "Policy.Description.Cannot.Be.Empty": {
+    "defaultMessage": "Policy description cannot be empty"
+  },
+  "Policy.Mapping.Added.Successfully": {
+    "defaultMessage": "Policy mapping added successfully"
+  },
+  "Policy.Mapping.Cannot.Be.Empty": {
+    "defaultMessage": "Policy mapping cannot be empty"
+  },
+  "Policy.Mapping.Update.Error": {
+    "defaultMessage": "Error occurred while updating the policy mapping"
+  },
+  "Policy.Mapping.Update.Success": {
+    "defaultMessage": "Policy mapping updated successfully"
+  },
+  "Policy.Name.Cannot.Be.Empty": {
+    "defaultMessage": "Policy name cannot be empty"
+  },
+  "Policy.Undeploy.Successful": {
+    "defaultMessage": "Policy undeployed successfully"
+  },
+  "Request.Details.Policies.PolicyList.Title": {
+    "defaultMessage": "Request"
+  },
+  "Response.Details.Policies.PolicyList.Title": {
+    "defaultMessage": "Response"
   },
   "Scopes.Create.CreateScope.cancel": {
     "defaultMessage": "Cancel"
@@ -4328,6 +4580,12 @@
   },
   "Scopes.Usage.UsageViewAPI.api.usage": {
     "defaultMessage": "List of APIs"
+  },
+  "Select.Gateways.Label": {
+    "defaultMessage": "Select gateways to deploy"
+  },
+  "Select.Gateways.Placeholder": {
+    "defaultMessage": "Select gateways to deploy"
   },
   "ServiceCatalog.CreateApi.api.context.label": {
     "defaultMessage": "Context"
@@ -4551,6 +4809,9 @@
   "ServiceCatalog.ServicesTableView.ServicesTableView.version": {
     "defaultMessage": "Version"
   },
+  "Undeploy": {
+    "defaultMessage": "Undeploy"
+  },
   "UnexpectedError.logout": {
     "defaultMessage": "Logout"
   },
@@ -4607,6 +4868,15 @@
   },
   "error.list.500.description": {
     "defaultMessage": "The server encountered an internal error or misconfiguration and was unable to complete your request."
+  },
+  "globalPolicies.create.create.heading": {
+    "defaultMessage": "Create a new global policy"
+  },
+  "globalPolicies.create.edit.heading": {
+    "defaultMessage": "Edit global policy"
+  },
+  "globalPolicies.heading": {
+    "defaultMessage": "Global Policies"
   },
   "save": {
     "defaultMessage": "Save"

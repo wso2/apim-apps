@@ -105,7 +105,7 @@ export default function ApiProductCreateWrapper(props) {
                 <FormattedMessage
                     id='Apis.Create.APIProduct.APIProductCreateWrapper.sub.heading'
                     defaultMessage={
-                        'Create an API Product by providing a Name, a Context, Resources, '
+                        'Create an API Product by providing a Name, a Context, a Version, Resources, '
                         + 'and Business Plans (optional).'
                     }
                 />
@@ -190,11 +190,12 @@ export default function ApiProductCreateWrapper(props) {
     const createAPIProduct = () => {
         setCreating(true);
         const {
-            name, context,
+            name, context, version,
         } = apiInputs;
         const apiData = {
             name,
             context,
+            version,
             policies,
             apis: apiResources,
         };
