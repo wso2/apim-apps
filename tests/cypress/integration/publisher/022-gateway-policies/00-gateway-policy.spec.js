@@ -47,8 +47,8 @@ describe("Gateway Policies", () => {
         cy.get('#headerValue').type('RequestHeaderValue');
         cy.get('[data-testid=policy-attached-details-save]').click();
         cy.get('[data-testid=policy-mapping-save-or-update-button]')
-            .scrollIntoView()
             .should('be.visible')
+            .scrollIntoView()
             .click();
         cy.wait(2000);
 
@@ -66,10 +66,11 @@ describe("Gateway Policies", () => {
         // update policy mapping
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
         cy.get('[data-testid=policy-mapping-edit-button]').click();
+        cy.wait(5000);
         cy.get('div[title="Add Header : v1"]')
-        .scrollIntoView()
-        .should('be.visible')
-        .click();
+            .should('be.visible')
+            .scrollIntoView()
+            .click();
         cy.get('#headerValue', { timeout: Cypress.config().largeTimeout }).click();
         cy.get('[data-testid=policy-attached-details-save]').should('be.disabled');
         const newText = 'RequestHeaderValueNew';
@@ -77,16 +78,17 @@ describe("Gateway Policies", () => {
         cy.get('[data-testid=policy-attached-details-save]').should('not.be.disabled');
         cy.get('[data-testid=policy-attached-details-save]').click();
         cy.get('[data-testid=policy-mapping-save-or-update-button]')
-            .scrollIntoView()
             .should('be.visible')
+            .scrollIntoView()
             .click();
         cy.wait(2000);
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
         cy.get('[data-testid=policy-mapping-edit-button]').click();
+        cy.wait(5000);
         cy.get('div[title="Add Header : v1"]')
-        .scrollIntoView()
-        .should('be.visible')
-        .click();
+            .should('be.visible')
+            .scrollIntoView()
+            .click();
         cy.get('#headerValue', { timeout: Cypress.config().largeTimeout }).click();
         cy.get('#headerValue').should('have.value', newText);
 
