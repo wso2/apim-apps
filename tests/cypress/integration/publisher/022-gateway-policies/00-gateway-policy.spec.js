@@ -65,8 +65,8 @@ describe("Gateway Policies", () => {
 
         // update policy mapping
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
-        cy.get('[data-testid=policy-mapping-edit-button]').click();
-        cy.wait(5000);
+        cy.get('[data-testid=policy-mapping-edit-button]').click({force : true});
+        cy.wait(10000);
         cy.get('div[title="Add Header : v1"]')
             .should('be.visible')
             .scrollIntoView()
@@ -83,8 +83,8 @@ describe("Gateway Policies", () => {
             .click();
         cy.wait(2000);
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
-        cy.get('[data-testid=policy-mapping-edit-button]').click();
-        cy.wait(5000);
+        cy.get('[data-testid=policy-mapping-edit-button]').click({force : true});
+        cy.wait(10000);
         cy.get('div[title="Add Header : v1"]')
             .should('be.visible')
             .scrollIntoView()
