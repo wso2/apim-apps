@@ -95,6 +95,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warSourceExcludes>/node_modules/**</warSourceExcludes>
                     <packagingExcludes>node_modules/**</packagingExcludes>
+                    <packagingExcludes>WEB-INF/lib/*</packagingExcludes>
                     <warName>devportal</warName>
                 </configuration>
             </plugin>
