@@ -63,6 +63,16 @@
                 <artifactId>org.wso2.carbon.apimgt.impl</artifactId>
                 <version>${carbon.apimgt.imp.pkg.version.range}</version>
                 <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-log4j2</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
             <dependency>
