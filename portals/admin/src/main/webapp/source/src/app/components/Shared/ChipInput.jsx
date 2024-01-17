@@ -34,13 +34,13 @@ const styles = (theme) => {
             flex: 1,
             marginTop: 0,
             minWidth: 70,
-            '&$outlined,&$filled': {
+            '&.Mui-outlined,&.Mui-filled': {
                 boxSizing: 'border-box',
             },
-            '&$outlined': {
+            '&.Mui-outlined': {
                 paddingTop: 14,
             },
-            '&$filled': {
+            '&.Mui-filled': {
                 paddingTop: 28,
             },
         },
@@ -60,7 +60,7 @@ const styles = (theme) => {
             cursor: 'text',
             marginBottom: -2,
             minHeight: 40,
-            '&$labeled&$standard': {
+            '&.Mui-labeled,&.Mui-standard': {
                 marginTop: 18,
             },
         },
@@ -88,13 +88,13 @@ const styles = (theme) => {
         labeled: {},
         label: {
             top: 4,
-            '&$outlined&:not($labelShrink)': {
+            '&.Mui-outlined&:not($labelShrink)': {
                 top: 2,
                 '$marginDense &': {
                     top: 5,
                 },
             },
-            '&$filled&:not($labelShrink)': {
+            '&.Mui-filled&:not($labelShrink)': {
                 top: 15,
                 '$marginDense &': {
                     top: 20,
@@ -108,6 +108,7 @@ const styles = (theme) => {
             marginBottom: -20,
         },
         focused: {},
+        focusVisible: {},
         disabled: {},
         underline: {
             '&:after': {
@@ -125,10 +126,10 @@ const styles = (theme) => {
                 }),
                 pointerEvents: 'none', // Transparent to the hover style.
             },
-            '&$focused:after': {
+            '&.Mui-focused:after': {
                 transform: 'scaleX(1)',
             },
-            '&$error:after': {
+            '&.Mui-error:after': {
                 borderBottomColor: theme.palette.error.main,
                 transform: 'scaleX(1)', // error is always underlined in red
             },
@@ -152,7 +153,7 @@ const styles = (theme) => {
                     borderBottom: `1px solid ${bottomLineColor}`,
                 },
             },
-            '&$disabled:before': {
+            '&.Mui-disabled:before': {
                 borderBottomStyle: 'dotted',
             },
         },

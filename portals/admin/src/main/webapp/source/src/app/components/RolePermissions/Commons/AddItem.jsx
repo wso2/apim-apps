@@ -42,9 +42,12 @@ function AddItem(props) {
                 fullWidth
                 maxWidth={maxWidth || 'sm'}
                 open
-                onClose={onClose}
+                onClose={(event, reason) => {
+                    if (reason !== 'backdropClick' || !disableBackdropClick) {
+                        onClose(event, reason);
+                    }
+                }}
                 aria-labelledby='form-dialog-title'
-                // disableBackdropClick={disableBackdropClick}
             >
                 <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
                 <DialogContent dividers>

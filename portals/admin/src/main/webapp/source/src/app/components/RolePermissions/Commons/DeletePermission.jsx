@@ -90,8 +90,11 @@ export default function DeletePermission(props) {
                 fullWidth
                 maxWidth='xs'
                 open={open}
-                // disableBackdropClick={isDeleting}
-                onClose={handleClose}
+                onClose={(event, reason) => {
+                    if (reason !== 'backdropClick' || !isDeleting) {
+                        handleClose(event, reason);
+                    }
+                }}
                 aria-labelledby='delete-confirmation'
             >
                 <DialogTitle id='delete-confirmation'>

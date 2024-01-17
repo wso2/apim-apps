@@ -120,8 +120,11 @@ export default function PermissionsSelector(props) {
                 fullWidth
                 maxWidth='md'
                 open={open}
-                // disableBackdropClick={isSaving}
-                onClose={handleClose}
+                onClose={(event, reason) => {
+                    if (reason !== 'backdropClick' || !isSaving) {
+                        handleClose(event, reason);
+                    }
+                }}
                 aria-labelledby='select-permissions-for-role'
             >
                 <DialogTitle id='select-permissions-for-role'>

@@ -60,8 +60,8 @@ const AppThemes = {
         overrides: {
             MuiRadio: {
                 colorSecondary: {
-                    '&$checked': { color: '#009be5' },
-                    '&$disabled': {
+                    '&.Mui-checked': { color: '#009be5' },
+                    '&.Mui-disabled': {
                         color: 'rgba(0, 0, 0, 0.26)',
                     },
                 },
@@ -109,6 +109,7 @@ const AppThemes = {
             MuiDivider: {
                 root: {
                     backgroundColor: '#404854',
+                    'border-color': '#404854',
                 },
             },
             MuiListItemText: {
