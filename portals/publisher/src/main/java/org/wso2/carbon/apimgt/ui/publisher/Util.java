@@ -149,6 +149,15 @@ public class Util {
         }
     }
 
+    public static boolean isEnableEmailUserName() {
+        boolean isEnableEmailUserName = Boolean.parseBoolean(CarbonUtils.getServerConfiguration().getFirstProperty("EnableEmailUserName"));
+        if (isEnableEmailUserName) {
+            return isEnableEmailUserName;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Deciding what to process as app context. <br>
      * If the settings.json has the following definition, <br><br>
