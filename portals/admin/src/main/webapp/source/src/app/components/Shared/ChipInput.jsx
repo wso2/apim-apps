@@ -3,6 +3,7 @@
  *         Copyright (c) 2014 Call-Em-All (https://github.com/callemall/material-ui)
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import Input from '@mui/material/Input';
@@ -10,7 +11,6 @@ import FilledInput from '@mui/material/FilledInput/FilledInput';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import Chip from '@mui/material/Chip';
-import withStyles from '@mui/styles/withStyles';
 import blue from '@mui/material/colors/blue';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -22,13 +22,36 @@ const variantComponent = {
     outlined: OutlinedInput,
 };
 
-const styles = (theme) => {
+const PREFIX = 'WAMuiChipInput';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  inputRoot: `${PREFIX}-inputRoot`,
+  input: `${PREFIX}-input`,
+  chipContainer: `${PREFIX}-chipContainer`,
+  outlined: `${PREFIX}-outlined`,
+  standard: `${PREFIX}-standard`,
+  filled: `${PREFIX}-filled`,
+  labeled: `${PREFIX}-labeled`,
+  label: `${PREFIX}-label`,
+  labelShrink: `${PREFIX}-labelShrink`,
+  helperText: `${PREFIX}-helperText`,
+  focused: `${PREFIX}-focused`,
+  focusVisible: `${PREFIX}-focusVisible`,
+  disabled: `${PREFIX}-disabled`,
+  underline: `${PREFIX}-underline`,
+  error: `${PREFIX}-error`,
+  chip: `${PREFIX}-chip`,
+  marginDense: `${PREFIX}-marginDense`,
+};
+
+const StyledFormControl = styled(FormControl)(({ theme }) => {
     const light = theme.palette.mode === 'light';
     const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)';
 
     return {
-        root: {},
-        inputRoot: {
+        [`& .${classes.root}`]: {},
+        [`& .${classes.inputRoot}`]: {
             display: 'inline-flex',
             flexWrap: 'wrap',
             flex: 1,
@@ -44,7 +67,7 @@ const styles = (theme) => {
                 paddingTop: 28,
             },
         },
-        input: {
+        [`& .${classes.input}`]: {
             display: 'inline-block',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
@@ -54,7 +77,7 @@ const styles = (theme) => {
             float: 'left',
             flex: 1,
         },
-        chipContainer: {
+        [`& .${classes.chipContainer}`]: {
             display: 'flex',
             flexFlow: 'row wrap',
             cursor: 'text',
@@ -64,7 +87,7 @@ const styles = (theme) => {
                 marginTop: 18,
             },
         },
-        outlined: {
+        [`& .${classes.outlined}`]: {
             '& input': {
                 height: 16,
                 paddingTop: 4,
@@ -73,8 +96,8 @@ const styles = (theme) => {
                 marginBottom: 4,
             },
         },
-        standard: {},
-        filled: {
+        [`& .${classes.standard}`]: {},
+        [`& .${classes.filled}`]: {
             '& input': {
                 height: 22,
                 marginBottom: 4,
@@ -85,8 +108,8 @@ const styles = (theme) => {
                 height: 26,
             },
         },
-        labeled: {},
-        label: {
+        [`& .${classes.labeled}`]: {},
+        [`& .${classes.label}`]: {
             top: 4,
             '&.Mui-outlined&:not($labelShrink)': {
                 top: 2,
@@ -101,16 +124,16 @@ const styles = (theme) => {
                 },
             },
         },
-        labelShrink: {
+        [`& .${classes.labelShrink}`]: {
             top: 0,
         },
-        helperText: {
+        [`& .${classes.helperText}`]: {
             marginBottom: -20,
         },
-        focused: {},
-        focusVisible: {},
-        disabled: {},
-        underline: {
+        [`& .${classes.focused}`]: {},
+        [`& .${classes.focusVisible}`]: {},
+        [`& .${classes.disabled}`]: {},
+        [`& .${classes.underline}`]: {
             '&:after': {
                 borderBottom: `2px solid ${theme.palette.primary[light ? 'dark' : 'light']}`,
                 left: 0,
@@ -157,19 +180,19 @@ const styles = (theme) => {
                 borderBottomStyle: 'dotted',
             },
         },
-        error: {
+        [`& .${classes.error}`]: {
             '&:after': {
                 backgroundColor: theme.palette.error.main,
                 transform: 'scaleX(1)', // error is always underlined in red
             },
         },
-        chip: {
+        [`& .${classes.chip}`]: {
             margin: '0 8px 8px 0',
             float: 'left',
         },
-        marginDense: {},
+        [`& .${classes.marginDense}`]: {},
     };
-};
+});
 
 const keyCodes = {
     BACKSPACE: 8,
@@ -578,7 +601,7 @@ class ChipInput extends React.Component {
       const InputComponent = variantComponent[variant];
 
       return (
-          <FormControl
+          <StyledFormControl
               ref={rootRef}
               fullWidth={fullWidth}
               className={cx(className, classes.root, {
@@ -649,7 +672,7 @@ class ChipInput extends React.Component {
             {helperText}
           </FormHelperText>
         )}
-      </FormControl>
+      </StyledFormControl>
       )
   }
 }
@@ -733,7 +756,7 @@ ChipInput.defaultProps = {
     variant: 'standard',
 };
 
-export default withStyles(styles, { name: 'WAMuiChipInput' })(ChipInput)
+export default (ChipInput)
 
 export const defaultChipRenderer = ({
     value, text, isFocused, isDisabled, isReadOnly, handleClick, handleDelete, className 

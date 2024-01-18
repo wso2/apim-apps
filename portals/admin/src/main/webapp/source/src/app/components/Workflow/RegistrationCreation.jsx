@@ -18,6 +18,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -26,7 +27,6 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import Card from '@mui/material/Card';
@@ -56,21 +56,36 @@ import CircularProgress from '@mui/material/CircularProgress';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
 import { Alert as MUIAlert } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-    searchInput: {
+const PREFIX = 'ListLabels';
+
+const classes = {
+    searchInput: `${PREFIX}-searchInput`,
+    block: `${PREFIX}-block`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    approveButton: `${PREFIX}-approveButton`,
+    rejectButton: `${PREFIX}-rejectButton`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.searchInput}`]: {
         fontSize: theme.typography.fontSize,
     },
-    block: {
+
+    [`& .${classes.block}`]: {
         display: 'block',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         margin: theme.spacing(2),
     },
-    approveButton: {
+
+    [`& .${classes.approveButton}`]: {
         textDecoration: 'none',
         backgroundColor: theme.palette.success.light,
     },
-    rejectButton: {
+
+    [`& .${classes.rejectButton}`]: {
         textDecoration: 'none',
         backgroundColor: theme.palette.error.light,
     },
@@ -84,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
 function ListLabels() {
     const intl = useIntl();
     const [data, setData] = useState(null);
-    const classes = useStyles();
+
     const [searchText, setSearchText] = useState('');
     const [isUpdating, setIsUpdating] = useState(null);
     const [buttonValue, setButtonValue] = useState();
@@ -383,7 +398,7 @@ function ListLabels() {
         download: false,
         viewColumns: false,
         customToolbar: null,
-        responsive: 'stacked',
+        responsive: 'vertical',
         searchText,
     };
     if (data && data.length === 0) {
@@ -455,7 +470,7 @@ function ListLabels() {
         );
     }
     return (
-        <>
+        <Root>
             <ContentBase {...pageProps}>
                 {(searchActive || addButtonProps) && (
                     <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
@@ -517,7 +532,7 @@ function ListLabels() {
                     </div>
                 )}
             </ContentBase>
-        </>
+        </Root>
     );
 }
 

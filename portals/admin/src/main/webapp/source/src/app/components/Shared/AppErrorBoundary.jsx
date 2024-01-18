@@ -16,28 +16,43 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Toolbar, AppBar } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
 
-const styles = (theme) => ({
-    appBar: {
+const PREFIX = 'AppErrorBoundary';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    typoRoot: `${PREFIX}-typoRoot`,
+    brandLink: `${PREFIX}-brandLink`,
+    toolbar: `${PREFIX}-toolbar`,
+    menuIcon: `${PREFIX}-menuIcon`,
+    errorDisplay: `${PREFIX}-errorDisplay`,
+    errorDisplayContent: `${PREFIX}-errorDisplayContent`,
+    errorTitle: `${PREFIX}-errorTitle`,
+    link: `${PREFIX}-link`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.appBar}`]: {
         zIndex: theme.zIndex.modal + 1,
         position: 'relative',
         background: theme.palette.background.appBar,
     },
-    typoRoot: {
+    [`& .${classes.typoRoot}`]: {
         marginLeft: theme.spacing(3),
         marginRight: theme.spacing(3),
         textTransform: 'capitalize',
     },
-    brandLink: {
+    [`& .${classes.brandLink}`]: {
         color: theme.palette.primary.contrastText,
     },
-    toolbar: {
+    [`& .${classes.toolbar}`]: {
         minHeight: 56,
         [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
             minHeight: 48,
@@ -46,22 +61,22 @@ const styles = (theme) => ({
             minHeight: 64,
         },
     },
-    menuIcon: {
+    [`& .${classes.menuIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.appBar),
         fontSize: 35,
     },
-    errorDisplay: {
+    [`& .${classes.errorDisplay}`]: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
     },
-    errorDisplayContent: {
+    [`& .${classes.errorDisplayContent}`]: {
         width: 960,
         display: 'flex',
         flexDirection: 'column',
         overflow: 'auto',
     },
-    errorTitle: {
+    [`& .${classes.errorTitle}`]: {
         display: 'flex',
         alignItems: 'center',
         paddingTop: theme.spacing(2),
@@ -70,10 +85,11 @@ const styles = (theme) => ({
             paddingLeft: theme.spacing(2),
         },
     },
-    link: {
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-});
+}));
+
 /**
  * Error boundary for the application.catch JavaScript errors anywhere in their child component tree,
  * log those errors, and display a fallback UI instead of the component tree that crashed.
@@ -113,13 +129,13 @@ class AppErrorBoundary extends React.Component {
      */
     render() {
         const { hasError, error, info } = this.state;
-        const { children, classes, theme } = this.props;
+        const { children, theme } = this.props;
         const errorStackStyle = {
             background: '#fff8dc',
         };
         if (hasError) {
             return (
-                <>
+                <Root>
                     <AppBar className={classes.appBar} position='fixed'>
                         <Toolbar className={classes.toolbar}>
                             <div className={classes.errorDisplay} style={{ width: '100%' }}>
@@ -163,7 +179,7 @@ class AppErrorBoundary extends React.Component {
                             </pre>
                         </div>
                     </div>
-                </>
+                </Root>
             );
         } else {
             return children;
@@ -189,4 +205,4 @@ AppErrorBoundary.propTypes = {
     }).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(AppErrorBoundary);
+export default AppErrorBoundary;

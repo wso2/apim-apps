@@ -17,16 +17,15 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import { Card } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import DnsRoundedIcon from '@mui/icons-material/DnsRounded';
@@ -34,30 +33,43 @@ import PeopleIcon from '@mui/icons-material/People';
 import PermMediaOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActual';
 import PublicIcon from '@mui/icons-material/Public';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
-import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'TasksWorkflowCard';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    title: `${PREFIX}-title`,
+    avatar: `${PREFIX}-avatar`,
+    approveButton: `${PREFIX}-approveButton`,
+    rejectButton: `${PREFIX}-rejectButton`,
+};
+
+const StyledCard = styled(Card)(({ theme }) => ({
+    [`&.${classes.root}`]: {
         minWidth: 275,
         minHeight: 270,
         textAlign: 'center',
 
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         fontSize: 20,
         fontWeight: 'fontWeightBold',
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: theme.spacing(4),
         height: theme.spacing(4),
     },
-    approveButton: {
+
+    [`& .${classes.approveButton}`]: {
         textDecoration: 'none',
         backgroundColor: theme.palette.success.light,
         margin: theme.spacing(0.5),
     },
-    rejectButton: {
+
+    [`& .${classes.rejectButton}`]: {
         textDecoration: 'none',
         backgroundColor: theme.palette.error.light,
         margin: theme.spacing(0.5),
@@ -69,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX} Loading animation.
  */
 export default function TasksWorkflowCard() {
-    const classes = useStyles();
     const intl = useIntl();
     const restApi = new Api();
     const [allTasksSet, setAllTasksSet] = useState({});
@@ -139,7 +150,7 @@ export default function TasksWorkflowCard() {
     // Component to be displayed when there's no task available
     // Note: When workflow is not enabled, this will be displayed
     const noTasksCard = (
-        <Card className={classes.root}>
+        <StyledCard className={classes.root}>
             <CardContent>
                 <Box mt={2}>
                     <DeviceHubIcon color='secondary' style={{ fontSize: 60 }} />
@@ -161,7 +172,7 @@ export default function TasksWorkflowCard() {
                     />
                 </Typography>
             </CardContent>
-        </Card>
+        </StyledCard>
     );
 
     // Compact task card component's individual category component
@@ -295,7 +306,7 @@ export default function TasksWorkflowCard() {
             },
         ];
         return (
-            <Card className={classes.root} style={{ textAlign: 'left' }}>
+            <StyledCard className={classes.root} style={{ textAlign: 'left' }}>
                 <CardContent>
                     <Box display='flex'>
                         <Box flexGrow={1}>
@@ -327,7 +338,7 @@ export default function TasksWorkflowCard() {
                         })}
                     </Box>
                 </CardContent>
-            </Card>
+            </StyledCard>
         );
     };
 

@@ -17,8 +17,8 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import SvgIcon from '@mui/material/SvgIcon';
-import { makeStyles, withStyles } from '@mui/styles';
 import fade from '@mui/material/Fade';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem from '@mui/lab/TreeItem';
@@ -27,6 +27,23 @@ import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is requir
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+
+const PREFIX = 'PermissionTree';
+
+const classes = {
+    iconContainer: `${PREFIX}-iconContainer`,
+    group: `${PREFIX}-group`,
+    label: `${PREFIX}-label`,
+    root: `${PREFIX}-root`,
+};
+
+const StyledTreeView = styled(TreeView)({
+    [`&.${classes.root}`]: {
+        minHeight: 512,
+        flexGrow: 1,
+        maxWidth: 800,
+    },
+});
 
 /**
  *
@@ -82,18 +99,20 @@ function TransitionComponent(props) {
     );
 }
 
-const StyledTreeItem = withStyles((theme) => ({
-    iconContainer: {
+const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
+    [`& .${classes.iconContainer}`]: {
         '& .close': {
             opacity: 0.3,
         },
     },
-    group: {
+
+    [`& .${classes.group}`]: {
         marginLeft: 7,
         paddingLeft: 18,
         borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
     },
-    label: {
+
+    [`& .${classes.label}`]: {
         backgroundColor: 'inherit !important', // tmkasun: remove !important
         width: '100%',
         paddingLeft: 4,
@@ -106,15 +125,7 @@ const StyledTreeItem = withStyles((theme) => ({
             },
         },
     },
-}))((props) => <TreeItem {...props} TransitionComponent={TransitionComponent} />);
-
-const useStyles = makeStyles({
-    root: {
-        minHeight: 512,
-        flexGrow: 1,
-        maxWidth: 800,
-    },
-});
+}));
 
 /**
  *
@@ -124,22 +135,34 @@ const useStyles = makeStyles({
  */
 export default function PermissionTreeView(props) {
     const { appMappings, role, onCheck } = props;
-    const classes = useStyles();
+
     const totalPermissions = appMappings.admin.length + appMappings.devportal.length + appMappings.publisher.length;
     return (
-        <TreeView
+        <StyledTreeView
             className={classes.root}
             defaultExpanded={[0, 3]}
             defaultCollapseIcon={<MinusSquare />}
             defaultExpandIcon={<PlusSquare />}
         >
 
-            <StyledTreeItem nodeId={0} label={`Scope Assignments (${totalPermissions})`}>
+            <StyledTreeItem
+                {...props}
+                TransitionComponent={TransitionComponent}
+                nodeId={0}
+                label={`Scope Assignments (${totalPermissions})`}
+                classes={{
+                    iconContainer: classes.iconContainer,
+                    group: classes.group,
+                    label: classes.label,
+                }}
+            >
                 {
                     Object.entries(appMappings).map(([app, scopes], APIIndex) => {
                         const nodeId = APIIndex + 1; // this is to give unique id for each nodes in the tree
                         return (
                             <StyledTreeItem
+                                {...props}
+                                TransitionComponent={TransitionComponent}
                                 nodeId={nodeId}
                                 label={(
                                     <Typography display='block' variant='subtitle1'>
@@ -152,9 +175,16 @@ export default function PermissionTreeView(props) {
                                         </Typography>
                                     </Typography>
                                 )}
+                                classes={{
+                                    iconContainer: classes.iconContainer,
+                                    group: classes.group,
+                                    label: classes.label,
+                                }}
                             >
                                 {scopes.map(({ name, description, roles }, index) => (
                                     <StyledTreeItem
+                                        {...props}
+                                        TransitionComponent={TransitionComponent}
                                         endIcon={(
                                             <Checkbox
                                                 checked={roles.includes(role)}
@@ -179,6 +209,11 @@ export default function PermissionTreeView(props) {
                                                 secondary={name}
                                             />
                                         )}
+                                        classes={{
+                                            iconContainer: classes.iconContainer,
+                                            group: classes.group,
+                                            label: classes.label,
+                                        }}
                                     />
                                 ))}
                             </StyledTreeItem>
@@ -186,6 +221,6 @@ export default function PermissionTreeView(props) {
                     })
                 }
             </StyledTreeItem>
-        </TreeView>
+        </StyledTreeView>
     );
 }

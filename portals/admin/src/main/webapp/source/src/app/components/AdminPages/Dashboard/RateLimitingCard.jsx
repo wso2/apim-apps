@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import { Card } from '@mui/material';
@@ -24,7 +25,6 @@ import Box from '@mui/material/Box';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import PolicyIcon from '@mui/icons-material/Policy';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
@@ -32,17 +32,27 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
-const useStyles = makeStyles(() => ({
-    root: {
+const PREFIX = 'RateLimitingCard';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    title: `${PREFIX}-title`,
+    pos: `${PREFIX}-pos`,
+};
+
+const StyledCard = styled(Card)(() => ({
+    [`&.${classes.root}`]: {
         minWidth: 275,
         minHeight: 270,
         textAlign: 'center',
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         fontSize: 20,
         fontWeight: 'fontWeightBold',
     },
-    pos: {
+
+    [`& .${classes.pos}`]: {
         marginBottom: 12,
     },
 }));
@@ -52,7 +62,6 @@ const useStyles = makeStyles(() => ({
  * @returns {JSX} Loading animation.
  */
 export default function RateLimitingCard() {
-    const classes = useStyles();
     const { isSuperTenant } = useAppContext();
     const intl = useIntl();
     const selectedRateLimitingPolicies = [
@@ -113,7 +122,7 @@ export default function RateLimitingCard() {
     }
 
     return (
-        <Card className={classes.root} style={{ textAlign: 'left' }}>
+        <StyledCard className={classes.root} style={{ textAlign: 'left' }}>
             <CardContent>
                 <Typography className={classes.title} gutterBottom>
                     <FormattedMessage
@@ -148,6 +157,6 @@ export default function RateLimitingCard() {
                     })}
                 </Box>
             </CardContent>
-        </Card>
+        </StyledCard>
     );
 }

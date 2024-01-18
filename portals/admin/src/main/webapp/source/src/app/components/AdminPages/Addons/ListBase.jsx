@@ -18,6 +18,7 @@
  */
 
 import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
@@ -27,7 +28,6 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import Card from '@mui/material/Card';
@@ -40,23 +40,39 @@ import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
 
-const useStyles = makeStyles((theme) => ({
-    searchBar: {
+const PREFIX = 'ListBase';
+
+const classes = {
+    searchBar: `${PREFIX}-searchBar`,
+    searchInput: `${PREFIX}-searchInput`,
+    block: `${PREFIX}-block`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    button: `${PREFIX}-button`,
+    tableCellWrapper: `${PREFIX}-tableCellWrapper`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.searchBar}`]: {
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
     },
-    searchInput: {
+
+    [`& .${classes.searchInput}`]: {
         fontSize: theme.typography.fontSize,
     },
-    block: {
+
+    [`& .${classes.block}`]: {
         display: 'block',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         margin: '40px 16px',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         borderColor: 'rgba(255, 255, 255, 0.7)',
     },
-    tableCellWrapper: {
+
+    [`& .${classes.tableCellWrapper}`]: {
         '& td': {
             'word-break': 'break-all',
             'white-space': 'normal',
@@ -81,7 +97,6 @@ function ListBase(props) {
         addedActions,
     } = props;
 
-    const classes = useStyles();
     const [searchText, setSearchText] = useState('');
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
@@ -236,7 +251,7 @@ function ListBase(props) {
         download: false,
         viewColumns: false,
         customToolbar: null,
-        responsive: 'stacked',
+        responsive: 'vertical',
         searchText,
         onColumnSortChange,
     };
@@ -245,7 +260,7 @@ function ListBase(props) {
     // retrieved data is empty, display an information card.
     if (!apiCall || (data && data.length === 0)) {
         return (
-            <ContentBase
+            <StyledContentBase
                 {...pageProps}
                 pageStyle='small'
             >
@@ -260,30 +275,30 @@ function ListBase(props) {
                         )}
                     </CardActions>
                 </Card>
-            </ContentBase>
+            </StyledContentBase>
         );
     }
 
     // If apiCall is provided and data is not retrieved yet, display progress component
     if (!error && apiCall && !data) {
         return (
-            <ContentBase pageStyle='paperLess'>
+            <StyledContentBase pageStyle='paperLess'>
                 <InlineProgress />
-            </ContentBase>
+            </StyledContentBase>
 
         );
     }
     if (error) {
         return (
-            <ContentBase {...pageProps}>
+            <StyledContentBase {...pageProps}>
                 <Alert severity='error'>{error}</Alert>
-            </ContentBase>
+            </StyledContentBase>
 
         );
     }
     return (
         <>
-            <ContentBase {...pageProps}>
+            <StyledContentBase {...pageProps}>
                 {(searchActive || addButtonProps) && (
                     <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
                         <Toolbar>
@@ -356,7 +371,7 @@ function ListBase(props) {
                         </Typography>
                     </div>
                 )}
-            </ContentBase>
+            </StyledContentBase>
         </>
     );
 }

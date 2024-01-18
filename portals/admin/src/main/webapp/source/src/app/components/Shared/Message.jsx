@@ -16,6 +16,7 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -27,7 +28,55 @@ import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import WarningIcon from '@mui/icons-material/Warning';
-import makeStyles from '@mui/styles/makeStyles';
+const PREFIX = 'Message';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    success: `${PREFIX}-success`,
+    error: `${PREFIX}-error`,
+    info: `${PREFIX}-info`,
+    warning: `${PREFIX}-warning`,
+    icon: `${PREFIX}-icon`,
+    iconVariant: `${PREFIX}-iconVariant`,
+    message: `${PREFIX}-message`,
+};
+
+const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
+    [`& .${classes.root}`]: {
+        position: 'relative' /* Overriding the default Snackbar root properties to stack messages */,
+        padding: '5px' /* To add some space between messages when stacking messages */,
+    },
+
+    [`& .${classes.success}`]: {
+        backgroundColor: green[600],
+    },
+
+    [`& .${classes.error}`]: {
+        backgroundColor: theme.palette.error.dark,
+    },
+
+    [`& .${classes.info}`]: {
+        backgroundColor: theme.palette.primary.main,
+    },
+
+    [`& .${classes.warning}`]: {
+        backgroundColor: amber[700],
+    },
+
+    [`& .${classes.icon}`]: {
+        fontSize: 20,
+    },
+
+    [`& .${classes.iconVariant}`]: {
+        opacity: 0.9,
+        marginRight: theme.spacing(1),
+    },
+
+    [`& .${classes.message}`]: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+}));
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -35,39 +84,7 @@ const variantIcon = {
     error: ErrorIcon,
     info: InfoIcon,
 };
-
-const useStyles1 = makeStyles((theme) => ({
-    root: {
-        position: 'relative' /* Overriding the default Snackbar root properties to stack messages */,
-        padding: '5px' /* To add some space between messages when stacking messages */,
-    },
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: theme.palette.error.dark,
-    },
-    info: {
-        backgroundColor: theme.palette.primary.main,
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing(1),
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-}));
-
 function MySnackbarContentWrapper(props) {
-    const classes = useStyles1();
     const {
         className, message, onClose, variant, ...other
     } = props;
@@ -107,10 +124,9 @@ MySnackbarContentWrapper.propTypes = {
 };
 
 export default function Message(props) {
-    const classes = useStyles1();
     const { message, handleClose, type } = props;
     return (
-        <Snackbar
+        <StyledSnackbar
             anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
@@ -120,7 +136,7 @@ export default function Message(props) {
             onClose={handleClose}
         >
             <MySnackbarContentWrapper onClose={handleClose} variant={type} message={message} />
-        </Snackbar>
+        </StyledSnackbar>
     );
 }
 Message.propTypes = {

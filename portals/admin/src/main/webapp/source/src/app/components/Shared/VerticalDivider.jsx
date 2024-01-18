@@ -1,12 +1,19 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-const styles = {
-    divider: {
+const PREFIX = 'VerticalDivider';
+
+const classes = {
+    divider: `${PREFIX}-divider`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+    [`& .${classes.divider}`]: {
         borderRight: 'solid 1px #ccc',
     },
-};
+});
 
 /**
  *
@@ -16,13 +23,13 @@ const styles = {
  */
 function VerticalDivider(props) {
     const {
-        classes, height = 30, marginLeft = 10, marginRight = 10,
+        height = 30, marginLeft = 10, marginRight = 10,
     } = props;
 
     return (
-        <>
+        <Root>
             <div className={classes.divider} style={{ height, marginLeft, marginRight }} />
-        </>
+        </Root>
     );
 }
 
@@ -35,4 +42,4 @@ VerticalDivider.propTypes = {
     marginRight: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(VerticalDivider);
+export default (VerticalDivider);

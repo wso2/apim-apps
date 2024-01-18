@@ -19,7 +19,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { createTheme, adaptV4Theme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import {
+    createTheme,
+    adaptV4Theme,
+    ThemeProvider,
+    StyledEngineProvider,
+} from '@mui/material/styles';
 import Hidden from '@mui/material/Hidden';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import User from 'AppData/User';

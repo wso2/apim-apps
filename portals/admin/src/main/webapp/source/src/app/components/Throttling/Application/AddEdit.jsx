@@ -17,11 +17,11 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import DialogContentText from '@mui/material/DialogContentText';
 import { FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import {
     Typography, RadioGroup, Radio, FormControlLabel, FormControl, Grid, Select, MenuItem,
@@ -30,23 +30,37 @@ import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import Joi from '@hapi/joi';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'AddEdit';
+
+const classes = {
+    error: `${PREFIX}-error`,
+    dialog: `${PREFIX}-dialog`,
+    quotaHeading: `${PREFIX}-quotaHeading`,
+    unitTime: `${PREFIX}-unitTime`,
+    unitTimeSelection: `${PREFIX}-unitTimeSelection`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    dialog: {
+
+    [`& .${classes.dialog}`]: {
         minWidth: theme.spacing(150),
 
     },
-    quotaHeading: {
+
+    [`& .${classes.quotaHeading}`]: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(2),
     },
-    unitTime: {
+
+    [`& .${classes.unitTime}`]: {
         display: 'flex',
         minWidth: theme.spacing(60),
     },
-    unitTimeSelection: {
+
+    [`& .${classes.unitTimeSelection}`]: {
         marginTop: theme.spacing(2.6),
         marginLeft: theme.spacing(2),
         minWidth: theme.spacing(15),
@@ -116,7 +130,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const intl = useIntl();
     const {
         updateList, icon, triggerButtonText, title, dataRow,
@@ -400,7 +413,7 @@ function AddEdit(props) {
     };
 
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={title}
             saveButtonText='Save'
             icon={icon}
@@ -646,7 +659,7 @@ function AddEdit(props) {
                     </Select>
                 </FormControl>
             </Grid>
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 

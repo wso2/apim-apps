@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import FormGroup from '@mui/material/FormGroup';
@@ -24,7 +25,6 @@ import Grid from '@mui/material/Grid';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Paper from '@mui/material/Paper';
@@ -37,15 +37,25 @@ import DialogContentText from '@mui/material/DialogContentText';
 import Divider from '@mui/material/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'AddEditVhost';
+
+const classes = {
+    error: `${PREFIX}-error`,
+    vhostPaper: `${PREFIX}-vhostPaper`,
+    portDivider: `${PREFIX}-portDivider`,
+};
+
+const StyledFormGroup = styled(FormGroup)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    vhostPaper: {
+
+    [`& .${classes.vhostPaper}`]: {
         padding: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
-    portDivider: {
+
+    [`& .${classes.portDivider}`]: {
         backgroundColor: 'LightGray',
         margin: theme.spacing(1),
     },
@@ -144,7 +154,7 @@ function AddEditVhost(props) {
 
     let vhostCounter = 1;
     return (
-        <FormGroup>
+        <StyledFormGroup>
             <Grid container spacing={0}>
                 {userVhosts && userVhosts.map((vhost) => (
                     <Grid item xs={12}>
@@ -352,7 +362,7 @@ function AddEditVhost(props) {
                     </Button>
                 </Grid>
             </Grid>
-        </FormGroup>
+        </StyledFormGroup>
     );
 }
 

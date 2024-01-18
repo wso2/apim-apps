@@ -1,10 +1,16 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Progress from 'AppComponents/Shared/Progress';
 
-const useStyles = makeStyles(() => ({
-    root: {
+const PREFIX = 'BlockingProgress';
+
+const classes = {
+    root: `${PREFIX}-root`,
+};
+
+const Root = styled('div')(() => ({
+    [`&.${classes.root}`]: {
         position: 'fixed',
         background: '#000',
         left: 0,
@@ -26,12 +32,10 @@ const useStyles = makeStyles(() => ({
  * @returns {JSX} The progress react component.
  */
 function BlockingProgress({ message }) {
-    const classes = useStyles();
-
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Progress message={message} />
-        </div>
+        </Root>
     );
 }
 

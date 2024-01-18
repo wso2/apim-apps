@@ -17,7 +17,7 @@
  * under the License.
  */
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
@@ -25,24 +25,32 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import WarningIcon from '@mui/icons-material/Warning';
 
-const useStyles = makeStyles((theme) => ({
-    root: {},
-    warningIcon: {
+const PREFIX = 'WarningBase';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    warningIcon: `${PREFIX}-warningIcon`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.root}`]: {},
+
+    [`& .${classes.warningIcon}`]: {
         color: theme.palette.warning.dark,
         fontSize: 44,
     },
 }));
+
 /**
  * Adds two numbers together.
  * @param {JSON} props The first number.
  * @returns {JSX} Render the inline warning message
  */
 export default function SimplePaper(props) {
-    const classes = useStyles();
     const { content, title, pageProps } = props;
 
     return (
-        <ContentBase
+        <StyledContentBase
             {...pageProps}
             pageStyle='small'
         >
@@ -60,6 +68,6 @@ export default function SimplePaper(props) {
                     </Typography>
                 </CardContent>
             </Card>
-        </ContentBase>
+        </StyledContentBase>
     );
 }

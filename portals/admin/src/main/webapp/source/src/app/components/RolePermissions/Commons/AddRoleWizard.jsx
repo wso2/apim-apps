@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -33,23 +33,35 @@ import PermissionAPI from 'AppData/PermissionScopes';
 import AddItem from './AddItem';
 import SelectPermissionsStep from './SelectPermissionsStep';
 
-const { ROLE_ALIAS, SELECT_PERMISSIONS } = SelectPermissionsStep.CONST;
+const PREFIX = 'AddRoleWizard';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    button: `${PREFIX}-button`,
+    actionsContainer: `${PREFIX}-actionsContainer`,
+    resetContainer: `${PREFIX}-resetContainer`,
+};
+
+const StyledAddItem = styled(AddItem)(({ theme }) => ({
+    [`& .${classes.root}`]: {
         width: '100%',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginTop: theme.spacing(1),
         marginRight: theme.spacing(1),
     },
-    actionsContainer: {
+
+    [`& .${classes.actionsContainer}`]: {
         marginBottom: theme.spacing(2),
     },
-    resetContainer: {
+
+    [`& .${classes.resetContainer}`]: {
         padding: theme.spacing(3),
     },
 }));
+
+const { ROLE_ALIAS, SELECT_PERMISSIONS } = SelectPermissionsStep.CONST;
 
 /**
  *
@@ -62,7 +74,6 @@ export default function AddRoleWizard(props) {
         appMappings, onClose, onRoleAdd, permissionMappings, roleAliases, setRoleAliases,
     } = props;
 
-    const classes = useStyles();
     const intl = useIntl();
     const [newRole, setNewRole] = useState('');
     const [isSaving, setIsSaving] = useState(false);
@@ -183,8 +194,7 @@ export default function AddRoleWizard(props) {
     };
 
     return (
-
-        <AddItem
+        <StyledAddItem
             onSave={onAddRole}
             onClose={onClose}
             title={(
@@ -292,7 +302,6 @@ export default function AddRoleWizard(props) {
                     ))}
                 </Stepper>
             </div>
-        </AddItem>
-
+        </StyledAddItem>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import makeStyles from '@mui/styles/makeStyles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -15,19 +15,29 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'ClaimMapping';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    table: `${PREFIX}-table`,
+    acitonColumn: `${PREFIX}-acitonColumn`,
+};
+
+const StyledBox = styled(Box)(({ theme }) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         margin: 10,
         '& tr td, & tr th': {
             padding: 5,
             margin: 0,
         },
     },
-    acitonColumn: {
+
+    [`& .${classes.acitonColumn}`]: {
         width: 50,
     },
 }));
@@ -39,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component}
  */
 export default function ClaimMappings(props) {
-    const classes = useStyles();
     const [newRemoteClaim, setRemoteClaim] = useState('');
     const [newLocalClaim, setLocalClaim] = useState('');
     const { claimMappings, setClaimMapping } = props;
@@ -105,7 +114,7 @@ export default function ClaimMappings(props) {
         setClaimMapping(newMapping);
     };
     return (
-        <Box mt={2}>
+        <StyledBox mt={2}>
             <Table className={classes.table} aria-label='simple table'>
                 <TableHead>
                     <TableRow>
@@ -218,7 +227,7 @@ export default function ClaimMappings(props) {
                     ))}
                 </TableBody>
             </Table>
-        </Box>
+        </StyledBox>
     );
 }
 

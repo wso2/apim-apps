@@ -16,28 +16,35 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
-const useStyles = makeStyles(() => {
+const PREFIX = 'ContentBase';
+
+const classes = {
+    pageTitle: `${PREFIX}-pageTitle`,
+    root: `${PREFIX}-root`,
+};
+
+const Root = styled('div')(() => {
     const minHeight = 43;
-    return ({
-        pageTitle: {
+    return {
+        [`& .${classes.pageTitle}`]: {
             minHeight,
             backgroundColor: '#f6f6f6',
         },
-        root: {
+        [`&.${classes.root}`]: {
             flexGrow: 1,
             minHeight: `calc(100vh - (${minHeight + 57}px))`,
             backgroundColor: '#eaeff1',
         },
-    });
+    };
 });
 
 /**
@@ -52,7 +59,6 @@ const useStyles = makeStyles(() => {
  * @returns {JSX} Header AppBar components.
  */
 function ContentBase(props) {
-    const classes = useStyles();
     const {
         title, pageDescription, children, help, width, pageStyle, PaperProps, classes: classesProp, paperLess,
     } = props;
@@ -63,7 +69,7 @@ function ContentBase(props) {
         size = 11;
     }
     return (
-        <div className={clsx(classesProp.root, classes.root)}>
+        <Root className={clsx(classesProp.root, classes.root)}>
             <Grid
                 container
                 direction='row'
@@ -104,7 +110,7 @@ function ContentBase(props) {
                 </Grid>
 
             </Grid>
-        </div>
+        </Root>
     );
 }
 ContentBase.defaultProps = {

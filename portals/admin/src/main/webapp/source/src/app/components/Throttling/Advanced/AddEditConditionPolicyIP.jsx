@@ -19,8 +19,8 @@
  */
 
 import React, { useState, useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl, FormattedMessage } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
@@ -32,6 +32,40 @@ import FormControl from '@mui/material/FormControl';
 import cloneDeep from 'lodash.clonedeep';
 import InputLabel from '@mui/material/InputLabel';
 import CreateIcon from '@mui/icons-material/Create';
+
+const PREFIX = 'AddEditConditionPolicyIP';
+
+const classes = {
+    error: `${PREFIX}-error`,
+    formControlSelect: `${PREFIX}-formControlSelect`,
+    outlined: `${PREFIX}-outlined`,
+    labelRoot: `${PREFIX}-labelRoot`,
+    textFieldLeft: `${PREFIX}-textFieldLeft`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
+        color: theme.palette.error.dark,
+    },
+
+    [`& .${classes.formControlSelect}`]: {
+        width: '100%',
+        marginBottom: theme.spacing(1),
+    },
+
+    [`& .${classes.outlined}`]: {
+        padding: '11.5px 14px',
+    },
+
+    [`& .${classes.labelRoot}`]: {
+        position: 'relative',
+        marginTop: theme.spacing(1.5),
+    },
+
+    [`& .${classes.textFieldLeft}`]: {
+        paddingRight: 10,
+    },
+}));
 
 /**
  * validate ip address
@@ -125,26 +159,6 @@ function reducer(state, { field, value }) {
     }
 }
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-    formControlSelect: {
-        width: '100%',
-        marginBottom: theme.spacing(1),
-    },
-    outlined: {
-        padding: '11.5px 14px',
-    },
-    labelRoot: {
-        position: 'relative',
-        marginTop: theme.spacing(1.5),
-    },
-    textFieldLeft: {
-        paddingRight: 10,
-    },
-}));
-
 /**
  * Render the ip condition add edit form.
  * @param {JSON} props component props.
@@ -152,7 +166,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function AddEditConditionPolicyIP(props) {
     const intl = useIntl();
-    const classes = useStyles();
+
     const { row, callBack, item } = props;
 
     const {
@@ -251,7 +265,7 @@ function AddEditConditionPolicyIP(props) {
         return false;
     };
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={item
                 ? intl.formatMessage({
                     id: 'Throttling.Advanced.AddEditConditionPolicyIP.dialog.tilte.add.new',
@@ -382,7 +396,7 @@ function AddEditConditionPolicyIP(props) {
                     />
                 </Box>
             )}
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 AddEditConditionPolicyIP.propTypes = {

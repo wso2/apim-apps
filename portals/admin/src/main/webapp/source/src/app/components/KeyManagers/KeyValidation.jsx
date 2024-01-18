@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -19,33 +19,52 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'KeyValidation';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    outlined: `${PREFIX}-outlined`,
+    textField: `${PREFIX}-textField`,
+    formControlSelect: `${PREFIX}-formControlSelect`,
+    labelRoot: `${PREFIX}-labelRoot`,
+    table: `${PREFIX}-table`,
+    acitonColumn: `${PREFIX}-acitonColumn`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    outlined: {
+
+    [`& .${classes.outlined}`]: {
         padding: '11px 14px',
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         marginTop: '14px !important',
     },
-    formControlSelect: {
+
+    [`& .${classes.formControlSelect}`]: {
         width: 200,
         marginRight: 20,
         paddingLeft: 14,
     },
-    labelRoot: {
+
+    [`& .${classes.labelRoot}`]: {
         position: 'relative',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         margin: 10,
         '& tr td, & tr th': {
             padding: 5,
             margin: 0,
         },
     },
-    acitonColumn: {
+
+    [`& .${classes.acitonColumn}`]: {
         width: 50,
     },
 }));
@@ -57,8 +76,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component}
  */
 export default function KeyValidation(props) {
-    const classes = useStyles();
-
     const { tokenValidation, setTokenValidation } = props;
     const [jwtValue, setjwtValue] = useState({});
     const [preValues, setPreValues] = useState({
@@ -145,7 +162,7 @@ export default function KeyValidation(props) {
         setTokenValidation(newMapping);
     };
     return (
-        <>
+        <Root>
             <Box display='flex' flexDirection='row' mt={2}>
                 <FormControl variant='outlined' className={classes.formControlSelect}>
                     <InputLabel classes={{ root: classes.labelRoot }}>
@@ -309,7 +326,7 @@ export default function KeyValidation(props) {
                     </Table>
                 )}
             </Box>
-        </>
+        </Root>
     );
 }
 KeyValidation.defaultProps = {

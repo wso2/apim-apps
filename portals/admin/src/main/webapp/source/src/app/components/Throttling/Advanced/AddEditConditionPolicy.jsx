@@ -17,8 +17,8 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl, FormattedMessage } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
@@ -26,8 +26,14 @@ import TextField from '@mui/material/TextField';
 import CreateIcon from '@mui/icons-material/Create';
 import CON_CONSTS from 'AppComponents/Throttling/Advanced/CON_CONSTS';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'AddEditConditionPolicy';
+
+const classes = {
+    error: `${PREFIX}-error`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
 }));
@@ -39,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function AddEditConditionPolicy(props) {
     const intl = useIntl();
-    const classes = useStyles();
+
     const { row } = props;
     const { row: { labelPrefix, description, name: conditionName }, callBack, item } = props;
     let initName = '';
@@ -110,7 +116,7 @@ function AddEditConditionPolicy(props) {
         return false;
     };
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={item
                 ? `${intl.formatMessage({
                     id: 'Throttling.Advanced.AddEditConditionPolicy.dialog.tilte.add.new',
@@ -190,7 +196,7 @@ function AddEditConditionPolicy(props) {
                 variant='outlined'
                 error={hasErrors('value', value, validating)}
             />
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 AddEditConditionPolicy.propTypes = {

@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
@@ -25,7 +26,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material//Select';
 import InputLabel from '@@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@@mui/material/MenuItem';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
@@ -37,16 +37,26 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'AddEditGWEnvironment';
+
+const classes = {
+    error: `${PREFIX}-error`,
+    addEditFormControl: `${PREFIX}-addEditFormControl`,
+    vhostPaper: `${PREFIX}-vhostPaper`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    addEditFormControl: {
+
+    [`& .${classes.addEditFormControl}`]: {
         minHeight: theme.spacing(40),
         maxHeight: theme.spacing(100),
         minWidth: theme.spacing(55),
     },
-    vhostPaper: {
+
+    [`& .${classes.vhostPaper}`]: {
         padding: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
@@ -118,7 +128,7 @@ function AddEditGWEnvironment(props) {
     const {
         updateList, dataRow, icon, triggerButtonText, title,
     } = props;
-    const classes = useStyles();
+
     const defaultVhost = {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
     };
@@ -223,7 +233,7 @@ function AddEditGWEnvironment(props) {
                             defaultMessage: 'Name is Empty',
                         })
                     );
-                } else if (!(/^[A-Za-z0-9_-]+$/).test(value)) {
+                } else if (!((/^[A-Za-z0-9_-]+$/)).test(value)) {
                     error = (
                         intl.formatMessage({
                             id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid',
@@ -397,7 +407,7 @@ function AddEditGWEnvironment(props) {
     };
 
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={title}
             saveButtonText={(
                 <FormattedMessage
@@ -548,7 +558,7 @@ function AddEditGWEnvironment(props) {
                     gatewayType={gatewayType}
                 />
             </FormControl>
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 

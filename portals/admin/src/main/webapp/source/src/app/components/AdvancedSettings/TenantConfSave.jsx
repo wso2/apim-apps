@@ -19,10 +19,10 @@
 import React, {
     useReducer, useState, Suspense, lazy, useEffect,
 } from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     Box, Grid, Button,
 } from '@mui/material';
@@ -32,43 +32,65 @@ import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "TeantConfAddMonacoEditor" */));
+const PREFIX = 'TenantConfSave';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    error: `${PREFIX}-error`,
+    dialog: `${PREFIX}-dialog`,
+    tenantConfHeading: `${PREFIX}-tenantConfHeading`,
+    showSampleButton: `${PREFIX}-showSampleButton`,
+    helperText: `${PREFIX}-helperText`,
+    infoBox: `${PREFIX}-infoBox`,
+    buttonBox: `${PREFIX}-buttonBox`,
+    saveButton: `${PREFIX}-saveButton`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.root}`]: {
         marginBottom: theme.spacing(15),
     },
-    error: {
+
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    dialog: {
+
+    [`& .${classes.dialog}`]: {
         minWidth: theme.spacing(150),
 
     },
-    tenantConfHeading: {
+
+    [`& .${classes.tenantConfHeading}`]: {
         marginBottom: theme.spacing(1),
     },
-    showSampleButton: {
+
+    [`& .${classes.showSampleButton}`]: {
         marginTop: theme.spacing(2),
     },
-    helperText: {
+
+    [`& .${classes.helperText}`]: {
         color: green[600],
         fontSize: theme.spacing(1.6),
         marginLeft: theme.spacing(1),
     },
-    infoBox: {
+
+    [`& .${classes.infoBox}`]: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(2),
     },
-    buttonBox: {
+
+    [`& .${classes.buttonBox}`]: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(2),
     },
 }));
+
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "TeantConfAddMonacoEditor" */));
 
 /**
  * Reducer
@@ -95,7 +117,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX} Header AppBar components.
  */
 function TenantConfSave() {
-    const classes = useStyles();
     const history = useHistory();
     const [initialState] = useState({
         tenantConf: '',
@@ -172,7 +193,7 @@ function TenantConfSave() {
     };
 
     return (
-        <ContentBase
+        <StyledContentBase
             pageStyle='full'
             title={(
                 <FormattedMessage
@@ -220,7 +241,7 @@ function TenantConfSave() {
                     </Box>
                 </Grid>
             </Box>
-        </ContentBase>
+        </StyledContentBase>
     );
 }
 

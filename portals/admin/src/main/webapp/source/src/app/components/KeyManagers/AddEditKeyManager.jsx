@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useReducer, useState } from 'react';
-
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import BlockingProgress from 'AppComponents/Shared/BlockingProgress';
@@ -53,7 +53,6 @@ import TextField from '@mui/material/TextField';
 import cloneDeep from 'lodash.clonedeep';
 import clsx from 'clsx';
 import isEmpty from 'lodash.isempty';
-import makeStyles from '@mui/styles/makeStyles';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import base64url from 'base64url';
 import Error from '@mui/icons-material/Error';
@@ -61,29 +60,48 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Chip from '@mui/material/Chip';
 import { red } from '@mui/material/colors/';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'AddEditKeyManager';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    error: `${PREFIX}-error`,
+    hr: `${PREFIX}-hr`,
+    labelRoot: `${PREFIX}-labelRoot`,
+    FormControlRoot: `${PREFIX}-FormControlRoot`,
+    select: `${PREFIX}-select`,
+    chipInputBox: `${PREFIX}-chipInputBox`,
+    chipInputRoot: `${PREFIX}-chipInputRoot`,
+    chipHelper: `${PREFIX}-chipHelper`,
+    chipContainer: `${PREFIX}-chipContainer`,
+    importButton: `${PREFIX}-importButton`,
+    radioGroup: `${PREFIX}-radioGroup`,
+    expand: `${PREFIX}-expand`,
+    expandOpen: `${PREFIX}-expandOpen`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.root}`]: {
         marginBottom: theme.spacing(10),
     },
-    error: {
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    hr: {
+    [`& .${classes.hr}`]: {
         border: 'solid 1px #efefef',
     },
-    labelRoot: {
+    [`& .${classes.labelRoot}`]: {
         position: 'relative',
     },
-    FormControlRoot: {
+    [`& .${classes.FormControlRoot}`]: {
         width: '100%',
     },
-    select: {
+    [`& .${classes.select}`]: {
         padding: '10.5px 14px',
     },
-    chipInputBox: {
+    [`& .${classes.chipInputBox}`]: {
         margin: '20px 0px',
     },
-    chipInputRoot: {
+    [`& .${classes.chipInputRoot}`]: {
         border: 'solid 1px #ccc',
         borderRadius: 10,
         padding: 10,
@@ -100,14 +118,14 @@ const useStyles = makeStyles((theme) => ({
             marginTop: '0',
         },
     },
-    chipHelper: {
+    [`& .${classes.chipHelper}`]: {
         position: 'absolute',
         marginTop: '-5px',
     },
-    chipContainer: {
+    [`& .${classes.chipContainer}`]: {
         marginBottom: 8,
     },
-    importButton: {
+    [`& .${classes.importButton}`]: {
         position: 'absolute',
         top: 0,
         right: 0,
@@ -120,18 +138,18 @@ const useStyles = makeStyles((theme) => ({
             marginRight: 10,
         },
     },
-    radioGroup: {
+    [`& .${classes.radioGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
     },
-    expand: {
+    [`& .${classes.expand}`]: {
         transform: 'rotate(0deg)',
         marginLeft: 'auto',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
         }),
     },
-    expandOpen: {
+    [`& .${classes.expandOpen}`]: {
         transform: 'rotate(180deg)',
     },
 }));
@@ -194,7 +212,6 @@ function reducer(state, newValue) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEditKeyManager(props) {
-    const classes = useStyles();
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
     const [importingConfig, setImportingConfig] = useState(false);
@@ -643,7 +660,7 @@ function AddEditKeyManager(props) {
     }
 
     return (
-        <ContentBase
+        <StyledContentBase
             pageStyle='half'
             title={pageTitle}
             help={<div />}
@@ -2087,7 +2104,8 @@ function AddEditKeyManager(props) {
                                         onClick={handleExpandClick}
                                         aria-expanded={expanded}
                                         aria-label='show more'
-                                        size='large'>
+                                        size='large'
+                                    >
                                         <ExpandMoreIcon />
                                     </IconButton>
                                 </Box>
@@ -2141,7 +2159,8 @@ function AddEditKeyManager(props) {
                                             onClick={handleExpandClick}
                                             aria-expanded={expanded}
                                             aria-label='show more'
-                                            size='large'>
+                                            size='large'
+                                        >
                                             <ExpandMoreIcon />
                                         </IconButton>
                                     </Box>
@@ -2215,7 +2234,7 @@ function AddEditKeyManager(props) {
                 </Grid>
             </Box>
 
-        </ContentBase>
+        </StyledContentBase>
     );
 }
 

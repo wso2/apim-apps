@@ -17,10 +17,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import Joi from '@hapi/joi';
-import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -47,32 +47,49 @@ import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not CO
 import PropTypes from 'prop-types';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 
-const styles = (theme) => ({
-    alertsWrapper: {
+const PREFIX = 'ManageAlerts';
+
+const classes = {
+    alertsWrapper: `${PREFIX}-alertsWrapper`,
+    manageAlertHeading: `${PREFIX}-manageAlertHeading`,
+    chipInput: `${PREFIX}-chipInput`,
+    alertConfigDialog: `${PREFIX}-alertConfigDialog`,
+    configDialogHeading: `${PREFIX}-configDialogHeading`,
+    listItem: `${PREFIX}-listItem`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.alertsWrapper}`]: {
         padding: theme.spacing(2),
         '& span, & h5, & label, & input, & td, & li': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
         marginBottom: theme.spacing(15),
     },
-    manageAlertHeading: {
+
+    [`& .${classes.manageAlertHeading}`]: {
         marginBottom: theme.spacing(),
     },
-    chipInput: {
+
+    [`& .${classes.chipInput}`]: {
         width: '100%',
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    alertConfigDialog: {
+
+    [`& .${classes.alertConfigDialog}`]: {
         width: '60%',
     },
-    configDialogHeading: {
+
+    [`& .${classes.configDialogHeading}`]: {
         fontWeight: '600',
     },
-    listItem: {
+
+    [`& .${classes.listItem}`]: {
         marginLeft: theme.spacing(1),
     },
-});
+}));
 
 /**
  * Alerts management component.
@@ -407,7 +424,7 @@ const ManageAlerts = (props) => {
     }
 
     return (
-        <>
+        <Root>
             {!isAnalyticsEnabled
                 ? (
                     <ContentBase
@@ -576,7 +593,7 @@ const ManageAlerts = (props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Root>
     );
 };
 
@@ -593,4 +610,4 @@ ManageAlerts.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(ManageAlerts));
+export default injectIntl((ManageAlerts));

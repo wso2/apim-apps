@@ -16,10 +16,10 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -29,28 +29,44 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormLabel from '@mui/material/FormLabel';
 
-const useStyles = makeStyles((theme) => ({
-    formTitle: {
+const PREFIX = 'AddEditExecution';
+
+const classes = {
+    formTitle: `${PREFIX}-formTitle`,
+    radioGroup: `${PREFIX}-radioGroup`,
+    slectRoot: `${PREFIX}-slectRoot`,
+    formControlSelect: `${PREFIX}-formControlSelect`,
+    defaultLimitLabel: `${PREFIX}-defaultLimitLabel`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.formTitle}`]: {
         paddingBottom: theme.spacing(4),
     },
-    radioGroup: {
+
+    [`& .${classes.radioGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    slectRoot: {
+
+    [`& .${classes.slectRoot}`]: {
         padding: '11.5px 14px',
         width: 100,
     },
-    formControlSelect: {
+
+    [`& .${classes.formControlSelect}`]: {
         paddingTop: 7,
         paddingLeft: 5,
     },
-    defaultLimitLabel: {
+
+    [`& .${classes.defaultLimitLabel}`]: {
         marginLeft: theme.spacing(1),
     },
 }));
+
 /**
  * Render the execution polcy section and default limits.
  * @returns {JSX} Returns form component.
@@ -58,7 +74,6 @@ const useStyles = makeStyles((theme) => ({
  */
 function AddEditExecution(props) {
     const intl = useIntl();
-    const classes = useStyles();
 
     const {
         onChange, updateGroup, hasErrors, limit, validating,
@@ -132,7 +147,7 @@ function AddEditExecution(props) {
         updateGroup();
     };
     return (
-        <>
+        <Root>
             <Box display='flex' flexDirection='row' alignItems='center'>
                 <Box flex='1' className={classes.defaultLimitLabel}>
                     <FormLabel component='legend'>
@@ -161,7 +176,6 @@ function AddEditExecution(props) {
                     />
                 </RadioGroup>
             </Box>
-
             <Box component='div' m={1}>
                 {requestCount && (
                     <TextField
@@ -275,7 +289,7 @@ function AddEditExecution(props) {
                     </FormControl>
                 </Box>
             </Box>
-        </>
+        </Root>
     );
 }
 AddEditExecution.defaultProps = {

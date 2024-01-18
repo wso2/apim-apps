@@ -19,10 +19,10 @@
 import React, {
     useReducer, useState, Suspense, lazy, useEffect,
 } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     Typography, Box, Grid, FormHelperText, Button,
 } from '@mui/material';
@@ -36,42 +36,64 @@ import { Link as RouterLink } from 'react-router-dom';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Joi from '@hapi/joi';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "CustomPolicyAddMonacoEditor" */));
+const PREFIX = 'AddEdit';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    error: `${PREFIX}-error`,
+    dialog: `${PREFIX}-dialog`,
+    siddhiQueryHeading: `${PREFIX}-siddhiQueryHeading`,
+    showSampleButton: `${PREFIX}-showSampleButton`,
+    helperText: `${PREFIX}-helperText`,
+    infoBox: `${PREFIX}-infoBox`,
+    buttonBox: `${PREFIX}-buttonBox`,
+    saveButton: `${PREFIX}-saveButton`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.root}`]: {
         marginBottom: theme.spacing(15),
     },
-    error: {
+
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    dialog: {
+
+    [`& .${classes.dialog}`]: {
         minWidth: theme.spacing(150),
 
     },
-    siddhiQueryHeading: {
+
+    [`& .${classes.siddhiQueryHeading}`]: {
         marginBottom: theme.spacing(1),
     },
-    showSampleButton: {
+
+    [`& .${classes.showSampleButton}`]: {
         marginTop: theme.spacing(2),
     },
-    helperText: {
+
+    [`& .${classes.helperText}`]: {
         color: green[600],
         fontSize: theme.spacing(1.6),
         marginLeft: theme.spacing(1),
     },
-    infoBox: {
+
+    [`& .${classes.infoBox}`]: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(2),
     },
-    buttonBox: {
+
+    [`& .${classes.buttonBox}`]: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(2),
     },
 }));
+
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "CustomPolicyAddMonacoEditor" */));
 
 const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@carbon.super' ) "
 + "AS isEligible , str:concat('admin@carbon.super','') as throttleKey "
@@ -107,7 +129,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const {
         updateList, history,
     } = props;
@@ -309,7 +330,7 @@ function AddEdit(props) {
     };
 
     return (
-        <ContentBase
+        <StyledContentBase
             pageStyle='half'
             title={editMode
                 ? intl.formatMessage({
@@ -463,7 +484,7 @@ function AddEdit(props) {
                     </Box>
                 </Grid>
             </Box>
-        </ContentBase>
+        </StyledContentBase>
     );
 }
 

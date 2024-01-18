@@ -17,15 +17,21 @@
  */
 
 import React, { useReducer, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'Edit';
+
+const classes = {
+    error: `${PREFIX}-error`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
 }));
@@ -52,7 +58,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX}.
  */
 function Edit(props) {
-    const classes = useStyles();
     const restApi = new API();
     const {
         updateList, dataRow, icon, triggerButtonText, title, applicationList,
@@ -142,7 +147,7 @@ function Edit(props) {
         }
     };
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={title}
             saveButtonText='Save'
             icon={icon}
@@ -184,7 +189,7 @@ function Edit(props) {
                 )}
                 variant='outlined'
             />
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 

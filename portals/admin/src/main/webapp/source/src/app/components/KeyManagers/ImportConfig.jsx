@@ -17,8 +17,8 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl, FormattedMessage } from 'react-intl';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import TextField from '@mui/material/TextField';
@@ -29,8 +29,14 @@ import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'ImportConfig';
+
+const classes = {
+    error: `${PREFIX}-error`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
 }));
@@ -42,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function ImportConfig(props) {
     const intl = useIntl();
-    const classes = useStyles();
+
 
     const { settings } = useAppContext();
 
@@ -102,7 +108,7 @@ function ImportConfig(props) {
         return false;
     };
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={intl.formatMessage({
                 id: 'KeyManagers.ImportConfig.dialog.tilte.add.new',
                 defaultMessage: 'Import Key Manager Configuration',
@@ -181,7 +187,7 @@ function ImportConfig(props) {
                 variant='outlined'
                 error={hasErrors('url', url, validating)}
             />
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 ImportConfig.propTypes = {

@@ -17,16 +17,22 @@
  */
 
 import React, { useReducer, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'AddEdit';
+
+const classes = {
+    error: `${PREFIX}-error`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
 }));
@@ -54,7 +60,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX}.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const {
         updateList, dataRow, icon, triggerButtonText, title,
     } = props;
@@ -179,7 +184,7 @@ function AddEdit(props) {
         }
     };
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={title}
             saveButtonText='Save'
             icon={icon}
@@ -217,7 +222,7 @@ function AddEdit(props) {
                 helperText={hasErrors('description', description) || 'Description of the API category'}
                 variant='outlined'
             />
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 

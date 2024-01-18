@@ -17,37 +17,52 @@
  */
 
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    fullHeight: {
+const PREFIX = 'AppsTableContent';
+
+const classes = {
+    head: `${PREFIX}-head`,
+    body: `${PREFIX}-body`,
+    root: `${PREFIX}-root`,
+    root2: `${PREFIX}-root2`,
+    fullHeight: `${PREFIX}-fullHeight`,
+    tableRow: `${PREFIX}-tableRow`,
+    appOwner: `${PREFIX}-appOwner`,
+    appName: `${PREFIX}-appName`,
+    appTablePaper: `${PREFIX}-appTablePaper`,
+    tableCellWrapper: `${PREFIX}-tableCellWrapper`,
+};
+
+const StyledTableBody = styled(TableBody)(({ theme }) => ({
+    [`&.${classes.fullHeight}`]: {
         height: '100%',
     },
-    tableRow: {
+
+    [`& .${classes.tableRow}`]: {
         height: theme.spacing(5),
         '& td': {
             padding: theme.spacing(0.5),
         },
     },
-    appOwner: {
+
+    [`& .${classes.appOwner}`]: {
         pointerEvents: 'none',
     },
-    appName: {
+
+    [`& .${classes.appName}`]: {
         '& a': {
             color: '#1b9ec7 !important',
         },
     },
-    appTablePaper: {
+
+    [`& .${classes.appTablePaper}`]: {
         '& table tr td': {
             paddingLeft: theme.spacing(1),
         },
@@ -58,35 +73,18 @@ const styles = (theme) => ({
             color: theme.palette.action.disabled,
         },
     },
-    tableCellWrapper: {
+
+    [`& .${classes.tableCellWrapper}`]: {
         '& td': {
             'word-break': 'break-all',
             'white-space': 'normal',
         },
     },
-});
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    body: {
-        fontSize: 14,
-    },
-    root: {
-        '&:first-child': {
-            paddingLeft: theme.spacing(2),
-        },
-    },
-}))(TableCell);
+}));
 
-const StyledTableRow = withStyles((theme) => ({
-    root: {
-        '&:nth-of-type(odd)': {
-            backgroundColor: theme.palette.background.default,
-        },
-    },
-}))(TableRow);
+const StyledTableCell = TableCell;
+
+const StyledTableRow = TableRow;
 
 /**
  *
@@ -127,7 +125,7 @@ class AppsTableContent extends Component {
      */
     render() {
         const {
-            apps, classes, editComponentProps, apiCall,
+            apps, editComponentProps, apiCall,
         } = this.props;
         const { notFound } = this.state;
 
@@ -135,15 +133,44 @@ class AppsTableContent extends Component {
             return <ResourceNotFound />;
         }
         return (
-            <TableBody className={classes.fullHeight}>
+            <StyledTableBody className={classes.fullHeight}>
                 {apps && apps.map((app) => {
                     return (
-                        <StyledTableRow className={classes.tableRow} key={app.applicationId}>
-                            <StyledTableCell align='left'>
+                        <StyledTableRow
+                            className={classes.tableRow}
+                            key={app.applicationId}
+                            classes={{
+                                root: classes.root2,
+                            }}
+                        >
+                            <StyledTableCell
+                                align='left'
+                                classes={{
+                                    head: classes.head,
+                                    body: classes.body,
+                                    root: classes.root,
+                                }}
+                            >
                                 {app.name}
                             </StyledTableCell>
-                            <StyledTableCell align='left'>{app.owner}</StyledTableCell>
-                            <StyledTableCell align='left'>
+                            <StyledTableCell
+                                align='left'
+                                classes={{
+                                    head: classes.head,
+                                    body: classes.body,
+                                    root: classes.root,
+                                }}
+                            >
+                                {app.owner}
+                            </StyledTableCell>
+                            <StyledTableCell
+                                align='left'
+                                classes={{
+                                    head: classes.head,
+                                    body: classes.body,
+                                    root: classes.root,
+                                }}
+                            >
                                 <EditApplication
                                     dataRow={app}
                                     updateList={apiCall}
@@ -153,7 +180,7 @@ class AppsTableContent extends Component {
                         </StyledTableRow>
                     );
                 })}
-            </TableBody>
+            </StyledTableBody>
         );
     }
 }
@@ -161,4 +188,4 @@ AppsTableContent.propTypes = {
     toggleDeleteConfirmation: PropTypes.func.isRequired,
     apps: PropTypes.instanceOf(Map).isRequired,
 };
-export default withStyles(styles)(AppsTableContent);
+export default (AppsTableContent);

@@ -17,10 +17,10 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
@@ -54,47 +54,73 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Chip from '@mui/material/Chip';
 import { red } from '@mui/material/colors/';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'AddEdit';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    error: `${PREFIX}-error`,
+    formTitle: `${PREFIX}-formTitle`,
+    radioGroup: `${PREFIX}-radioGroup`,
+    radioGroupBilling: `${PREFIX}-radioGroupBilling`,
+    selectRoot: `${PREFIX}-selectRoot`,
+    formControlSelect: `${PREFIX}-formControlSelect`,
+    formControlSelectBottom: `${PREFIX}-formControlSelectBottom`,
+    toggleSwitchPadding: `${PREFIX}-toggleSwitchPadding`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    paddingTooltip: `${PREFIX}-paddingTooltip`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.root}`]: {
         marginBottom: theme.spacing(10),
     },
-    error: {
+
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    formTitle: {
+
+    [`& .${classes.formTitle}`]: {
         paddingBottom: theme.spacing(4),
     },
-    radioGroup: {
+
+    [`& .${classes.radioGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
     },
-    radioGroupBilling: {
+
+    [`& .${classes.radioGroupBilling}`]: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    selectRoot: {
+
+    [`& .${classes.selectRoot}`]: {
         padding: '11.5px 14px',
         width: 100,
     },
-    formControlSelect: {
+
+    [`& .${classes.formControlSelect}`]: {
         paddingTop: 7,
         paddingLeft: 5,
     },
-    formControlSelectBottom: {
+
+    [`& .${classes.formControlSelectBottom}`]: {
         display: 'flex',
         paddingTop: 7,
         paddingBottom: 7,
     },
-    toggleSwitchPadding: {
+
+    [`& .${classes.toggleSwitchPadding}`]: {
         paddingTop: 10,
         paddingBottom: 7,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    paddingTooltip: {
+
+    [`& .${classes.paddingTooltip}`]: {
         paddingLeft: 5,
     },
 }));
@@ -159,7 +185,6 @@ function reducer(state, newValue) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
     const { history, match: { params } } = props;
@@ -674,7 +699,7 @@ function AddEdit(props) {
     };
 
     return (
-        <ContentBase
+        <StyledContentBase
             pageStyle='half'
             title={isEdit
                 ? intl.formatMessage({
@@ -1633,7 +1658,7 @@ function AddEdit(props) {
                     </Grid>
                 </Grid>
             </Box>
-        </ContentBase>
+        </StyledContentBase>
     );
 }
 

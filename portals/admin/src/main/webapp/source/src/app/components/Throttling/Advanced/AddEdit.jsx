@@ -17,11 +17,11 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
@@ -35,14 +35,24 @@ import API from 'AppData/api';
 import AddEditExecution from 'AppComponents/Throttling/Advanced/AddEditExecution';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'AddEdit';
+
+const classes = {
+    error: `${PREFIX}-error`,
+    hr: `${PREFIX}-hr`,
+    root: `${PREFIX}-root`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    hr: {
+
+    [`& .${classes.hr}`]: {
         border: 'solid 1px #efefef',
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         marginBottom: theme.spacing(15),
     },
 }));
@@ -101,7 +111,6 @@ function reducer(state, { field, value }) {
  * @param {JSON} props Props passed from other components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const intl = useIntl();
@@ -287,8 +296,7 @@ function AddEdit(props) {
         dispatch({ field: 'conditionalGroups', value: clearedGroup });
     };
     return (
-
-        <ContentBase
+        <StyledContentBase
             pageStyle='half'
             title={
                 id ? `${intl.formatMessage({
@@ -486,7 +494,7 @@ function AddEdit(props) {
                     </Grid>
                 </Grid>
             </Box>
-        </ContentBase>
+        </StyledContentBase>
     );
 }
 

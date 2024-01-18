@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -24,24 +25,37 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import makeStyles from '@mui/styles/makeStyles';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
-const useStyles = makeStyles((theme) => ({
-    searchBar: {
+const PREFIX = 'ListAddOns';
+
+const classes = {
+    searchBar: `${PREFIX}-searchBar`,
+    searchInput: `${PREFIX}-searchInput`,
+    block: `${PREFIX}-block`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    button: `${PREFIX}-button`,
+};
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+    [`&.${classes.searchBar}`]: {
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
     },
-    searchInput: {
+
+    [`& .${classes.searchInput}`]: {
         fontSize: theme.typography.fontSize,
     },
-    block: {
+
+    [`& .${classes.block}`]: {
         display: 'block',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         margin: '40px 16px',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         borderColor: 'rgba(255, 255, 255, 0.7)',
     },
 }));
@@ -56,9 +70,9 @@ function ListAddOns(props) {
     const {
         searchActive, filterData, onRefresh, searchPlaceholder, children,
     } = props;
-    const classes = useStyles();
+
     return (
-        <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+        <StyledAppBar className={classes.searchBar} position='static' color='default' elevation={0}>
             <Toolbar>
                 <Grid container spacing={2} direction='row' justifyContent='flex-end' alignItems='center'>
                     <Grid item>
@@ -97,7 +111,7 @@ function ListAddOns(props) {
                     </Grid>
                 </Grid>
             </Toolbar>
-        </AppBar>
+        </StyledAppBar>
     );
 }
 

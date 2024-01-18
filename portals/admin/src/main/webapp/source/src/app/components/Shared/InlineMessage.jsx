@@ -1,13 +1,21 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Paper from '@mui/material/Paper';
 import Icon from '@mui/material/Icon';
 import { amber } from '@mui/material/colors';
 import VerticalDivider from './VerticalDivider';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'InlineMessage';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    button: `${PREFIX}-button`,
+    content: `${PREFIX}-content`,
+};
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    [`&.${classes.root}`]: {
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(2),
@@ -22,16 +30,18 @@ const styles = (theme) => ({
             color: amber[700],
         },
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
         paddingRight: theme.spacing(1),
     },
-});
+}));
 
 /**
  *
@@ -53,14 +63,14 @@ class InlineMessage extends React.Component {
      */
     render() {
         const {
-            classes, height, type, children,
+            height, type, children,
         } = this.props;
         return (
-            <Paper className={classes.root} {...this.props}>
+            <StyledPaper className={classes.root} {...this.props}>
                 <Icon className={type}>{type}</Icon>
                 <VerticalDivider height={height} />
                 <div className={classes.content}>{children}</div>
-            </Paper>
+            </StyledPaper>
         );
     }
 }
@@ -79,4 +89,4 @@ InlineMessage.defaultProps = {
     height: 100,
     type: 'info',
 };
-export default withStyles(styles)(InlineMessage);
+export default (InlineMessage);

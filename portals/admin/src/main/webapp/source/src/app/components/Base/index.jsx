@@ -18,12 +18,50 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
-import withStyles from '@mui/styles/withStyles';
+import { useTheme, styled } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { Toaster } from 'react-hot-toast';
+
+const drawerWidth = 256;
+
+const PREFIX = 'index';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    drawer: `${PREFIX}-drawer`,
+    app: `${PREFIX}-app`,
+    footer: `${PREFIX}-footer`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.root}`]: {
+        display: 'flex',
+        minHeight: '100vh',
+    },
+
+    [`& .${classes.drawer}`]: {
+        [theme.breakpoints.up('sm')]: {
+            width: drawerWidth,
+            flexShrink: 0,
+        },
+    },
+
+    [`& .${classes.app}`]: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+
+    [`& .${classes.footer}`]: {
+        padding: theme.spacing(2),
+        background: '#eaeff1',
+        position: 'relative',
+        bottom: 0,
+    },
+}));
 
 /**
  * Render copyright
@@ -40,33 +78,6 @@ function Copyright() {
     );
 }
 
-const drawerWidth = 256;
-
-const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        minHeight: '100vh',
-    },
-    drawer: {
-        [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
-    },
-    app: {
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-    },
-
-    footer: {
-        padding: theme.spacing(2),
-        background: '#eaeff1',
-        position: 'relative',
-        bottom: 0,
-    },
-});
-
 /**
  * Render base page component.
  * @param {JSON} props component props.
@@ -74,11 +85,11 @@ const styles = (theme) => ({
  */
 function Base(props) {
     const {
-        classes, children, leftMenu, header,
+        children, leftMenu, header,
     } = props;
     const theme = useTheme();
     return (
-        <>
+        <Root>
             <Toaster
                 position='bottom-right'
                 gutter={8}
@@ -131,7 +142,7 @@ function Base(props) {
                     </footer>
                 </div>
             </div>
-        </>
+        </Root>
     );
 }
 
@@ -142,4 +153,4 @@ Base.propTypes = {
     leftMenu: PropTypes.element.isRequired,
 };
 
-export default withStyles(styles)(Base);
+export default (Base);

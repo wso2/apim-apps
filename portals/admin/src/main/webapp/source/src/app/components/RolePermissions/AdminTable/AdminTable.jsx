@@ -17,22 +17,32 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import { TableContextProvider } from './AdminTableContext';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'AdminTable';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    table: `${PREFIX}-table`,
+};
+
+const StyledTableContextProvider = styled(TableContextProvider)(({ theme }) => ({
+    [`& .${classes.root}`]: {
         width: '100%',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         width: '100%',
         marginBottom: theme.spacing(2),
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         minWidth: 750,
     },
 }));
@@ -47,7 +57,7 @@ export default function AdminTable(props) {
     const {
         children, multiSelect, rowsPerPageOptions, dataIDs,
     } = props;
-    const classes = useStyles();
+
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('role');
     const [selected, setSelected] = React.useState([]);
@@ -79,7 +89,7 @@ export default function AdminTable(props) {
     };
 
     return (
-        <TableContextProvider value={{
+        <StyledTableContextProvider value={{
             onSelectAllClick: handleSelectAllClick,
             order,
             orderBy,
@@ -115,6 +125,6 @@ export default function AdminTable(props) {
                 </TableContainer>
 
             </div>
-        </TableContextProvider>
+        </StyledTableContextProvider>
     );
 }

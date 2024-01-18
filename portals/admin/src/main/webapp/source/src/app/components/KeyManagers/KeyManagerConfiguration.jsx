@@ -1,4 +1,5 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,14 +12,21 @@ import RadioGroup from '@mui/material/RadioGroup';
 import { FormattedMessage } from 'react-intl';
 import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import makeStyles from '@mui/styles/makeStyles';
 import CustomInputField from 'AppComponents/KeyManagers/CustomInputField';
 
-const useStyles = makeStyles((theme) => ({
-    inputLabel: {
+const PREFIX = 'KeyManagerConfiguration';
+
+const classes = {
+    inputLabel: `${PREFIX}-inputLabel`,
+    error: `${PREFIX}-error`,
+};
+
+const StyledBox = styled(Box)(({ theme }) => ({
+    [`& .${classes.inputLabel}`]: {
         transform: 'translate(14px, 11px) scale(1)',
     },
-    error: {
+
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
 }));
@@ -38,7 +46,7 @@ export default function KeyManagerConfiguration(props) {
         keymanagerConnectorConfigurations, additionalProperties,
         setAdditionalProperties, hasErrors, validating,
     } = props;
-    const classes = useStyles();
+
     const onChange = (e) => {
         let finalValue;
         const { name, value, type } = e.target;
@@ -188,9 +196,9 @@ export default function KeyManagerConfiguration(props) {
     };
     return (
         keymanagerConnectorConfigurations.map((keymanagerConnectorConfiguration) => (
-            <Box mb={3}>
+            <StyledBox mb={3}>
                 {getComponent(keymanagerConnectorConfiguration, hasErrors, validating)}
-            </Box>
+            </StyledBox>
         )));
 }
 KeyManagerConfiguration.defaultProps = {

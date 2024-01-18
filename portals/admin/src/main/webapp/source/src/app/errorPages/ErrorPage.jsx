@@ -17,24 +17,31 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import makeStyles from '@mui/styles/makeStyles';
 import ErrorList from './ErrorList';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'ErrorPage';
+
+const classes = {
+    root: `${PREFIX}-root`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.root}`]: {
         marginTop: theme.spacing(15),
     },
 }));
 
 const ErrorPage = (props) => {
     const { errorCode } = props;
-    const classes = useStyles();
+
     return (
-        <>
+        <Root>
             <Container maxWidth='md' className={classes.root}>
                 <Box padding={4}>
                     <Paper elevation={2}>
@@ -46,7 +53,7 @@ const ErrorPage = (props) => {
                     </Paper>
                 </Box>
             </Container>
-        </>
+        </Root>
     );
 };
 ErrorPage.propTypes = {

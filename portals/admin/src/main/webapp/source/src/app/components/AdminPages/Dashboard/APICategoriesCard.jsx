@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import { Card } from '@mui/material';
@@ -24,7 +25,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import CategoryIcon from '@mui/icons-material/Category';
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -32,18 +32,28 @@ import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
 import Configurations from 'Config';
 
-const useStyles = makeStyles(() => ({
-    root: {
+const PREFIX = 'APICategoriesCard';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    title: `${PREFIX}-title`,
+    cardText: `${PREFIX}-cardText`,
+};
+
+const StyledCard = styled(Card)(() => ({
+    [`& .${classes.root}`]: {
         minWidth: 275,
         minHeight: 270,
         textAlign: 'center',
 
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         fontSize: 20,
         fontWeight: 'fontWeightBold',
     },
-    cardText: {
+
+    [`& .${classes.cardText}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -55,7 +65,6 @@ const useStyles = makeStyles(() => ({
  * @returns {JSX} Loading animation.
  */
 export default function APICategoriesCard() {
-    const classes = useStyles();
     const [apiCategoriesList, setApiCategoriesList] = useState();
     const [numberOfCategories, setNumberOfCategories] = useState(0);
     const restApi = new API();
@@ -75,7 +84,7 @@ export default function APICategoriesCard() {
     }, []);
 
     const noApiCategoriesCard = (
-        <Card className={classes.root}>
+        <StyledCard className={classes.root}>
             <CardContent>
 
                 <Box>
@@ -133,12 +142,12 @@ export default function APICategoriesCard() {
                     </Button>
                 </Box>
             </CardContent>
-        </Card>
+        </StyledCard>
     );
 
     const apiCategoriesListingCard = () => {
         return (
-            <Card className={classes.root} style={{ textAlign: 'left' }}>
+            <StyledCard className={classes.root} style={{ textAlign: 'left' }}>
                 <CardContent>
                     <Box display='flex'>
                         <Box flexGrow={1}>
@@ -205,7 +214,7 @@ export default function APICategoriesCard() {
                         </Button>
                     </Box>
                 </Box>
-            </Card>
+            </StyledCard>
         );
     };
 

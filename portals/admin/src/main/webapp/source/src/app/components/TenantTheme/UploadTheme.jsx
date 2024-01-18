@@ -17,8 +17,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     List, Button, ListItemAvatar, Typography, Toolbar, Grid, Paper, ListItem, Avatar, ListItemSecondaryAction, Box,
@@ -39,30 +39,59 @@ import AlertMui from '@mui/material/Alert';
 import Icon from '@mui/material/Icon';
 import Utils from 'AppData/Utils';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'UploadTheme';
+
+const classes = {
+    error: `${PREFIX}-error`,
+    addEditFormControl: `${PREFIX}-addEditFormControl`,
+    gridRoot: `${PREFIX}-gridRoot`,
+    paper: `${PREFIX}-paper`,
+    warningPaper: `${PREFIX}-warningPaper`,
+    downloadPaper: `${PREFIX}-downloadPaper`,
+    main: `${PREFIX}-main`,
+    paperUpload: `${PREFIX}-paperUpload`,
+    uploadButtonGrid: `${PREFIX}-uploadButtonGrid`,
+    dropbox: `${PREFIX}-dropbox`,
+    browseFileButton: `${PREFIX}-browseFileButton`,
+    button: `${PREFIX}-button`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    uploadFilesHeading: `${PREFIX}-uploadFilesHeading`,
+    downloadBox: `${PREFIX}-downloadBox`,
+    fileIcon: `${PREFIX}-fileIcon`,
+    fileName: `${PREFIX}-fileName`,
+    fileUploadError: `${PREFIX}-fileUploadError`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
-    addEditFormControl: {
+
+    [`& .${classes.addEditFormControl}`]: {
         minHeight: theme.spacing(40),
         maxHeight: theme.spacing(40),
         minWidth: theme.spacing(55),
     },
-    gridRoot: {
+
+    [`& .${classes.gridRoot}`]: {
         paddingLeft: 0,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         maxWidth: 936,
         margin: 'auto',
         overflow: 'hidden',
     },
-    warningPaper: {
+
+    [`& .${classes.warningPaper}`]: {
         maxWidth: 936,
         margin: 'auto',
         overflow: 'hidden',
         marginTop: theme.spacing(2),
     },
-    downloadPaper: {
+
+    [`& .${classes.downloadPaper}`]: {
         maxWidth: 936,
         height: theme.spacing(8),
         margin: 'auto',
@@ -74,56 +103,68 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadius,
         border: 'solid 1px ' + theme.palette.secondary.main,
     },
-    main: {
+
+    [`& .${classes.main}`]: {
         flex: 1,
         padding: theme.spacing(6, 4),
         background: '#eaeff1',
     },
-    paperUpload: {
+
+    [`& .${classes.paperUpload}`]: {
         maxWidth: 750,
         margin: 'auto',
         overflow: 'hidden',
         marginTop: theme.spacing(5),
     },
-    uploadButtonGrid: {
+
+    [`& .${classes.uploadButtonGrid}`]: {
         display: 'grid',
         padding: '0px 345px 10px',
     },
-    dropbox: {
+
+    [`& .${classes.dropbox}`]: {
         maxWidth: 500,
         margin: 'auto',
         overflow: 'hidden',
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(2),
     },
-    browseFileButton: {
+
+    [`& .${classes.browseFileButton}`]: {
         marginTop: theme.spacing(1),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(3),
         fontWeight: 600,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginLeft: theme.spacing(4),
         fontSize: '50px',
     },
-    uploadFilesHeading: {
+
+    [`& .${classes.uploadFilesHeading}`]: {
         display: 'flex',
         justifyContent: 'center',
         marginTop: theme.spacing(2),
     },
-    downloadBox: {
+
+    [`& .${classes.downloadBox}`]: {
         display: 'flex',
         justifyContent: 'center',
     },
-    fileIcon: {
+
+    [`& .${classes.fileIcon}`]: {
         fontSize: 45,
     },
-    fileName: {
+
+    [`& .${classes.fileName}`]: {
         marginTop: theme.spacing(1.5),
         marginLeft: theme.spacing(5),
     },
-    fileUploadError: {
+
+    [`& .${classes.fileUploadError}`]: {
         marginTop: theme.spacing(2),
     },
 }));
@@ -134,7 +175,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX}.
  */
 function UploadTheme() {
-    const classes = useStyles();
     const [themeFile, setThemeFile] = useState([]);
     const [fileName, setFileName] = useState();
     const [isFileAccepted, setIsFileAccepted] = useState(false);
@@ -193,7 +233,7 @@ function UploadTheme() {
     };
 
     return (
-        <>
+        <Root>
             <Toolbar className={classes.root}>
                 <Grid container alignItems='center' spacing={1} classes={{ root: classes.gridRoot }}>
                     <Grid item xs>
@@ -232,7 +272,6 @@ function UploadTheme() {
 
                 </Grid>
             </Toolbar>
-
             <main className={classes.main}>
                 <Paper className={classes.paperUpload}>
                     <Grid item xs className={classes.uploadFilesHeading}>
@@ -348,7 +387,7 @@ function UploadTheme() {
                     </Grid>
                 </Paper>
             </main>
-        </>
+        </Root>
     );
 }
 

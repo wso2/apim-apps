@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -42,33 +42,42 @@ import DeleteConditionGroup from 'AppComponents/Throttling/Advanced/DeleteCondit
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
-/**
- * Create UUID
- * @returns {string} random uuid string.
- */
-function getUUID() {
-    return Math.random().toString(36).substring(2) + Date.now().toString(36);
-}
+const PREFIX = 'ConditionalGroup';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    secondaryHeading: `${PREFIX}-secondaryHeading`,
+    table: `${PREFIX}-table`,
+    expandContentRoot: `${PREFIX}-expandContentRoot`,
+    subsubTitle: `${PREFIX}-subsubTitle`,
+    alert: `${PREFIX}-alert`,
+    hr: `${PREFIX}-hr`,
+    descriptionBox: `${PREFIX}-descriptionBox`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.root}`]: {
         width: '100%',
         marginBottom: 20,
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
         flex: 1,
         alignItems: 'center',
     },
-    secondaryHeading: {
+
+    [`& .${classes.secondaryHeading}`]: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
         display: 'flex',
         alignItems: 'center',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         marginBottom: 40,
         background: '#efefef',
         '& th': {
@@ -79,23 +88,36 @@ const useStyles = makeStyles((theme) => ({
             'white-space': 'normal',
         },
     },
-    expandContentRoot: {
+
+    [`& .${classes.expandContentRoot}`]: {
         flexDirection: 'column',
     },
-    subsubTitle: {
+
+    [`& .${classes.subsubTitle}`]: {
         fontSize: '0.81rem',
     },
-    alert: {
+
+    [`& .${classes.alert}`]: {
         flex: 1,
     },
-    hr: {
+
+    [`& .${classes.hr}`]: {
         border: 'solid 1px #efefef',
         width: '100%',
     },
-    descriptionBox: {
+
+    [`& .${classes.descriptionBox}`]: {
         marginLeft: theme.spacing(1),
     },
 }));
+
+/**
+ * Create UUID
+ * @returns {string} random uuid string.
+ */
+function getUUID() {
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
 
 /**
  * Render a list
@@ -104,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function ConditionalGroup(props) {
     const intl = useIntl();
-    const classes = useStyles();
+
     const [expanded, setExpanded] = React.useState(false);
     const {
         group, updateGroup, hasErrors, index, deleteGroup,
@@ -345,7 +367,7 @@ function ConditionalGroup(props) {
         return checked;
     };
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -611,7 +633,7 @@ function ConditionalGroup(props) {
                 </AccordionDetails>
             </Accordion>
 
-        </div>
+        </Root>
     );
 }
 ConditionalGroup.propTypes = {

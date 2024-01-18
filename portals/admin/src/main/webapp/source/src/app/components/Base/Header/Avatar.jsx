@@ -1,5 +1,6 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     IconButton,
     Menu,
@@ -7,26 +8,36 @@ import {
     Icon,
 } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
 
-const styles = (theme) => ({
-    profileMenu: {
+const PREFIX = 'Avatar';
+
+const classes = {
+    profileMenu: `${PREFIX}-profileMenu`,
+    userLink: `${PREFIX}-userLink`,
+    accountIcon: `${PREFIX}-accountIcon`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.profileMenu}`]: {
         zIndex: theme.zIndex.modal + 1,
         paddingTop: '5px',
     },
-    userLink: {
+
+    [`& .${classes.userLink}`]: {
         fontSize: theme.typography.fontSize,
         textTransform: 'uppercase',
         fontWeight: 'bold',
     },
-    accountIcon: {
+
+    [`& .${classes.accountIcon}`]: {
         marginRight: 10,
     },
-});
+}));
 
 /**
  * Render the User Avatar with their name inside the Top AppBar component
@@ -82,7 +93,7 @@ class Avatar extends Component {
      * @memberof Avatar
      */
      render() {
-         const { classes, user } = this.props;
+         const { user } = this.props;
          let username = user.name;
          const count = (username.match(/@/g) || []).length;
          if (user.name.endsWith('@carbon.super') && count <= 1) {
@@ -90,7 +101,7 @@ class Avatar extends Component {
          }
          const { anchorEl } = this.state;
          return (
-             <>
+             <Root>
                  <IconButton
                      id='profile-menu-btn'
                      aria-owns='profile-menu-appbar'
@@ -133,7 +144,7 @@ class Avatar extends Component {
                          </MenuItem>
                      </Link>
                  </Menu>
-             </>
+             </Root>
          );
      }
 }
@@ -146,4 +157,4 @@ Avatar.propTypes = {
     user: PropTypes.shape({ name: PropTypes.string.isRequired }).isRequired,
 };
 
-export default withStyles(styles)(Avatar);
+export default (Avatar);

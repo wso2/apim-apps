@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
@@ -42,31 +42,38 @@ import SearchIcon from '@mui/icons-material/Search';
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 
-/**
- * Render a list
- * @returns {JSX} Header AppBar components.
- */
+const PREFIX = 'ListApplications';
 
-const useStyles = makeStyles((theme) => ({
-    searchBar: {
+const classes = {
+    searchBar: `${PREFIX}-searchBar`,
+    block: `${PREFIX}-block`,
+    clearSearch: `${PREFIX}-clearSearch`,
+    addUser: `${PREFIX}-addUser`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.searchBar}`]: {
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
     },
-    block: {
+
+    [`& .${classes.block}`]: {
         display: 'block',
     },
-    clearSearch: {
+
+    [`& .${classes.clearSearch}`]: {
         position: 'absolute',
         right: 111,
         top: 13,
     },
-    addUser: {
+
+    [`& .${classes.addUser}`]: {
         marginRight: theme.spacing(1),
     },
 }));
 
 export default function ListApplications() {
     const intl = useIntl();
-    const classes = useStyles();
+
     const [loading, setLoading] = useState(false);
     const [applicationList, setApplicationList] = useState(null);
     const [totalApps, setTotalApps] = useState(0);
@@ -153,7 +160,7 @@ export default function ListApplications() {
     }
 
     return (
-        <ContentBase>
+        <StyledContentBase>
             <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
                 <Toolbar>
                     <form onSubmit={filterApps} style={{ width: '100%' }} disabled={loading}>
@@ -195,7 +202,8 @@ export default function ListApplications() {
                                             aria-label='delete'
                                             className={classes.clearSearch}
                                             onClick={clearSearch}
-                                            size='large'>
+                                            size='large'
+                                        >
                                             <HighlightOffRoundedIcon />
                                         </IconButton>
                                     </Tooltip>
@@ -276,6 +284,6 @@ export default function ListApplications() {
                     </Alert>
                 </Box>
             )}
-        </ContentBase>
+        </StyledContentBase>
     );
 }

@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
@@ -26,8 +26,15 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { useTableContext } from './AdminTableContext';
 
-const useStyles = makeStyles(() => ({
-    visuallyHidden: {
+const PREFIX = 'AdminTableHead';
+
+const classes = {
+    visuallyHidden: `${PREFIX}-visuallyHidden`,
+    tableHead: `${PREFIX}-tableHead`,
+};
+
+const StyledTableHead = styled(TableHead)(() => ({
+    [`& .${classes.visuallyHidden}`]: {
         border: 0,
         clip: 'rect(0 0 0 0)',
         height: 1,
@@ -38,7 +45,8 @@ const useStyles = makeStyles(() => ({
         top: 20,
         width: 1,
     },
-    tableHead: {
+
+    [`& .${classes.tableHead}`]: {
         fontWeight: 800,
     },
 }));
@@ -56,13 +64,13 @@ function AdminTableHead(props) {
     const {
         onRequestSort, numSelected, rowCount, onSelectAllClick, orderBy, order, multiSelect,
     } = useTableContext();
-    const classes = useStyles();
+
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
     };
 
     return (
-        <TableHead>
+        <StyledTableHead>
             <TableRow>
                 {multiSelect && (
                     <TableCell padding='checkbox'>
@@ -100,7 +108,7 @@ function AdminTableHead(props) {
                     </TableCell>
                 ))}
             </TableRow>
-        </TableHead>
+        </StyledTableHead>
     );
 }
 
