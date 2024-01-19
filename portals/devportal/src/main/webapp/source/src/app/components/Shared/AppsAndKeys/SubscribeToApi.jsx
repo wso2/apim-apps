@@ -112,12 +112,15 @@ const styles = theme => ({
     },
     appDropDown: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
+        '&:hover': {
+            backgroundColor: 'unset',
+        },
     },
 });
 
 const subscribeToApi = (props) => {
     const [appSelected, setAppSelected] = useState('');
-    const [policySelected, setPolicySelected] = useState('');
+    const [policySelected, setPolicySelected] = useState({tierName:''});
     const [applicationsList, setApplicationsList] = useState([]);
     const {
         classes,
@@ -128,9 +131,22 @@ const subscribeToApi = (props) => {
         renderSmall,
     } = props;
 
+    let sortedThrottlingPolicyList = throttlingPolicyList;
+
     useEffect(() => {
+        sortedThrottlingPolicyList = throttlingPolicyList.sort((a, b) => {
+            // Sort by 'COMMERCIAL' tier plan first
+            if (a.tierPlan === 'COMMERCIAL' && b.tierPlan !== 'COMMERCIAL') {
+                return -1;
+            } else if (a.tierPlan !== 'COMMERCIAL' && b.tierPlan === 'COMMERCIAL') {
+                return 1;
+            }
+        
+            // For options within the same tier plan, sort alphabetically
+            return a.tierName.localeCompare(b.tierName);
+        });
         if (throttlingPolicyList && throttlingPolicyList[0]) {
-            setPolicySelected(throttlingPolicyList[0].tierName);
+            setPolicySelected(sortedThrottlingPolicyList[0]);
         }
     }, [throttlingPolicyList]);
 
@@ -158,8 +174,8 @@ const subscribeToApi = (props) => {
                 setAppSelected(value);
                 break;
             case 'throttlingPolicy':
-                newRequest.throttlingPolicy = target.value;
-                setPolicySelected(target.value);
+                newRequest.throttlingPolicy = value.tierName;
+                setPolicySelected(value);
                 break;
             default:
                 break;
@@ -182,6 +198,7 @@ const subscribeToApi = (props) => {
                            id="application-subscribe"
                            aria-describedby='application-helper-text'
                            options={applicationsList}
+                           disableClearable
                            value={(applicationsList.length !== 0 && appSelected === '') ?
                                 applicationsList[0] : appSelected}
                            onChange={(e, value) => handleChange('application', e, value)}
@@ -197,7 +214,7 @@ const subscribeToApi = (props) => {
                         </FormHelperText>
                     </FormControl>
                 )}
-                {throttlingPolicyList && (
+                {sortedThrottlingPolicyList && (
                     <FormControl
                         className={classNames(classes.FormControl, classes.smallDisplayFix, {
                             [classes.smallDisplay]: renderSmall,
@@ -210,17 +227,20 @@ const subscribeToApi = (props) => {
                                 defaultMessage='Business Plan'
                             />
                         </InputLabel>
-                        <Select
-                            value={policySelected}
+                        <Autocomplete
+                            id='application-policy'
                             aria-describedby='policies-helper-text'
-                            onChange={e => handleChange('throttlingPolicy', e)}
-                            input={<Input name='policySelected' id='policy-label-placeholder' />}
-                            displayEmpty
-                            name='policySelected'
-                            className={classes.selectEmpty}
-                        >
-                            {throttlingPolicyList.map(policy => (
-                                <MenuItem value={policy.tierName} key={policy.tierName}  className={classes.appDropDown}>
+                            options={sortedThrottlingPolicyList}
+                            disableClearable
+                            value={policySelected}
+                            getOptionLabel={(option) => option.tierName}
+                            getOptionSelected={(option, value) => option.tierName === value.tierName}
+                            onChange={(e, value) => handleChange('throttlingPolicy', e, value)}
+                            classes={{ root: classes.fullWidth }}
+                            renderInput={(params) => <TextField {...params} />}
+                            groupBy={(option) => option.tierPlan === 'COMMERCIAL'  ? 'Commercial' : 'Free'}
+                            renderOption={(policy) => (
+                                <MenuItem value={policy.tierName} key={policy.tierName} className={classes.appDropDown}>
                                     {policy.tierPlan === 'COMMERCIAL' ? (
                                         <React.Fragment>
                                             <ListItemText
@@ -248,17 +268,17 @@ const subscribeToApi = (props) => {
                                         <ListItemText primary={policy.tierName} />
                                     )}
                                 </MenuItem>
-                            ))}
-                        </Select>
+                            )}
+                        />
                         <FormHelperText id='policies-helper-text'>
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.SubscribeToApi.available.policies'
                                 defaultMessage='Available Policies -'
                             />{' '}
-                            {throttlingPolicyList.map((policy, index) => (
+                            {sortedThrottlingPolicyList.map((policy, index) => (
                                 <span key={policy.tierName}>
                                     {policy.tierName}
-                                    {index !== throttlingPolicyList.length - 1 && <span>,</span>}
+                                    {index !== sortedThrottlingPolicyList.length - 1 && <span>,</span>}
                                 </span>
                             ))}
                         </FormHelperText>

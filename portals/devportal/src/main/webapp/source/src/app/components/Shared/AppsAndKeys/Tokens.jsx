@@ -19,13 +19,14 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+
 
 // Styles for Grid and Paper elements
 const styles = theme => ({
@@ -68,8 +69,11 @@ const MenuProps = {
     getContentAnchorEl: null,
 };
 
+const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
+const checkedIcon = <CheckBoxIcon fontSize='small' />;
+
 /**
- * Used to display generate acctoken UI
+ * Used to display generate access token UI
  */
 const tokens = (props) => {
     /**
@@ -107,37 +111,41 @@ const tokens = (props) => {
                 className={classes.FormControlOdd}
                 disabled={subscriptionScopes.length === 0}
             >
-                <InputLabel htmlFor='quota-helper' className={classes.quotaHelp}>
-                    <FormattedMessage
-                        id='Shared.AppsAndKeys.Tokens.when.you.generate.scopes'
-                        defaultMessage='Scopes'
-                    />
-
-                </InputLabel>
-                <Select
-                    name='scopesSelected'
+                <Autocomplete
                     multiple
+                    limitTags={5}
+                    id='scopesSelected'
+                    name='scopesSelected'
+                    options={subscriptionScopes}
+                    noOptionsText='No scopes available'
+                    disableCloseOnSelect
                     value={accessTokenRequest.scopesSelected}
-                    onChange={e => handleChange('scopesSelected', e)}
-                    input={<Input id='select-multiple-chip' />}
-                    renderValue={selected => (
-                        <div className={classes.chips}>
-                            {selected.map(value => (
-                                <Chip key={value} label={value} className={classes.chip} />
-                            ))}
-                        </div>
+                    onChange={(e, newValue) => handleChange('scopesSelected', { target: { value: newValue } })}
+                    renderOption={(option, { selected }) => (
+                        <>
+                            <Checkbox
+                                id={'access-token-scope-' + option}
+                                icon={icon}
+                                checkedIcon={checkedIcon}
+                                style={{ marginRight: 8 }}
+                                checked={selected}
+                            />
+                            {option}
+                        </>
                     )}
-                    MenuProps={MenuProps}
-                >
-                    {subscriptionScopes.map(scope => (
-                        <MenuItem
-                            key={scope}
-                            value={scope}
-                        >
-                            {scope}
-                        </MenuItem>
-                    ))}
-                </Select>
+                    renderInput={(params) => (
+                        <TextField {...params}
+                            margin='dense'
+                            variant='outlined'
+                            label={<FormattedMessage
+                                htmlFor='quota-helper'
+                                className={classes.quotaHelp}
+                                id='Shared.AppsAndKeys.Tokens.when.you.generate.scopes'
+                                defaultMessage='Scopes'
+                            />}
+                        />
+                    )}
+                />
                 <Typography variant='caption'>
                     <FormattedMessage
                         id='Shared.AppsAndKeys.Tokens.when.you.generate'

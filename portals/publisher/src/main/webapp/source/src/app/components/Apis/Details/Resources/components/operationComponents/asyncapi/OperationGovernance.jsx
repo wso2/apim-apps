@@ -19,18 +19,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import LaunchIcon from '@material-ui/icons/Launch';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import { Link } from 'react-router-dom';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -50,6 +51,8 @@ export default function OperationGovernance(props) {
     const operationScopes = getAsyncAPIOperationScopes(operation[verb]);
     const filteredApiScopes = api.scopes.filter((sharedScope) => !sharedScope.shared);
     const intl = useIntl();
+    const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
+    const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
     return (
         <>
@@ -108,110 +111,68 @@ export default function OperationGovernance(props) {
                 </sup>
             </Grid>
             <Grid item md={1} />
-            <Grid item md={5}>
-                {
-                    operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
-                        <TextField
-                            id='operation_scope'
-                            select
-                            SelectProps={{
-                                multiple: true,
-                                renderValue: (selected) => (Array.isArray(selected) ? selected.join(', ') : selected),
-                            }}
-                            disabled={disableUpdate}
-                            fullWidth
-                            label={api.scopes.length !== 0 || sharedScopes ? intl.formatMessage({
-                                id: 'Apis.Details.Topics.components.operationComponents.'
-                                + 'OperationGovernance.operation.scope.label.default',
-                                defaultMessage: 'Operation scope',
-                            }) : intl.formatMessage({
-                                id: 'Apis.Details.Topics.components.operationComponents.'
-                                + 'OperationGovernance.operation.scope.label.notAvailable',
-                                defaultMessage: 'No scope available',
-                            })}
-                            value={operationScopes}
-                            onChange={({ target: { value } }) => operationsDispatcher({
+            <Grid item md={7}>
+                {operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
+                    <Autocomplete
+                        multiple
+                        limitTags={5}
+                        id={verb + target + '-operation-scope-autocomplete'}
+                        options={[...filteredApiScopes, ...sharedScopes]}
+                        groupBy={(option) => option.shared ? 'Shared Scopes' : 'API Scopes'}
+                        noOptionsText='No scopes available'
+                        disableCloseOnSelect
+                        value={operationScopes.map((scope) => ({ scope: { name: scope } }))}
+                        getOptionLabel={(option) => option.scope.name}
+                        getOptionSelected={(option, value) => option.scope.name === value.scope.name}
+                        onChange={(event, newValue) => {
+                            const selectedScopes = newValue.map((val) => val.scope.name);
+                            operationsDispatcher({
                                 action: 'scopes',
-                                data: { target, verb, value: value ? [value] : [] },
-                            })}
-                            helperText={(
-                                <FormattedMessage
-                                    id={'Apis.Details.Topics.components.operationComponents.'
-                                    + 'OperationGovernance.operation.scope.helperText'}
-                                    defaultMessage='Select a scope to control permissions to this operation'
+                                data: { target, verb, value: selectedScopes ? [selectedScopes] : [] },
+                            });
+                        }}
+                        renderOption={(option, { selected }) => (
+                            <>
+                                <Checkbox
+                                    id={verb + target + '-operation-scope-' + option.scope.name}
+                                    icon={icon}
+                                    checkedIcon={checkedIcon}
+                                    style={{ marginRight: 8 }}
+                                    checked={selected}
                                 />
-                            )}
-                            margin='dense'
-                            variant='outlined'
-                        >
-                            <ListSubheader>
-                                <FormattedMessage
-                                    id={'Apis.Details.Topics.components.operationComponents.'
-                                    + 'OperationGovernance.operation.scope.select.local'}
-                                    defaultMessage='API Scopes'
-                                />
-                            </ListSubheader>
-                            {filteredApiScopes.length !== 0 ? filteredApiScopes.map((apiScope) => (
-                                <MenuItem
-                                    key={apiScope.scope.name}
-                                    value={apiScope.scope.name}
-                                    dense
-                                >
-                                    <Checkbox checked={operationScopes.includes(apiScope.scope.name)} color='primary' />
-                                    {apiScope.scope.name}
-                                </MenuItem>
-                            )) : (
-                                <MenuItem
-                                    value=''
-                                    disabled
-                                >
-                                    <em>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Topics.components.operationComponents.'
-                                        + 'OperationGovernance.operation.no.api.scope.available'}
-                                            defaultMessage='No API scopes available'
-                                        />
-                                    </em>
-                                </MenuItem>
-                            )}
-                            <ListSubheader>
-                                <FormattedMessage
-                                    id={'Apis.Details.Topics.components.operationComponents.'
-                                    + 'OperationGovernance.operation.scope.select.shared'}
-                                    defaultMessage='Shared Scopes'
-                                />
-                            </ListSubheader>
-                            {sharedScopes && sharedScopes.length !== 0 ? sharedScopes.map((sharedScope) => (
-                                <MenuItem
-                                    key={sharedScope.scope.name}
-                                    value={sharedScope.scope.name}
-                                    dense
-                                >
-                                    <Checkbox
-                                        checked={operationScopes.includes(sharedScope.scope.name)}
-                                        color='primary'
+                                {option.scope.name}
+                            </>
+                        )}
+                        style={{ width: 500 }}
+                        renderInput={(params) => (
+                            <TextField {...params}
+                                disabled={disableUpdate}
+                                fullWidth
+                                label={api.scopes.length !== 0 || sharedScopes ? intl.formatMessage({
+                                    id: 'Apis.Details.Topics.components.operationComponents.'
+                                        + 'OperationGovernance.operation.scope.label.default',
+                                    defaultMessage: 'Operation scope',
+                                }) : intl.formatMessage({
+                                    id: 'Apis.Details.Topics.components.operationComponents.'
+                                        + 'OperationGovernance.operation.scope.label.notAvailable',
+                                    defaultMessage: 'No scope available',
+                                })}
+                                placeholder='Search scopes'
+                                helperText={(
+                                    <FormattedMessage
+                                        id={'Apis.Details.Topics.components.operationComponents.'
+                                            + 'OperationGovernance.operation.scope.helperText'}
+                                        defaultMessage='Select a scope to control permissions to this operation'
                                     />
-                                    {sharedScope.scope.name}
-                                </MenuItem>
-                            )) : (
-                                <MenuItem
-                                    value=''
-                                    disabled
-                                >
-                                    <em>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Topics.components.operationComponents.'
-                                        + 'OperationGovernance.operation.no.sharedpi.scope.available'}
-                                            defaultMessage='No shared scopes available'
-                                        />
-                                    </em>
-                                </MenuItem>
-                            )}
-                        </TextField>
-                    ) : null
-                }
+                                )}
+                                margin='dense'
+                                variant='outlined'
+                                id={verb + target + '-operation-scope-select'} />
+                        )}
+                    />
+                ) : null}
             </Grid>
-            <Grid item md={5} style={{ marginTop: '14px' }}>
+            <Grid item md={3} style={{ marginTop: '14px' }}>
                 {
                     operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? !disableUpdate && (
                         <Link
