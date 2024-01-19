@@ -170,7 +170,7 @@ export default function APICategoriesCard() {
                     <Box height={170} mt={1} mb={-2}>
                         {apiCategoriesList.map((category) => {
                             return (
-                                <Box display='flex' alignItems='center'>
+                                <Box display='flex' alignItems='center' key={category.name}>
                                     <Box width={50} flexGrow={1} mt={0.5}>
                                         <Typography className={classes.cardText} variant='subtitle2'>
                                             {category.name}

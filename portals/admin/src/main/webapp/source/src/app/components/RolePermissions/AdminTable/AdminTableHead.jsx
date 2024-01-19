@@ -86,7 +86,7 @@ function AdminTableHead(props) {
                     <TableCell
                         key={headCell.id}
                         align={index === 0 ? 'left' : 'right'}
-                        padding={headCell.disablePadding ? 'none' : 'default'}
+                        padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                         variant='head'
                         classes={{ head: classes.tableHead }}

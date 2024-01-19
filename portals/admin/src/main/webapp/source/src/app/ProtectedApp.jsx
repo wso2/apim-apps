@@ -211,7 +211,7 @@ class Protected extends Component {
                                                 component={Dashboard}
                                             />
                                             {allRoutes.map((r) => {
-                                                return <Route path={r.path} component={r.component} />;
+                                                return <Route path={r.path} component={r.component} key={r.path} />;
                                             })}
                                             <Route component={ResourceNotFound} />
                                         </Switch>

@@ -151,10 +151,11 @@ function AdminTableBody(props) {
                                     component='th'
                                     label={labelId}
                                     scope='row'
-                                    padding={multiSelect ? 'none' : 'default'}
+                                    padding={multiSelect ? 'none' : 'normal'}
                                     align={index === 0 ? 'left' : 'right'}
                                     data-testid={column}
                                     style={{ maxWidth: '800px' }}
+                                    key={index} // eslint-disable-line react/no-array-index-key
                                 >
                                     {column}
                                 </TableCell>

@@ -109,7 +109,7 @@ const AppThemes = {
             MuiDivider: {
                 root: {
                     backgroundColor: '#404854',
-                    'border-color': '#404854',
+                    borderColor: '#404854',
                 },
             },
             MuiListItemText: {

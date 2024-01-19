@@ -242,6 +242,7 @@ function Navigator(props) {
                                 style={{ textDecoration: 'none' }}
                                 data-testid={id}
                                 underline='hover'
+                                key={id}
                             >
                                 <List disablePadding role='list'>
                                     <ListItem

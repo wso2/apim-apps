@@ -124,7 +124,6 @@ class Avatar extends Component {
                      keepMounted
                      open={Boolean(anchorEl)}
                      onClose={this.handleClose}
-                     getContentAnchorEl={null}
                      anchorOrigin={{
                          vertical: 'bottom',
                          horizontal: 'center',

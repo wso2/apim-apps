@@ -427,6 +427,6 @@ ListBase.propTypes = {
     }),
     noDataMessage: PropTypes.element,
     addButtonOverride: PropTypes.element,
-    addedActions: PropTypes.shape({}),
+    addedActions: PropTypes.shape([]),
 };
 export default ListBase;
