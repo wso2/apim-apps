@@ -314,7 +314,7 @@ function AddEdit(props) {
                     />
                 </Typography>
             </DialogContentText>
-            <FormControl component='fieldset' className={classes.addForm}>
+            <FormControl variant='standard' component='fieldset' className={classes.addForm}>
                 <RadioGroup
                     row
                     aria-label='position'

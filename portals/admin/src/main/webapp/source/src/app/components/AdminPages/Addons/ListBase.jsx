@@ -310,6 +310,7 @@ function ListBase(props) {
                                 <Grid item xs>
                                     {searchActive && (
                                         <TextField
+                                            variant='standard'
                                             fullWidth
                                             placeholder={searchPlaceholder}
                                             InputProps={{

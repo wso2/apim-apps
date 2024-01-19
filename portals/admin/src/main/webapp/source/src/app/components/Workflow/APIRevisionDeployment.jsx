@@ -486,6 +486,7 @@ function ListLabels() {
                                 <Grid item xs>
                                     {searchActive && (
                                         <TextField
+                                            variant='standard'
                                             fullWidth
                                             placeholder={searchPlaceholder}
                                             InputProps={{

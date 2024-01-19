@@ -421,7 +421,11 @@ function AddEditGWEnvironment(props) {
             formSaveCallback={formSaveCallback}
             dialogOpenCallback={dialogOpenCallback}
         >
-            <FormControl component='fieldset' className={classes.addEditFormControl}>
+            <FormControl
+                variant='standard'
+                component='fieldset'
+                className={classes.addEditFormControl}
+            >
                 <TextField
                     autoFocus
                     margin='dense'

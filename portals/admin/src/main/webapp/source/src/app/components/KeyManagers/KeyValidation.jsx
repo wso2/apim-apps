@@ -172,6 +172,7 @@ export default function KeyValidation(props) {
                         />
                     </InputLabel>
                     <Select
+                        variant='standard'
                         name='type'
                         value={tokenValidation.type}
                         onChange={onChange}

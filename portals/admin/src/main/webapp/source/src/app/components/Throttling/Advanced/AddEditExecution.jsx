@@ -222,6 +222,7 @@ function AddEditExecution(props) {
                         />
                         <FormControl variant='outlined' className={classes.formControlSelect}>
                             <Select
+                                variant='standard'
                                 name='dataUnit'
                                 value={bandwidth.dataUnit}
                                 onChange={update}
@@ -256,6 +257,7 @@ function AddEditExecution(props) {
                     />
                     <FormControl variant='outlined' className={classes.formControlSelect}>
                         <Select
+                            variant='standard'
                             name='timeUnit'
                             value={timeUnit}
                             onChange={update}

@@ -892,6 +892,7 @@ function AddEdit(props) {
                                     />
                                     <FormControl variant='outlined' className={classes.formControlSelect}>
                                         <Select
+                                            variant='standard'
                                             name='dataUnit'
                                             fullWidth
                                             value={dataUnit}
@@ -957,6 +958,7 @@ function AddEdit(props) {
                                 />
                                 <FormControl variant='outlined' className={classes.formControlSelect}>
                                     <Select
+                                        variant='standard'
                                         name='timeUnit'
                                         value={timeUnit}
                                         fullWidth
@@ -1024,6 +1026,7 @@ function AddEdit(props) {
                                 </Grid>
                                 <FormControl variant='outlined' className={classes.formControlSelect}>
                                     <Select
+                                        variant='standard'
                                         name='rateLimitTimeUnit'
                                         fullWidth
                                         value={rateLimitTimeUnit}

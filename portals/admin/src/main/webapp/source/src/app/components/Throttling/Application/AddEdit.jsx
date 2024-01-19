@@ -478,7 +478,7 @@ function AddEdit(props) {
                     />
                 </Typography>
             </DialogContentText>
-            <FormControl component='fieldset'>
+            <FormControl variant='standard' component='fieldset'>
                 <RadioGroup
                     row
                     aria-label='position'
@@ -553,8 +553,9 @@ function AddEdit(props) {
                                     />
                                 )}
                         />
-                        <FormControl className={classes.unitTimeSelection}>
+                        <FormControl variant='standard' className={classes.unitTimeSelection}>
                             <Select
+                                variant='standard'
                                 labelId='demo-simple-select-label'
                                 name='dataUnit'
                                 value={dataUnit}
@@ -594,8 +595,9 @@ function AddEdit(props) {
                                 />
                             )}
                     />
-                    <FormControl className={classes.unitTimeSelection}>
+                    <FormControl variant='standard' className={classes.unitTimeSelection}>
                         <Select
+                            variant='standard'
                             labelId='demo-simple-select-label'
                             name='timeUnit'
                             value={timeUnit}
@@ -647,8 +649,9 @@ function AddEdit(props) {
                     })}
                     variant='outlined'
                 />
-                <FormControl className={classes.unitTimeSelection}>
+                <FormControl variant='standard' className={classes.unitTimeSelection}>
                     <Select
+                        variant='standard'
                         name='rateLimitTimeUnit'
                         value={rateLimitTimeUnit}
                         fullWidth

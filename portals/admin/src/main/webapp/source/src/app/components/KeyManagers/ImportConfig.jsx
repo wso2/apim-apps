@@ -144,6 +144,7 @@ function ImportConfig(props) {
                     <span className={classes.error}>*</span>
                 </InputLabel>
                 <Select
+                    variant='standard'
                     name='type'
                     value={type}
                     onChange={onChange}

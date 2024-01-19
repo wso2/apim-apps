@@ -41,7 +41,7 @@ export default function SelectPermissionsStep(props) {
     const { ROLE_ALIAS, SELECT_PERMISSIONS } = SelectPermissionsStep.CONST;
 
     return (
-        <FormControl style={{ width: '100%' }} component='fieldset'>
+        <FormControl variant='standard' style={{ width: '100%' }} component='fieldset'>
             <RadioGroup
                 aria-label='mapping-type'
                 name='mapping-type'

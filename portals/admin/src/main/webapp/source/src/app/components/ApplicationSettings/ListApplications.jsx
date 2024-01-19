@@ -170,6 +170,7 @@ export default function ListApplications() {
                             </Grid>
                             <Grid item xs>
                                 <TextField
+                                    variant='standard'
                                     fullWidth
                                     id='search-label'
                                     label={intl.formatMessage({
@@ -185,8 +186,8 @@ export default function ListApplications() {
                                         className: classes.searchInput,
                                     }}
                                     value={owner}
+                                    // onKeyPress={this.handleSearchKeyPress}
                                     onChange={setQuery}
-                                // onKeyPress={this.handleSearchKeyPress}
                                 />
                                 { owner.length > 0
                                 && (

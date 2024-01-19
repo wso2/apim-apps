@@ -297,6 +297,7 @@ function AddEditConditionPolicyIP(props) {
             </DialogContentText>
             <FormControl variant='outlined' className={classes.formControlSelect}>
                 <Select
+                    variant='standard'
                     name='ipConditionType'
                     value={ipConditionType}
                     onChange={onChange}

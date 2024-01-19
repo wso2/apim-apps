@@ -834,6 +834,7 @@ function AddEditKeyManager(props) {
                                             <span className={classes.error}>*</span>
                                         </InputLabel>
                                         <Select
+                                            variant='standard'
                                             id='Admin.KeyManager.form.type.select'
                                             name='type'
                                             value={type}
@@ -1820,6 +1821,7 @@ function AddEditKeyManager(props) {
                                     <span className={classes.error}>*</span>
                                 </InputLabel>
                                 <Select
+                                    variant='standard'
                                     id='Admin.KeyManager.form.permission.select'
                                     name='KeyManagerPermissionRestrict'
                                     value={permissionStatus}
@@ -2031,7 +2033,7 @@ function AddEditKeyManager(props) {
                                     </Typography>
                                 </Box>
                                 <Box>
-                                    <FormControl component='fieldset'>
+                                    <FormControl variant='standard' component='fieldset'>
                                         <RadioGroup
                                             aria-label={intl.formatMessage({
                                                 id: 'KeyManagers.AddEditKeyManager.token.validation.method',

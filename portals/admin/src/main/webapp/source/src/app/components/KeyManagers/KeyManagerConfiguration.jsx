@@ -119,7 +119,7 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'select') {
             return (
-                <FormControl component='fieldset'>
+                <FormControl variant='standard' component='fieldset'>
                     <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
                     <FormGroup>
                         {keymanagerConnectorConfiguration.values.map((selection) => (
@@ -141,7 +141,7 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'checkbox') {
             return (
-                <FormControl component='fieldset'>
+                <FormControl variant='standard' component='fieldset'>
                     <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
                     <FormGroup>
                         {keymanagerConnectorConfiguration.values.map((selection) => (
@@ -163,7 +163,7 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'options') {
             return (
-                <FormControl component='fieldset'>
+                <FormControl variant='standard' component='fieldset'>
                     <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
                     <RadioGroup
                         aria-label={keymanagerConnectorConfiguration.label}

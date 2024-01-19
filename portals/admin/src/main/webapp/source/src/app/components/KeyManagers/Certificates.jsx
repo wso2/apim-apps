@@ -75,7 +75,7 @@ export default function Certificates(props) {
     };
     return (
         <>
-            <FormControl component='fieldset'>
+            <FormControl variant='standard' component='fieldset'>
                 <RadioGroup
                     style={{ flexDirection: 'row' }}
                     aria-label='certificate'
