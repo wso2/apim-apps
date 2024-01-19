@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AddEditVhost(props) {
     const intl = useIntl();
-    const { onVhostChange, initialVhosts } = props;
+    const { onVhostChange, initialVhosts, selectedGatewayType } = props;
     const classes = useStyles();
 
     const [userVhosts, setUserVhosts] = useState(initialVhosts);
@@ -225,10 +225,10 @@ function AddEditVhost(props) {
                                             https://${vhost.host || '<HOST>'}:${vhost.httpsPort}/${vhost.httpContext}`
                                         }
                                         <br />
-                                        {
+                                        {selectedGatewayType === 'Synapse' && (
                                             `ws://${vhost.host || '<HOST>'}:${vhost.wsPort}/ |
                                             wss://${vhost.host || '<HOST>'}:${vhost.wssPort}/`
-                                        }
+                                        )}
                                     </Typography>
                                 </Grid>
                                 {/* Advanced Settings */}
@@ -292,42 +292,46 @@ function AddEditVhost(props) {
                                                     <Divider variant='middle' className={classes.portDivider} />
                                                 </Grid>
                                                 {/* WS Ports */}
-                                                <Grid item xs={12}>
-                                                    <Grid container spacing={2}>
-                                                        <Grid item xs={6} />
-                                                        {
-                                                            [
-                                                                {
-                                                                    name: 'wsPort',
-                                                                    caption: intl.formatMessage({
-                                                                        defaultMessage: 'WS Port',
-                                                                        id: 'GatewayEnvironments.AddEditVhost.wsPort',
-                                                                    }),
-                                                                },
-                                                                {
-                                                                    name: 'wssPort',
-                                                                    caption: intl.formatMessage({
-                                                                        defaultMessage: 'WSS Port',
-                                                                        id: 'GatewayEnvironments.AddEditVhost.wssPort',
-                                                                    }),
-                                                                },
-                                                            ].map((field) => (
-                                                                <Grid item xs={3}>
-                                                                    <TextField
-                                                                        margin='dense'
-                                                                        name={vhost.key}
-                                                                        disabled={!vhost.isNew}
-                                                                        onChange={changeHandler(field.name)}
-                                                                        label={field.caption}
-                                                                        value={vhost[field.name]}
-                                                                        type='number'
-                                                                        variant='outlined'
-                                                                    />
-                                                                </Grid>
-                                                            ))
-                                                        }
+                                                {selectedGatewayType === 'Synapse' && (
+                                                    <Grid item xs={12}>
+                                                        <Grid container spacing={2}>
+                                                            <Grid item xs={6} />
+                                                            {
+                                                                [
+                                                                    {
+                                                                        name: 'wsPort',
+                                                                        caption: intl.formatMessage({
+                                                                            defaultMessage: 'WS Port',
+                                                                            id:
+                                                                            'GatewayEnvironments.AddEditVhost.wsPort',
+                                                                        }),
+                                                                    },
+                                                                    {
+                                                                        name: 'wssPort',
+                                                                        caption: intl.formatMessage({
+                                                                            defaultMessage: 'WSS Port',
+                                                                            id:
+                                                                            'GatewayEnvironments.AddEditVhost.wssPort',
+                                                                        }),
+                                                                    },
+                                                                ].map((field) => (
+                                                                    <Grid item xs={3}>
+                                                                        <TextField
+                                                                            margin='dense'
+                                                                            name={vhost.key}
+                                                                            disabled={!vhost.isNew}
+                                                                            onChange={changeHandler(field.name)}
+                                                                            label={field.caption}
+                                                                            value={vhost[field.name]}
+                                                                            type='number'
+                                                                            variant='outlined'
+                                                                        />
+                                                                    </Grid>
+                                                                ))
+                                                            }
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
+                                                )}
                                             </Grid>
                                         </ExpansionPanelDetails>
                                     </ExpansionPanel>
@@ -358,6 +362,7 @@ AddEditVhost.defaultProps = {
 
 AddEditVhost.propTypes = {
     onVhostChange: PropTypes.func.isRequired,
+    selectedGatewayType: PropTypes.string.isRequired,
     initialVhosts: PropTypes.arrayOf(PropTypes.shape({
         host: PropTypes.string.isRequired,
         httpContext: PropTypes.string,

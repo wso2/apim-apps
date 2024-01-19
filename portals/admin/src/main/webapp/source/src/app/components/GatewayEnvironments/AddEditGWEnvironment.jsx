@@ -25,6 +25,11 @@ import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 
 const useStyles = makeStyles((theme) => ({
@@ -40,6 +45,39 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
+    radioOutline: {
+        display: 'flex',
+        alignItems: 'center',
+        width: '200px', // Set your desired width
+        height: '125px', // Set your desired height
+        padding: '4px', // Adjust the padding for the desired outline size
+        marginRight: '30px',
+        marginLeft: '10px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        border: '2px solid gray', // Initial border color
+        borderRadius: '8px', // Adjust the border-radius for a square outline
+        transition: 'border 0.3s', // Add transition for a smooth color change
+        '&:hover': {
+            border: '2px solid gray', // Keep the gray color on hover
+        },
+        '&.Mui-checked': {
+            border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
+        },
+    },
+    label: {
+        marginLeft: '10px', // Adjust as needed for spacing between the radio button and label
+    },
+    newLabel: {
+        backgroundColor: 'green', // Blue color
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '0.6rem',
+        padding: '2px 4px', // Adjust padding as needed
+        borderRadius: '4px', // Adjust border-radius for rounded corners
+        marginLeft: '10px', // Adjust margin as needed
+        display: 'inline-block', // Ensure inline display
+    },
 }));
 
 /**
@@ -53,6 +91,7 @@ function reducer(state, { field, value }) {
     switch (field) {
         case 'name':
         case 'displayName':
+        case 'gatewayType':
         case 'description':
         case 'vhosts':
             return { ...state, [field]: value };
@@ -93,10 +132,23 @@ function AddEditGWEnvironment(props) {
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
     };
+
+    const [selectedGatewayType, setValue] = React.useState('Synapse');
+    const getBorderColor = (gatewayType) => {
+        return selectedGatewayType === gatewayType
+            ? '2px solid #1976D2'
+            : '2px solid gray';
+    };
+
+    const handleChange = (event) => {
+        setValue(event.target.value);
+    };
+
     useEffect(() => {
         setInitialState({
             displayName: '',
             description: '',
+            selectedGatewayType: '',
             vhosts: [defaultVhost],
         });
     }, []);
@@ -399,9 +451,52 @@ function AddEditGWEnvironment(props) {
                     )}
                     variant='outlined'
                 />
+                <FormControl component='fieldset'>
+                    <FormLabel style={{ marginTop: '10px' }}>Select Gateway type</FormLabel>
+                    <RadioGroup
+                        row
+                        aria-label='gateway-type'
+                        name='gateway-type'
+                        value={selectedGatewayType}
+                        onChange={handleChange}
+                    >
+                        <FormControlLabel
+                            value='Synapse'
+                            className={classes.radioOutline}
+                            control={<Radio />}
+                            label={(
+                                <div>
+                                    <span>Synapse Gateway</span>
+                                    <Typography variant='body2' color='textSecondary'>
+                                        API gateway embedded in APIM runtime.
+                                        Connect directly to an existing APIManager.
+                                    </Typography>
+                                </div>
+                            )}
+                            style={{ border: getBorderColor('Synapse') }}
+                        />
+                        <FormControlLabel
+                            value='APK'
+                            className={classes.radioOutline}
+                            control={<Radio />}
+                            label={(
+                                <div>
+                                    <span>APK Gateway</span>
+                                    <span className={`${classes.label} ${classes.newLabel}`}>New</span>
+                                    <Typography variant='body2' color='textSecondary'>
+                                        Fast API gateway running on kubernetes designed to manage
+                                        and secure APIs.
+                                    </Typography>
+                                </div>
+                            )}
+                            style={{ border: getBorderColor('APK') }}
+                        />
+                    </RadioGroup>
+                </FormControl>
                 <AddEditVhost
                     initialVhosts={vhosts}
                     onVhostChange={onChange}
+                    selectedGatewayType={selectedGatewayType}
                 />
             </FormControl>
         </FormDialogBase>
