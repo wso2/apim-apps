@@ -61,6 +61,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
             + 'learn/rate-limiting/adding-new-throttling-policies/#adding-a-new-subscription-level-throttling-tier'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
@@ -80,6 +81,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
                 + 'learn/rate-limiting/setting-throttling-limits/#subscription-level-throttling-api-publisher'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
@@ -99,6 +101,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
                 + 'learn/rate-limiting/setting-throttling-limits/#subscription-level-throttling-api-subscriber'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

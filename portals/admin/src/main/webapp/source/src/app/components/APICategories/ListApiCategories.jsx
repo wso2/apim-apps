@@ -124,6 +124,7 @@ export default function ListApiCategories() {
                                 + 'develop/customizations/customizing-the-developer-portal/customize-api-listing/'
                                 + 'api-category-based-grouping/'
                             }
+                            underline='hover'
                         >
                             <ListItemText
                                 primary={(

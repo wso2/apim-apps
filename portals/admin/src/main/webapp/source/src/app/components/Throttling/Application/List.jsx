@@ -71,6 +71,7 @@ export default function ListApplicationThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
             + 'learn/rate-limiting/adding-new-throttling-policies/#adding-a-new-application-level-throttling-tier'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
@@ -90,6 +91,7 @@ export default function ListApplicationThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
                 + 'learn/rate-limiting/setting-throttling-limits/#application-level-throttling-application-developer'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

@@ -74,6 +74,7 @@ export default function ListBlacklistThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
             + 'learn/rate-limiting/access-control/#denying-requests'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

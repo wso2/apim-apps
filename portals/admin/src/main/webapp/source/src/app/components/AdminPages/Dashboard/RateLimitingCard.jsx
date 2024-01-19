@@ -135,12 +135,12 @@ export default function RateLimitingCard() {
                 <Box mt={1} mb={-2}>
                     {selectedPolicies.map((policy) => {
                         return (
-                            <Box display='flex'>
+                            <Box display='flex' key={policy.name}>
                                 <Box mx={1} mt={0.5}>
                                     {policy.icon}
                                 </Box>
                                 <Box flexGrow={1}>
-                                    <Link component={RouterLink} to={policy.path} color='inherit'>
+                                    <Link component={RouterLink} to={policy.path} color='inherit' underline='hover'>
                                         <Typography
                                             variant='body1'
                                             style={{ fontWeight: 'bold' }}

@@ -185,7 +185,7 @@ export default function TasksWorkflowCard() {
                     </Avatar>
                 </Box>
                 <Box flexGrow={1}>
-                    <Link component={RouterLink} to={path} color='inherit'>
+                    <Link component={RouterLink} to={path} color='inherit' underline='hover'>
                         <Typography>
                             {name}
                         </Typography>

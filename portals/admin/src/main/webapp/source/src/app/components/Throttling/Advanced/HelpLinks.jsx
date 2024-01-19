@@ -43,6 +43,7 @@ export default function HelpLinks() {
                         href={Configurations.app.docUrl
                 + 'learn/rate-limiting/'
                 + 'introducing-throttling-use-cases/'}
+                        underline='hover'
                     >
                         <ListItemText primary={(
                             <FormattedMessage
@@ -63,6 +64,7 @@ export default function HelpLinks() {
                         href={Configurations.app.docUrl
                 + 'learn/rate-limiting/adding-new-throttling-policies/'
                 + '#adding-a-new-advanced-throttling-policy'}
+                        underline='hover'
                     >
                         <ListItemText primary={(
                             <FormattedMessage

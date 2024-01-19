@@ -210,6 +210,7 @@ function ListLabels() {
                             target='_blank'
                             href={Configurations.app.docUrl
                         + 'develop/customizations/adding-a-user-signup-workflow/'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

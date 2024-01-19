@@ -212,6 +212,7 @@ function ListLabels() {
                             href={Configurations.app.docUrl
                         + 'learn/consume-api/manage-subscription/advanced-topics/adding'
                         + '-an-api-subscription-workflow/#adding-an-api-subscription-update-workflow'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

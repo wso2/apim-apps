@@ -213,6 +213,7 @@ function ListLabels() {
                             target='_blank'
                             href={Configurations.app.docUrl
                         + 'deploy-and-publish/deploy-on-gateway/deploy-api/revision-deployment-workflow'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

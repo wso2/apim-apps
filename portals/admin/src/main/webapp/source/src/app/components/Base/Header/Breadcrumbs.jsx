@@ -72,13 +72,19 @@ function Breadcrumbs(props) {
         pageDetails.forEach((page) => {
             if (page.path) {
                 breadcrumbElements.push(
-                    <Link component={RouterLink} color='inherit' to={page.path}>
+                    <Link
+                        component={RouterLink}
+                        color='inherit'
+                        to={page.path}
+                        key={page.id}
+                        underline='hover'
+                    >
                         {page.id}
                     </Link>,
                 );
             } else {
                 breadcrumbElements.push(
-                    <Typography color='textPrimary'>{page.id}</Typography>,
+                    <Typography color='textPrimary' key={page.id}>{page.id}</Typography>,
                 );
             }
         });

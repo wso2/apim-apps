@@ -234,6 +234,7 @@ function ListLabels(props) {
                             href={Configurations.app.docUrl
                         + 'learn/design-api/advanced-topics/adding-an-api-'
                         + 'state-change-workflow/#adding-an-api-state-change-workflow'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

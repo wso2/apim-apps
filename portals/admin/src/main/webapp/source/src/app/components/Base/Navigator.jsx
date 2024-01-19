@@ -220,7 +220,7 @@ function Navigator(props) {
         <StyledDrawer variant='permanent' {...other}>
             <List disablePadding role='list'>
                 <ListItem className={clsx(classes.firebase, classes.item, 'itemCategory', classes.logoWrapper)}>
-                    <Link component={RouterLink} to='/'>
+                    <Link component={RouterLink} to='/' underline='hover'>
                         <img
                             alt='logo APIM admin portal'
                             src={Configurations.app.context
@@ -241,6 +241,7 @@ function Navigator(props) {
                                 to={parentPath}
                                 style={{ textDecoration: 'none' }}
                                 data-testid={id}
+                                underline='hover'
                             >
                                 <List disablePadding role='list'>
                                     <ListItem
@@ -265,7 +266,7 @@ function Navigator(props) {
                             </Link>
                         )}
                         {children && (
-                            <React.Fragment key={id} role='listitem'>
+                            <React.Fragment key={id}>
                                 <NavigatorChildren
                                     navChildren={children}
                                     navId={id}

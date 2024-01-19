@@ -72,6 +72,8 @@ function NavigatorChildren(props) {
                         to={path || '/'}
                         style={{ textDecoration: 'none' }}
                         data-testid={childId + '-child-link'}
+                        key={childId}
+                        underline='hover'
                     >
                         <ListItem
                             key={childId}

@@ -72,6 +72,7 @@ export default function ListCustomThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
             + 'learn/rate-limiting/advanced-topics/custom-throttling/'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

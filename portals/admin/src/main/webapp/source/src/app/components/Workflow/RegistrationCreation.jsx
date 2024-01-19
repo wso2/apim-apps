@@ -220,6 +220,7 @@ function ListLabels() {
                             href={Configurations.app.docUrl
                         + 'learn/consume-api/manage-application/advanced-topics/adding-an-application-'
                         + 'key-generation-workflow/#adding-an-application-key-generation-workflow'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

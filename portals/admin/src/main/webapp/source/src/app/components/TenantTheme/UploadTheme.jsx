@@ -256,6 +256,7 @@ function UploadTheme() {
                                         target='_blank'
                                         href={Configurations.app.docUrl
         + 'develop/customizations/customizing-the-developer-portal/overriding-developer-portal-theme/#tenant-theming'}
+                                        underline='hover'
                                     >
                                         <ListItemText primary={(
                                             <FormattedMessage
@@ -293,6 +294,7 @@ function UploadTheme() {
                                 target='_blank'
                                 href={Configurations.app.docUrl
         + 'develop/customizations/customizing-the-developer-portal/overriding-developer-portal-theme/#tenant-theming'}
+                                underline='hover'
                             >
                                 API Manager theme format
                             </Link>
