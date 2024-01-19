@@ -32,9 +32,9 @@ function getMessage(errorType, isApiName, maxLength) {
         case 'any.empty':
             return 'should not be empty';
         case 'string.regex.base':
-            if(isApiName){
+            if (isApiName) {
                 return 'should not contain trailing or leading spaces, special characters, and consecutive spaces';
-            }else{
+            } else {
                 return 'should not contain spaces or special characters';
             }
         case 'string.max':

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+* Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
 *
 * WSO2 LLC. licenses this file to you under the Apache License,
 * Version 2.0 (the "License"); you may not use this file except
@@ -20,7 +20,6 @@ import React, { useState } from 'react';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import PropTypes from 'prop-types';
 import API from 'AppData/api';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -113,16 +112,11 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const ApisTableContent = ({ apis, updateApiList }) => {
-    const [notFound] = useState(false);
     const restApi = new API();
     const [provider, setProvider] = useState('');
     const [editableRows, setEditableRows] = useState(new Set());
 
     const classes = useStyles();
-
-    if (notFound) {
-        return <ResourceNotFound />;
-    }
 
     const handleEditClick = (apiId) => {
         setEditableRows((prevRows) => {
