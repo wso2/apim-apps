@@ -32,6 +32,7 @@
         "@mui/lab": "^5.0.0-alpha.160",
         "@mui/material": "^5.15.4",
         "@mui/system": "^5.15.4",
+        "@mui/x-tree-view": "^6.17.0",
         "async-mutex": "^0.4.0",
         "async-react-component": "^0.7.0",
         "autosuggest-highlight": "^3.3.4",

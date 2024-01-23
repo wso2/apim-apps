@@ -19,9 +19,8 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import SvgIcon from '@mui/material/SvgIcon';
-import fade from '@mui/material/Fade';
-import TreeView from '@mui/lab/TreeView';
-import TreeItem from '@mui/lab/TreeItem';
+import { TreeView } from '@mui/x-tree-view/TreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import Collapse from '@mui/material/Collapse';
 import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
 import Checkbox from '@mui/material/Checkbox';
@@ -99,7 +98,7 @@ function TransitionComponent(props) {
     );
 }
 
-const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
+const StyledTreeItem = styled(TreeItem)(() => ({
     [`& .${classes.iconContainer}`]: {
         '& .close': {
             opacity: 0.3,
@@ -109,7 +108,7 @@ const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
     [`& .${classes.group}`]: {
         marginLeft: 7,
         paddingLeft: 18,
-        borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
+        // borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
     },
 
     [`& .${classes.label}`]: {
@@ -140,7 +139,7 @@ export default function PermissionTreeView(props) {
     return (
         <StyledTreeView
             className={classes.root}
-            defaultExpanded={[0, 3]}
+            defaultExpanded={['0', '3']}
             defaultCollapseIcon={<MinusSquare />}
             defaultExpandIcon={<PlusSquare />}
         >
@@ -148,7 +147,7 @@ export default function PermissionTreeView(props) {
             <StyledTreeItem
                 {...props}
                 TransitionComponent={TransitionComponent}
-                nodeId={0}
+                nodeId='0'
                 label={`Scope Assignments (${totalPermissions})`}
                 classes={{
                     iconContainer: classes.iconContainer,
@@ -163,7 +162,7 @@ export default function PermissionTreeView(props) {
                             <StyledTreeItem
                                 {...props}
                                 TransitionComponent={TransitionComponent}
-                                nodeId={nodeId}
+                                nodeId={`${nodeId}`}
                                 label={(
                                     <Typography display='block' variant='subtitle1'>
                                         {app}
@@ -197,12 +196,12 @@ export default function PermissionTreeView(props) {
                                                 inputProps={{ 'aria-label': 'primary checkbox' }}
                                             />
                                         )}
-                                        onLabelClick={() => onCheck({
+                                        onClick={() => onCheck({
                                             target: {
                                                 name, checked: !roles.includes(role), role, app,
                                             },
                                         })}
-                                        nodeId={index + 10 * nodeId}
+                                        nodeId={`${index + 10 * nodeId}`}
                                         label={(
                                             <ListItemText
                                                 primary={description}
