@@ -155,7 +155,10 @@ module.exports = function (env, argv) {
             MaterialIcons: 'MaterialIcons',
         },
         plugins: [
-            new CleanWebpackPlugin(),
+            new CleanWebpackPlugin({
+                cleanOnceBeforeBuildPatterns: ['./js/build/*','./css/build/*'],
+                dangerouslyAllowCleanPatternsOutsideProject: true,
+            }),
             new HtmlWebpackPlugin({
                 inject: false,
                 template: path.resolve(__dirname, 'site/public/pages/index.jsp.hbs'),
