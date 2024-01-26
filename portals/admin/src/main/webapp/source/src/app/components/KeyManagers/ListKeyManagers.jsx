@@ -248,25 +248,25 @@ export default function ListKeyManagers() {
             options: {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
-                        const artifactId = tableMeta.rowData[4];
+                        console.log(tableMeta);
+                        const artifactId = tableMeta.rowData[5];
                         return (
                             <RouterLink
                                 to={{
                                     pathname: `/settings/key-managers/${artifactId}`,
-                                    state: { isGlobal: tableMeta.rowData[5] },
+                                    state: { isGlobal: tableMeta.rowData[6] },
                                 }}
                             >
                                 {value}
                                 {' '}
-
-                                tableMeta.rowData[5] && (
-                                <Chip
-                                    size='small'
-                                    label='Global'
-                                    color='primary'
-                                    style={{ marginTop: -4, marginLeft: 10 }}
-                                />
-                                )
+                                {tableMeta.rowData[6] && (
+                                    <Chip
+                                        size='small'
+                                        label='Global'
+                                        color='primary'
+                                        style={{ marginTop: -4, marginLeft: 10 }}
+                                    />
+                                )}
                             </RouterLink>
                         );
                     } else {
