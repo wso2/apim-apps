@@ -19,19 +19,19 @@
 import React, {
     useReducer, useContext, useState,
 } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
+import Fade from '@mui/material/Fade';
 import API from 'AppData/api';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import Application from 'AppData/Application';
 import Alert from 'AppComponents/Shared/Alert';
 import AuthManager from 'AppData/AuthManager';
@@ -95,7 +95,7 @@ export default function GoToTryOut() {
     const intl = useIntl();
     const history = useHistory();
     const theme = useTheme();
-    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
+    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
     const isAsyncAPI = (api
         && (api.type === CONSTANTS.API_TYPES.WS
             || api.type === CONSTANTS.API_TYPES.WEBSUB
@@ -311,7 +311,7 @@ export default function GoToTryOut() {
                         <Grid
                             container
                             direction='row'
-                            justify='center'
+                            justifyContent='center'
                             alignItems='center'
                         >
                             <TaskState
@@ -419,7 +419,6 @@ export default function GoToTryOut() {
                     </Box>
                 </Fade>
             </Modal>
-
         </>
     );
 }

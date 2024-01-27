@@ -20,16 +20,22 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { StylesProvider as StylesProviderCore, jssPreset as jssPresetCore } from '@material-ui/core/styles';
-import { StylesProvider as StylesProviderPlain, jssPreset as jssPresetPlain } from '@material-ui/styles';
+import { adaptV4Theme } from '@mui/material/styles';
+import StylesProviderCore from '@mui/styles/StylesProvider';
+import jssPresetCore from '@mui/styles/jssPreset';
+import { StylesProvider as StylesProviderPlain, jssPreset as jssPresetPlain } from '@mui/styles';
 import { IntlProvider } from 'react-intl';
 import Configurations from 'Config';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import { create } from 'jss';
 import rtl from 'jss-rtl';
-import { MuiThemeProvider as ThemeProviderWithMui, createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider as ThemeProviderPlain } from '@material-ui/core/styles';
+import {
+    ThemeProvider as ThemeProviderWithMui,
+    StyledEngineProvider,
+    createTheme,
+} from '@mui/material/styles';
+import { ThemeProvider as ThemeProviderPlain } from '@mui/material/styles';
 import Utils from 'AppData/Utils';
 import Settings from 'Settings';
 import DefaultConfigurations from 'AppData/defaultTheme';
@@ -339,21 +345,23 @@ class DevPortal extends React.Component {
                     <Helmet>
                         <title>{this.getTitle(theme)}</title>
                     </Helmet>
-                    <MuiThemeProvider theme={createMuiTheme(theme)}>
-                        <StylesProvider jss={jss}>
-                            {this.loadCustomCSS(theme)}
-                            <BrowserRouter basename={context}>
-                                <Suspense fallback={<Progress />}>
-                                    <IntlProvider locale={language} messages={messages}>
-                                        <Switch>
-                                            <Route path='/logout' render={() => (<Logout theme={theme} />)} />
-                                            <Route component={protectedApp} />
-                                        </Switch>
-                                    </IntlProvider>
-                                </Suspense>
-                            </BrowserRouter>
-                        </StylesProvider>
-                    </MuiThemeProvider>
+                    <StyledEngineProvider injectFirst>
+                        <MuiThemeProvider theme={createTheme(adaptV4Theme(theme))}>
+                            <StylesProvider jss={jss}>
+                                {this.loadCustomCSS(theme)}
+                                <BrowserRouter basename={context}>
+                                    <Suspense fallback={<Progress />}>
+                                        <IntlProvider locale={language} messages={messages}>
+                                            <Switch>
+                                                <Route path='/logout' render={() => (<Logout theme={theme} />)} />
+                                                <Route component={protectedApp} />
+                                            </Switch>
+                                        </IntlProvider>
+                                    </Suspense>
+                                </BrowserRouter>
+                            </StylesProvider>
+                        </MuiThemeProvider>
+                    </StyledEngineProvider>
                 </SettingsProvider>
             );
         } else {

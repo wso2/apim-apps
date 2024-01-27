@@ -17,12 +17,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { TextField, Button, Typography, InputLabel } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import withStyles from '@mui/styles/withStyles';
+import { TextField, Button, Typography, InputLabel } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from '../../../Shared/Alert';
 import API from '../../../../data/api';

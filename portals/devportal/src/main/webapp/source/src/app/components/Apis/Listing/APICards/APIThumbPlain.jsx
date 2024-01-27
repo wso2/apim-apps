@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Icon from '@mui/material/Icon';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import { app, apis } from 'Settings';
 import Api from 'AppData/api';
-import Popover from '@material-ui/core/Popover';
+import Popover from '@mui/material/Popover';
 import classNames from 'classnames';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import EmailIcon from '@material-ui/icons/Email';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import EmailIcon from '@mui/icons-material/Email';
 
 import getIcon from './ImageUtils';
 

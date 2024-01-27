@@ -17,9 +17,9 @@
  */
 
 import React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/core/styles';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: DON'T USE THIS COMPONENT or even COPY

@@ -18,12 +18,12 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import { withStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import withStyles from '@mui/styles/withStyles';
+import Chip from '@mui/material/Chip';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
@@ -31,11 +31,11 @@ import MaterialIcons from 'MaterialIcons';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import { app, apis } from 'Settings';
 import classNames from 'classnames';
-import Box from '@material-ui/core/Box';
-import Popover from '@material-ui/core/Popover';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import EmailIcon from '@material-ui/icons/Email';
-import Divider from '@material-ui/core/Divider';
+import Box from '@mui/material/Box';
+import Popover from '@mui/material/Popover';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import EmailIcon from '@mui/icons-material/Email';
+import Divider from '@mui/material/Divider';
 import ImageGenerator from './ImageGenerator';
 import Api from '../../../../data/api';
 import { ApiContext } from '../../Details/ApiContext';

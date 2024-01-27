@@ -18,17 +18,17 @@
  */
 
 import React, { useContext, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
 import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import Settings from 'Settings';
 import queryString from 'query-string';
 import { ApiContext } from './ApiContext';

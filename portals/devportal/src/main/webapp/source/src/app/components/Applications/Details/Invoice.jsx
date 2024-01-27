@@ -18,17 +18,17 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import MUIDataTable from 'mui-datatables';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage } from 'react-intl';
 import Subscription from 'AppData/Subscription';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import { withStyles } from '@material-ui/core/styles';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import withStyles from '@mui/styles/withStyles';
 
 const styles = (theme) => ({
     dialogWrapper: {
@@ -108,7 +108,6 @@ function Invoice(props) {
     return (
         <>
             <Button
-                color='default'
                 onClick={handlePopup}
                 startIcon={<Icon>receipt</Icon>}
                 disabled={tiers.length === 0}

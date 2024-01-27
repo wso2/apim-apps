@@ -20,10 +20,10 @@ import React, { Component } from 'react';
 import AsyncApiComponent from '@asyncapi/react-component';
 import '@asyncapi/react-component/lib/styles/fiori.css';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import withStyles from '@mui/styles/withStyles';
+import Grid from '@mui/material/Grid';
 import { ApiContext } from '../../ApiContext';
 
 const styles = (theme) => ({

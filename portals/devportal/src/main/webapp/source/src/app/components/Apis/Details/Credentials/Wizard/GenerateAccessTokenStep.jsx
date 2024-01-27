@@ -19,9 +19,9 @@
 import React, { useState, useEffect } from 'react';
 import Tokens from 'AppComponents/Shared/AppsAndKeys/Tokens';
 import Application from 'AppData/Application';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import Alert from 'AppComponents/Shared/Alert';
 import ButtonPanel from './ButtonPanel';
 

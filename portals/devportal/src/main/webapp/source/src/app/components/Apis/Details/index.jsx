@@ -19,13 +19,13 @@
  */
 import React, { lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import withStyles from '@mui/styles/withStyles';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import {
     Route, Switch, Redirect, Link, withRouter,
 } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Api from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
@@ -130,7 +130,7 @@ const styles = (theme) => {
         },
         leftMenuVerticalLeft: {
             width: theme.custom.leftMenu.width,
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 width: 50,
             },
             top: 0,
@@ -177,7 +177,7 @@ const styles = (theme) => {
             flexDirection: 'column',
             marginLeft: shiftToLeft,
             marginRight: shiftToRight,
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 marginLeft: shiftToLeft !== 0 && 50,
                 marginRight: shiftToRight !== 0 && 50,
             },

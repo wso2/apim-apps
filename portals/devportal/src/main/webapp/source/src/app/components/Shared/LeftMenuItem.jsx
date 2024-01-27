@@ -21,9 +21,10 @@ import React, { useEffect, useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@mui/material/Typography';
+import withStyles from '@mui/styles/withStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip from '@mui/material/Tooltip';
 import CustomIcon from './CustomIcon';
 
 const useStylesBootstrap = makeStyles((theme) => ({
@@ -67,7 +68,7 @@ const styles = (theme) => ({
         paddingTop: theme.spacing(0.6),
         paddingBottom: theme.spacing(0.6),
         paddingLeft: theme.spacing(1),
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             paddingLeft: 0,
         },
         paddingRight: 0,
@@ -93,13 +94,13 @@ const styles = (theme) => ({
         display: 'none',
     },
     leftLInkText_NoTextWhenSmall: {
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             display: 'none !important',
         }
     },
     submenu: {
         paddingLeft: 12,
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             paddingLeft: 0,
             color: theme.palette.grey[500],
         }

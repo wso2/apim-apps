@@ -17,22 +17,22 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import withStyles from '@mui/styles/withStyles';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Loading from 'AppComponents/Base/Loading/Loading';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import CircularProgress from '@mui/material/CircularProgress';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import Alert from 'AppComponents/Shared/Alert';
 import ImportExternalApp from 'AppComponents/Shared/AppsAndKeys/ImportExternalApp';
 import Application from 'AppData/Application';
 import AuthManager from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import WarningIcon from '@material-ui/icons/Warning';
+import WarningIcon from '@mui/icons-material/Warning';
 import API from 'AppData/api';
 import KeyConfiguration from './KeyConfiguration';
 import ViewKeys from './ViewKeys';
@@ -41,8 +41,8 @@ import { ScopeValidation, resourceMethods, resourcePaths } from '../ScopeValidat
 import TokenMangerSummary from './TokenManagerSummary';
 import Progress from '../Progress';
 import TokenExchangeKeyConfiguration from "AppComponents/Shared/AppsAndKeys/TokenExchangeKeyConfiguration";
-import Table from "@material-ui/core/Table";
-import TableRow from "@material-ui/core/TableRow";
+import Table from "@mui/material/Table";
+import TableRow from "@mui/material/TableRow";
 import {
     Dialog,
     DialogActions, DialogContent,
@@ -51,9 +51,9 @@ import {
     Radio,
     RadioGroup,
     TableCell
-} from "@material-ui/core";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Grid from "@material-ui/core/Grid";
+} from "@mui/material";
+import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
 
 const styles = (theme) => ({
     root: {

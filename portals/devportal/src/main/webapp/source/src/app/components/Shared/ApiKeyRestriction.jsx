@@ -18,24 +18,24 @@
 import React, { useState } from "react";
 import { injectIntl, FormattedMessage } from "react-intl";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Tooltip from "@material-ui/core/Tooltip";
-import Grid from "@material-ui/core/Grid";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import Box from "@material-ui/core/Box";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControl from "@material-ui/core/FormControl";
-import Typography from "@material-ui/core/Typography";
+import withStyles from '@mui/styles/withStyles';
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Tooltip from "@mui/material/Tooltip";
+import Grid from "@mui/material/Grid";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
+import Box from "@mui/material/Box";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControl from "@mui/material/FormControl";
+import Typography from "@mui/material/Typography";
 import Validation from 'AppData/Validation';
 
 const styles = (theme) => ({
@@ -138,7 +138,7 @@ const apiKeyRestrictions = (props) => {
 
   return (
     <React.Fragment>
-      <Box border={1} borderRadius={5} className={classes.outterBox}>
+      <Box border={1} borderRadius="5px" className={classes.outterBox}>
         <Typography variant="body1">
           <FormattedMessage
               defaultMessage='Key Restrictions'
@@ -191,7 +191,7 @@ const apiKeyRestrictions = (props) => {
               container
               direction="row"
               spacing={0}
-              justify="left"
+              justifyContent="left"
               alignItems="left"
             >
               <Grid item md={10} xs={10}>
@@ -243,7 +243,7 @@ const apiKeyRestrictions = (props) => {
               container
               direction="row"
               spacing={0}
-              justify="left"
+              justifyContent="left"
               alignItems="left"
               md={10}
               xs={10}
@@ -265,7 +265,7 @@ const apiKeyRestrictions = (props) => {
                             edge="end"
                             aria-label="delete"
                             onClick={() => deleteIpItem(ip)}
-                          >
+                            size="large">
                             <DeleteIcon />
                           </IconButton>
                         </Tooltip>
@@ -284,7 +284,7 @@ const apiKeyRestrictions = (props) => {
               container
               direction="row"
               spacing={0}
-              justify="left"
+              justifyContent="left"
               alignItems="left"
             >
               <Grid item md={10} xs={10}>
@@ -335,7 +335,7 @@ const apiKeyRestrictions = (props) => {
               container
               direction="row"
               spacing={0}
-              justify="left"
+              justifyContent="left"
               alignItems="left"
               md={10}
               xs={10}
@@ -357,7 +357,7 @@ const apiKeyRestrictions = (props) => {
                             edge="end"
                             aria-label="delete"
                             onClick={() => deleteRefererItem(referer)}
-                          >
+                            size="large">
                             <DeleteIcon />
                           </IconButton>
                         </Tooltip>

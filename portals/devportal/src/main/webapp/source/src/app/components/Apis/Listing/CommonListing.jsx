@@ -18,11 +18,11 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
+import withStyles from '@mui/styles/withStyles';
 import classNames from 'classnames';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import Settings from 'AppComponents/Shared/SettingsContext';
@@ -74,7 +74,7 @@ const styles = (theme) => ({
         flexGrow: 1,
     },
     listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+        padding: `0 ${theme.spacing(3)}`,
         display: 'flex',
     },
     iconDefault: {
@@ -359,6 +359,7 @@ class CommonListing extends React.Component {
                                     className={classes.button}
                                     onClick={() => this.setListType('list')}
                                     disabled={listType === 'list'}
+                                    size='large'
                                 >
                                     <Icon
                                         className={classNames(
@@ -374,6 +375,7 @@ class CommonListing extends React.Component {
                                     className={classes.button}
                                     onClick={() => this.setListType('grid')}
                                     disabled={listType === 'grid'}
+                                    size='large'
                                 >
                                     <Icon
                                         className={classNames(

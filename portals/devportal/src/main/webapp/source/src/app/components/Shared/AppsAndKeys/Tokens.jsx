@@ -18,14 +18,14 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Typography from '@material-ui/core/Typography';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import withStyles from '@mui/styles/withStyles';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 // Styles for Grid and Paper elements
 const styles = theme => ({

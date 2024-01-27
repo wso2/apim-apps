@@ -17,11 +17,11 @@
  */
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { Typography } from '@mui/material';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import FileCopy from '@material-ui/icons/FileCopy';
-import Tooltip from '@material-ui/core/Tooltip';
+import FileCopy from '@mui/icons-material/FileCopy';
+import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 const useStyles = makeStyles(theme => ({

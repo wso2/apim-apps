@@ -18,13 +18,13 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useIntl, FormattedMessage } from 'react-intl';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogContentText from '@mui/material/DialogContentText';
 import FormDialogBase from 'AppComponents/Apis/Details/GraphQLConsole/FormDialogBase';
-import TextField from '@material-ui/core/TextField';
-import CreateIcon from '@material-ui/icons/Create';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import CreateIcon from '@mui/icons-material/Create';
+import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles((theme) => ({
     error: {

@@ -17,12 +17,12 @@
  */
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory, Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Typography from '@material-ui/core/Typography';
-import { Link as MUILink } from '@material-ui/core';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Box from '@material-ui/core/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Typography from '@mui/material/Typography';
+import { Link as MUILink } from '@mui/material';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import Box from '@mui/material/Box';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { useIntl } from 'react-intl';

@@ -17,12 +17,13 @@
  */
 
 import React, { useContext } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { injectIntl } from 'react-intl';
 import { app } from 'Settings';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import EmbedCode from 'AppComponents/Apis/Details/Social/EmbedCode';
-import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 const useStyles = makeStyles((theme) => ({
     socialLink: {

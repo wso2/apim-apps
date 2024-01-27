@@ -18,24 +18,24 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import withStyles from '@mui/styles/withStyles';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormGroup from '@material-ui/core/FormGroup';
-import Grid from '@material-ui/core/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
 import ViewToken from './ViewToken';
 import ApiKey from '../ApiKey';
 import ApiKeyRestriction from '../ApiKeyRestriction';
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const styles = (theme) => ({
   root: {
@@ -196,7 +196,7 @@ class ApiKeyManager extends React.Component {
       newReferer, refererList, restrictSchema, isGenerating,
     } = this.state;
     return (
-      <Grid container direction="row" spacing={0} justify="left" alignItems="left">
+      <Grid container direction="row" spacing={0} justifyContent="left" alignItems="left">
         <Grid item md={5} xs={12}>
           <ApiKeyRestriction
             updateNewIp={this.updateNewIp}

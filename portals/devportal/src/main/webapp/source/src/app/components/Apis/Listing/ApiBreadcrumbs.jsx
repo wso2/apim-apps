@@ -18,13 +18,14 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Link from '@material-ui/core/Link';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Paper from '@mui/material/Paper';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
 import { Link as RouterLink } from 'react-router-dom';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 
 const useStyles = makeStyles((theme) => ({
     root: {

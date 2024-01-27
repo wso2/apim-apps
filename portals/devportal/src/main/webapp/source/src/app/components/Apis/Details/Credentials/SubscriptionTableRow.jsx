@@ -17,9 +17,9 @@
  */
 
 import React from 'react';
-import { Link as MUILink } from '@material-ui/core';
+import { Link as MUILink } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import classNames from 'classnames';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';

@@ -18,11 +18,11 @@
 import React from 'react';
 import {
     Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+} from '@mui/material';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 
 const styles = (theme) => ({
     dialogWrapper: {

@@ -17,15 +17,16 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 import ApiTagThumb from './ApiTagThumb';
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+        padding: `0 ${theme.spacing(3)}`,
     },
     textWrapper: {
         color: theme.custom.tagCloud.leftMenu.color,

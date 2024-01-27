@@ -18,7 +18,7 @@
 
 import React, { Component } from 'react';
 import qs from 'qs';
-import { withTheme } from '@material-ui/core/styles';
+import withTheme from '@mui/styles/withTheme';
 import Settings from 'Settings';
 import Tenants from 'AppData/Tenants';
 import queryString from 'query-string';

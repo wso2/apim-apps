@@ -21,11 +21,11 @@ import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import Settings from 'Settings';
 import Joi from '@hapi/joi';
-import { Box, Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { Box, Grid } from '@mui/material';
+import Button from '@mui/material/Button';
+import makeStyles from '@mui/styles/makeStyles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import ChangePasswordBase from './ChangePasswordBase';
 import PageNotFound from 'AppComponents/Base/Errors/PageNotFound'
 import API from 'AppData/api';
@@ -289,7 +289,7 @@ const ChangePassword = () => {
                                 mt={2}
                                 spacing={2}
                                 direction='column'
-                                justify='center'
+                                justifyContent='center'
                                 alignItems='flex-start'
                             >
                                 <TextField

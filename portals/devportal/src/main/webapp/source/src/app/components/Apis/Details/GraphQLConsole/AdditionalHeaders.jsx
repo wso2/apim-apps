@@ -17,23 +17,23 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Box from '@material-ui/core/Box';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import cloneDeep from 'lodash.clonedeep';
 import AddEditAdditionalHeaders from 'AppComponents/Apis/Details/GraphQLConsole/AddEditAdditionalHeaders';
 import DeleteHeader from 'AppComponents/Apis/Details/GraphQLConsole/DeleteHeader';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -141,8 +141,8 @@ function AdditionalHeaders(props) {
 
     return (
         <div className={classes.root}>
-            <ExpansionPanel expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-                <ExpansionPanelSummary
+            <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
                     id='panel1bh-header'
@@ -164,8 +164,8 @@ function AdditionalHeaders(props) {
                             Hide group
                         </Typography>
                     )}
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails classes={{ root: classes.expandContentRoot }}>
+                </AccordionSummary>
+                <AccordionDetails classes={{ root: classes.expandContentRoot }}>
                     <>
                         <Divider light className={classes.customDivider} />
                         <Box component='div' marginLeft={1} display='flex' alignItems='center'>
@@ -238,9 +238,8 @@ function AdditionalHeaders(props) {
                         )}
                     </>
                     <Divider />
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-
+                </AccordionDetails>
+            </Accordion>
         </div>
     );
 }

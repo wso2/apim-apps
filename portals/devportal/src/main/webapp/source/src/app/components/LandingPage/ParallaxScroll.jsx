@@ -18,7 +18,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import classNames from 'classnames';
 import { app } from 'Settings';

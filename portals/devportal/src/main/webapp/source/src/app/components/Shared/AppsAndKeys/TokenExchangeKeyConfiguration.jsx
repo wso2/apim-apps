@@ -16,34 +16,34 @@
  * under the License.
  */
 import React, {useReducer, useState} from 'react';
-import Box from '@material-ui/core/Box';
-import {withStyles} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import Box from '@mui/material/Box';
+import withStyles from '@mui/styles/withStyles';
+import TextField from '@mui/material/TextField';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
 import {FormattedMessage, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Link from "@mui/material/Link";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import ViewCurl from "AppComponents/Shared/AppsAndKeys/ViewCurl";
 import ViewToken from "AppComponents/Shared/AppsAndKeys/ViewToken";
-import DialogActions from "@material-ui/core/DialogActions";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Button from "@material-ui/core/Button";
+import DialogActions from "@mui/material/DialogActions";
+import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
 import Application from "AppData/Application";
 import Loading from "AppComponents/Base/Loading/Loading";
 import Alert from "AppComponents/Shared/Alert";
 import Tokens from "AppComponents/Shared/AppsAndKeys/Tokens";
-import {TableBody, TableCell, TableRow} from "@material-ui/core";
-import Table from "@material-ui/core/Table";
+import {TableBody, TableCell, TableRow} from "@mui/material";
+import Table from "@mui/material/Table";
 
 const styles = (theme) => ({
         FormControl: {
@@ -490,7 +490,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                                 <IconButton
                                                     aria-label='Copy to clipboard'
                                                     classes={{root: classes.iconButton}}
-                                                >
+                                                    size="large">
                                                     <Icon color='secondary'>file_copy</Icon>
                                                 </IconButton>
                                             </CopyToClipboard>

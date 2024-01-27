@@ -17,12 +17,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import FileCopy from '@material-ui/icons/FileCopy';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import FileCopy from '@mui/icons-material/FileCopy';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import InlineMessage from '../InlineMessage';
 /**

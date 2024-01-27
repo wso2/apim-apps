@@ -16,9 +16,10 @@
  * under the License.
  */
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { app } from 'Settings';
 

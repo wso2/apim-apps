@@ -20,11 +20,11 @@ import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import {
     ListItemIcon, List, ListItem, ListItemText,
-} from '@material-ui/core';
-import { withTheme } from '@material-ui/core/styles';
+} from '@mui/material';
+import withTheme from '@mui/styles/withTheme';
 import AuthManager from 'AppData/AuthManager';
 import CustomIcon from '../../Shared/CustomIcon';
 

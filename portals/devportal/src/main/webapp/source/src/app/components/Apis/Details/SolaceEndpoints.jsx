@@ -14,19 +14,19 @@
  *  limitations under the License.
  */
 import React, { useContext, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
+import makeStyles from '@mui/styles/makeStyles';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
-import Grid from '@material-ui/core/Grid';
-import Chip from '@material-ui/core/Chip';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import { upperCaseString } from 'AppData/stringFormatter';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
@@ -112,7 +112,6 @@ function SolaceEndpoints() {
     }, [api]);
 
     return (
-
         <>
             {(api.gatewayVendor === 'solace') && (
                 <Grid container spacing={2} xs={12}>
@@ -215,9 +214,7 @@ function SolaceEndpoints() {
                                                             // text={endpoint.URLs.http}
                                                             onCopy={() => onCopy('urlCopied')}
                                                         >
-                                                            <IconButton
-                                                                aria-label='Copy the API URL to clipboard'
-                                                            >
+                                                            <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                                 <Icon color='secondary'>file_copy</Icon>
                                                             </IconButton>
                                                         </CopyToClipboard>

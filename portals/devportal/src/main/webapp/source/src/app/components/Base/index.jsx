@@ -21,24 +21,24 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import Hidden from '@material-ui/core/Hidden';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import Hidden from '@mui/material/Hidden';
 import {
     MenuItem, MenuList,
-} from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
+} from '@mui/material';
+import Icon from '@mui/material/Icon';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Popper from '@material-ui/core/Popper';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
+import Popper from '@mui/material/Popper';
+import Grow from '@mui/material/Grow';
+import Paper from '@mui/material/Paper';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { Toaster } from 'react-hot-toast';
-import Drawer from '@material-ui/core/Drawer';
+import Drawer from '@mui/material/Drawer';
 import HeaderSearch from 'AppComponents/Base/Header/Search/HeaderSearch';
 import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import { app } from 'Settings';
@@ -154,7 +154,7 @@ const styles = (theme) => {
         listRootInline: {
             padding: 0,
             display: 'flex',
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 flexDirection: 'column',
             },
         },
@@ -200,7 +200,7 @@ const styles = (theme) => {
             minWidth: 'auto',
         },
         listItemRoot: {
-            padding: `0 ${theme.spacing(1)}px 0 ${theme.spacing(1)}px `,
+            padding: `0 ${theme.spacing(1)} 0 ${theme.spacing(1)} `,
             height: 30,
         },
         logoutLink: {
@@ -442,7 +442,7 @@ class Layout extends React.Component {
                         <AppBar position='fixed' className={classes.appBar} id='appBar'>
                             <Toolbar className={classes.toolbar} id='toolBar'>
                                 <Hidden mdUp>
-                                    <IconButton onClick={this.toggleGlobalNavBar} color='inherit'>
+                                    <IconButton onClick={this.toggleGlobalNavBar} color='inherit' size='large'>
                                         <Icon className={classes.menuIcon}>menu</Icon>
                                     </IconButton>
                                 </Hidden>
@@ -461,7 +461,7 @@ class Layout extends React.Component {
                                         }}
                                     />
                                 </Link>
-                                <Hidden smDown>
+                                <Hidden mdDown>
                                     <VerticalDivider height={32} />
                                     <div className={classes.listInline}>
                                         <GlobalNavBar
@@ -518,7 +518,7 @@ class Layout extends React.Component {
                                     >
                                         <Button className={classes.publicStore}>
                                             <Icon className={classes.icons}>public</Icon>
-                                            <Hidden mdDown>
+                                            <Hidden lgDown>
                                                 <FormattedMessage
                                                     id='Base.index.go.to.public.store'
                                                     defaultMessage='Switch Dev Portals'

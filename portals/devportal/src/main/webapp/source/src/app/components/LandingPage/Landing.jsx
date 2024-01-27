@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import Carousel from './Carousel';
 import ApisWithTag from './ApisWithTag';
 import ParallaxScroll from './ParallaxScroll';

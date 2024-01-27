@@ -18,13 +18,13 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import { Typography, Paper, Box } from '@material-ui/core';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+import Grid from '@mui/material/Grid';
+import { Typography, Paper, Box } from '@mui/material';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import CreateAppStep from './CreateAppStep';
 import SubscribeToAppStep from './SubscribeToAppStep';
 import GenerateKeysStep from './GenerateKeysStep';

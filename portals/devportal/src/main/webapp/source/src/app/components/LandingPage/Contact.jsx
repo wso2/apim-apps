@@ -1,5 +1,6 @@
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 
 const useStyles = makeStyles(() => ({

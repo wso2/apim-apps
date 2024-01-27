@@ -18,11 +18,17 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import {
+    createTheme,
+    ThemeProvider,
+    StyledEngineProvider,
+    adaptV4Theme,
+} from '@mui/material/styles';
+import withStyles from '@mui/styles/withStyles';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
-import { withTheme } from '@material-ui/styles';
+import { withTheme } from '@mui/styles';
 import Configurations from 'Config';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
@@ -170,7 +176,7 @@ class Recommendations extends React.Component {
             };
         }
         muiTheme = Object.assign(muiTheme, themeAdditions, Configurations);
-        return createMuiTheme(muiTheme);
+        return createTheme(adaptV4Theme(muiTheme));
     };
 
     // get data
@@ -349,9 +355,11 @@ class Recommendations extends React.Component {
             return null;
         }
         return (
-            <MuiThemeProvider theme={this.getMuiTheme()}>
-                <MUIDataTable title='Recommended APIs for you' data={data} columns={columns} options={options} />
-            </MuiThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.getMuiTheme()}>
+                    <MUIDataTable title='Recommended APIs for you' data={data} columns={columns} options={options} />
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
     }
 }

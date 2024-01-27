@@ -18,21 +18,27 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import {
+    createTheme,
+    ThemeProvider,
+    StyledEngineProvider,
+    adaptV4Theme,
+} from '@mui/material/styles';
+import withStyles from '@mui/styles/withStyles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import queryString from 'query-string';
 import API from 'AppData/api';
-import { withTheme } from '@material-ui/styles';
-import Typography from '@material-ui/core/Typography';
+import { withTheme } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 import Configurations from 'Config';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import Alert from 'AppComponents/Shared/Alert';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import DefaultConfigurations from 'AppData/defaultTheme';
 import ImageGenerator from './APICards/ImageGenerator';
@@ -217,7 +223,7 @@ class ApiTableView extends React.Component {
         }
         const systemTheme = merge({}, DefaultConfigurations, Configurations, { custom: cloneDeep(theme.custom) });
         const dataTableTheme = merge({}, muiTheme, systemTheme, themeAdditions);
-        return createMuiTheme(dataTableTheme);
+        return createTheme(adaptV4Theme(dataTableTheme));
     };
 
     // get data
@@ -600,9 +606,11 @@ class ApiTableView extends React.Component {
             return <NoApi />;
         }
         return (
-            <MuiThemeProvider theme={this.getMuiTheme()}>
-                <MUIDataTable title='' data={data} columns={columns} options={options} />
-            </MuiThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.getMuiTheme()}>
+                    <MUIDataTable title='' data={data} columns={columns} options={options} />
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
     }
 }

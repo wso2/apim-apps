@@ -17,25 +17,25 @@
  */
 
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import SearchIcon from '@material-ui/icons/Search';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import SearchIcon from '@mui/icons-material/Search';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Progress from 'AppComponents/Shared/Progress';
 import Alert from 'AppComponents/Shared/Alert';
@@ -587,6 +587,7 @@ class Subscriptions extends React.Component {
                                         className={classes.iconButton}
                                         aria-label='search'
                                         onClick={this.handleSearchTextChange}
+                                        size='large'
                                     >
                                         <SearchIcon />
                                     </IconButton>
@@ -614,7 +615,12 @@ class Subscriptions extends React.Component {
 
                             </Box>
 
-                            <IconButton aria-label='close' className={classes.closeButton} onClick={this.handleOpenDialog}>
+                            <IconButton
+                                aria-label='close'
+                                className={classes.closeButton}
+                                onClick={this.handleOpenDialog}
+                                size='large'
+                            >
                                 <Icon>cancel</Icon>
                             </IconButton>
                         </MuiDialogTitle>

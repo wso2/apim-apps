@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Icon from '@material-ui/core/Icon';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import API from 'AppData/api';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import {
     Grid, List, ListItem, MenuItem, Paper, TextField,
-} from '@material-ui/core';
+} from '@mui/material';
 import { upperCaseString } from 'AppData/stringFormatter';
 
 const useStyles = makeStyles((theme) => ({

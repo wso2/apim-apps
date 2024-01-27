@@ -18,19 +18,19 @@
 
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import FormHelperText from '@mui/material/FormHelperText';
 import Alert from 'AppComponents/Shared/Alert';
 import Application from 'AppData/Application';
 import API from 'AppData/api';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import Settings from 'Settings';
 import ButtonPanel from './ButtonPanel';
 

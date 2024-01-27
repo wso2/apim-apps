@@ -22,10 +22,10 @@ import PropTypes from 'prop-types';
 import {
     Route, Switch, Redirect, Link,
 } from 'react-router-dom';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import ScreenLockLandscapeIcon from '@material-ui/icons/ScreenLockLandscape';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import ScreenLockLandscapeIcon from '@mui/icons-material/ScreenLockLandscape';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
 import { app } from 'Settings';
@@ -36,7 +36,7 @@ import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
 import TokenManager from 'AppComponents/Shared/AppsAndKeys/TokenManager';
 import ApiKeyManager from 'AppComponents/Shared/AppsAndKeys/ApiKeyManager';
 import classNames from 'classnames';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { Helmet } from 'react-helmet';
 import Subscriptions from './Subscriptions';
 import InfoBar from './InfoBar';
@@ -82,7 +82,7 @@ const styles = (theme) => {
             top: 0,
             left: 0,
             overflowY: 'auto',
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 width: 50,
             },
         },
@@ -121,7 +121,7 @@ const styles = (theme) => {
             marginRight: shiftToRight,
             paddingBottom: theme.spacing(3),
             overflowX: 'hidden',
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 marginLeft: shiftToLeft !== 0 && 50,
                 marginRight: shiftToRight !== 0 && 50,
             },

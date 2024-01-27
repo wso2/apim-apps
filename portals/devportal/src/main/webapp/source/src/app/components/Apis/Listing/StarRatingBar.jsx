@@ -18,21 +18,21 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/core/styles';
-import Cancel from '@material-ui/icons/Cancel';
-import Clear from '@material-ui/icons/Clear';
-import StarRate from '@material-ui/icons/StarRate';
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import withStyles from '@mui/styles/withStyles';
+import Cancel from '@mui/icons-material/Cancel';
+import Clear from '@mui/icons-material/Clear';
+import StarRate from '@mui/icons-material/StarRate';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import StarRatingSummary from 'AppComponents/Apis/Details/StarRatingSummary';
-import Rating from '@material-ui/lab/Rating';
+import Rating from '@mui/material/Rating';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 const styles = (theme) => ({
@@ -237,7 +237,13 @@ class StarRatingBar extends React.Component {
                     <>
                         {isEditable ? (
                             <Box position='relative'>
-                                <IconButton component='div' onClick={this.toggleEditRating} display='flex' style={{ cursor: 'pointer' }}>
+                                <IconButton
+                                    component='div'
+                                    onClick={this.toggleEditRating}
+                                    display='flex'
+                                    style={{ cursor: 'pointer' }}
+                                    size='large'
+                                >
                                     {(userRating === 0)
                                         ? (<StarBorderIcon style={{ fontSize: 30 }} />)
                                         : (<StarIcon style={{ fontSize: 30, color: '#75d5fa' }} />)}
@@ -257,14 +263,18 @@ class StarRatingBar extends React.Component {
                                         <ClickAwayListener onClickAway={this.toggleEditRating}>
                                             <div className={classes.userRating}>
                                                 {[1, 2, 3, 4, 5].map((i) => (
-                                                    <IconButton area-label={'Rate ' + i} onClick={() => this.doRate(i)}>
+                                                    <IconButton area-label={'Rate ' + i} onClick={() => this.doRate(i)} size='large'>
                                                         <StarRate
                                                             key={i}
                                                             className={userRating >= i ? classes.starRate : classes.noStarRate}
                                                         />
                                                     </IconButton>
                                                 ))}
-                                                <IconButton area-label='Clear rating' onClick={() => this.removeUserRating()}>
+                                                <IconButton
+                                                    area-label='Clear rating'
+                                                    onClick={() => this.removeUserRating()}
+                                                    size='large'
+                                                >
                                                     <Clear
                                                         className={classes.removeRating}
                                                     />
@@ -273,6 +283,7 @@ class StarRatingBar extends React.Component {
                                                     className={classes.closeRating}
                                                     area-label='Close rating popup'
                                                     onClick={this.toggleEditRating}
+                                                    size='large'
                                                 >
                                                     <Cancel
                                                         className={classes.removeRating}

@@ -17,9 +17,9 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from '../../../../data/AuthManager';
 

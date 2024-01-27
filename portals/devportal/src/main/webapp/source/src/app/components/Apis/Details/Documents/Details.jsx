@@ -18,12 +18,12 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
-import Dialog from '@material-ui/core/Dialog';
-import IconButton from '@material-ui/core/IconButton';
+import makeStyles from '@mui/styles/makeStyles';
+import Icon from '@mui/material/Icon';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
 import View from 'AppComponents/Apis/Details/Documents/View';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles((theme) => ({
     fullView: {
@@ -71,6 +71,7 @@ export default function Details(props) {
                         onClick={toggleOpen}
                         aria-label={'View ' + selectedDoc.name + ' document in full screen'}
                         className={classes.fullView}
+                        size='large'
                     >
                         <Icon>
                             launch
@@ -81,7 +82,7 @@ export default function Details(props) {
             </div>
             <Dialog fullScreen open={open} onClose={toggleOpen}>
                 <div className={classes.popupHeader}>
-                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close full screen view'>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close full screen view' size='large'>
                         <Icon>close</Icon>
                     </IconButton>
                     <Typography variant='h4'>{selectedDoc.name}</Typography>

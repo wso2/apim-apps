@@ -18,18 +18,18 @@
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Icon from '@material-ui/core/Icon';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import Slide from '@material-ui/core/Slide';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Icon from '@mui/material/Icon';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import Slide from '@mui/material/Slide';
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
@@ -257,7 +257,6 @@ class SubscriptionTableData extends React.Component {
                 <TableCell>
                     <Button
                         id={'edit-api-subscription-' + apiId}
-                        color='default'
                         onClick={this.handleRequestOpenEditMenu}
                         startIcon={<Icon>edit</Icon>}
                         disabled={tiers.length === 0}
@@ -398,7 +397,6 @@ class SubscriptionTableData extends React.Component {
                     >
                         <Button
                             id={'delete-api-subscription-' + apiId}
-                            color='default'
                             onClick={this.handleRequestOpen}
                             startIcon={<Icon>delete</Icon>}
                             disabled={tiers.length === 0 || status === 'DELETE_PENDING'}

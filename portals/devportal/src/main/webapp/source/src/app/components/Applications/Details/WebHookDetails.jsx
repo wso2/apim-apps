@@ -17,23 +17,23 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles/index';
+import makeStyles from '@mui/styles/makeStyles';
 import { matchPath } from 'react-router';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import Grid from '@material-ui/core/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import _ from 'lodash';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import CancelIcon from '@material-ui/icons/Cancel';
-import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 dayjs.extend(relativeTime);
 

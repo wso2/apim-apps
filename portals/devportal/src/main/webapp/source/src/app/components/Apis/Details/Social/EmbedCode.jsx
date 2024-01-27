@@ -1,11 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
-import CodeIcon from '@material-ui/icons/Code';
+import makeStyles from '@mui/styles/makeStyles';
+import Modal from '@mui/material/Modal';
+import CodeIcon from '@mui/icons-material/Code';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import Icon from '@material-ui/core/Icon';
+import Tooltip from '@mui/material/Tooltip';
+import Icon from '@mui/material/Icon';
 
 /**
  * Position the modal

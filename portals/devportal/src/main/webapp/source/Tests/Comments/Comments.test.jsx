@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
-import { unwrap } from '@material-ui/core/test-utils';
-import { Typography } from '@material-ui/core';
+import { unwrap } from '@mui/material/test-utils';
+import { Typography } from '@mui/material';
 import Comments from '../../src/app/components/Apis/Details/Comments/Comments';
 import Comment from '../../src/app/components/Apis/Details/Comments/Comment';
 import CommentAdd from '../../src/app/components/Apis/Details/Comments/CommentAdd';

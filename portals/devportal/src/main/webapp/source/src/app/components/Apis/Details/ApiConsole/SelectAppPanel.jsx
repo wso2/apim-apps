@@ -2,10 +2,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
     Grid, FormControl, FormControlLabel, RadioGroup, Radio, Typography,
-} from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+} from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import withStyles from '@mui/styles/withStyles';
+import TextField from '@mui/material/TextField';
 
 const styles = (theme) => ({
     centerItems: {

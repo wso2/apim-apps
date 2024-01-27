@@ -17,21 +17,21 @@
  */
 
 import React, { useState } from 'react';
-import Accordion from '@material-ui/core/ExpansionPanel';
-import AccordionDetails from '@material-ui/core/ExpansionPanelDetails';
-import AccordionSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import AccordionActions from '@material-ui/core/ExpansionPanelActions';
-import Button from '@material-ui/core/Button';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from '@mui/material/Typography';
+import AccordionActions from '@mui/material/AccordionActions';
+import Button from '@mui/material/Button';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
-import { makeStyles } from '@material-ui/core/styles/index';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import Utils from 'AppData/Utils';
-import Grid from '@material-ui/core/Grid';
-import Badge from '@material-ui/core/Badge';
+import Grid from '@mui/material/Grid';
+import Badge from '@mui/material/Badge';
 
 export default function GenericSubscriptionUI(props) {
     const verb = props.topic.type.toLowerCase();
@@ -99,7 +99,7 @@ export default function GenericSubscriptionUI(props) {
                 id='generic-subscription-header'
                 className={classes.subscriptionSummary}
             >
-                <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
                     <Grid item md={11}>
                         <Badge invisible='false' color='error' variant='dot'>
                             <Button

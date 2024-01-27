@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,7 +45,7 @@ function ChangePasswordBase(props) {
     const classes = useStyles();
     return (
         <Box width={1} mt={5}>
-            <Grid justify='center' container spacing={3}>
+            <Grid justifyContent='center' container spacing={3}>
                 <Grid item sm={6} md={4}>
                     <Grid container spacing={4}>
                         <Grid item md={12} className={classes.createTitle}>

@@ -18,15 +18,15 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import ApplicationCreateForm from 'AppComponents/Shared/AppsAndKeys/ApplicationCreateForm';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import cloneDeep from 'lodash.clonedeep';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import ButtonPanel from './ButtonPanel';

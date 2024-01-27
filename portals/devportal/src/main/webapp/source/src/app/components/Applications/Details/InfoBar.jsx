@@ -19,15 +19,15 @@
 import React from 'react';
 import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
+import Button from '@mui/material/Button';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Application from 'AppData/Application';
 import Alert from 'AppComponents/Shared/Alert';
 import AuthManager from 'AppData/AuthManager';
@@ -380,7 +380,6 @@ class InfoBar extends React.Component {
                                     <Button
                                         id='edit-application'
                                         style={{ padding: '4px' }}
-                                        color='default'
                                         classes={{ label: classes.iconButton }}
                                         aria-label={(
                                             <FormattedMessage
@@ -406,7 +405,6 @@ class InfoBar extends React.Component {
                                     onClick={this.handleDeleteConfimation}
                                     disabled={AuthManager.getUser().name !== applicationOwner
                                         || this.props.application.status === 'DELETE_PENDING'}
-                                    color='default'
                                     classes={{ label: classes.iconButton }}
                                     aria-label={(
                                         <FormattedMessage

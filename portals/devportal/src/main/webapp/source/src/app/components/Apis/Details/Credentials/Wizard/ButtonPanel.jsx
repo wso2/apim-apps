@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 

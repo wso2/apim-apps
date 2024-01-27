@@ -17,14 +17,15 @@
  */
 
 import React, { useEffect } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import Box from '@material-ui/core/Box';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Box from '@mui/material/Box';
 import { app } from 'Settings';
-import Hidden from '@material-ui/core/Hidden';
+import Hidden from '@mui/material/Hidden';
 import Utils from 'AppData/Utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -93,7 +94,7 @@ export default function LanguageSelector() {
                                         width={`${lang.imageWidth}px`}
                                     />
                                 )}
-                                <Hidden mdDown>
+                                <Hidden lgDown>
                                     {showText && (
                                         <Typography variant='body1' className={classes.langText}>{lang.text}</Typography>
                                     )}

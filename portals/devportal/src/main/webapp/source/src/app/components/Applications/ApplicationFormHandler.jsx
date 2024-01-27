@@ -18,10 +18,10 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
 import ApplicationCreateForm from 'AppComponents/Shared/AppsAndKeys/ApplicationCreateForm';
@@ -31,7 +31,7 @@ import Application from 'AppData/Application';
 import { Link } from 'react-router-dom';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import ApplicationCreateBase from './Create/ApplicationCreateBase';
 
 /**

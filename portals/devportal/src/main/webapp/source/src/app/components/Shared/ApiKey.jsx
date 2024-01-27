@@ -18,11 +18,11 @@
 import React, { useState } from 'react';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import withStyles from '@mui/styles/withStyles';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import Validation from 'AppData/Validation';
 
 // Styles for Grid and Paper elements

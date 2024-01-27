@@ -17,10 +17,10 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import { withStyles } from '@material-ui/core/styles';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import withStyles from '@mui/styles/withStyles';
 
 /**
  * @inheritdoc

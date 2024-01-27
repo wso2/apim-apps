@@ -18,7 +18,7 @@
 
 import React from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { withStyles } from '@material-ui/core';
+import withStyles from '@mui/styles/withStyles';
 import CommonListing from './Listing/CommonListing';
 import TagCloudListing from './Listing/TagCloudListing';
 import Details from './Details/index';

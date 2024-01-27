@@ -17,18 +17,18 @@
  */
 
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardMedia from '@material-ui/core/CardMedia';
-import Icon from '@material-ui/core/Icon';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardMedia from '@mui/material/CardMedia';
+import Icon from '@mui/material/Icon';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import JSFileDownload from 'js-file-download';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
@@ -248,7 +248,7 @@ class Sdk extends React.Component {
                 {filteredLanguageList ? (
                     <Grid container spacing={0} className={classes.gridRoot}>
                         <Grid item xs={12} sm={6} md={9} lg={9} xl={10}>
-                            <Grid container justify='flex-start' spacing={4}>
+                            <Grid container justifyContent='flex-start' spacing={4}>
                                 {filteredLanguageList.map((language) => (
                                     <Grid key={language} item>
                                         <div style={{ width: 'auto', textAlign: 'center', margin: '10px' }}>
@@ -272,7 +272,7 @@ class Sdk extends React.Component {
                                                     />
                                                 </CardMedia>
                                                 <CardActions>
-                                                    <Grid container justify='center'>
+                                                    <Grid container justifyContent='center'>
                                                         <Button
                                                             color='secondary'
                                                             onClick={(event) => this.handleClick(event, language)}

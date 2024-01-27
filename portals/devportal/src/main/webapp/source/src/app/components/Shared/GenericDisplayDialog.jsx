@@ -18,9 +18,9 @@
 
 import React from 'react';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import { Typography } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import makeStyles from '@mui/styles/makeStyles';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 
 const useStyles = makeStyles((theme) => ({

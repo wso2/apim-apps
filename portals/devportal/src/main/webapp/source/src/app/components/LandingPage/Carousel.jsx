@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Slide from '@material-ui/core/Slide';
-import Icon from '@material-ui/core/Icon';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Slide from '@mui/material/Slide';
+import Icon from '@mui/material/Icon';
 import classNames from 'classnames';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import { app } from 'Settings';

@@ -17,17 +17,17 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
@@ -144,8 +144,8 @@ export default function QueryComplexityView(props) {
                 >
                     <div>
                         {typelist.map((res) => (
-                            <ExpansionPanel>
-                                <ExpansionPanelSummary
+                            <Accordion>
+                                <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
                                     aria-controls='panel1a-content'
                                     id='panel1a-header'
@@ -153,10 +153,10 @@ export default function QueryComplexityView(props) {
                                     <Typography className={classes.heading}>
                                         {res}
                                     </Typography>
-                                </ExpansionPanelSummary>
+                                </AccordionSummary>
                                 <Divider />
                                 {state.map((respond) => ((respond.type === res) && (
-                                    <ExpansionPanelDetails>
+                                    <AccordionDetails>
                                         <div className={classes.column}>
                                             {respond.field}
                                             {':'}
@@ -164,9 +164,9 @@ export default function QueryComplexityView(props) {
                                         <div className={classes.column}>
                                             {respond.complexityValue}
                                         </div>
-                                    </ExpansionPanelDetails>
+                                    </AccordionDetails>
                                 )))}
-                            </ExpansionPanel>
+                            </Accordion>
                         ))}
                     </div>
                 </div>

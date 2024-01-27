@@ -21,11 +21,11 @@ import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import withStyles from '@mui/styles/withStyles';
+import Paper from '@mui/material/Paper';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import {
     renderInput, renderSuggestion, getSuggestions, getSuggestionValue, buildSearchQuery,
@@ -386,7 +386,11 @@ class HeaderSearch extends React.Component {
                          </>
                      )}
                  >
-                     <IconButton className={classNames(classes.infoButton, 'search-tips-icon')} aria-label='Search Options'>
+                     <IconButton
+                         className={classNames(classes.infoButton, 'search-tips-icon')}
+                         aria-label='Search Options'
+                         size='large'
+                     >
                          <InfoIcon />
                      </IconButton>
                  </Tooltip>

@@ -17,10 +17,11 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import withStyles from '@mui/styles/withStyles';
+import withTheme from '@mui/styles/withTheme';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import { injectIntl } from 'react-intl';
 import CONSTS from 'AppData/Constants';
 import Api from 'AppData/api';

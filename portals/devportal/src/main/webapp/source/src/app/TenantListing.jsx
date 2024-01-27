@@ -20,10 +20,10 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { FormattedMessage } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import withStyles from '@mui/styles/withStyles';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import API from './data/api';
 
@@ -52,7 +52,7 @@ const styles = (theme) => ({
         background: theme.palette.background.paper,
         display: 'block',
         margin: '10px auto',
-        padding: `${theme.spacing(3)}px ${theme.spacing(2)}px`,
+        padding: `${theme.spacing(3)} ${theme.spacing(2)}`,
         overflow: 'auto',
     },
     wrapper: {
@@ -92,7 +92,7 @@ const tenantListing = (props) => {
 
     return (
         <div className={classes.root}>
-            <Grid container md={4} justify='left' spacing={0} className={classes.wrapper}>
+            <Grid container md={4} justifyContent='left' spacing={0} className={classes.wrapper}>
                 <Typography variant='h4'>
                     <FormattedMessage id='TenantListing.title' defaultMessage='Tenant Developer Portals' />
                 </Typography>

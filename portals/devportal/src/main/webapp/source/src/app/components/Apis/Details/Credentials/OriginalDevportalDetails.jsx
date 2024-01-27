@@ -18,9 +18,9 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Paper, Typography } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
-import LaunchIcon from '@material-ui/icons/Launch';
+import { Paper, Typography } from '@mui/material';
+import Link from '@mui/material/Link';
+import LaunchIcon from '@mui/icons-material/Launch';
 
 const OriginalDevportalDetails = (props) => {
     const {

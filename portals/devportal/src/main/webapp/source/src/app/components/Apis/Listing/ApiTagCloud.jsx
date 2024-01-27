@@ -18,8 +18,9 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { TagCloud } from 'react-tagcloud';
 import PropTypes from 'prop-types';

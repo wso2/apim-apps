@@ -18,9 +18,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
 import { FormattedMessage } from 'react-intl';
 import APICategoryThumb from './APICategoryThumb';
 
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+        padding: `0 ${theme.spacing(3)}`,
     },
     textWrapper: {
         color: theme.custom.tagCloud.leftMenu.color,

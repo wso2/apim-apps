@@ -14,21 +14,21 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Divider, Grid, TextField,
-} from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import InputBase from '@material-ui/core/InputBase';
-import Avatar from '@material-ui/core/Avatar';
-import Tooltip from '@material-ui/core/Tooltip';
+} from '@mui/material';
+import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-import Chip from '@material-ui/core/Chip';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
+import Chip from '@mui/material/Chip';
 import { upperCaseString } from 'AppData/stringFormatter';
 import API from 'AppData/api';
 import Loading from 'AppComponents/Base/Loading/Loading';
@@ -413,9 +413,7 @@ function SolaceTopicsInfo() {
                                                 text={selectedEndpoint}
                                                 onCopy={() => onCopy('urlCopied')}
                                             >
-                                                <IconButton
-                                                    aria-label='Copy the API URL to clipboard'
-                                                >
+                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                     <Icon color='secondary'>file_copy</Icon>
                                                 </IconButton>
                                             </CopyToClipboard>
@@ -472,9 +470,7 @@ function SolaceTopicsInfo() {
                                                                 text={t}
                                                                 onCopy={() => onTopicCopy('topicCopied')}
                                                             >
-                                                                <IconButton
-                                                                    aria-label='Copy the API URL to clipboard'
-                                                                >
+                                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                                     <Icon color='secondary'>file_copy</Icon>
                                                                 </IconButton>
                                                             </CopyToClipboard>
@@ -543,9 +539,7 @@ function SolaceTopicsInfo() {
                                                                 text={t}
                                                                 onCopy={() => onTopicCopy('topicCopied')}
                                                             >
-                                                                <IconButton
-                                                                    aria-label='Copy the API URL to clipboard'
-                                                                >
+                                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                                     <Icon color='secondary'>file_copy</Icon>
                                                                 </IconButton>
                                                             </CopyToClipboard>

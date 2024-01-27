@@ -18,19 +18,19 @@
 
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import AuthManager from 'AppData/AuthManager';
 
 /**
@@ -65,7 +65,7 @@ const StyledTableCell = withStyles((theme) => ({
         fontSize: 14,
     },
     root: {
-        padding: `0 0 0  ${theme.spacing(2)}px`,
+        padding: `0 0 0  ${theme.spacing(2)}`,
     },
 }))(TableCell);
 
@@ -210,7 +210,7 @@ class AppsTableContent extends Component {
                                                         to={`/applications/${app.applicationId}/edit/`}
                                                         className={!isAppOwner && classes.appOwner}
                                                     >
-                                                        <IconButton disabled={!isAppOwner} aria-label={'Edit' + app.name}>
+                                                        <IconButton disabled={!isAppOwner} aria-label={'Edit' + app.name} size='large'>
                                                             <Icon>
                                                                 edit
                                                             </Icon>
@@ -246,6 +246,7 @@ class AppsTableContent extends Component {
                                                     color='default'
                                                     aria-label={'Delete' + app.name}
                                                     id={'delete-' + app.name + '-btn'}
+                                                    size='large'
                                                 >
                                                     <Icon>delete</Icon>
                                                 </IconButton>

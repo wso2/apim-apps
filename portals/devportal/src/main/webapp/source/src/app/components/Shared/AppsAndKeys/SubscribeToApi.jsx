@@ -17,19 +17,19 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import ListItemText from '@material-ui/core/ListItemText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import Typography from '@material-ui/core/Typography';
-import Select from '@material-ui/core/Select';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import ListItemText from '@mui/material/ListItemText';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import withStyles from '@mui/styles/withStyles';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import PropTypes from 'prop-types';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 
@@ -93,7 +93,7 @@ const styles = theme => ({
         paddingLeft: theme.spacing(2),
     },
     subscribeRootSmall: {
-        marginLeft: `-${theme.spacing(4)}px`,
+        marginLeft: theme.spacing(-4),
     },
     smallDisplay: {
         width: 240,

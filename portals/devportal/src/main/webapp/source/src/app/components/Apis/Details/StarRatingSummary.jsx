@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import StarRate from '@material-ui/icons/StarRate';
-import Icon from '@material-ui/core/Icon';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import StarRate from '@mui/icons-material/StarRate';
+import Icon from '@mui/material/Icon';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 const styles = (theme) => {

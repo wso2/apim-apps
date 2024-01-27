@@ -18,12 +18,12 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
-import Tooltip from '@material-ui/core/Tooltip';
+import withStyles from '@mui/styles/withStyles';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Icon from '@mui/material/Icon';
+import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 

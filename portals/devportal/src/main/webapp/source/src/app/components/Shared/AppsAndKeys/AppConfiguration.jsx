@@ -17,22 +17,22 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
+import MenuItem from '@mui/material/MenuItem';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import withStyles from '@mui/styles/withStyles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { injectIntl, defineMessages } from 'react-intl';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import Box from '@material-ui/core/Box';
+import Select from '@mui/material/Select';
+import Input from '@mui/material/Input';
+import Box from '@mui/material/Box';
 import ChipInput from 'AppComponents/Shared/ChipInput';
 
 

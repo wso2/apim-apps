@@ -17,24 +17,24 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Icon from '@material-ui/core/Icon';
-import Grid from '@material-ui/core/Grid';
+import withStyles from '@mui/styles/withStyles';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import Icon from '@mui/material/Icon';
+import Grid from '@mui/material/Grid';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Tooltip from '@material-ui/core/Tooltip';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip from '@mui/material/Tooltip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import ResourceNotFound from '../../Base/Errors/ResourceNotFound';
@@ -348,8 +348,10 @@ class ViewKeys extends React.Component {
                                                 onCopy={() => this.onCopy('keyCopied')}
                                                 classes={{ root: classes.iconButton }}
                                             >
-                                                <IconButton aria-label='Copy to clipboard'
-                                                    classes={{ root: classes.iconButton }}>
+                                                <IconButton
+                                                    aria-label='Copy to clipboard'
+                                                    classes={{ root: classes.iconButton }}
+                                                    size="large">
                                                     <Icon color='secondary'>
                                                         file_copy
                                                     </Icon>
@@ -395,7 +397,7 @@ class ViewKeys extends React.Component {
                                                 onClick={() => this.handleShowHidden('showCS')}
                                                 onMouseDown={this.handleMouseDownGeneric}
                                                 id='visibility-toggle-btn'
-                                            >
+                                                size="large">
                                                 {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
                                             </IconButton>
                                             <Tooltip
@@ -417,7 +419,10 @@ class ViewKeys extends React.Component {
                                                     onCopy={() => this.onCopy('secretCopied')}
                                                     classes={{ root: classes.iconButton }}
                                                 >
-                                                    <IconButton aria-label='Copy to clipboard' classes={{ root: classes.iconButton }}>
+                                                    <IconButton
+                                                        aria-label='Copy to clipboard'
+                                                        classes={{ root: classes.iconButton }}
+                                                        size="large">
                                                         <Icon color='secondary'>file_copy</Icon>
                                                     </IconButton>
                                                 </CopyToClipboard>

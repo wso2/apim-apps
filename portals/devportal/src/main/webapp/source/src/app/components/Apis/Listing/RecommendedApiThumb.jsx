@@ -17,12 +17,12 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import { withStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import withStyles from '@mui/styles/withStyles';
+import Chip from '@mui/material/Chip';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import MaterialIcons from 'MaterialIcons';

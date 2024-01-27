@@ -19,10 +19,10 @@
 import React, { useContext } from 'react';
 import ViewToken from 'AppComponents/Shared/AppsAndKeys/ViewToken';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-import { Box } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import ButtonPanel from './ButtonPanel';
 
 const useStyles = makeStyles((theme) => ({

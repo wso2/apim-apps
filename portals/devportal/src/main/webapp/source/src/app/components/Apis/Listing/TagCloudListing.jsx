@@ -16,8 +16,9 @@
  * under the License.
  */
 import React, { useEffect, useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import TagCloudListingTags from './TagCloudListingTags';
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+        padding: `0 ${theme.spacing(3)}`,
     },
     iconDefault: {
         color: theme.palette.getContrastText(theme.custom.infoBar.background),

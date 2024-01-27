@@ -16,21 +16,21 @@
  * under the License.
  */
 import React, { useState } from 'react';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import withStyles from '@mui/styles/withStyles';
+import TextField from '@mui/material/TextField';
+import FormHelperText from '@mui/material/FormHelperText';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Settings from 'Settings';
 import PropTypes from 'prop-types';
@@ -277,7 +277,7 @@ const KeyConfiguration = (props) => {
                                             <IconButton
                                                 aria-label='Copy to clipboard'
                                                 classes={{ root: classes.iconButton }}
-                                            >
+                                                size="large">
                                                 <Icon color='secondary'>file_copy</Icon>
                                             </IconButton>
                                         </CopyToClipboard>
@@ -317,7 +317,7 @@ const KeyConfiguration = (props) => {
                                             <IconButton
                                                 aria-label='Copy to clipboard'
                                                 classes={{ root: classes.iconButton }}
-                                            >
+                                                size="large">
                                                 <Icon color='secondary'>file_copy</Icon>
                                             </IconButton>
                                         </CopyToClipboard>
@@ -357,7 +357,7 @@ const KeyConfiguration = (props) => {
                                             <IconButton
                                                 aria-label='Copy to clipboard'
                                                 classes={{ root: classes.iconButton }}
-                                            >
+                                                size="large">
                                                 <Icon color='secondary'>file_copy</Icon>
                                             </IconButton>
                                         </CopyToClipboard>

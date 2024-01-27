@@ -21,11 +21,11 @@ import React, {
     useState, useEffect, useContext, Suspense, lazy,
 } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import withStyles from '@mui/styles/withStyles';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
 import Settings from 'Settings';
@@ -239,7 +239,6 @@ function View(props) {
             {doc.sourceType === 'FILE' && (
                 <Button
                     variant='contained'
-                    color='default'
                     className={classes.button}
                     disabled={!isFileAvailable}
                     onClick={handleDownload}

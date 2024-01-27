@@ -17,21 +17,21 @@
  * under the License.
  */
 import React, { useContext, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import makeStyles from '@mui/styles/makeStyles';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@mui/material/Avatar';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import Box from '@material-ui/core/Box';
-import Icon from '@material-ui/core/Icon';
-import Divider from '@material-ui/core/Divider';
+import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
+import Icon from '@mui/material/Icon';
+import Divider from '@mui/material/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
@@ -150,7 +150,7 @@ function Environments(props) {
                             // text={endpoint.URLs.http}
                             onCopy={() => onCopy('urlCopied')}
                         >
-                            <IconButton aria-label='Copy the Default Version URL to clipboard'>
+                            <IconButton aria-label='Copy the Default Version URL to clipboard' size='large'>
                                 <Icon color='secondary'>file_copy</Icon>
                             </IconButton>
                         </CopyToClipboard>
@@ -259,7 +259,7 @@ function Environments(props) {
                                                 // text={endpoint.URLs.http}
                                                 onCopy={() => onCopy('urlCopied')}
                                             >
-                                                <IconButton aria-label='Copy the API URL to clipboard'>
+                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                     <Icon color='secondary'>file_copy</Icon>
                                                 </IconButton>
                                             </CopyToClipboard>
@@ -312,7 +312,7 @@ function Environments(props) {
                                                             || selectedEndpoint.URLs.ws}
                                                         onCopy={() => onCopy('urlCopied')}
                                                     >
-                                                        <IconButton aria-label='Copy the API URL to clipboard'>
+                                                        <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                             <Icon color='secondary'>file_copy</Icon>
                                                         </IconButton>
                                                     </CopyToClipboard>
@@ -386,7 +386,7 @@ function Environments(props) {
                                                 // text={endpoint.URLs.http}
                                                 onCopy={() => onCopy('urlCopied')}
                                             >
-                                                <IconButton aria-label='Copy the API URL to clipboard'>
+                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                     <Icon color='secondary'>file_copy</Icon>
                                                 </IconButton>
                                             </CopyToClipboard>
@@ -435,7 +435,7 @@ function Environments(props) {
                                                             text={advertiseInfo.apiExternalSandboxEndpoint}
                                                             onCopy={() => onCopy('urlCopied')}
                                                         >
-                                                            <IconButton aria-label='Copy the API URL to clipboard'>
+                                                            <IconButton aria-label='Copy the API URL to clipboard' size='large'>
                                                                 <Icon color='secondary'>file_copy</Icon>
                                                             </IconButton>
                                                         </CopyToClipboard>
@@ -471,7 +471,6 @@ function Environments(props) {
                 </Box>
             )}
         </Box>
-
     );
 }
 Environments.propTypes = {

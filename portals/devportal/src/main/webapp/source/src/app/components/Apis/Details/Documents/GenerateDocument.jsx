@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { API } from '@stoplight/elements';
 import './elements.css';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';

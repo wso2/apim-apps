@@ -18,17 +18,17 @@
  */
 
 import React, { Component } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TablePagination from '@material-ui/core/TablePagination';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import TableFooter from '@material-ui/core/TableFooter';
-import TableRow from '@material-ui/core/TableRow';
-import Box from '@material-ui/core/Box';
+import Table from '@mui/material/Table';
+import TablePagination from '@mui/material/TablePagination';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import TableFooter from '@mui/material/TableFooter';
+import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -38,13 +38,13 @@ import Loading from 'AppComponents/Base/Loading/Loading';
 import Application from 'AppData/Application';
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { appSettings } from 'Settings';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import AppsTableContent from './AppsTableContent';
 import ApplicationTableHead from './ApplicationTableHead';
 import DeleteConfirmation from './DeleteConfirmation';
@@ -508,7 +508,12 @@ class Listing extends Component {
                                             id: 'Applications.Listing.Listing.clear.search',
                                         })}
                                         >
-                                            <IconButton aria-label='delete' className={classes.clearSearch} onClick={this.clearSearch}>
+                                            <IconButton
+                                                aria-label='delete'
+                                                className={classes.clearSearch}
+                                                onClick={this.clearSearch}
+                                                size='large'
+                                            >
                                                 <HighlightOffRoundedIcon />
                                             </IconButton>
                                         </Tooltip>
@@ -570,8 +575,8 @@ class Listing extends Component {
                                                                 nextIconButtonProps={{
                                                                     'aria-label': 'Next Page',
                                                                 }}
-                                                                onChangePage={this.handleChangePage}
-                                                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                                                onPageChange={this.handleChangePage}
+                                                                onRowsPerPageChange={this.handleChangeRowsPerPage}
                                                             />
                                                         </TableRow>
                                                     </TableFooter>
