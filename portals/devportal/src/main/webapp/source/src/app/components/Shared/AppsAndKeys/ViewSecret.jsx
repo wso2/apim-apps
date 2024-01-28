@@ -18,7 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
-import CopyToClipboard from 'react-copy-to-clipboard';
+// import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import FileCopy from '@mui/icons-material/FileCopy';
 import Typography from '@mui/material/Typography';
@@ -178,9 +178,10 @@ class ViewSecret extends React.Component {
                         }
                         placement='right'
                     >
-                        <CopyToClipboard text={secret.consumerSecret} onCopy={this.onCopy('secretCopied')}>
-                            <FileCopy color='secondary'>file_copy</FileCopy>
-                        </CopyToClipboard>
+                        {/*<CopyToClipboard text={secret.consumerSecret} onCopy={this.onCopy('secretCopied')}>*/}
+                            <FileCopy color='secondary' onCopy={this.onCopy('secretCopied')}>file_copy</FileCopy>
+                            {secret.consumerSecret}
+                        {/*</CopyToClipboard>*/}
                     </Tooltip>
                 </div>
             </div>

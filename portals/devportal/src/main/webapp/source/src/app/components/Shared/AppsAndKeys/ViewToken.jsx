@@ -18,7 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
-import CopyToClipboard from 'react-copy-to-clipboard';
+// import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import FileCopy from '@mui/icons-material/FileCopy';
 import Typography from '@mui/material/Typography';
@@ -229,11 +229,12 @@ class ViewToken extends React.Component {
                         }
                         placement='right'
                     >
-                        <CopyToClipboard text={token.accessToken} onCopy={this.onCopy('tokenCopied')}>
-                            <IconButton id = 'copy-to-clipbord-icon' aria-label='Copy to clipboard' size="large">
+                        {/*<CopyToClipboard text={token.accessToken} onCopy={this.onCopy('tokenCopied')}>*/}
+                            <IconButton id = 'copy-to-clipbord-icon' aria-label='Copy to clipboard' size="large" onCopy={this.onCopy('tokenCopied')}>
                                 <FileCopy color='secondary'>file_copy</FileCopy>
+                                {token.accessToken}
                             </IconButton>
-                        </CopyToClipboard>
+                        {/*</CopyToClipboard>*/}
                     </Tooltip>
                 </div>
                 <FormHelperText>

@@ -25,7 +25,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Icon from '@mui/material/Icon';
 import Grid from '@mui/material/Grid';
-import CopyToClipboard from 'react-copy-to-clipboard';
+// import CopyToClipboard from 'react-copy-to-clipboard';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import Dialog from '@mui/material/Dialog';
@@ -343,20 +343,23 @@ class ViewKeys extends React.Component {
                                             }
                                             placement='right'
                                         >
-                                            <CopyToClipboard
-                                                text={consumerKey}
-                                                onCopy={() => this.onCopy('keyCopied')}
-                                                classes={{ root: classes.iconButton }}
-                                            >
+                                            {/*<CopyToClipboard*/}
+                                            {/*    text={consumerKey}*/}
+                                            {/*    onCopy={() => this.onCopy('keyCopied')}*/}
+                                            {/*    classes={{ root: classes.iconButton }}*/}
+                                            {/*>*/}
                                                 <IconButton
                                                     aria-label='Copy to clipboard'
                                                     classes={{ root: classes.iconButton }}
-                                                    size="large">
+                                                    size="large"
+                                                    onCopy={() => this.onCopy('keyCopied')}
+                                                >
                                                     <Icon color='secondary'>
                                                         file_copy
                                                     </Icon>
+                                                    {consumerKey}
                                                 </IconButton>
-                                            </CopyToClipboard>
+                                            {/*</CopyToClipboard>*/}
                                         </Tooltip>
                                     </InputAdornment>
                                 ),
@@ -414,18 +417,21 @@ class ViewKeys extends React.Component {
                                                 }
                                                 placement='right'
                                             >
-                                                <CopyToClipboard
-                                                    text={consumerSecret}
-                                                    onCopy={() => this.onCopy('secretCopied')}
-                                                    classes={{ root: classes.iconButton }}
-                                                >
+                                                {/*<CopyToClipboard*/}
+                                                {/*    text={consumerSecret}*/}
+                                                {/*    onCopy={() => this.onCopy('secretCopied')}*/}
+                                                {/*    classes={{ root: classes.iconButton }}*/}
+                                                {/*>*/}
                                                     <IconButton
                                                         aria-label='Copy to clipboard'
                                                         classes={{ root: classes.iconButton }}
-                                                        size="large">
+                                                        size="large"
+                                                        onCopy={() => this.onCopy('secretCopied')}
+                                                    >
                                                         <Icon color='secondary'>file_copy</Icon>
+                                                        {consumerSecret}
                                                     </IconButton>
-                                                </CopyToClipboard>
+                                                {/*</CopyToClipboard>*/}
                                             </Tooltip>
                                         </InputAdornment>
                                     ),

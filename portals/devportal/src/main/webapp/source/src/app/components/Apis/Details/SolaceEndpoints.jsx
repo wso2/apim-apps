@@ -25,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
-import CopyToClipboard from 'react-copy-to-clipboard';
+// import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import { upperCaseString } from 'AppData/stringFormatter';
 import { ApiContext } from './ApiContext';
@@ -209,15 +209,20 @@ function SolaceEndpoints() {
                                                         placement='right'
                                                         className={classes.iconStyle}
                                                     >
-                                                        <CopyToClipboard
-                                                            text={p.endPointUrl}
-                                                            // text={endpoint.URLs.http}
-                                                            onCopy={() => onCopy('urlCopied')}
+                                                        {/* <CopyToClipboard */}
+                                                        {/*    text= */}
+                                                        {/*    // text={endpoint.URLs.http} */}
+                                                        {/*    */}
+                                                        {/* > */}
+                                                        <IconButton
+                                                            aria-label='Copy the API URL to clipboard'
+                                                            size='large'
+                                                            onClick={() => onCopy('urlCopied')}
                                                         >
-                                                            <IconButton aria-label='Copy the API URL to clipboard' size='large'>
-                                                                <Icon color='secondary'>file_copy</Icon>
-                                                            </IconButton>
-                                                        </CopyToClipboard>
+                                                            <Icon color='secondary'>file_copy</Icon>
+                                                            {p.endPointUrl}
+                                                        </IconButton>
+                                                        {/* </CopyToClipboard> */}
                                                     </Tooltip>
                                                 </Avatar>
                                             </Paper>
