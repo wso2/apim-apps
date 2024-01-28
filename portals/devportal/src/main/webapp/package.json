@@ -140,7 +140,6 @@
         "mock-local-storage": "^1.0.5",
         "prettier": "^2.5.1",
         "process": "^0.11.10",
-        "react-hot-loader": "^4.13.0",
         "react-test-renderer": "^17.0.0",
         "rimraf": "^3.0.2",
         "sinon": "^7.2.2",
