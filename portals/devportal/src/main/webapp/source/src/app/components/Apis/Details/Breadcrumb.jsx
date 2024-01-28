@@ -129,11 +129,21 @@ export default function Breadcrumb(props) {
                 <Typography color='textPrimary' component='h1' variant='h6'>{selected.text}</Typography>
                 <VerticalDivider height={15} />
                 <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
-                    <MUILink color='textPrimary' to={'/apis/' + api.id + '/overview'} component={Link}>
+                    <MUILink
+                        color='textPrimary'
+                        to={'/apis/' + api.id + '/overview'}
+                        component={Link}
+                        underline='hover'
+                    >
                         {api.name}
                     </MUILink>
                     { (selected.route === 'documents' && document) && (
-                        <MUILink color='textPrimary' to={'/apis/' + api.id + '/documents/default'} component={Link}>
+                        <MUILink
+                            color='textPrimary'
+                            to={'/apis/' + api.id + '/documents/default'}
+                            component={Link}
+                            underline='hover'
+                        >
                             {selected.text}
                         </MUILink>
                     ) }

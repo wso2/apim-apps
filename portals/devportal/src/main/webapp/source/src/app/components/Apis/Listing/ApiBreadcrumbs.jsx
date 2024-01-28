@@ -69,14 +69,14 @@ export default function ApiBreadcrumbs(props) {
                     to={theme.custom.tagWise.active && theme.custom.tagWise.style === 'page' ? '/api-groups' : '/apis'}
                     className={classes.apiGroup}
                 >
-                    <Link color='inherit' className={classes.link}>
+                    <Link color='inherit' className={classes.link} underline='hover'>
                         <Icon className={classes.icon}>dynamic_feed</Icon>
                         <FormattedMessage defaultMessage='API Groups' id='Apis.Listing.ApiBreadcrumbs.apigroups.main' />
                     </Link>
                 </RouterLink>
 
                 {selectedTag && (
-                    <Link color='inherit' className={classes.linkNotActive}>
+                    <Link color='inherit' className={classes.linkNotActive} underline='hover'>
                         <CustomIcon width={16} height={16} icon='api' />
                         <span className={classes.selectedTagText}>{selectedTag}</span>
                     </Link>

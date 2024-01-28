@@ -40,6 +40,7 @@ const OriginalDevportalDetails = (props) => {
                 rel='noopener noreferrer'
                 href={originalDevPortalUrl}
                 variant='body2'
+                underline='hover'
             >
                 <div className={classes.originalDevPortalLink} data-testid='itest-original-devportal-link'>
                     <FormattedMessage

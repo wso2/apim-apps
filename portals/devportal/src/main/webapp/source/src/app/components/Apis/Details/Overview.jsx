@@ -448,6 +448,7 @@ function Overview() {
                                     rel='noopener noreferrer'
                                     href={advertiseInfo.originalDevPortalUrl}
                                     variant='body3'
+                                    underline='hover'
                                 >
                                     <FormattedMessage
                                         id={'Apis.Details.Credentials.Credentials.visit.original.'
@@ -542,7 +543,11 @@ function Overview() {
                                                 {subscribedApplications.map((app) => (
                                                     <TableRow key={app.label}>
                                                         <TableCell component='th' scope='row'>
-                                                            <MUILink component={Link} to={`/applications/${app.value}/overview`}>
+                                                            <MUILink
+                                                                component={Link}
+                                                                to={`/applications/${app.value}/overview`}
+                                                                underline='hover'
+                                                            >
                                                                 {app.label}
                                                             </MUILink>
                                                         </TableCell>
@@ -635,7 +640,12 @@ function Overview() {
                             <Box pr={2} pl={1}>
                                 <OverviewDocuments apiId={api.id} />
                                 {allDocuments.length > 2 && (
-                                    <MUILink component={Link} to={'/apis/' + api.id + '/documents'} className={classes.moreLink}>
+                                    <MUILink
+                                        component={Link}
+                                        to={'/apis/' + api.id + '/documents'}
+                                        className={classes.moreLink}
+                                        underline='hover'
+                                    >
                                         {allDocuments.length - 2}
                                         {' '}
                                         <FormattedMessage

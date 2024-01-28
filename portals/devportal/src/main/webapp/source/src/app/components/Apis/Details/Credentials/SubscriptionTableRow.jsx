@@ -80,6 +80,7 @@ const subscriptionTableRow = (props) => {
                             id={app.label + '-MA'}
                             aria-labelledby={app.label + '-MA ' + app.label}
                             component={Link}
+                            underline='hover'
                         >
                             <span>
                                 <FormattedMessage
@@ -109,6 +110,7 @@ const subscriptionTableRow = (props) => {
                                 }}
                                 id={app.label + '-UN'}
                                 aria-labelledby={app.label + '-UN ' + app.label}
+                                underline='hover'
                             >
                                 <span>
                                     <FormattedMessage
@@ -133,6 +135,7 @@ const subscriptionTableRow = (props) => {
                             onClick={() => loadInfo('PRODUCTION', app.value)}
                             id={app.label + '-PK'}
                             aria-labelledby={app.label + '-PK ' + app.label}
+                            underline='hover'
                         >
                             <span>
                                 <FormattedMessage
@@ -156,6 +159,7 @@ const subscriptionTableRow = (props) => {
                             onClick={() => loadInfo('SANDBOX', app.value)}
                             id={app.label + '-SB'}
                             aria-labelledby={app.label + '-SB ' + app.label}
+                            underline='hover'
                         >
                             <span>
                                 <FormattedMessage

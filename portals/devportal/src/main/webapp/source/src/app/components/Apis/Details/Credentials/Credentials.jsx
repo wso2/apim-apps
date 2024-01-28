@@ -596,6 +596,7 @@ class Credentials extends React.Component {
                                                     ? { pointerEvents: 'none' } : null}
                                                 className={classes.addLinkWrapper}
                                                 component={RouterLink}
+                                                underline='hover'
                                             >
                                                 <Button
                                                     color='secondary'
