@@ -24,11 +24,10 @@ import {
     StyledEngineProvider,
     adaptV4Theme,
 } from '@mui/material/styles';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles, withTheme } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
-import { withTheme } from '@mui/styles';
 import Configurations from 'Config';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import withSettings from 'AppComponents/Shared/withSettingsContext';

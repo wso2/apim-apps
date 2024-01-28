@@ -24,14 +24,13 @@ import {
     StyledEngineProvider,
     adaptV4Theme,
 } from '@mui/material/styles';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles, withTheme } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import queryString from 'query-string';
 import API from 'AppData/api';
-import { withTheme } from '@mui/styles';
 import Typography from '@mui/material/Typography';
 import Configurations from 'Config';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';

@@ -17,18 +17,18 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import { Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid/Grid';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+import { withStyles } from '@mui/styles';
+import Paper from '@mui/material/Paper';
+import { Typography } from '@mui/material';
+import Grid from '@mui/material/Grid/Grid';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classNames from 'classnames';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Comment from './Comment';
 import CommentAdd from './CommentAdd';
 import API from '../../../../data/api';
