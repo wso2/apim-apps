@@ -196,8 +196,8 @@ export default function ListKeyManagers() {
             const updateSomething = () => {
                 const restApi = new API();
                 const kmName = rowData[0];
-                const kmId = rowData[4];
-                const isGlobal = rowData[5];
+                const kmId = rowData[5];
+                const isGlobal = rowData[6];
                 (isGlobal ? restApi.globalKeyManagerGet(kmId) : restApi.keyManagerGet(kmId)).then((result) => {
                     let editState;
                     if (result.body.name !== null) {
@@ -225,7 +225,7 @@ export default function ListKeyManagers() {
                         });
                 });
             };
-            const kmEnabled = rowData[3];
+            const kmEnabled = rowData[4];
             return (
                 <Switch
                     disabled={rowData[5] ? !isSuperAdmin : false}
@@ -248,7 +248,6 @@ export default function ListKeyManagers() {
             options: {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
-                        console.log(tableMeta);
                         const artifactId = tableMeta.rowData[5];
                         return (
                             <RouterLink
