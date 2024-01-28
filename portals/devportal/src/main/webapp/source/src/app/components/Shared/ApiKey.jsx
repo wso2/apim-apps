@@ -80,7 +80,7 @@ const tokens = (props) => {
 
     return (
         <React.Fragment>
-            <FormControl margin='normal' className={classes.FormControl}>
+            <FormControl variant="standard" margin='normal' className={classes.FormControl}>
                 <FormControlLabel
                     control={<Checkbox
                         checked={infiniteValidity}
@@ -94,6 +94,7 @@ const tokens = (props) => {
                     })}
                 />
                 {!infiniteValidity && <TextField
+                    variant="standard"
                     required
                     label={intl.formatMessage({
                         defaultMessage: 'API Key validity period',

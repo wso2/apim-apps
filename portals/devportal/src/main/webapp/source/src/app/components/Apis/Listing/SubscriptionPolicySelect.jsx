@@ -81,6 +81,7 @@ class SubscriptionPolicySelect extends React.Component {
             && (
                 <div className={classes.root}>
                     <Select
+                        variant='standard'
                         className={classes.select}
                         value={selectedPolicy}
                         onChange={(e) => {

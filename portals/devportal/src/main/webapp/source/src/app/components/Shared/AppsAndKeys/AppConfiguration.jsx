@@ -223,6 +223,7 @@ const AppConfiguration = (props) => {
                                 <FormControl variant="outlined" className={classes.formControl} fullWidth>
                                     <InputLabel id="multi-select-label">{config.label}</InputLabel>
                                     <Select
+                                        variant="standard"
                                         labelId="multi-select-label"
                                         id="multi-select-outlined"
                                         margin='dense'

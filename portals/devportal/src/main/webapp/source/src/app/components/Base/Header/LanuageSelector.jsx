@@ -74,9 +74,10 @@ export default function LanguageSelector() {
     };
 
     return (
-        <FormControl className={classes.formControl}>
+        <FormControl variant='standard' className={classes.formControl}>
             {language && (
                 <Select
+                    variant='standard'
                     labelId='demo-language-select-label'
                     id='demo-language-select'
                     value={language}

@@ -197,6 +197,7 @@ class ViewToken extends React.Component {
                         )}
                     </label>
                     <TextField
+                        variant="standard"
                         defaultValue={token.accessToken}
                         id='access-token'
                         multiline

@@ -484,6 +484,7 @@ class Listing extends Component {
                                 </Grid>
                                 <Grid item xs>
                                     <TextField
+                                        variant='standard'
                                         fullWidth
                                         id='search-label'
                                         label={intl.formatMessage({

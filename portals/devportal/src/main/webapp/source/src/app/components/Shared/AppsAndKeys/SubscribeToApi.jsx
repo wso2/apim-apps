@@ -171,7 +171,9 @@ const subscribeToApi = (props) => {
         <Grid container className={classNames(classes.subscribeRoot, { [classes.subscribeRootSmall]: renderSmall })}>
             <Grid item xs={12} md={renderSmall ? 12 : 6}>
                 {appSelected && (
-                    <FormControl className={classNames(classes.FormControl, { [classes.smallDisplay]: renderSmall })}>
+                    <FormControl
+                        variant="standard"
+                        className={classNames(classes.FormControl, { [classes.smallDisplay]: renderSmall })}>
                         <InputLabel shrink for='application-subscribe' className={classes.quotaHelp}>
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.SubscribeToApi.application'
@@ -187,7 +189,7 @@ const subscribeToApi = (props) => {
                            onChange={(e, value) => handleChange('application', e, value)}
                            getOptionLabel={(option) => option.label}
                            classes={{root:classes.fullWidth}}
-                           renderInput={(params) => <TextField {...params} />}
+                           renderInput={(params) => <TextField variant="standard" {...params} />}
                          />
                         <FormHelperText id='application-helper-text'>
                             <FormattedMessage
@@ -199,6 +201,7 @@ const subscribeToApi = (props) => {
                 )}
                 {throttlingPolicyList && (
                     <FormControl
+                        variant="standard"
                         className={classNames(classes.FormControl, classes.smallDisplayFix, {
                             [classes.smallDisplay]: renderSmall,
                             [classes.FormControlOdd]: !renderSmall,
@@ -211,6 +214,7 @@ const subscribeToApi = (props) => {
                             />
                         </InputLabel>
                         <Select
+                            variant="standard"
                             value={policySelected}
                             aria-describedby='policies-helper-text'
                             onChange={e => handleChange('throttlingPolicy', e)}

@@ -202,9 +202,10 @@ export default function AsyncApiUI(props) {
     } else {
         return (
             <>
-                <FormControl className={classes.endpointSelectorRoot}>
+                <FormControl variant="standard" className={classes.endpointSelectorRoot}>
                     <InputLabel>Servers</InputLabel>
                     <Select
+                        variant="standard"
                         className={classes.selectList}
                         id="api-endpoint-select"
                         value={endPoint}

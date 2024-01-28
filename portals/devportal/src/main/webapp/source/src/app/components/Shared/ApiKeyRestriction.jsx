@@ -145,7 +145,7 @@ const apiKeyRestrictions = (props) => {
               id='Shared.ApiKeyRestriction.key.restrictions'
           />
         </Typography>
-        <FormControl component="fieldset">
+        <FormControl variant="standard" component="fieldset">
           <RadioGroup
             aria-label="API Key Restrictions"
             value={restrictSchema}

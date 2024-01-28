@@ -93,7 +93,7 @@ function ImportExternalApp(props) {
                                 disabled={!isUserOwner}
                                 variant='outlined'
                             />
-                            <FormControl>
+                            <FormControl variant="standard">
                                 <FormHelperText id='consumer-key-helper-text'>
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ImportExternalApp.consumer.key.title'
@@ -117,7 +117,7 @@ function ImportExternalApp(props) {
                                 disabled={!isUserOwner}
                                 variant='outlined'
                             />
-                            <FormControl>
+                            <FormControl variant="standard">
                                 <FormHelperText id='consumer-secret-helper-text'>
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ImportExternalApp.consumer.secret.of.application'

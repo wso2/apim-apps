@@ -535,7 +535,7 @@ function TryOutController(props) {
                                     defaultMessage='Security Type'
                                 />
                             </Typography>
-                            <FormControl component='fieldset'>
+                            <FormControl variant='standard' component='fieldset'>
                                 <RadioGroup
                                     name='securityScheme'
                                     value={securitySchemeType}

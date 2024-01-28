@@ -103,6 +103,7 @@ const tokens = (props) => {
     return (
         <>
             <FormControl
+                variant="standard"
                 margin='normal'
                 className={classes.FormControlOdd}
                 disabled={subscriptionScopes.length === 0}
@@ -115,6 +116,7 @@ const tokens = (props) => {
 
                 </InputLabel>
                 <Select
+                    variant="standard"
                     name='scopesSelected'
                     multiple
                     value={accessTokenRequest.scopesSelected}

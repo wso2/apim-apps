@@ -87,6 +87,7 @@ function renderInput(inputProps) {
                     </FormattedMessage>
                 </NativeSelect>
                 <TextField
+                    variant='standard'
                     id='searchQuery'
                     classes={{ root: classNames(classes.inputRoot, 'api-search-textbox') }}
                     InputProps={{

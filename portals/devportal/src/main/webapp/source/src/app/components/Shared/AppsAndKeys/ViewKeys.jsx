@@ -363,7 +363,7 @@ class ViewKeys extends React.Component {
                             }}
                         />
                     </div>
-                    <FormControl>
+                    <FormControl variant="standard">
                         <FormHelperText id='consumer-key-helper-text'>
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.ViewKeys.consumer.key.title'
@@ -447,7 +447,7 @@ class ViewKeys extends React.Component {
                         )}
                     </div>
                     {!hashEnabled && (
-                        <FormControl>
+                        <FormControl variant="standard">
                             <FormHelperText id='consumer-secret-helper-text'>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.consumer.secret.of.application'

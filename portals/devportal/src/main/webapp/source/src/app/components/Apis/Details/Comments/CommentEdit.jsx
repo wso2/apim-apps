@@ -192,8 +192,8 @@ class CommentEdit extends React.Component {
         const { category, commentText, currentLength } = this.state;
         return (
             <div>
-                <FormControl className={classes.category}>
-                    <Select value={category} onChange={this.handleCategoryChange}>
+                <FormControl variant="standard" className={classes.category}>
+                    <Select variant="standard" value={category} onChange={this.handleCategoryChange}>
                         <MenuItem value='General'>
                             <FormattedMessage id='Apis.Details.Comments.CommentEdit.general' defaultMessage='General' />
                         </MenuItem>
@@ -212,6 +212,7 @@ class CommentEdit extends React.Component {
                     </Select>
                 </FormControl>
                 <TextField
+                    variant="standard"
                     id='multiline-static'
                     autoFocus
                     multiline

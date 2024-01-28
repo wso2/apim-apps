@@ -183,6 +183,7 @@ function WebhookSubscriptionUI(props) {
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
+                            variant='standard'
                             name='callback'
                             id='standard-full-width'
                             label={intl.formatMessage({
@@ -210,6 +211,7 @@ function WebhookSubscriptionUI(props) {
                         <>
                             <Grid item xs={6}>
                                 <TextField
+                                    variant='standard'
                                     name='secret'
                                     id='standard-full-width'
                                     label={intl.formatMessage({
@@ -233,6 +235,7 @@ function WebhookSubscriptionUI(props) {
                             </Grid>
                             <Grid item xs={6}>
                                 <TextField
+                                    variant='standard'
                                     name='lease'
                                     id='standard-full-width'
                                     label={intl.formatMessage({
@@ -258,6 +261,7 @@ function WebhookSubscriptionUI(props) {
                     )}
                     <Grid item xs={12}>
                         <TextField
+                            variant='standard'
                             label={intl.formatMessage({
                                 defaultMessage: 'cURL',
                                 id: 'Apis.Details.AsyncApiConsole.Webhooks.curl',

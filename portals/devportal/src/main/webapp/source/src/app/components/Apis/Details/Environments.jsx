@@ -190,6 +190,7 @@ function Environments(props) {
                             {api.endpointURLs.length > 1 && (
                                 <>
                                     <Select
+                                        variant='standard'
                                         value={selectedEndpoint.environmentName}
                                         onChange={updateSelectedEndpoint}
                                         aria-label='Select the Gateway Environment'

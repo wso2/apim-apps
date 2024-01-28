@@ -120,6 +120,7 @@ export default function GenericSubscriptionUI(props) {
             <AccordionDetails>
                 <Grid container direction='column' wrap='nowrap'>
                     <TextField
+                        variant='standard'
                         label='cURL'
                         defaultValue=''
                         value={command}

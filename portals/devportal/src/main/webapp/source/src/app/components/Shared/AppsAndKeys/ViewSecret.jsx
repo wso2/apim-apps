@@ -147,6 +147,7 @@ class ViewSecret extends React.Component {
                         />
                     </Typography>
                     <TextField
+                        variant="standard"
                         defaultValue={secret.consumerSecret}
                         id='bootstrap-input'
                         multiline
