@@ -49,11 +49,11 @@ import Button from '@mui/material/Button';
 import * as dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import CheckIcon from '@mui/icons-material/Check';
-import ClearIcon from '@mui/icons-material/Clear';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import { Alert as MUIAlert } from '@mui/material';
+import CheckIcon from '@material-ui/icons/Check';
+import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Alert as MUIAlert } from '@material-ui/lab';
+import WFRejectionPopup from 'AppComponents/Workflow/WFRejectionPopup';
 
 /**
  * Render a list
@@ -123,9 +123,14 @@ function ListLabels() {
         fetchData();
     }, []);
 
-    const updateStatus = (referenceId, value) => {
+    const updateStatus = (referenceId, value, comment) => {
         setButtonValue(value);
-        const body = { status: value, attributes: {}, description: '' };
+        const body = {
+            status: value,
+            attributes: {},
+            description: '',
+            comments: comment,
+        };
         setIsUpdating(true);
         if (value === 'APPROVED') {
             body.description = 'Approve workflow request.';
@@ -274,7 +279,7 @@ function ListLabels() {
                                     color='success'
                                     variant='contained'
                                     size='small'
-                                    onClick={() => updateStatus(referenceId, 'APPROVED')}
+                                    onClick={() => updateStatus(referenceId, 'APPROVED', 'APPROVED')}
                                     disabled={isUpdating}
                                 >
                                     <CheckIcon />
@@ -285,20 +290,7 @@ function ListLabels() {
                                     {(isUpdating && buttonValue === 'APPROVED') && <CircularProgress size={15} /> }
                                 </Button>
                                 &nbsp;&nbsp;
-                                <Button
-                                    color='error'
-                                    variant='contained'
-                                    size='small'
-                                    onClick={() => updateStatus(referenceId, 'REJECTED')}
-                                    disabled={isUpdating}
-                                >
-                                    <ClearIcon />
-                                    <FormattedMessage
-                                        id='Workflow.UserCreation.table.button.reject'
-                                        defaultMessage='Reject'
-                                    />
-                                    {(isUpdating && buttonValue === 'REJECTED') && <CircularProgress size={15} />}
-                                </Button>
+                                <WFRejectionPopup referenceId={referenceId} updateStatus={updateStatus} />
                             </Box>
                         </div>
                     );
