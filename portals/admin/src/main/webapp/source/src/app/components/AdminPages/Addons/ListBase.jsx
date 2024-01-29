@@ -18,7 +18,6 @@
  */
 
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
@@ -39,46 +38,6 @@ import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
-
-const PREFIX = 'ListBase';
-
-const classes = {
-    searchBar: `${PREFIX}-searchBar`,
-    searchInput: `${PREFIX}-searchInput`,
-    block: `${PREFIX}-block`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    button: `${PREFIX}-button`,
-    tableCellWrapper: `${PREFIX}-tableCellWrapper`,
-};
-
-const StyledContentBase = styled(ContentBase)(({ theme }) => ({
-    [`& .${classes.searchBar}`]: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-
-    [`& .${classes.searchInput}`]: {
-        fontSize: theme.typography.fontSize,
-    },
-
-    [`& .${classes.block}`]: {
-        display: 'block',
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        margin: '40px 16px',
-    },
-
-    [`& .${classes.button}`]: {
-        borderColor: 'rgba(255, 255, 255, 0.7)',
-    },
-
-    [`& .${classes.tableCellWrapper}`]: {
-        '& td': {
-            'word-break': 'break-all',
-            'white-space': 'normal',
-        },
-    },
-}));
 
 /**
  * Render a list
@@ -260,11 +219,11 @@ function ListBase(props) {
     // retrieved data is empty, display an information card.
     if (!apiCall || (data && data.length === 0)) {
         return (
-            <StyledContentBase
+            <ContentBase
                 {...pageProps}
                 pageStyle='small'
             >
-                <Card className={classes.root}>
+                <Card>
                     <CardContent>
                         {emptyBoxTitle}
                         {emptyBoxContent}
@@ -275,37 +234,42 @@ function ListBase(props) {
                         )}
                     </CardActions>
                 </Card>
-            </StyledContentBase>
+            </ContentBase>
         );
     }
 
     // If apiCall is provided and data is not retrieved yet, display progress component
     if (!error && apiCall && !data) {
         return (
-            <StyledContentBase pageStyle='paperLess'>
+            <ContentBase pageStyle='paperLess'>
                 <InlineProgress />
-            </StyledContentBase>
+            </ContentBase>
 
         );
     }
     if (error) {
         return (
-            <StyledContentBase {...pageProps}>
+            <ContentBase {...pageProps}>
                 <Alert severity='error'>{error}</Alert>
-            </StyledContentBase>
+            </ContentBase>
 
         );
     }
     return (
         <>
-            <StyledContentBase {...pageProps}>
+            <ContentBase {...pageProps}>
                 {(searchActive || addButtonProps) && (
-                    <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+                    <AppBar
+                        sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+                        position='static'
+                        color='default'
+                        elevation={0}
+                    >
                         <Toolbar>
                             <Grid container spacing={2} alignItems='center'>
 
                                 <Grid item>
-                                    {searchActive && (<SearchIcon className={classes.block} color='inherit' />)}
+                                    {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
                                 </Grid>
                                 <Grid item xs>
                                     {searchActive && (
@@ -313,9 +277,14 @@ function ListBase(props) {
                                             variant='standard'
                                             fullWidth
                                             placeholder={searchPlaceholder}
+                                            sx={(theme) => ({
+                                                '& .search-input': {
+                                                    fontSize: theme.typography.fontSize,
+                                                },
+                                            })}
                                             InputProps={{
                                                 disableUnderline: true,
-                                                className: classes.searchInput,
+                                                className: 'search-input',
                                             }}
                                             // eslint-disable-next-line react/jsx-no-duplicate-props
                                             inputProps={{
@@ -345,7 +314,7 @@ function ListBase(props) {
                                         <IconButton onClick={fetchData} size='large'>
                                             <RefreshIcon
                                                 aria-label='refresh-advanced-policies'
-                                                className={classes.block}
+                                                sx={{ display: 'block' }}
                                                 color='inherit'
                                             />
                                         </IconButton>
@@ -355,7 +324,7 @@ function ListBase(props) {
                         </Toolbar>
                     </AppBar>
                 )}
-                <div className={classes.tableCellWrapper}>
+                <div>
                     {data && data.length > 0 && (
                         <MUIDataTable
                             title={null}
@@ -366,13 +335,13 @@ function ListBase(props) {
                     )}
                 </div>
                 {data && data.length === 0 && (
-                    <div className={classes.contentWrapper}>
+                    <div>
                         <Typography color='textSecondary' align='center'>
                             {noDataMessage}
                         </Typography>
                     </div>
                 )}
-            </StyledContentBase>
+            </ContentBase>
         </>
     );
 }

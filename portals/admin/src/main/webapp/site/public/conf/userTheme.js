@@ -67,7 +67,7 @@ const AppThemes = {
                 },
             },
             MuiButton: {
-                label: {
+                root: {
                     textTransform: 'none',
                 },
                 contained: {
@@ -94,6 +94,17 @@ const AppThemes = {
                     margin: '0 16px',
                     minWidth: 0,
                     padding: 0,
+                },
+            },
+            MuiTableCell: {
+                root: {
+                    '&:first-of-type': {
+                        paddingLeft: 16,
+                        paddingRight: 4,
+                        paddingTop: 4,
+                        paddingBottom: 4,
+                    },
+                    borderBottom: '1px solid #e0e0e0',
                 },
             },
             MuiIconButton: {
@@ -145,6 +156,38 @@ const AppThemes = {
                         paddingTop: 8,
                         paddingBottom: 8,
                     },
+                },
+            },
+            MuiInputLabel: {
+                root: {
+                    display: 'block',
+                    transformOrigin: 'top left',
+                },
+                outlined: {
+                    zIndex: 1,
+                    transform: 'translate(14px, 12px) scale(1)',
+                    pointerEvents: 'none',
+                    '&.MuiInputLabel-shrink': {
+                        transform: 'translate(14px, -6px) scale(0.75)',
+                    },
+                    '&.MuiInputLabel-marginDense': {
+                        transform: 'translate(10px, 12px) scale(1)',
+                    },
+                },
+            },
+            MuiOutlinedInput: {
+                root: {
+                    position: 'relative',
+                    borderRadius: '8px',
+                },
+                input: {
+                    padding: '10.5px 14px',
+                },
+                multiline: {
+                    padding: '10.5px 14px',
+                },
+                marginDense: {
+                    padding: '10.5px 14px',
                 },
             },
         },

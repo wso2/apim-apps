@@ -35,27 +35,9 @@ import API from 'AppData/api';
 import AddEditExecution from 'AppComponents/Throttling/Advanced/AddEditExecution';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const PREFIX = 'AddEdit';
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
-const classes = {
-    error: `${PREFIX}-error`,
-    hr: `${PREFIX}-hr`,
-    root: `${PREFIX}-root`,
-};
-
-const StyledContentBase = styled(ContentBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-
-    [`& .${classes.hr}`]: {
-        border: 'solid 1px #efefef',
-    },
-
-    [`& .${classes.root}`]: {
-        marginBottom: theme.spacing(15),
-    },
-}));
+const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
 
 /**
  * Reducer
@@ -296,7 +278,7 @@ function AddEdit(props) {
         dispatch({ field: 'conditionalGroups', value: clearedGroup });
     };
     return (
-        <StyledContentBase
+        <ContentBase
             pageStyle='half'
             title={
                 id ? `${intl.formatMessage({
@@ -309,7 +291,7 @@ function AddEdit(props) {
             }
             help={<HelpLinks />}
         >
-            <Box component='div' m={2} className={classes.root}>
+            <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
@@ -342,7 +324,7 @@ function AddEdit(props) {
                                             defaultMessage='Name'
                                         />
 
-                                        <span className={classes.error}>*</span>
+                                        <StyledSpan>*</StyledSpan>
                                     </span>
                                 )}
                                 fullWidth
@@ -374,7 +356,7 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Default limits */}
@@ -407,7 +389,7 @@ function AddEdit(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={3}>
@@ -459,10 +441,10 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{ mb: 2 }}>
                         <Box component='span' m={1}>
                             <Button variant='contained' color='primary' onClick={formSave}>
                                 {saving ? (<CircularProgress size={16} />) : (
@@ -484,7 +466,7 @@ function AddEdit(props) {
                             </Button>
                         </Box>
                         <RouterLink to='/throttling/advanced'>
-                            <Button variant='contained'>
+                            <Button variant='outlined'>
                                 <FormattedMessage
                                     id='Throttling.Advanced.AddEdit.form.cancel'
                                     defaultMessage='Cancel'
@@ -494,12 +476,11 @@ function AddEdit(props) {
                     </Grid>
                 </Grid>
             </Box>
-        </StyledContentBase>
+        </ContentBase>
     );
 }
 
 AddEdit.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     match: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({}).isRequired,
 };

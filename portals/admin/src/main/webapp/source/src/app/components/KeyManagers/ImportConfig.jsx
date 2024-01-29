@@ -29,17 +29,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
-const PREFIX = 'ImportConfig';
-
-const classes = {
-    error: `${PREFIX}-error`,
-};
-
-const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Render delete dialog box.
@@ -108,7 +98,7 @@ function ImportConfig(props) {
         return false;
     };
     return (
-        <StyledFormDialogBase
+        <FormDialogBase
             title={intl.formatMessage({
                 id: 'KeyManagers.ImportConfig.dialog.tilte.add.new',
                 defaultMessage: 'Import Key Manager Configuration',
@@ -141,7 +131,7 @@ function ImportConfig(props) {
                         defaultMessage='Key Manager Type'
                         id='Admin.KeyManager.form.type'
                     />
-                    <span className={classes.error}>*</span>
+                    <StyledSpan>*</StyledSpan>
                 </InputLabel>
                 <Select
                     variant='standard'
@@ -176,7 +166,7 @@ function ImportConfig(props) {
                             id='KeyManagers.ImportConfig.form.url'
                             defaultMessage='Url'
                         />
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth
@@ -188,7 +178,7 @@ function ImportConfig(props) {
                 variant='outlined'
                 error={hasErrors('url', url, validating)}
             />
-        </StyledFormDialogBase>
+        </FormDialogBase>
     );
 }
 ImportConfig.propTypes = {

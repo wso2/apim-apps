@@ -23,22 +23,7 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 
-const PREFIX = 'InlineProgress';
-
-const classes = {
-    root: `${PREFIX}-root`,
-};
-
-const Root = styled('div')(({ theme }) => ({
-    [`&.${classes.root}`]: {
-        display: 'flex',
-        '& > * + *': {
-            marginLeft: theme.spacing(2),
-        },
-        justifyContent: 'center',
-        padding: 20,
-    },
-}));
+const Root = styled('div')(() => ({}));
 
 /**
  * Render progress inside a container centering in the container.
@@ -48,7 +33,16 @@ const Root = styled('div')(({ theme }) => ({
 function InlineProgress(props) {
     const { message } = props;
     return (
-        <Root className={classes.root}>
+        <Root
+            sx={{
+                display: 'flex',
+                '& > * + *': {
+                    marginLeft: 2,
+                },
+                justifyContent: 'center',
+                padding: 20,
+            }}
+        >
             <CircularProgress />
             <Typography color='textSecondary' align='center'>
                 {message || (

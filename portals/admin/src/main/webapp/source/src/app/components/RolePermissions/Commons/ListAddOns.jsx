@@ -17,7 +17,6 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -27,38 +26,6 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
-
-const PREFIX = 'ListAddOns';
-
-const classes = {
-    searchBar: `${PREFIX}-searchBar`,
-    searchInput: `${PREFIX}-searchInput`,
-    block: `${PREFIX}-block`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    button: `${PREFIX}-button`,
-};
-
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-    [`&.${classes.searchBar}`]: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-
-    [`& .${classes.searchInput}`]: {
-        fontSize: theme.typography.fontSize,
-    },
-
-    [`& .${classes.block}`]: {
-        display: 'block',
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        margin: '40px 16px',
-    },
-
-    [`& .${classes.button}`]: {
-        borderColor: 'rgba(255, 255, 255, 0.7)',
-    },
-}));
 
 /**
  *
@@ -72,11 +39,16 @@ function ListAddOns(props) {
     } = props;
 
     return (
-        <StyledAppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+        <AppBar
+            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+            position='static'
+            color='default'
+            elevation={0}
+        >
             <Toolbar>
                 <Grid container spacing={2} direction='row' justifyContent='flex-end' alignItems='center'>
                     <Grid item>
-                        {searchActive && (<SearchIcon className={classes.block} color='inherit' />)}
+                        {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
                     </Grid>
                     <Grid item xs>
                         {searchActive && (
@@ -86,7 +58,7 @@ function ListAddOns(props) {
                                 placeholder={searchPlaceholder}
                                 InputProps={{
                                     disableUnderline: true,
-                                    className: classes.searchInput,
+                                    style: { fontSize: '12px' },
                                 }}
                                 onChange={filterData}
                             />
@@ -103,7 +75,7 @@ function ListAddOns(props) {
                         >
                             <IconButton onClick={onRefresh} size='large'>
                                 <RefreshIcon
-                                    className={classes.block}
+                                    sx={{ display: 'block' }}
                                     color='inherit'
                                     aria-label='refresh-button-icon'
                                 />
@@ -112,7 +84,7 @@ function ListAddOns(props) {
                     </Grid>
                 </Grid>
             </Toolbar>
-        </StyledAppBar>
+        </AppBar>
     );
 }
 

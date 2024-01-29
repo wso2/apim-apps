@@ -146,7 +146,7 @@ export default function PermissionsSelector(props) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleClose} variant='outlined'>Cancel</Button>
                     <Button
                         size='small'
                         variant='contained'

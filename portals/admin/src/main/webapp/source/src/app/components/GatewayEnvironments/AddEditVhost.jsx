@@ -37,29 +37,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import Divider from '@mui/material/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-const PREFIX = 'AddEditVhost';
-
-const classes = {
-    error: `${PREFIX}-error`,
-    vhostPaper: `${PREFIX}-vhostPaper`,
-    portDivider: `${PREFIX}-portDivider`,
-};
-
-const StyledFormGroup = styled(FormGroup)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-
-    [`& .${classes.vhostPaper}`]: {
-        padding: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-
-    [`& .${classes.portDivider}`]: {
-        backgroundColor: 'LightGray',
-        margin: theme.spacing(1),
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 function AddEditVhost(props) {
     const intl = useIntl();
@@ -154,11 +132,14 @@ function AddEditVhost(props) {
 
     let vhostCounter = 1;
     return (
-        <StyledFormGroup>
+        <FormGroup>
             <Grid container spacing={0}>
                 {userVhosts && userVhosts.map((vhost) => (
                     <Grid item xs={12}>
-                        <Paper variant='outlined' className={classes.vhostPaper}>
+                        <Paper
+                            variant='outlined'
+                            sx={(theme) => ({ padding: theme.spacing(1), marginBottom: theme.spacing(1) })}
+                        >
                             <Grid container direction='row' spacing={0}>
                                 {/* VHost's host name */}
                                 <Grid item xs={9}>
@@ -175,7 +156,7 @@ function AddEditVhost(props) {
                                                 />
                                                 -
                                                 {vhostCounter++}
-                                                <span className={classes.error}>*</span>
+                                                <StyledSpan>*</StyledSpan>
                                             </span>
                                         )}
                                         value={vhost.host}
@@ -249,7 +230,7 @@ function AddEditVhost(props) {
                                             aria-controls='panel1a-content'
                                             id='panel1a-header'
                                         >
-                                            <Typography className={classes.heading}>Advanced Settings</Typography>
+                                            <Typography>Advanced Settings</Typography>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Grid container>
@@ -299,7 +280,13 @@ function AddEditVhost(props) {
                                                     </Grid>
                                                 </Grid>
                                                 <Grid item xs={12}>
-                                                    <Divider variant='middle' className={classes.portDivider} />
+                                                    <Divider
+                                                        variant='middle'
+                                                        sx={(theme) => ({
+                                                            borderColor: 'LightGray',
+                                                            margin: theme.spacing(1),
+                                                        })}
+                                                    />
                                                 </Grid>
                                                 {/* WS Ports */}
                                                 {gatewayType === 'Regular' && (
@@ -362,7 +349,7 @@ function AddEditVhost(props) {
                     </Button>
                 </Grid>
             </Grid>
-        </StyledFormGroup>
+        </FormGroup>
     );
 }
 

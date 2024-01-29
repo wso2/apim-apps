@@ -19,76 +19,16 @@
 import React, {
     useReducer, useState, Suspense, lazy, useEffect,
 } from 'react';
-import { styled } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import {
     Box, Grid, Button,
 } from '@mui/material';
-import { green } from '@mui/material/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-
-const PREFIX = 'TenantConfSave';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    error: `${PREFIX}-error`,
-    dialog: `${PREFIX}-dialog`,
-    tenantConfHeading: `${PREFIX}-tenantConfHeading`,
-    showSampleButton: `${PREFIX}-showSampleButton`,
-    helperText: `${PREFIX}-helperText`,
-    infoBox: `${PREFIX}-infoBox`,
-    buttonBox: `${PREFIX}-buttonBox`,
-    saveButton: `${PREFIX}-saveButton`,
-};
-
-const StyledContentBase = styled(ContentBase)(({ theme }) => ({
-    [`& .${classes.root}`]: {
-        marginBottom: theme.spacing(15),
-    },
-
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-
-    [`& .${classes.dialog}`]: {
-        minWidth: theme.spacing(150),
-
-    },
-
-    [`& .${classes.tenantConfHeading}`]: {
-        marginBottom: theme.spacing(1),
-    },
-
-    [`& .${classes.showSampleButton}`]: {
-        marginTop: theme.spacing(2),
-    },
-
-    [`& .${classes.helperText}`]: {
-        color: green[600],
-        fontSize: theme.spacing(1.6),
-        marginLeft: theme.spacing(1),
-    },
-
-    [`& .${classes.infoBox}`]: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.buttonBox}`]: {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-        marginLeft: theme.spacing(1),
-    },
-
-    [`& .${classes.saveButton}`]: {
-        marginRight: theme.spacing(2),
-    },
-}));
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "TeantConfAddMonacoEditor" */));
 
@@ -193,7 +133,7 @@ function TenantConfSave() {
     };
 
     return (
-        <StyledContentBase
+        <ContentBase
             pageStyle='full'
             title={(
                 <FormattedMessage
@@ -202,9 +142,9 @@ function TenantConfSave() {
                 />
             )}
         >
-            <Box component='div' m={2} className={classes.root} name={tenantConfSchema}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={12} lg={12}>
+            <Box component='div' sx={{ mb: 15, m: 2 }} name={tenantConfSchema}>
+                <Grid container>
+                    <Grid item xs={12} md={12} lg={12} sx={{ p: 2 }}>
                         <Suspense fallback={<Progress />}>
                             <MonacoEditor
                                 language='json'
@@ -216,11 +156,11 @@ function TenantConfSave() {
                             />
                         </Suspense>
                     </Grid>
-                    <Box component='span' className={classes.buttonBox}>
+                    <Box component='span' sx={{ mt: 2, mb: 2, ml: 1 }}>
                         <Button
                             variant='contained'
                             color='primary'
-                            className={classes.saveButton}
+                            sx={{ mr: 2 }}
                             onClick={formSaveCallback}
                             data-testid='monaco-editor-save'
                         >
@@ -230,7 +170,7 @@ function TenantConfSave() {
                             />
                         </Button>
                         <Button
-                            variant='contained'
+                            variant='outlined'
                             onClick={cancelUpdate}
                         >
                             <FormattedMessage
@@ -241,7 +181,7 @@ function TenantConfSave() {
                     </Box>
                 </Grid>
             </Box>
-        </StyledContentBase>
+        </ContentBase>
     );
 }
 

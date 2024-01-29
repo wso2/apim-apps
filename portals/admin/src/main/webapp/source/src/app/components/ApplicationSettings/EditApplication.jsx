@@ -24,17 +24,7 @@ import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 
-const PREFIX = 'Edit';
-
-const classes = {
-    error: `${PREFIX}-error`,
-};
-
-const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Reducer
@@ -147,7 +137,7 @@ function Edit(props) {
         }
     };
     return (
-        <StyledFormDialogBase
+        <FormDialogBase
             title={title}
             saveButtonText='Save'
             icon={icon}
@@ -165,7 +155,7 @@ function Edit(props) {
                             id='AdminPages.ApplicationSettings.Edit.form.name'
                             defaultMessage='Application Name'
                         />
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth
@@ -189,7 +179,7 @@ function Edit(props) {
                 )}
                 variant='outlined'
             />
-        </StyledFormDialogBase>
+        </FormDialogBase>
     );
 }
 

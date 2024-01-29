@@ -6,42 +6,23 @@ import Icon from '@mui/material/Icon';
 import { amber } from '@mui/material/colors';
 import VerticalDivider from './VerticalDivider';
 
-const PREFIX = 'InlineMessage';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    button: `${PREFIX}-button`,
-    content: `${PREFIX}-content`,
-};
-
 const StyledPaper = styled(Paper)(({ theme }) => ({
-    [`&.${classes.root}`]: {
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-        borderRadius: theme.shape.borderRadius,
-        border: 'solid 1px ' + theme.palette.secondary.main,
-        '& span.material-icons.info': {
-            fontSize: 80,
-            color: theme.palette.primary.main,
-        },
-        '& span.material-icons.warning': {
-            fontSize: 80,
-            color: amber[700],
-        },
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius,
+    border: 'solid 1px ' + theme.palette.secondary.main,
+    '& span.material-icons.info': {
+        fontSize: 80,
+        color: theme.palette.primary.main,
     },
-
-    [`& .${classes.button}`]: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-
-    [`& .${classes.content}`]: {
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
-        paddingRight: theme.spacing(1),
+    '& span.material-icons.warning': {
+        fontSize: 80,
+        color: amber[700],
     },
 }));
+
+const StyledDiv = styled('div')({ pt: 1, pb: 1, pr: 1 });
 
 /**
  *
@@ -66,10 +47,10 @@ class InlineMessage extends React.Component {
             height, type, children,
         } = this.props;
         return (
-            <StyledPaper className={classes.root} {...this.props}>
+            <StyledPaper {...this.props}>
                 <Icon className={type}>{type}</Icon>
                 <VerticalDivider height={height} />
-                <div className={classes.content}>{children}</div>
+                <StyledDiv>{children}</StyledDiv>
             </StyledPaper>
         );
     }

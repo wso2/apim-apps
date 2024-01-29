@@ -17,35 +17,11 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import { TableContextProvider } from './AdminTableContext';
-
-const PREFIX = 'AdminTable';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    paper: `${PREFIX}-paper`,
-    table: `${PREFIX}-table`,
-};
-
-const StyledTableContextProvider = styled(TableContextProvider)(({ theme }) => ({
-    [`& .${classes.root}`]: {
-        width: '100%',
-    },
-
-    [`& .${classes.paper}`]: {
-        width: '100%',
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.table}`]: {
-        minWidth: 750,
-    },
-}));
 
 /**
  *
@@ -89,7 +65,7 @@ export default function AdminTable(props) {
     };
 
     return (
-        <StyledTableContextProvider value={{
+        <TableContextProvider value={{
             onSelectAllClick: handleSelectAllClick,
             order,
             orderBy,
@@ -103,10 +79,9 @@ export default function AdminTable(props) {
             page,
         }}
         >
-            <div className={classes.root}>
+            <div style={{ width: '100%' }}>
                 <TableContainer>
                     <Table
-                        className={classes.table}
                         role='presentation'
                         size='medium'
                         aria-label='enhanced table'
@@ -125,6 +100,6 @@ export default function AdminTable(props) {
                 </TableContainer>
 
             </div>
-        </StyledTableContextProvider>
+        </TableContextProvider>
     );
 }

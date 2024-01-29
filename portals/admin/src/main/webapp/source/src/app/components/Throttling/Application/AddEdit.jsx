@@ -17,7 +17,6 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -30,42 +29,21 @@ import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import Joi from '@hapi/joi';
 
-const PREFIX = 'AddEdit';
-
-const classes = {
-    error: `${PREFIX}-error`,
-    dialog: `${PREFIX}-dialog`,
-    quotaHeading: `${PREFIX}-quotaHeading`,
-    unitTime: `${PREFIX}-unitTime`,
-    unitTimeSelection: `${PREFIX}-unitTimeSelection`,
-};
-
-const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
+const styles = {
+    quotaHeading: {
+        marginTop: 3,
+        marginBottom: 2,
     },
-
-    [`& .${classes.dialog}`]: {
-        minWidth: theme.spacing(150),
-
-    },
-
-    [`& .${classes.quotaHeading}`]: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.unitTime}`]: {
+    unitTime: {
         display: 'flex',
-        minWidth: theme.spacing(60),
+        minWidth: 60,
     },
-
-    [`& .${classes.unitTimeSelection}`]: {
-        marginTop: theme.spacing(2.6),
-        marginLeft: theme.spacing(2),
-        minWidth: theme.spacing(15),
+    unitTimeSelection: {
+        marginTop: 1,
+        marginLeft: 2,
+        minWidth: 120,
     },
-}));
+};
 
 /**
  * Reducer
@@ -413,7 +391,7 @@ function AddEdit(props) {
     };
 
     return (
-        <StyledFormDialogBase
+        <FormDialogBase
             title={title}
             saveButtonText='Save'
             icon={icon}
@@ -471,14 +449,14 @@ function AddEdit(props) {
                 onChange={onChange}
             />
             <DialogContentText>
-                <Typography variant='h6' className={classes.quotaHeading}>
+                <Typography variant='h6' sx={styles.quotaHeading}>
                     <FormattedMessage
                         id='Admin.Throttling.Application.Throttling.Policy.add.quota.limits.details'
                         defaultMessage='Quota Limits'
                     />
                 </Typography>
             </DialogContentText>
-            <FormControl variant='standard' component='fieldset'>
+            <FormControl variant='outlined' component='fieldset'>
                 <RadioGroup
                     row
                     aria-label='position'
@@ -527,7 +505,7 @@ function AddEdit(props) {
                             )}
                     />
                 ) : (
-                    <Grid className={classes.unitTime}>
+                    <Grid sx={styles.unitTime}>
                         <TextField
                             margin='dense'
                             name='dataAmount'
@@ -553,14 +531,13 @@ function AddEdit(props) {
                                     />
                                 )}
                         />
-                        <FormControl variant='standard' className={classes.unitTimeSelection}>
+                        <FormControl variant='outlined' sx={styles.unitTimeSelection}>
                             <Select
-                                variant='standard'
+                                variant='outlined'
                                 labelId='demo-simple-select-label'
                                 name='dataUnit'
                                 value={dataUnit}
                                 onChange={onChange}
-                                fullWidth
                             >
                                 <MenuItem value='KB'>KB</MenuItem>
                                 <MenuItem value='MB'>MB</MenuItem>
@@ -570,7 +547,7 @@ function AddEdit(props) {
                     </Grid>
 
                 )}
-                <Grid className={classes.unitTime}>
+                <Grid sx={styles.unitTime}>
                     <TextField
                         margin='dense'
                         name='unitTime'
@@ -595,9 +572,9 @@ function AddEdit(props) {
                                 />
                             )}
                     />
-                    <FormControl variant='standard' className={classes.unitTimeSelection}>
+                    <FormControl variant='outlined' sx={styles.unitTimeSelection}>
                         <Select
-                            variant='standard'
+                            variant='outlined'
                             labelId='demo-simple-select-label'
                             name='timeUnit'
                             value={timeUnit}
@@ -616,7 +593,7 @@ function AddEdit(props) {
             </FormControl>
             {/* Burst Control (Rate Limiting) */}
             <DialogContentText>
-                <Typography variant='h6' className={classes.quotaHeading}>
+                <Typography variant='h6' sx={styles.quotaHeading}>
                     <FormattedMessage
                         id='Admin.Throttling.Application.Throttling.Policy.add.burst.limits.details'
                         defaultMessage='Burst Control (Rate Limiting)'
@@ -629,7 +606,7 @@ function AddEdit(props) {
                     />
                 </Typography>
             </DialogContentText>
-            <Grid className={classes.unitTime}>
+            <Grid sx={styles.unitTime}>
                 <TextField
                     margin='dense'
                     name='rateLimitCount'
@@ -649,9 +626,9 @@ function AddEdit(props) {
                     })}
                     variant='outlined'
                 />
-                <FormControl variant='standard' className={classes.unitTimeSelection}>
+                <FormControl variant='outlined' sx={styles.unitTimeSelection}>
                     <Select
-                        variant='standard'
+                        variant='outlined'
                         name='rateLimitTimeUnit'
                         value={rateLimitTimeUnit}
                         fullWidth
@@ -662,7 +639,7 @@ function AddEdit(props) {
                     </Select>
                 </FormControl>
             </Grid>
-        </StyledFormDialogBase>
+        </FormDialogBase>
     );
 }
 

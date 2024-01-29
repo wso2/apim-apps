@@ -16,7 +16,6 @@
  * under the License.
  */
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Avatar as AvatarComponent } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -25,50 +24,6 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Breadcrumbs from 'AppComponents/Base/Header/Breadcrumbs';
-
-const lightColor = 'rgba(255, 255, 255, 0.7)';
-
-const PREFIX = 'index';
-
-const classes = {
-    secondaryBar: `${PREFIX}-secondaryBar`,
-    menuButton: `${PREFIX}-menuButton`,
-    iconButtonAvatar: `${PREFIX}-iconButtonAvatar`,
-    link: `${PREFIX}-link`,
-    button: `${PREFIX}-button`,
-    headerToolbar: `${PREFIX}-headerToolbar`,
-};
-
-const Root = styled('div')(({ theme }) => ({
-    [`& .${classes.secondaryBar}`]: {
-        zIndex: 0,
-    },
-
-    [`& .${classes.menuButton}`]: {
-        marginLeft: -theme.spacing(1),
-    },
-
-    [`& .${classes.iconButtonAvatar}`]: {
-        padding: 4,
-    },
-
-    [`& .${classes.link}`]: {
-        textDecoration: 'none',
-        color: lightColor,
-        '&:hover': {
-            color: theme.palette.common.white,
-        },
-    },
-
-    [`& .${classes.button}`]: {
-        borderColor: lightColor,
-    },
-
-    [`& .${classes.headerToolbar}`]: {
-        boxShadow: '0 -1px 0 #dddddd inset',
-        height: 50,
-    },
-}));
 
 /**
  * Render header component
@@ -79,8 +34,8 @@ function Header(props) {
     const { handleDrawerToggle, avatar } = props;
 
     return (
-        <Root>
-            <Toolbar className={classes.headerToolbar}>
+        <>
+            <Toolbar sx={{ boxShadow: '0 -1px 0 #dddddd inset', height: 50 }}>
                 <Grid container spacing={1} alignItems='center'>
                     <Hidden smUp>
                         <Grid item>
@@ -88,7 +43,7 @@ function Header(props) {
                                 color='inherit'
                                 aria-label='open drawer'
                                 onClick={() => handleDrawerToggle()}
-                                className={classes.menuButton}
+                                sx={{ ml: -1 }}
                                 size='large'
                             >
                                 <MenuIcon />
@@ -105,7 +60,7 @@ function Header(props) {
                     </Grid>
                 </Grid>
             </Toolbar>
-        </Root>
+        </>
     );
 }
 

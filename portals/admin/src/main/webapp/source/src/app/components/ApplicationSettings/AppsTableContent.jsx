@@ -17,74 +17,12 @@
  */
 
 import React, { Component } from 'react';
-import { styled } from '@mui/material/styles';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import PropTypes from 'prop-types';
-
-const PREFIX = 'AppsTableContent';
-
-const classes = {
-    head: `${PREFIX}-head`,
-    body: `${PREFIX}-body`,
-    root: `${PREFIX}-root`,
-    root2: `${PREFIX}-root2`,
-    fullHeight: `${PREFIX}-fullHeight`,
-    tableRow: `${PREFIX}-tableRow`,
-    appOwner: `${PREFIX}-appOwner`,
-    appName: `${PREFIX}-appName`,
-    appTablePaper: `${PREFIX}-appTablePaper`,
-    tableCellWrapper: `${PREFIX}-tableCellWrapper`,
-};
-
-const StyledTableBody = styled(TableBody)(({ theme }) => ({
-    [`&.${classes.fullHeight}`]: {
-        height: '100%',
-    },
-
-    [`& .${classes.tableRow}`]: {
-        height: theme.spacing(5),
-        '& td': {
-            padding: theme.spacing(0.5),
-        },
-    },
-
-    [`& .${classes.appOwner}`]: {
-        pointerEvents: 'none',
-    },
-
-    [`& .${classes.appName}`]: {
-        '& a': {
-            color: '#1b9ec7 !important',
-        },
-    },
-
-    [`& .${classes.appTablePaper}`]: {
-        '& table tr td': {
-            paddingLeft: theme.spacing(1),
-        },
-        '& table tr td:first-child, & table tr th:first-child': {
-            paddingLeft: theme.spacing(2),
-        },
-        '& table tr td button.Mui-disabled span.material-icons': {
-            color: theme.palette.action.disabled,
-        },
-    },
-
-    [`& .${classes.tableCellWrapper}`]: {
-        '& td': {
-            'word-break': 'break-all',
-            'white-space': 'normal',
-        },
-    },
-}));
-
-const StyledTableCell = TableCell;
-
-const StyledTableRow = TableRow;
 
 /**
  *
@@ -133,54 +71,40 @@ class AppsTableContent extends Component {
             return <ResourceNotFound />;
         }
         return (
-            <StyledTableBody className={classes.fullHeight}>
+            <TableBody
+                sx={{
+                    height: '100%',
+                    '& tr:nth-of-type(odd) td': {
+                        backgroundColor: '#f5f5f5',
+                    },
+                    '& tr:nth-of-type(even) td': {
+                        backgroundColor: '#fff',
+                    },
+                }}
+            >
                 {apps && apps.map((app) => {
                     return (
-                        <StyledTableRow
-                            className={classes.tableRow}
+                        <TableRow
+                            sx={{ height: 5, '& td': { padding: 0.5 } }}
                             key={app.applicationId}
-                            classes={{
-                                root: classes.root2,
-                            }}
                         >
-                            <StyledTableCell
-                                align='left'
-                                classes={{
-                                    head: classes.head,
-                                    body: classes.body,
-                                    root: classes.root,
-                                }}
-                            >
+                            <TableCell align='left'>
                                 {app.name}
-                            </StyledTableCell>
-                            <StyledTableCell
-                                align='left'
-                                classes={{
-                                    head: classes.head,
-                                    body: classes.body,
-                                    root: classes.root,
-                                }}
-                            >
+                            </TableCell>
+                            <TableCell align='left'>
                                 {app.owner}
-                            </StyledTableCell>
-                            <StyledTableCell
-                                align='left'
-                                classes={{
-                                    head: classes.head,
-                                    body: classes.body,
-                                    root: classes.root,
-                                }}
-                            >
+                            </TableCell>
+                            <TableCell align='left'>
                                 <EditApplication
                                     dataRow={app}
                                     updateList={apiCall}
                                     {...editComponentProps}
                                 />
-                            </StyledTableCell>
-                        </StyledTableRow>
+                            </TableCell>
+                        </TableRow>
                     );
                 })}
-            </StyledTableBody>
+            </TableBody>
         );
     }
 }

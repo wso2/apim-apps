@@ -58,7 +58,7 @@ function AddItem(props) {
                 <DialogActions>
                     {dialogActions || (
                         <>
-                            <Button onClick={onClose}>
+                            <Button onClick={onClose} variant='outlined'>
                                 Cancel
                             </Button>
                             <Button onClick={onSave} color='primary' variant='contained' disabled={disabled}>

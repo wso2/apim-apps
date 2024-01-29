@@ -26,17 +26,7 @@ import TextField from '@mui/material/TextField';
 import CreateIcon from '@mui/icons-material/Create';
 import CON_CONSTS from 'AppComponents/Throttling/Advanced/CON_CONSTS';
 
-const PREFIX = 'AddEditConditionPolicy';
-
-const classes = {
-    error: `${PREFIX}-error`,
-};
-
-const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Render delete dialog box.
@@ -116,7 +106,7 @@ function AddEditConditionPolicy(props) {
         return false;
     };
     return (
-        <StyledFormDialogBase
+        <FormDialogBase
             title={item
                 ? `${intl.formatMessage({
                     id: 'Throttling.Advanced.AddEditConditionPolicy.dialog.tilte.add.new',
@@ -136,7 +126,7 @@ function AddEditConditionPolicy(props) {
             })}
             icon={item ? <CreateIcon /> : null}
             triggerButtonProps={{
-                color: 'default',
+                color: 'primary',
                 variant: 'contained',
                 size: 'small',
             }}
@@ -158,7 +148,7 @@ function AddEditConditionPolicy(props) {
                             id='Throttling.Advanced.AddEditConditionPolicy.form.name'
                             defaultMessage='Name'
                         />
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth
@@ -184,7 +174,7 @@ function AddEditConditionPolicy(props) {
                             defaultMessage='Value'
                         />
 
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth
@@ -196,7 +186,7 @@ function AddEditConditionPolicy(props) {
                 variant='outlined'
                 error={hasErrors('value', value, validating)}
             />
-        </StyledFormDialogBase>
+        </FormDialogBase>
     );
 }
 AddEditConditionPolicy.propTypes = {

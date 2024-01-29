@@ -1,6 +1,5 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
-import { styled } from '@mui/material/styles';
 import {
     IconButton,
     Menu,
@@ -12,32 +11,6 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
-
-const PREFIX = 'Avatar';
-
-const classes = {
-    profileMenu: `${PREFIX}-profileMenu`,
-    userLink: `${PREFIX}-userLink`,
-    accountIcon: `${PREFIX}-accountIcon`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
-    [`& .${classes.profileMenu}`]: {
-        zIndex: theme.zIndex.modal + 1,
-        paddingTop: '5px',
-    },
-
-    [`& .${classes.userLink}`]: {
-        fontSize: theme.typography.fontSize,
-        textTransform: 'uppercase',
-        fontWeight: 'bold',
-    },
-
-    [`& .${classes.accountIcon}`]: {
-        marginRight: 10,
-    },
-}));
 
 /**
  * Render the User Avatar with their name inside the Top AppBar component
@@ -101,17 +74,21 @@ class Avatar extends Component {
          }
          const { anchorEl } = this.state;
          return (
-             <Root>
+             <>
                  <IconButton
                      id='profile-menu-btn'
                      aria-owns='profile-menu-appbar'
                      aria-haspopup='true'
                      color='inherit'
                      onClick={this.handleClick}
-                     className={classes.userLink}
+                     sx={(theme) => ({
+                         fontSize: theme.typography.fontSize,
+                         textTransform: 'uppercase',
+                         fontWeight: 'bold',
+                     })}
                      size='large'
                  >
-                     <AccountCircle className={classes.accountIcon} />
+                     <AccountCircle sx={{ mr: 1 }} />
                      {' '}
                      {username}
                      <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
@@ -132,7 +109,10 @@ class Avatar extends Component {
                          vertical: 'top',
                          horizontal: 'center',
                      }}
-                     className={classes.profileMenu}
+                     sx={(theme) => ({
+                         zIndex: theme.zIndex.modal + 1,
+                         pt: '5px',
+                     })}
                  >
                      <Link to={{ pathname: '/services/logout' }}>
                          <MenuItem onClick={this.doOIDCLogout} id='logout'>
@@ -143,7 +123,7 @@ class Avatar extends Component {
                          </MenuItem>
                      </Link>
                  </Menu>
-             </Root>
+             </>
          );
      }
 }

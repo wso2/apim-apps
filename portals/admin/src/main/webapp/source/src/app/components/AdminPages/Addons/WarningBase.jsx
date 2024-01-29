@@ -17,29 +17,12 @@
  * under the License.
  */
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import WarningIcon from '@mui/icons-material/Warning';
-
-const PREFIX = 'WarningBase';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    warningIcon: `${PREFIX}-warningIcon`,
-};
-
-const StyledContentBase = styled(ContentBase)(({ theme }) => ({
-    [`& .${classes.root}`]: {},
-
-    [`& .${classes.warningIcon}`]: {
-        color: theme.palette.warning.dark,
-        fontSize: 44,
-    },
-}));
 
 /**
  * Adds two numbers together.
@@ -50,14 +33,14 @@ export default function SimplePaper(props) {
     const { content, title, pageProps } = props;
 
     return (
-        <StyledContentBase
+        <ContentBase
             {...pageProps}
             pageStyle='small'
         >
-            <Card className={classes.root}>
+            <Card>
                 <CardContent>
                     <Box display='flex' flexDirection='row'>
-                        <WarningIcon className={classes.warningIcon} />
+                        <WarningIcon sx={(theme) => ({ fontSize: 44, color: theme.palette.warning.dark })} />
                         <Typography variant='h5' component='h2'>
                             {title}
                         </Typography>
@@ -68,6 +51,6 @@ export default function SimplePaper(props) {
                     </Typography>
                 </CardContent>
             </Card>
-        </StyledContentBase>
+        </ContentBase>
     );
 }

@@ -43,7 +43,7 @@ import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import Configurations from 'Config';
-import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
+import { MuiChipsInput } from 'mui-chips-input';
 import PropTypes from 'prop-types';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 
@@ -52,7 +52,6 @@ const PREFIX = 'ManageAlerts';
 const classes = {
     alertsWrapper: `${PREFIX}-alertsWrapper`,
     manageAlertHeading: `${PREFIX}-manageAlertHeading`,
-    chipInput: `${PREFIX}-chipInput`,
     alertConfigDialog: `${PREFIX}-alertConfigDialog`,
     configDialogHeading: `${PREFIX}-configDialogHeading`,
     listItem: `${PREFIX}-listItem`,
@@ -70,12 +69,6 @@ const Root = styled('div')(({ theme }) => ({
 
     [`& .${classes.manageAlertHeading}`]: {
         marginBottom: theme.spacing(),
-    },
-
-    [`& .${classes.chipInput}`]: {
-        width: '100%',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
     },
 
     [`& .${classes.alertConfigDialog}`]: {
@@ -480,11 +473,11 @@ const ManageAlerts = (props) => {
                                                 );
                                             })}
                                         </List>
-                                        <ChipInput
+                                        <MuiChipsInput
+                                            fullWidth
                                             label='Emails'
                                             id='email-input'
                                             variant='outlined'
-                                            className={classes.chipInput}
                                             placeholder={emails.length === 0
                                                 ? 'Enter email address and press Enter' : ''}
                                             defaultValue={emails}
@@ -493,12 +486,8 @@ const ManageAlerts = (props) => {
                                                 + 'alerts of selected Alert types.'
                                                 + ' Type email address and press Enter to add'}
                                             error={validateEmailList(emails)}
-                                            onChange={(chip) => {
-                                                handleAddEmail(chip);
-                                            }}
-                                            onDelete={(chip) => {
-                                                handleEmailDeletion(chip);
-                                            }}
+                                            onAddChip={handleAddEmail}
+                                            onDeleteChip={handleEmailDeletion}
                                         />
                                         <Box mt={2}>
                                             <Grid
@@ -532,7 +521,7 @@ const ManageAlerts = (props) => {
                                                     <Link to='/'>
                                                         <Button
                                                             disabled={isInProgress.subscribing}
-                                                            variant='contained'
+                                                            variant='outlined'
                                                             role='button'
                                                         >
                                                             {isInProgress.unSubscribing

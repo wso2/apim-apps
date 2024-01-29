@@ -17,7 +17,6 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import { Card } from '@mui/material';
@@ -31,31 +30,6 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
-
-const PREFIX = 'RateLimitingCard';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    title: `${PREFIX}-title`,
-    pos: `${PREFIX}-pos`,
-};
-
-const StyledCard = styled(Card)(() => ({
-    [`&.${classes.root}`]: {
-        minWidth: 275,
-        minHeight: 270,
-        textAlign: 'center',
-    },
-
-    [`& .${classes.title}`]: {
-        fontSize: 20,
-        fontWeight: 'fontWeightBold',
-    },
-
-    [`& .${classes.pos}`]: {
-        marginBottom: 12,
-    },
-}));
 
 /**
  * Render progress inside a container centering in the container.
@@ -122,9 +96,9 @@ export default function RateLimitingCard() {
     }
 
     return (
-        <StyledCard className={classes.root} style={{ textAlign: 'left' }}>
+        <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'left' }}>
             <CardContent>
-                <Typography className={classes.title} gutterBottom>
+                <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                     <FormattedMessage
                         id='Dashboard.rateLimiting.card.title'
                         defaultMessage='Rate Limiting'
@@ -143,7 +117,7 @@ export default function RateLimitingCard() {
                                     <Link component={RouterLink} to={policy.path} color='inherit' underline='hover'>
                                         <Typography
                                             variant='body1'
-                                            style={{ fontWeight: 'bold' }}
+                                            sx={{ fontWeight: 'bold' }}
                                         >
                                             {policy.name}
                                         </Typography>
@@ -157,6 +131,6 @@ export default function RateLimitingCard() {
                     })}
                 </Box>
             </CardContent>
-        </StyledCard>
+        </Card>
     );
 }

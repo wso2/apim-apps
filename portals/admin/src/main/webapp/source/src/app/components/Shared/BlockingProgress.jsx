@@ -3,27 +3,19 @@ import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Progress from 'AppComponents/Shared/Progress';
 
-const PREFIX = 'BlockingProgress';
-
-const classes = {
-    root: `${PREFIX}-root`,
-};
-
 const Root = styled('div')(() => ({
-    [`&.${classes.root}`]: {
-        position: 'fixed',
-        background: '#000',
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%',
-        opacity: 0.6,
-        zIndex: 2,
-        '& .apim-dual-ring span': {
-            color: '#fff',
-            marginLeft: 0,
-            paddingBottom: 10,
-        },
+    position: 'fixed',
+    background: '#000',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.6,
+    zIndex: 2,
+    '& .apim-dual-ring span': {
+        color: '#fff',
+        marginLeft: 0,
+        paddingBottom: 10,
     },
 }));
 
@@ -33,7 +25,7 @@ const Root = styled('div')(() => ({
  */
 function BlockingProgress({ message }) {
     return (
-        <Root className={classes.root}>
+        <Root>
             <Progress message={message} />
         </Root>
     );

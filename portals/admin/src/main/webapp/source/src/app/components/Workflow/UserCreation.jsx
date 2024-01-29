@@ -18,7 +18,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -55,41 +54,6 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Alert as MUIAlert } from '@mui/material';
-
-const PREFIX = 'ListLabels';
-
-const classes = {
-    searchInput: `${PREFIX}-searchInput`,
-    block: `${PREFIX}-block`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    approveButton: `${PREFIX}-approveButton`,
-    rejectButton: `${PREFIX}-rejectButton`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
-    [`& .${classes.searchInput}`]: {
-        fontSize: theme.typography.fontSize,
-    },
-
-    [`& .${classes.block}`]: {
-        display: 'block',
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        margin: theme.spacing(2),
-    },
-
-    [`& .${classes.approveButton}`]: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.success.light,
-    },
-
-    [`& .${classes.rejectButton}`]: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.error.light,
-    },
-}));
 
 /**
  * Render a list
@@ -307,7 +271,7 @@ function ListLabels() {
                         <div>
                             <Box component='span' m={1}>
                                 <Button
-                                    className={classes.approveButton}
+                                    color='success'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'APPROVED')}
@@ -322,7 +286,7 @@ function ListLabels() {
                                 </Button>
                                 &nbsp;&nbsp;
                                 <Button
-                                    className={classes.rejectButton}
+                                    color='error'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'REJECTED')}
@@ -384,7 +348,7 @@ function ListLabels() {
                 {...pageProps}
                 pageStyle='small'
             >
-                <Card className={classes.root}>
+                <Card>
                     <CardContent>
                         <Typography gutterBottom variant='h5' component='h2'>
                             <FormattedMessage
@@ -449,15 +413,15 @@ function ListLabels() {
         );
     }
     return (
-        <Root>
+        <>
             <ContentBase {...pageProps}>
                 {(searchActive || addButtonProps) && (
-                    <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+                    <AppBar position='static' color='default' elevation={0}>
                         <Toolbar>
                             <Grid container spacing={2} alignItems='center'>
 
                                 <Grid item>
-                                    {searchActive && (<SearchIcon className={classes.block} color='inherit' />)}
+                                    {searchActive && (<SearchIcon color='inherit' />)}
                                 </Grid>
                                 <Grid item xs>
                                     {searchActive && (
@@ -465,9 +429,14 @@ function ListLabels() {
                                             variant='standard'
                                             fullWidth
                                             placeholder={searchPlaceholder}
+                                            sx={(theme) => ({
+                                                '& .search-input': {
+                                                    fontSize: theme.typography.fontSize,
+                                                },
+                                            })}
                                             InputProps={{
                                                 disableUnderline: true,
-                                                className: classes.searchInput,
+                                                className: 'search-input',
                                             }}
                                             onChange={filterData}
                                         />
@@ -489,7 +458,7 @@ function ListLabels() {
                                     )}
                                     >
                                         <IconButton onClick={fetchData} size='large'>
-                                            <RefreshIcon className={classes.block} color='inherit' />
+                                            <RefreshIcon color='inherit' />
                                         </IconButton>
                                     </Tooltip>
                                 </Grid>
@@ -506,14 +475,14 @@ function ListLabels() {
                     />
                 )}
                 {data && data.length === 0 && (
-                    <div className={classes.contentWrapper}>
+                    <div>
                         <Typography color='textSecondary' align='center'>
                             {noDataMessage}
                         </Typography>
                     </div>
                 )}
             </ContentBase>
-        </Root>
+        </>
     );
 }
 

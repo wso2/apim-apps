@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,33 +13,6 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ClearIcon from '@mui/icons-material/Clear';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage } from 'react-intl';
-
-const PREFIX = 'ClaimMapping';
-
-const classes = {
-    mandatoryStar: `${PREFIX}-mandatoryStar`,
-    table: `${PREFIX}-table`,
-    acitonColumn: `${PREFIX}-acitonColumn`,
-};
-
-const StyledBox = styled(Box)(({ theme }) => ({
-    [`& .${classes.mandatoryStar}`]: {
-        color: theme.palette.error.main,
-        marginLeft: theme.spacing(0.1),
-    },
-
-    [`& .${classes.table}`]: {
-        margin: 10,
-        '& tr td, & tr th': {
-            padding: 5,
-            margin: 0,
-        },
-    },
-
-    [`& .${classes.acitonColumn}`]: {
-        width: 50,
-    },
-}));
 
 /**
  * Claim Mapping Creation Form
@@ -114,17 +86,26 @@ export default function ClaimMappings(props) {
         setClaimMapping(newMapping);
     };
     return (
-        <StyledBox mt={2}>
-            <Table className={classes.table} aria-label='simple table'>
+        <Box mt={2}>
+            <Table
+                sx={{
+                    margin: 0.5,
+                    '& tr td, & tr th': {
+                        padding: 0.5,
+                        margin: 0,
+                    },
+                }}
+                aria-label='simple table'
+            >
                 <TableHead>
                     <TableRow>
                         <TableCell>
                             <FormattedMessage id='Keymanager.Remote.Claim' defaultMessage='Remote Claim' />
                         </TableCell>
-                        <TableCell align='right'>
+                        <TableCell align='left'>
                             <FormattedMessage id='Keymanager.Local.Claim' defaultMessage='Local Claim' />
                         </TableCell>
-                        <TableCell align='right' className={classes.acitonColumn}>
+                        <TableCell align='right' sx={{ width: 50 }}>
                             <FormattedMessage id='Keymanager.Claim.Action' defaultMessage='Action' />
                         </TableCell>
                     </TableRow>
@@ -227,7 +208,7 @@ export default function ClaimMappings(props) {
                     ))}
                 </TableBody>
             </Table>
-        </StyledBox>
+        </Box>
     );
 }
 

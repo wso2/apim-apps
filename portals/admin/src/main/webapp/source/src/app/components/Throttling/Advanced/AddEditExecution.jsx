@@ -16,7 +16,6 @@
  * under the License.
  */
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
@@ -28,44 +27,6 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormLabel from '@mui/material/FormLabel';
-
-const PREFIX = 'AddEditExecution';
-
-const classes = {
-    formTitle: `${PREFIX}-formTitle`,
-    radioGroup: `${PREFIX}-radioGroup`,
-    slectRoot: `${PREFIX}-slectRoot`,
-    formControlSelect: `${PREFIX}-formControlSelect`,
-    defaultLimitLabel: `${PREFIX}-defaultLimitLabel`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
-    [`& .${classes.formTitle}`]: {
-        paddingBottom: theme.spacing(4),
-    },
-
-    [`& .${classes.radioGroup}`]: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-    [`& .${classes.slectRoot}`]: {
-        padding: '11.5px 14px',
-        width: 100,
-    },
-
-    [`& .${classes.formControlSelect}`]: {
-        paddingTop: 7,
-        paddingLeft: 5,
-    },
-
-    [`& .${classes.defaultLimitLabel}`]: {
-        marginLeft: theme.spacing(1),
-    },
-}));
 
 /**
  * Render the execution polcy section and default limits.
@@ -147,9 +108,9 @@ function AddEditExecution(props) {
         updateGroup();
     };
     return (
-        <Root>
+        <>
             <Box display='flex' flexDirection='row' alignItems='center'>
-                <Box flex='1' className={classes.defaultLimitLabel}>
+                <Box flex='1' sx={{ ml: 1 }}>
                     <FormLabel component='legend'>
                         <FormattedMessage
                             id='Throttling.Advanced.AddEditExecution.default.limit.option'
@@ -162,7 +123,12 @@ function AddEditExecution(props) {
                     name='defaultLimit'
                     value={limitOption}
                     onChange={update}
-                    className={classes.radioGroup}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
                 >
                     <FormControlLabel
                         value='REQUESTCOUNTLIMIT'
@@ -211,7 +177,7 @@ function AddEditExecution(props) {
                                     defaultMessage='Data Bandwidth'
                                 />
                             )}
-                            fullWidth
+                            sx={{ width: 350, mr: 1 }}
                             error={hasErrors('dataAmount', bandwidth.dataAmount, validating)}
                             helperText={hasErrors('dataAmount', bandwidth.dataAmount, validating)
                             || intl.formatMessage({
@@ -220,13 +186,13 @@ function AddEditExecution(props) {
                             })}
                             variant='outlined'
                         />
-                        <FormControl variant='outlined' className={classes.formControlSelect}>
+                        <FormControl variant='outlined' sx={{ pt: 1, pl: 0.5 }}>
                             <Select
-                                variant='standard'
+                                variant='outlined'
                                 name='dataUnit'
                                 value={bandwidth.dataUnit}
                                 onChange={update}
-                                classes={{ root: classes.slectRoot }}
+                                sx={{ width: 120 }}
                             >
                                 <MenuItem value='KB'>KB</MenuItem>
                                 <MenuItem value='MB'>MB</MenuItem>
@@ -247,7 +213,7 @@ function AddEditExecution(props) {
                                 defaultMessage='Unit Time'
                             />
                         )}
-                        fullWidth
+                        sx={{ width: 350, mr: 1 }}
                         error={hasErrors('unitTime', unitTime, validating)}
                         helperText={hasErrors('unitTime', unitTime, validating) || intl.formatMessage({
                             id: 'Throttling.Advanced.AddEdit.form.unit.time.help',
@@ -255,13 +221,13 @@ function AddEditExecution(props) {
                         })}
                         variant='outlined'
                     />
-                    <FormControl variant='outlined' className={classes.formControlSelect}>
+                    <FormControl variant='outlined' sx={{ pt: 1, pl: 0.5 }}>
                         <Select
-                            variant='standard'
+                            variant='outlined'
                             name='timeUnit'
                             value={timeUnit}
                             onChange={update}
-                            classes={{ root: classes.slectRoot }}
+                            sx={{ width: 120 }}
                         >
                             <MenuItem value='min'>
                                 <FormattedMessage
@@ -291,7 +257,7 @@ function AddEditExecution(props) {
                     </FormControl>
                 </Box>
             </Box>
-        </Root>
+        </>
     );
 }
 AddEditExecution.defaultProps = {
@@ -304,7 +270,6 @@ AddEditExecution.propTypes = {
     hasErrors: PropTypes.func.isRequired,
     limit: PropTypes.shape({}),
     validating: PropTypes.bool,
-    classes: PropTypes.shape({}).isRequired,
     match: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({}).isRequired,
 };

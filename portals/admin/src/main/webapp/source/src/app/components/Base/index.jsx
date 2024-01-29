@@ -24,44 +24,16 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { Toaster } from 'react-hot-toast';
 
-const drawerWidth = 256;
+const StyledDiv = styled('div')({});
 
-const PREFIX = 'index';
+const StyledNav = styled('nav')({});
 
-const classes = {
-    root: `${PREFIX}-root`,
-    drawer: `${PREFIX}-drawer`,
-    app: `${PREFIX}-app`,
-    footer: `${PREFIX}-footer`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
-    [`& .${classes.root}`]: {
-        display: 'flex',
-        minHeight: '100vh',
-    },
-
-    [`& .${classes.drawer}`]: {
-        [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
-    },
-
-    [`& .${classes.app}`]: {
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-    },
-
-    [`& .${classes.footer}`]: {
-        padding: theme.spacing(2),
-        background: '#eaeff1',
-        position: 'relative',
-        bottom: 0,
-    },
-}));
+const StyledFooter = styled('footer')({
+    padding: 2,
+    background: '#eaeff1',
+    position: 'relative',
+    bottom: 0,
+});
 
 /**
  * Render copyright
@@ -69,7 +41,7 @@ const Root = styled('div')(({ theme }) => ({
  */
 function Copyright() {
     return (
-        <Typography variant='body2' color='textSecondary' align='center'>
+        <Typography variant='body2' color='textSecondary' align='center' sx={{ p: '16px' }}>
             <FormattedMessage
                 id='Base.Footer.Footer.product_details'
                 defaultMessage='WSO2 API-M v4.3.0 | © 2024 WSO2 LLC'
@@ -89,7 +61,7 @@ function Base(props) {
     } = props;
     const theme = useTheme();
     return (
-        <Root>
+        <>
             <Toaster
                 position='bottom-right'
                 gutter={8}
@@ -129,20 +101,34 @@ function Base(props) {
                     },
                 }}
             />
-            <div className={classes.root}>
+            <StyledDiv sx={{ display: 'flex', minHeight: '100vh' }}>
                 <CssBaseline />
-                <nav className={classes.drawer} aria-label='admin-portal-navbar'>
+                <StyledNav
+                    sx={(thm) => ({
+                        [thm.breakpoints.up('sm')]: {
+                            width: 256,
+                            flexShrink: 0,
+                        },
+                    })}
+                    aria-label='admin-portal-navbar'
+                >
                     {leftMenu}
-                </nav>
-                <div className={classes.app}>
+                </StyledNav>
+                <StyledDiv
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     {header}
                     {children}
-                    <footer className={classes.footer}>
+                    <StyledFooter>
                         <Copyright />
-                    </footer>
-                </div>
-            </div>
-        </Root>
+                    </StyledFooter>
+                </StyledDiv>
+            </StyledDiv>
+        </>
     );
 }
 

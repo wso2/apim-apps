@@ -17,7 +17,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import { Card } from '@mui/material';
@@ -31,34 +30,6 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
 import Configurations from 'Config';
-
-const PREFIX = 'APICategoriesCard';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    title: `${PREFIX}-title`,
-    cardText: `${PREFIX}-cardText`,
-};
-
-const StyledCard = styled(Card)(() => ({
-    [`& .${classes.root}`]: {
-        minWidth: 275,
-        minHeight: 270,
-        textAlign: 'center',
-
-    },
-
-    [`& .${classes.title}`]: {
-        fontSize: 20,
-        fontWeight: 'fontWeightBold',
-    },
-
-    [`& .${classes.cardText}`]: {
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-}));
 
 /**
  * Render progress inside a container centering in the container.
@@ -84,14 +55,14 @@ export default function APICategoriesCard() {
     }, []);
 
     const noApiCategoriesCard = (
-        <StyledCard className={classes.root}>
+        <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'center' }}>
             <CardContent>
 
                 <Box>
                     <CategoryIcon color='secondary' style={{ fontSize: 60 }} />
                 </Box>
 
-                <Typography className={classes.title} gutterBottom>
+                <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                     <FormattedMessage
                         id='Dashboard.apiCategories.noApiCategories.card.title'
                         defaultMessage='API Category based grouping'
@@ -142,16 +113,16 @@ export default function APICategoriesCard() {
                     </Button>
                 </Box>
             </CardContent>
-        </StyledCard>
+        </Card>
     );
 
     const apiCategoriesListingCard = () => {
         return (
-            <StyledCard className={classes.root} style={{ textAlign: 'left' }}>
+            <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'center' }} style={{ textAlign: 'left' }}>
                 <CardContent>
                     <Box display='flex'>
                         <Box flexGrow={1}>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 <FormattedMessage
                                     id='Dashboard.apiCategories.apiCategoriesListing.card.title'
                                     defaultMessage='API Categories'
@@ -159,7 +130,7 @@ export default function APICategoriesCard() {
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 {numberOfCategories}
                             </Typography>
                         </Box>
@@ -172,10 +143,16 @@ export default function APICategoriesCard() {
                             return (
                                 <Box display='flex' alignItems='center' key={category.name}>
                                     <Box width={50} flexGrow={1} mt={0.5}>
-                                        <Typography className={classes.cardText} variant='subtitle2'>
+                                        <Typography
+                                            sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                                            variant='subtitle2'
+                                        >
                                             {category.name}
                                         </Typography>
-                                        <Typography className={classes.cardText} variant='body2'>
+                                        <Typography
+                                            sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                                            variant='body2'
+                                        >
                                             {category.description || (
                                                 <FormattedMessage
                                                     id='Dashboard.apiCategories.apiCategoriesListing.no.description'
@@ -214,7 +191,7 @@ export default function APICategoriesCard() {
                         </Button>
                     </Box>
                 </Box>
-            </StyledCard>
+            </Card>
         );
     };
 

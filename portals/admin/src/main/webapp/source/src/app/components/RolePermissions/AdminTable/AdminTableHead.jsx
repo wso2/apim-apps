@@ -26,30 +26,17 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { useTableContext } from './AdminTableContext';
 
-const PREFIX = 'AdminTableHead';
-
-const classes = {
-    visuallyHidden: `${PREFIX}-visuallyHidden`,
-    tableHead: `${PREFIX}-tableHead`,
-};
-
-const StyledTableHead = styled(TableHead)(() => ({
-    [`& .${classes.visuallyHidden}`]: {
-        border: 0,
-        clip: 'rect(0 0 0 0)',
-        height: 1,
-        margin: -1,
-        overflow: 'hidden',
-        padding: 0,
-        position: 'absolute',
-        top: 20,
-        width: 1,
-    },
-
-    [`& .${classes.tableHead}`]: {
-        fontWeight: 800,
-    },
-}));
+const StyledSpan = styled('span')({
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+});
 
 /**
  *
@@ -70,7 +57,7 @@ function AdminTableHead(props) {
     };
 
     return (
-        <StyledTableHead>
+        <TableHead>
             <TableRow>
                 {multiSelect && (
                     <TableCell padding='checkbox'>
@@ -89,7 +76,7 @@ function AdminTableHead(props) {
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                         variant='head'
-                        classes={{ head: classes.tableHead }}
+                        sx={{ fontWeight: 800 }}
                     >
                         {headCell.enableSort ? (
                             <TableSortLabel
@@ -99,16 +86,16 @@ function AdminTableHead(props) {
                             >
                                 {headCell.label}
                                 {orderBy === headCell.id ? (
-                                    <span className={classes.visuallyHidden}>
+                                    <StyledSpan>
                                         {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                    </span>
+                                    </StyledSpan>
                                 ) : null}
                             </TableSortLabel>
                         ) : headCell.label}
                     </TableCell>
                 ))}
             </TableRow>
-        </StyledTableHead>
+        </TableHead>
     );
 }
 

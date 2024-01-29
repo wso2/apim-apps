@@ -33,39 +33,7 @@ import cloneDeep from 'lodash.clonedeep';
 import InputLabel from '@mui/material/InputLabel';
 import CreateIcon from '@mui/icons-material/Create';
 
-const PREFIX = 'AddEditConditionPolicyIP';
-
-const classes = {
-    error: `${PREFIX}-error`,
-    formControlSelect: `${PREFIX}-formControlSelect`,
-    outlined: `${PREFIX}-outlined`,
-    labelRoot: `${PREFIX}-labelRoot`,
-    textFieldLeft: `${PREFIX}-textFieldLeft`,
-};
-
-const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-
-    [`& .${classes.formControlSelect}`]: {
-        width: '100%',
-        marginBottom: theme.spacing(1),
-    },
-
-    [`& .${classes.outlined}`]: {
-        padding: '11.5px 14px',
-    },
-
-    [`& .${classes.labelRoot}`]: {
-        position: 'relative',
-        marginTop: theme.spacing(1.5),
-    },
-
-    [`& .${classes.textFieldLeft}`]: {
-        paddingRight: 10,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * validate ip address
@@ -265,7 +233,7 @@ function AddEditConditionPolicyIP(props) {
         return false;
     };
     return (
-        <StyledFormDialogBase
+        <FormDialogBase
             title={item
                 ? intl.formatMessage({
                     id: 'Throttling.Advanced.AddEditConditionPolicyIP.dialog.tilte.add.new',
@@ -285,7 +253,7 @@ function AddEditConditionPolicyIP(props) {
             })}
             icon={item ? <CreateIcon /> : null}
             triggerButtonProps={{
-                color: 'default',
+                color: 'primary',
                 variant: 'contained',
                 size: 'small',
                 disabled,
@@ -295,13 +263,13 @@ function AddEditConditionPolicyIP(props) {
             <DialogContentText>
                 {description}
             </DialogContentText>
-            <FormControl variant='outlined' className={classes.formControlSelect}>
+            <FormControl variant='outlined' sx={{ width: '100%', mb: 1 }}>
                 <Select
                     variant='standard'
                     name='ipConditionType'
                     value={ipConditionType}
                     onChange={onChange}
-                    classes={{ outlined: classes.outlined }}
+                    sx={{ padding: '11.5px 14px' }}
                 >
                     <MenuItem value='IPSPECIFIC'>
                         <FormattedMessage
@@ -316,7 +284,7 @@ function AddEditConditionPolicyIP(props) {
                         />
                     </MenuItem>
                 </Select>
-                <InputLabel classes={{ root: classes.labelRoot }}>
+                <InputLabel sx={{ position: 'relative', mt: 1.5 }}>
                     <FormattedMessage
                         id='Throttling.Advanced.AddEditConditionPolicyIP.ip.condition.type'
                         defaultMessage='IP Condition Type'
@@ -336,7 +304,7 @@ function AddEditConditionPolicyIP(props) {
                                     id='Throttling.Advanced.AddEditConditionPolicyIP.form.specific.ip'
                                     defaultMessage='Specific IP'
                                 />
-                                <span className={classes.error}>*</span>
+                                <StyledSpan>*</StyledSpan>
                             </span>
                         )}
                         fullWidth
@@ -351,7 +319,7 @@ function AddEditConditionPolicyIP(props) {
             ) : (
                 <Box display='flex' flexDirection='row'>
                     <TextField
-                        className={classes.textFieldLeft}
+                        sx={{ pr: 10 }}
                         margin='dense'
                         name='startingIP'
                         value={startingIP || ''}
@@ -362,7 +330,7 @@ function AddEditConditionPolicyIP(props) {
                                     id='Throttling.Advanced.AddEditConditionPolicyIP.form.start.ip'
                                     defaultMessage='Start IP'
                                 />
-                                <span className={classes.error}>*</span>
+                                <StyledSpan>*</StyledSpan>
                             </span>
                         )}
                         fullWidth
@@ -384,7 +352,7 @@ function AddEditConditionPolicyIP(props) {
                                     id='Throttling.Advanced.AddEditConditionPolicyIP.form.end.ip'
                                     defaultMessage='End IP'
                                 />
-                                <span className={classes.error}>*</span>
+                                <StyledSpan>*</StyledSpan>
                             </span>
                         )}
                         fullWidth
@@ -397,7 +365,7 @@ function AddEditConditionPolicyIP(props) {
                     />
                 </Box>
             )}
-        </StyledFormDialogBase>
+        </FormDialogBase>
     );
 }
 AddEditConditionPolicyIP.propTypes = {

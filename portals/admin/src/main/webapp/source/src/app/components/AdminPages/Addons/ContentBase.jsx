@@ -23,28 +23,11 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import clsx from 'clsx';
 
-const PREFIX = 'ContentBase';
-
-const classes = {
-    pageTitle: `${PREFIX}-pageTitle`,
-    root: `${PREFIX}-root`,
-};
-
-const Root = styled('div')(() => {
-    const minHeight = 43;
-    return {
-        [`& .${classes.pageTitle}`]: {
-            minHeight,
-            backgroundColor: '#f6f6f6',
-        },
-        [`&.${classes.root}`]: {
-            flexGrow: 1,
-            minHeight: `calc(100vh - (${minHeight + 57}px))`,
-            backgroundColor: '#eaeff1',
-        },
-    };
+const Root = styled('div')({
+    flexGrow: 1,
+    minHeight: `calc(100vh - (${43 + 57}px))`,
+    backgroundColor: '#eaeff1',
 });
 
 /**
@@ -60,7 +43,7 @@ const Root = styled('div')(() => {
  */
 function ContentBase(props) {
     const {
-        title, pageDescription, children, help, width, pageStyle, PaperProps, classes: classesProp, paperLess,
+        title, pageDescription, children, help, width, pageStyle, PaperProps, paperLess,
     } = props;
     let size = 8;// default half/medium
     if ([width, pageStyle].includes('small')) {
@@ -69,7 +52,7 @@ function ContentBase(props) {
         size = 11;
     }
     return (
-        <Root className={clsx(classesProp.root, classes.root)}>
+        <Root>
             <Grid
                 container
                 direction='row'
@@ -77,7 +60,7 @@ function ContentBase(props) {
                 alignItems='flex-start'
             >
                 <Grid item xs={12}>
-                    <Toolbar className={clsx(classesProp.pageTitle, classes.pageTitle)}>
+                    <Toolbar sx={{ minHeight: 43, backgroundColor: '#f6f6f6' }}>
                         <Grid container alignItems='center' spacing={1}>
                             <Grid item xs>
                                 <Typography color='inherit' variant='h5' component='h1'>
@@ -116,7 +99,6 @@ function ContentBase(props) {
 ContentBase.defaultProps = {
     width: 'medium',
     PaperProps: {},
-    classes: {},
     pageStyle: 'half',
     paperLess: false,
     pageDescription: null,
@@ -133,7 +115,6 @@ ContentBase.propTypes = {
    * Override or extend the styles applied to the component.
    * See [CSS API](#css) below for more details.
    */
-    classes: PropTypes.shape({ root: PropTypes.string }),
     paperLess: PropTypes.bool,
 };
 

@@ -25,17 +25,7 @@ import { FormattedMessage } from 'react-intl';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
 
-const PREFIX = 'AddEdit';
-
-const classes = {
-    error: `${PREFIX}-error`,
-};
-
-const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Reducer
@@ -184,7 +174,7 @@ function AddEdit(props) {
         }
     };
     return (
-        <StyledFormDialogBase
+        <FormDialogBase
             title={title}
             saveButtonText='Save'
             icon={icon}
@@ -201,7 +191,7 @@ function AddEdit(props) {
                 label={(
                     <span>
                         <FormattedMessage id='AdminPages.ApiCategories.AddEdit.form.name' defaultMessage='Name' />
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth
@@ -222,7 +212,7 @@ function AddEdit(props) {
                 helperText={hasErrors('description', description) || 'Description of the API category'}
                 variant='outlined'
             />
-        </StyledFormDialogBase>
+        </FormDialogBase>
     );
 }
 

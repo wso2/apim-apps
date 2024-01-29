@@ -14,22 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import CustomInputField from 'AppComponents/KeyManagers/CustomInputField';
 
-const PREFIX = 'KeyManagerConfiguration';
-
-const classes = {
-    inputLabel: `${PREFIX}-inputLabel`,
-    error: `${PREFIX}-error`,
-};
-
-const StyledBox = styled(Box)(({ theme }) => ({
-    [`& .${classes.inputLabel}`]: {
-        transform: 'translate(14px, 11px) scale(1)',
-    },
-
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * @export
@@ -79,9 +64,9 @@ export default function KeyManagerConfiguration(props) {
             if (keymanagerConnectorConfiguration.mask) {
                 return (
                     <FormControl variant='outlined' fullWidth>
-                        <InputLabel className={classes.inputLabel}>
+                        <InputLabel>
                             {keymanagerConnectorConfiguration.label}
-                            {keymanagerConnectorConfiguration.required && (<span className={classes.error}>*</span>)}
+                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
                         </InputLabel>
                         <CustomInputField
                             value={value}
@@ -105,7 +90,7 @@ export default function KeyManagerConfiguration(props) {
                     label={(
                         <span>
                             {keymanagerConnectorConfiguration.label}
-                            {keymanagerConnectorConfiguration.required && (<span className={classes.error}>*</span>)}
+                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
                         </span>
                     )}
                     fullWidth
@@ -196,9 +181,9 @@ export default function KeyManagerConfiguration(props) {
     };
     return (
         keymanagerConnectorConfigurations.map((keymanagerConnectorConfiguration) => (
-            <StyledBox mb={3}>
+            <Box mb={3}>
                 {getComponent(keymanagerConnectorConfiguration, hasErrors, validating)}
-            </StyledBox>
+            </Box>
         )));
 }
 KeyManagerConfiguration.defaultProps = {

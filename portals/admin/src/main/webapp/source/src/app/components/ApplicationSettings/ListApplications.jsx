@@ -17,7 +17,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
@@ -41,35 +40,6 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
-
-const PREFIX = 'ListApplications';
-
-const classes = {
-    searchBar: `${PREFIX}-searchBar`,
-    block: `${PREFIX}-block`,
-    clearSearch: `${PREFIX}-clearSearch`,
-    addUser: `${PREFIX}-addUser`,
-};
-
-const StyledContentBase = styled(ContentBase)(({ theme }) => ({
-    [`& .${classes.searchBar}`]: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-
-    [`& .${classes.block}`]: {
-        display: 'block',
-    },
-
-    [`& .${classes.clearSearch}`]: {
-        position: 'absolute',
-        right: 111,
-        top: 13,
-    },
-
-    [`& .${classes.addUser}`]: {
-        marginRight: theme.spacing(1),
-    },
-}));
 
 export default function ListApplications() {
     const intl = useIntl();
@@ -160,13 +130,18 @@ export default function ListApplications() {
     }
 
     return (
-        <StyledContentBase>
-            <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+        <ContentBase>
+            <AppBar
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+                position='static'
+                color='default'
+                elevation={0}
+            >
                 <Toolbar>
                     <form onSubmit={filterApps} style={{ width: '100%' }} disabled={loading}>
                         <Grid container spacing={2} alignItems='center'>
                             <Grid item>
-                                <SearchIcon className={classes.block} color='inherit' />
+                                <SearchIcon sx={{ display: 'block' }} color='inherit' />
                             </Grid>
                             <Grid item xs>
                                 <TextField
@@ -183,7 +158,6 @@ export default function ListApplications() {
                                     })}
                                     InputProps={{
                                         disableUnderline: true,
-                                        className: classes.searchInput,
                                     }}
                                     value={owner}
                                     // onKeyPress={this.handleSearchKeyPress}
@@ -201,7 +175,11 @@ export default function ListApplications() {
                                     >
                                         <IconButton
                                             aria-label='delete'
-                                            className={classes.clearSearch}
+                                            sx={{
+                                                position: 'absolute',
+                                                right: 111,
+                                                top: 13,
+                                            }}
                                             onClick={clearSearch}
                                             size='large'
                                         >
@@ -213,7 +191,7 @@ export default function ListApplications() {
                             <Grid item>
                                 <Button
                                     variant='contained'
-                                    className={classes.addUser}
+                                    sx={{ mr: 1 }}
                                     type='submit'
                                     disabled={loading}
                                 >
@@ -285,6 +263,6 @@ export default function ListApplications() {
                     </Alert>
                 </Box>
             )}
-        </StyledContentBase>
+        </ContentBase>
     );
 }

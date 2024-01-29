@@ -16,7 +16,6 @@
  * under the License.
  */
 import React, { useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -32,34 +31,6 @@ import cloneDeep from 'lodash.clonedeep';
 import PermissionAPI from 'AppData/PermissionScopes';
 import AddItem from './AddItem';
 import SelectPermissionsStep from './SelectPermissionsStep';
-
-const PREFIX = 'AddRoleWizard';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    button: `${PREFIX}-button`,
-    actionsContainer: `${PREFIX}-actionsContainer`,
-    resetContainer: `${PREFIX}-resetContainer`,
-};
-
-const StyledAddItem = styled(AddItem)(({ theme }) => ({
-    [`& .${classes.root}`]: {
-        width: '100%',
-    },
-
-    [`& .${classes.button}`]: {
-        marginTop: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.actionsContainer}`]: {
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.resetContainer}`]: {
-        padding: theme.spacing(3),
-    },
-}));
 
 const { ROLE_ALIAS, SELECT_PERMISSIONS } = SelectPermissionsStep.CONST;
 
@@ -194,7 +165,7 @@ export default function AddRoleWizard(props) {
     };
 
     return (
-        <StyledAddItem
+        <AddItem
             onSave={onAddRole}
             onClose={onClose}
             title={(
@@ -211,11 +182,12 @@ export default function AddRoleWizard(props) {
             )}
             dialogProps={{ disableBackdropClick: isSaving, maxWidth: 'md' }}
             dialogActions={(
-                <div className={classes.actionsContainer}>
+                <div style={{ marginBottom: '1rem' }}>
                     <div>
                         <Button
+                            variant='outlined'
                             onClick={activeStep === 0 ? onClose : handleBack}
-                            className={classes.button}
+                            sx={{ mt: 1, mr: 1 }}
                             disabled={isSaving}
                         >
                             {activeStep === 0 ? 'Cancel' : 'Back'}
@@ -225,7 +197,7 @@ export default function AddRoleWizard(props) {
                             disabled={isSaving}
                             color='primary'
                             onClick={activeStep === 1 ? onAddRole : handleNext}
-                            className={classes.button}
+                            sx={{ mt: 1, mr: 1 }}
                         >
                             {activeStep === 1 ? (
                                 <>
@@ -238,7 +210,7 @@ export default function AddRoleWizard(props) {
                 </div>
             )}
         >
-            <div className={classes.root}>
+            <div style={{ width: '100%' }}>
                 <Stepper activeStep={activeStep} orientation='vertical'>
                     {['Provide role name', 'Select permissions'].map((label, index) => (
                         <Step key={label}>
@@ -302,6 +274,6 @@ export default function AddRoleWizard(props) {
                     ))}
                 </Stepper>
             </div>
-        </StyledAddItem>
+        </AddItem>
     );
 }

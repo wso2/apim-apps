@@ -17,7 +17,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import { Card } from '@mui/material';
@@ -34,47 +33,6 @@ import PermMediaOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActual';
 import PublicIcon from '@mui/icons-material/Public';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 import Api from 'AppData/api';
-
-const PREFIX = 'TasksWorkflowCard';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    title: `${PREFIX}-title`,
-    avatar: `${PREFIX}-avatar`,
-    approveButton: `${PREFIX}-approveButton`,
-    rejectButton: `${PREFIX}-rejectButton`,
-};
-
-const StyledCard = styled(Card)(({ theme }) => ({
-    [`&.${classes.root}`]: {
-        minWidth: 275,
-        minHeight: 270,
-        textAlign: 'center',
-
-    },
-
-    [`& .${classes.title}`]: {
-        fontSize: 20,
-        fontWeight: 'fontWeightBold',
-    },
-
-    [`& .${classes.avatar}`]: {
-        width: theme.spacing(4),
-        height: theme.spacing(4),
-    },
-
-    [`& .${classes.approveButton}`]: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.success.light,
-        margin: theme.spacing(0.5),
-    },
-
-    [`& .${classes.rejectButton}`]: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.error.light,
-        margin: theme.spacing(0.5),
-    },
-}));
 
 /**
  * Render progress inside a container centering in the container.
@@ -150,13 +108,13 @@ export default function TasksWorkflowCard() {
     // Component to be displayed when there's no task available
     // Note: When workflow is not enabled, this will be displayed
     const noTasksCard = (
-        <StyledCard className={classes.root}>
+        <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'center' }}>
             <CardContent>
                 <Box mt={2}>
                     <DeviceHubIcon color='secondary' style={{ fontSize: 60 }} />
                 </Box>
 
-                <Typography className={classes.title} gutterBottom>
+                <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                     <FormattedMessage
                         id='Dashboard.tasksWorkflow.noTasks.card.title'
                         defaultMessage='All the pending tasks completed'
@@ -172,7 +130,7 @@ export default function TasksWorkflowCard() {
                     />
                 </Typography>
             </CardContent>
-        </StyledCard>
+        </Card>
     );
 
     // Compact task card component's individual category component
@@ -180,7 +138,7 @@ export default function TasksWorkflowCard() {
         return (
             <Box alignItems='center' display='flex' width='50%' my='1%'>
                 <Box mx={1}>
-                    <Avatar className={classes.avatar}>
+                    <Avatar>
                         <IconComponent fontSize='inherit' />
                     </Avatar>
                 </Box>
@@ -306,11 +264,11 @@ export default function TasksWorkflowCard() {
             },
         ];
         return (
-            <StyledCard className={classes.root} style={{ textAlign: 'left' }}>
+            <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'left' }}>
                 <CardContent>
                     <Box display='flex'>
                         <Box flexGrow={1}>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 <FormattedMessage
                                     id='Dashboard.tasksWorkflow.compactTasks.card.title'
                                     defaultMessage='Pending tasks'
@@ -318,7 +276,7 @@ export default function TasksWorkflowCard() {
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 {getAllTaskCount()}
                             </Typography>
                         </Box>
@@ -338,7 +296,7 @@ export default function TasksWorkflowCard() {
                         })}
                     </Box>
                 </CardContent>
-            </StyledCard>
+            </Card>
         );
     };
 

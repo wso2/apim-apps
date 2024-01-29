@@ -22,18 +22,9 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
-const PREFIX = 'ErrorList';
-
-const classes = {
-    errorIcon: `${PREFIX}-errorIcon`,
-};
-
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
-const Root = styled('div')(({ theme }) => ({
-    [`& .${classes.errorIcon}`]: {
-        marginBottom: theme.spacing(-1),
-        marginRight: theme.spacing(1),
-    },
+const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)(({ theme }) => ({
+    marginBottom: theme.spacing(-1),
+    marginRight: theme.spacing(1),
 }));
 
 const ErrorList = (props) => {
@@ -42,9 +33,9 @@ const ErrorList = (props) => {
     switch (errorCode) {
         case '500':
             return (
-                <Root>
+                <>
                     <Typography variant='h5' gutterBottom>
-                        <ErrorOutlineIcon fontSize='large' color='error' className={classes.errorIcon} />
+                        <StyledErrorOutlineIcon fontSize='large' color='error' />
                         <FormattedMessage
                             id='error.list.500'
                             defaultMessage='500 : The page cannot be displayed.'
@@ -57,13 +48,13 @@ const ErrorList = (props) => {
                             + ' was unable to complete your request.'}
                         />
                     </Typography>
-                </Root>
+                </>
             );
         case '401':
             return (
-                <Root>
+                <>
                     <Typography variant='h5' gutterBottom>
-                        <ErrorOutlineIcon fontSize='large' color='error' className={classes.errorIcon} />
+                        <StyledErrorOutlineIcon fontSize='large' color='error' />
                         <FormattedMessage
                             id='error.list.401'
                             defaultMessage='401 : Authorization Required.'
@@ -76,13 +67,13 @@ const ErrorList = (props) => {
                             + 'access the requested resource'}
                         />
                     </Typography>
-                </Root>
+                </>
             );
         case '403':
             return (
-                <Root>
+                <>
                     <Typography variant='h5' gutterBottom>
-                        <ErrorOutlineIcon fontSize='large' color='error' className={classes.errorIcon} />
+                        <StyledErrorOutlineIcon fontSize='large' color='error' />
                         <FormattedMessage
                             id='error.list.403'
                             defaultMessage='403 : Forbidden.'
@@ -95,13 +86,13 @@ const ErrorList = (props) => {
                             + 'kind of request.'}
                         />
                     </Typography>
-                </Root>
+                </>
             );
         case '404':
             return (
-                <Root>
+                <>
                     <Typography variant='h5' gutterBottom>
-                        <ErrorOutlineIcon fontSize='large' color='error' className={classes.errorIcon} />
+                        <StyledErrorOutlineIcon fontSize='large' color='error' />
                         <FormattedMessage
                             id='error.list.404'
                             defaultMessage='404 : The page cannot be found.'
@@ -114,7 +105,7 @@ const ErrorList = (props) => {
                             + 'had its name changed or is temporarily unavailable.'}
                         />
                     </Typography>
-                </Root>
+                </>
             );
         default:
             break;

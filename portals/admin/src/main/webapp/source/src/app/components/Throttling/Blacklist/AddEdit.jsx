@@ -30,47 +30,10 @@ import { green } from '@mui/material/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 
-const PREFIX = 'AddEdit';
-
-const classes = {
-    error: `${PREFIX}-error`,
-    dialog: `${PREFIX}-dialog`,
-    unitTime: `${PREFIX}-unitTime`,
-    helperText: `${PREFIX}-helperText`,
-    invertCondition: `${PREFIX}-invertCondition`,
-    addForm: `${PREFIX}-addForm`,
-};
-
-const StyledFormDialogBase = styled(FormDialogBase)(({ theme }) => ({
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-
-    [`& .${classes.dialog}`]: {
-        minWidth: theme.spacing(150),
-
-    },
-
-    [`& .${classes.unitTime}`]: {
-        display: 'flex',
-        marginTop: theme.spacing(2),
-    },
-
-    [`& .${classes.helperText}`]: {
-        color: green[600],
-        fontSize: theme.spacing(1.6),
-        marginLeft: theme.spacing(-1),
-    },
-
-    [`& .${classes.invertCondition}`]: {
-        fontSize: theme.spacing(1.8),
-        marginRight: theme.spacing(3),
-        marginTop: theme.spacing(1.2),
-    },
-
-    [`&.${classes.addForm}`]: {
-        minHeight: theme.spacing(24),
-    },
+const StyledFormHelperText = styled(FormHelperText)(({ theme }) => ({
+    color: green[600],
+    fontSize: theme.spacing(1.6),
+    marginLeft: theme.spacing(-1),
 }));
 
 /**
@@ -298,13 +261,12 @@ function AddEdit(props) {
     };
 
     return (
-        <StyledFormDialogBase
+        <FormDialogBase
             title={title}
             saveButtonText='Deny'
             icon={icon}
             triggerButtonText={triggerButtonText}
             formSaveCallback={formSaveCallback}
-            className={classes.addForm}
         >
             <DialogContentText>
                 <Typography variant='h6'>
@@ -314,7 +276,7 @@ function AddEdit(props) {
                     />
                 </Typography>
             </DialogContentText>
-            <FormControl variant='standard' component='fieldset' className={classes.addForm}>
+            <FormControl variant='standard' component='fieldset' sx={{ minHeight: 24 }}>
                 <RadioGroup
                     row
                     aria-label='position'
@@ -367,8 +329,8 @@ function AddEdit(props) {
                         helperText={(
                             <>
                                 {/* eslint-disable-next-line no-template-curly-in-string */ }
-                                <FormHelperText className={classes.helperText}>{'Format : ${context}'}</FormHelperText>
-                                <FormHelperText className={classes.helperText}>Eg : /test/1.0.0</FormHelperText>
+                                <StyledFormHelperText>{'Format : ${context}'}</StyledFormHelperText>
+                                <StyledFormHelperText>Eg : /test/1.0.0</StyledFormHelperText>
                             </>
                         )}
                     />
@@ -385,13 +347,13 @@ function AddEdit(props) {
                         required
                         helperText={(
                             <>
-                                <FormHelperText className={classes.helperText}>
+                                <StyledFormHelperText>
                                     {/* eslint-disable-next-line no-template-curly-in-string */}
                                     {'Format : ${userName}:${applicationName}'}
-                                </FormHelperText>
-                                <FormHelperText className={classes.helperText}>
+                                </StyledFormHelperText>
+                                <StyledFormHelperText>
                                     Eg : admin:DefaultApplication
-                                </FormHelperText>
+                                </StyledFormHelperText>
                             </>
                         )}
                     />
@@ -408,13 +370,13 @@ function AddEdit(props) {
                         required
                         helperText={(
                             <>
-                                <FormHelperText className={classes.helperText}>
+                                <StyledFormHelperText>
                                     {/* eslint-disable-next-line no-template-curly-in-string */}
                                     {'Format : ${ip}'}
-                                </FormHelperText>
-                                <FormHelperText className={classes.helperText}>
+                                </StyledFormHelperText>
+                                <StyledFormHelperText>
                                     Eg : 127.0.0.1
-                                </FormHelperText>
+                                </StyledFormHelperText>
                             </>
                         )}
                     />
@@ -443,8 +405,8 @@ function AddEdit(props) {
                     </>
                 )}
                 {(conditionType === 'IP' || conditionType === 'IPRANGE') && (
-                    <Grid className={classes.unitTime}>
-                        <Typography className={classes.invertCondition}>
+                    <Grid sx={{ display: 'flex', mt: 2 }}>
+                        <Typography sx={{ fontSize: 14, mr: 3, mt: 1.2 }}>
                             <FormattedMessage
                                 id='Admin.Throttling.Blacklist.policy.add.invert.condition'
                                 defaultMessage='Invert Condition: '
@@ -470,13 +432,13 @@ function AddEdit(props) {
                         required
                         helperText={(
                             <>
-                                <FormHelperText className={classes.helperText}>
+                                <StyledFormHelperText>
                                     {/* eslint-disable-next-line no-template-curly-in-string */}
                                     {'Format : ${userName}'}
-                                </FormHelperText>
-                                <FormHelperText className={classes.helperText}>
+                                </StyledFormHelperText>
+                                <StyledFormHelperText>
                                     Eg : admin
-                                </FormHelperText>
+                                </StyledFormHelperText>
                             </>
                         )}
                     />
@@ -499,7 +461,7 @@ function AddEdit(props) {
                     )}
                 />
             </FormControl>
-        </StyledFormDialogBase>
+        </FormDialogBase>
     );
 }
 

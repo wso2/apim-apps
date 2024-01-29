@@ -19,14 +19,12 @@
 import React, {
     useReducer, useState, Suspense, lazy, useEffect,
 } from 'react';
-import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
 import {
     Typography, Box, Grid, FormHelperText, Button,
 } from '@mui/material';
-import { green } from '@mui/material/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { format } from 'sql-formatter';
@@ -35,63 +33,7 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Link as RouterLink } from 'react-router-dom';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Joi from '@hapi/joi';
-
-const PREFIX = 'AddEdit';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    error: `${PREFIX}-error`,
-    dialog: `${PREFIX}-dialog`,
-    siddhiQueryHeading: `${PREFIX}-siddhiQueryHeading`,
-    showSampleButton: `${PREFIX}-showSampleButton`,
-    helperText: `${PREFIX}-helperText`,
-    infoBox: `${PREFIX}-infoBox`,
-    buttonBox: `${PREFIX}-buttonBox`,
-    saveButton: `${PREFIX}-saveButton`,
-};
-
-const StyledContentBase = styled(ContentBase)(({ theme }) => ({
-    [`& .${classes.root}`]: {
-        marginBottom: theme.spacing(15),
-    },
-
-    [`& .${classes.error}`]: {
-        color: theme.palette.error.dark,
-    },
-
-    [`& .${classes.dialog}`]: {
-        minWidth: theme.spacing(150),
-
-    },
-
-    [`& .${classes.siddhiQueryHeading}`]: {
-        marginBottom: theme.spacing(1),
-    },
-
-    [`& .${classes.showSampleButton}`]: {
-        marginTop: theme.spacing(2),
-    },
-
-    [`& .${classes.helperText}`]: {
-        color: green[600],
-        fontSize: theme.spacing(1.6),
-        marginLeft: theme.spacing(1),
-    },
-
-    [`& .${classes.infoBox}`]: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.buttonBox}`]: {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.saveButton}`]: {
-        marginRight: theme.spacing(2),
-    },
-}));
+import { green } from '@mui/material/colors';
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "CustomPolicyAddMonacoEditor" */));
 
@@ -330,7 +272,7 @@ function AddEdit(props) {
     };
 
     return (
-        <StyledContentBase
+        <ContentBase
             pageStyle='half'
             title={editMode
                 ? intl.formatMessage({
@@ -342,7 +284,7 @@ function AddEdit(props) {
                     defaultMessage: 'Custom Rate Limiting Policy - Define Policy',
                 })}
         >
-            <Box component='div' m={2} className={classes.root}>
+            <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12} lg={12}>
                         <TextField
@@ -411,20 +353,20 @@ function AddEdit(props) {
                                 />
                             )}
                         />
-                        <FormHelperText className={classes.helperText}>
+                        <FormHelperText sx={(theme) => ({ color: green[600], ml: 1, fontSize: theme.spacing(1.6) })}>
                             Eg: $userId:$apiContext:$apiVersion
                         </FormHelperText>
                     </Grid>
                     <Grid item xs={12} md={12} lg={12}>
-                        <Typography className={classes.siddhiQueryHeading}>
+                        <Typography sx={{ mb: 1 }}>
                             <FormattedMessage
                                 id='Admin.Throttling.Custom.policy.add.siddhi.query'
                                 defaultMessage='Siddhi Query: '
                             />
                         </Typography>
                         {!editMode && (
-                            <InlineMessage type='info' height={50} className={classes.infoBox}>
-                                <div className={classes.contentWrapper}>
+                            <InlineMessage type='info' height={50} sx={{ mt: 1, mb: 2 }}>
+                                <div>
                                     <Typography>
                                         <FormattedMessage
                                             id='Admin.Throttling.Custom.policy.add.siddhi.query.description'
@@ -451,11 +393,10 @@ function AddEdit(props) {
                             />
                         </Suspense>
                     </Grid>
-                    <Box component='span' className={classes.buttonBox}>
+                    <Box component='span' sx={{ mt: 2, mb: 2, ml: 2 }}>
                         <Button
+                            sx={{ mr: 2 }}
                             variant='contained'
-                            color='primary'
-                            className={classes.saveButton}
                             onClick={formSaveCallback}
                             disabled={validationError && validationError.length !== 0
                                 && Object.values(validationError)[0] !== false}
@@ -474,7 +415,7 @@ function AddEdit(props) {
                             )}
                         </Button>
                         <RouterLink to='/throttling/custom'>
-                            <Button variant='contained'>
+                            <Button variant='outlined'>
                                 <FormattedMessage
                                     id='Throttling.Custom.AddEdit.form.cancel'
                                     defaultMessage='Cancel'
@@ -484,7 +425,7 @@ function AddEdit(props) {
                     </Box>
                 </Grid>
             </Box>
-        </StyledContentBase>
+        </ContentBase>
     );
 }
 

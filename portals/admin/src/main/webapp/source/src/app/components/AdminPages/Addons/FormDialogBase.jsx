@@ -124,7 +124,7 @@ FormDialogBase.propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.element.isRequired,
     icon: PropTypes.element.isRequired,
-    triggerButtonText: PropTypes.string.isRequired,
+    triggerButtonText: PropTypes.element.isRequired,
     saveButtonText: PropTypes.string.isRequired,
     triggerButtonProps: PropTypes.shape({}),
     triggerIconProps: PropTypes.shape({}),
