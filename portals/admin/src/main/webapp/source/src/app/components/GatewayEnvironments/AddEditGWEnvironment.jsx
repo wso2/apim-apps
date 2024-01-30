@@ -133,7 +133,7 @@ function AddEditGWEnvironment(props) {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const [selectedGatewayType, setValue] = React.useState('Synapse');
+    const [selectedGatewayType, setValue] = React.useState('Regular');
     const getBorderColor = (gatewayType) => {
         return selectedGatewayType === gatewayType
             ? '2px solid #1976D2'
@@ -320,11 +320,12 @@ function AddEditGWEnvironment(props) {
         if (dataRow) {
             // assign the update promise to the promiseAPICall
             promiseAPICall = restApi.updateGatewayEnvironment(
-                dataRow.id, name.trim(), displayName, description, vhostDto,
+                dataRow.id, name.trim(), displayName, description, selectedGatewayType, vhostDto,
             );
         } else {
             // assign the create promise to the promiseAPICall
-            promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, description, vhostDto);
+            promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, description,
+                selectedGatewayType, vhostDto);
         }
 
         return promiseAPICall.then(() => {
@@ -461,22 +462,24 @@ function AddEditGWEnvironment(props) {
                         onChange={handleChange}
                     >
                         <FormControlLabel
-                            value='Synapse'
+                            value='Regular'
+                            name='Regular'
                             className={classes.radioOutline}
                             control={<Radio />}
                             label={(
                                 <div>
-                                    <span>Synapse Gateway</span>
+                                    <span>Regular Gateway</span>
                                     <Typography variant='body2' color='textSecondary'>
                                         API gateway embedded in APIM runtime.
                                         Connect directly to an existing APIManager.
                                     </Typography>
                                 </div>
                             )}
-                            style={{ border: getBorderColor('Synapse') }}
+                            style={{ border: getBorderColor('Regular') }}
                         />
                         <FormControlLabel
                             value='APK'
+                            name='APK'
                             className={classes.radioOutline}
                             control={<Radio />}
                             label={(

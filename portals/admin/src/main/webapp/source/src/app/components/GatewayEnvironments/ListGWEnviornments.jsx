@@ -64,7 +64,7 @@ export default function ListGWEnviornments() {
             name: 'gatewayType',
             label: intl.formatMessage({
                 id: 'AdminPages.Gateways.table.header.gatewayType',
-                defaultMessage: 'Type',
+                defaultMessage: 'Gateway Type',
             }),
             options: {
                 sort: false,
