@@ -287,7 +287,7 @@ class Layout extends React.Component {
     };
 
     handleCloseUserMenu = (event) => {
-        if (this.anchorEl.contains(event.target)) {
+        if (this.anchorEl?.contains(event.target)) {
             return;
         }
 
