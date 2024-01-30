@@ -18,12 +18,12 @@
 
 import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
-import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
+import Accordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import EndpointIcon from '@material-ui/icons/GamesOutlined';
 import ScopesIcon from '@material-ui/icons/VpnKey';
 import PoliciesIcon from '@material-ui/icons/SyncAlt';
@@ -32,9 +32,9 @@ import BusinessIcon from '@material-ui/icons/Business';
 import ConfigurationIcon from '@material-ui/icons/Build';
 import PropertiesIcon from '@material-ui/icons/List';
 import SubscriptionsIcon from '@material-ui/icons/RssFeed';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import CommentIcon from '@material-ui/icons/Comment';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import RuntimeConfigurationIcon from '@material-ui/icons/Settings';
 import MonetizationIcon from '@material-ui/icons/LocalAtm';

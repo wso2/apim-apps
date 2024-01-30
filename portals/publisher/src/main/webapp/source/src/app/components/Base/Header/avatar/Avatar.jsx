@@ -5,7 +5,7 @@ import {
     MenuItem,
     Icon,
     Box,
-} from '@material-ui/core';
+} from '@mui/material';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';

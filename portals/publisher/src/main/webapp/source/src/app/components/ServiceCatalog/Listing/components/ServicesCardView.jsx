@@ -17,9 +17,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import TablePagination from '@material-ui/core/TablePagination';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import TablePagination from '@mui/material/TablePagination';
 import ServiceCard from './ServiceCard';
 
 /**

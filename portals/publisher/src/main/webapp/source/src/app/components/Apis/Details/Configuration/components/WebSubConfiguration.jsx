@@ -18,20 +18,19 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@mui/material/Checkbox';
 
 const useStyles = makeStyles((theme) => ({
     expansionPanel: {
@@ -70,15 +69,15 @@ export default function WebSubConfiguration(props) {
     const classes = useStyles();
     return (
         <WrappedExpansionPanel className={classes.expansionPanel} id='webSubConfiguration'>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.WebSubConfiguration.configuration'
                         defaultMessage='WebSub Configuration'
                     />
                 </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.expansionPanelDetails}>
                 <Grid container>
                     <Grid item>
                         <FormControlLabel
@@ -134,7 +133,7 @@ export default function WebSubConfiguration(props) {
                         />
                     </Grid>
                 </Grid>
-            </ExpansionPanelDetails>
+            </AccordionDetails>
         </WrappedExpansionPanel>
     );
 }

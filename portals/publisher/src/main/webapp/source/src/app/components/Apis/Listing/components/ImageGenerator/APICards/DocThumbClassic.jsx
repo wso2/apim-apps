@@ -17,13 +17,13 @@
  */
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import PropTypes from 'prop-types';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import TextFieldsIcon from '@material-ui/icons/TextFields';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
 import { makeStyles } from '@material-ui/core/styles';

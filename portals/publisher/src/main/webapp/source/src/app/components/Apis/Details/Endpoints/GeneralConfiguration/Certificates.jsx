@@ -34,9 +34,9 @@ import {
     ListItemSecondaryAction,
     ListItemText,
     Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import UploadCertificate from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/UploadCertificate';
 import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage.tsx";
 import API from '../../../../../data/api';

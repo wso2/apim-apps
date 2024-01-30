@@ -17,10 +17,10 @@
  */
 
 import React, { FC, useContext, useEffect, useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
@@ -247,12 +247,12 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     }, [apiOperations, apiLevelPolicies]);
 
     return (
-        <ExpansionPanelDetails>
+        <AccordionDetails>
             <Grid
                 spacing={2}
                 container
                 direction='row'
-                justify='flex-start'
+                justifyContent='flex-start'
                 alignItems='flex-start'
             >
                 <Grid item xs={12} md={12}>
@@ -324,7 +324,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     )}
                 </Grid>
             </Grid>
-        </ExpansionPanelDetails>
+        </AccordionDetails>
     );
 };
 

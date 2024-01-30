@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Icon from '@material-ui/core/Icon';
+import Paper from '@mui/material/Paper';
+import Icon from '@mui/material/Icon';
 import { amber } from '@material-ui/core/colors';
 import VerticalDivider from './VerticalDivider';
 

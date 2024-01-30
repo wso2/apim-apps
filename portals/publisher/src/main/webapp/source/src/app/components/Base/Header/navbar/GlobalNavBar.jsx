@@ -17,7 +17,7 @@
  */
 import React, { useEffect } from 'react';
 import clsx from 'clsx';
-import Drawer from '@material-ui/core/Drawer';
+import Drawer from '@mui/material/Drawer';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core';

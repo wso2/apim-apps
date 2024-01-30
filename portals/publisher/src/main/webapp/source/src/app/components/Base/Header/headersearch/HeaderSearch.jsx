@@ -21,11 +21,11 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 import {

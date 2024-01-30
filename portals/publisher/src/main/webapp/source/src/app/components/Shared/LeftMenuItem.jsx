@@ -20,7 +20,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/styles';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';

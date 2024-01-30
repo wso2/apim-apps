@@ -20,10 +20,10 @@ import PropTypes from 'prop-types';
 import deburr from 'lodash/deburr';
 import Downshift from 'downshift';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import Chip from '@material-ui/core/Chip';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
+import MenuItem from '@mui/material/MenuItem';
+import Chip from '@mui/material/Chip';
 import API from 'AppData/api';
 import CONSTS from 'AppData/Constants';
 

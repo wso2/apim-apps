@@ -22,12 +22,12 @@ import {
     Grid,
     Paper,
     Typography,
-    withStyles,
     Radio,
     FormControlLabel,
     Collapse,
     RadioGroup, Checkbox, Dialog, DialogTitle, DialogContent, IconButton, Button, DialogActions, Icon,
-} from '@material-ui/core';
+} from '@mui/material';
+import { withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';

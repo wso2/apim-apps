@@ -20,7 +20,6 @@ import React, { useState } from 'react';
 import {
     Typography,
     Grid,
-    withStyles,
     RadioGroup,
     FormControlLabel,
     Radio,
@@ -30,7 +29,8 @@ import {
     Card,
     CardContent,
     CardActions,
-} from '@material-ui/core';
+} from '@mui/material';
+import { withStyles } from '@material-ui/core';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 

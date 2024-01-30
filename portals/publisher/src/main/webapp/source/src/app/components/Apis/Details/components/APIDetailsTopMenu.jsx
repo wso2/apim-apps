@@ -18,8 +18,8 @@
 
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -33,11 +33,11 @@ import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppCon
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
 import GoTo from 'AppComponents/Apis/Details/GoTo/GoTo';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';

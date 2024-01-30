@@ -7,8 +7,8 @@
 import * as React from 'react';
 import clsx from 'clsx';
 import { withStyles, lighten, darken } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
 import { capitalize } from '@material-ui/core/utils';
 import SuccessOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';

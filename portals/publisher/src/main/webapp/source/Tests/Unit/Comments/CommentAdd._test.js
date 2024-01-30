@@ -18,7 +18,7 @@
 // import { unwrap } from '@material-ui/core/test-utils';
 import {
     TextField, Button, Typography, Select, MenuItem,
-} from '@material-ui/core';
+} from '@mui/material';
 import CommentAdd from '../../../src/app/components/Apis/Details/Comments/CommentAdd';
 
 // const CommentAddUnwrapped = unwrap(CommentAdd);

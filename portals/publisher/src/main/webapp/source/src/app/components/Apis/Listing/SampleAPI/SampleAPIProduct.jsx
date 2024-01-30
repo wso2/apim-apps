@@ -19,7 +19,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { useTheme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import { PropTypes } from 'prop-types';

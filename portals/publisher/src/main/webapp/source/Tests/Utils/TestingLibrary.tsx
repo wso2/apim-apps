@@ -19,7 +19,7 @@ import {
   configure,
 } from "@testing-library/react";
 import { IntlProvider } from "react-intl";
-import { ThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider } from '@material-ui/core';
 import { createTheme } from '@material-ui/core/styles';
 import defaultTheme from "AppData/defaultTheme";
 import Api from "AppData/api";

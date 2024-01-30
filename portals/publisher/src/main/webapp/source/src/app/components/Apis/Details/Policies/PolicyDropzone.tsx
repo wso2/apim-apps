@@ -17,7 +17,8 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@mui/material';
+import { Theme, makeStyles } from '@material-ui/core';
 import { useDrop } from 'react-dnd';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';

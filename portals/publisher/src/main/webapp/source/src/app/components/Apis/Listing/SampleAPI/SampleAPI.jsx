@@ -17,12 +17,12 @@
  */
 
 import React, { useReducer, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
+import Fade from '@mui/material/Fade';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
@@ -33,8 +33,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core';
 
-import Link from '@material-ui/core/Link';
-import Button from '@material-ui/core/Button';
+import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
 
 import { getSampleAPIData, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 

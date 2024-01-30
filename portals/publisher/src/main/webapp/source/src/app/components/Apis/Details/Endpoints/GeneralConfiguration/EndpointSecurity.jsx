@@ -22,17 +22,17 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
-} from '@material-ui/core';
+} from '@mui/material';
 import { RemoveRedEye } from '@material-ui/icons';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import Button from '@material-ui/core/Button';
+import Table from '@mui/material/Table';
+import Button from '@mui/material/Button';
 import AddCircle from '@material-ui/icons/AddCircle';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import isEmpty from 'lodash.isempty';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';

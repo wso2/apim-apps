@@ -22,12 +22,12 @@ import { oas } from '@stoplight/spectral-rulesets';
 import { FormattedMessage } from 'react-intl';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import WarningIcon from '@material-ui/icons/Warning';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles} from '@material-ui/core';
 
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };

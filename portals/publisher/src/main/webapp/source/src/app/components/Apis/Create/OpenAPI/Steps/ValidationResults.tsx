@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, List, ListItem, 
-    ListItemIcon, ListItemText, Typography } from "@material-ui/core";
+    ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { ExpandMore } from "@material-ui/icons";
 import { FormattedMessage } from "react-intl";
 import LinterUI from "AppComponents/Apis/Details/APIDefinition/LinterUI/LinterUI";

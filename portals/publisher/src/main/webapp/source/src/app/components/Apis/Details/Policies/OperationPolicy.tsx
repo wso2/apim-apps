@@ -17,17 +17,16 @@
  */
 
 import React, { FC } from 'react';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import { Accordion, AccordionSummary } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
-import Badge from '@material-ui/core/Badge';
+import Badge from '@mui/material/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
 import PoliciesExpansion from './PoliciesExpansion';
@@ -123,13 +122,13 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
 
     return (
         <>
-            <ExpansionPanel
+            <Accordion
                 expanded={expandedResource === verb + target}
                 onChange={handleExpansion(verb + target)}
                 disabled={false}
                 className={classes.paperStyles}
             >
-                <ExpansionPanelSummary
+                <AccordionSummary
                     className={highlight ? classes.highlightSelected : ''}
                     disableRipple
                     disableTouchRipple
@@ -137,7 +136,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                     id={verb + target}
                     classes={{ content: classes.contentNoMargin }}
                 >
-                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                    <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
                         <Grid item md={4} className={classes.operationSummaryGrid}>
                             <Badge
                                 invisible={!operation['x-wso2-new']}
@@ -177,7 +176,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                         </Grid>
                         {renderUsedInApiProducts}
                     </Grid>
-                </ExpansionPanelSummary>
+                </AccordionSummary>
                 <Divider light className={classes.customDivider} />
                 <PoliciesExpansion
                     target={target}
@@ -187,7 +186,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                     policyList={policyList}
                     isAPILevelPolicy={false}
                 />
-            </ExpansionPanel>
+            </Accordion>
         </>
     );
 };

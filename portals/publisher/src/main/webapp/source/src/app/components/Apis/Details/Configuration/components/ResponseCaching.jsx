@@ -18,21 +18,20 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { FormattedMessage } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';
 import { makeStyles } from '@material-ui/core';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 
 const useStyles = makeStyles((theme) => ({
     expansionPanel: {
@@ -84,7 +83,7 @@ export default function ResponseCaching(props) {
     return (
         <>
             <WrappedExpansionPanel className={classes.expansionPanel} id='responseCaching'>
-                <ExpansionPanelSummary expandIcon={generateElement(api.responseCachingEnabled)}>
+                <AccordionSummary expandIcon={generateElement(api.responseCachingEnabled)}>
                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.Configuration.response.caching'
@@ -125,8 +124,8 @@ export default function ResponseCaching(props) {
                             />
                         )}
                     />
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                </AccordionSummary>
+                <AccordionDetails className={classes.expansionPanelDetails}>
                     <Grid container spacing={1} alignItems='flex-start'>
                         <Grid item>
                             {isResponseCachingEnabled && (
@@ -147,7 +146,7 @@ export default function ResponseCaching(props) {
                             )}
                         </Grid>
                     </Grid>
-                </ExpansionPanelDetails>
+                </AccordionDetails>
             </WrappedExpansionPanel>
         </>
     );

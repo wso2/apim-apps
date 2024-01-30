@@ -16,7 +16,7 @@
  * under the License.
  */
 // import { unwrap } from '@material-ui/core/test-utils';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import CommentEdit from '../../../src/app/components/Apis/Details/Comments/CommentEdit';
 import CommentOptions from '../../../src/app/components/Apis/Details/Comments/CommentOptions';
 import CommentReply from '../../../src/app/components/Apis/Details/Comments/CommentReply';

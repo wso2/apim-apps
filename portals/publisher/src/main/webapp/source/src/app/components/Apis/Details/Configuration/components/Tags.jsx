@@ -22,7 +22,7 @@ import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not CO
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import { red } from '@material-ui/core/colors/';
 
 /**
