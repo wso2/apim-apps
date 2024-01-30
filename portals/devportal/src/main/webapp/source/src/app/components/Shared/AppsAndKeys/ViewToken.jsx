@@ -157,7 +157,7 @@ class ViewToken extends React.Component {
                         <ViewSecret secret={{consumerSecret}}/>
                     </div>
                 )}
-                <InlineMessage type='warn'>
+                <InlineMessage type='warning'>
                     <Typography variant='h5' component='h3'>
                         {(token.isOauth) && (
                             <FormattedMessage
