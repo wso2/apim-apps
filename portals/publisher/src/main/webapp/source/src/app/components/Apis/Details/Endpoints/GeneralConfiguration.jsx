@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import { withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Certificates from './GeneralConfiguration/Certificates';

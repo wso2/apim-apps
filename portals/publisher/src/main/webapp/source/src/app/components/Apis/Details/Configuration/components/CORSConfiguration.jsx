@@ -22,12 +22,12 @@ import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not CO
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';

@@ -18,8 +18,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';

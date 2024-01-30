@@ -6,14 +6,14 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from 'AppComponents/Shared/Alert';
 import Grid from '@mui/material/Grid';
 import StepConnector from '@mui/material/StepConnector';
 import ApiContext, { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import grey from '@material-ui/core/colors/grey';
@@ -22,7 +22,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import AuthManager from 'AppData/AuthManager';
 import Typography from '@mui/material/Typography';
-import LinkIcon from '@material-ui/icons/Link';
+import LinkIcon from '@mui/icons-material/Link';
 import API from 'AppData/api';
 
 const ColorlibConnector = withStyles((theme) => {

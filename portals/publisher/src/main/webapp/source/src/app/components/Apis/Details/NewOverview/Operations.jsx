@@ -20,7 +20,7 @@ import React from 'react';
 import { withStyles, withTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Chip from '@mui/material/Chip';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';

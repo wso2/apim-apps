@@ -22,7 +22,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {Typography} from '@mui/material';
 import Button from '@mui/material/Button';
-import UsageIcon from '@material-ui/icons/List';
+import UsageIcon from '@mui/icons-material/List';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';

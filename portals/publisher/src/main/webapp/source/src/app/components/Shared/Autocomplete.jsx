@@ -27,8 +27,8 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import CloseIcon from '@material-ui/icons/Close';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import CloseIcon from '@mui/icons-material/Close';
 import useAutocomplete, { createFilterOptions } from './useAutocomplete';
 
 export { createFilterOptions };

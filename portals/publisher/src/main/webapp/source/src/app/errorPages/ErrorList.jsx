@@ -19,7 +19,7 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({

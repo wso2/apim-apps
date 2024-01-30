@@ -26,7 +26,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import FormControl from '@mui/material/FormControl';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Button from '@mui/material/Button';
 import Utils from 'AppData/Utils';
 import API from 'AppData/api.js';

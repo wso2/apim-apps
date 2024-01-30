@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';

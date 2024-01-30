@@ -31,7 +31,7 @@ import {
 } from '@mui/material';
 import { withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';

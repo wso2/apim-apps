@@ -33,7 +33,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
-import ArrowForwardIcon from '@material-ui/icons/SettingsEthernet';
+import ArrowForwardIcon from '@mui/icons-material/SettingsEthernet';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { isRestricted } from 'AppData/AuthManager';

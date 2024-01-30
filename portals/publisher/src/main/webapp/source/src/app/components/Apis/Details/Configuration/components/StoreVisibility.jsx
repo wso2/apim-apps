@@ -20,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -28,7 +28,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
 import base64url from 'base64url';
-import Error from '@material-ui/icons/Error';
+import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
 import Chip from '@mui/material/Chip';
 import { red } from '@material-ui/core/colors/';

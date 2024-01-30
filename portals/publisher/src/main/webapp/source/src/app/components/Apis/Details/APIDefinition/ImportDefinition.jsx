@@ -25,7 +25,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Typography } from '@mui/material';
-import CloudUploadRounded from '@material-ui/icons/CloudUploadRounded';
+import CloudUploadRounded from '@mui/icons-material/CloudUploadRounded';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import { isRestricted } from 'AppData/AuthManager';

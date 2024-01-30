@@ -34,12 +34,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import CheckIcon from '@material-ui/icons/Check';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CheckIcon from '@mui/icons-material/Check';
 
 import APIValidation from 'AppData/APIValidation';
 import Wsdl from 'AppData/Wsdl';

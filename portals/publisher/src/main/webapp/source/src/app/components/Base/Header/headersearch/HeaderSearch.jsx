@@ -23,7 +23,7 @@ import Autosuggest from 'react-autosuggest';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';

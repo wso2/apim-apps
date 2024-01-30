@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
 import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';

@@ -18,6 +18,22 @@
 
 import React, { FC } from 'react';
 import FlowArrowShared from 'AppComponents/Shared/PoliciesUI/FlowArrow';
+import { makeStyles } from '@material-ui/core';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Box from '@mui/material/Box';
+
+const useStyles = makeStyles(() => ({
+    arrowColor: {
+        backgroundColor: 'black',
+        opacity: 0.4,
+    },
+    iconSize: {
+        fontSize: '2em',
+        color: 'black',
+        opacity: 0.4,
+    }
+}));
 
 interface FlowArrowProps {
     arrowDirection: string;

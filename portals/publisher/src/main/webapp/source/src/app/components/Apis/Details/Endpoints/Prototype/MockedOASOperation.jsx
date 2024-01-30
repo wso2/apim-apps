@@ -26,7 +26,7 @@ import {
     Typography,
 } from '@mui/material';
 import { makeStyles } from '@material-ui/core';
-import { ArrowDropDown } from '@material-ui/icons';
+import { ArrowDropDown } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 

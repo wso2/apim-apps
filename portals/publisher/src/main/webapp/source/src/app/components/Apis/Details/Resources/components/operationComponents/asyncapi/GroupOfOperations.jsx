@@ -20,7 +20,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 /**
  * Return a group container , User should provide the operations list as the child component

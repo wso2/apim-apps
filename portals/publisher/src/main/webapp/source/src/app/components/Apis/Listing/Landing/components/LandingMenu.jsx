@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Configurations from 'Config';
 import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 
 const useStyles = makeStyles((theme) => ({
     root: {

@@ -23,7 +23,7 @@ import Chip from '@mui/material/Chip';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 
 import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';

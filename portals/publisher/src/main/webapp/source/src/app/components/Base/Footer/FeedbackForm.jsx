@@ -26,16 +26,16 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
-import FeedbackIcon from '@material-ui/icons/Feedback';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 import Tooltip from '@mui/material/Tooltip';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import ButtonGroup from '@mui/material/ButtonGroup';
 import IconButton from '@mui/material/IconButton';
-import MoodIcon from '@material-ui/icons/Mood';
-import MoodBadIcon from '@material-ui/icons/MoodBad';
-import FaceIcon from '@material-ui/icons/Face';
+import MoodIcon from '@mui/icons-material/Mood';
+import MoodBadIcon from '@mui/icons-material/MoodBad';
+import FaceIcon from '@mui/icons-material/Face';
 import Alert from 'AppComponents/Shared/Alert';
 import Configurations from 'Config';
 

@@ -22,8 +22,8 @@ import { FormattedMessage } from 'react-intl';
 import TableCell from '@mui/material/TableCell';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import TableRow from '@mui/material/TableRow';
 
 /**

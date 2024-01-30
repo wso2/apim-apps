@@ -28,7 +28,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import ClearIcon from '@material-ui/icons/Clear';
+import ClearIcon from '@mui/icons-material/Clear';
 import Tooltip from '@mui/material/Tooltip';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import FormControlLabel from '@mui/material/FormControlLabel';

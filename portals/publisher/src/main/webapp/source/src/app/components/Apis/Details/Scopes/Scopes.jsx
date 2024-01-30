@@ -27,14 +27,14 @@ import Button from '@mui/material/Button';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from 'react-router-dom';
 import { List, ListItem, ListItemText } from '@mui/material';
-import AddCircle from '@material-ui/icons/AddCircle';
+import AddCircle from '@mui/icons-material/AddCircle';
 import MUIDataTable from 'mui-datatables';
 import Icon from '@mui/material/Icon';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Grid from '@mui/material/Grid';
 import { isRestricted } from 'AppData/AuthManager';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 

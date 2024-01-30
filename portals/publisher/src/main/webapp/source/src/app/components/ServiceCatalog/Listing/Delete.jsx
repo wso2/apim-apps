@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 
 /**

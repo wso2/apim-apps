@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@mui/material/Box';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 

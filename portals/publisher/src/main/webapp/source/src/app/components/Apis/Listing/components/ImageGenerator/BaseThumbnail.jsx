@@ -19,7 +19,7 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import ButtonBase from '@mui/material/ButtonBase';
 import { Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';

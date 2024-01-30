@@ -17,7 +17,7 @@
  */
 
 import React, { FC, useState } from 'react';
-import { HelpOutline } from '@material-ui/icons';
+import { HelpOutline } from '@mui/icons-material';
 import Tooltip from '@mui/material/Tooltip';
 import {
     Dialog,

@@ -30,7 +30,7 @@ import Typography from '@mui/material/Typography';
 import Icon from '@mui/material/Icon';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Backdrop from '@mui/material/Backdrop';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import GoToSuggestions from 'AppComponents/Apis/Details/GoTo/Components/GoToSuggestions';
 

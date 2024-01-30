@@ -23,7 +23,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import Box from '@mui/material/Box';
 import API from 'AppData/api';
 import { capitalizeFirstLetter, upperCaseString, lowerCaseString } from 'AppData/stringFormatter';

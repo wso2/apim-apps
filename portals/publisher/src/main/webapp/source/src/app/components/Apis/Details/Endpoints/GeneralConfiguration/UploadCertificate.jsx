@@ -34,7 +34,7 @@ import { FormattedMessage } from 'react-intl';
 import Dropzone from 'react-dropzone';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import APIValidation from 'AppData/APIValidation';
 import SelectEndpoint from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/SelectEndpoint';
 import SelectPolicies from '../../../Create/Components/SelectPolicies';

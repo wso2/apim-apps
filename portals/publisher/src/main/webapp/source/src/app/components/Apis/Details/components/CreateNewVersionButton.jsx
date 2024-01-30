@@ -18,7 +18,7 @@
 
 import React from 'react';
 
-import LibraryAdd from '@material-ui/icons/LibraryAdd';
+import LibraryAdd from '@mui/icons-material/LibraryAdd';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';

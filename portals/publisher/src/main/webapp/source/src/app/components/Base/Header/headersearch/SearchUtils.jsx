@@ -28,7 +28,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Divider from '@mui/material/Divider';
 import Icon from '@mui/material/Icon';
 import InputAdornment from '@mui/material/InputAdornment';
-import SearchOutlined from '@material-ui/icons/SearchOutlined';
+import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import { Link } from 'react-router-dom';
 import ProductIcon from 'AppComponents/Shared/CustomIcon';
 import CircularProgress from '@mui/material/CircularProgress';

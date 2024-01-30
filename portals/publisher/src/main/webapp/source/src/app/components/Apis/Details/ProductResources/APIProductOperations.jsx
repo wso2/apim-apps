@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Box from '@mui/material/Box';
 import API from 'AppData/api';

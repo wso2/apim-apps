@@ -23,7 +23,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage } from 'react-intl';
-import CancelIcon from '@material-ui/icons/Cancel';
+import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from '@mui/material/IconButton';
 import { orange } from '@material-ui/core/colors';
 import differenceBy from 'lodash/differenceBy'
