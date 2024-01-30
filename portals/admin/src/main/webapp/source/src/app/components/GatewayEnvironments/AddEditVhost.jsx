@@ -225,7 +225,7 @@ function AddEditVhost(props) {
                                             https://${vhost.host || '<HOST>'}:${vhost.httpsPort}/${vhost.httpContext}`
                                         }
                                         <br />
-                                        {selectedGatewayType === 'Synapse' && (
+                                        {selectedGatewayType === 'Regular' && (
                                             `ws://${vhost.host || '<HOST>'}:${vhost.wsPort}/ |
                                             wss://${vhost.host || '<HOST>'}:${vhost.wssPort}/`
                                         )}
@@ -292,7 +292,7 @@ function AddEditVhost(props) {
                                                     <Divider variant='middle' className={classes.portDivider} />
                                                 </Grid>
                                                 {/* WS Ports */}
-                                                {selectedGatewayType === 'Synapse' && (
+                                                {selectedGatewayType === 'Regular' && (
                                                     <Grid item xs={12}>
                                                         <Grid container spacing={2}>
                                                             <Grid item xs={6} />
