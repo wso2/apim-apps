@@ -30,7 +30,7 @@ import { Link } from 'react-router-dom';
 import Wsdl from 'AppData/Wsdl';
 import Alert from 'AppComponents/Shared/Alert';
 import { Link as MUILink } from '@mui/material';
-import { Alert as MUIAlert, AlertTitle } from '@material-ui/lab';
+import { Alert as MUIAlert, AlertTitle } from '@mui/lab';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
