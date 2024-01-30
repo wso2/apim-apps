@@ -44,7 +44,7 @@ describe("Add key manager", () => {
         const appDescription = 'app description';
 
         cy.get('[data-testid="Key Managers"]').click();
-        cy.get('.MuiButton-label').contains('Add Key Manager').click();
+        cy.get('[data-testid="add-key-manager-button"]').contains('Add Key Manager').click();
         cy.get('input[name="name"]').type(km);
         cy.get('input[name="displayName"]').type(km);
         cy.get('[data-testid="key-manager-type-select"]').click();
@@ -52,7 +52,7 @@ describe("Add key manager", () => {
         cy.get('input[name="wellKnownEndpoint"]').type(wellKnowUrl);
         // importing config'
         cy.intercept('**/key-managers/discover').as('importConfig');
-        cy.get('button span.MuiButton-label').contains('Import').click();
+        cy.get('#import-button').contains('Import').click();
         cy.wait('@importConfig', { timeout: 3000 }).then(() => {
             // filing the tokens
             cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
@@ -84,7 +84,7 @@ describe("Add key manager", () => {
             cy.contains(claimValueRegex1).should('exist');
             cy.contains(claimKey2).should('exist');
             cy.contains(claimValueRegex2).should('exist');
-            cy.get('button.MuiButton-containedPrimary span').contains('Add').click();
+            cy.get('#keymanager-add').contains('Add').click();
             cy.wait(1000);
 
             // validating
@@ -108,7 +108,7 @@ describe("Add key manager", () => {
         cy.get('[data-testid="key-manager-permission-roles"]').should('exist');
         cy.get('[data-testid="Internal/subscriber"]').should('exist');
 
-        cy.get('button.MuiButton-containedPrimary span').contains('Update').click();
+        cy.get('#keymanager-add').contains('Update').click();
         cy.logoutFromAdminPortal();
 
 
@@ -152,7 +152,7 @@ describe("Add key manager", () => {
         cy.loginToAdmin(usernameLocal, passwordLocal);
         cy.visit(`/admin/settings/key-managers/`);
         cy.get(`[data-testid="${km}-actions"] > span:first-child svg`).click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('td > div').contains(km).should('not.exist');
     }
     it.only("Add key manager - super admin", () => {

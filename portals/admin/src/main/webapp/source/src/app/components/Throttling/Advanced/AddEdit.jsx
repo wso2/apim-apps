@@ -446,7 +446,12 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12} sx={{ mb: 2 }}>
                         <Box component='span' m={1}>
-                            <Button variant='contained' color='primary' onClick={formSave}>
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                onClick={formSave}
+                                data-testid='throttling-advanced-save-button'
+                            >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
                                         {id ? (

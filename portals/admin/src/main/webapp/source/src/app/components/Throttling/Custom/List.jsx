@@ -188,7 +188,13 @@ export default function ListCustomThrottlingPolicies() {
 
     const addButtonOverride = (
         <RouterLink to='/throttling/custom/create'>
-            <Button variant='contained' color='primary' size='small' role='button'>
+            <Button
+                variant='contained'
+                color='primary'
+                size='small'
+                role='button'
+                data-testid='throttling-custom-add-button'
+            >
                 <FormattedMessage
                     id='Throttling.Custom.List.add.new.polcy'
                     defaultMessage='Define Policy'

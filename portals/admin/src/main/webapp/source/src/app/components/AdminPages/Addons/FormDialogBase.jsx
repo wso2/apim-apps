@@ -80,7 +80,7 @@ function FormDialogBase({
             )}
             {triggerButtonText && (
                 // eslint-disable-next-line react/jsx-props-no-spreading
-                <Button {...triggerButtonProps} onClick={handleClickOpen}>
+                <Button {...triggerButtonProps} onClick={handleClickOpen} data-testid='form-dialog-base-trigger-btn'>
                     {triggerButtonText}
                 </Button>
             )}
@@ -99,7 +99,7 @@ function FormDialogBase({
                         color='primary'
                         variant='contained'
                         disabled={saving}
-                        data-testid={saveButtonText + '-btn'}
+                        data-testid='form-dialog-base-save-btn'
                     >
                         {saving ? (<CircularProgress size={16} />) : (<>{saveButtonText}</>)}
                     </Button>
@@ -128,7 +128,10 @@ FormDialogBase.propTypes = {
         PropTypes.element.isRequired,
         PropTypes.string.isRequired,
     ]).isRequired,
-    saveButtonText: PropTypes.string.isRequired,
+    saveButtonText: PropTypes.oneOfType([
+        PropTypes.string.isRequired,
+        PropTypes.element.isRequired,
+    ]).isRequired,
     triggerButtonProps: PropTypes.shape({}),
     triggerIconProps: PropTypes.shape({}),
     formSaveCallback: PropTypes.func.isRequired,

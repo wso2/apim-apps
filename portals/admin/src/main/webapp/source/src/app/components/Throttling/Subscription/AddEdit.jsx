@@ -1581,6 +1581,7 @@ function AddEdit(props) {
                                 color='primary'
                                 onClick={formSaveCallback}
                                 disabled={invalidRoles.length !== 0}
+                                data-testid='throttling-subscription-save-button'
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <FormattedMessage

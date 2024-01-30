@@ -400,6 +400,7 @@ function AddEdit(props) {
                             onClick={formSaveCallback}
                             disabled={validationError && validationError.length !== 0
                                 && Object.values(validationError)[0] !== false}
+                            data-testid='throttling-custom-save-button'
                         >
                             {!editMode && (
                                 <FormattedMessage

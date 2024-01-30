@@ -47,7 +47,7 @@ describe("Change the owner of application", () => {
     cy.get('div[role="dialog"]').contains("div", "owner");
     cy.get('input[name="owner"]').click().clear();
     cy.get('input[name="owner"]').type("admin");
-    cy.get('[data-testid="Save-btn"]').click();
+    cy.get('[data-testid="form-dialog-base-save-btn"]').click();
     cy.wait(5000);
     cy.get("#itest-application-list-table").within(() => {
       cy.contains("tr", appName).within(() => {

@@ -56,7 +56,6 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
 import base64url from 'base64url';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
-// import Chip from '@mui/material/Chip';
 import { red } from '@mui/material/colors/';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));

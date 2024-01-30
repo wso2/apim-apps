@@ -198,6 +198,7 @@ export default function AddRoleWizard(props) {
                             color='primary'
                             onClick={activeStep === 1 ? onAddRole : handleNext}
                             sx={{ mt: 1, mr: 1 }}
+                            data-testid='add-role-wizard-save-button'
                         >
                             {activeStep === 1 ? (
                                 <>

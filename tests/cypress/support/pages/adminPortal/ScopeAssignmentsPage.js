@@ -21,50 +21,23 @@ class ScopeAssignmentsPage{
         return "/admin/settings/scope-mapping";
     }
     getAddScopeMappingButton(){
-        return cy.get(".MuiButton-containedPrimary > .MuiButton-label")
+        return cy.get('[data-testid="add-scope-mapping"]')
     }
     getAddNewScopeRoleNameTextBox(){
         return cy.get("#role-input-field-helper-text")
     }
 
     getAddNewScopeNextButton(){
-        return cy.get(".MuiDialogActions-root > div > div > .MuiButton-containedPrimary")
+        return cy.get('[data-testid="add-role-wizard-save-button"]')
     }
 
     selectRoleAlias(mappingRole){
-        cy.get('.MuiAutocomplete-endAdornment > button[aria-label="Open"]').click();
-        //cy.get("#role-select-dropdown-option-1").click();
-
-        switch(mappingRole){
-            case userRoles.admin :
-                cy.get("#role-select-dropdown-option-0").click();
-                break;
-            case userRoles.Internal_creator :
-                cy.get("#role-select-dropdown-option-1").click();
-                break;
-            case userRoles.Internal_publisher :
-                cy.get("#role-select-dropdown-option-2").click();
-                break;
-            case userRoles.Internal_integration_dev :
-                cy.get("#role-select-dropdown-option-3").click();
-                break;
-            case userRoles.Internal_subscriber :
-                cy.get("#role-select-dropdown-option-4").click();
-                break;
-            case userRoles.Internal_devops:
-                cy.get("#role-select-dropdown-option-5").click();
-                break;
-            case userRoles.Internal_analytics :
-                cy.get("#role-select-dropdown-option-6").click();
-                break;
-            case userRoles.Internal_observer :
-                cy.get("#role-select-dropdown-option-7").click();
-                break;
-        }
+        cy.get('#role-select-dropdown').click();
+        cy.get('[id^=role-select-dropdown-option-]').contains(mappingRole).click();
     }
 
     getAddNewScopeSavetButton(){
-        return cy.get(".MuiDialogActions-root > div > div > .MuiButton-containedPrimary")
+        return cy.get('[data-testid="add-role-wizard-save-button"]')
     }
 
     getSearchTextBox(){

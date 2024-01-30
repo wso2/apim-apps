@@ -26,10 +26,10 @@ describe("Add Edit Delete api categories", () => {
     it.only("Add Edit Delete api categories", () => {
         const categoryName = 'Finance';
         cy.get('[data-testid="API Categories"]').click();
-        cy.get('.MuiButton-label').contains('Add API Category').click();
+        cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add API Category').click();
         cy.get('input[name="name"]').type(categoryName);
         cy.get('textarea[name="description"]').type('finance related apis');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
         cy.get('[data-testid="MuiDataTableBodyCell-2-0"]').contains('finance related apis').should('exist');
 
         // editing
@@ -37,14 +37,14 @@ describe("Add Edit Delete api categories", () => {
         cy.get('textarea[name="description"]').clear().type('finance apis');
 
         cy.intercept('GET', '**/api-categories').as('getCategories');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
         cy.wait('@getCategories', { timeout: 3000 }).then(() => {
             cy.get('[data-testid="MuiDataTableBodyCell-2-0"]').contains('finance apis').should('exist');
         });
 
         // delete
         cy.get(`[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)`).click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('div[role="status"]').should('have.text','API Category deleted successfully');
     });
 
