@@ -23,12 +23,12 @@ import { InputAdornment, IconButton, Icon } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
-import green from '@material-ui/core/colors/green';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
+import { green } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) => ({
     mandatoryStar: {
@@ -517,7 +517,7 @@ export default function DefaultAPIForm(props) {
                                             aria-label='TestEndpoint'
                                             onClick={() => testEndpoint(api.endpoint)}
                                             disabled={isUpdating}
-                                        >
+                                            size='large'>
                                             {isUpdating
                                                 ? <CircularProgress size={20} />
                                                 : (
@@ -535,7 +535,7 @@ export default function DefaultAPIForm(props) {
 
                 {!appendChildrenBeforeEndpoint && !!children && children}
             </form>
-            <Grid container direction='row' justify='flex-end' alignItems='center'>
+            <Grid container direction='row' justifyContent='flex-end' alignItems='center'>
                 <Grid item>
                     <Typography variant='caption' display='block' gutterBottom>
                         <sup style={{ color: 'red' }}>*</sup>

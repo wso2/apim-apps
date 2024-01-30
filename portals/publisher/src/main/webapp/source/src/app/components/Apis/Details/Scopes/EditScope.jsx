@@ -24,14 +24,14 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@mui/material/Paper';
 import FormControl from '@mui/material/FormControl';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
 import Chip from '@mui/material/Chip';
-import { red } from '@material-ui/core/colors/';
+import { red } from '@mui/material/colors/';
 import Icon from '@mui/material/Icon';
 import base64url from 'base64url';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -63,12 +63,12 @@ const styles = (theme) => ({
         paddingLeft: 0,
     },
     FormControl: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
+        padding: `0 0 0 ${theme.spacing(1)}`,
         width: '100%',
         marginTop: 0,
     },
     FormControlOdd: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
+        padding: `0 0 0 ${theme.spacing(1)}`,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,

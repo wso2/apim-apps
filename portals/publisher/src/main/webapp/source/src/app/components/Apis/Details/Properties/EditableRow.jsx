@@ -20,7 +20,7 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
@@ -238,7 +238,7 @@ function EditableRow(props) {
                         onKeyDown={() => { }}
                         color='inherit'
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    >
+                        size='large'>
                         <EditIcon className={classes.buttonIcon} />
                     </IconButton>
                 )}
@@ -249,7 +249,7 @@ function EditableRow(props) {
                     onKeyDown={() => { }}
                     color='inherit'
                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                >
+                    size='large'>
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>

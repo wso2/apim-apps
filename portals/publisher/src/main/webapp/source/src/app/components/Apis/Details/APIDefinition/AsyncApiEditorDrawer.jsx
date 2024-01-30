@@ -18,7 +18,7 @@
 import React, { lazy } from 'react';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import withStyles from '@material-ui/core/styles/withStyles';
+import withStyles from '@mui/styles/withStyles';
 import AsyncApiUI from './asyncApiUI/AsyncApiUI';
 
 const styles = () => ({

@@ -65,7 +65,7 @@ function RequestBody(props) {
                 <TableCell align='left'>
                     {hideParameterEdit && (
                         <Tooltip title='Edit'>
-                            <IconButton onClick={() => {}} fontSize='small'>
+                            <IconButton onClick={() => {}} fontSize='small' size='large'>
                                 <EditIcon fontSize='small' />
                             </IconButton>
                         </Tooltip>
@@ -95,7 +95,7 @@ function RequestBody(props) {
                                 });
                             }}
                             fontSize='small'
-                        >
+                            size='large'>
                             <DeleteIcon fontSize='small' />
                         </IconButton>
                     </Tooltip>

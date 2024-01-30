@@ -17,7 +17,7 @@
  */
 import React from 'react';
 import { Toolbar, AppBar } from '@mui/material';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';

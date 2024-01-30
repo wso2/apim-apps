@@ -17,8 +17,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Button, Grid, IconButton, Tooltip, Typography } from '@mui/material';
-import { useTheme, makeStyles } from '@material-ui/core';
+import { Button, Grid, IconButton, Tooltip, Typography, useTheme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage, useIntl } from 'react-intl';

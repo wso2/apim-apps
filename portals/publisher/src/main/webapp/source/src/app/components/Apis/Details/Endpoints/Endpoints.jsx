@@ -18,7 +18,7 @@ import React, {
     useContext, useEffect, useState, useReducer,
 } from 'react';
 import { Grid } from '@mui/material';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';

@@ -467,7 +467,7 @@ export default function Topics(props) {
     // if ((!pageError && isEmpty(openAPISpec)) || (resolvedSpec.errors.length === 0 && isEmpty(resolvedSpec.spec))) {
     if ((!pageError && isEmpty(asyncAPISpec))) {
         return (
-            <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item>
                     <CircularProgress disableShrink />
                 </Grid>
@@ -476,7 +476,7 @@ export default function Topics(props) {
     }
 
     return (
-        <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
+        <Grid container direction='row' justifyContent='flex-start' spacing={2} alignItems='stretch'>
             {pageError && (
                 <Grid item md={12}>
                     <Banner onClose={() => setPageError(null)} disableActions type='error' message={pageError} />
@@ -505,7 +505,7 @@ export default function Topics(props) {
                                 <Grid
                                     container
                                     direction='row'
-                                    justify='flex-start'
+                                    justifyContent='flex-start'
                                     spacing={1}
                                     alignItems='stretch'
                                 >
@@ -554,7 +554,7 @@ export default function Topics(props) {
                     style={{ marginTop: '25px' }}
                     container
                     direction='row'
-                    justify='space-between'
+                    justifyContent='space-between'
                     alignItems='center'
                 >
                     {!disableUpdate && (

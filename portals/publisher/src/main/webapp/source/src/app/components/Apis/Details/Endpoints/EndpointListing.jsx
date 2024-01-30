@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@mui/material';
-import { withStyles } from '@material-ui/core';
+import withStyles from '@mui/styles/withStyles';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import GenericEndpoint from './GenericEndpoint';

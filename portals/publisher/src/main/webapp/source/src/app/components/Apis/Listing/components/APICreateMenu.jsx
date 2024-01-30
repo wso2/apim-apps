@@ -17,8 +17,8 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => {
             margin: 'auto',
         },
         popover: {
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 width: '95vw',
             },
             [theme.breakpoints.up('md')]: {
@@ -66,38 +66,36 @@ const APICreateMenu = () => {
         soapApiIcon,
         streamingApiIcon,
     } = theme.custom.landingPage.icons;
-    return (
-        !AuthManager.isNotCreator() && (
-            <MenuButton
-                buttonProps={{
-                    id: 'itest-create-api-menu-button',
-                    color: 'primary',
-                    variant: 'contained',
-                    'aria-label': 'View create API options',
-                }}
-                menuList={(
-                    <Grid
-                        className={popover}
-                        container
-                        direction='row'
-                        justify='space-around'
-                        alignItems='flex-start'
-                        spacing={2}
-                    >
-                        <RestAPIMenu isCreateMenu icon={restApiIcon} />
-                        <SoapAPIMenu isCreateMenu icon={soapApiIcon} />
-                        <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
-                        <StreamingAPIMenu isCreateMenu icon={streamingApiIcon} />
-                        <Box display={{ xs: 'none', md: 'block' }} mx={2}>
-                            <Divider className={dividerCls} light orientation='vertical' variant='inset' />
-                        </Box>
-                        <ServiceCatalogMenu isCreateMenu icon={streamingApiIcon} />
-                    </Grid>
-                )}
-            >
-                Create API
-            </MenuButton>
-        )
+    return !AuthManager.isNotCreator() && (
+        <MenuButton
+            buttonProps={{
+                id: 'itest-create-api-menu-button',
+                color: 'primary',
+                variant: 'contained',
+                'aria-label': 'View create API options',
+            }}
+            menuList={(
+                <Grid
+                    className={popover}
+                    container
+                    direction='row'
+                    justifyContent='space-around'
+                    alignItems='flex-start'
+                    spacing={2}
+                >
+                    <RestAPIMenu isCreateMenu icon={restApiIcon} />
+                    <SoapAPIMenu isCreateMenu icon={soapApiIcon} />
+                    <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
+                    <StreamingAPIMenu isCreateMenu icon={streamingApiIcon} />
+                    <Box display={{ xs: 'none', md: 'block' }} mx={2}>
+                        <Divider className={dividerCls} light orientation='vertical' variant='inset' />
+                    </Box>
+                    <ServiceCatalogMenu isCreateMenu icon={streamingApiIcon} />
+                </Grid>
+            )}
+        >
+            Create API
+        </MenuButton>
     );
 };
 export default APICreateMenu;

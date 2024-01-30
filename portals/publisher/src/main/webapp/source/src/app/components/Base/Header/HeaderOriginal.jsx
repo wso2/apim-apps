@@ -1,5 +1,6 @@
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import AppBar from '@mui/material/AppBar';
 import { Toolbar } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
@@ -61,7 +62,7 @@ export default function HeaderOriginal(props) {
                         aria-label='Expand publisher landing page drawer'
                         onClick={handleDrawerToggle}
                         edge='start'
-                    >
+                        size='large'>
                         <Icon
                             fontSize='large'
                             className={classes.drawerToggleIcon}
@@ -79,11 +80,15 @@ export default function HeaderOriginal(props) {
                             </Link>
                         </Box>
                         <Box display='flex'>
-                            <Hidden smDown>
+                            <Hidden mdDown>
                                 <HeaderSearch />
                             </Hidden>
                             <Hidden mdUp>
-                                <IconButton onClick={toggleMiniSearch} color='inherit' aria-label='Search button'>
+                                <IconButton
+                                    onClick={toggleMiniSearch}
+                                    color='inherit'
+                                    aria-label='Search button'
+                                    size='large'>
                                     <SearchIcon className={classes.menuIcon} />
                                 </IconButton>
                                 {openMiniSearch

@@ -18,7 +18,7 @@
 
 import React from 'react';
 import { withRouter } from 'react-router';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';

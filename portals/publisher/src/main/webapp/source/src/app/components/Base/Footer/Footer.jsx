@@ -17,7 +17,8 @@
  */
 
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
@@ -48,7 +49,7 @@ function Footer() {
 
     return (
         <footer className={classes.footer}>
-            <Grid container direction='row' justify='space-between' alignItems='center'>
+            <Grid container direction='row' justifyContent='space-between' alignItems='center'>
                 <Grid item>
                     {theme.custom.footer.text ? theme.custom.footer.text : (
                         <Typography noWrap>

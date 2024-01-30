@@ -26,14 +26,14 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Tooltip from '@mui/material/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import AddIcon from '@mui/icons-material/Add';
 import CardHeader from '@mui/material/CardHeader';
 import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Checkbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
     },
     content: {
-        margin: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`,
+        margin: `${theme.spacing(2)} 0 ${theme.spacing(2)} 0`,
     },
     head: {
         fontWeight: 200,

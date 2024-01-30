@@ -17,7 +17,8 @@
  */
 
 import React from 'react';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
+import withTheme from '@mui/styles/withTheme';
 import PropTypes from 'prop-types';
 import Chip from '@mui/material/Chip';
 import LaunchIcon from '@mui/icons-material/Launch';

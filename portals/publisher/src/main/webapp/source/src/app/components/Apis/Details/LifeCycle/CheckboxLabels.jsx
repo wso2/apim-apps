@@ -20,14 +20,14 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Link } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
-import green from '@material-ui/core/colors/green';
-import yellow from '@material-ui/core/colors/yellow';
 import LaunchIcon from '@mui/icons-material/Launch';
+
+import { green, yellow } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) => ({
     stateButton: {

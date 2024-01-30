@@ -19,7 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography, Tooltip } from '@mui/material';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Icon from '@mui/material/Icon';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';

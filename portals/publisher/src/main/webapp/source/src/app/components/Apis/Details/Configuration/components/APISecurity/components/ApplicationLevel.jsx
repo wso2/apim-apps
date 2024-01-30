@@ -29,7 +29,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AuthorizationHeader from 'AppComponents/Apis/Details/Configuration/components/AuthorizationHeader.jsx';
 import ApiKeyHeader from "AppComponents/Apis/Details/Configuration/components/ApiKeyHeader";
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import Radio from '@mui/material/Radio';

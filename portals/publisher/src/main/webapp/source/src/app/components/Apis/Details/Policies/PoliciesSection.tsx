@@ -17,7 +17,7 @@
  */
 
 import { Grid } from '@mui/material';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import CONSTS from 'AppData/Constants';

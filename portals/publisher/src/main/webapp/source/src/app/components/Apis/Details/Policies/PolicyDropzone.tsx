@@ -17,15 +17,15 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Grid, Typography } from '@mui/material';
-import { Theme, makeStyles } from '@material-ui/core';
+import { Grid, Typography , Theme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { useDrop } from 'react-dnd';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
 import clsx from 'clsx';
+import { green, red } from '@mui/material/colors';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
     dropzoneDiv: {

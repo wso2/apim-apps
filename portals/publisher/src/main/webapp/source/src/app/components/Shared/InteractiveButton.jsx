@@ -18,11 +18,11 @@
 
 import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { withStyles } from '@material-ui/core/styles';
-import green from '@material-ui/core/colors/green';
+import withStyles from '@mui/styles/withStyles';
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { green } from '@mui/material/colors';
 
 const styles = (theme) => ({
     wrapper: {

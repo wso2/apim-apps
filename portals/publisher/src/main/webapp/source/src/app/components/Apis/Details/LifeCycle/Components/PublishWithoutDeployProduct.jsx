@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import MuiDialogTitle from '@mui/material/DialogTitle';
@@ -55,7 +55,11 @@ const DialogTitle = withStyles(styles)((props) => {
         <MuiDialogTitle disableTypography className={classes.root} {...other}>
             <Typography variant='h6'>{children}</Typography>
             {onClose ? (
-                <IconButton aria-label='close' className={classes.closeButton} onClick={onClose}>
+                <IconButton
+                    aria-label='close'
+                    className={classes.closeButton}
+                    onClick={onClose}
+                    size='large'>
                     <CloseIcon />
                 </IconButton>
             ) : null}

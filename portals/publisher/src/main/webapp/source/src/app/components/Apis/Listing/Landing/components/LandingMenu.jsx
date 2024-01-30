@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import blue from '@material-ui/core/colors/blue';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Configurations from 'Config';
 import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { blue } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -62,7 +62,7 @@ const   LandingMenu = (props) => {
                 bgcolor='background.paper'
                 justifyContent='center'
                 alignItems='center'
-                borderRadius={8}
+                borderRadius='8px'
                 borderColor='grey.300'
                 display='flex'
                 border={1}
@@ -79,7 +79,7 @@ const   LandingMenu = (props) => {
                 <Grid
                     container
                     direction='row'
-                    justify='center'
+                    justifyContent='center'
                     alignItems='center'
                 >
                     <Grid item xs={12}>
@@ -124,13 +124,13 @@ const   LandingMenu = (props) => {
                                     setIsCollapsed(false);
                                     e.preventDefault(); e.stopPropagation();
                                 }}
-                            >
+                                size='large'>
                                 <CloseIcon />
                             </IconButton>
                             <Grid
                                 container
                                 direction='row'
-                                justify='flex-start'
+                                justifyContent='flex-start'
                                 alignItems='center'
                                 spacing={4}
                             >

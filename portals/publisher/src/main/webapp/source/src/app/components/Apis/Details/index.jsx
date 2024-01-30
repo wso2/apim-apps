@@ -26,7 +26,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import CodeIcon from '@mui/icons-material/Code';
 import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 import ResourcesIcon from '@mui/icons-material/VerticalSplit';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { injectIntl, defineMessages } from 'react-intl';
 import {
     Redirect, Route, Switch, Link, matchPath,

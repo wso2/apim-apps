@@ -16,9 +16,7 @@
  * under the License.
  */
 import React from 'react';
-// import { unwrap } from '@material-ui/core/test-utils';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme, adaptV4Theme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
 import Themes from 'AppData/defaultTheme';
 import LeftMenuItem from './LeftMenuItem';
@@ -30,9 +28,11 @@ describe.skip('<LeftMenuItem/> tests', () => {
     test('should render the <LeftMenuItem/> component with light theme styles', () => {
         const { light } = Themes;
         const TestComponent = (
-            <MuiThemeProvider theme={createTheme(light)}>
-                <LeftMenuItem />
-            </MuiThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={createTheme(adaptV4Theme(light))}>
+                    <LeftMenuItem />
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
         // DEPRECATED_mount(TestComponent);
     });

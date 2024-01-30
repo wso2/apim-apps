@@ -17,7 +17,7 @@
  */
 
 import { Typography } from '@mui/material';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';

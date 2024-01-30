@@ -22,7 +22,7 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';

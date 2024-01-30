@@ -20,7 +20,7 @@ import React from 'react';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import deburr from 'lodash/deburr';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 
 import suggestions from 'AppComponents/Apis/Details/GoTo/RouteMappings';

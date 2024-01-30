@@ -19,7 +19,7 @@
 import React, { Suspense, lazy } from 'react';
 import AppContext from 'AppComponents/Shared/AppContext';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { FormattedMessage, injectIntl } from 'react-intl';

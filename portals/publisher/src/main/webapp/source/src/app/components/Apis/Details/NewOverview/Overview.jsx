@@ -18,14 +18,14 @@
 
 import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import green from '@material-ui/core/colors/green';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import API from 'AppData/api';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
+import { green } from '@mui/material/colors';
 import Resources from './Resources';
 import Operations from './Operations';
 import ProductResources from './ProductResources';

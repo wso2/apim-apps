@@ -26,7 +26,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { isRestricted } from 'AppData/AuthManager';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { Link, useHistory } from 'react-router-dom';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';

@@ -17,7 +17,7 @@ import {
     Document,
     ISpectralDiagnostic,
 } from '@stoplight/spectral-core';
-import { green, orange } from '@material-ui/core/colors';
+import { green, orange } from '@mui/material/colors';
 import { oas } from '@stoplight/spectral-rulesets';
 import { FormattedMessage } from 'react-intl';
 import ToggleButton from '@mui/lab/ToggleButton';
@@ -27,7 +27,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { makeStyles} from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };

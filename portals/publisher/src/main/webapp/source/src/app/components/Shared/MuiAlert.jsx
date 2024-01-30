@@ -6,10 +6,11 @@
  */
 import * as React from 'react';
 import clsx from 'clsx';
-import { withStyles, lighten, darken } from '@material-ui/core/styles';
+import { lighten, darken } from '@mui/material/styles';
+import withStyles from '@mui/styles/withStyles';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
-import { capitalize } from '@material-ui/core/utils';
+import { capitalize } from '@mui/material/utils';
 import SuccessOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
@@ -18,8 +19,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import CloseIcon from '@mui/icons-material/Close';
 
 export const styles = (theme) => {
-    const getColor = theme.palette.type === 'light' ? darken : lighten;
-    const getBackgroundColor = theme.palette.type === 'light' ? lighten : darken;
+    const getColor = theme.palette.mode === 'light' ? darken : lighten;
+    const getBackgroundColor = theme.palette.mode === 'light' ? lighten : darken;
 
     return {
         /* Styles applied to the root element. */

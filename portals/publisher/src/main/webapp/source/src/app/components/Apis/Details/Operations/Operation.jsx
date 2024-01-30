@@ -21,7 +21,7 @@ import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import Chip from '@mui/material/Chip';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';

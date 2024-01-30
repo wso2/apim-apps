@@ -20,7 +20,7 @@ import {
 } from '@stoplight/spectral-core';
 import *  as spectralFunc from "@stoplight/spectral-functions";
 import { oas } from '@stoplight/spectral-rulesets';
-import { green, orange } from '@material-ui/core/colors';
+import { green, orange } from '@mui/material/colors';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';

@@ -26,7 +26,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import API from 'AppData/api';
 import Radio from '@mui/material/Radio';

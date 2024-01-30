@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -113,14 +113,14 @@ export default function ServiceCard(props) {
                     <Grid
                         container
                         direction='row'
-                        justify='space-between'
+                        justifyContent='space-between'
                         alignItems='stretch'
                     >
                         <Grid item xs={12}>
                             <Grid
                                 container
                                 direction='row'
-                                justify='flex-start'
+                                justifyContent='flex-start'
                                 alignItems='center'
                             >
                                 <Grid item>
@@ -161,7 +161,7 @@ export default function ServiceCard(props) {
                     <Grid
                         container
                         direction='row'
-                        justify='space-between'
+                        justifyContent='space-between'
                         alignItems='center'
                     >
                         <Box pl={1}>

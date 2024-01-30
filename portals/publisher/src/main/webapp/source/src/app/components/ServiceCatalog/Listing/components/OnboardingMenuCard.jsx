@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -48,7 +48,7 @@ function OnboardingMenuCard(props) {
                 <Grid
                     container
                     direction='row'
-                    justify='center'
+                    justifyContent='center'
                     alignItems='flex-end'
                     className={classes.cardContainer}
                 >

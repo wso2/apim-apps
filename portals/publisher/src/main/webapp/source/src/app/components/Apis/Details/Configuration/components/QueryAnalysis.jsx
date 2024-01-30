@@ -18,7 +18,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from '@mui/material';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';

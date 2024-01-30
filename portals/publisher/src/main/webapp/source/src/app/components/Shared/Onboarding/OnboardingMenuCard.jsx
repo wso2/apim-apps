@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Configurations from 'Config';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
@@ -46,7 +46,6 @@ const RestAPIMenu = (props) => {
     const Component = disabled ? span : Link;
 
     return (
-
         <Grid
             item
             xs={12}
@@ -67,7 +66,7 @@ const RestAPIMenu = (props) => {
                     bgcolor='background.paper'
                     justifyContent='center'
                     alignItems='center'
-                    borderRadius={8}
+                    borderRadius='8px'
                     borderColor='grey.300'
                     display='flex'
                     border={1}
@@ -82,7 +81,7 @@ const RestAPIMenu = (props) => {
                     <Grid
                         container
                         direction='column'
-                        justify='space-between'
+                        justifyContent='space-between'
                         alignItems='center'
                     >
                         <Grid item xs={12}>

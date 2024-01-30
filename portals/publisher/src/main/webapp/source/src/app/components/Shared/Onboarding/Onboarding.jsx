@@ -1,11 +1,11 @@
 import React from 'react';
-import { useTheme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const useStyles = makeStyles({
     root: {
@@ -16,7 +16,7 @@ const useStyles = makeStyles({
 const Onboarding = (props) => {
     const { title, subTitle, children } = props;
     const theme = useTheme();
-    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
+    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
     const { root } = useStyles();
 
     return (
@@ -24,7 +24,7 @@ const Onboarding = (props) => {
             <Grid
                 container
                 direction='column'
-                justify='center'
+                justifyContent='center'
             >
                 <Grid item xs={12}>
                     <Box pt={isXsOrBelow ? 2 : 7} />
@@ -45,7 +45,7 @@ const Onboarding = (props) => {
                         <Grid
                             container
                             direction='row'
-                            justify='center'
+                            justifyContent='center'
                             alignItems='flex-start'
                         >
                             {children}
@@ -54,7 +54,6 @@ const Onboarding = (props) => {
                 </Grid>
             </Grid>
         </div>
-
     );
 };
 

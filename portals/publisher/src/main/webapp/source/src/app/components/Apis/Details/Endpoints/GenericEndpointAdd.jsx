@@ -22,7 +22,7 @@ import {
     InputAdornment,
     TextField,
 } from '@mui/material';
-import { withStyles } from '@material-ui/core';
+import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
@@ -98,7 +98,7 @@ function GenericEndpointAdd(props) {
                                 aria-label='Search'
                                 disabled={serviceUrl === ''}
                                 id={category + '-' + endpointType + '-add-btn'}
-                            >
+                                size='large'>
                                 <Icon>
                                     add
                                 </Icon>

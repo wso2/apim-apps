@@ -24,7 +24,7 @@ import { Progress } from 'AppComponents/Shared';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Button from '@mui/material/Button';
-import withStyles from '@material-ui/core/styles/withStyles';
+import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import { List, ListItem, ListItemText } from '@mui/material';
 import AddCircle from '@mui/icons-material/AddCircle';
@@ -73,7 +73,7 @@ const styles = (theme) => ({
         marginRight: theme.spacing(1),
     },
     content: {
-        margin: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`,
+        margin: `${theme.spacing(2)} 0 ${theme.spacing(2)} 0`,
     },
     head: {
         fontWeight: 200,

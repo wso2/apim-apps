@@ -123,151 +123,149 @@ function MockImplEndpoints(props) {
         return <Progress />
     }
 
-    return (
-        <>
-            <Grid item>
+    return <>
+        <Grid item>
+            <Typography>
+                <FormattedMessage
+                    id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Options'
+                    defaultMessage='Select the gateway type'
+                />
+            </Typography>
+            <RadioGroup
+                aria-label='accessMethod'
+                name='accessMethod'
+                value={scriptType}
+                onChange={handleEndpointTypeSelect}
+            >
+                <div>
+                    <FormControlLabel
+                        value='INLINE'
+                        control={<Radio color='primary' />}
+                        label={
+                            (
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline'
+                                    defaultMessage='Regular gateway (Synapse gateway)'
+                                />
+                            )
+                        }
+                    />
+                </div>
+                <div>
+                    <FormControlLabel
+                        value='MOCKED_OAS'
+                        control={<Radio color='primary' />}
+                        label={
+                            (
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS'
+                                    defaultMessage='Choreo Connect'
+                                />
+                            )
+                        }
+                    />
+                    <Tooltip
+                        title={
+                            (
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS'
+                                        + '.description'}
+                                    defaultMessage='If you want to add/update examples, update the API Definition'
+                                />
+                            )
+                        }
+                    >
+                        <Icon>help_outline</Icon>
+                    </Tooltip>
+                </div>
+            </RadioGroup>
+        </Grid>
+        <Grid container direction='row' justifyContent='flex-start' spacing={2} alignItems='stretch'>
+            <Grid item md={12}>
+                <Paper>
+                    {Object.keys(paths).map((path) => {
+                        return (
+                            <Grid key={path} item md={12}>
+                                <GroupOfOperations openAPI={swagger} tag={path}>
+                                    <Grid
+                                        container
+                                        direction='column'
+                                        justifyContent='flex-start'
+                                        spacing={1}
+                                        alignItems='stretch'
+                                    >
+                                        {Object.keys(paths[path]).map((method) => {
+                                            return CONSTS.HTTP_METHODS.includes(method) ? (
+                                                <Grid key={`${path}/${method}`} item>
+                                                    <GenericOperation
+                                                        target={path}
+                                                        verb={method}>
+                                                        {scriptType === 'MOCKED_OAS' ?
+                                                            <MockedOASOperation
+                                                                operation={paths[path][method]}
+                                                            />
+                                                            :
+                                                            <MockScriptOperation
+                                                                resourcePath={path}
+                                                                resourceMethod={method}
+                                                                operation={paths[path][method]}
+                                                                updatePaths={updatePaths}
+                                                                paths={paths}
+                                                                mockScripts={mockScripts}
+                                                            />
+                                                        }
+                                                    </GenericOperation>
+                                                </Grid>
+                                            ) : null;
+                                        })}
+                                    </Grid>
+                                </GroupOfOperations>
+                            </Grid>
+                        );
+                    })}
+                </Paper>
+            </Grid>
+        </Grid>
+
+        <Dialog open={typeChangeConfirmation}>
+            <DialogTitle>
                 <Typography>
                     <FormattedMessage
-                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Options'
-                        defaultMessage='Select the gateway type'
+                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation'
+                        defaultMessage='Change Mock implementation'
                     />
                 </Typography>
-                <RadioGroup
-                    aria-label='accessMethod'
-                    name='accessMethod'
-                    value={scriptType}
-                    onChange={handleEndpointTypeSelect}
+            </DialogTitle>
+            <DialogContent>
+                <Typography>
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message'
+                        defaultMessage='Your current mock endpoint implementation scripts will be lost.'
+                    />
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={() => { setTypeChangeConfirmation(false) }}
+                    color='primary'
                 >
-                    <div>
-                        <FormControlLabel
-                            value='INLINE'
-                            control={<Radio color='primary' />}
-                            label={
-                                (
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline'
-                                        defaultMessage='Regular gateway (Synapse gateway)'
-                                    />
-                                )
-                            }
-                        />
-                    </div>
-                    <div>
-                        <FormControlLabel
-                            value='MOCKED_OAS'
-                            control={<Radio color='primary' />}
-                            label={
-                                (
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS'
-                                        defaultMessage='Choreo Connect'
-                                    />
-                                )
-                            }
-                        />
-                        <Tooltip
-                            title={
-                                (
-                                    <FormattedMessage
-                                        id={'Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS'
-                                            + '.description'}
-                                        defaultMessage='If you want to add/update examples, update the API Definition'
-                                    />
-                                )
-                            }
-                        >
-                            <Icon>help_outline</Icon>
-                        </Tooltip>
-                    </div>
-                </RadioGroup>
-            </Grid>
-            <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
-                <Grid item md={12}>
-                    <Paper>
-                        {Object.keys(paths).map((path) => {
-                            return (
-                                <Grid key={path} item md={12}>
-                                    <GroupOfOperations openAPI={swagger} tag={path}>
-                                        <Grid
-                                            container
-                                            direction='column'
-                                            justify='flex-start'
-                                            spacing={1}
-                                            alignItems='stretch'
-                                        >
-                                            {Object.keys(paths[path]).map((method) => {
-                                                return CONSTS.HTTP_METHODS.includes(method) ? (
-                                                    <Grid key={`${path}/${method}`} item>
-                                                        <GenericOperation
-                                                            target={path}
-                                                            verb={method}>
-                                                            {scriptType === 'MOCKED_OAS' ?
-                                                                <MockedOASOperation
-                                                                    operation={paths[path][method]}
-                                                                />
-                                                                :
-                                                                <MockScriptOperation
-                                                                    resourcePath={path}
-                                                                    resourceMethod={method}
-                                                                    operation={paths[path][method]}
-                                                                    updatePaths={updatePaths}
-                                                                    paths={paths}
-                                                                    mockScripts={mockScripts}
-                                                                />
-                                                            }
-                                                        </GenericOperation>
-                                                    </Grid>
-                                                ) : null;
-                                            })}
-                                        </Grid>
-                                    </GroupOfOperations>
-                                </Grid>
-                            );
-                        })}
-                    </Paper>
-                </Grid>
-            </Grid>
-
-            <Dialog open={typeChangeConfirmation}>
-                <DialogTitle>
-                    <Typography>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation'
-                            defaultMessage='Change Mock implementation'
-                        />
-                    </Typography>
-                </DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message'
-                            defaultMessage='Your current mock endpoint implementation scripts will be lost.'
-                        />
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={() => { setTypeChangeConfirmation(false) }}
-                        color='primary'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel'
-                            defaultMessage='Cancel'
-                        />
-                    </Button>
-                    <Button
-                        onClick={() => { handleEndpointTypeChange(changedToType) }}
-                        color='primary'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed'
-                            defaultMessage='Proceed'
-                        />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel'
+                        defaultMessage='Cancel'
+                    />
+                </Button>
+                <Button
+                    onClick={() => { handleEndpointTypeChange(changedToType) }}
+                    color='primary'
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed'
+                        defaultMessage='Proceed'
+                    />
+                </Button>
+            </DialogActions>
+        </Dialog>
+    </>;
 }
 
 MockImplEndpoints.propTypes = {

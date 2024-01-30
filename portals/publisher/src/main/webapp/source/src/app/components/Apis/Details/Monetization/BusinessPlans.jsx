@@ -8,7 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 
 import API from 'AppData/api';
 import Banner from 'AppComponents/Shared/Banner';

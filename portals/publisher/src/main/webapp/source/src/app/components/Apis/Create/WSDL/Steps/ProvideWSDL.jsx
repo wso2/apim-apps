@@ -24,7 +24,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -189,7 +189,7 @@ export default function ProvideWSDL(props) {
                                 inputsDispatcher({ action: 'inputValue', value: null });
                                 inputsDispatcher({ action: 'isFormValid', value: false });
                             }}
-                        >
+                            size='large'>
                             <DeleteIcon />
                         </IconButton>
                     </ListItemSecondaryAction>

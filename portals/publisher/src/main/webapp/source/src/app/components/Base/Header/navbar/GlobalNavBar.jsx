@@ -19,8 +19,8 @@ import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import Drawer from '@mui/material/Drawer';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 
 import GlobalNavLinks from './GlobalNavLinks';

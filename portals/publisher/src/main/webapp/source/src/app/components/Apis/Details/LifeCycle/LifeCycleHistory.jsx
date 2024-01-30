@@ -19,7 +19,7 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Person from '@mui/icons-material/Person';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Table from '@mui/material/Table';

@@ -35,7 +35,7 @@ import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 import Chip from '@mui/material/Chip';
 import Joi from '@hapi/joi';
@@ -409,7 +409,7 @@ export default function ApiCreateAsyncAPI(props) {
                 </Grid>
                 <Grid item xs={1} />
                 <Grid item xs={11}>
-                    <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (
                                 <Link to='/apis/'>

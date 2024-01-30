@@ -24,7 +24,7 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
 import { FormattedMessage } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
 

@@ -19,7 +19,7 @@
 import React, {useState, useRef, useContext} from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
@@ -141,7 +141,7 @@ function Edit(props) {
             </Button>
             <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen>
                 <Paper square className={classes.popupHeader}>
-                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size='large'>
                         <Icon>close</Icon>
                     </IconButton>
                     <Typography variant='h4' className={classes.docName}>

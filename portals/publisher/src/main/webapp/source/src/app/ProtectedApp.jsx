@@ -19,8 +19,13 @@
 import React, { Component, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { ThemeProvider as CoreThemeProvider, createTheme } from '@material-ui/core/styles';
-import { ThemeProvider as NormalThemeProvider } from '@material-ui/styles';
+import {
+    ThemeProvider as CoreThemeProvider,
+    StyledEngineProvider,
+    createTheme,
+    adaptV4Theme,
+} from '@mui/material/styles';
+import { ThemeProvider as NormalThemeProvider } from '@mui/styles';
 // import MaterialDesignCustomTheme from 'AppComponents/Shared/CustomTheme';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Base from 'AppComponents/Base';
@@ -195,35 +200,41 @@ export default class Protected extends Component {
             return (<Progress />);
         }
         return (
-            <ThemeProvider theme={createTheme(defaultTheme)}>
-                <ThemeProvider theme={(currentTheme) => createTheme(
-                    merge(currentTheme, (typeof theme === 'function' ? theme(currentTheme) : theme)),
-                )}
-                >
-                    <AppErrorBoundary>
-                        <QueryClientProviderX>
-                            <Base user={user}>
-                                <AppContextProvider value={{
-                                    user,
-                                    settings,
-                                    updateSettings: this.updateSettings,
-                                }}
-                                >
-                                    <Switch>
-                                        <Redirect exact from='/' to='/apis' />
-                                        <Route path='/apis' component={DeferredAPIs} />
-                                        <Route path='/api-products' component={DeferredAPIs} />
-                                        <Route path='/scopes' component={Scopes} />
-                                        <Route path='/policies' component={CommonPolicies} />
-                                        <Route path='/service-catalog' component={ServiceCatalogRouting} />
-                                        <Route component={ResourceNotFound} />
-                                    </Switch>
-                                </AppContextProvider>
-                            </Base>
-                        </QueryClientProviderX>
-                    </AppErrorBoundary>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={createTheme(adaptV4Theme(defaultTheme))}>
+                    <StyledEngineProvider injectFirst>
+                        <ThemeProvider theme={(currentTheme) => createTheme(
+                            adaptV4Theme(
+                                merge(currentTheme, (typeof theme === 'function' ? theme(currentTheme) : theme))
+                            ),
+                        )}
+                        >
+                            <AppErrorBoundary>
+                                <QueryClientProviderX>
+                                    <Base user={user}>
+                                        <AppContextProvider value={{
+                                            user,
+                                            settings,
+                                            updateSettings: this.updateSettings,
+                                        }}
+                                        >
+                                            <Switch>
+                                                <Redirect exact from='/' to='/apis' />
+                                                <Route path='/apis' component={DeferredAPIs} />
+                                                <Route path='/api-products' component={DeferredAPIs} />
+                                                <Route path='/scopes' component={Scopes} />
+                                                <Route path='/policies' component={CommonPolicies} />
+                                                <Route path='/service-catalog' component={ServiceCatalogRouting} />
+                                                <Route component={ResourceNotFound} />
+                                            </Switch>
+                                        </AppContextProvider>
+                                    </Base>
+                                </QueryClientProviderX>
+                            </AppErrorBoundary>
+                        </ThemeProvider>
+                    </StyledEngineProvider>
                 </ThemeProvider>
-            </ThemeProvider>
+            </StyledEngineProvider>
         );
     }
 }

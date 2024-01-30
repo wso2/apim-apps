@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
-import { ListItemIcon, ListItem, ListItemText } from '@mui/material';
-import { withStyles, useTheme } from '@material-ui/core';
+import { ListItemIcon, ListItem, ListItemText, useTheme } from '@mui/material';
+import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';

@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';

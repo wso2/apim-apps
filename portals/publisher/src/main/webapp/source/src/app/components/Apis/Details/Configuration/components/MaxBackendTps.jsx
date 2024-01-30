@@ -33,7 +33,7 @@ import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 

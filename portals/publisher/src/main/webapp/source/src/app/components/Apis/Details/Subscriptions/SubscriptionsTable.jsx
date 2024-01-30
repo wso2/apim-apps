@@ -34,7 +34,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import Tooltip from '@mui/material/Tooltip';
-import withStyles from '@material-ui/core/styles/withStyles';
+import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
@@ -206,28 +206,22 @@ function SubscriptionTablePagination(props) {
         <div
             style={{ display: 'flex' }}
         >
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-            >
+            <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} size='large'>
                 <FirstPageIcon />
             </IconButton>
-            <IconButton
-                onClick={handleBackButtonClick}
-                disabled={page === 0}
-            >
+            <IconButton onClick={handleBackButtonClick} disabled={page === 0} size='large'>
                 <KeyboardArrowLeft />
             </IconButton>
             <IconButton
                 onClick={handleNextButtonClick}
                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-            >
+                size='large'>
                 <KeyboardArrowRight />
             </IconButton>
             <IconButton
                 onClick={handleLastPageButtonClick}
                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-            >
+                size='large'>
                 <LastPageIcon />
             </IconButton>
         </div>
@@ -710,7 +704,7 @@ class SubscriptionsTable extends Component {
         const { classes, api } = this.props;
         if (!subscriptions) {
             return (
-                <Grid container direction='row' justify='center' alignItems='center'>
+                <Grid container direction='row' justifyContent='center' alignItems='center'>
                     <Grid item>
                         <CircularProgress />
                     </Grid>
@@ -916,8 +910,8 @@ class SubscriptionsTable extends Component {
                         count={totalSubscription}
                         rowsPerPage={rowsPerPage}
                         page={page}
-                        onChangePage={this.handleChangePage}
-                        onChangeRowsPerPage={(e) => this.handleChangeRowsPerPage(e, changeRowsPerPage)}
+                        onPageChange={this.handleChangePage}
+                        onRowsPerPageChange={(e) => this.handleChangeRowsPerPage(e, changeRowsPerPage)}
                         ActionsComponent={SubscriptionTablePagination}
                     />
                 );

@@ -17,8 +17,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ButtonBase from '@mui/material/ButtonBase';
 import { Link } from 'react-router-dom';

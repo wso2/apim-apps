@@ -17,7 +17,7 @@
  */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
@@ -105,7 +105,7 @@ function SubscriptionConfig(props) {
                 </Grid>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container direction='row' spacing={0} justify='center' alignItems='center'>
+                <Grid container direction='row' spacing={0} justifyContent='center' alignItems='center'>
                     <Grid item xs={6}>
                         <FormControl component='fieldset'>
                             <FormControlLabel

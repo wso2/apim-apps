@@ -25,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/icons-material/List';
 import GridOn from '@mui/icons-material/GridOn';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
@@ -179,10 +179,16 @@ function TopMenu(props) {
                 {showToggle && (
                     <Box height={32} m='auto' mr={8}>
                         <ButtonGroup color='primary' aria-label='outlined primary button group'>
-                            <IconButton onClick={() => setListType('grid')} aria-label='Switch to Grid View'>
+                            <IconButton
+                                onClick={() => setListType('grid')}
+                                aria-label='Switch to Grid View'
+                                size='large'>
                                 <GridOn color={listType === 'grid' ? 'primary' : 'disabled'} />
                             </IconButton>
-                            <IconButton onClick={() => setListType('list')} aria-label='Switch to List View'>
+                            <IconButton
+                                onClick={() => setListType('list')}
+                                aria-label='Switch to List View'
+                                size='large'>
                                 <List color={listType === 'list' ? 'primary' : 'disabled'} />
                             </IconButton>
                         </ButtonGroup>
