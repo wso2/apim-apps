@@ -18,14 +18,16 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { Autocomplete } from '@material-ui/lab';
-import Checkbox from '@material-ui/core/Checkbox';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import API from 'AppData/api';

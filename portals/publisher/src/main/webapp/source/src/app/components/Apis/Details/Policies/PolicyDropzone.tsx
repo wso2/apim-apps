@@ -17,6 +17,8 @@
  */
 
 import React, { FC, useState } from 'react';
+import { Grid, Typography } from '@mui/material';
+import { Theme, makeStyles } from '@material-ui/core';
 import { useDrop } from 'react-dnd';
 import PolicyDropzoneShared from 'AppComponents/Shared/PoliciesUI/PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';

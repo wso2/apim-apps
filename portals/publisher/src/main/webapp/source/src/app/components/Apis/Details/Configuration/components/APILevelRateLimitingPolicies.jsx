@@ -18,20 +18,18 @@
 
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Typography from '@mui/material/Typography';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
@@ -88,8 +86,8 @@ export default function APILevelRateLimitingPolicies(props) {
     }, []);
 
     return (
-        <ExpansionPanel className={classes.expansionPanel} defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        <Accordion className={classes.expansionPanel} defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={classes.subHeading} variant='h6'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.APILevelRateLimitingPolicies.configuration'
@@ -124,8 +122,8 @@ export default function APILevelRateLimitingPolicies(props) {
                         />
                     )}
                 />
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.expansionPanelDetails}>
                 <Grid container spacing={1} alignItems='center'>
                     <Grid item md={6} xs={12}>
                         {!(apiThrottlingPolicy === null) && (
@@ -149,8 +147,8 @@ export default function APILevelRateLimitingPolicies(props) {
                         )}
                     </Grid>
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </Accordion>
     );
 }
 

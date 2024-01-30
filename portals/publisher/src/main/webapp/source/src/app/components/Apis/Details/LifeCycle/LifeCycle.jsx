@@ -17,8 +17,8 @@
  */
 
 import React, { Component } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';

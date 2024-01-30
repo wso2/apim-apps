@@ -18,12 +18,10 @@
 
 import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     tagClass: {
@@ -52,8 +50,8 @@ const OperationGroup: FC<OperationGroupProps> = ({
 
     return (
         <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
-            <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
+            <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} id={tag}>
                     <Typography
                         variant='h4'
                         className={classes.tagClass}
@@ -69,9 +67,9 @@ const OperationGroup: FC<OperationGroupProps> = ({
                             {currentTagInfo.description}
                         </Typography>
                     )}
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionSummary>
+                <AccordionDetails>{children}</AccordionDetails>
+            </Accordion>
         </Box>
     );
 };

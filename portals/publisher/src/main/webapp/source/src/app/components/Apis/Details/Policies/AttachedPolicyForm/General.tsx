@@ -31,7 +31,7 @@ import {
     InputLabel,
     FormControl,
     FormHelperText,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
@@ -418,7 +418,7 @@ const General: FC<GeneralProps> = ({
                         </Grid>
                     ))}
                     {setDroppedPolicy && !isAPILevelPolicy && (
-                        <Grid item container justify='flex-start' xs={12}>
+                        <Grid item container justifyContent='flex-start' xs={12}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -440,7 +440,7 @@ const General: FC<GeneralProps> = ({
                             />
                         </Grid>
                     )}
-                    <Grid item container justify='flex-end' xs={12}>
+                    <Grid item container justifyContent='flex-end' xs={12}>
                         <Button
                             variant='outlined'
                             color='primary'

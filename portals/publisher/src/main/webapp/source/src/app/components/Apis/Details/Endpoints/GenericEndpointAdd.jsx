@@ -21,8 +21,8 @@ import {
     IconButton,
     InputAdornment,
     TextField,
-    withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
+import { withStyles } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';

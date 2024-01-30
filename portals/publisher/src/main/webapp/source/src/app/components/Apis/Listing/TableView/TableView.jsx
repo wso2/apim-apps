@@ -25,7 +25,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import queryString from 'query-string';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import ApiThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/ApiThumb';
 import DocThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/DocThumb';
 import { Progress } from 'AppComponents/Shared';

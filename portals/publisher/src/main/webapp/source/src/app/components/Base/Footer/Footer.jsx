@@ -18,9 +18,9 @@
 
 import React from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Configurations from 'Config';
 
 import FeedbackForm from './FeedbackForm';

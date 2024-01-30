@@ -22,7 +22,7 @@ import LibraryAdd from '@material-ui/icons/LibraryAdd';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 import { resourceMethod, resourcePath, ScopeValidation } from 'AppData/ScopeValidation';

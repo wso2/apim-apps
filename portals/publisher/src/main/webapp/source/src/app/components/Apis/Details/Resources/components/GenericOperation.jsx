@@ -22,11 +22,11 @@ import {
     Button,
     Divider,
     Grid,
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
     Typography,
-} from '@material-ui/core';
+    Accordion, 
+    AccordionSummary, 
+    AccordionDetails
+} from '@mui/material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
@@ -96,12 +96,12 @@ function GenericOperation(props) {
 
     return (
         <>
-            <ExpansionPanel
+            <Accordion
                 expanded={isExpanded}
                 onChange={handleExpansion}
                 className={classes.paperStyles}
             >
-                <ExpansionPanelSummary
+                <AccordionSummary
                     className={classes.highlightSelected}
                     disableRipple
                     disableTouchRipple
@@ -132,12 +132,12 @@ function GenericOperation(props) {
                             </Typography>
                         </Grid>
                     </Grid>
-                </ExpansionPanelSummary>
+                </AccordionSummary>
                 <Divider light className={classes.customDivider} />
-                <ExpansionPanelDetails>
+                <AccordionDetails>
                     {children}
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
         </>
     );
 }

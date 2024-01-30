@@ -17,7 +17,7 @@
  */
 import React from 'react';
 import { useTheme } from '@material-ui/styles';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import PropTypes from 'prop-types';
 import Configurations from 'Config';
 

@@ -21,11 +21,11 @@ import {
     CircularProgress,
     Divider,
     Grid,
-    makeStyles,
     MenuItem,
     TextField,
     Typography,
-} from '@material-ui/core';
+} from '@mui/material';
+import { makeStyles } from '@material-ui/core';
 import { ArrowDropDown } from '@material-ui/icons';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';

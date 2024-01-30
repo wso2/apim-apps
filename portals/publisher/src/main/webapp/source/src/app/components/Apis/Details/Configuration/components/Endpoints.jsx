@@ -19,15 +19,14 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { Link } from 'react-router-dom';
-import Tooltip from '@material-ui/core/Tooltip';
-import Box from '@material-ui/core/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -103,15 +102,15 @@ function Endpoints(props) {
     return (
         <>
             <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded id='endpoints'>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography className={classes.subHeading} variant='h6' component='h4'>
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.Endpoints.endpoints'
                             defaultMessage='Endpoints'
                         />
                     </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                </AccordionSummary>
+                <AccordionDetails className={classes.expansionPanelDetails}>
                     {isDynamicEndpoints(api.endpointConfig)
                         ? (
                             <Box pb={2}>
@@ -218,7 +217,7 @@ function Endpoints(props) {
                             </Typography>
                         </Link>
                     </Box>
-                </ExpansionPanelDetails>
+                </AccordionDetails>
             </WrappedExpansionPanel>
         </>
     );

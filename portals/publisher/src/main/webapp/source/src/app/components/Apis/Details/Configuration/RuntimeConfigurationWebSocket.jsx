@@ -18,12 +18,10 @@
 
 import React, { useReducer, useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import { Link, useHistory } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import FormGroup from '@material-ui/core/FormGroup';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -31,6 +29,8 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import ArrowForwardIcon from '@material-ui/icons/SettingsEthernet';

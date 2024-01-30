@@ -19,15 +19,15 @@
 import React, {
     useReducer, useEffect, useState, useCallback, useMemo,
 } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import isEmpty from 'lodash/isEmpty';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { isRestricted } from 'AppData/AuthManager';

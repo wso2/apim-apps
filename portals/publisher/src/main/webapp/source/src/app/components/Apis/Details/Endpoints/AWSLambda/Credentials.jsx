@@ -21,7 +21,6 @@ import PropTypes from 'prop-types';
 import {
     Grid,
     TextField,
-    makeStyles,
     Typography,
     Tooltip,
     RadioGroup,
@@ -29,9 +28,10 @@ import {
     MenuItem,
     Collapse,
     Radio,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
+} from '@mui/material';
+import { makeStyles } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage } from 'react-intl';

@@ -22,13 +22,9 @@ import React, {
     useContext,
     useState,
 } from 'react';
-import {
-    Grid,
-    Typography,
-    makeStyles,
-    Button,
-} from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { Grid, Typography, Button } from '@mui/material';
+import { makeStyles } from '@material-ui/core';
+import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';

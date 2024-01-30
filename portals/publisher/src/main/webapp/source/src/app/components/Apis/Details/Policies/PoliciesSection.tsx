@@ -16,9 +16,10 @@
  * under the License.
  */
 
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import { makeStyles } from '@material-ui/core';
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
 import Alert from '@material-ui/lab/Alert';
@@ -74,7 +75,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                 <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1}}>
                     <Grid item xs={12}>
                         <Grid
-                            container direction='column' justify='flex-start'
+                            container direction='column' justifyContent='flex-start'
                             spacing={1} alignItems='stretch'
                         >
                             <PoliciesExpansion
@@ -105,7 +106,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                 <Grid
                                     container
                                     direction='column'
-                                    justify='flex-start'
+                                    justifyContent='flex-start'
                                     spacing={1}
                                     alignItems='stretch'
                                 >

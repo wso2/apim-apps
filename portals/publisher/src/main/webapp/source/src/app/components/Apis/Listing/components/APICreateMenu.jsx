@@ -18,13 +18,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-    useTheme,
-} from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { useTheme } from '@material-ui/core';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+
 import AuthManager from 'AppData/AuthManager';
 import RestAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/RestAPIMenu';
 import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';

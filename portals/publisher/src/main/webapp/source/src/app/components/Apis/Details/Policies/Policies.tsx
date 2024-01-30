@@ -16,12 +16,13 @@
  * under the License.
  */
 
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
+import { makeStyles } from '@material-ui/core';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
@@ -30,8 +31,8 @@ import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operation
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { arrayMove } from '@dnd-kit/sortable';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import PolicyList from './PolicyList';
 import type { ApiPolicy, Policy, PolicySpec, ApiLevelPolicy } from './Types';
 import GatewaySelector from './GatewaySelector';

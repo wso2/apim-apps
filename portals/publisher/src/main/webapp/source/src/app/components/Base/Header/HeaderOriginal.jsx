@@ -1,12 +1,12 @@
 import React from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
+import AppBar from '@mui/material/AppBar';
+import { Toolbar } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/SearchOutlined';
-import Hidden from '@material-ui/core/Hidden';
-import Box from '@material-ui/core/Box';
+import Hidden from '@mui/material/Hidden';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import Avatar from 'AppComponents/Base/Header/avatar/Avatar';
 import CloseIcon from '@material-ui/icons/Close';

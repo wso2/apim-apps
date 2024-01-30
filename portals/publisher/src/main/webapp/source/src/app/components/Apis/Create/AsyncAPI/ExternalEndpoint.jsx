@@ -18,9 +18,9 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import MuiAlert from 'AppComponents/Shared/MuiAlert';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 const ExternalEndpoint = (props) => {
     const {

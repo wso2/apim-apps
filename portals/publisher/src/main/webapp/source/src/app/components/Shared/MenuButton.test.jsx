@@ -16,9 +16,9 @@
  * under the License.
  */
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 // import { unwrap } from '@material-ui/core/test-utils';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 import MenuButton from './MenuButton';
 

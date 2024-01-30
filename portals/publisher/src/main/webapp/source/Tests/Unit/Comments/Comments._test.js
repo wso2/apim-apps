@@ -16,7 +16,7 @@
  * under the License.
  */
 // import { unwrap } from '@material-ui/core/test-utils';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ArrowDropDownCircleOutlined from '@material-ui/icons/ArrowDropDownCircleOutlined';
 import Comments from '../../../src/app/components/Apis/Details/Comments/Comments';

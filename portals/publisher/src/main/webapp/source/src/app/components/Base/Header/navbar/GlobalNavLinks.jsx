@@ -17,15 +17,15 @@
  */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { useTheme } from '@material-ui/styles';
 import { FormattedMessage } from 'react-intl';
 import AuthManager, { isRestricted } from 'AppData/AuthManager';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 
 import GlobalNavLink from './GlobalNavLink';
 

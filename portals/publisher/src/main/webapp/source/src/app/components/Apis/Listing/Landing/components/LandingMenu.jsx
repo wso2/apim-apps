@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import blue from '@material-ui/core/colors/blue';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Configurations from 'Config';
-import Fade from '@material-ui/core/Fade';
-import IconButton from '@material-ui/core/IconButton';
+import Fade from '@mui/material/Fade';
+import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({

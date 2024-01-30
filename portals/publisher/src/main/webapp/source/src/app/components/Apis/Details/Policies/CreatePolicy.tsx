@@ -17,14 +17,15 @@
  */
 
 import React, { useContext, useState } from 'react';
-import { Typography, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
+import { Typography } from '@mui/material';
+import { Theme, makeStyles } from '@material-ui/core';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api.js';

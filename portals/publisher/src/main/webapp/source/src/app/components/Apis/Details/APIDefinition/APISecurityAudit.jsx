@@ -15,17 +15,17 @@
  */
 
 import React, { Component } from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
-import Tooltip from '@material-ui/core/Tooltip';
-import Button from '@material-ui/core/Button';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
 import HelpOutline from '@material-ui/icons/HelpOutline';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { Line } from 'rc-progress';
 import Progress from 'AppComponents/Shared/Progress';
@@ -34,8 +34,8 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 
 import MUIDataTable from 'mui-datatables';
 
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
 import MonacoEditor from 'react-monaco-editor';
 
 const styles = (theme) => ({

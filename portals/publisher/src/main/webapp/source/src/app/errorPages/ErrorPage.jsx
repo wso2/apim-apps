@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import { makeStyles } from '@material-ui/core/styles';
 import ErrorList from './ErrorList';
 

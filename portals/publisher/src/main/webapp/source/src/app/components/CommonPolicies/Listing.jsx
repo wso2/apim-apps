@@ -17,28 +17,21 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-    Button,
-    Grid,
-    IconButton,
-    Tooltip,
-    Typography,
-    useTheme,
-    makeStyles,
-} from '@material-ui/core';
+import { Button, Grid, IconButton, Tooltip, Typography } from '@mui/material';
+import { useTheme, makeStyles } from '@material-ui/core';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import AddCircle from '@material-ui/icons/AddCircle';
 import MUIDataTable from 'mui-datatables';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import { isRestricted } from 'AppData/AuthManager';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import ArrowForward from '@material-ui/icons/ArrowForward';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import TrendingDown from '@material-ui/icons/TrendingDown';

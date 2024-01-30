@@ -16,15 +16,15 @@
  * under the License.
  */
 import React, { lazy } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import withStyles from '@material-ui/core/styles/withStyles';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage } from 'react-intl';
 import CancelIcon from '@material-ui/icons/Cancel';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 import { orange } from '@material-ui/core/colors';
 import differenceBy from 'lodash/differenceBy'
 import SwaggerUI from './swaggerUI/SwaggerUI';

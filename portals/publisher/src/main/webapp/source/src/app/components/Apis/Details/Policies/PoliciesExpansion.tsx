@@ -18,6 +18,12 @@
 
 import React, { FC, useContext, useEffect, useState } from 'react';
 import PoliciesExpansionShared from 'AppComponents/Shared/PoliciesUI/PoliciesExpansion';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import PolicyDropzone from './PolicyDropzone';
@@ -252,6 +258,84 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             FlowArrow={FlowArrow}
             PolicyDropzone={PolicyDropzone}
         />
+        // <AccordionDetails>
+        //     <Grid
+        //         spacing={2}
+        //         container
+        //         direction='row'
+        //         justifyContent='flex-start'
+        //         alignItems='flex-start'
+        //     >
+        //         <Grid item xs={12} md={12}>
+        //             <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-request'>
+        //                 <Typography variant='subtitle2' align='left'>
+        //                     <FormattedMessage
+        //                         id='Apis.Details.Policies.PoliciesExpansion.request.flow.title'
+        //                         defaultMessage='Request Flow'
+        //                     />
+        //                 </Typography>
+        //                 <FlowArrow arrowDirection='left' />
+        //                 <PolicyDropzone
+        //                     policyDisplayStartDirection='left'
+        //                     currentPolicyList={requestFlowPolicyList}
+        //                     setCurrentPolicyList={setRequestFlowPolicyList}
+        //                     droppablePolicyList={requestFlowDroppablePolicyList}
+        //                     currentFlow='request'
+        //                     target={target}
+        //                     verb={verb}
+        //                     allPolicies={allPolicies}
+        //                     isAPILevelPolicy={isAPILevelPolicy}
+        //                 />
+        //             </Box>
+        //             <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-response'>
+        //                 <Typography variant='subtitle2' align='left'>
+        //                     <FormattedMessage
+        //                         id='Apis.Details.Policies.PoliciesExpansion.response.flow.title'
+        //                         defaultMessage='Response Flow'
+        //                     />
+        //                 </Typography>
+        //                 <FlowArrow arrowDirection='right' />
+        //                 <PolicyDropzone
+        //                     policyDisplayStartDirection='right'
+        //                     currentPolicyList={responseFlowPolicyList}
+        //                     setCurrentPolicyList={setResponseFlowPolicyList}
+        //                     droppablePolicyList={
+        //                         responseFlowDroppablePolicyList
+        //                     }
+        //                     currentFlow='response'
+        //                     target={target}
+        //                     verb={verb}
+        //                     allPolicies={allPolicies}
+        //                     isAPILevelPolicy={isAPILevelPolicy}
+        //                 />
+        //             </Box>
+        //             {!isChoreoConnectEnabled && (
+        //                 <Box className={classes.flowSpecificPolicyAttachGrid}>
+        //                     <Typography variant='subtitle2' align='left'>
+        //                         <FormattedMessage
+        //                             id='Apis.Details.Policies.PoliciesExpansion.fault.flow.title'
+        //                             defaultMessage='Fault Flow'
+        //                         />
+        //                     </Typography>
+        //                     <FlowArrow arrowDirection='right' />
+        //                     <PolicyDropzone
+        //                         policyDisplayStartDirection='right'
+        //                         currentPolicyList={faultFlowPolicyList}
+        //                         setCurrentPolicyList={setFaultFlowPolicyList}
+        //                         droppablePolicyList={
+        //                             faultFlowDroppablePolicyList
+        //                         }
+        //                         currentFlow='fault'
+        //                         target={target}
+        //                         verb={verb}
+        //                         allPolicies={allPolicies}
+        //                         isAPILevelPolicy={isAPILevelPolicy}
+        //                     />
+        //                 </Box>
+        //             )}
+        //         </Grid>
+        //     </Grid>
+        // </AccordionDetails>
     );
 };
 

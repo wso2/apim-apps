@@ -18,21 +18,19 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
 import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import LockIcon from '@material-ui/icons//Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
@@ -156,13 +154,13 @@ function Operation(props) {
                     </Tooltip>
                 </Box>
             )}
-            <ExpansionPanel
+            <Accordion
                 expanded={expandedResource === verb + target}
                 onChange={handleExpansion(verb + target)}
                 disabled={markAsDelete}
                 className={classes.paperStyles}
             >
-                <ExpansionPanelSummary
+                <AccordionSummary
                     className={highlight ? classes.highlightSelected : ''}
                     disableRipple
                     disableTouchRipple
@@ -304,9 +302,9 @@ function Operation(props) {
 
                         </Grid>
                     </Grid>
-                </ExpansionPanelSummary>
+                </AccordionSummary>
                 <Divider light className={classes.customDivider} />
-                <ExpansionPanelDetails>
+                <AccordionDetails>
                     <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
                         <DescriptionAndSummary
                             operation={operation}
@@ -368,8 +366,8 @@ function Operation(props) {
                             )
                         }
                     </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
         </>
     );
 }

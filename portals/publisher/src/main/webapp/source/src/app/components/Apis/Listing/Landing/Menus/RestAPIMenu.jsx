@@ -23,8 +23,8 @@ import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/Landi
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
 import SampleAPI from 'AppComponents/Apis/Listing/SampleAPI/SampleAPI';
-import Divider from '@material-ui/core/Divider';
-import Box from '@material-ui/core/Box';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
 import Configurations from 'Config';
 import API from 'AppData/api';
 

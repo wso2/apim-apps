@@ -19,17 +19,17 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
+    Accordion, 
+    AccordionSummary, 
+    AccordionDetails,
     Grid,
     Icon,
     IconButton,
     MenuItem,
     TextField,
     Typography,
-    withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
+import { withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -38,7 +38,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import EndpointListing from 'AppComponents/Apis/Details/Endpoints/EndpointListing';
 import LoadBalanceConfig from 'AppComponents/Apis/Details/Endpoints/LoadBalanceConfig';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse from '@mui/material/Collapse';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { getEndpointTypeProperty } from './endpointUtils';
 
@@ -219,12 +219,12 @@ function LoadbalanceFailoverConfig(props) {
 
     return (
         <>
-            <ExpansionPanel
+            <Accordion
                 expanded={isConfigExpanded || endpointType === 'load_balance' || endpointType === 'failover'}
                 onChange={() => setConfigExpand(!isConfigExpanded)}
                 className={classes.generalConfigPanel}
             >
-                <ExpansionPanelSummary
+                <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
                     id='panel1bh-header'
@@ -233,8 +233,8 @@ function LoadbalanceFailoverConfig(props) {
                     <Typography className={classes.secondaryHeading}>
                         {getEndpointTypeHeading()}
                     </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className={classes.generalConfigContent}>
+                </AccordionSummary>
+                <AccordionDetails className={classes.generalConfigContent}>
                     {(!epConfig.production_endpoints && !epConfig.sandbox_endpoints)
                         ? (
                             <InlineMessage>
@@ -366,8 +366,8 @@ function LoadbalanceFailoverConfig(props) {
                                 </Grid>
                             </Grid>
                         )}
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
             <Dialog open={isLBConfigOpen}>
                 <DialogTitle>
                     <Typography className={classes.configDialogHeader}>
