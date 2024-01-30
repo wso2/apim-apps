@@ -1,6 +1,5 @@
 import React from 'react';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
-import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { useTheme, styled } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
@@ -283,9 +282,5 @@ function Navigator(props) {
         </StyledDrawer>
     );
 }
-
-Navigator.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
-};
 
 export default withRouter((Navigator));

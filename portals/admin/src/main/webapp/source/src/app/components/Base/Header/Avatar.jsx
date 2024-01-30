@@ -128,11 +128,6 @@ class Avatar extends Component {
      }
 }
 Avatar.propTypes = {
-    classes: PropTypes.shape({
-        userLink: PropTypes.string,
-        profileMenu: PropTypes.string,
-        accountIcon: PropTypes.string,
-    }).isRequired,
     user: PropTypes.shape({ name: PropTypes.string.isRequired }).isRequired,
 };
 

@@ -69,7 +69,7 @@ Header.defaultProps = {
 };
 
 Header.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
+    user: PropTypes.shape({}).isRequired,
     handleDrawerToggle: PropTypes.func.isRequired,
     avatar: PropTypes.element,
 };

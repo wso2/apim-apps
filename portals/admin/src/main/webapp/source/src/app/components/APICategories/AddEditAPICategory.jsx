@@ -229,7 +229,10 @@ AddEdit.propTypes = {
         name: PropTypes.string.isRequired,
     }),
     icon: PropTypes.element,
-    triggerButtonText: PropTypes.shape({}).isRequired,
+    triggerButtonText: PropTypes.oneOfType([
+        PropTypes.element.isRequired,
+        PropTypes.string.isRequired,
+    ]).isRequired,
     title: PropTypes.shape({}).isRequired,
 };
 

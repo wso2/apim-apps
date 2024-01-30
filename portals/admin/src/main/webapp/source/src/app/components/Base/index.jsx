@@ -133,7 +133,6 @@ function Base(props) {
 }
 
 Base.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     children: PropTypes.element.isRequired,
     header: PropTypes.element.isRequired,
     leftMenu: PropTypes.element.isRequired,
