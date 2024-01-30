@@ -22,7 +22,7 @@ import Box from '@mui/material/Box';
 import { makeStyles } from '@material-ui/core';
 import { spectralSeverityMap, spectralSeverityNames } from "./Linting"
 import { Grid, Tooltip, Typography } from '@mui/material';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };
 type APILintingProps = {

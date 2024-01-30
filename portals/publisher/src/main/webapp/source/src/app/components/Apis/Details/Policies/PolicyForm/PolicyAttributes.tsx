@@ -31,8 +31,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import PriorityHighOutlined from '@mui/icons-material/PriorityHighOutlined';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import ToggleButton from '@mui/lab/ToggleButton';
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup';
 import SubjectOutlinedIcon from '@mui/icons-material/SubjectOutlined';
 import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -85,8 +85,8 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
-    const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLElement | null>(null);
+    const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLElement | null>(null);
     const [openedDescriptionPopoverId, setOpenedDescriptionPopoverId] = useState<string | null>(null);
     const [openedValuesPopoverId, setOpenedValuesPopoverId] = useState<string | null>(null);
 
@@ -203,7 +203,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     }
 
     // Description toggle button related actions
-    const handleDescriptionToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+    const handleDescriptionToggle = (event: React.MouseEvent<HTMLElement>, id: string) => {
         setOpenedDescriptionPopoverId(id);
         setDescriptionAnchorEl(event.currentTarget);
     }
@@ -213,7 +213,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     };
 
     // Value properties toggle button related actions
-    const handleValuePropertiesToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+    const handleValuePropertiesToggle = (event: React.MouseEvent<HTMLElement>, id: string) => {
         setOpenedValuesPopoverId(id);
         setValuePropertiesAnchorEl(event.currentTarget);
     }

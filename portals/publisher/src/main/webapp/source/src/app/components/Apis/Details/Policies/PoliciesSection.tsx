@@ -22,7 +22,7 @@ import React, { FC } from 'react';
 import Box from '@mui/material/Box';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/lab/Alert';
 import { FormattedMessage } from 'react-intl';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
