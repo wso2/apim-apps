@@ -26,7 +26,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { Drawer, ListItemIcon, Typography } from '@mui/material';
 import { Theme, makeStyles } from '@material-ui/core';
 import IconButton from '@mui/material/IconButton';
-import { Settings, Close } from '@material-ui/icons';
+import { Settings, Close } from '@mui/icons-material';
 import Divider from '@mui/material/Divider';
 import General from './AttachedPolicyForm/General';
 import type { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';

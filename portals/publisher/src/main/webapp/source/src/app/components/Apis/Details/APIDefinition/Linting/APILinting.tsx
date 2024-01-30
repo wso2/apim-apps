@@ -23,10 +23,10 @@ import { FormattedMessage } from 'react-intl';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import Box from '@mui/material/Box';
-import WarningIcon from '@material-ui/icons/Warning';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import InfoIcon from '@mui/icons-material/Info';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { makeStyles} from '@material-ui/core';
 
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well

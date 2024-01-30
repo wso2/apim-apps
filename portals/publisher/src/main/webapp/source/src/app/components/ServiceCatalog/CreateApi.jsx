@@ -26,7 +26,7 @@ import DialogActions from '@mui/material/DialogActions';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';

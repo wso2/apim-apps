@@ -18,7 +18,7 @@
 import React, { useState, useContext } from 'react';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import PropTypes from 'prop-types';
-import WarningIcon from '@material-ui/icons/Warning';
+import WarningIcon from '@mui/icons-material/Warning';
 import Alert from 'AppComponents/Shared/Alert';
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';

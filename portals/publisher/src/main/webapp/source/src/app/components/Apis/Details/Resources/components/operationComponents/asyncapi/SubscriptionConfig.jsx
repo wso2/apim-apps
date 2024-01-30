@@ -27,7 +27,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';

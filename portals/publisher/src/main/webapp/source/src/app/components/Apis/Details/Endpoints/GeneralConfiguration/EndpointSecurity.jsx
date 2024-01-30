@@ -23,12 +23,12 @@ import {
     ListItemAvatar,
     ListItemText,
 } from '@mui/material';
-import { RemoveRedEye } from '@material-ui/icons';
+import { RemoveRedEye } from '@mui/icons-material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
-import AddCircle from '@material-ui/icons/AddCircle';
+import AddCircle from '@mui/icons-material/AddCircle';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

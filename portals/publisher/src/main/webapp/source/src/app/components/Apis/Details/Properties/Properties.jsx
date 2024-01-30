@@ -29,7 +29,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import AddCircle from '@material-ui/icons/AddCircle';
+import AddCircle from '@mui/icons-material/AddCircle';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

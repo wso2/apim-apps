@@ -23,11 +23,11 @@ import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import { Accordion, AccordionSummary } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
 import Badge from '@mui/material/Badge';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
 import PoliciesExpansion from './PoliciesExpansion';
 import type { Policy, PolicySpec } from './Types'

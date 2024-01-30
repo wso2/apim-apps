@@ -29,15 +29,15 @@ import Tooltip from '@mui/material/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import CardHeader from '@mui/material/CardHeader';
 import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useTheme } from '@material-ui/core';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Checkbox from '@mui/material/Checkbox';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 

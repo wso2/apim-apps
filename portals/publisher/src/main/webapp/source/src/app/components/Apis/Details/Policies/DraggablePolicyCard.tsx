@@ -25,7 +25,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Utils from 'AppData/Utils';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import IconButton from '@mui/material/IconButton';
 import { FormattedMessage } from 'react-intl';
 import { useDrag } from 'react-dnd';

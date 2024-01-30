@@ -28,14 +28,14 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Tooltip from '@mui/material/Tooltip';
 import Avatar from '@mui/material/Avatar';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Dropzone from 'react-dropzone';
 import clsx from 'clsx';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
 import Icon from '@mui/material/Icon';
-import { HelpOutline } from '@material-ui/icons';
+import { HelpOutline } from '@mui/icons-material';
 import { GATEWAY_TYPE_LABELS } from './SourceDetails';
 
 const useStyles = makeStyles((theme: Theme) => ({

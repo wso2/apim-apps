@@ -24,12 +24,12 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import TextFieldsIcon from '@material-ui/icons/TextFields';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
 import { makeStyles } from '@material-ui/core/styles';
-import DescriptionTwoToneIcon from '@material-ui/icons/DescriptionTwoTone';
-import LinkIcon from '@material-ui/icons/Link';
-import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
+import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
+import LinkIcon from '@mui/icons-material/Link';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 const useStyles = makeStyles((theme) => ({
     card: {

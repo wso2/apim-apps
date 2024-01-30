@@ -25,7 +25,7 @@ import Table from '@mui/material/Table';
 import TextField from '@mui/material/TextField';
 import TableCell from '@mui/material/TableCell';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
 import TableBody from '@mui/material/TableBody';

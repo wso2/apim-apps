@@ -18,7 +18,7 @@
 
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Person from '@material-ui/icons/Person';
+import Person from '@mui/icons-material/Person';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import moment from 'moment';

@@ -31,7 +31,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import FormControl from '@mui/material/FormControl';
 import ServiceCatalog from 'AppData/ServiceCatalog';
 import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';

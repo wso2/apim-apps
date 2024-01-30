@@ -32,8 +32,8 @@ import {
 import { makeStyles } from '@material-ui/core';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import LaunchIcon from '@material-ui/icons/Launch';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import API from 'AppData/api';

@@ -33,7 +33,7 @@ import FormLabel from '@mui/material/FormLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import FormControl from '@mui/material/FormControl';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 

@@ -20,7 +20,7 @@ import React, { FC } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Box } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({

@@ -21,10 +21,10 @@ import { FormattedMessage, injectIntl, defineMessages } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
@@ -38,8 +38,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
-import InfoIcon from '@material-ui/icons/Info';
-import UserIcon from '@material-ui/icons/Person';
+import InfoIcon from '@mui/icons-material/Info';
+import UserIcon from '@mui/icons-material/Person';
 
 
 import Alert from 'AppComponents/Shared/Alert';

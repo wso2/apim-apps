@@ -27,7 +27,7 @@ import {
     AccordionSummary, 
     AccordionDetails
 } from '@mui/material';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@material-ui/core/styles';
 import Utils from 'AppData/Utils';
 

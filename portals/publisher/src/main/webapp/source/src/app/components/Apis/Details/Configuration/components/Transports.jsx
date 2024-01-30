@@ -26,7 +26,7 @@ import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import Typography from '@mui/material/Typography';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { isRestricted } from 'AppData/AuthManager';

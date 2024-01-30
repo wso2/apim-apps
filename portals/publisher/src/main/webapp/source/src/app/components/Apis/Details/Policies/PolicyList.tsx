@@ -25,7 +25,7 @@ import Tab from '@mui/material/Tab';
 import CardContent from '@mui/material/CardContent';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import { AddCircle } from '@material-ui/icons';
+import { AddCircle } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { Theme, makeStyles } from '@material-ui/core';
 import CONSTS from 'AppData/Constants';

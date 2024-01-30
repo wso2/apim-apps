@@ -38,7 +38,7 @@ import CONSTS from 'AppData/Constants';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';

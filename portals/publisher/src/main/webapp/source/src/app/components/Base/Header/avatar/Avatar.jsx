@@ -6,13 +6,13 @@ import {
     Icon,
     Box,
 } from '@mui/material';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AuthManager from 'AppData/AuthManager';
 
 const styles = (theme) => ({

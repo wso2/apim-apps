@@ -26,7 +26,7 @@ import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Button from '@mui/material/Button';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import Paper from '@mui/material/Paper';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';

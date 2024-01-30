@@ -25,7 +25,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import API from 'AppData/api';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';

@@ -26,7 +26,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import Icon from '@mui/material/Icon';
 import IconButton from '@mui/material/IconButton';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';

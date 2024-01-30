@@ -23,7 +23,7 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import EditRounded from '@material-ui/icons/EditRounded';
+import EditRounded from '@mui/icons-material/EditRounded';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';

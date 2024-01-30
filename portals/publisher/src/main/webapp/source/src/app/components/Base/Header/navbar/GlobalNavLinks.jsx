@@ -19,7 +19,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { useTheme } from '@material-ui/styles';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';

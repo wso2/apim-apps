@@ -25,7 +25,7 @@ import MuiDialogTitle from '@mui/material/DialogTitle';
 import MuiDialogContent from '@mui/material/DialogContent';
 import MuiDialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import DialogContentText from '@mui/material/DialogContentText';
 import Box from '@mui/material/Box';

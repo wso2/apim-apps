@@ -20,12 +20,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { isRestricted } from 'AppData/AuthManager';
-import LifeCycleIcon from '@material-ui/icons/Autorenew';
-import StoreIcon from '@material-ui/icons/Store';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import CodeIcon from '@material-ui/icons/Code';
-import PersonPinCircleOutlinedIcon from '@material-ui/icons/PersonPinCircleOutlined';
-import ResourcesIcon from '@material-ui/icons/VerticalSplit';
+import LifeCycleIcon from '@mui/icons-material/Autorenew';
+import StoreIcon from '@mui/icons-material/Store';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CodeIcon from '@mui/icons-material/Code';
+import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
+import ResourcesIcon from '@mui/icons-material/VerticalSplit';
 import { withStyles } from '@material-ui/core/styles';
 import { injectIntl, defineMessages } from 'react-intl';
 import {

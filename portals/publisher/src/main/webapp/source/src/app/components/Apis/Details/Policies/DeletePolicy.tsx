@@ -18,7 +18,7 @@
 
 import React, { useState, FC, useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';

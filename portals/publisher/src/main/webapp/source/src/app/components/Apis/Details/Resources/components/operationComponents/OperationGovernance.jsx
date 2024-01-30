@@ -30,12 +30,12 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import LaunchIcon from '@material-ui/icons/Launch';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import LaunchIcon from '@mui/icons-material/Launch';
 import ListSubheader from '@mui/material/ListSubheader';
 import { Link } from 'react-router-dom';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { getOperationScopes } from '../../operationUtils';
 

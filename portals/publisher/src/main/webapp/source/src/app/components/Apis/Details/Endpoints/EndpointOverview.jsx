@@ -31,7 +31,7 @@ import { withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { Progress } from 'AppComponents/Shared';
 import CONSTS from 'AppData/Constants';
 

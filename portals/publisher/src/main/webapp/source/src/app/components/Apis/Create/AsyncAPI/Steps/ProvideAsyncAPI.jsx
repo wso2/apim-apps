@@ -28,16 +28,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
-import CheckIcon from '@material-ui/icons/Check';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import CheckIcon from '@mui/icons-material/Check';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 
@@ -45,7 +45,7 @@ import Banner from 'AppComponents/Shared/Banner';
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
-import CheckCircleSharpIcon from '@material-ui/icons/CheckCircleSharp';
+import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
 import Chip from '@mui/material/Chip';
 
 const useStyles = makeStyles((theme) => ({

@@ -3,7 +3,7 @@ import React from 'react';
 import {
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
 } from '@mui/material';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';

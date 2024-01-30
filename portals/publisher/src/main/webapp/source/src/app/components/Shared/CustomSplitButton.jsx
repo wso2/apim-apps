@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';

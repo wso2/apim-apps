@@ -26,7 +26,7 @@ import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import AddCircle from '@material-ui/icons/AddCircle';
+import AddCircle from '@mui/icons-material/AddCircle';
 import Icon from '@mui/material/Icon';
 import Paper from '@mui/material/Paper';
 import Alert from 'AppComponents/Shared/Alert';

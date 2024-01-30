@@ -29,7 +29,7 @@ import Typography from '@mui/material/Typography';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
-import { FileCopy } from '@material-ui/icons';
+import { FileCopy } from '@mui/icons-material';
 import { isRestricted } from 'AppData/AuthManager';
 
 /**

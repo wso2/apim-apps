@@ -21,7 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const useStyles = makeStyles((theme) => ({
     tagClass: {

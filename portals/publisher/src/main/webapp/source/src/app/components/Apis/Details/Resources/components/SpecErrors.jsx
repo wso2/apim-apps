@@ -28,7 +28,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Tooltip from '@mui/material/Tooltip';
 import PropTypes from 'prop-types';
 /**
