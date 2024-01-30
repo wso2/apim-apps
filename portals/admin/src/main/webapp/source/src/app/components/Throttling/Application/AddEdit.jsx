@@ -293,6 +293,10 @@ function AddEdit(props) {
             };
         }
 
+        if (!applicationThrottlingPolicy.burstLimit.rateLimitCount) {
+            applicationThrottlingPolicy.burstLimit = null;
+        }
+
         if (dataRow) {
             const policyId = dataRow[4];
             promisedAddApplicationPolicy = restApi.updateApplicationThrottlingPolicy(policyId,
