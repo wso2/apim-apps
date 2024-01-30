@@ -20,6 +20,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
@@ -113,7 +114,6 @@ function AddEditGWEnvironment(props) {
         updateList, dataRow, icon, triggerButtonText, title,
     } = props;
     const classes = useStyles();
-
     const defaultVhost = {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
     };
@@ -133,7 +133,9 @@ function AddEditGWEnvironment(props) {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const [selectedGatewayType, setValue] = React.useState('Regular');
+    const [selectedGatewayType, setValue] = React.useState('');
+    const { settings } = useAppContext();
+    const gatewayTypes = settings.gatewayTypes;
     const getBorderColor = (gatewayType) => {
         return selectedGatewayType === gatewayType
             ? '2px solid #1976D2'
@@ -151,6 +153,9 @@ function AddEditGWEnvironment(props) {
             selectedGatewayType: '',
             vhosts: [defaultVhost],
         });
+        if (gatewayTypes.length === 1) {
+            setValue(gatewayTypes[0]);
+        }
     }, []);
 
     const handleHostValidation = (vhost) => {
@@ -304,16 +309,27 @@ function AddEditGWEnvironment(props) {
             return false;
         }
         const vhostDto = [];
-        vhosts.forEach((vhost) => {
-            vhostDto.push({
-                host: vhost.host,
-                httpContext: vhost.httpContext,
-                httpPort: vhost.httpPort,
-                httpsPort: vhost.httpsPort,
-                wsPort: vhost.wsPort,
-                wssPort: vhost.wssPort,
+        if (selectedGatewayType === 'Regular') {
+            vhosts.forEach((vhost) => {
+                vhostDto.push({
+                    host: vhost.host,
+                    httpContext: vhost.httpContext,
+                    httpPort: vhost.httpPort,
+                    httpsPort: vhost.httpsPort,
+                    wsPort: vhost.wsPort,
+                    wssPort: vhost.wssPort,
+                });
             });
-        });
+        } else if (selectedGatewayType === 'APK') {
+            vhosts.forEach((vhost) => {
+                vhostDto.push({
+                    host: vhost.host,
+                    httpContext: vhost.httpContext,
+                    httpPort: vhost.httpPort,
+                    httpsPort: vhost.httpsPort,
+                });
+            });
+        }
 
         const restApi = new API();
         let promiseAPICall;
@@ -452,50 +468,52 @@ function AddEditGWEnvironment(props) {
                     )}
                     variant='outlined'
                 />
-                <FormControl component='fieldset'>
-                    <FormLabel style={{ marginTop: '10px' }}>Select Gateway type</FormLabel>
-                    <RadioGroup
-                        row
-                        aria-label='gateway-type'
-                        name='gateway-type'
-                        value={selectedGatewayType}
-                        onChange={handleChange}
-                    >
-                        <FormControlLabel
-                            value='Regular'
-                            name='Regular'
-                            className={classes.radioOutline}
-                            control={<Radio />}
-                            label={(
-                                <div>
-                                    <span>Regular Gateway</span>
-                                    <Typography variant='body2' color='textSecondary'>
-                                        API gateway embedded in APIM runtime.
-                                        Connect directly to an existing APIManager.
-                                    </Typography>
-                                </div>
-                            )}
-                            style={{ border: getBorderColor('Regular') }}
-                        />
-                        <FormControlLabel
-                            value='APK'
-                            name='APK'
-                            className={classes.radioOutline}
-                            control={<Radio />}
-                            label={(
-                                <div>
-                                    <span>APK Gateway</span>
-                                    <span className={`${classes.label} ${classes.newLabel}`}>New</span>
-                                    <Typography variant='body2' color='textSecondary'>
-                                        Fast API gateway running on kubernetes designed to manage
-                                        and secure APIs.
-                                    </Typography>
-                                </div>
-                            )}
-                            style={{ border: getBorderColor('APK') }}
-                        />
-                    </RadioGroup>
-                </FormControl>
+                {gatewayTypes && gatewayTypes.length > 1 && (
+                    <FormControl component='fieldset'>
+                        <FormLabel style={{ marginTop: '10px' }}>Select Gateway type</FormLabel>
+                        <RadioGroup
+                            row
+                            aria-label='gateway-type'
+                            name='gateway-type'
+                            value={selectedGatewayType}
+                            onChange={handleChange}
+                        >
+                            <FormControlLabel
+                                value='Regular'
+                                name='Regular'
+                                className={classes.radioOutline}
+                                control={<Radio />}
+                                label={(
+                                    <div>
+                                        <span>Regular Gateway</span>
+                                        <Typography variant='body2' color='textSecondary'>
+                                            API gateway embedded in APIM runtime.
+                                            Connect directly to an existing APIManager.
+                                        </Typography>
+                                    </div>
+                                )}
+                                style={{ border: getBorderColor('Regular') }}
+                            />
+                            <FormControlLabel
+                                value='APK'
+                                name='APK'
+                                className={classes.radioOutline}
+                                control={<Radio />}
+                                label={(
+                                    <div>
+                                        <span>APK Gateway</span>
+                                        <span className={`${classes.label} ${classes.newLabel}`}>New</span>
+                                        <Typography variant='body2' color='textSecondary'>
+                                            Fast API gateway running on kubernetes designed to manage
+                                            and secure APIs.
+                                        </Typography>
+                                    </div>
+                                )}
+                                style={{ border: getBorderColor('APK') }}
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                )}
                 <AddEditVhost
                     initialVhosts={vhosts}
                     onVhostChange={onChange}
