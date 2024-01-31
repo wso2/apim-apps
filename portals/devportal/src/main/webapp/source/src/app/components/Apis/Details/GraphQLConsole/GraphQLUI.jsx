@@ -23,7 +23,7 @@ import GraphiQL from 'graphiql';
 import 'graphiql/graphiql.css';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import GraphiQLExplorer from 'graphiql-explorer-continue';
+import GraphiQLExplorer from 'graphiql-explorer';
 import Collapse from '@mui/material/Collapse';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { ApiContext } from '../ApiContext';
