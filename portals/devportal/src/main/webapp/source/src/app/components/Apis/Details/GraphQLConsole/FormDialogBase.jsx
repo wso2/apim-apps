@@ -37,7 +37,6 @@ function FormDialogBase({
     icon,
     triggerButtonText,
     saveButtonText,
-    triggerButtonProps,
     formSaveCallback,
     dialogOpenCallback,
     triggerIconProps,
@@ -80,7 +79,7 @@ function FormDialogBase({
             )}
             {triggerButtonText && (
                 // eslint-disable-next-line react/jsx-props-no-spreading
-                <Button {...triggerButtonProps} onClick={handleClickOpen}>
+                <Button onClick={handleClickOpen}>
                     {triggerButtonText}
                 </Button>
             )}
