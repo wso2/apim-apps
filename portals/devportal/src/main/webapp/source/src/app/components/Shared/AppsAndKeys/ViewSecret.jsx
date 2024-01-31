@@ -124,7 +124,7 @@ class ViewSecret extends React.Component {
         const { secretCopied } = this.state;
         return (
             <div className={classes.root}>
-                <InlineMessage type='warn'>
+                <InlineMessage type='warning'>
                     <Typography variant='h5' component='h3'>
                         <FormattedMessage
                             id='Shared.AppsAndKeys.ViewSecret.please.copy.secret'

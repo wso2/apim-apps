@@ -232,7 +232,7 @@ const createAppStep = (props) => {
     if (!hasValidKM) {
         return (
             <Box mb={1} ml={4}>
-                <InlineMessage type='warn'>
+                <InlineMessage type='warning'>
                     <FormattedMessage
                         id='Apis.Details.Credentials.Wizard.CreateAppStep.default.km.msg'
                         defaultMessage={'Wizard is only accessible via the Resident Key Manager.'

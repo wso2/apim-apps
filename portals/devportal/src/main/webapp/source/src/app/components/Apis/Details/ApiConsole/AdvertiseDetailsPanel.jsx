@@ -167,7 +167,7 @@ const AdvertiseDetailsPanel = (props) => {
             </Grid>
             {(availableTransports || securitySchemes || authorizationHeader) && (
                 <Grid x={12} md={6} className={classes.centerItems} style={{ marginTop: '10px' }}>
-                    <MuiAlert severity='info'>
+                    <MuiAlert severity='info' variant='filled' sx={{ bgcolor: 'background.paper' }}>
                         <AlertTitle>
                             <FormattedMessage
                                 id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.security.details'

@@ -43,7 +43,7 @@ export default function TaskState(props) {
             message = inProgressMessage;
         }
     } else {
-        severity = 'waiting';
+        severity = 'warning';
     }
     if (errors) {
         severity = 'error';
@@ -80,7 +80,7 @@ export default function TaskState(props) {
             <Grid item xs={12}>
                 <Alert
                     icon={inProgress ? <CircularProgress size={20} thickness={2} /> : null}
-                    variant={errors ? 'standard' : 'plain'}
+                    variant={errors ? 'standard' : 'outlined'}
                     severity={severity}
                 >
                     {message}
