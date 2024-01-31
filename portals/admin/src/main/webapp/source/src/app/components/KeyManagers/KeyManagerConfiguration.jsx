@@ -64,7 +64,7 @@ export default function KeyManagerConfiguration(props) {
             if (keymanagerConnectorConfiguration.mask) {
                 return (
                     <FormControl variant='outlined' fullWidth>
-                        <InputLabel>
+                        <InputLabel sx={{ bgcolor: 'white' }}>
                             {keymanagerConnectorConfiguration.label}
                             {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
                         </InputLabel>

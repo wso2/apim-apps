@@ -116,8 +116,9 @@ export default function KeyValidation(props) {
                 <FormControl
                     variant='outlined'
                     sx={{
-                        width: 200,
+                        width: 180,
                         mr: 2,
+                        mt: 1,
                         paddingLeft: 1,
                     }}
                 >

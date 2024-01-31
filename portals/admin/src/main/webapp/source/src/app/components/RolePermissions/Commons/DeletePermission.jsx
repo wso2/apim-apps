@@ -105,7 +105,7 @@ export default function DeletePermission(props) {
                     ?
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Box pl={5} mt={2} mb={2}>
+                    <Box mt={2} mb={2} ml={1}>
                         Are you sure you want to delete scope assignments for
                         {' '}
                         <b>{role}</b>

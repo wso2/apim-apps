@@ -41,7 +41,7 @@ const styles = {
     unitTimeSelection: {
         marginTop: 1,
         marginLeft: 2,
-        minWidth: 120,
+        minWidth: 140,
     },
 };
 
