@@ -291,7 +291,7 @@ function ListLabels() {
                                 </Button>
                                 &nbsp;&nbsp;
                                 <Button
-                                    color='reject'
+                                    color='error'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'REJECTED')}
