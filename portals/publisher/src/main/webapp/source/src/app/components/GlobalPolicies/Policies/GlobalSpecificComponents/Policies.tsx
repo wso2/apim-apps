@@ -587,6 +587,7 @@ const Policies: FC<PolicyProps> =  ({
                         type='submit'
                         variant='contained'
                         color='primary'
+                        data-testid= 'policy-mapping-save-or-update-button'
                         disabled={disabled}
                         onClick={() => isCreateNew? save() : update()}
                     >

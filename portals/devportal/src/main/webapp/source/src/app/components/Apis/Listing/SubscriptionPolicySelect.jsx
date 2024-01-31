@@ -18,9 +18,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Select from '@material-ui/core/Select';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from '../../Shared/ScopeValidation';
 
@@ -80,15 +81,17 @@ class SubscriptionPolicySelect extends React.Component {
             policies
             && (
                 <div className={classes.root}>
-                    <Select
-                        className={classes.select}
-                        value={selectedPolicy}
-                        onChange={(e) => {
-                            this.setState({ selectedPolicy: e.target.value });
-                        }}
+                    <Autocomplete
                         id='policy-select'
-                    >
-                        {policies.map((policy) => (
+                        disableClearable
+                        options={policies}
+                        value={selectedPolicy}
+                        onChange={(e, value) => {
+                            this.setState({ selectedPolicy: value });
+                        }}
+                        style={{ width: 200 }}
+                        renderInput={(params) => (<TextField {...params} />)}
+                        renderOption={(policy) => (
                             <MenuItem
                                 value={policy}
                                 key={policy}
@@ -96,9 +99,8 @@ class SubscriptionPolicySelect extends React.Component {
                             >
                                 {policy}
                             </MenuItem>
-                        ))}
-
-                    </Select>
+                        )}
+                    />
                     <ScopeValidation
                         resourcePath={resourcePaths.SUBSCRIPTIONS}
                         resourceMethod={resourceMethods.POST}
