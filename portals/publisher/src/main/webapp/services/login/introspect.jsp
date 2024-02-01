@@ -73,7 +73,15 @@
     log.debug("Introspection result json: " + introspectResult.body());
 
     if (introspectResult.statusCode() == 200) {
+        boolean isEnableEmailUserName = Util.isEnableEmailUserName();
         Map introspect = gson.fromJson(introspectResult.body(), Map.class);
+        String username = (String) introspect.get("username");
+        Pattern regPattern = Pattern.compile("(@)");
+        boolean found = regPattern.matcher(username).find();
+        int count = !found ? 0 : (int) username.chars().filter(ch -> ch == '@').count();
+        if (isEnableEmailUserName || (username.indexOf("@carbon.super") > 0 && count <= 1)) {
+            introspect.put("username", username.replace("@carbon.super", ""));
+        }
         response.setContentType("application/json");
         out.println(gson.toJson(introspect));
     } else {
