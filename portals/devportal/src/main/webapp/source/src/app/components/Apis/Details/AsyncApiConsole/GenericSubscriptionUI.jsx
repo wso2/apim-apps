@@ -24,7 +24,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
 import AccordionActions from '@mui/material/AccordionActions';
 import Button from '@mui/material/Button';
-// import CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
 import makeStyles from '@mui/styles/makeStyles';
@@ -143,20 +143,16 @@ export default function GenericSubscriptionUI(props) {
                 <Button size='small' onClick={handleClick}>
                     <FormattedMessage id='Apis.Details.AsyncApiConsole.Curl' defaultMessage='Generate Curl' />
                 </Button>
-                {/* <CopyToClipboard */}
-                {/*    text={command} */}
-                {/*    */}
-                {/* > */}
-                <Button
-                    size='small'
+                <CopyToClipboard
+                    text={command}
                     onCopy={() => Alert.info(
                         <FormattedMessage id='Apis.Details.AsyncApiConsole.Copied' defaultMessage='cURL copied' />,
                     )}
                 >
-                    <FormattedMessage id='Apis.Details.AsyncApiConsole.Copy' defaultMessage='Copy Curl' />
-                    {command}
-                </Button>
-                {/* </CopyToClipboard> */}
+                    <Button size='small'>
+                        <FormattedMessage id='Apis.Details.AsyncApiConsole.Copy' defaultMessage='Copy Curl' />
+                    </Button>
+                </CopyToClipboard>
             </AccordionActions>
         </Accordion>
     );

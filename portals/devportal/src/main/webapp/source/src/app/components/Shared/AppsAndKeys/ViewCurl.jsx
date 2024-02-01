@@ -19,7 +19,7 @@ import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import { Typography } from '@mui/material';
-// import CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import FileCopy from '@mui/icons-material/FileCopy';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -116,17 +116,14 @@ function ViewCurl(props) {
                             }
                             placement='right'
                         >
-                            {/*<CopyToClipboard*/}
-                            {/*    text={`curl -k -X POST ${tokenEndpoint} -d ` +*/}
-                            {/*    '"grant_type=password&username=Username&password=Password" -H ' +*/}
-                            {/*    `"Authorization: Basic ${bas64Encoded}"`}*/}
-                            {/*    onCopy={onCopy}*/}
-                            {/*>*/}
-                                <FileCopy color='secondary' onCopy={onCopy}/>
-                                {`curl -k -X POST ${tokenEndpoint} -d ` +
-                                    '"grant_type=password&username=Username&password=Password" -H ' +
-                                    `"Authorization: Basic ${bas64Encoded}"`}
-                            {/*</CopyToClipboard>*/}
+                            <CopyToClipboard
+                                text={`curl -k -X POST ${tokenEndpoint} -d ` +
+                                '"grant_type=password&username=Username&password=Password" -H ' +
+                                `"Authorization: Basic ${bas64Encoded}"`}
+                                onCopy={onCopy}
+                            >
+                                <FileCopy color='secondary'/>
+                            </CopyToClipboard>
                         </Tooltip>
                     </div>
                 </div>
@@ -168,17 +165,14 @@ function ViewCurl(props) {
                             }
                             placement='right'
                         >
-                            {/*<CopyToClipboard*/}
-                            {/*    text={`curl -k -X POST ${tokenEndpoint} -d ` +*/}
-                            {/*    '"grant_type=client_credentials" -H ' +*/}
-                            {/*    `"Authorization: Basic ${bas64Encoded}"`}*/}
-                            {/*    onCopy={onCopy}*/}
-                            {/*>*/}
-                                <FileCopy color='secondary' onCopy={onCopy}/>
-                                {`curl -k -X POST ${tokenEndpoint} -d ` +
-                                    '"grant_type=client_credentials" -H ' +
-                                    `"Authorization: Basic ${bas64Encoded}"`}
-                            {/*</CopyToClipboard>*/}
+                            <CopyToClipboard
+                                text={`curl -k -X POST ${tokenEndpoint} -d ` +
+                                '"grant_type=client_credentials" -H ' +
+                                `"Authorization: Basic ${bas64Encoded}"`}
+                                onCopy={onCopy}
+                            >
+                                <FileCopy color='secondary'/>
+                            </CopyToClipboard>
                         </Tooltip>
                     </div>
                 </div>
@@ -246,23 +240,17 @@ function ViewCurl(props) {
                                 }
                                 placement='right'
                             >
-                                {/*<CopyToClipboard*/}
-                                {/*    text={`curl -k -X POST ${defaultTokenEndpoint} -d ` +*/}
-                                {/*    '"grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d ' +*/}
-                                {/*    '"subject_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +*/}
-                                {/*    '"requested_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +*/}
-                                {/*    `"subject_token=${jwtToken}"  -H ` +*/}
-                                {/*    `"Authorization: Basic ${bas64Encoded}"`}*/}
-                                {/*    onCopy={onCopy}*/}
-                                {/*>*/}
-                                    <FileCopy color='secondary' onCopy={onCopy}/>
-                                    {`curl -k -X POST ${defaultTokenEndpoint} -d ` +
-                                        '"grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d ' +
-                                        '"subject_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
-                                        '"requested_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
-                                        `"subject_token=${jwtToken}"  -H ` +
-                                        `"Authorization: Basic ${bas64Encoded}"`}
-                                {/*</CopyToClipboard>*/}
+                                <CopyToClipboard
+                                    text={`curl -k -X POST ${defaultTokenEndpoint} -d ` +
+                                    '"grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d ' +
+                                    '"subject_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
+                                    '"requested_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
+                                    `"subject_token=${jwtToken}"  -H ` +
+                                    `"Authorization: Basic ${bas64Encoded}"`}
+                                    onCopy={onCopy}
+                                >
+                                    <FileCopy color='secondary'/>
+                                </CopyToClipboard>
                             </Tooltip>
                         </div>
                     </div>

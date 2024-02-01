@@ -24,7 +24,7 @@ import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-// import CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
@@ -409,19 +409,14 @@ function SolaceTopicsInfo() {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            {/* <CopyToClipboard */}
-                                            {/*    text= */}
-                                            {/*    */}
-                                            {/* > */}
-                                            <IconButton
-                                                aria-label='Copy the API URL to clipboard'
-                                                size='large'
-                                                onClick={() => onCopy('urlCopied')}
+                                            <CopyToClipboard
+                                                text={selectedEndpoint}
+                                                onCopy={() => onCopy('urlCopied')}
                                             >
-                                                <Icon color='secondary'>file_copy</Icon>
-                                                {selectedEndpoint}
-                                            </IconButton>
-                                            {/* </CopyToClipboard> */}
+                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
+                                                    <Icon color='secondary'>file_copy</Icon>
+                                                </IconButton>
+                                            </CopyToClipboard>
                                         </Tooltip>
                                     </Avatar>
                                 </Box>
@@ -471,19 +466,14 @@ function SolaceTopicsInfo() {
                                                             placement='right'
                                                             className={classes.iconStyle}
                                                         >
-                                                            {/* <CopyToClipboard */}
-                                                            {/*    text={t} */}
-                                                            {/*    onCopy={() => onTopicCopy('topicCopied')} */}
-                                                            {/* > */}
-                                                            <IconButton
-                                                                aria-label='Copy the API URL to clipboard'
-                                                                size='large'
-                                                                onClick={() => onTopicCopy('topicCopied')}
+                                                            <CopyToClipboard
+                                                                text={t}
+                                                                onCopy={() => onTopicCopy('topicCopied')}
                                                             >
-                                                                <Icon color='secondary'>file_copy</Icon>
-                                                                {t}
-                                                            </IconButton>
-                                                            {/* </CopyToClipboard> */}
+                                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
+                                                                    <Icon color='secondary'>file_copy</Icon>
+                                                                </IconButton>
+                                                            </CopyToClipboard>
                                                         </Tooltip>
                                                     </Avatar>
                                                 </Box>
@@ -545,19 +535,14 @@ function SolaceTopicsInfo() {
                                                             placement='right'
                                                             className={classes.iconStyle}
                                                         >
-                                                            {/* <CopyToClipboard */}
-                                                            {/*    text={t} */}
-                                                            {/*    onCopy={() => onTopicCopy('topicCopied')} */}
-                                                            {/* > */}
-                                                            <IconButton
-                                                                aria-label='Copy the API URL to clipboard'
-                                                                size='large'
-                                                                onClick={() => onTopicCopy('topicCopied')}
+                                                            <CopyToClipboard
+                                                                text={t}
+                                                                onCopy={() => onTopicCopy('topicCopied')}
                                                             >
-                                                                <Icon color='secondary'>file_copy</Icon>
-                                                                {t}
-                                                            </IconButton>
-                                                            {/* </CopyToClipboard> */}
+                                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
+                                                                    <Icon color='secondary'>file_copy</Icon>
+                                                                </IconButton>
+                                                            </CopyToClipboard>
                                                         </Tooltip>
                                                     </Avatar>
                                                 </Box>

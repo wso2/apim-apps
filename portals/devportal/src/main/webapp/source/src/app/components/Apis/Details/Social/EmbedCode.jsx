@@ -3,7 +3,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import Modal from '@mui/material/Modal';
 import CodeIcon from '@mui/icons-material/Code';
 import { FormattedMessage, injectIntl } from 'react-intl';
-// import CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import Icon from '@mui/material/Icon';
 
@@ -112,15 +112,12 @@ function EmbedCode(props) {
                         placement='right'
                         className={classes.iconStyle}
                     >
-                        {/* <CopyToClipboard */}
-                        {/*    text={embedCode} */}
-                        {/*    onCopy={onCopy} */}
-                        {/* > */}
-                        <Icon color='secondary' onClick={onCopy}>
-                            file_copy
-                            {embedCode}
-                        </Icon>
-                        {/* </CopyToClipboard> */}
+                        <CopyToClipboard
+                            text={embedCode}
+                            onCopy={onCopy}
+                        >
+                            <Icon color='secondary'>file_copy</Icon>
+                        </CopyToClipboard>
                     </Tooltip>
                 </div>
             </Modal>

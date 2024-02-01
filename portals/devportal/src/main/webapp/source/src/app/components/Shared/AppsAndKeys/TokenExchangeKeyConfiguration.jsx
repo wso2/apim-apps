@@ -19,7 +19,7 @@ import React, {useReducer, useState} from 'react';
 import Box from '@mui/material/Box';
 import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
-// import CopyToClipboard from 'react-copy-to-clipboard';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Icon from '@mui/material/Icon';
@@ -483,20 +483,17 @@ const TokenExchangeKeyConfiguration = (props) => {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            {/*<CopyToClipboard*/}
-                                            {/*    text={keyManagerConfig.tokenEndpoint}*/}
-                                            {/*    onCopy={onCopy}*/}
-                                            {/*>*/}
+                                            <CopyToClipboard
+                                                text={keyManagerConfig.tokenEndpoint}
+                                                onCopy={onCopy}
+                                            >
                                                 <IconButton
                                                     aria-label='Copy to clipboard'
                                                     classes={{root: classes.iconButton}}
-                                                    size="large"
-                                                    onClick={onCopy}
-                                                >
+                                                    size="large">
                                                     <Icon color='secondary'>file_copy</Icon>
-                                                    {keyManagerConfig.tokenEndpoint}
                                                 </IconButton>
-                                            {/*</CopyToClipboard>*/}
+                                            </CopyToClipboard>
                                         </Tooltip>
                                     </TableCell>
                                 </TableRow>
