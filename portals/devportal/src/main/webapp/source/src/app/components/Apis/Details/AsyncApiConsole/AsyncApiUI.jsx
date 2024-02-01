@@ -149,13 +149,13 @@ export default function AsyncApiUI(props) {
     function generateWSSubscriptionCommand(topic) {
         const token = generateAccessToken();
         if (topic.name.includes('*')) {
-            let wscat = `wscat -c '${endPoint}' -H 'Authorization: ${token}'`;
+            let wscat = `wscat -c '${endPoint}' -H '${securitySchemeType === 'API-KEY' ? 'apikey' : 'Authorization'}: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
                 wscat = `wscat -c '${endPoint}' -H '${authorizationHeader}: ${token}'`;
             }
             return wscat;
         } else {
-            let wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            let wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H '${securitySchemeType === 'API-KEY' ? 'apikey': 'Authorization'}: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
                 wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
             }
