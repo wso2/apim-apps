@@ -32,7 +32,6 @@ import fileDownload from 'js-file-download';
 import openapiToPostman from 'openapi-to-postmanv2';
 import swaggerToPostman from 'swagger2-postman2-converter';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import queryString from 'query-string';
@@ -637,17 +636,18 @@ class ApiConsole extends React.Component {
                                         )}
                                     placement='top'
                                 >
-                                    <CopyToClipboard
-                                        text={location.origin + '/api/am/devportal/v3/apis/' + api.id + '/swagger?accessToken='
-                                        + accessTokenPart + '&X-WSO2-Tenant-Q=' + tenant + '&' + selectedAttribute + '='
-                                        + selectedEnvironment}
-                                        onCopy={this.onCopy}
-                                        size='small'
+                                    <Button
+                                        aria-label='Copy to clipboard'
+                                        className={classes.button}
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(location.origin
+                                                + '/api/am/devportal/v3/apis/' + api.id + '/swagger?accessToken='
+                                                + accessTokenPart + '&X-WSO2-Tenant-Q=' + tenant + '&'
+                                                + selectedAttribute + '=' + selectedEnvironment).then(this.onCopy());
+                                        }}
                                     >
-                                        <Button aria-label='Copy to clipboard' className={classes.button}>
-                                            <FileCopyIcon className={classes.buttonIcon} />
-                                        </Button>
-                                    </CopyToClipboard>
+                                        <FileCopyIcon className={classes.buttonIcon} />
+                                    </Button>
                                 </Tooltip>
                             </Grid>
                         </Grid>

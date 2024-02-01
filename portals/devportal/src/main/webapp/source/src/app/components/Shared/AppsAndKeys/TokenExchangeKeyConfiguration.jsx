@@ -19,7 +19,6 @@ import React, {useReducer, useState} from 'react';
 import Box from '@mui/material/Box';
 import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Icon from '@mui/material/Icon';
@@ -28,7 +27,6 @@ import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -483,17 +481,14 @@ const TokenExchangeKeyConfiguration = (props) => {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            <CopyToClipboard
-                                                text={keyManagerConfig.tokenEndpoint}
-                                                onCopy={onCopy}
+                                            <IconButton
+                                                aria-label='Copy to clipboard'
+                                                classes={{root: classes.iconButton}}
+                                                size="large"
+                                                onClick={() => {navigator.clipboard.writeText(keyManagerConfig.tokenEndpoint).then(onCopy())}}
                                             >
-                                                <IconButton
-                                                    aria-label='Copy to clipboard'
-                                                    classes={{root: classes.iconButton}}
-                                                    size="large">
-                                                    <Icon color='secondary'>file_copy</Icon>
-                                                </IconButton>
-                                            </CopyToClipboard>
+                                                <Icon color='secondary'>file_copy</Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </TableCell>
                                 </TableRow>

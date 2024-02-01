@@ -24,7 +24,6 @@ import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
@@ -409,14 +408,16 @@ function SolaceTopicsInfo() {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            <CopyToClipboard
-                                                text={selectedEndpoint}
-                                                onCopy={() => onCopy('urlCopied')}
+                                            <IconButton
+                                                aria-label='Copy the API URL to clipboard'
+                                                size='large'
+                                                onClick={() => {
+                                                    navigator.clipboard
+                                                        .writeText(selectedEndpoint).then(onCopy('urlCopied'));
+                                                }}
                                             >
-                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
-                                                    <Icon color='secondary'>file_copy</Icon>
-                                                </IconButton>
-                                            </CopyToClipboard>
+                                                <Icon color='secondary'>file_copy</Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </Avatar>
                                 </Box>
@@ -466,14 +467,16 @@ function SolaceTopicsInfo() {
                                                             placement='right'
                                                             className={classes.iconStyle}
                                                         >
-                                                            <CopyToClipboard
-                                                                text={t}
-                                                                onCopy={() => onTopicCopy('topicCopied')}
+                                                            <IconButton
+                                                                aria-label='Copy the API URL to clipboard'
+                                                                size='large'
+                                                                onClick={() => {
+                                                                    navigator.clipboard
+                                                                        .writeText(t).then(onTopicCopy('topicCopied'));
+                                                                }}
                                                             >
-                                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
-                                                                    <Icon color='secondary'>file_copy</Icon>
-                                                                </IconButton>
-                                                            </CopyToClipboard>
+                                                                <Icon color='secondary'>file_copy</Icon>
+                                                            </IconButton>
                                                         </Tooltip>
                                                     </Avatar>
                                                 </Box>
@@ -535,14 +538,16 @@ function SolaceTopicsInfo() {
                                                             placement='right'
                                                             className={classes.iconStyle}
                                                         >
-                                                            <CopyToClipboard
-                                                                text={t}
-                                                                onCopy={() => onTopicCopy('topicCopied')}
+                                                            <IconButton
+                                                                aria-label='Copy the API URL to clipboard'
+                                                                size='large'
+                                                                onClick={() => {
+                                                                    navigator.clipboard
+                                                                        .writeText(t).then(onTopicCopy('topicCopied'));
+                                                                }}
                                                             >
-                                                                <IconButton aria-label='Copy the API URL to clipboard' size='large'>
-                                                                    <Icon color='secondary'>file_copy</Icon>
-                                                                </IconButton>
-                                                            </CopyToClipboard>
+                                                                <Icon color='secondary'>file_copy</Icon>
+                                                            </IconButton>
                                                         </Tooltip>
                                                     </Avatar>
                                                 </Box>

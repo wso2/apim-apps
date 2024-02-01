@@ -25,7 +25,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Icon from '@mui/material/Icon';
 import Grid from '@mui/material/Grid';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import Dialog from '@mui/material/Dialog';
@@ -161,7 +160,6 @@ class ViewKeys extends React.Component {
     componentDidUpdate(prevProps) {
         const { isKeyJWT } = this.props;
         if (isKeyJWT && !prevProps.isKeyJWT) {
-            // eslint-disable-next-line react/no-did-update-set-state
             this.setState({ isKeyJWT: true });
         }
     }
@@ -343,20 +341,17 @@ class ViewKeys extends React.Component {
                                             }
                                             placement='right'
                                         >
-                                            <CopyToClipboard
-                                                text={consumerKey}
-                                                onCopy={() => this.onCopy('keyCopied')}
-                                                classes={{ root: classes.iconButton }}
-                                            >
                                                 <IconButton
                                                     aria-label='Copy to clipboard'
                                                     classes={{ root: classes.iconButton }}
-                                                    size="large">
+                                                    size="large"
+                                                    onClick={() => {navigator.clipboard.writeText(consumerKey).
+                                                    then(() => this.onCopy('keyCopied'))}}
+                                                >
                                                     <Icon color='secondary'>
                                                         file_copy
                                                     </Icon>
                                                 </IconButton>
-                                            </CopyToClipboard>
                                         </Tooltip>
                                     </InputAdornment>
                                 ),
@@ -414,18 +409,15 @@ class ViewKeys extends React.Component {
                                                 }
                                                 placement='right'
                                             >
-                                                <CopyToClipboard
-                                                    text={consumerSecret}
-                                                    onCopy={() => this.onCopy('secretCopied')}
+                                                <IconButton
+                                                    aria-label='Copy to clipboard'
                                                     classes={{ root: classes.iconButton }}
+                                                    size="large"
+                                                    onClick={() => {navigator.clipboard.
+                                                    writeText(consumerSecret).then(() => this.onCopy('secretCopied'))}}
                                                 >
-                                                    <IconButton
-                                                        aria-label='Copy to clipboard'
-                                                        classes={{ root: classes.iconButton }}
-                                                        size="large">
-                                                        <Icon color='secondary'>file_copy</Icon>
-                                                    </IconButton>
-                                                </CopyToClipboard>
+                                                    <Icon color='secondary'>file_copy</Icon>
+                                                </IconButton>
                                             </Tooltip>
                                         </InputAdornment>
                                     ),

@@ -22,7 +22,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
 import Utils from 'AppData/Utils';
@@ -238,17 +237,18 @@ function SourceDownload(props) {
                         )}
                     placement='top'
                 >
-                    <CopyToClipboard
-                        text={location.origin + '/api/am/devportal/v3/apis/' + api.id
-                        + '/swagger?accessToken=' + accessTokenPart + '&X-WSO2-Tenant-Q='
-                        + tenant + '&environmentName='
-                        + selectedEndpoint.environmentName}
-                        onCopy={() => setIsTokenCopied('urlCopied')}
+                    <Button
+                        aria-label='Copy to clipboard'
+                        size='small'
+                        onClick={() => {
+                            navigator.clipboard.writeText(location.origin + '/api/am/devportal/v3/apis/' + api.id
+                            + '/swagger?accessToken=' + accessTokenPart + '&X-WSO2-Tenant-Q='
+                            + tenant + '&environmentName='
+                            + selectedEndpoint.environmentName).then(() => setIsTokenCopied('urlCopied'));
+                        }}
                     >
-                        <Button aria-label='Copy to clipboard' size='small'>
-                            <FileCopyIcon className={classes.buttonIcon} />
-                        </Button>
-                    </CopyToClipboard>
+                        <FileCopyIcon className={classes.buttonIcon} />
+                    </Button>
                 </Tooltip>
             </Box>
         );

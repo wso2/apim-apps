@@ -25,7 +25,6 @@ import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import Tooltip from '@mui/material/Tooltip';
 import { upperCaseString } from 'AppData/stringFormatter';
 import { ApiContext } from './ApiContext';
@@ -209,15 +208,16 @@ function SolaceEndpoints() {
                                                         placement='right'
                                                         className={classes.iconStyle}
                                                     >
-                                                        <CopyToClipboard
-                                                            text={p.endPointUrl}
-                                                            // text={endpoint.URLs.http}
-                                                            onCopy={() => onCopy('urlCopied')}
+                                                        <IconButton
+                                                            aria-label='Copy the API URL to clipboard'
+                                                            size='large'
+                                                            onClick={() => {
+                                                                navigator.clipboard
+                                                                    .writeText(p.endPointUrl).then(() => onCopy('urlCopied'));
+                                                            }}
                                                         >
-                                                            <IconButton aria-label='Copy the API URL to clipboard' size='large'>
-                                                                <Icon color='secondary'>file_copy</Icon>
-                                                            </IconButton>
-                                                        </CopyToClipboard>
+                                                            <Icon color='secondary'>file_copy</Icon>
+                                                        </IconButton>
                                                     </Tooltip>
                                                 </Avatar>
                                             </Paper>
