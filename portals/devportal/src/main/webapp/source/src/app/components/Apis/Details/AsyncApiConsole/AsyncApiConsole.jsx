@@ -250,40 +250,42 @@ export default function AsyncApiConsole() {
                         </Grid>
                     )}
                 </Grid>
-                <TryOutController
-                    setSecurityScheme={setSecurityScheme}
-                    securitySchemeType={securitySchemeType}
-                    setSelectedEnvironment={setSelectedEnvironment}
-                    selectedEnvironment={selectedEnvironment}
-                    productionAccessToken={productionAccessToken}
-                    setProductionAccessToken={setProductionAccessToken}
-                    sandboxAccessToken={sandboxAccessToken}
-                    setSandboxAccessToken={setSandboxAccessToken}
-                    environments={environments}
-                    scopes={scopes}
-                    labels={labels}
-                    setUsername={setUsername}
-                    setPassword={setPassword}
-                    username={username}
-                    password={password}
-                    setSelectedKeyType={setSelectedKeyType}
-                    selectedKeyType={selectedKeyType}
-                    setKeys={setKeys}
-                    setURLs={setURLs}
-                    setProductionApiKey={setProductionApiKey}
-                    setSandboxApiKey={setSandboxApiKey}
-                    productionApiKey={productionApiKey}
-                    sandboxApiKey={sandboxApiKey}
-                    environmentObject={environmentObject}
-                    setAdvAuthHeader={setAdvAuthHeader}
-                    setAdvAuthHeaderValue={setAdvAuthHeaderValue}
-                    advAuthHeader={advAuthHeader}
-                    advAuthHeaderValue={advAuthHeaderValue}
-                    setSelectedEndpoint={setSelectedEndpoint}
-                    selectedEndpoint={selectedEndpoint}
-                    api={api}
-                    URLs={null}
-                />
+                <Grid container className={classes.grid}>
+                    <TryOutController
+                        setSecurityScheme={setSecurityScheme}
+                        securitySchemeType={securitySchemeType}
+                        setSelectedEnvironment={setSelectedEnvironment}
+                        selectedEnvironment={selectedEnvironment}
+                        productionAccessToken={productionAccessToken}
+                        setProductionAccessToken={setProductionAccessToken}
+                        sandboxAccessToken={sandboxAccessToken}
+                        setSandboxAccessToken={setSandboxAccessToken}
+                        environments={environments}
+                        scopes={scopes}
+                        labels={labels}
+                        setUsername={setUsername}
+                        setPassword={setPassword}
+                        username={username}
+                        password={password}
+                        setSelectedKeyType={setSelectedKeyType}
+                        selectedKeyType={selectedKeyType}
+                        setKeys={setKeys}
+                        setURLs={setURLs}
+                        setProductionApiKey={setProductionApiKey}
+                        setSandboxApiKey={setSandboxApiKey}
+                        productionApiKey={productionApiKey}
+                        sandboxApiKey={sandboxApiKey}
+                        environmentObject={environmentObject}
+                        setAdvAuthHeader={setAdvAuthHeader}
+                        setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                        advAuthHeader={advAuthHeader}
+                        advAuthHeaderValue={advAuthHeaderValue}
+                        setSelectedEndpoint={setSelectedEndpoint}
+                        selectedEndpoint={selectedEndpoint}
+                        api={api}
+                        URLs={null}
+                    />
+                </Grid>
             </Paper>
             <Paper className={classes.paper}>
                 <AsyncApiUI

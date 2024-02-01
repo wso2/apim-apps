@@ -561,42 +561,43 @@ class ApiConsole extends React.Component {
                             </Grid>
                         )}
                     </Grid>
-
-                    <TryOutController
-                        setSecurityScheme={this.setSecurityScheme}
-                        securitySchemeType={securitySchemeType}
-                        setSelectedEnvironment={this.setSelectedEnvironment}
-                        selectedEnvironment={selectedEnvironment}
-                        productionAccessToken={productionAccessToken}
-                        setProductionAccessToken={this.setProductionAccessToken}
-                        sandboxAccessToken={sandboxAccessToken}
-                        setSandboxAccessToken={this.setSandboxAccessToken}
-                        swagger={swaggerSpec}
-                        environments={environments}
-                        scopes={scopes}
-                        setUsername={this.setUsername}
-                        setPassword={this.setPassword}
-                        username={username}
-                        password={password}
-                        setSelectedKeyType={this.setSelectedKeyType}
-                        selectedKeyType={selectedKeyType}
-                        setSelectedKeyManager={this.setSelectedKeyManager}
-                        selectedKeyManager={selectedKeyManager}
-                        updateSwagger={this.updateSwagger}
-                        setKeys={this.setKeys}
-                        setProductionApiKey={this.setProductionApiKey}
-                        setSandboxApiKey={this.setSandboxApiKey}
-                        productionApiKey={productionApiKey}
-                        sandboxApiKey={sandboxApiKey}
-                        setAdvAuthHeader={this.setAdvAuthHeader}
-                        setAdvAuthHeaderValue={this.setAdvAuthHeaderValue}
-                        advAuthHeader={advAuthHeader}
-                        advAuthHeaderValue={advAuthHeaderValue}
-                        setSelectedEndpoint={this.setSelectedEndpoint}
-                        selectedEndpoint={selectedEndpoint}
-                        api={this.state.api}
-                        URLs={null}
-                    />
+                    <Grid container className={classes.grid}>
+                        <TryOutController
+                            setSecurityScheme={this.setSecurityScheme}
+                            securitySchemeType={securitySchemeType}
+                            setSelectedEnvironment={this.setSelectedEnvironment}
+                            selectedEnvironment={selectedEnvironment}
+                            productionAccessToken={productionAccessToken}
+                            setProductionAccessToken={this.setProductionAccessToken}
+                            sandboxAccessToken={sandboxAccessToken}
+                            setSandboxAccessToken={this.setSandboxAccessToken}
+                            swagger={swaggerSpec}
+                            environments={environments}
+                            scopes={scopes}
+                            setUsername={this.setUsername}
+                            setPassword={this.setPassword}
+                            username={username}
+                            password={password}
+                            setSelectedKeyType={this.setSelectedKeyType}
+                            selectedKeyType={selectedKeyType}
+                            setSelectedKeyManager={this.setSelectedKeyManager}
+                            selectedKeyManager={selectedKeyManager}
+                            updateSwagger={this.updateSwagger}
+                            setKeys={this.setKeys}
+                            setProductionApiKey={this.setProductionApiKey}
+                            setSandboxApiKey={this.setSandboxApiKey}
+                            productionApiKey={productionApiKey}
+                            sandboxApiKey={sandboxApiKey}
+                            setAdvAuthHeader={this.setAdvAuthHeader}
+                            setAdvAuthHeaderValue={this.setAdvAuthHeaderValue}
+                            advAuthHeader={advAuthHeader}
+                            advAuthHeaderValue={advAuthHeaderValue}
+                            setSelectedEndpoint={this.setSelectedEndpoint}
+                            selectedEndpoint={selectedEndpoint}
+                            api={this.state.api}
+                            URLs={null}
+                        />
+                    </Grid>
 
                     {api.type !== 'SOAP' && (
                         <Grid container>
