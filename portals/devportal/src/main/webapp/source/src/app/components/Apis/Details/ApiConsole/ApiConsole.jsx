@@ -638,7 +638,7 @@ class ApiConsole extends React.Component {
                                     placement='top'
                                 >
                                     <CopyToClipboard
-                                        text={location.origin + '/api/am/devportal/v3/apis/' + api.id + '/swagger?accessToken='
+                                        text={location.origin + '/api/am/devportal/v4/apis/' + api.id + '/swagger?accessToken='
                                         + accessTokenPart + '&X-WSO2-Tenant-Q=' + tenant + '&' + selectedAttribute + '='
                                         + selectedEnvironment}
                                         onCopy={this.onCopy}

@@ -709,7 +709,7 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get('#panel2a-header h6').contains('apim/car-co/api/V1/json/{region_id}/{make}/{model}/{vin}/{event_type}').should('exist');
     cy.get('[data-testid="itest-api-config"]').click();
 
-    cy.intercept('GET','/api/am/publisher/v4/settings',{fixture : 'solaceEnvironmentResponse.json'}).as('getSettings');
+    cy.intercept('GET','/api/am/publisher/v5/settings',{fixture : 'solaceEnvironmentResponse.json'}).as('getSettings');
     cy.reload();
     //Check solace deployments and deploy
     cy.get('#left-menu-itemdeployments').click();
@@ -720,7 +720,7 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
         cy.get('[data-testid="api-org-name"] input').should('have.value','wso2dev');
         cy.get('#deploy-btn-solace').click({force:true});
         cy.intercept('**/deploy-revision**', { statusCode: 201, fixture: 'api_artifacts/solaceDeployedStatus.json' }).as('deployedStatus');
-        cy.intercept('/api/am/publisher/v4/apis/*/revisions**', { statusCode: 200, fixture: 'api_artifacts/solaceDeployedQuery.json' }).as('deployedRevision');
+        cy.intercept('/api/am/publisher/v5/apis/*/revisions**', { statusCode: 200, fixture: 'api_artifacts/solaceDeployedQuery.json' }).as('deployedRevision');
         cy.wait('@deployedStatus');
         cy.wait('@deployedRevision');
 
@@ -735,18 +735,18 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
 
 Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
 
-    cy.intercept('GET','/api/am/devportal/v3/apis?limit=10&offset=0',{fixture:'api_artifacts/publishedApis.json'}).as('publishedApis');
-    cy.intercept('GET','/api/am/devportal/v3/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e',{fixture:'api_artifacts/mockSolaceApi.json'}).as('mockSolaceApi');
-    cy.intercept('GET','/api/am/devportal/v3/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/ratings',{statusCode:200,fixture:'api_artifacts/solaceApiRatings.json'});
-    cy.intercept('GET','/api/am/devportal/v3/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/thumbnail',{statusCode:204});
-    cy.intercept('GET','/api/am/devportal/v3/subscriptions**',{fixture:'api_artifacts/solaceApiSubscriptionsOverview.json'}).as('solaceApiSubscriptionsOverview');
-    cy.intercept('GET','/api/am/devportal/v3/subscriptions?apiId=27dea111-28a9-44a5-a14d-87f6ca61bd2e&limit=25',{fixture:'api_artifacts/solaceApiSubscriptionsLimit25.json'}).as('solaceApiSubscriptionsLimit25');
-    cy.intercept('GET','/api/am/devportal/v3/subscriptions?apiId=27dea111-28a9-44a5-a14d-87f6ca61bd2e&limit=5000',{fixture:'api_artifacts/solaceApiSubscriptionsLimit5000.json'}).as('solaceApiSubscriptionsLimit5000');
-    cy.intercept('GET','/api/am/devportal/v3/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/comments**',{statusCode:200});
-    cy.intercept('GET','/api/am/devportal/v3/applications?limit=5000',{fixture:'api_artifacts/solaceApiApplications.json'});
-    cy.intercept('GET','/api/am/devportal/v3/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/documents',{fixture:'api_artifacts/solaceApiDocuments.json'});
-    cy.intercept('GET','/api/am/devportal/v3/settings',{fixture:'api_artifacts/solaceApiSettings.json'}).as('solaceApiSettings');
-    cy.intercept('GET','/api/am/devportal/v3/throttling-policies/subscription',{fixture:'api_artifacts/solaceApiThrottling.json'}).as('solaceApiThrottling');
+    cy.intercept('GET','/api/am/devportal/v4/apis?limit=10&offset=0',{fixture:'api_artifacts/publishedApis.json'}).as('publishedApis');
+    cy.intercept('GET','/api/am/devportal/v4/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e',{fixture:'api_artifacts/mockSolaceApi.json'}).as('mockSolaceApi');
+    cy.intercept('GET','/api/am/devportal/v4/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/ratings',{statusCode:200,fixture:'api_artifacts/solaceApiRatings.json'});
+    cy.intercept('GET','/api/am/devportal/v4/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/thumbnail',{statusCode:204});
+    cy.intercept('GET','/api/am/devportal/v4/subscriptions**',{fixture:'api_artifacts/solaceApiSubscriptionsOverview.json'}).as('solaceApiSubscriptionsOverview');
+    cy.intercept('GET','/api/am/devportal/v4/subscriptions?apiId=27dea111-28a9-44a5-a14d-87f6ca61bd2e&limit=25',{fixture:'api_artifacts/solaceApiSubscriptionsLimit25.json'}).as('solaceApiSubscriptionsLimit25');
+    cy.intercept('GET','/api/am/devportal/v4/subscriptions?apiId=27dea111-28a9-44a5-a14d-87f6ca61bd2e&limit=5000',{fixture:'api_artifacts/solaceApiSubscriptionsLimit5000.json'}).as('solaceApiSubscriptionsLimit5000');
+    cy.intercept('GET','/api/am/devportal/v4/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/comments**',{statusCode:200});
+    cy.intercept('GET','/api/am/devportal/v4/applications?limit=5000',{fixture:'api_artifacts/solaceApiApplications.json'});
+    cy.intercept('GET','/api/am/devportal/v4/apis/27dea111-28a9-44a5-a14d-87f6ca61bd2e/documents',{fixture:'api_artifacts/solaceApiDocuments.json'});
+    cy.intercept('GET','/api/am/devportal/v4/settings',{fixture:'api_artifacts/solaceApiSettings.json'}).as('solaceApiSettings');
+    cy.intercept('GET','/api/am/devportal/v4/throttling-policies/subscription',{fixture:'api_artifacts/solaceApiThrottling.json'}).as('solaceApiThrottling');
 
     cy.wait('@publishedApis',{ timeout:10000}).then(()=> {
         cy.get('[data-testid="solace-label"]').should('exist');
@@ -988,7 +988,7 @@ Cypress.Commands.add('updateTenantConfig', (username, password, tenant, config) 
     })
     // Try to improve this
     // Better to modify the API response accordingly instead of mocking the entire API call
-    cy.intercept('GET', 'https://localhost:9443/api/am/admin/v4/tenant-config', {
+    cy.intercept('GET', 'https://localhost:9443/api/am/admin/v5/tenant-config', {
         statusCode: 200,
         body: config
     });
