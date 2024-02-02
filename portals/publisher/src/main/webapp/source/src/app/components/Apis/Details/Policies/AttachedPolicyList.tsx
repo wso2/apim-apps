@@ -29,7 +29,6 @@ import AttachedPolicyCard from './AttachedPolicyCard';
 import type { AttachedPolicy, PolicySpec } from './Types';
 import ApiOperationContext from './ApiOperationContext';
 
-
 interface AttachedPolicyListProps {
     currentPolicyList: AttachedPolicy[];
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
