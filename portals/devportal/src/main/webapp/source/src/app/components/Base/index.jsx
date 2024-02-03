@@ -226,6 +226,7 @@ class Layout extends React.Component {
             openNavBar: false,
             openUserMenu: false,
             selected: 'home',
+            anchorEl: null,
         };
         this.toggleGlobalNavBar = this.toggleGlobalNavBar.bind(this);
         const { history } = props;
@@ -282,12 +283,13 @@ class Layout extends React.Component {
         });
     };
 
-    handleToggleUserMenu = () => {
+    handleToggleUserMenu = (event) => {
         this.setState((state) => ({ openUserMenu: !state.openUserMenu }));
+        this.setState({ anchorEl: event.currentTarget });
     };
 
     handleCloseUserMenu = (event) => {
-        if (this.anchorEl?.contains(event.target)) {
+        if (this.state.anchorEl?.contains(event.target)) {
             return;
         }
 
@@ -533,9 +535,6 @@ class Layout extends React.Component {
                                     <>
                                         <div className={classes.linkWrapper}>
                                             <Button
-                                                buttonRef={(node) => {
-                                                    this.anchorEl = node;
-                                                }}
                                                 aria-owns={this.openUserMenu ? 'menu-list-grow' : null}
                                                 aria-haspopup='true'
                                                 onClick={this.handleToggleUserMenu}
@@ -549,7 +548,7 @@ class Layout extends React.Component {
                                             <Popper
                                                 id='userPopup'
                                                 open={this.state.openUserMenu}
-                                                anchorEl={this.anchorEl}
+                                                anchorEl={this.state.anchorEl}
                                                 transition
                                                 disablePortal
                                                 anchorOrigin={{
