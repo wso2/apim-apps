@@ -251,7 +251,7 @@ export default function GoToTryOut() {
             variant='contained'
             color='primary'
             size='medium'
-            classes={{ label: classes.tryoutLabel }}
+            className={classes.tryoutLabel}
             onClick={pushToTryout}
             aria-label='Go to Try Out page'
         >
@@ -280,7 +280,7 @@ export default function GoToTryOut() {
                 color='primary'
                 size='medium'
                 aria-label='Try Out the API'
-                classes={{ label: classes.tryoutLabel }}
+                className={classes.tryoutLabel}
             >
                 <FormattedMessage
                     id='Apis.Details.GoToTryOut.btn.tryout'
