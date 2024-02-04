@@ -19,7 +19,7 @@
  * under the License.
  */
 import React from 'react'
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import Settings from 'Settings';
 
 /**
@@ -30,24 +30,28 @@ import Settings from 'Settings';
 export default function HTMLRender(props) {
     const {html} = props;
     // Extract html parser props from settings.json
-    const { decodeEntities, tagsNotAllowed } = (Settings.app && 
+    const { tagsNotAllowed } = (Settings.app &&
         Settings.app.reactHTMLParser) ? Settings.app.reactHTMLParser : {
-            decodeEntities: true,
-            tagsNotAllowed: [],
-        };
-    /**
-     * Adds two numbers together.
-     * https://www.npmjs.com/package/react-html-parser
-     * @param {node} node node passed from react-html-parser
-     * @param {int} index node index.
-     * @returns {HTMLElement} HTML element to render.
-     */
-    function transform(node, index) {
-        if (node.type === 'tag' && tagsNotAllowed.includes(node.name)) {
-            return null;
+        tagsNotAllowed: [],
+    };
+    // Define a custom replace function to filter out script tags
+    const customReplace = (node) => {
+        if (node.type === 'tag' && tagsNotAllowed.find( t => t === node.name)) {
+            // You can handle script tags in any way you want here.
+            // For example, you can replace them with a harmless element like a <div>.
+            return <div>{node.name} tags are not allowed</div>;
         }
-    }
+        // Return the node as is for other tags
+        return node;
+    };
+
+    // Use html-react-parser with the custom replace function
+    const parsedHtml = parse(html, {
+        replace: customReplace,
+    });
+    // Remove tags from html
+
     return (
-        <>{ReactHtmlParser(html, { transform, decodeEntities })}</>
+        <>{parsedHtml}</>
     )
 }
