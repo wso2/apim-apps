@@ -76,6 +76,7 @@ const styles = (theme) => ({
     listContentWrapper: {
         padding: `0 ${theme.spacing(3)}`,
         display: 'flex',
+        marginLeft: -40,
     },
     iconDefault: {
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
