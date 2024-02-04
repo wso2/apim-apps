@@ -65,6 +65,10 @@ const useStyles = makeStyles((theme) => ({
     actionPanel: {
         justifyContent: 'flex-start',
     },
+    disabledTier: {
+        color: '#999999',
+        fontWeight: '400',
+    },
     Paper: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
@@ -139,6 +143,7 @@ function Overview(props) {
     const [notFound, setNotFound] = useState(false);
     const { match: { params: { applicationId } } } = props;
     const [environment, setEnvironment] = useState(null);
+    const [tierDisabled, setTierDisabled] = useState(false);
     const [selectedProtocol, setSelectedProtocol] = useState(null);
     const [selectedEndpoint, setSelectedEndpoint] = useState(null);
     const [topics, setTopics] = useState(null);
@@ -148,11 +153,11 @@ function Overview(props) {
         const promisedApplication = client.getApplication(applicationId);
         promisedApplication
             .then((response) => {
-                const promisedTier = client.getTierByName(response.obj.throttlingPolicy, 'application');
                 const appInner = response.obj;
+                setApplication(appInner);
+                const promisedTier = client.getTierByName(response.obj.throttlingPolicy, 'application');
                 promisedTier.then((tierResponse) => {
                     setTierDescription(tierResponse.obj.description);
-                    setApplication(appInner);
                     if (appInner.solaceDeployedEnvironments) {
                         setEnvironment(appInner.solaceDeployedEnvironments[0]);
                         setSelectedProtocol(appInner.solaceDeployedEnvironments[0].solaceURLs[0].protocol);
@@ -163,6 +168,10 @@ function Overview(props) {
                             setTopics(appInner.solaceDeployedEnvironments[0].SolaceTopicsObject.defaultSyntax);
                         }
                     }
+                }).catch((error) => {
+                    setTierDisabled(true);
+                    setTierDescription('Tier is disabled.');
+                    console.log(error);
                 });
             }).catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -251,7 +260,7 @@ function Overview(props) {
                                             <TableCell>
                                                 {application.throttlingPolicy}
                                                 {' '}
-                                                {`(${tierDescription})`}
+                                                <span className={tierDisabled ? classes.disabledTier : ''}>{`(${tierDescription})`}</span>
                                             </TableCell>
                                         )}
                                 </TableRow>
