@@ -50,6 +50,12 @@ const useStyles = makeStyles(() => ({
     },
     statusBox: {
         outline: 'none',
+        bgcolor: 'background.paper',
+        transform: 'translate(-50%, -50%)',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        borderRadius: 4,
     },
     asyncButton: {
         minWidth: 115,

@@ -29,7 +29,7 @@ function InlineMessage(props) {
     const { type, title } = props;
     const messageType = type || 'info';
     return (
-        <Alert variant="filled" severity={messageType} sx={{ bgcolor: 'background.paper' }}>
+        <Alert variant="standard" severity={messageType}>
             {title && (<AlertTitle>{title}</AlertTitle>)}
             {props.children}
         </Alert>
