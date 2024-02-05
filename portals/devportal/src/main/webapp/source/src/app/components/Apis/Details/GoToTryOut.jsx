@@ -58,7 +58,7 @@ const useStyles = makeStyles(() => ({
         borderRadius: 4,
     },
     asyncButton: {
-        minWidth: 115,
+        minWidth: 120,
     },
 }));
 
