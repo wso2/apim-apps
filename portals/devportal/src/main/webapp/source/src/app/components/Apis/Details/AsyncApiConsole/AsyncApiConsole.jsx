@@ -88,7 +88,7 @@ export default function AsyncApiConsole() {
                 const apiData = apiResponse.obj;
                 if (apiData.endpointURLs) {
                     const environment = apiData.endpointURLs.map((endpoint) => {
-                        return endpoint.environmentName;
+                        return { name: endpoint.environmentName, displayName: endpoint.environmentDisplayName };
                     });
                     setEnvironments(environment);
                 } else {

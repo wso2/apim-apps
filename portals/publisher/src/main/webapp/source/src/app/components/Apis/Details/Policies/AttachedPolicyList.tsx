@@ -18,18 +18,13 @@
 
 import React, { FC, useContext } from 'react';
 import {
-    DndContext,
-    closestCenter,
     PointerSensor,
     useSensor,
     useSensors,
     DragEndEvent,
 } from '@dnd-kit/core';
-import {
-    horizontalListSortingStrategy,
-    SortableContext,
-} from '@dnd-kit/sortable';
 
+import AttachedPolicyListShared from 'AppComponents/Shared/PoliciesUI/AttachedPolicyList';
 import AttachedPolicyCard from './AttachedPolicyCard';
 import type { AttachedPolicy, PolicySpec } from './Types';
 import ApiOperationContext from './ApiOperationContext';
@@ -98,32 +93,19 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
     };
 
     return (
-        <>
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-            >
-                <SortableContext
-                    items={currentPolicyList.map((item) => item.uniqueKey)}
-                    strategy={horizontalListSortingStrategy}
-                >
-                    {policyListToDisplay.map((policy: AttachedPolicy) => (
-                        <AttachedPolicyCard
-                            key={policy.uniqueKey}
-                            policyObj={policy}
-                            currentPolicyList={currentPolicyList}
-                            setCurrentPolicyList={setCurrentPolicyList}
-                            currentFlow={currentFlow}
-                            target={target}
-                            verb={verb}
-                            allPolicies={allPolicies}
-                            isAPILevelPolicy={isAPILevelPolicy}
-                        />
-                    ))}
-                </SortableContext>
-            </DndContext>
-        </>
+        <AttachedPolicyListShared
+            currentPolicyList={currentPolicyList}
+            setCurrentPolicyList={setCurrentPolicyList}
+            currentFlow={currentFlow}
+            target={target}
+            verb={verb}
+            allPolicies={allPolicies}
+            isAPILevelPolicy={isAPILevelPolicy}
+            sensors={sensors}
+            handleDragEnd={handleDragEnd}
+            policyListToDisplay={policyListToDisplay}
+            AttachedPolicyCard={AttachedPolicyCard}
+        />
     );
 };
 

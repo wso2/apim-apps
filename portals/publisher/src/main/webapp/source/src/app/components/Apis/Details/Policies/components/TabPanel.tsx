@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import { Box } from '@material-ui/core';
 import React, { FC } from 'react';
+import TabPanelShared from 'AppComponents/Shared/PoliciesUI/TabPanel';
 import DraggablePolicyCard from '../DraggablePolicyCard';
 import type { Policy } from '../Types';
 
@@ -45,27 +45,14 @@ const TabPanel: FC<TabPanelProps> = ({
     const currentFlow = flowNames[index];
 
     return (
-        <div
-            role='tabpanel'
-            hidden={selectedTab !== index}
-            id={`${currentFlow}-tabpanel`}
-            aria-labelledby={`${currentFlow}-tab`}
-        >
-            <Box py={1} px={3}>
-                {selectedTab === index &&
-                    policyList?.map((singlePolicy: Policy) => {
-                        return (
-                            <DraggablePolicyCard
-                                key={singlePolicy.id}
-                                policyObj={singlePolicy}
-                                showCopyIcon
-                                isLocalToAPI={singlePolicy.isAPISpecific}
-                                fetchPolicies={fetchPolicies}
-                            />
-                        );
-                    })}
-            </Box>
-        </div>
+        <TabPanelShared
+            selectedTab={selectedTab}
+            index={index}
+            currentFlow={currentFlow}
+            policyList={policyList}
+            fetchPolicies={fetchPolicies}
+            DraggablePolicyCard={DraggablePolicyCard}
+        />
     );
 };
 

@@ -30,6 +30,7 @@ import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/lab/Autocomplete';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
@@ -287,7 +288,7 @@ class SubscriptionTableData extends React.Component {
                                                 id={'Applications.Details.SubscriptionTableData.update.'
                                                 + 'throttling.policy.blocked'}
                                                 defaultMessage={'Subscription is in BLOCKED state. '
-                                                + 'You need to unblock the subscription inorder to edit the tier'}
+                                                + 'You need to unblock the subscription in order to edit the tier'}
                                             />
                                         )
                                         : (status === 'ON_HOLD')
@@ -320,38 +321,40 @@ class SubscriptionTableData extends React.Component {
                                                     )
                                                     : (
                                                         <div>
-                                                            <TextField
-                                                                required
-                                                                fullWidth
-                                                                id='outlined-select-currency'
-                                                                select
-                                                                label={(
-                                                                    <FormattedMessage
-                                                                        defaultMessage='Business Plan'
-                                                                        id={'Applications.Details.SubscriptionTableData.'
-                                                                        + 'update.business.plan.name'}
-                                                                    />
-                                                                )}
+                                                            <Autocomplete
+                                                                id='application-policy'
+                                                                disableClearable
+                                                                options={tiers}
+                                                                getOptionLabel={(option) => option.label ?? option}
+                                                                getOptionSelected={(option, value) => option.value === value}
                                                                 value={selectedTier}
-                                                                name='throttlingPolicy'
-                                                                onChange={(e) => this.setSelectedTier(e.target.value)}
-                                                                helperText={(
-                                                                    <FormattedMessage
-                                                                        defaultMessage={'Assign a new Business plan to the '
-                                                                        + 'existing subscription'}
-                                                                        id={'Applications.Details.SubscriptionTableData.'
-                                                                        + 'update.throttling.policy.helper'}
+                                                                onChange={(e, newValue) => this.setSelectedTier(newValue.value)}
+                                                                renderInput={(params) => (
+                                                                    <TextField
+                                                                        id='outlined-select-currency'
+                                                                        name='throttlingPolicy'
+                                                                        required
+                                                                        {...params}
+                                                                        label={(
+                                                                            <FormattedMessage
+                                                                                defaultMessage='Business Plan'
+                                                                                id={'Applications.Details.SubscriptionTableData.'
+                                                                                + 'update.business.plan.name'}
+                                                                            />
+                                                                        )}
+                                                                        helperText={(
+                                                                            <FormattedMessage
+                                                                                defaultMessage={'Assign a new Business plan to the '
+                                                                                + 'existing subscription'}
+                                                                                id={'Applications.Details.SubscriptionTableData.'
+                                                                                + 'update.throttling.policy.helper'}
+                                                                            />
+                                                                        )}
+                                                                        margin='normal'
+                                                                        variant='outlined'
                                                                     />
                                                                 )}
-                                                                margin='normal'
-                                                                variant='outlined'
-                                                            >
-                                                                {this.state.tiers.map((tier) => (
-                                                                    <MenuItem key={tier.value} value={tier.value}>
-                                                                        {tier.label}
-                                                                    </MenuItem>
-                                                                ))}
-                                                            </TextField>
+                                                            />
                                                             { (status === 'TIER_UPDATE_PENDING')
                                                         && (
                                                             <div>

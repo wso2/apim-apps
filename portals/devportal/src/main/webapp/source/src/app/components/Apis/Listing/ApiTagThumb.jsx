@@ -134,13 +134,15 @@ function ApiTagThumb(props) {
             <Link to={tagLink} className={classes.imageWrapper}>
                 <img src={app.context + image} className={classes.image} alt='' />
             </Link>
-            <div className={classNames(classes.thumbContent)}>
-                <Link to={tagLink} className={classes.textWrapper}>
-                    <Typography className={classes.thumbHeader} variant='h4' gutterBottom title={name}>
-                        {name}
-                    </Typography>
-                </Link>
-            </div>
+            <center>
+                <div className={classNames(classes.thumbContent)}>
+                    <Link to={tagLink} className={classes.textWrapper}>
+                        <Typography className={classes.thumbHeader} variant='h4' gutterBottom title={name}>
+                            {name}
+                        </Typography>
+                    </Link>
+                </div>
+            </center>
         </div>
     );
 }

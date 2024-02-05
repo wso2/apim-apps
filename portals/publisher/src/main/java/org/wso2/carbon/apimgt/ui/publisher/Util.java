@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.wso2.carbon.apimgt.api.APIManagementException;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.registry.api.RegistryException;
+import org.wso2.carbon.utils.CarbonUtils;
 
 /**
  * Class for the utility functions needed by the services
@@ -146,6 +147,15 @@ public class Util {
             return tenantDomain;
         } else {
             return "carbon.super";
+        }
+    }
+
+    public static boolean isEnableEmailUserName() {
+        boolean isEnableEmailUserName = Boolean.parseBoolean(CarbonUtils.getServerConfiguration().getFirstProperty("EnableEmailUserName"));
+        if (isEnableEmailUserName) {
+            return isEnableEmailUserName;
+        } else {
+            return false;
         }
     }
 

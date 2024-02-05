@@ -180,8 +180,7 @@ class Details extends Component {
         promisedApplication
             .then((response) => {
                 this.setState({ application: response.obj });
-                const promisedPolicy = client.getTierByName(response.obj.throttlingPolicy, 'application');
-                return Promise.all([response, promisedPolicy]);
+                return Promise.all([response]);
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {

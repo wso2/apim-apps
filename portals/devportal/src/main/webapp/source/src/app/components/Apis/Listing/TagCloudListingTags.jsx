@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
     },
     mainPageList: {
         display: 'flex',
+        flexWrap: 'wrap',
     },
     mainPageAllApis: {
         width: '100%',

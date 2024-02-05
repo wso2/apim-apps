@@ -26,6 +26,11 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Autocomplete from '@mui/lab/Autocomplete';
+import Checkbox from '@mui/material/Checkbox';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import TextField from '@mui/material/TextField';
 
 // Styles for Grid and Paper elements
 const styles = theme => ({
@@ -68,8 +73,11 @@ const MenuProps = {
     getContentAnchorEl: null,
 };
 
+const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
+const checkedIcon = <CheckBoxIcon fontSize='small' />;
+
 /**
- * Used to display generate acctoken UI
+ * Used to display generate access token UI
  */
 const tokens = (props) => {
     /**
@@ -108,38 +116,41 @@ const tokens = (props) => {
                 className={classes.FormControlOdd}
                 disabled={subscriptionScopes.length === 0}
             >
-                <InputLabel htmlFor='quota-helper' className={classes.quotaHelp}>
-                    <FormattedMessage
-                        id='Shared.AppsAndKeys.Tokens.when.you.generate.scopes'
-                        defaultMessage='Scopes'
-                    />
-
-                </InputLabel>
-                <Select
-                    variant="standard"
-                    name='scopesSelected'
+                <Autocomplete
                     multiple
+                    limitTags={5}
+                    id='scopesSelected'
+                    name='scopesSelected'
+                    options={subscriptionScopes}
+                    noOptionsText='No scopes available'
+                    disableCloseOnSelect
                     value={accessTokenRequest.scopesSelected}
-                    onChange={e => handleChange('scopesSelected', e)}
-                    input={<Input id='select-multiple-chip' />}
-                    renderValue={selected => (
-                        <div className={classes.chips}>
-                            {selected.map(value => (
-                                <Chip key={value} label={value} className={classes.chip} />
-                            ))}
-                        </div>
+                    onChange={(e, newValue) => handleChange('scopesSelected', { target: { value: newValue } })}
+                    renderOption={(option, { selected }) => (
+                        <>
+                            <Checkbox
+                                id={'access-token-scope-' + option}
+                                icon={icon}
+                                checkedIcon={checkedIcon}
+                                style={{ marginRight: 8 }}
+                                checked={selected}
+                            />
+                            {option}
+                        </>
                     )}
-                    MenuProps={MenuProps}
-                >
-                    {subscriptionScopes.map(scope => (
-                        <MenuItem
-                            key={scope}
-                            value={scope}
-                        >
-                            {scope}
-                        </MenuItem>
-                    ))}
-                </Select>
+                    renderInput={(params) => (
+                        <TextField {...params}
+                            margin='dense'
+                            variant='outlined'
+                            label={<FormattedMessage
+                                htmlFor='quota-helper'
+                                className={classes.quotaHelp}
+                                id='Shared.AppsAndKeys.Tokens.when.you.generate.scopes'
+                                defaultMessage='Scopes'
+                            />}
+                        />
+                    )}
+                />
                 <Typography variant='caption'>
                     <FormattedMessage
                         id='Shared.AppsAndKeys.Tokens.when.you.generate'
