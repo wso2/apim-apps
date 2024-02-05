@@ -25,6 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Tooltip from '@material-ui/core/Tooltip';
 import API from 'AppData/api';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import BusinessInformation from './BusinessInformation';
@@ -38,6 +39,7 @@ import BusinessInformation from './BusinessInformation';
 function MetaData(props) {
     const { parentClasses } = props;
     const [api] = useAPI();
+    const { settings } = useAppContext();
 
     return (
         <>
@@ -130,6 +132,24 @@ function MetaData(props) {
                             <Grid item xs={12} md={6} lg={8}>
                                 <Typography component='p' variant='body1'>
                                     {api.version && <>{api.version}</>}
+                                </Typography>
+                            </Grid>
+                        </>
+                    )}
+                    {/* Gateway type */}
+                    {settings && settings.gatewayTypes.length === 2 && (
+                        <>
+                            <Grid item xs={12} md={6} lg={4}>
+                                <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                                    <FormattedMessage
+                                        id='Apis.Details.NewOverview.MetaData.version'
+                                        defaultMessage='Gateway Type'
+                                    />
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6} lg={8}>
+                                <Typography component='p' variant='body1'>
+                                    {api.gatewayType === 'wso2/synapse' ? 'Regular' : 'APK'}
                                 </Typography>
                             </Grid>
                         </>

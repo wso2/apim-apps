@@ -19,6 +19,7 @@ import React, { useReducer, useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -30,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 import ProvideGraphQL from './Steps/ProvideGraphQL';
 
@@ -40,10 +42,12 @@ import ProvideGraphQL from './Steps/ProvideGraphQL';
  * @param {*} props
  * @returns
  */
-export default function ApiCreateGraphQL() {
+export default function ApiCreateGraphQL(props) {
     const intl = useIntl();
+    const { multiGateway } = props;
     const [wizardStep, setWizardStep] = useState(0);
     const history = useHistory();
+    const { data: settings } = usePublisherSettings();
     const [policies, setPolicies] = useState([]);
 
     useEffect(() => {
@@ -75,6 +79,7 @@ export default function ApiCreateGraphQL() {
             case 'inputValue':
             case 'name':
             case 'version':
+            case 'gatewayType':
             case 'endpoint':
             case 'context':
             case 'isFormValid':
@@ -138,14 +143,26 @@ export default function ApiCreateGraphQL() {
             version,
             context,
             endpoint,
+            gatewayType,
             implementationType,
             inputValue,
             graphQLInfo: { operations },
         } = apiInputs;
+
+        let defaultGatewayType;
+        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
+            defaultGatewayType = 'Regular';
+        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
+            defaultGatewayType = 'APK';
+        } else {
+            defaultGatewayType = 'default';
+        }
+
         const additionalProperties = {
             name,
             version,
             context,
+            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
             policies,
             operations,
         };
@@ -266,6 +283,7 @@ export default function ApiCreateGraphQL() {
                         <DefaultAPIForm
                             onValidate={handleOnValidate}
                             onChange={handleOnChange}
+                            multiGateway={multiGateway}
                             api={apiInputs}
                             isAPIProduct={false}
                         />
@@ -335,3 +353,7 @@ export default function ApiCreateGraphQL() {
         </APICreateBase>
     );
 }
+
+ApiCreateGraphQL.propTypes = {
+    multiGateway: PropTypes.shape({ content: PropTypes.string }).isRequired,
+};

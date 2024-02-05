@@ -16,8 +16,9 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '@material-ui/core';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -39,6 +40,23 @@ const useStyles = makeStyles({
 const APILanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
+    const { data: settings } = usePublisherSettings();
+    const [gateway, setGatewayType] = useState(false);
+    
+    const getGatewayType = () => {
+        if (settings != null) {
+            if (settings.gatewayTypes && settings.gatewayTypes.includes('Regular')) {
+                setGatewayType(true);
+            } else {
+                setGatewayType(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        getGatewayType();
+    }, [settings]);
+
     const { root } = useStyles();
     const {
         graphqlIcon,
@@ -84,9 +102,13 @@ const APILanding = () => {
                             spacing={3}
                         >
                             <RestAPIMenu icon={restApiIcon} />
-                            <SoapAPIMenu icon={soapApiIcon} />
+                            {gateway &&
+                                <SoapAPIMenu icon={soapApiIcon} />
+                            }
                             <GraphqlAPIMenu icon={graphqlIcon} />
-                            <StreamingAPIMenu icon={streamingApiIcon} />
+                            {gateway &&
+                                <StreamingAPIMenu icon={streamingApiIcon} />
+                            }
                         </Grid>
                     </Box>
                 </Grid>
