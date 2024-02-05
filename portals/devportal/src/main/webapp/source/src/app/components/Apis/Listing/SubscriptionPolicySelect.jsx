@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-import Autocomplete from '@mui/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from '../../Shared/ScopeValidation';

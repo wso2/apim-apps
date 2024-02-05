@@ -29,7 +29,7 @@ import Dialog from '@mui/material/Dialog';
 import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';

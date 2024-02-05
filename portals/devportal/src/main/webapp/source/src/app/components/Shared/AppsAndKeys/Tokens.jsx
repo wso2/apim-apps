@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
 import FormControl from '@mui/material/FormControl';
 import Typography from '@mui/material/Typography';
-import Autocomplete from '@mui/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import Checkbox from '@mui/material/Checkbox';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
