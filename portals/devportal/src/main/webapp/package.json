@@ -88,7 +88,7 @@
         "stream-browserify": "^3.0.0",
         "subscriptions-transport-ws": "^0.11.0",
         "swagger-client": "^3.18.5",
-        "swagger-ui-react": "^3.52.5",
+        "swagger-ui-react": "^5.6.2",
         "swagger2-postman2-converter": "0.0.3"
     },
     "devDependencies": {
