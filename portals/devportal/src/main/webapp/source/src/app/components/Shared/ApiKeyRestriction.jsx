@@ -214,6 +214,7 @@ const apiKeyRestrictions = (props) => {
                       : ""
                   }
                   error={invalidIP}
+                  size='small'
                   margin="dense"
                   variant="outlined"
                   placeholder={intl.formatMessage({
@@ -306,6 +307,7 @@ const apiKeyRestrictions = (props) => {
                       : ""
                   }
                   error={invalidReferer}
+                  size='small'
                   margin="dense"
                   variant="outlined"
                   placeholder={intl.formatMessage({
