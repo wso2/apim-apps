@@ -28,7 +28,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/lab/Autocomplete';
 import { FormattedMessage } from 'react-intl';

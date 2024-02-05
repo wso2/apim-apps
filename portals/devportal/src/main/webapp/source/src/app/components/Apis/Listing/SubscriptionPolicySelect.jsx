@@ -18,12 +18,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from '@mui/styles/withStyles';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/lab/Autocomplete';
-import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from '../../Shared/ScopeValidation';
