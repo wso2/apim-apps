@@ -56,7 +56,7 @@ function GlobalNavLinks(props) {
     const theme = useTheme();
 
     const { data: settings } = usePublisherSettings();
-    const [gateway, setGatewayType] = useState(false);
+    const [gateway, setGatewayType] = useState(true);
     
     const getGatewayType = () => {
         if (settings != null) {
