@@ -18,7 +18,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {
-    Grid, TextField, MenuItem, InputAdornment,
+    Grid, TextField, MenuItem,
     Icon,
     ListItem,
     ListItemAvatar,
@@ -105,7 +105,7 @@ function EndpointSecurity(props) {
     const [securityValidity, setSecurityValidity] = useState();
 
     const [showAddParameter, setShowAddParameter] = useState(false);
-    const [clientSecretIsMasked, setClientSecretIsMasked] = useState(true);
+    const [clientSecretIsMasked] = useState(true);
     // Implementation of useState variables for parameter name and value
     const [parameterName, setParameterName] = useState(null);
     const [parameterValue, setParameterValue] = useState(null);
@@ -113,7 +113,7 @@ function EndpointSecurity(props) {
 
     const authTypes = () => {
         const { gatewayType } = api; // Access gatewayType directly from api
-    
+
         if (gatewayType === 'wso2/apk') {
             return [
                 {
@@ -132,7 +132,7 @@ function EndpointSecurity(props) {
                 },
             ];
         }
-    
+
         // Default authTypes for other gateway types
         return [
             {
@@ -165,7 +165,7 @@ function EndpointSecurity(props) {
             },
         ];
     };
-    
+
     const grantTypes = [
         {
             key: 'CLIENT_CREDENTIALS',
@@ -238,12 +238,6 @@ function EndpointSecurity(props) {
         setShowAddParameter(!showAddParameter);
     };
 
-    /**
-     * Show or hide the Client Secret
-     */
-    const toggleClientSecretMask = () => {
-        setClientSecretIsMasked(!clientSecretIsMasked);
-    };
 
     /**
      * Set the custom parameter name or value property
@@ -543,14 +537,6 @@ function EndpointSecurity(props) {
                                         onBlur={() => validateAndUpdateSecurityInfo('clientSecret')}
                                         InputProps={{
                                             autoComplete: 'new-password',
-                                            endAdornment: (
-                                                <InputAdornment position='end'>
-                                                    <RemoveRedEye
-                                                        className={classes.eye}
-                                                        onClick={toggleClientSecretMask}
-                                                    />
-                                                </InputAdornment>
-                                            ),
                                         }}
                                     />
                                 </Grid>
