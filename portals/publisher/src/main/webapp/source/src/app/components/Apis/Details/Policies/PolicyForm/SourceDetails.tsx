@@ -284,7 +284,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                     label={GATEWAY_TYPE_LABELS.SYNAPSE}
                                     data-testid='regular-gateway-label'
                                 />
-                                <FormControlLabel
+                                {/* <FormControlLabel
                                     control={
                                         <Checkbox
                                             name='choreoConnect'
@@ -297,7 +297,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                     }
                                     label={GATEWAY_TYPE_LABELS.CC}
                                     data-testid='choreo-connect-label'
-                                />
+                                /> */}
                             </FormGroup>
                             <FormHelperText>
                                 {supportedGatewaysError

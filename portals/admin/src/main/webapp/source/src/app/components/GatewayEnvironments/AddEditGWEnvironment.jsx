@@ -135,7 +135,7 @@ function AddEditGWEnvironment(props) {
 
     const [selectedGatewayType, setValue] = React.useState('');
     const { settings } = useAppContext();
-    const gatewayTypes = settings.gatewayTypes;
+    const { gatewayTypes } = settings;
     const getBorderColor = (gatewayType) => {
         return selectedGatewayType === gatewayType
             ? '2px solid #1976D2'

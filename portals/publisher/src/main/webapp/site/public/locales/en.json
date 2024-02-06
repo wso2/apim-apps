@@ -237,6 +237,12 @@
       "value": "Context"
     }
   ],
+  "Apis.Create.Components.DefaultAPIForm.api.product.version": [
+    {
+      "type": 0,
+      "value": "Version"
+    }
+  ],
   "Apis.Create.Components.DefaultAPIForm.name": [
     {
       "type": 0,
@@ -244,12 +250,6 @@
     }
   ],
   "Apis.Create.Components.DefaultAPIForm.version": [
-    {
-      "type": 0,
-      "value": "Version"
-    }
-  ],
-  "Apis.Create.Components.DefaultAPIForm.api.product.version": [
     {
       "type": 0,
       "value": "Version"

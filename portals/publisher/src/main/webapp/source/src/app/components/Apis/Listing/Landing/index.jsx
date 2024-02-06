@@ -41,7 +41,7 @@ const APILanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
-    const [gateway, setGatewayType] = useState(false);
+    const [gateway, setGatewayType] = useState(true);
     
     const getGatewayType = () => {
         if (settings != null) {
