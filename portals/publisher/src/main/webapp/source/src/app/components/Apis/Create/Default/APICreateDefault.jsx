@@ -56,7 +56,7 @@ const getPolicies = async () => {
  */
 function APICreateDefault(props) {
     const {
-        isWebSocket, isAPIProduct, history, intl,
+        isWebSocket, isAPIProduct, history, intl, multiGateway
     } = props;
     const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
 
@@ -84,6 +84,7 @@ function APICreateDefault(props) {
             case 'version':
             case 'endpoint':
             case 'context':
+            case 'gatewayType':
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             default:
@@ -140,10 +141,11 @@ function APICreateDefault(props) {
     async function createAPI() {
         setIsCreating(true);
         const {
-            name, version, context, endpoint,
+            name, version, context, endpoint, gatewayType
         } = apiInputs;
         let promisedCreatedAPI;
         let policies;
+        let defaultGatewayType;
         const allPolicies = await getPolicies();
         if (allPolicies.length === 0) {
             Alert.info(intl.formatMessage({
@@ -155,11 +157,19 @@ function APICreateDefault(props) {
         } else {
             policies = [allPolicies[0].name];
         }
+        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
+            defaultGatewayType = 'wso2/synapse';
+        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
+            defaultGatewayType = 'wso2/apk';
+        } else {
+            defaultGatewayType = 'default';
+        }
 
         const apiData = {
             name,
             version,
             context,
+            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
             policies,
         };
         if (endpoint) {
@@ -202,7 +212,7 @@ function APICreateDefault(props) {
             promisedCreatedAPI = newAPI
                 .save();
             Alert.loading(promisedCreatedAPI, {
-                loading: 'Creating API...',
+                loading: 'Creating API...' + apiData.gatewayType,
                 success: 'API created successfully',
                 error: (error) => {
                     console.error(error);
@@ -415,7 +425,7 @@ function APICreateDefault(props) {
 
     return (
         <APICreateBase title={pageTitle}>
-            <Grid container direction='row' justify='center' alignItems='center' spacing={3}>
+            <Grid container direction='row' justify='center' alignItems='center' spacing={2}>
                 {/* Page error banner */}
                 {(pageError) && (
                     <Grid item xs={11}>
@@ -445,6 +455,7 @@ function APICreateDefault(props) {
                         onValidate={handleOnValidate}
                         onChange={handleOnChange}
                         api={apiInputs}
+                        multiGateway={multiGateway}
                         isAPIProduct={isAPIProduct}
                         isWebSocket={isWebSocket}
                     />
@@ -499,6 +510,9 @@ function APICreateDefault(props) {
                     </Grid>
                 </Grid>
             </Grid>
+            <Grid item xs={12}>
+                <Box mt={4} />
+            </Grid>
         </APICreateBase>
     );
 }
@@ -511,6 +525,7 @@ APICreateDefault.WORKFLOW_STATUS = {
 };
 APICreateDefault.propTypes = {
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+    multiGateway: PropTypes.string.isRequired,
     isAPIProduct: PropTypes.shape({}),
     isWebSocket: PropTypes.shape({}),
     intl: PropTypes.shape({

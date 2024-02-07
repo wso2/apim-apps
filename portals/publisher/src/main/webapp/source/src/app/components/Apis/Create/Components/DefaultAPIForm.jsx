@@ -27,6 +27,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
 import green from '@material-ui/core/colors/green';
 import APIValidation from 'AppData/APIValidation';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormLabel from '@material-ui/core/FormLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 
@@ -62,6 +68,36 @@ const useStyles = makeStyles((theme) => ({
     iconButtonValid: {
         padding: theme.spacing(1),
         color: green[500],
+    },
+    radioOutline: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px', // Adjust the padding for the desired outline size
+        marginTop: '10px',
+        marginLeft: '6px',
+        marginRight: '8px',
+        border: '2px solid gray', // Initial border color
+        borderRadius: '8px', // Adjust the border-radius for a square outline
+        transition: 'border 0.3s', // Add transition for a smooth color change
+        '&:hover': {
+            border: '2px solid gray', // Keep the gray color on hover
+        },
+        '&.Mui-checked': {
+            border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
+        },
+    },
+    label: {
+        marginLeft: '10px', // Adjust as needed for spacing between the radio button and label
+    },
+    newLabel: {
+        backgroundColor: 'green', // Blue color
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '0.6rem',
+        padding: '2px 4px', // Adjust padding as needed
+        borderRadius: '4px', // Adjust border-radius for rounded corners
+        marginLeft: '10px', // Adjust margin as needed
+        display: 'inline-block', // Ensure inline display
     },
 }));
 
@@ -130,7 +166,8 @@ function checkContext(value, result) {
  */
 export default function DefaultAPIForm(props) {
     const {
-        onChange, onValidate, api, isAPIProduct, isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
+        onChange, onValidate, api, isAPIProduct, multiGateway,
+        isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
     } = props;
     const classes = useStyles();
     const [validity, setValidity] = useState({});
@@ -139,6 +176,12 @@ export default function DefaultAPIForm(props) {
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
+
+    const getBorderColor = (gatewayType) => {
+        return api.gatewayType === gatewayType
+            ? '2px solid #1976D2'
+            : '2px solid gray';
+    };
 
     // Check the provided API validity on mount, TODO: Better to use Joi schema here ~tmkb
     useEffect(() => {
@@ -562,7 +605,61 @@ export default function DefaultAPIForm(props) {
                         }}
                     />
                 )}
-
+                {multiGateway  &&
+                    <Grid container spacing={2}>
+                        <FormControl component='fieldset'>
+                            <FormLabel style={{ marginLeft: '7px', marginTop: '20px' }}>
+                                Select Gateway type
+                            </FormLabel>
+                            <RadioGroup
+                                row
+                                aria-label='gateway-type'
+                                name='gatewayType'
+                                value={api.gatewayType}
+                                onChange={onChange}
+                            >
+                                <Grid item xs={6}>
+                                    <FormControlLabel
+                                        value='wso2/synapse'
+                                        className={classes.radioOutline}
+                                        control={<Radio />}
+                                        label={(
+                                            <div>
+                                                <span>Regular Gateway</span>
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    API gateway embedded in APIM runtime.
+                                                    Connect directly APIManager.
+                                                </Typography>
+                                            </div>
+                                        )}
+                                        style={{ border: getBorderColor('Regular') }}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormControlLabel
+                                        value='wso2/apk'
+                                        className={classes.radioOutline}
+                                        control={<Radio />}
+                                        label={(
+                                            <div>
+                                                <span>APK Gateway</span>
+                                                <span className={`${classes.label} ${classes.newLabel}`}>New</span> 
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    Fast API gateway running on kubernetes designed to manage
+                                                    and secure APIs.
+                                                </Typography>
+                                            </div>
+                                        )}
+                                        style={{ border: getBorderColor('APK') }}
+                                    />
+                                </Grid>
+                            </RadioGroup>
+                            <FormHelperText style={{ marginLeft: '7px'}}>
+                                Select the gateway type where your API will run.
+                            </FormHelperText>
+                        </FormControl>
+                    </Grid>
+                }   
                 {!appendChildrenBeforeEndpoint && !!children && children}
             </form>
             <Grid container direction='row' justify='flex-end' alignItems='center'>
@@ -585,6 +682,7 @@ DefaultAPIForm.defaultProps = {
 };
 DefaultAPIForm.propTypes = {
     api: PropTypes.shape({}),
+    multiGateway: PropTypes.string.isRequired,
     isAPIProduct: PropTypes.shape({}).isRequired,
     isWebSocket: PropTypes.shape({}),
     onChange: PropTypes.func.isRequired,

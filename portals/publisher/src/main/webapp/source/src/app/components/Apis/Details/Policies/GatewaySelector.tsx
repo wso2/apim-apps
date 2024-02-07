@@ -161,7 +161,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                         label='Regular Gateway'
                                         labelPlacement='end'
                                     />
-                                    <FormControlLabel
+                                    {/* <FormControlLabel
                                         value={SupportedGatewayTypes.CC}
                                         control={
                                             <Radio
@@ -174,7 +174,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                         }
                                         label='Choreo Connect'
                                         labelPlacement='end'
-                                    />
+                                    /> */}
                                 </RadioGroup>
                             </FormControl>
                         </Box>
