@@ -71,7 +71,9 @@ const styles = {
         marginLeft: '10px', // Adjust margin as needed
         display: 'inline-block', // Ensure inline display
     },
-}
+};
+
+const StyledLabel = styled('span')({ ...styles.label, ...styles.newLabel });
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -506,7 +508,7 @@ function AddEditGWEnvironment(props) {
                                 label={(
                                     <div>
                                         <span>APK Gateway</span>
-                                        <span sx={{ ...styles.label, ...styles.newLabel }}>New</span>
+                                        <StyledLabel>New</StyledLabel>
                                         <Typography variant='body2' color='textSecondary'>
                                             Fast API gateway running on kubernetes designed to manage
                                             and secure APIs.

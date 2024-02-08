@@ -1,7 +1,8 @@
 import React from 'react';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import clsx from 'clsx';
-import { useTheme, styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';

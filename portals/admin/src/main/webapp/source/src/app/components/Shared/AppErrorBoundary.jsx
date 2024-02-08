@@ -22,6 +22,7 @@ import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
+import AppErrorBoundaryImage from './AppErrorBoundaryImage';
 
 const PREFIX = 'AppErrorBoundary';
 
@@ -129,7 +130,7 @@ class AppErrorBoundary extends React.Component {
      */
     render() {
         const { hasError, error, info } = this.state;
-        const { children, theme } = this.props;
+        const { children } = this.props;
         const errorStackStyle = {
             background: '#fff8dc',
         };
@@ -141,11 +142,7 @@ class AppErrorBoundary extends React.Component {
                             <div className={classes.errorDisplay} style={{ width: '100%' }}>
                                 <div className={classes.errorDisplayContent}>
                                     <a href={Configurations.app.context}>
-                                        <img
-                                            src={Configurations.app.context + theme.custom.logo}
-                                            alt={theme.custom.title}
-                                            style={{ height: theme.custom.logoHeight, width: theme.custom.logoWidth }}
-                                        />
+                                        <AppErrorBoundaryImage />
                                     </a>
                                 </div>
                             </div>
