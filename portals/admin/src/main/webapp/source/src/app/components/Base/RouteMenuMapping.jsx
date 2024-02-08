@@ -57,6 +57,7 @@ import SecurityIcon from '@material-ui/icons/Security';
 import TouchAppIcon from '@material-ui/icons/TouchApp';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import ListApis from '../APISettings/ListApis';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -308,10 +309,19 @@ const RouteMenuMapping = (intl) => [
             {
                 id: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.applications',
-                    defaultMessage: 'Applications',
+                    defaultMessage: 'Change Application Owner',
                 }),
                 path: '/settings/applications',
                 component: ListApplications,
+                icon: <SettingsIcon />,
+            },
+            {
+                id: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.apis',
+                    defaultMessage: 'Change API Provider',
+                }),
+                path: '/settings/apis',
+                component: ListApis,
                 icon: <SettingsIcon />,
             },
             {

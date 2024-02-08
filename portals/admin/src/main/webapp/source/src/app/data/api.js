@@ -421,6 +421,17 @@ class API extends Resource {
     }
 
     /**
+     * Get a list of apis from all users
+     */
+    getApiList(params) {
+        return this.client.then((client) => {
+            return client.apis['APIs'].getAllAPIs(
+                params, this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get Subscription Throttling Policies
      */
     getSubscritionPolicyList() {
@@ -440,6 +451,18 @@ class API extends Resource {
                 'Application'
             ].post_applications__applicationId__change_owner(
                 { owner: owner, applicationId: id },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+     /**
+     * Update an api's owner
+     */
+     updateApiProvider(apiId, provider) {
+        return this.client.then((client) => {
+            return client.apis['Api Provider Change'].providerNamePost(
+                { provider: provider, apiId: apiId },
                 this._requestMetaData(),
             );
         });
@@ -471,9 +494,9 @@ class API extends Resource {
     /**
      * Add a Gateway Environment
      */
-    addGatewayEnvironment(name, displayName, description, vhosts, provider="wso2",  callback = null) {
+    addGatewayEnvironment(name, displayName, description, gatewayType, vhosts, provider="wso2",  callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, description, vhosts, provider };
+            const data = { name, displayName, description, gatewayType, vhosts, provider };
             const payload = {
                 'Content-Type': 'application/json',
             };
@@ -488,9 +511,9 @@ class API extends Resource {
     /**
      * Update a Gateway Environment
      */
-    updateGatewayEnvironment(id, name, displayName, description, vhosts,  callback = null) {
+    updateGatewayEnvironment(id, name, displayName, description, gatewayType, vhosts,  callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, description, vhosts };
+            const data = { name, displayName, description, gatewayType, vhosts };
             return client.apis['Environments'].put_environments__environmentId_(
                 { environmentId: id },
                 { requestBody: data },

@@ -15,13 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Route, Switch } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import APICreateDefault from './Default/APICreateDefault';
 import APIProductCreateWrapper from './APIProduct/APIProductCreateWrapper';
 import ApiCreateSwagger from './OpenAPI/ApiCreateOpenAPI';
@@ -37,6 +37,10 @@ const styles = {
     },
 };
 
+// Wrapper component to pass additional props
+const WithSomeValue = (Component, additionalProps) => (routeProps) => (
+    <Component {...routeProps} {...additionalProps} />
+);
 /**
  *
  * Handle routing for all types of API create creations, If you want to add new API type create page,
@@ -46,13 +50,34 @@ const styles = {
  */
 function APICreateRoutes(props) {
     const { classes } = props;
+    const { data: settings } = usePublisherSettings();
+    const [gateway, setGatewayType] = useState(false);
+    
+    const getGatewayType = () => {
+        if (settings != null) {
+            if (settings.gatewayTypes && settings.gatewayTypes.length === 2 ) {
+                setGatewayType(true);
+            } else {
+                setGatewayType(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        getGatewayType();
+    }, [settings]);
+    
     return (
         <div className={classes.content}>
             <Switch>
-                <Route path='/apis/create/rest' component={APICreateDefault} />
+                <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, { multiGateway: gateway })}/>
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
-                <Route path='/apis/create/graphQL' component={ApiCreateGraphQL} />
-                <Route path='/apis/create/openapi' component={ApiCreateSwagger} />
+                <Route path='/apis/create/graphQL' component={WithSomeValue(ApiCreateGraphQL,
+                    { multiGateway: gateway })}
+                />
+                <Route path='/apis/create/openapi' component={WithSomeValue(ApiCreateSwagger,
+                    { multiGateway: gateway })}
+                />
                 <Route path='/apis/create/wsdl' component={ApiCreateWSDL} />
                 {/* TODO: Remove ApiCreateWebSocket components and associated routes */}
                 <Route path='/apis/create/ws' component={ApiCreateWebSocket} />

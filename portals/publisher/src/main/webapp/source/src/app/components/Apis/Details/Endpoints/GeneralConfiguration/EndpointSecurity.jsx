@@ -93,36 +93,61 @@ function EndpointSecurity(props) {
     const [parameterValue, setParameterValue] = useState(null);
     const endpointType = isProduction ? 'production' : 'sandbox';
 
-    const authTypes = [
-        {
-            key: 'NONE',
-            value: intl.formatMessage({
-                id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.none',
-                defaultMessage: 'None',
-            }),
-        },
-        {
-            key: 'BASIC',
-            value: intl.formatMessage({
-                id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.basic',
-                defaultMessage: 'Basic Auth',
-            }),
-        },
-        {
-            key: 'DIGEST',
-            value: intl.formatMessage({
-                id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.digest.auth',
-                defaultMessage: 'Digest Auth',
-            }),
-        },
-        {
-            key: 'OAUTH',
-            value: intl.formatMessage({
-                id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.oauth',
-                defaultMessage: 'OAuth 2.0',
-            }),
-        },
-    ];
+    const authTypes = () => {
+        const { gatewayType } = api; // Access gatewayType directly from api
+    
+        if (gatewayType === 'wso2/apk') {
+            return [
+                {
+                    key: 'NONE',
+                    value: intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.none',
+                        defaultMessage: 'None',
+                    }),
+                },
+                {
+                    key: 'BASIC',
+                    value: intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.basic',
+                        defaultMessage: 'Basic Auth',
+                    }),
+                },
+            ];
+        }
+    
+        // Default authTypes for other gateway types
+        return [
+            {
+                key: 'NONE',
+                value: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.none',
+                    defaultMessage: 'None',
+                }),
+            },
+            {
+                key: 'BASIC',
+                value: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.basic',
+                    defaultMessage: 'Basic Auth',
+                }),
+            },
+            {
+                key: 'DIGEST',
+                value: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.digest.auth',
+                    defaultMessage: 'Digest Auth',
+                }),
+            },
+            {
+                key: 'OAUTH',
+                value: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.oauth',
+                    defaultMessage: 'OAuth 2.0',
+                }),
+            },
+        ];
+    };
+    
     const grantTypes = [
         {
             key: 'CLIENT_CREDENTIALS',
@@ -339,7 +364,7 @@ function EndpointSecurity(props) {
                     }}
                     onBlur={() => validateAndUpdateSecurityInfo(isProduction)}
                 >
-                    {authTypes.map((type) => (
+                    {authTypes().map((type) => (
                         <MenuItem value={type.key} id={'auth-type-' + type.key}>{type.value}</MenuItem>
                     ))}
                 </TextField>

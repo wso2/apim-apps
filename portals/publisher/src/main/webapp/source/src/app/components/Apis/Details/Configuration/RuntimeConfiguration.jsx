@@ -477,7 +477,7 @@ export default function RuntimeConfiguration() {
                                             <CORSConfiguration api={apiConfig} configDispatcher={configDispatcher} />
                                         )}
 
-                                        {(api.type !== 'GRAPHQL' && !isAsyncAPI)
+                                        {((api.type !== 'GRAPHQL' || !isAsyncAPI) && api.gatewayType !== 'wso2/apk')
                                             && <SchemaValidation api={apiConfig} configDispatcher={configDispatcher} />}
                                         {api.type === 'GRAPHQL' && (
                                             <Box mt={3}>
@@ -493,7 +493,7 @@ export default function RuntimeConfiguration() {
                                         <ArrowForwardIcon className={classes.arrowForwardIcon} />
                                     )}
                                 </Grid>
-                                { !isNonWebSubAsyncAPI && (
+                                { api.gatewayType !== 'wso2/apk' && !isNonWebSubAsyncAPI && (
                                     <>
                                         <Typography className={classes.heading} variant='h6' component='h3'>
                                             {!isWebSub ? (
@@ -555,7 +555,7 @@ export default function RuntimeConfiguration() {
                                     >
                                         {!api.isAPIProduct() && (
                                             <>
-                                                {!isAsyncAPI && (
+                                                {(!isAsyncAPI && api.gatewayType !== 'wso2/apk') && (
                                                     <MaxBackendTps
                                                         api={apiConfig}
                                                         configDispatcher={configDispatcher}

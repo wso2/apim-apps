@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
@@ -23,6 +23,7 @@ import LaunchIcon from '@material-ui/icons/Launch';
 import { useTheme } from '@material-ui/styles';
 import { FormattedMessage } from 'react-intl';
 import AuthManager, { isRestricted } from 'AppData/AuthManager';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 
@@ -53,8 +54,28 @@ function GlobalNavLinks(props) {
     const classes = useStyles();
     const { selected } = props;
     const theme = useTheme();
+
+    const { data: settings } = usePublisherSettings();
+    const [gateway, setGatewayType] = useState(true);
+    
+    const getGatewayType = () => {
+        if (settings != null) {
+            if (settings.gatewayTypes
+                && settings.gatewayTypes.includes('Regular')) {
+                setGatewayType(true);
+            } else {
+                setGatewayType(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        getGatewayType();
+    }, [settings]);
+
     const analyticsMenuEnabled = theme.custom.leftMenuAnalytics.enable;
     const analyticsMenuLink = theme.custom.leftMenuAnalytics.link;
+
     return (
         <Box mt={10}>
             <List className={classes.listRoot} component='nav' name='primaryNavigation' aria-label='primary navigation'>
@@ -69,68 +90,75 @@ function GlobalNavLinks(props) {
                         defaultMessage='APIs'
                     />
                 </GlobalNavLink>
-                <GlobalNavLink
-                    to='/service-catalog'
-                    type='service-catalog'
-                    title='Services'
-                    active={selected === 'service-catalog'}
-                >
-                    <FormattedMessage
-                        id='Base.Header.navbar.GlobalNavBar.Service.Catalog'
-                        defaultMessage='Services'
-                    />
-                </GlobalNavLink>
-                { (readOnlyUser || publisherUser)
-                    && (
+                {gateway && (
+                    <div>
                         <GlobalNavLink
-                            to='/api-products'
-                            type='api-product'
-                            title='API Products'
-                            active={selected === 'api-products'}
+                            to='/service-catalog'
+                            type='service-catalog'
+                            title='Services'
+                            active={selected === 'service-catalog'}
                         >
                             <FormattedMessage
-                                id='Base.Header.navbar.GlobalNavBar.api.products'
-                                defaultMessage='API Products'
+                                id='Base.Header.navbar.GlobalNavBar.Service.Catalog'
+                                defaultMessage='Services'
                             />
                         </GlobalNavLink>
-                    )}
-                {(adminUser)
-                    && (
+                        { (readOnlyUser || publisherUser)
+                            && (
+                                <GlobalNavLink
+                                    to='/api-products'
+                                    type='api-product'
+                                    title='API Products'
+                                    active={selected === 'api-products'}
+                                >
+                                    <FormattedMessage
+                                        id='Base.Header.navbar.GlobalNavBar.api.products'
+                                        defaultMessage='API Products'
+                                    />
+                                </GlobalNavLink>
+                            )}
+                        {(adminUser)
+                            && (
+                                <GlobalNavLink
+                                    id='scope'
+                                    to='/scopes'
+                                    type='scopes'
+                                    title='Scopes'
+                                    active={selected === 'scopes'}
+                                >
+                                    <FormattedMessage
+                                        id='Base.Header.navbar.GlobalNavBar.scopes'
+                                        defaultMessage='Scopes'
+                                    />
+                                </GlobalNavLink>
+                            )}
                         <GlobalNavLink
-                            id='scope'
-                            to='/scopes'
-                            type='scopes'
-                            title='Scopes'
-                            active={selected === 'scopes'}
+                            id='policies'
+                            to='/policies'
+                            type='policies'
+                            title='Policies'
+                            active={selected === 'policies'}
                         >
-                            <FormattedMessage id='Base.Header.navbar.GlobalNavBar.scopes' defaultMessage='Scopes' />
+                            <FormattedMessage
+                                id='Base.Header.navbar.GlobalNavBar.common.policies'
+                                defaultMessage='Policies'
+                            />
                         </GlobalNavLink>
-                    )}
-                <GlobalNavLink
-                    id='policies'
-                    to='/policies'
-                    type='policies'
-                    title='Policies'
-                    active={selected === 'policies'}
-                >
-                    <FormattedMessage
-                        id='Base.Header.navbar.GlobalNavBar.common.policies'
-                        defaultMessage='Policies'
-                    />
-                </GlobalNavLink>
-                {(!isRestricted(['apim:gateway_policy_manage', 'apim:gateway_policy_view']))
-                    && (
-                        <GlobalNavLink
-                            id='global-policies'
-                            to='/global-policies'
-                            type='global-policies'
-                            title='Global Policies'
-                            active={selected === 'global-policies'}
-                        >
-                            <FormattedMessage id='Base.Header.navbar.GlobalNavBar.global.policies' 
-                                defaultMessage='Global Policies'/>
-                        </GlobalNavLink>
-                    )}
+                        {(!isRestricted(['apim:gateway_policy_manage', 'apim:gateway_policy_view']))
+                            && (
+                                <GlobalNavLink
+                                    id='global-policies'
+                                    to='/global-policies'
+                                    type='global-policies'
+                                    title='Global Policies'
+                                    active={selected === 'global-policies'}
+                                >
+                                    <FormattedMessage id='Base.Header.navbar.GlobalNavBar.global.policies' 
+                                        defaultMessage='Global Policies'/>
+                                </GlobalNavLink>
+                            )}
+                    </div>
+                )}
                 {analyticsMenuEnabled && (
                     <>
                         <Divider />

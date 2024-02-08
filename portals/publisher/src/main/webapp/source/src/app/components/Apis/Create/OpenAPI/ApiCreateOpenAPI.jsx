@@ -25,6 +25,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Link } from 'react-router-dom';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
@@ -49,6 +50,7 @@ function apiInputsReducer(currentState, inputAction) {
         case 'name':
         case 'version':
         case 'endpoint':
+        case 'gatewayType':
         case 'context':
         case 'policies':
         case 'isFormValid':
@@ -76,7 +78,8 @@ function apiInputsReducer(currentState, inputAction) {
  */
 export default function ApiCreateOpenAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
-    const { history } = props;
+    const { history, multiGateway } = props;
+    const { data: settings } = usePublisherSettings();
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateOpenAPI',
@@ -117,12 +120,22 @@ export default function ApiCreateOpenAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, policies, inputValue, inputType,
+            name, version, context, endpoint, gatewayType, policies, inputValue, inputType,
         } = apiInputs;
+        let defaultGatewayType;
+        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
+            defaultGatewayType = 'Regular';
+        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
+            defaultGatewayType = 'APK';
+        } else {
+            defaultGatewayType = 'default';
+        }
+
         const additionalProperties = {
             name,
             version,
             context,
+            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
             policies,
         };
         if (endpoint) {
@@ -211,6 +224,7 @@ export default function ApiCreateOpenAPI(props) {
                         <DefaultAPIForm
                             onValidate={handleOnValidate}
                             onChange={handleOnChange}
+                            multiGateway={multiGateway}
                             api={apiInputs}
                             isAPIProduct={false}
                         />
@@ -271,4 +285,5 @@ export default function ApiCreateOpenAPI(props) {
 
 ApiCreateOpenAPI.propTypes = {
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+    multiGateway: PropTypes.string.isRequired,
 };
