@@ -238,7 +238,7 @@ const subscribeToApi = (props) => {
                             getOptionSelected={(option, value) => option.tierName === value.tierName}
                             onChange={(e, value) => handleChange('throttlingPolicy', e, value)}
                             classes={{ root: classes.fullWidth }}
-                            renderInput={(params) => <TextField {...params} />}
+                            renderInput={(params) => <TextField variant="standard" {...params} />}
                             groupBy={(option) => option.tierPlan === 'COMMERCIAL'  ? 'Commercial' : 'Free'}
                             renderOption={(props, policy) => (
                                 <MenuItem {...props} value={policy.tierName} key={policy.tierName} className={classes.appDropDown}>

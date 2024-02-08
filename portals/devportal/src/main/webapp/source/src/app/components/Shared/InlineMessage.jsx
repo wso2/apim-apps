@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import Icon from '@mui/material/Icon';
 import VerticalDivider from './VerticalDivider';
 import { Alert, AlertTitle } from '@mui/material';
+import CircularProgress from "@mui/material/CircularProgress";
 
 /**
  * Main style object
@@ -29,7 +30,7 @@ function InlineMessage(props) {
     const { type, title } = props;
     const messageType = type || 'info';
     return (
-        <Alert variant="standard" severity={messageType}>
+        <Alert variant="plain" severity={messageType}>
             {title && (<AlertTitle>{title}</AlertTitle>)}
             {props.children}
         </Alert>

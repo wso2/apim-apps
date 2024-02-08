@@ -80,7 +80,7 @@ export default function TaskState(props) {
             <Grid item xs={12}>
                 <Alert
                     icon={inProgress ? <CircularProgress size={20} thickness={2} /> : null}
-                    variant={errors ? 'standard' : 'outlined'}
+                    variant={errors ? 'standard' : 'plain'}
                     severity={severity}
                 >
                     {message}
