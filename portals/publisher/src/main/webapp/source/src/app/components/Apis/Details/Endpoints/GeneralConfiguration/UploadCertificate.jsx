@@ -103,6 +103,7 @@ export default function UploadCertificate(props) {
         uploadCertificateOpen,
         setUploadCertificateOpen,
         aliasList,
+        api,
     } = props;
     const [alias, setAlias] = useState('');
     const [policy, setPolicy] = useState('');
@@ -235,7 +236,7 @@ export default function UploadCertificate(props) {
             <DialogContent>
                 <Grid>
                     <div>
-                        {isMutualSSLEnabled ? (
+                        {isMutualSSLEnabled && api.gatewaytype === 'wso2/synapse' && (
                             <SelectPolicies
                                 multiple={false}
                                 policies={policy}
@@ -244,16 +245,16 @@ export default function UploadCertificate(props) {
                                 required
                                 validate={onValidate}
                             />
-                        )
-                            : (
-                                <SelectEndpoint
-                                    endpoints={endpoints}
-                                    onChange={handleEndpointOnChange}
-                                    endpoint={endpoint}
-                                    isEndpointEmpty={isEndpointEmpty}
-                                    required
-                                />
-                            )}
+                        )}
+                        {!isMutualSSLEnabled && (
+                            <SelectEndpoint
+                                endpoints={endpoints}
+                                onChange={handleEndpointOnChange}
+                                endpoint={endpoint}
+                                isEndpointEmpty={isEndpointEmpty}
+                                required
+                            />
+                        )}
                         <TextField
                             required
                             id='certificateAlias'
@@ -395,6 +396,7 @@ UploadCertificate.propTypes = {
     certificates: PropTypes.shape({}).isRequired,
     uploadCertificate: PropTypes.func.isRequired,
     isMutualSSLEnabled: PropTypes.bool,
+    api: PropTypes.shape({}).isRequired,
     setUploadCertificateOpen: PropTypes.func.isRequired,
     uploadCertificateOpen: PropTypes.bool.isRequired,
     endpoints: PropTypes.shape([]),

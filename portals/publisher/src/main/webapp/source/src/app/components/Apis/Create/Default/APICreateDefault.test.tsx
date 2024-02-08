@@ -64,7 +64,7 @@ describe('Create REST API From scratch', () => {
         userEvent.clear(NAME_INPUT);
 
         // Test for special characters
-        const NO_SPACE_ERROR = /name should not contain spaces or special characters/i;
+        const NO_SPACE_ERROR = /name should not contain trailing or leading spaces, special characters, and consecutive spaces/i;
         userEvent.type(NAME_INPUT, 'invalid@name');
         NAME_INPUT.blur();
         expect(screen.getByText(NO_SPACE_ERROR)).toBeInTheDocument();

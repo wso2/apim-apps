@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function Certificates(props) {
     const {
-        certificates, uploadCertificate, deleteCertificate, isMutualSSLEnabled, apiId, endpoints, aliasList,
+        api, certificates, uploadCertificate, deleteCertificate, isMutualSSLEnabled, apiId, endpoints, aliasList,
     } = props;
     const [certificateList, setCertificateList] = useState([]);
     const [openCertificateDetails, setOpenCertificateDetails] = useState({ open: false, anchor: null, details: {} });
@@ -376,6 +376,7 @@ function Certificates(props) {
                 setUploadCertificateOpen={setUploadCertificateOpen}
                 uploadCertificateOpen={uploadCertificateOpen}
                 aliasList={aliasList}
+                api={api}
             />
         </Grid>
     );
@@ -395,6 +396,7 @@ Certificates.propTypes = {
     uploadCertificate: PropTypes.func.isRequired,
     deleteCertificate: PropTypes.func.isRequired,
     apiId: PropTypes.string,
+    api: PropTypes.shape({}).isRequired,
     isMutualSSLEnabled: PropTypes.bool,
     endpoints: PropTypes.shape([]).isRequired,
     aliasList: PropTypes.shape([]).isRequired,

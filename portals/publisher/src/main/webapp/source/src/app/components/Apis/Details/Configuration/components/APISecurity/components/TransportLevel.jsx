@@ -270,6 +270,7 @@ function TransportLevel(props) {
                                 uploadCertificate={saveClientCertificate}
                                 deleteCertificate={deleteClientCertificate}
                                 apiId={id}
+                                api={apiFromContext}
                             />
                         )}
                     </ExpansionPanelDetails>

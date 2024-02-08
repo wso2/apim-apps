@@ -113,7 +113,7 @@ const CommonPolicyGatewaySelector: FC<CommonPolicyGatewaySelectorProps> = ({
                                         }
                                         label='Regular Gateway'
                                     />
-                                    <FormControlLabel
+                                    {/* <FormControlLabel
                                         value={SupportedGatewayTypes.CC}
                                         control={
                                             <Radio
@@ -124,7 +124,7 @@ const CommonPolicyGatewaySelector: FC<CommonPolicyGatewaySelectorProps> = ({
                                             />
                                         }
                                         label='Choreo Connect'
-                                    />
+                                    /> */}
                                 </RadioGroup>
                             </FormControl>
                         </Box>

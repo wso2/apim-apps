@@ -230,7 +230,7 @@ function EndpointOverview(props) {
     const getSupportedType = (apiObject) => {
         const { type } = apiObject;
         let supportedEndpointTypes = [];
-        if (type === 'GRAPHQL') {
+        if (type === 'GRAPHQL' && apiObject.gatewayType !== 'wso2/apk') {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
                 { key: 'service', value: 'Service Endpoint' },
@@ -245,6 +245,10 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
                 { key: 'service', value: 'Service Endpoint' },
+            ];
+        } else if (apiObject.gatewayType === 'wso2/apk') {
+            supportedEndpointTypes = [
+                { key: 'http', value: 'HTTP/REST Endpoint' },
             ];
         } else {
             supportedEndpointTypes = [
@@ -1168,6 +1172,7 @@ function EndpointOverview(props) {
                         || api.type === 'WS'
                         || endpointType.key === 'awslambda'
                         || endpointType.key === 'service'
+                        || api.gatewayType === 'wso2/apk'
                         ? <div />
                         : (
                             <Grid item xs={12}>
@@ -1198,24 +1203,26 @@ function EndpointOverview(props) {
                         )
                 }
             </Grid>
-            <Dialog open={advanceConfigOptions.open}>
-                <DialogTitle>
-                    <Typography className={classes.configDialogHeader}>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration'
-                            defaultMessage='Advanced Configurations'
+            {api.gatewayType !== 'wso2/apk' && (
+                <Dialog open={advanceConfigOptions.open}>
+                    <DialogTitle>
+                        <Typography className={classes.configDialogHeader}>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration'
+                                defaultMessage='Advanced Configurations'
+                            />
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent>
+                        <AdvanceEndpointConfig
+                            isSOAPEndpoint={endpointType.key === 'address'}
+                            advanceConfig={advanceConfigOptions.config}
+                            onSaveAdvanceConfig={saveAdvanceConfig}
+                            onCancel={closeAdvanceConfig}
                         />
-                    </Typography>
-                </DialogTitle>
-                <DialogContent>
-                    <AdvanceEndpointConfig
-                        isSOAPEndpoint={endpointType.key === 'address'}
-                        advanceConfig={advanceConfigOptions.config}
-                        onSaveAdvanceConfig={saveAdvanceConfig}
-                        onCancel={closeAdvanceConfig}
-                    />
-                </DialogContent>
-            </Dialog>
+                    </DialogContent>
+                </Dialog>
+            )}
             <Dialog open={endpointSecurityConfig.open}>
                 <DialogTitle>
                     <Typography className={classes.configDialogHeader}>

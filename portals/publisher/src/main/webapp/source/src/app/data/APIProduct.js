@@ -23,14 +23,14 @@ import Resource from './Resource';
  * An abstract representation of an API Product
  */
 class APIProduct extends Resource {
-    constructor(name, context, kwargs) {
+    constructor(name, version, context, kwargs) {
         super();
         let properties = kwargs;
         if (name instanceof Object) {
             properties = name;
         } else {
             this.name = name;
-            this.version = '1.0.0';
+            this.version = version;
             this.context = context;
             this.isDefaultVersion = false;
             this.transport = ['http', 'https'];
@@ -628,7 +628,7 @@ class APIProduct extends Resource {
         const apiZip = this.client.then((client) => {
             return client.apis['Import Export'].exportAPIProduct({
                 name: this.name,
-                version: '1.0.0'
+                version: this.version
             },  this._requestMetaData({
                     'accept': 'application/zip'
                 })
