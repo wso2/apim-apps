@@ -121,17 +121,17 @@ const tokens = (props) => {
                     disableCloseOnSelect
                     value={accessTokenRequest.scopesSelected}
                     onChange={(e, newValue) => handleChange('scopesSelected', { target: { value: newValue } })}
-                    renderOption={(option, { selected }) => (
-                        <>
+                    renderOption={(props, option, { selected }) => (
+                        <li {...props}>
                             <Checkbox
                                 id={'access-token-scope-' + option}
                                 icon={icon}
                                 checkedIcon={checkedIcon}
-                                style={{ marginRight: 8 }}
+                                style={{marginRight: 8}}
                                 checked={selected}
                             />
                             {option}
-                        </>
+                        </li>
                     )}
                     renderInput={(params) => (
                         <TextField {...params}

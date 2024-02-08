@@ -91,8 +91,9 @@ class SubscriptionPolicySelect extends React.Component {
                         }}
                         style={{ width: 200 }}
                         renderInput={(params) => (<TextField {...params} />)}
-                        renderOption={(policy) => (
+                        renderOption={(props, policy) => (
                             <MenuItem
+                                {...props}
                                 value={policy}
                                 key={policy}
                                 id={'policy-select-' + policy}

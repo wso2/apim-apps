@@ -240,8 +240,8 @@ const subscribeToApi = (props) => {
                             classes={{ root: classes.fullWidth }}
                             renderInput={(params) => <TextField {...params} />}
                             groupBy={(option) => option.tierPlan === 'COMMERCIAL'  ? 'Commercial' : 'Free'}
-                            renderOption={(policy) => (
-                                <MenuItem value={policy.tierName} key={policy.tierName} className={classes.appDropDown}>
+                            renderOption={(props, policy) => (
+                                <MenuItem {...props} value={policy.tierName} key={policy.tierName} className={classes.appDropDown}>
                                     {policy.tierPlan === 'COMMERCIAL' ? (
                                         <React.Fragment>
                                             <ListItemText
