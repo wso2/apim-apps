@@ -39,7 +39,9 @@ describe("Add Edit Delete Microgateway Environments", () => {
         });
 
         // editing
-        cy.get('[data-testid="MuiDataTableBodyCell-5-1"] div > div > button:first-child').click();
+        cy.get('[data-testid="MUIDataTableBodyRow-1"]').within(() => {
+            cy.get('[data-testid="EditIcon"]').click();
+        });
         cy.get('textarea[name="description"]').type('marketing store');
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
@@ -49,7 +51,9 @@ describe("Add Edit Delete Microgateway Environments", () => {
         });
 
         // deleting
-        cy.get('[data-testid="MuiDataTableBodyCell-5-1"] div > div > button:nth-child(2)').click();
+        cy.get('[data-testid="MUIDataTableBodyRow-1"]').within(() => {
+            cy.get('[data-testid="DeleteForeverIcon"]').click();
+        });
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('div[role="status"]').should('have.text','Gateway Environment deleted successfully');
     });
