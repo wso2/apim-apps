@@ -362,7 +362,7 @@ class InfoBar extends React.Component {
                             </Link>
                         </div>
                         <div style={{ marginLeft: theme.spacing(1) }}>
-                            <Typography variant='caption' gutterBottom align='left'>
+                            <Typography variant='caption' gutterBottom align='left' noWrap>
                                 {application.subscriptionCount}
                                 {' '}
                                 <FormattedMessage
