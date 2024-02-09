@@ -373,7 +373,7 @@ class InfoBar extends React.Component {
                         </div>
                     </Grid>
                     {isUserOwner && (
-                        <>
+                        <Grid container justifyContent='flex-end'>
                             <VerticalDivider height={70} />
                             <Grid item xs={1} m={1} className={classes.editButton}>
                                 <Link to={`/applications/${applicationId}/edit/fromView`} className={classes.editButton}>
@@ -429,7 +429,7 @@ class InfoBar extends React.Component {
                                     toggleDeleteConfirmation={this.toggleDeleteConfirmation}
                                 />
                             </Grid>
-                        </>
+                        </Grid>
                     )}
                 </div>
             </div>
