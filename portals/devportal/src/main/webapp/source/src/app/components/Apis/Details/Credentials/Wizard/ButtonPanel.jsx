@@ -45,6 +45,7 @@ const ButtonPanel = (props) => {
                     <Button
                         onClick={handleCancel}
                         variant='text'
+                        color='grey'
                     >
                         <FormattedMessage
                             id='Apis.Details.Credentials.Wizard.Wizard.Cancel'
