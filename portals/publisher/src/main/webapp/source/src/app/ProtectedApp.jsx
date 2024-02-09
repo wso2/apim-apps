@@ -42,6 +42,7 @@ import { QueryClientProviderX } from 'AppData/hooks/ReactQueryX';
 import Scopes from 'AppComponents/Scopes/Scopes';
 import CommonPolicies from 'AppComponents/CommonPolicies/CommonPolicies';
 import GlobalPolicies from 'AppComponents/GlobalPolicies/GlobalPolicies';
+import Notifications from 'AppComponents/Notifications/Notifications';
 import merge from 'lodash/merge';
 import User from './data/User';
 import Utils from './data/Utils';
@@ -224,6 +225,7 @@ export default class Protected extends Component {
                                         <Route path='/policies' component={CommonPolicies} />
                                         <Route path='/global-policies' component={GlobalPolicies} />
                                         <Route path='/service-catalog' component={ServiceCatalogRouting} />
+                                        <Route path='/notifications' component={Notifications} />
                                         <Route component={ResourceNotFound} />
                                     </Switch>
                                 </AppContextProvider>

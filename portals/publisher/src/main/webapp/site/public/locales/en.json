@@ -9051,6 +9051,42 @@
       "value": "Error 403 : Forbidden"
     }
   ],
+  "Notification.page.title": [
+    {
+      "type": 0,
+      "value": "Notifications"
+    }
+  ],
+  "Notification.table.header.markAsRead": [
+    {
+      "type": 0,
+      "value": "Mark As Read"
+    }
+  ],
+  "Notification.table.header.notification": [
+    {
+      "type": 0,
+      "value": "Notification"
+    }
+  ],
+  "Notification.table.header.notificationId": [
+    {
+      "type": 0,
+      "value": "Notification ID"
+    }
+  ],
+  "Notification.table.header.notificationType": [
+    {
+      "type": 0,
+      "value": "Notification Type"
+    }
+  ],
+  "Notification.table.header.receivedDate": [
+    {
+      "type": 0,
+      "value": "Received Date"
+    }
+  ],
   "Polcies.TextField.Description": [
     {
       "type": 0,

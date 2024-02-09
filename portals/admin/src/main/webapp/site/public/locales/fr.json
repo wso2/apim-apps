@@ -787,6 +787,8 @@
   "Workflow.UserCreation.updateStatus.has.errors": "",
   "Workflow.WFRejectionPopup.dialog.open.button.reject": "",
   "Workflow.WFRejectionPopup.dialog.title": "",
+  "Workflow.WFRejectionPopup.dialogBox.helperText": "",
+  "Workflow.WFRejectionPopup.dialogBox.label": "",
   "Workflow.api.statechange.search.default": "",
   "Workflow.apiProduct.statechange.search.default": "",
   "Workflow.applicationcreation.search.default": "",

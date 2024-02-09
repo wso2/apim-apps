@@ -14,7 +14,8 @@ import Configurations from 'Config';
 import HeaderSearch from 'AppComponents/Base/Header/headersearch/HeaderSearch';
 import GlobalNavBar from 'AppComponents/Base/Header/navbar/GlobalNavBar';
 import { GlobalDrawerProvider } from 'AppComponents/Base/Header/navbar/useNavBar';
-
+import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
+import Badge from '@material-ui/core/Badge';
 
 const PREFIX = 'HeaderOriginal';
 
@@ -92,6 +93,21 @@ export default function HeaderOriginal(props) {
                                 </Link>
                             </Box>
                             <Box display='flex'>
+                                <Box display='flex' alignItems='center' mr={2.5}>
+                                    <Link to='/notifications' aria-label='Go to notification page'>
+                                        <Badge 
+                                            badgeContent={<span style={{ 
+                                                backgroundColor: 'orange', 
+                                                borderRadius: '50%', 
+                                                padding: '3px 6px', 
+                                                fontSize: '0.8rem',
+                                                color: '#000000' 
+                                            }}>6</span>} 
+                                        >
+                                            <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }}/>
+                                        </Badge>
+                                    </Link>
+                                </Box>
                                 <Hidden mdDown>
                                     <HeaderSearch />
                                 </Hidden>
@@ -112,7 +128,7 @@ export default function HeaderOriginal(props) {
                                     {menuItems}
                                     {avatar || <Avatar user={user} />}
                                 </div>
-                            </Box>
+                            </Box>                            
                         </Box>
                     </Toolbar>
                 </AppBar>

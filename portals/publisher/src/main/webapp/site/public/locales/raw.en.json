@@ -4329,6 +4329,24 @@
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
   },
+  "Notification.page.title": {
+    "defaultMessage": "Notifications"
+  },
+  "Notification.table.header.markAsRead": {
+    "defaultMessage": "Mark As Read"
+  },
+  "Notification.table.header.notification": {
+    "defaultMessage": "Notification"
+  },
+  "Notification.table.header.notificationId": {
+    "defaultMessage": "Notification ID"
+  },
+  "Notification.table.header.notificationType": {
+    "defaultMessage": "Notification Type"
+  },
+  "Notification.table.header.receivedDate": {
+    "defaultMessage": "Received Date"
+  },
   "Polcies.TextField.Description": {
     "defaultMessage": "Description"
   },

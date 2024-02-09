@@ -69,13 +69,27 @@ function WFRejectionPopup(props) {
                 margin='dense'
                 name='rejectReason'
                 onChange={onChange}
-                label='Reason for rejection'
+                label={
+                    (
+                        <FormattedMessage
+                            id='Workflow.WFRejectionPopup.dialogBox.label'
+                            defaultMessage='Reason for rejection'
+                        />
+                    )
+                }
                 fullWidth
                 multiline
                 variant='outlined'
                 maxRows={4}
                 icon={<ClearIcon />}
-                helperText='Please provide a reason for rejection'
+                helperText={
+                    (
+                        <FormattedMessage
+                            id='Workflow.WFRejectionPopup.dialogBox.helperText'
+                            defaultMessage='Please provide a reason for rejection'
+                        />
+                    )
+                }
             />
         </FormDialogBase>
     );
