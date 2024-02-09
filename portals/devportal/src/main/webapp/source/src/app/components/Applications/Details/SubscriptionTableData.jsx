@@ -257,6 +257,7 @@ class SubscriptionTableData extends React.Component {
                 <TableCell>
                     <Button
                         id={'edit-api-subscription-' + apiId}
+                        color='grey'
                         onClick={this.handleRequestOpenEditMenu}
                         startIcon={<Icon>edit</Icon>}
                         disabled={tiers.length === 0}
@@ -399,6 +400,7 @@ class SubscriptionTableData extends React.Component {
                     >
                         <Button
                             id={'delete-api-subscription-' + apiId}
+                            color='grey'
                             onClick={this.handleRequestOpen}
                             startIcon={<Icon>delete</Icon>}
                             disabled={tiers.length === 0 || status === 'DELETE_PENDING'}

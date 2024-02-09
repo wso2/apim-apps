@@ -240,6 +240,7 @@ function SourceDownload(props) {
                     <Button
                         aria-label='Copy to clipboard'
                         size='small'
+                        color='grey'
                         onClick={() => {
                             navigator.clipboard.writeText(location.origin + '/api/am/devportal/v3/apis/' + api.id
                             + '/swagger?accessToken=' + accessTokenPart + '&X-WSO2-Tenant-Q='

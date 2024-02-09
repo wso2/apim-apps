@@ -108,6 +108,7 @@ function Invoice(props) {
     return (
         <>
             <Button
+                color='grey'
                 onClick={handlePopup}
                 startIcon={<Icon>receipt</Icon>}
                 disabled={tiers.length === 0}

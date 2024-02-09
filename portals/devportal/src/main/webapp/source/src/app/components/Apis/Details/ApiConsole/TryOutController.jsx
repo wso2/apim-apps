@@ -78,6 +78,7 @@ const styles = makeStyles((theme) => ({
         display: 'block',
     },
     genKeyButton: {
+        background: theme.palette.grey[300],
         width: theme.spacing(20),
         height: theme.spacing(5),
         marginTop: theme.spacing(2.5),
@@ -751,6 +752,7 @@ function TryOutController(props) {
                                             onClick={securitySchemeType === 'API-KEY' ? generateApiKey
                                                 : generateAccessToken}
                                             variant='contained'
+                                            color='grey'
                                             className={classes.genKeyButton}
                                             disabled={!user || (subscriptions && subscriptions.length === 0)
                                                         || (!ksGenerated && securitySchemeType === 'OAUTH')}
@@ -761,7 +763,7 @@ function TryOutController(props) {
                                             )}
                                             <FormattedMessage
                                                 id='Apis.Details.ApiCOnsole.generate.test.key'
-                                                defaultMessage='GET TEST KEY '
+                                                defaultMessage='GET TEST KEY'
                                             />
                                         </Button>
                                         <Tooltip

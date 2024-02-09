@@ -503,7 +503,7 @@ class ApplicationFormHandler extends React.Component {
                                     </Box>
                                     <Box ml={1}>
                                         <Link to={this.backLink}>
-                                            <Button variant='text'>
+                                            <Button variant='text' color='grey'>
                                                 <FormattedMessage
                                                     id='Applications.Create.ApplicationFormHandler.cancel'
                                                     defaultMessage='CANCEL'

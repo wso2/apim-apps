@@ -380,6 +380,7 @@ class InfoBar extends React.Component {
                                     <Button
                                         id='edit-application'
                                         style={{ padding: '4px' }}
+                                        color='grey'
                                         classes={{ label: classes.iconButton }}
                                         aria-label={(
                                             <FormattedMessage
@@ -405,6 +406,7 @@ class InfoBar extends React.Component {
                                     onClick={this.handleDeleteConfimation}
                                     disabled={AuthManager.getUser().name !== applicationOwner
                                         || this.props.application.status === 'DELETE_PENDING'}
+                                    color='grey'
                                     classes={{ label: classes.iconButton }}
                                     aria-label={(
                                         <FormattedMessage

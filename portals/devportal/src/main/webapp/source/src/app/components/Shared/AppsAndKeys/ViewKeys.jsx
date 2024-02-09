@@ -619,7 +619,7 @@ class ViewKeys extends React.Component {
                                             id='generate-access-token-oauth2'
                                             variant='outlined'
                                             size='small'
-                                            color='primary'
+                                            color='grey'
                                             className={classes.margin}
                                             onClick={this.handleClickOpen}
                                             disabled={!supportedGrantTypesUnchanged.includes('client_credentials')}
@@ -634,7 +634,7 @@ class ViewKeys extends React.Component {
                                     id='curl-to-generate-access-token-btn'
                                     variant='outlined'
                                     size='small'
-                                    color='primary'
+                                    color='grey'
                                     className={classes.margin}
                                     onClick={this.handleClickOpenCurl}
                                 >

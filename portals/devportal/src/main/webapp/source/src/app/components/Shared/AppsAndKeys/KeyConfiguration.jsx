@@ -377,7 +377,7 @@ const KeyConfiguration = (props) => {
                                                         onChange={(e) => handleChange('grantType', e)}
                                                         value={value}
                                                         disabled={!isUserOwner}
-                                                        color='primary'
+                                                        color='grey'
                                                         data-testid={key}
                                                     />
                                                 )}

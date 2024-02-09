@@ -82,6 +82,7 @@ const styles = (theme) => ({
     },
     addUser: {
         marginRight: theme.spacing(1),
+        background: theme.palette.grey[300],
     },
     contentWrapper: {
         margin: 0,
@@ -521,7 +522,7 @@ class Listing extends Component {
                                     )}
                                 </Grid>
                                 <Grid item>
-                                    <Button variant='contained' className={classes.addUser} onClick={this.filterApps}>
+                                    <Button variant='contained' color='grey' className={classes.addUser} onClick={this.filterApps}>
                                         <FormattedMessage
                                             id='Applications.Listing.Listing.applications.search'
                                             defaultMessage='Search'

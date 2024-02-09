@@ -603,7 +603,7 @@ class ApiConsole extends React.Component {
                         <Grid container>
                             <Grid xs={7} item />
                             <Grid xs={2} item>
-                                <Button size='small' onClick={() => this.convertToPostman(downloadSwagger)}>
+                                <Button size='small' color='grey' onClick={() => this.convertToPostman(downloadSwagger)}>
                                     <Icons icon={postmanIcon} width={30} height={30} className={classes.buttonIcon} />
                                     <FormattedMessage
                                         id='Apis.Details.APIConsole.APIConsole.download.postman'
@@ -613,7 +613,7 @@ class ApiConsole extends React.Component {
                             </Grid>
                             <Grid xs={3} item>
                                 <a href={downloadLink} download={fileName}>
-                                    <Button size='small'>
+                                    <Button size='small' color='grey'>
                                         <CloudDownloadRounded className={classes.buttonIcon} />
                                         <FormattedMessage
                                             id='Apis.Details.APIConsole.APIConsole.download.swagger'
@@ -640,6 +640,7 @@ class ApiConsole extends React.Component {
                                     <Button
                                         aria-label='Copy to clipboard'
                                         className={classes.button}
+                                        color='grey'
                                         onClick={() => {
                                             navigator.clipboard.writeText(location.origin
                                                 + '/api/am/devportal/v3/apis/' + api.id + '/swagger?accessToken='
