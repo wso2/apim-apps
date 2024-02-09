@@ -48,8 +48,8 @@ const styles = (theme) => ({
         '& .MuiButton-containedPrimary span.MuiButton-label': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
+        paddingRight: theme.spacing(80),
     },
-
 });
 
 const stepComponents = [CreateAppStep, SubscribeToAppStep, GenerateKeysStep,
@@ -179,7 +179,7 @@ class Wizard extends Component {
                     />
                 </Typography>
                 <Paper elevation={0} className={classes.paper}>
-                    <Box py={1} mx='auto' display='flex'>
+                    <Box py={4} mx='auto' display='block' width='96%'>
                         <Grid item xs={12} md={12}>
                             <Stepper activeStep={currentStep}>
                                 {this.steps.map((label) => {
