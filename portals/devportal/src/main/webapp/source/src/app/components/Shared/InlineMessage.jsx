@@ -27,10 +27,10 @@ const styles = theme => ({
  * @extends {React.Component}
  */
 function InlineMessage(props) {
-    const { type, title } = props;
+    const { type, title, variant } = props;
     const messageType = type || 'info';
     return (
-        <Alert variant="plain" severity={messageType}>
+        <Alert variant={variant || "standard"} severity={messageType}>
             {title && (<AlertTitle>{title}</AlertTitle>)}
             {props.children}
         </Alert>

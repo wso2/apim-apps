@@ -315,6 +315,7 @@ class ViewKeys extends React.Component {
                             id='consumer-key'
                             value={consumerKey}
                             margin='dense'
+                            size='small'
                             label={(
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.consumer.key'
@@ -383,6 +384,7 @@ class ViewKeys extends React.Component {
                                 margin='dense'
                                 fullWidth
                                 variant='outlined'
+                                size='small'
                                 InputProps={{
                                     readOnly: true,
                                     endAdornment: (

@@ -411,6 +411,7 @@ const KeyConfiguration = (props) => {
                                     <TextField
                                         margin='dense'
                                         id='callbackURL'
+                                        size='small'
                                         label={(
                                             <FormattedMessage
                                                 defaultMessage='Callback URL'

@@ -210,6 +210,7 @@ const AppConfiguration = (props) => {
                                 }
                                 margin='dense'
                                 variant='outlined'
+                                size='small'
                                 disabled={!isUserOwner}
                             >
                                 {config.values.map(key => (
@@ -313,6 +314,7 @@ const AppConfiguration = (props) => {
                                     </Typography>
                                 }
                                 margin='dense'
+                                size='small'
                                 variant='outlined'
                                 disabled={!isUserOwner}
                             />

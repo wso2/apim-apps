@@ -30,6 +30,7 @@ const styles = (theme) => ({
         display: 'flex',
     },
     buttonGap: {
+        background: theme.palette.grey[300],
         marginLeft: 20,
         '& span span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -90,7 +91,7 @@ class SubscriptionPolicySelect extends React.Component {
                             this.setState({ selectedPolicy: value });
                         }}
                         style={{ width: 200 }}
-                        renderInput={(params) => (<TextField {...params} />)}
+                        renderInput={(params) => (<TextField size='small' variant='standard' {...params} />)}
                         renderOption={(props, policy) => (
                             <MenuItem
                                 {...props}
@@ -109,6 +110,7 @@ class SubscriptionPolicySelect extends React.Component {
                         <Button
                             variant='contained'
                             size='small'
+                            color='grey'
                             className={classes.buttonGap}
                             onClick={() => {
                                 handleSubscribe(applicationId, apiId, selectedPolicy);
