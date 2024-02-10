@@ -372,7 +372,7 @@ class SubscriptionTableData extends React.Component {
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                            <Button dense onClick={this.handleRequestCloseEditMenu}>
+                            <Button dense color='grey' onClick={this.handleRequestCloseEditMenu}>
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.cancel'
                                     defaultMessage='Cancel'
@@ -428,7 +428,7 @@ class SubscriptionTableData extends React.Component {
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                            <Button dense onClick={this.handleRequestClose}>
+                            <Button dense color='grey' onClick={this.handleRequestClose}>
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.cancel'
                                     defaultMessage='Cancel'

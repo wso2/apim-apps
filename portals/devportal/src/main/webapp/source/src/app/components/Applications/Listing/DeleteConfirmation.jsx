@@ -43,7 +43,7 @@ const DeleteConfirmation = (props) => {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button dense onClick={toggleDeleteConfirmation}>
+                <Button dense color='grey' onClick={toggleDeleteConfirmation}>
                     <FormattedMessage
                         id='Applications.Listing.DeleteConfirmation.dialog.cancel'
                         defaultMessage='Cancel'

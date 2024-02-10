@@ -227,7 +227,7 @@ class CommentAdd extends React.Component {
                         </Grid>
                         {cancelButton && (
                             <Grid item>
-                                <Button onClick={this.handleCancel} className={classes.button}>
+                                <Button onClick={this.handleCancel} color='grey' className={classes.button}>
                                     <FormattedMessage
                                         id='Apis.Details.Comments.CommentAdd.btn.cancel'
                                         defaultMessage='Cancel'

@@ -74,7 +74,7 @@ class ConfirmDialog extends React.Component {
                     <DialogContentText>{message || <FormattedMessage id='Shared.ConfirmDialog.please.confirm.sure' defaultMessage='Are you sure?' />}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleRequestClose(ConfirmDialog.Action.CANCEL)} color='primary'>
+                    <Button onClick={() => this.handleRequestClose(ConfirmDialog.Action.CANCEL)} color='grey'>
                         {labelCancel || <FormattedMessage id='Shared.ConfirmDialog.cancel' defaultMessage='Cancel' />}
                     </Button>
                     <Button

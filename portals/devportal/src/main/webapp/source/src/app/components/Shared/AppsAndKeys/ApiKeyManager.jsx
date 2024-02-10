@@ -273,7 +273,7 @@ class ApiKeyManager extends React.Component {
                    {isGenerating && <CircularProgress size={24} />}
                 </Button>
               )}
-              <Button onClick={this.handleClose} color="primary" autoFocus id='generate-api-keys-close-btn'>
+              <Button onClick={this.handleClose} color="grey" autoFocus id='generate-api-keys-close-btn'>
                 <FormattedMessage
                   id="Shared.AppsAndKeys.ViewKeys.consumer.close.btn"
                   defaultMessage="Close"

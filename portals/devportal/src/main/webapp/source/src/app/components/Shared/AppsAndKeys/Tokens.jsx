@@ -137,6 +137,7 @@ const tokens = (props) => {
                         <TextField {...params}
                             margin='dense'
                             variant='outlined'
+                                   size='small'
                             label={<FormattedMessage
                                 htmlFor='quota-helper'
                                 className={classes.quotaHelp}
