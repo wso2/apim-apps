@@ -28,6 +28,7 @@ import ButtonPanel from './ButtonPanel';
 const useStyles = makeStyles((theme) => ({
     tokenWrapper: {
         paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(25),
     },
 }));
 

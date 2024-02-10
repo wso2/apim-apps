@@ -34,6 +34,7 @@ import ButtonPanel from './ButtonPanel';
 const useStyles = makeStyles((theme) => ({
     appCreateFormWrapper: {
         paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(80),
     },
     warningIcon: {
         color: '#ff9a00',
