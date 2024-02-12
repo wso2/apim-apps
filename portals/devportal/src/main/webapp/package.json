@@ -144,6 +144,7 @@
         "sinon": "^7.2.2",
         "style-loader": "^0.18.1",
         "swagger2-postman2-converter": "0.0.3",
+        "ts-loader": "^8.4.0",
         "underscore-template-loader": "^1.1.0",
         "unused-files-webpack-plugin": "^3.4.0",
         "webpack": "^5.88.1",
