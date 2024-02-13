@@ -1803,8 +1803,11 @@ export default function Environments() {
     }
     // allEnvDeployments represents all deployments of the API with mapping
     // environment -> {revision deployed to env, vhost deployed to env with revision}
-    const allEnvDeployments = Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision);
-    const allEnvRevisionMapping = Utils.getAllEnvironmentRevisions(settings.environment, allEnvRevision);
+    const allEnvDeployments = allEnvRevision ?
+        Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision) : null;
+    const allEnvRevisionMapping = allEnvRevision ?
+        Utils.getAllEnvironmentRevisions(settings.environment, allEnvRevision) : null;
+
 
     return (
         <>
