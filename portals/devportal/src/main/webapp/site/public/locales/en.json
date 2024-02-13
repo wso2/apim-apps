@@ -1,7 +1,7 @@
 {
   "Apis.Details.APIConsole.APIConsole.download.postman": "Postman collection",
   "Apis.Details.APIConsole.APIConsole.download.swagger": "Swagger ( /swagger.json )",
-  "Apis.Details.ApiCOnsole.generate.test.key": "GET TEST KEY ",
+  "Apis.Details.ApiCOnsole.generate.test.key": "GET TEST KEY",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header": "Authorization Header",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header.value": "Authorization Header Value",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.authentication.heading": "Authentication",
@@ -337,7 +337,7 @@
   "Applications.Details.SubscriptionTableData.update.business.plan": "Current Business Plan : ",
   "Applications.Details.SubscriptionTableData.update.business.plan.name": "Business Plan",
   "Applications.Details.SubscriptionTableData.update.subscription": "Update Subscription",
-  "Applications.Details.SubscriptionTableData.update.throttling.policy.blocked": "Subscription is in BLOCKED state. You need to unblock the subscription inorder to edit the tier",
+  "Applications.Details.SubscriptionTableData.update.throttling.policy.blocked": "Subscription is in BLOCKED state. You need to unblock the subscription in order to edit the tier",
   "Applications.Details.SubscriptionTableData.update.throttling.policy.helper": "Assign a new Business plan to the existing subscription",
   "Applications.Details.SubscriptionTableData.update.throttling.policy.onHold": "Subscription is currently ON_HOLD state. You need to get approval to the subscription before editing the tier",
   "Applications.Details.SubscriptionTableData.update.throttling.policy.rejected": "Subscription is currently REJECTED state. You need to get approval to the subscription before editing the tier",

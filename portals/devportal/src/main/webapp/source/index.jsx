@@ -16,12 +16,17 @@
  * under the License.
  */
 
+import 'react-app-polyfill/ie11';
+import 'react-app-polyfill/stable';
+import ReactDOM from 'react-dom';
 import React from 'react';
-import { createRoot } from 'react-dom/client';
 import DevPortal from './src/DevPortal';
+import './customPolyfill';
 
-const container = document.getElementById('react-root');
-const root = createRoot(container);
-root.render(
-    <DevPortal />,
+// What about production? # https://github.com/gaearon/react-hot-loader#what-about-production
+ReactDOM.render(
+    <React.StrictMode>
+        <DevPortal />
+    </React.StrictMode>,
+    document.getElementById('react-root'),
 );
