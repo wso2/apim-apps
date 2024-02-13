@@ -11,7 +11,7 @@
         "test:ci": "jest --silent --passWithNoTests",
         "test:integration": "jest -c source/Tests/Integration/jest.config.js",
         "test:coverage": "jest --coverage",
-        "build:prod": "rimraf site/public/dist/ && npm rum i18n && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
+        "build:prod": "rimraf site/public/dist/ && npm rum i18n --legacy-peer-deps && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
         "build:dev": "rimraf site/public/dist/ && cross-env NODE_ENV=development webpack --mode development --watch",
         "analysis": "cross-env NODE_ENV=development webpack --env.analysis -p --progress",
         "lint": "eslint --ignore-pattern '*.test.js' --ignore-pattern '*.test.jsx' --quiet -c .eslintrc.js --ext .jsx,.js source",
