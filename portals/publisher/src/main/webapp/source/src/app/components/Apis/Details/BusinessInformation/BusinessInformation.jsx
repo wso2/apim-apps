@@ -17,9 +17,9 @@
  */
 /* eslint no-param-reassign: ["error", { "props": false }] */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -33,26 +33,43 @@ import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
 import APIValidation from 'AppData/APIValidation';
 
-const styles = (theme) => ({
-    FormControl: {
+const PREFIX = 'BusinessInformation';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    paperRoot: `${PREFIX}-paperRoot`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         padding: 0,
         width: '100%',
         marginTop: 0,
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: 0,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         paddingTop: 20,
     },
-    paperRoot: {
+
+    [`& .${classes.paperRoot}`]: {
         padding: 20,
         marginTop: 20,
-    },
-});
+    }
+}));
 
 /**
  *
@@ -136,13 +153,13 @@ class BusinessInformation extends React.Component {
      * @memberof BusinessInformation
      */
     render() {
-        const { classes, api, updateAPI } = this.props;
+        const {  api, updateAPI } = this.props;
         const {
             businessOwner, businessOwnerEmail, technicalOwner, technicalOwnerEmail,
         } = this.state;
 
         return (
-            <>
+            (<Root>
                 <Container maxWidth='md'>
                     <Box mb={3}>
                         <Typography id='itest-api-details-bushiness-info-head' variant='h4' component='h2'>
@@ -361,7 +378,7 @@ class BusinessInformation extends React.Component {
                         </Box>
                     </Paper>
                 </Container>
-            </>
+            </Root>)
         );
     }
 }
@@ -382,4 +399,4 @@ BusinessInformation.propTypes = {
     updateAPI: PropTypes.func.isRequired,
 };
 
-export default withAPI(withStyles(styles)(BusinessInformation));
+export default withAPI((BusinessInformation));

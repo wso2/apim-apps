@@ -22,9 +22,8 @@ import React, {
     lazy,
     Suspense,
 } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
@@ -60,102 +59,159 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import beautify from 'xml-beautifier';
 
-dayjs.extend(relativeTime);
-// disabled because webpack magic comment for chunk name require to be in the same line
-// eslint-disable-next-line max-len
-const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/APIDefinition/swaggerUI/SwaggerUI' /* webpackChunkName: "ServiceOverviewSwaggerUI" */));
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
+const PREFIX = 'Overview';
 
-const useStyles = makeStyles((theme) => ({
-    preview: {
+const classes = {
+    preview: `${PREFIX}-preview`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    iconAligner: `${PREFIX}-iconAligner`,
+    tableIcon: `${PREFIX}-tableIcon`,
+    bodyStyle: `${PREFIX}-bodyStyle`,
+    contentTopBarStyle: `${PREFIX}-contentTopBarStyle`,
+    table: `${PREFIX}-table`,
+    iconTextWrapper: `${PREFIX}-iconTextWrapper`,
+    versionBarStyle: `${PREFIX}-versionBarStyle`,
+    topBarDetailsSectionStyle: `${PREFIX}-topBarDetailsSectionStyle`,
+    versionStyle: `${PREFIX}-versionStyle`,
+    apiUsageStyle: `${PREFIX}-apiUsageStyle`,
+    headingSpacing: `${PREFIX}-headingSpacing`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    buttonSection: `${PREFIX}-buttonSection`,
+    paperStyle: `${PREFIX}-paperStyle`,
+    downloadServiceFlex: `${PREFIX}-downloadServiceFlex`,
+    downloadServiceGroup: `${PREFIX}-downloadServiceGroup`,
+    iconSpacing: `${PREFIX}-iconSpacing`,
+    button: `${PREFIX}-button`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    downloadButtonSpacing: `${PREFIX}-downloadButtonSpacing`,
+    editorPane: `${PREFIX}-editorPane`,
+    editorRoot: `${PREFIX}-editorRoot`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.preview}`]: {
         height: theme.spacing(16),
         marginBottom: theme.spacing(3),
         marginLeft: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         marginTop: theme.spacing(3),
         alignItems: 'center',
     },
-    iconAligner: {
+
+    [`& .${classes.iconAligner}`]: {
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
-    tableIcon: {
+
+    [`& .${classes.tableIcon}`]: {
         width: theme.spacing(3),
     },
-    bodyStyle: {
+
+    [`& .${classes.bodyStyle}`]: {
         marginLeft: theme.spacing(2),
         marginBottom: theme.spacing(3),
     },
-    contentTopBarStyle: {
+
+    [`& .${classes.contentTopBarStyle}`]: {
         display: 'flex',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         minWidth: '100%',
     },
-    iconTextWrapper: {
+
+    [`& .${classes.iconTextWrapper}`]: {
         display: 'inline-block',
         paddingLeft: 20,
     },
-    versionBarStyle: {
+
+    [`& .${classes.versionBarStyle}`]: {
         marginTop: theme.spacing(1),
         display: 'flex',
     },
-    topBarDetailsSectionStyle: {
+
+    [`& .${classes.topBarDetailsSectionStyle}`]: {
         marginLeft: theme.spacing(5),
     },
-    versionStyle: {
+
+    [`& .${classes.versionStyle}`]: {
         marginLeft: theme.spacing(1),
     },
-    apiUsageStyle: {
+
+    [`& .${classes.apiUsageStyle}`]: {
         marginTop: theme.spacing(3),
     },
-    headingSpacing: {
+
+    [`& .${classes.headingSpacing}`]: {
         marginTop: theme.spacing(3),
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         paddingTop: 10,
     },
-    buttonSection: {
+
+    [`& .${classes.buttonSection}`]: {
         paddingTop: theme.spacing(1),
         marginLeft: theme.spacing(2),
     },
-    paperStyle: {
+
+    [`& .${classes.paperStyle}`]: {
         marginBottom: theme.spacing(3),
     },
-    downloadServiceFlex: {
+
+    [`& .${classes.downloadServiceFlex}`]: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginLeft: -8,
     },
-    downloadServiceGroup: {
+
+    [`& .${classes.downloadServiceGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
         marginLeft: -8,
     },
-    iconSpacing: {
+
+    [`& .${classes.iconSpacing}`]: {
         marginRight: theme.spacing(1),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(2),
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    downloadButtonSpacing: {
+
+    [`& .${classes.downloadButtonSpacing}`]: {
         marginLeft: theme.spacing(1),
     },
-    editorPane: {
+
+    [`& .${classes.editorPane}`]: {
         width: '50%',
         height: '100%',
         overflow: 'scroll',
     },
-    editorRoot: {
+
+    [`& .${classes.editorRoot}`]: {
         height: '100%',
-    },
+    }
 }));
+
+dayjs.extend(relativeTime);
+// disabled because webpack magic comment for chunk name require to be in the same line
+// eslint-disable-next-line max-len
+const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/APIDefinition/swaggerUI/SwaggerUI' /* webpackChunkName: "ServiceOverviewSwaggerUI" */));
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
 /**
  * Service Catalog Overview Page
@@ -164,7 +220,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {any} Overview page of a service
  */
 function Overview(props) {
-    const classes = useStyles();
+
     const intl = useIntl();
     const { match, history } = props;
     const serviceId = match.params.service_uuid;
@@ -397,313 +453,315 @@ function Overview(props) {
         scrollBeyondLastLine: false,
     };
 
-    return <>
-        <Container maxWidth='md'>
-            <Box mb={3} className={classes.headingSpacing}>
-                <Breadcrumbs aria-label='breadcrumb'>
-                    <Link color='inherit' to='/service-catalog'>
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Overview.parent.breadcrumb'
-                            defaultMessage='Service Catalog'
-                        />
-                    </Link>
-                    <Typography color='textPrimary'>
-                        <FormattedMessage
-                            id='ServiceCatalog.Listing.Overview.readonly.breadcrumb'
-                            defaultMessage='Overview'
-                        />
-                    </Typography>
-                </Breadcrumbs>
-            </Box>
-            <Paper elevation={1} className={classes.paperStyle}>
-                <Box px={8} py={5}>
-                    <Grid container spacing={1}>
-                        <Grid item md={10}>
-                            <div className={classes.contentTopBarStyle}>
-                                {serviceTypeIcon}
-                                <div className={classes.topBarDetailsSectionStyle}>
-                                    <div className={classes.versionBarStyle}>
-                                        <Typography className={classes.heading} variant='h5'>
-                                            <FormattedMessage
-                                                id='ServiceCatalog.Listing.Overview.display.name'
-                                                defaultMessage='{serviceDisplayName}'
-                                                values={{ serviceDisplayName: service.name }}
-                                            />
-                                        </Typography>
-                                    </div>
-                                    <div className={classes.versionBarStyle}>
-                                        <LocalOfferOutlinedIcon />
-                                        <Typography className={classes.versionStyle}>
-                                            <FormattedMessage
-                                                id='ServiceCatalog.Listing.Overview.service.version'
-                                                defaultMessage='{serviceVersion}'
-                                                values={{ serviceVersion: service.version }}
-                                            />
-                                        </Typography>
-                                    </div>
-                                    <Usages
-                                        usageNumber={service.usage}
-                                        serviceDisplayName={service.name}
-                                        serviceId={service.id}
-                                        isOverview
-                                        classes={classes}
-                                    />
-                                </div>
-                            </div>
-                        </Grid>
-                        <Grid item md={2}>
-                            <Box display='flex' flexDirection='column'>
-                                {!isRestricted(['apim:api_create']) && (
-                                    <CreateApi
-                                        history={history}
-                                        serviceId={service.id}
-                                        serviceKey={service.serviceKey}
-                                        serviceDisplayName={service.name}
-                                        serviceVersion={service.version}
-                                        serviceUrl={service.serviceUrl}
-                                        servieDefinitionType={service.definitionType}
-                                        usage={service.usage}
-                                        isOverview
-                                    />
-                                )}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                    <div className={classes.bodyStyle}>
+    return (
+        <Root>
+            <Container maxWidth='md'>
+                <Box mb={3} className={classes.headingSpacing}>
+                    <Breadcrumbs aria-label='breadcrumb'>
+                        <Link color='inherit' to='/service-catalog'>
+                            <FormattedMessage
+                                id='ServiceCatalog.Listing.Overview.parent.breadcrumb'
+                                defaultMessage='Service Catalog'
+                            />
+                        </Link>
+                        <Typography color='textPrimary'>
+                            <FormattedMessage
+                                id='ServiceCatalog.Listing.Overview.readonly.breadcrumb'
+                                defaultMessage='Overview'
+                            />
+                        </Typography>
+                    </Breadcrumbs>
+                </Box>
+                <Paper elevation={1} className={classes.paperStyle}>
+                    <Box px={8} py={5}>
                         <Grid container spacing={1}>
-                            { (service.description && service.description !== '') && (
-                                <>
-                                    <Grid item md={12}>
-                                        <Typography>
-                                            <FormattedMessage
-                                                id='ServiceCatalog.Listing.Overview.service.description'
-                                                defaultMessage='{description}'
-                                                values={{ description: service.description }}
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                </>
-                            )}
-                        </Grid>
-                        <div className={classes.contentWrapper}>
-                            <Table className={classes.table}>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell component='th' scope='row'>
-                                            <div className={classes.iconAligner}>
-                                                <Icon className={classes.tableIcon}>link</Icon>
-                                                <span className={classes.iconTextWrapper}>
-                                                    <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Overview.service.url'
-                                                        defaultMessage='Service URL'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell style={{ maxWidth: '220px', wordWrap: 'break-word' }}>
-                                            {service.serviceUrl}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component='th' scope='row'>
-                                            <div className={classes.iconAligner}>
-                                                <Icon className={classes.tableIcon}>code</Icon>
-                                                <span className={classes.iconTextWrapper}>
-                                                    <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Overview.definition.type'
-                                                        defaultMessage='Schema Type'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {getDefinitionTypeDisplayName(service.definitionType)}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component='th' scope='row'>
-                                            <div className={classes.iconAligner}>
-                                                <Icon className={classes.tableIcon}>description</Icon>
-                                                <span className={classes.iconTextWrapper}>
-                                                    <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Overview.definition.download'
-                                                        defaultMessage='Service Definition'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className={classes.downloadServiceFlex}>
-                                                <div className={classes.downloadServiceGroup}>
-                                                    <Button
-                                                        onClick={
-                                                            () => downloadServiceDefinition(
-                                                                service.id,
-                                                                service.definitionType,
-                                                            )
-                                                        }
-                                                        color='primary'
-                                                        className={classes.downloadButtonSpacing}
-                                                    >
-                                                        <CloudDownloadRounded className={classes.iconSpacing} />
-                                                        <FormattedMessage
-                                                            id='ServiceCatalog.Listing.Overview.download.service'
-                                                            defaultMessage='Download'
-                                                        />
-                                                    </Button>
-                                                    <VerticalDivider height={30} />
-                                                    <Button
-                                                        onClick={showServiceDefinition}
-                                                        color='primary'
-                                                        endIcon={
-                                                            !openReadOnlyDefinition
-                                                            && <OpenInNewIcon />
-                                                        }
-                                                    >
-                                                        <FormattedMessage
-                                                            id='ServiceCatalog.Listing.Overview.view.definition'
-                                                            defaultMessage='View Definition'
-                                                        />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                            <Dialog
-                                                fullScreen
-                                                open={openReadOnlyDefinition}
-                                                onClose={closeEditor}
-                                            >
-                                                <Paper square className={classes.popupHeader}>
-                                                    <IconButton
-                                                        className={classes.button}
-                                                        color='inherit'
-                                                        onClick={closeEditor}
-                                                        aria-label={(
-                                                            <FormattedMessage
-                                                                id='ServiceCatalog.Listing.Overview.close.btn'
-                                                                defaultMessage='Close'
-                                                            />
-                                                        )}
-                                                        size='large'>
-                                                        <Icon>close</Icon>
-                                                    </IconButton>
-                                                </Paper>
-                                                <Suspense
-                                                    fallback={(
-                                                        <Progress />
-                                                    )}
-                                                >
-                                                    {service.definitionType !== 'WSDL1' ? (
-                                                        <Grid container spacing={2} className={classes.editorRoot}>
-                                                            <Grid item className={classes.editorPane}>
-                                                                <MonacoEditor
-                                                                    language={format}
-                                                                    width='100%'
-                                                                    height='calc(100vh - 51px)'
-                                                                    theme='vs-dark'
-                                                                    value={serviceDefinition}
-                                                                    options={editorOptions}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item className={classes.editorPane}>
-                                                                <SwaggerUI
-                                                                    url={'data:text/' + format + ','
-                                                                    + encodeURIComponent(serviceDefinition)}
-                                                                />
-                                                            </Grid>
-                                                        </Grid>
-                                                    ) : (
-                                                        <MonacoEditor
-                                                            language={format}
-                                                            width='100%'
-                                                            height='calc(100vh - 51px)'
-                                                            theme='vs-dark'
-                                                            value={serviceDefinition}
-                                                            options={editorOptions}
-                                                        />
-                                                    )}
-                                                </Suspense>
-                                            </Dialog>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component='th' scope='row'>
-                                            <div className={classes.iconAligner}>
-                                                <Icon className={classes.tableIcon}>security</Icon>
-                                                <span className={classes.iconTextWrapper}>
-                                                    <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Overview.security.type'
-                                                        defaultMessage='Security Type'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {getSecurityTypeDisplayName(service.securityType)}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component='th' scope='row'>
-                                            <div className={classes.iconAligner}>
-                                                <Icon className={classes.tableIcon}>sync_alt</Icon>
-                                                <span className={classes.iconTextWrapper}>
-                                                    <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Overview.mutual.ssl'
-                                                        defaultMessage='Mutual SSL'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            { renderContent() }
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell component='th' scope='row'>
-                                            <div className={classes.iconAligner}>
-                                                <Icon className={classes.tableIcon}>timeline</Icon>
-                                                <span className={classes.iconTextWrapper}>
-                                                    <FormattedMessage
-                                                        id='ServiceCatalog.Listing.Overview.created.time'
-                                                        defaultMessage='Created Time'
-                                                    />
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Tooltip
-                                                placement='right'
-                                                title={dayjs(service.createdTime).format('lll')}
-                                            >
-                                                <span>{dayjs(service.createdTime).fromNow()}</span>
-                                            </Tooltip>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </div>
-                    <div className={classes.buttonWrapper}>
-                        <Grid
-                            container
-                            direction='row'
-                            alignItems='flex-start'
-                            spacing={1}
-                            className={classes.buttonSection}
-                        >
-                            <Grid item>
-                                <Button onClick={listingRedirect} color='primary'>
-                                    <FormattedMessage
-                                        id='ServiceCatalog.Listing.Overview.back.btn'
-                                        defaultMessage='Go Back'
-                                    />
-                                </Button>
+                            <Grid item md={10}>
+                                <div className={classes.contentTopBarStyle}>
+                                    {serviceTypeIcon}
+                                    <div className={classes.topBarDetailsSectionStyle}>
+                                        <div className={classes.versionBarStyle}>
+                                            <Typography className={classes.heading} variant='h5'>
+                                                <FormattedMessage
+                                                    id='ServiceCatalog.Listing.Overview.display.name'
+                                                    defaultMessage='{serviceDisplayName}'
+                                                    values={{ serviceDisplayName: service.name }}
+                                                />
+                                            </Typography>
+                                        </div>
+                                        <div className={classes.versionBarStyle}>
+                                            <LocalOfferOutlinedIcon />
+                                            <Typography className={classes.versionStyle}>
+                                                <FormattedMessage
+                                                    id='ServiceCatalog.Listing.Overview.service.version'
+                                                    defaultMessage='{serviceVersion}'
+                                                    values={{ serviceVersion: service.version }}
+                                                />
+                                            </Typography>
+                                        </div>
+                                        <Usages
+                                            usageNumber={service.usage}
+                                            serviceDisplayName={service.name}
+                                            serviceId={service.id}
+                                            isOverview
+                                            classes={classes}
+                                        />
+                                    </div>
+                                </div>
+                            </Grid>
+                            <Grid item md={2}>
+                                <Box display='flex' flexDirection='column'>
+                                    {!isRestricted(['apim:api_create']) && (
+                                        <CreateApi
+                                            history={history}
+                                            serviceId={service.id}
+                                            serviceKey={service.serviceKey}
+                                            serviceDisplayName={service.name}
+                                            serviceVersion={service.version}
+                                            serviceUrl={service.serviceUrl}
+                                            servieDefinitionType={service.definitionType}
+                                            usage={service.usage}
+                                            isOverview
+                                        />
+                                    )}
+                                </Box>
                             </Grid>
                         </Grid>
-                    </div>
-                </Box>
-            </Paper>
-        </Container>
-    </>;
+                        <div className={classes.bodyStyle}>
+                            <Grid container spacing={1}>
+                                { (service.description && service.description !== '') && (
+                                    <>
+                                        <Grid item md={12}>
+                                            <Typography>
+                                                <FormattedMessage
+                                                    id='ServiceCatalog.Listing.Overview.service.description'
+                                                    defaultMessage='{description}'
+                                                    values={{ description: service.description }}
+                                                />
+                                            </Typography>
+                                        </Grid>
+                                    </>
+                                )}
+                            </Grid>
+                            <div className={classes.contentWrapper}>
+                                <Table className={classes.table}>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell component='th' scope='row'>
+                                                <div className={classes.iconAligner}>
+                                                    <Icon className={classes.tableIcon}>link</Icon>
+                                                    <span className={classes.iconTextWrapper}>
+                                                        <FormattedMessage
+                                                            id='ServiceCatalog.Listing.Overview.service.url'
+                                                            defaultMessage='Service URL'
+                                                        />
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell style={{ maxWidth: '220px', wordWrap: 'break-word' }}>
+                                                {service.serviceUrl}
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell component='th' scope='row'>
+                                                <div className={classes.iconAligner}>
+                                                    <Icon className={classes.tableIcon}>code</Icon>
+                                                    <span className={classes.iconTextWrapper}>
+                                                        <FormattedMessage
+                                                            id='ServiceCatalog.Listing.Overview.definition.type'
+                                                            defaultMessage='Schema Type'
+                                                        />
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {getDefinitionTypeDisplayName(service.definitionType)}
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell component='th' scope='row'>
+                                                <div className={classes.iconAligner}>
+                                                    <Icon className={classes.tableIcon}>description</Icon>
+                                                    <span className={classes.iconTextWrapper}>
+                                                        <FormattedMessage
+                                                            id='ServiceCatalog.Listing.Overview.definition.download'
+                                                            defaultMessage='Service Definition'
+                                                        />
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className={classes.downloadServiceFlex}>
+                                                    <div className={classes.downloadServiceGroup}>
+                                                        <Button
+                                                            onClick={
+                                                                () => downloadServiceDefinition(
+                                                                    service.id,
+                                                                    service.definitionType,
+                                                                )
+                                                            }
+                                                            color='primary'
+                                                            className={classes.downloadButtonSpacing}
+                                                        >
+                                                            <CloudDownloadRounded className={classes.iconSpacing} />
+                                                            <FormattedMessage
+                                                                id='ServiceCatalog.Listing.Overview.download.service'
+                                                                defaultMessage='Download'
+                                                            />
+                                                        </Button>
+                                                        <VerticalDivider height={30} />
+                                                        <Button
+                                                            onClick={showServiceDefinition}
+                                                            color='primary'
+                                                            endIcon={
+                                                                !openReadOnlyDefinition
+                                                                && <OpenInNewIcon />
+                                                            }
+                                                        >
+                                                            <FormattedMessage
+                                                                id='ServiceCatalog.Listing.Overview.view.definition'
+                                                                defaultMessage='View Definition'
+                                                            />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <Dialog
+                                                    fullScreen
+                                                    open={openReadOnlyDefinition}
+                                                    onClose={closeEditor}
+                                                >
+                                                    <Paper square className={classes.popupHeader}>
+                                                        <IconButton
+                                                            className={classes.button}
+                                                            color='inherit'
+                                                            onClick={closeEditor}
+                                                            aria-label={(
+                                                                <FormattedMessage
+                                                                    id='ServiceCatalog.Listing.Overview.close.btn'
+                                                                    defaultMessage='Close'
+                                                                />
+                                                            )}
+                                                            size='large'>
+                                                            <Icon>close</Icon>
+                                                        </IconButton>
+                                                    </Paper>
+                                                    <Suspense
+                                                        fallback={(
+                                                            <Progress />
+                                                        )}
+                                                    >
+                                                        {service.definitionType !== 'WSDL1' ? (
+                                                            <Grid container spacing={2} className={classes.editorRoot}>
+                                                                <Grid item className={classes.editorPane}>
+                                                                    <MonacoEditor
+                                                                        language={format}
+                                                                        width='100%'
+                                                                        height='calc(100vh - 51px)'
+                                                                        theme='vs-dark'
+                                                                        value={serviceDefinition}
+                                                                        options={editorOptions}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item className={classes.editorPane}>
+                                                                    <SwaggerUI
+                                                                        url={'data:text/' + format + ','
+                                                                        + encodeURIComponent(serviceDefinition)}
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        ) : (
+                                                            <MonacoEditor
+                                                                language={format}
+                                                                width='100%'
+                                                                height='calc(100vh - 51px)'
+                                                                theme='vs-dark'
+                                                                value={serviceDefinition}
+                                                                options={editorOptions}
+                                                            />
+                                                        )}
+                                                    </Suspense>
+                                                </Dialog>
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell component='th' scope='row'>
+                                                <div className={classes.iconAligner}>
+                                                    <Icon className={classes.tableIcon}>security</Icon>
+                                                    <span className={classes.iconTextWrapper}>
+                                                        <FormattedMessage
+                                                            id='ServiceCatalog.Listing.Overview.security.type'
+                                                            defaultMessage='Security Type'
+                                                        />
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {getSecurityTypeDisplayName(service.securityType)}
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell component='th' scope='row'>
+                                                <div className={classes.iconAligner}>
+                                                    <Icon className={classes.tableIcon}>sync_alt</Icon>
+                                                    <span className={classes.iconTextWrapper}>
+                                                        <FormattedMessage
+                                                            id='ServiceCatalog.Listing.Overview.mutual.ssl'
+                                                            defaultMessage='Mutual SSL'
+                                                        />
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                { renderContent() }
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell component='th' scope='row'>
+                                                <div className={classes.iconAligner}>
+                                                    <Icon className={classes.tableIcon}>timeline</Icon>
+                                                    <span className={classes.iconTextWrapper}>
+                                                        <FormattedMessage
+                                                            id='ServiceCatalog.Listing.Overview.created.time'
+                                                            defaultMessage='Created Time'
+                                                        />
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Tooltip
+                                                    placement='right'
+                                                    title={dayjs(service.createdTime).format('lll')}
+                                                >
+                                                    <span>{dayjs(service.createdTime).fromNow()}</span>
+                                                </Tooltip>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
+                        <div className={classes.buttonWrapper}>
+                            <Grid
+                                container
+                                direction='row'
+                                alignItems='flex-start'
+                                spacing={1}
+                                className={classes.buttonSection}
+                            >
+                                <Grid item>
+                                    <Button onClick={listingRedirect} color='primary'>
+                                        <FormattedMessage
+                                            id='ServiceCatalog.Listing.Overview.back.btn'
+                                            defaultMessage='Go Back'
+                                        />
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </div>
+                    </Box>
+                </Paper>
+            </Container>
+        </Root>
+    );
 }
 
 Overview.propTypes = {

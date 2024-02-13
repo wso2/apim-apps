@@ -17,10 +17,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import deburr from 'lodash/deburr';
 import Downshift from 'downshift';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
@@ -35,6 +35,55 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage } from 'react-intl';
 
+const PREFIX = 'AWSLambdaSettings';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    container: `${PREFIX}-container`,
+    paper: `${PREFIX}-paper`,
+    chip: `${PREFIX}-chip`,
+    inputRoot: `${PREFIX}-inputRoot`,
+    inputInput: `${PREFIX}-inputInput`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+        flexGrow: 1,
+        border: '2px solid red'
+    },
+
+    [`& .${classes.container}`]: {
+        flexGrow: 1,
+        position: 'relative',
+    },
+
+    [`& .${classes.paper}`]: {
+        position: 'absolute',
+        zIndex: 1000,
+        marginTop: theme.spacing(-2),
+        left: 0,
+        right: 0,
+    },
+
+    [`& .${classes.chip}`]: {
+        margin: theme.spacing(0.5, 0.25),
+    },
+
+    [`& .${classes.inputRoot}`]: {
+        flexWrap: 'wrap',
+    },
+
+    [`& .${classes.inputInput}`]: {
+        width: 'auto',
+        flexGrow: 1,
+    }
+}));
+
 /**
  * The renderInput function.
  * @param {any} inputProps The props that are being passed to the function.
@@ -42,7 +91,7 @@ import { FormattedMessage } from 'react-intl';
  */
 function renderInput(inputProps) {
     const {
-        InputProps, classes, ref, ...other
+        InputProps, ref, ...other
     } = inputProps;
     return (
         <TextField
@@ -123,40 +172,13 @@ function getSuggestions(value, { showEmpty = false } = {}, arns) {
         });
 }
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-    },
-    container: {
-        flexGrow: 1,
-        position: 'relative',
-    },
-    paper: {
-        position: 'absolute',
-        zIndex: 1000,
-        marginTop: theme.spacing(-2),
-        left: 0,
-        right: 0,
-    },
-    chip: {
-        margin: theme.spacing(0.5, 0.25),
-    },
-    inputRoot: {
-        flexWrap: 'wrap',
-    },
-    inputInput: {
-        width: 'auto',
-        flexGrow: 1,
-    },
-}));
-
 /**
  * The autocomplete component. This component lists the ARNs of a specific user role.
  * @returns {any} HTML view of the autocomplete component.
  * @param {any} props The input parameters.
  */
 export default function IntegrationDownshift(props) {
-    const classes = useStyles();
+
     const {
         operation,
         operationsDispatcher,
@@ -223,7 +245,7 @@ export default function IntegrationDownshift(props) {
         console.log('changing content encode ' + event.target.checked + ' dispatched');
     };
     return (
-        <>
+        (<Root>
             <Grid item md={12} xs={12}>
                 <Typography variant='subtitle1'>
                     <FormattedMessage
@@ -378,7 +400,7 @@ export default function IntegrationDownshift(props) {
                 </FormControl>
             </Grid>
             <Grid item md={1} xs={1} />
-        </>
+        </Root>)
     );
 }
 

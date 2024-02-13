@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -31,9 +31,20 @@ import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/Streaming
 import ServiceCatalogMenu from 'AppComponents/Apis/Listing/Landing/Menus/ServiceCatalogMenu';
 import MenuButton from 'AppComponents/Shared/MenuButton';
 
-const useStyles = makeStyles((theme) => {
+const PREFIX = 'APICreateMenu';
+
+const classes = {
+    dividerCls: `${PREFIX}-dividerCls`,
+    popover: `${PREFIX}-popover`
+};
+
+const StyledMenuButton = styled(MenuButton)((
+    {
+        theme
+    }
+) => {
     return {
-        dividerCls: {
+        [`& .${classes.dividerCls}`]: {
             height: '180px',
             position: 'absolute',
             top: '50%',
@@ -41,7 +52,7 @@ const useStyles = makeStyles((theme) => {
             transform: 'translateY(-50%)',
             margin: 'auto',
         },
-        popover: {
+        [`& .${classes.popover}`]: {
             [theme.breakpoints.down('md')]: {
                 width: '95vw',
             },
@@ -59,7 +70,7 @@ const useStyles = makeStyles((theme) => {
 
 const APICreateMenu = () => {
     const theme = useTheme();
-    const { dividerCls, popover } = useStyles();
+
     const {
         graphqlIcon,
         restApiIcon,
@@ -67,7 +78,7 @@ const APICreateMenu = () => {
         streamingApiIcon,
     } = theme.custom.landingPage.icons;
     return !AuthManager.isNotCreator() && (
-        <MenuButton
+        <StyledMenuButton
             buttonProps={{
                 id: 'itest-create-api-menu-button',
                 color: 'primary',
@@ -76,7 +87,7 @@ const APICreateMenu = () => {
             }}
             menuList={(
                 <Grid
-                    className={popover}
+                    className={classes.popover}
                     container
                     direction='row'
                     justifyContent='space-around'
@@ -88,14 +99,14 @@ const APICreateMenu = () => {
                     <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
                     <StreamingAPIMenu isCreateMenu icon={streamingApiIcon} />
                     <Box display={{ xs: 'none', md: 'block' }} mx={2}>
-                        <Divider className={dividerCls} light orientation='vertical' variant='inset' />
+                        <Divider className={classes.dividerCls} light orientation='vertical' variant='inset' />
                     </Box>
                     <ServiceCatalogMenu isCreateMenu icon={streamingApiIcon} />
                 </Grid>
             )}
         >
             Create API
-        </MenuButton>
+        </StyledMenuButton>
     );
 };
 export default APICreateMenu;

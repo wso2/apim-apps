@@ -17,8 +17,8 @@
  */
 
 import React, { FC, useEffect, useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { CircularProgress , Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
@@ -33,17 +33,25 @@ import uuidv4 from '../Utils';
 import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    root: {
+const PREFIX = 'PolicyCreateForm';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    cancelBtn: `${PREFIX}-cancelBtn`
+};
+
+const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         padding: 20,
     },
-    cancelBtn: {
+
+    [`& .${classes.cancelBtn}`]: {
         marginLeft: theme.spacing(1),
-    },
+    }
 }));
 
 export const ACTIONS = {
@@ -172,7 +180,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     onCancel,
     saving,
 }) => {
-    const classes = useStyles();
+
     const initialState: NewPolicyState = {
         displayName: null,
         version: null,
@@ -279,7 +287,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     };
 
     return (
-        <Paper elevation={0} className={classes.root} data-testid='create-policy-form'>
+        <StyledPaper elevation={0} className={classes.root} data-testid='create-policy-form'>
             {/* General details of policy */}
             <GeneralDetails
                 displayName={state.displayName}
@@ -339,7 +347,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                     />
                 </Button>
             </Box>
-        </Paper>
+        </StyledPaper>
     );
 };
 

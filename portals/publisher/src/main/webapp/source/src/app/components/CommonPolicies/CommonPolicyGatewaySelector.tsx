@@ -68,7 +68,7 @@ const CommonPolicyGatewaySelector: FC<CommonPolicyGatewaySelectorProps> = ({
     return (
         <Paper>
             <Grid container direction='row' spacing={3}>
-                <Grid item md={12} xs={12}>
+                <Grid item xs={12}>
                     <Box
                         display='flex'
                         flexDirection='row'

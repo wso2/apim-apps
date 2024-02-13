@@ -1,14 +1,20 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const useStyles = makeStyles({
-    root: {
+const PREFIX = 'Onboarding';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
     },
 });
@@ -17,10 +23,10 @@ const Onboarding = (props) => {
     const { title, subTitle, children } = props;
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
-    const { root } = useStyles();
+
 
     return (
-        <div className={root}>
+        <Root className={classes.root}>
             <Grid
                 container
                 direction='column'
@@ -53,7 +59,7 @@ const Onboarding = (props) => {
                     </Box>
                 </Grid>
             </Grid>
-        </div>
+        </Root>
     );
 };
 

@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
 import Grid from '@mui/material/Grid';
@@ -28,34 +29,51 @@ import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import makeStyles from '@mui/styles/makeStyles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'CORSConfiguration';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+const StyledWrappedExpansionPanel = styled(WrappedExpansionPanel)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         marginLeft: theme.spacing(20),
         marginTop: '-7px',
         marginBottom: '-7px',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -74,7 +92,7 @@ export default function CORSConfiguration(props) {
     const isCorsEnabled = corsConfiguration.corsConfigurationEnabled;
     const isAllowAllOrigins = corsConfiguration.accessControlAllowOrigins[0] === '*'
         && corsConfiguration.accessControlAllowOrigins.length === 1;
-    const classes = useStyles();
+
     const generateElement = (isEnabled) => {
         if (isEnabled) {
             return (
@@ -84,7 +102,7 @@ export default function CORSConfiguration(props) {
         return (null);
     };
     return (
-        <WrappedExpansionPanel className={classes.expansionPanel} id='corsConfiguration'>
+        <StyledWrappedExpansionPanel className={classes.expansionPanel} id='corsConfiguration'>
             <AccordionSummary expandIcon={generateElement(corsConfiguration.corsConfigurationEnabled)}>
                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                     <FormattedMessage
@@ -327,7 +345,7 @@ export default function CORSConfiguration(props) {
                     </Grid>
                 </Grid>
             </AccordionDetails>
-        </WrappedExpansionPanel>
+        </StyledWrappedExpansionPanel>
     );
 }
 

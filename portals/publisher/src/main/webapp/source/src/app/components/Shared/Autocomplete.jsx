@@ -20,8 +20,8 @@
 
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
-import withStyles from '@mui/styles/withStyles';
 import Popper from '@mui/material/Popper';
 import ListSubheader from '@mui/material/ListSubheader';
 import Paper from '@mui/material/Paper';
@@ -33,184 +33,200 @@ import useAutocomplete, { createFilterOptions } from './useAutocomplete';
 
 export { createFilterOptions };
 
-export const styles = (theme) => ({
-    /* Styles applied to the root element. */
-    root: {
-        '&$focused $clearIndicatorDirty': {
+const PREFIX = 'Autocomplete';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    focused: `${PREFIX}-focused`,
+    fullWidth: `${PREFIX}-fullWidth`,
+    tag: `${PREFIX}-tag`,
+    tagSizeSmall: `${PREFIX}-tagSizeSmall`,
+    hasPopupIcon: `${PREFIX}-hasPopupIcon`,
+    hasClearIcon: `${PREFIX}-hasClearIcon`,
+    inputRoot: `${PREFIX}-inputRoot`,
+    input: `${PREFIX}-input`,
+    inputFocused: `${PREFIX}-inputFocused`,
+    endAdornment: `${PREFIX}-endAdornment`,
+    clearIndicator: `${PREFIX}-clearIndicator`,
+    clearIndicatorDirty: `${PREFIX}-clearIndicatorDirty`,
+    popupIndicator: `${PREFIX}-popupIndicator`,
+    popupIndicatorOpen: `${PREFIX}-popupIndicatorOpen`,
+    popper: `${PREFIX}-popper`,
+    popperDisablePortal: `${PREFIX}-popperDisablePortal`,
+    paper: `${PREFIX}-paper`,
+    listbox: `${PREFIX}-listbox`,
+    loading: `${PREFIX}-loading`,
+    noOptions: `${PREFIX}-noOptions`,
+    option: `${PREFIX}-option`,
+    groupLabel: `${PREFIX}-groupLabel`,
+    groupUl: `${PREFIX}-groupUl`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.root}`]: {
+        // more to be added...
+        [`&.${classes.focused} .${classes.clearIndicatorDirty}`]: {
             visibility: 'visible',
         },
-        /* Avoid double tap issue on iOS */
-        '@media (pointer: fine)': {
-            '&:hover $clearIndicatorDirty': {
-                visibility: 'visible',
-            },
+        [`&:hover .${classes.clearIndicator}`]: {
+            visibility: 'visible',
         },
     },
-    /* Styles applied to the root element if `fullWidth={true}`. */
-    fullWidth: {
+    [`& .${classes.focused}`]: { 
+        // no change
+    },
+    [`&.${classes.fullWidth}, & .${classes.fullWidth}`]: {
         width: '100%',
     },
-    /* Pseudo-class applied to the root element if focused. */
-    focused: {},
-    /* Styles applied to the tag elements, e.g. the chips. */
-    tag: {
+    [`& .${classes.tag}`]: {
         margin: 3,
         maxWidth: 'calc(100% - 6px)',
     },
-    /* Styles applied to the tag elements, e.g. the chips if `size="small"`. */
-    tagSizeSmall: {
+    [`& .${classes.tagSizeSmall}`]: {
         margin: 2,
         maxWidth: 'calc(100% - 4px)',
     },
-    /* Styles applied when the popup icon is rendered. */
-    hasPopupIcon: {},
-    /* Styles applied when the clear icon is rendered. */
-    hasClearIcon: {},
-    /* Styles applied to the Input element. */
-    inputRoot: {
+    [`& .${classes.hasPopupIcon}`]: {
+        // no change
+    },
+    [`& .${classes.hasClearIcon}`]: {
+        // no change
+    },
+    [`& .${classes.inputRoot}`]: {
         flexWrap: 'wrap',
-        '$hasPopupIcon &, $hasClearIcon &': {
-            paddingRight: 26 + 4,
+        [`.${classes.hasPopupIcon} &, .${classes.hasClearIcon} &`]: {
+            paddingRight: 30,
         },
-        '$hasPopupIcon$hasClearIcon &': {
-            paddingRight: 52 + 4,
+        [`.${classes.hasPopupIcon}.${classes.hasClearIcon} &`]: {
+            paddingRight: 56,
         },
-        '& $input': {
+        // --------------------------
+
+        [`& .${classes.input}}`]: {
             width: 0,
             minWidth: 30,
         },
-        '&[class*="MuiInput-root"]': {
+        [`&[class*="MuiInput-root"]`]: {
             paddingBottom: 1,
-            '& $input': {
+            [`& .${classes.input}`]: {
                 padding: 4,
             },
-            '& $input:first-child': {
+            [`& .${classes.input}:first-child`]: {
                 padding: '6px 0',
             },
         },
-        '&[class*="MuiInput-root"][class*="MuiInput-marginDense"]': {
-            '& $input': {
+        [`&[class*="MuiInput-root"][class*="MuiInput-marginDense"]`]: {
+            [`& .${classes.input}`]: {
                 padding: '4px 4px 5px',
             },
-            '& $input:first-child': {
+            [`& .${classes.input}:first-child`]: {
                 padding: '3px 0 6px',
             },
         },
-        '&[class*="MuiOutlinedInput-root"]': {
+        [`&[class*="MuiOutlinedInput-root"]`]: {
             padding: 9,
-            '$hasPopupIcon &, $hasClearIcon &': {
+            [`.${classes.hasPopupIcon} &, .${classes.hasClearIcon} &`]: {
                 paddingRight: 26 + 4 + 9,
             },
-            '$hasPopupIcon$hasClearIcon &': {
+            [`.${classes.hasPopupIcon}.${classes.hasClearIcon} &`]: {
                 paddingRight: 52 + 4 + 9,
             },
-            '& $input': {
+            [`& .${classes.input}`]: {
                 padding: '9.5px 4px',
             },
-            '& $input:first-child': {
+            [`& .${classes.input}:first-child`]: {
                 paddingLeft: 6,
             },
-            '& $endAdornment': {
+            [`& .${classes.endAdornment}`]: {
                 right: 9,
             },
         },
-        '&[class*="MuiOutlinedInput-root"][class*="MuiOutlinedInput-marginDense"]': {
+        [`&[class*="MuiOutlinedInput-root"][class*="MuiOutlinedInput-marginDense"]`]: {
             padding: 6,
-            '& $input': {
+            [`& .${classes.input}`]: {
                 padding: '4.5px 4px',
             },
         },
-        '&[class*="MuiFilledInput-root"]': {
+        [`&[class*="MuiFilledInput-root"]`]: {
             paddingTop: 19,
             paddingLeft: 8,
-            '$hasPopupIcon &, $hasClearIcon &': {
+            [`.${classes.hasPopupIcon} &, .${classes.hasClearIcon} &`]: {
                 paddingRight: 26 + 4 + 9,
             },
-            '$hasPopupIcon$hasClearIcon &': {
+            [`.${classes.hasPopupIcon}.${classes.hasClearIcon} &`]: {
                 paddingRight: 52 + 4 + 9,
             },
-            '& $input': {
+            [`& .${classes.input}`]: {
                 padding: '9px 4px',
             },
-            '& $endAdornment': {
+            [`& .${classes.endAdornment}`]: {
                 right: 9,
             },
         },
-        '&[class*="MuiFilledInput-root"][class*="MuiFilledInput-marginDense"]': {
+        [`&[class*="MuiFilledInput-root"][class*="MuiFilledInput-marginDense"]`]: {
             paddingBottom: 1,
-            '& $input': {
+            [`& .${classes.input}`]: {
                 padding: '4.5px 4px',
             },
         },
+        // --------------------------
     },
-    /* Styles applied to the input element. */
-    input: {
+    [`& .${classes.input}`]: {
         flexGrow: 1,
         textOverflow: 'ellipsis',
         opacity: 0,
     },
-    /* Styles applied to the input element if tag focused. */
-    inputFocused: {
+    [`& .${classes.inputFocused}`]: {
         opacity: 1,
     },
-    /* Styles applied to the endAdornment element. */
-    endAdornment: {
+    [`& .${classes.endAdornment}`]: {
         // We use a position absolute to support wrapping tags.
         position: 'absolute',
         right: 0,
         top: 'calc(50% - 14px)', // Center vertically
     },
-    /* Styles applied to the clear indicator. */
-    clearIndicator: {
+    [`& .${classes.clearIndicator}`]: {
         marginRight: -2,
         padding: 4,
         visibility: 'hidden',
     },
-    /* Styles applied to the clear indicator if the input is dirty. */
-    clearIndicatorDirty: {},
-    /* Styles applied to the popup indicator. */
-    popupIndicator: {
+    [`& .${classes.clearIndicatorDirty}`]: {
+        // no change
+    },
+    [`& .${classes.popupIndicator}`]: {
         padding: 2,
         marginRight: -2,
     },
-    /* Styles applied to the popup indicator if the popup is open. */
-    popupIndicatorOpen: {
+    [`& .${classes.popupIndicatorOpen}`]: {
         transform: 'rotate(180deg)',
     },
-    /* Styles applied to the popper element. */
-    popper: {
+    [`& .${classes.popper}`]: {
         zIndex: theme.zIndex.modal,
     },
-    /* Styles applied to the popper element if `disablePortal={true}`. */
-    popperDisablePortal: {
+    [`& .${classes.popperDisablePortal}`]: {
         position: 'absolute',
     },
-    /* Styles applied to the `Paper` component. */
-    paper: {
+    [`& .${classes.paper}`]: {
         ...theme.typography.body1,
         overflow: 'hidden',
         margin: '4px 0',
     },
-    /* Styles applied to the `listbox` component. */
-    listbox: {
+    [`& .${classes.listbox}`]: {
         listStyle: 'none',
         margin: 0,
         padding: '8px 0',
         maxHeight: '40vh',
         overflow: 'auto',
     },
-    /* Styles applied to the loading wrapper. */
-    loading: {
+    [`& .${classes.loading}`]: {
         color: theme.palette.text.secondary,
         padding: '14px 16px',
     },
-    /* Styles applied to the no option wrapper. */
-    noOptions: {
+    [`& .${classes.noOptions}`]: {
         color: theme.palette.text.secondary,
         padding: '14px 16px',
     },
-    /* Styles applied to the option elements. */
-    option: {
+    [`& .${classes.option}`]: {
         minHeight: 48,
         display: 'flex',
         justifyContent: 'flex-start',
@@ -223,36 +239,31 @@ export const styles = (theme) => ({
         paddingBottom: 6,
         paddingLeft: 16,
         paddingRight: 16,
-        [theme.breakpoints.up('sm')]: {
-            minHeight: 'auto',
-        },
-        '&[aria-selected="true"]': {
+        [`&[aria-selected="true"]`]: {
             backgroundColor: theme.palette.action.selected,
         },
-        '&[data-focus="true"]': {
+        [`&[data-focus="true"]`]: {
             backgroundColor: theme.palette.action.hover,
         },
-        '&:active': {
+        [`&:active`]: {
             backgroundColor: theme.palette.action.selected,
         },
-        '&[aria-disabled="true"]': {
-            opacity: theme.palette.action.disabledOpacity,
+        [`&[aria-disabled="true"]`]: {
+            opacity: 0.5,
             pointerEvents: 'none',
         },
     },
-    /* Styles applied to the group's label elements. */
-    groupLabel: {
+    [`& .${classes.groupLabel}`]: {
         backgroundColor: theme.palette.background.paper,
         top: -8,
     },
-    /* Styles applied to the group's ul elements. */
-    groupUl: {
+    [`& .${classes.groupUl}`]: {
         padding: 0,
-        '& $option': {
+        [`& .${classes.option}`]: {
             paddingLeft: 24,
         },
     },
-});
+}));
 
 function DisablePortal(props) {
     // eslint-disable-next-line react/prop-types
@@ -268,7 +279,6 @@ const Autocomplete = React.forwardRef((props, ref) => {
         autoSelect = false,
         blurOnSelect = false,
         ChipProps,
-        classes,
         className,
         clearOnBlur = !props.freeSolo,
         clearOnEscape = false,
@@ -415,7 +425,7 @@ const Autocomplete = React.forwardRef((props, ref) => {
     const hasClearIcon = !disableClearable && !disabled;
     const hasPopupIcon = (!freeSolo || forcePopupIcon === true) && forcePopupIcon !== false;
 
-    return <>
+    return <Root className={clsx({ [classes.fullWidth]: fullWidth })}>
         <div
             ref={ref}
             className={clsx(
@@ -522,7 +532,7 @@ const Autocomplete = React.forwardRef((props, ref) => {
                 </PaperComponent>
             </PopperComponent>
         ) : null}
-    </>;
+    </Root>;
 });
 
 Autocomplete.propTypes = {
@@ -861,4 +871,4 @@ Autocomplete.propTypes = {
     value: PropTypes.any,
 };
 
-export default withStyles(styles)(Autocomplete);
+export default Autocomplete;

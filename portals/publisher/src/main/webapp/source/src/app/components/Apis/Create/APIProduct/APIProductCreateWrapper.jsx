@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, { useReducer, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -23,7 +24,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
@@ -37,25 +37,40 @@ import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
-const useStyles = makeStyles((theme) => ({
-    Paper: {
+const PREFIX = 'APIProductCreateWrapper';
+
+const classes = {
+    Paper: `${PREFIX}-Paper`,
+    saveButton: `${PREFIX}-saveButton`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    alternativeLabel: `${PREFIX}-alternativeLabel`
+};
+
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.Paper}`]: {
         height: '40px',
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         padding: '0px 0px 0px 10px',
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         paddingBottom: theme.spacing(2),
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         marginTop: theme.spacing(4),
     },
-    alternativeLabel: {
+
+    [`& .${classes.alternativeLabel}`]: {
         marginTop: theme.spacing(1),
-    },
+    }
 }));
 
 /**
@@ -94,7 +109,7 @@ export default function ApiProductCreateWrapper(props) {
         });
     }, []);
     const pageTitle = (
-        <>
+        (<Root>
             <Typography variant='h5'>
                 <FormattedMessage
                     id='Apis.Create.APIProduct.APIProductCreateWrapper.heading'
@@ -110,7 +125,7 @@ export default function ApiProductCreateWrapper(props) {
                     }
                 />
             </Typography>
-        </>
+        </Root>)
     );
     /**
      *
@@ -183,7 +198,7 @@ export default function ApiProductCreateWrapper(props) {
     }
 
     const [isCreating, setCreating] = useState();
-    const classes = useStyles();
+
     const steps = getSteps();
     let newAPIProduct;
 
@@ -346,10 +361,8 @@ export default function ApiProductCreateWrapper(props) {
                     </Stepper>
                 )}
             </Box>
-            <Grid container spacing={2}>
-                {wizardStep === 0 && <Grid item md={12} />}
-                {wizardStep === 0 && <Grid item md={1} />}
-                <Grid item md={wizardStep === 0 ? 11 : 12}>
+            <Grid container>
+                <Grid item md={12}>
                     {wizardStep === 0 && (
                         <DefaultAPIForm
                             onValidate={handleOnValidate}
@@ -367,8 +380,8 @@ export default function ApiProductCreateWrapper(props) {
                         />
                     )}
                 </Grid>
-                {wizardStep === 0 && <Grid item md={1} />}
-                <Grid item md={9}>
+                {/* {wizardStep === 0 && <Grid item md={1} />} */}
+                <Grid item md={12}>
                     <Grid
                         className={wizardStep === 1 && classes.saveButton}
                         container

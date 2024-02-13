@@ -106,7 +106,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
 
     return (
         <Paper>
-            <Grid container direction='row' spacing={3}>
+            <Grid container direction='row'>
                 <Grid item md={12} xs={12}>
                     <Box
                         display='flex'

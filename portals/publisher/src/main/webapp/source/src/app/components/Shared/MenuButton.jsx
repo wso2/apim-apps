@@ -1,24 +1,39 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
-import withStyles from '@mui/styles/withStyles';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'MenuButton';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    position: `${PREFIX}-position`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         marginRight: theme.spacing(2),
     },
-    position: {
+
+    [`& .${classes.position}`]: {
         display: 'inherit',
         zIndex: theme.zIndex.apiCreateMenu,
-    },
-});
+    }
+}));
 
 /**
  * Button with dropdown menu
@@ -71,12 +86,10 @@ class MenuButton extends React.Component {
      * @memberof MenuButton
      */
     render() {
-        const {
-            classes, children, menuList, buttonProps,
-        } = this.props;
+        const { children, menuList, buttonProps } = this.props;
         const { open } = this.state;
         return (
-            <>
+            (<Root>
                 <Button
                     id='itest-id-createapi'
                     aria-owns={open ? 'menu-list-grow' : null}
@@ -117,7 +130,7 @@ class MenuButton extends React.Component {
                         </Grow>
                     )}
                 </Popper>
-            </>
+            </Root>)
         );
     }
 }
@@ -129,4 +142,4 @@ MenuButton.propTypes = {
     buttonProps: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(MenuButton);
+export default (MenuButton);

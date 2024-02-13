@@ -1,32 +1,48 @@
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import Configurations from 'Config';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 
-const useStyles = makeStyles((theme) => ({
-    boxTransition: {
+const PREFIX = 'RestAPIMenu';
+
+const classes = {
+    boxTransition: `${PREFIX}-boxTransition`,
+    overlayBox: `${PREFIX}-overlayBox`,
+    overlayCloseButton: `${PREFIX}-overlayCloseButton`,
+    actionStyle: `${PREFIX}-actionStyle`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.boxTransition}`]: {
         transition: 'box-shadow 0.9s cubic-bezier(.25,.8,.25,1)',
         cursor: 'pointer',
     },
-    overlayBox: {
+
+    [`& .${classes.overlayBox}`]: {
         cursor: 'auto',
         outline: 'none',
         'border-color': '#f9f9f9', // TODO: take from theme ~tmkb
         'box-shadow': '0 0 6px 4px #f9f9f9',
         'border-radius': '5px',
     },
-    overlayCloseButton: {
+
+    [`& .${classes.overlayCloseButton}`]: {
         float: 'right',
     },
-    actionStyle: {
+
+    [`& .${classes.actionStyle}`]: {
         paddingLeft: theme.spacing(4),
         paddingRight: theme.spacing(4),
-    },
+    }
 }));
 
 
@@ -34,7 +50,7 @@ const RestAPIMenu = (props) => {
     const {
         to, iconName, name, disabled, id,
     } = props;
-    const { boxTransition } = useStyles();
+
     const [isHover, setIsHover] = useState(false);
     const onMouseOver = () => {
         setIsHover(true && !disabled);
@@ -46,7 +62,7 @@ const RestAPIMenu = (props) => {
     const Component = disabled ? span : Link;
 
     return (
-        <Grid
+        <StyledGrid
             item
             xs={12}
             sm={5}
@@ -60,7 +76,7 @@ const RestAPIMenu = (props) => {
                 to={to}
             >
                 <Box
-                    className={boxTransition}
+                    className={classes.boxTransition}
                     onMouseOver={onMouseOver}
                     onMouseOut={onMouseOut}
                     bgcolor='background.paper'
@@ -125,7 +141,7 @@ const RestAPIMenu = (props) => {
                     </Grid>
                 </Box>
             </Component>
-        </Grid>
+        </StyledGrid>
     );
 };
 

@@ -17,8 +17,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import { Button, Grid, IconButton, Tooltip, Typography, useTheme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -40,8 +40,19 @@ import CONSTS from 'AppData/Constants';
 import Delete from './DeletePolicy';
 import CommonPolicyGatewaySelector from './CommonPolicyGatewaySelector';
 
-const useStyles = makeStyles((theme) => ({
-    table: {
+const PREFIX = 'CommonPolicyListing';
+
+const classes = {
+    table: `${PREFIX}-table`,
+    heading: `${PREFIX}-heading`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    icon: `${PREFIX}-icon`
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.table}`]: {
         marginLeft: 'auto',
         marginRight: 'auto',
         '& > td[class^=MUIDataTableBodyCell-cellHide-]': {
@@ -57,11 +68,13 @@ const useStyles = makeStyles((theme) => ({
             minWidth: '150px',
         },
     },
-    heading: {
+
+    [`&.${classes.heading}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -69,15 +82,18 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
         marginRight: 'auto',
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    icon: {
+
+    [`& .${classes.icon}`]: {
         marginRight: theme.spacing(0.5),
-    },
+    }
 }));
 
 /**
@@ -87,7 +103,7 @@ const useStyles = makeStyles((theme) => ({
 const Listing = () => {
     const intl = useIntl();
     const theme = useTheme();
-    const classes = useStyles();
+
     const { commonPolicyAddIcon } = theme.custom.landingPage.icons;
     const [policies, setPolicies] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -354,115 +370,100 @@ const Listing = () => {
     }
 
     return (
-        <div className={classes.heading}>
-            <Grid
-                className={classes.titleWrapper}
-                xs={12}
-                sm={12}
-                md={11}
-                lg={11}
-                item
-            >
-                <Typography
-                    variant='h4'
-                    align='left'
-                    component='h1'
-                    className={classes.mainTitle}
-                >
-                    <FormattedMessage
-                        id='CommonPolicies.Listing.policies.title.name'
-                        defaultMessage='Policies'
-                    />
-                </Typography>
-                <Tooltip
-                    title={
-                        <FormattedMessage
-                            id='CommonPolicies.Listing.policies.title.tooltip'
-                            defaultMessage={
-                                'You can utilize these policies at the operation level' +
-                                ' by navigating to the Policies tab under any desired API'
+        <Root>
+            <Box sx={{ p: 2 }}>
+                <Grid container justifyContent='flex-start' alignItems='center' spacing={2}>
+                    <Grid className={classes.titleWrapper} xs={12} item>
+                        <Typography variant='h5' align='left' component='h1' className={classes.mainTitle}>
+                            <FormattedMessage
+                                id='CommonPolicies.Listing.policies.title.name'
+                                defaultMessage='Policies'
+                            />
+                        </Typography>
+                        <Tooltip
+                            title={
+                                <FormattedMessage
+                                    id='CommonPolicies.Listing.policies.title.tooltip'
+                                    defaultMessage={
+                                        'You can utilize these policies at the operation level' +
+                                        ' by navigating to the Policies tab under any desired API'
+                                    }
+                                />
                             }
-                        />
-                    }
-                    placement='bottom-start'
-                >
-                    <IconButton size='small' aria-label='Policy-helper-text'>
-                        <HelpOutlineIcon fontSize='small' />
-                    </IconButton>
-                </Tooltip>
-                <Box pl={1}>
-                    <Button
-                        color='primary'
-                        variant='outlined'
-                        size='small'
-                        data-testid='add-new-common-policy'
-                        disabled={isRestricted([
+                            placement='bottom-start'
+                        >
+                            <IconButton size='small' aria-label='Policy-helper-text'>
+                                <HelpOutlineIcon fontSize='small' />
+                            </IconButton>
+                        </Tooltip>
+                        <Box pl={1}>
+                            <Button
+                                color='primary'
+                                variant='outlined'
+                                size='small'
+                                data-testid='add-new-common-policy'
+                                disabled={isRestricted([
+                                    'apim:api_create',
+                                    'apim:api_manage',
+                                    'apim:mediation_policy_create',
+                                    'apim:mediation_policy_manage',
+                                    'apim:api_mediation_policy_manage',
+                                ])}
+                                component={Link}
+                                to={
+                                    !isRestricted([
+                                        'apim:api_create',
+                                        'apim:api_manage',
+                                        'apim:mediation_policy_create',
+                                        'apim:mediation_policy_manage',
+                                        'apim:api_mediation_policy_manage',
+                                    ]) && CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE
+                                }
+                            >
+                                <AddCircle className={classes.buttonIcon} />
+                                <FormattedMessage
+                                    id='CommonPolicies.Listing.policies.title.add.new.policy'
+                                    defaultMessage='Add New Policy'
+                                />
+                            </Button>
+                        </Box>
+                        {isRestricted([
                             'apim:api_create',
                             'apim:api_manage',
                             'apim:mediation_policy_create',
                             'apim:mediation_policy_manage',
                             'apim:api_mediation_policy_manage',
-                        ])}
-                        component={Link}
-                        to={
-                            !isRestricted([
-                                'apim:api_create',
-                                'apim:api_manage',
-                                'apim:mediation_policy_create',
-                                'apim:mediation_policy_manage',
-                                'apim:api_mediation_policy_manage',
-                            ]) && CONSTS.PATH_TEMPLATES.COMMON_POLICY_CREATE
-                        }
-                    >
-                        <AddCircle className={classes.buttonIcon} />
-                        <FormattedMessage
-                            id='CommonPolicies.Listing.policies.title.add.new.policy'
-                            defaultMessage='Add New Policy'
-                        />
-                    </Button>
-                </Box>
-                {isRestricted([
-                    'apim:api_create',
-                    'apim:api_manage',
-                    'apim:mediation_policy_create',
-                    'apim:mediation_policy_manage',
-                    'apim:api_mediation_policy_manage',
-                ]) && (
-                    <Grid item>
-                        <Typography variant='body2' color='primary'>
-                            <FormattedMessage
-                                id='CommonPolicies.Listing.policies.title.update.not.allowed'
-                                defaultMessage={
-                                    '*You are not authorized to manage policies ' +
-                                    'due to insufficient permissions'
-                                }
-                            />
-                        </Typography>
+                        ]) && (
+                            <Grid item>
+                                <Typography variant='body2' color='primary'>
+                                    <FormattedMessage
+                                        id='CommonPolicies.Listing.policies.title.update.not.allowed'
+                                        defaultMessage={
+                                            '*You are not authorized to manage policies ' +
+                                            'due to insufficient permissions'
+                                        }
+                                    />
+                                </Typography>
+                            </Grid>
+                        )}
                     </Grid>
-                )}
-            </Grid>
-            <Grid
-                className={classes.table}
-                xs={12}
-                sm={12}
-                md={11}
-                lg={11}
-                item
-            >
-                <Box>
-                    <CommonPolicyGatewaySelector
-                        handleGatewayTypeSelection={handleGatewayTypeSelection}
-                        isAllowedToFilterCCPolicies={isAllowedToFilterCCPolicies}
-                    />
-                </Box>
-                <MUIDataTable
-                    title={false}
-                    data={policiesList}
-                    columns={columns}
-                    options={options}
-                />
-            </Grid>
-        </div>
+                    <Grid className={classes.table} xs={12} item>
+                        <Box>
+                            <CommonPolicyGatewaySelector
+                                handleGatewayTypeSelection={handleGatewayTypeSelection}
+                                isAllowedToFilterCCPolicies={isAllowedToFilterCCPolicies}
+                            />
+                        </Box>
+                        <MUIDataTable
+                            title={false}
+                            data={policiesList}
+                            columns={columns}
+                            options={options}
+                        />
+                    </Grid>
+                </Grid>
+            </Box>
+        </Root>
     );
 };
 

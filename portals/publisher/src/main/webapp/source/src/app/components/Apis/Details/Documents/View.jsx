@@ -17,9 +17,9 @@
  */
 
 import React, { useState, useEffect, useContext, Suspense, lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Icon from '@mui/material/Icon';
@@ -38,27 +38,50 @@ import Utils from 'AppData/Utils';
 import Configuration from 'Config';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 
-const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "ViewReactMD" */));
+const PREFIX = 'View';
 
-const styles = theme => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    docTitle: `${PREFIX}-docTitle`,
+    docBadge: `${PREFIX}-docBadge`,
+    button: `${PREFIX}-button`,
+    displayURL: `${PREFIX}-displayURL`,
+    displayURLLink: `${PREFIX}-displayURLLink`,
+    paper: `${PREFIX}-paper`,
+    leftCell: `${PREFIX}-leftCell`,
+    summaryView: `${PREFIX}-summaryView`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
     },
-    docTitle: {
+
+    [`& .${classes.docTitle}`]: {
         fontWeight: 100,
         fontSize: 50,
         color: theme.palette.grey[500],
     },
-    docBadge: {
+
+    [`& .${classes.docBadge}`]: {
         padding: theme.spacing(1),
         background: theme.palette.primary.main,
         position: 'absolute',
@@ -66,32 +89,41 @@ const styles = theme => ({
         marginTop: -22,
         color: theme.palette.getContrastText(theme.palette.primary.main),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         padding: theme.spacing(2),
         marginTop: theme.spacing(2),
     },
-    displayURL: {
+
+    [`& .${classes.displayURL}`]: {
         padding: theme.spacing(2),
         marginTop: theme.spacing(2),
         background: theme.palette.grey[200],
         color: theme.palette.getContrastText(theme.palette.grey[200]),
         display: 'flex',
     },
-    displayURLLink: {
+
+    [`& .${classes.displayURLLink}`]: {
         paddingLeft: theme.spacing(2),
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         marginTop: 20,
         padding: theme.spacing(2),
         height: '100%',
     },
-    leftCell: {
+
+    [`& .${classes.leftCell}`]: {
         width: 150,
     },
-    summaryView: {
+
+    [`& .${classes.summaryView}`]: {
         'wordBreak': 'break-word',
-    },
-});
+    }
+}));
+
+const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "ViewReactMD" */));
+
 /**
  *
  *
@@ -175,7 +207,7 @@ function View(props) {
     const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
     const listingPath = `/${urlPrefix}/${api.id}/documents`;
     return doc && (
-        <React.Fragment>
+        <Root>
             <div className={classes.root}>
                 <div className={classes.titleWrapper}>
                     <Link to={listingPath} className={classes.titleLink}>
@@ -276,7 +308,7 @@ function View(props) {
                     )}
                 </Paper>
             </div>
-        </React.Fragment>
+        </Root>
     );
 }
 
@@ -290,4 +322,4 @@ View.propTypes = {
     fullScreen: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(View));
+export default injectIntl((View));

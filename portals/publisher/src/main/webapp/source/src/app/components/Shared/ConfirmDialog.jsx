@@ -55,15 +55,12 @@ ConfirmDialog.defaultProps = {
     callback: () => {},
 };
 ConfirmDialog.propTypes = {
-    title: PropTypes.string,
-    message: PropTypes.string,
-    labelCancel: PropTypes.string,
-    labelOk: PropTypes.string,
+    title: PropTypes.element,
+    message: PropTypes.element,
+    labelOk: PropTypes.element,
+    labelCancel: PropTypes.element,
     open: PropTypes.bool.isRequired,
     callback: PropTypes.func,
-    intl: PropTypes.shape({
-        formatMessage: PropTypes.func,
-    }).isRequired,
 };
 ConfirmDialog.Action = {
     OK: 'ok',

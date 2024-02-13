@@ -17,25 +17,36 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
-    errorIcon: {
+const PREFIX = 'ErrorList';
+
+const classes = {
+    errorIcon: `${PREFIX}-errorIcon`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.errorIcon}`]: {
         marginBottom: theme.spacing(-1),
         marginRight: theme.spacing(1),
-    },
+    }
 }));
 
 const ErrorList = (props) => {
     const { errorCode } = props;
-    const classes = useStyles();
+
     switch (errorCode) {
         case '500':
             return (
-                <>
+                (<Root>
                     <Typography variant='h5' gutterBottom>
                         <ErrorOutlineIcon fontSize='large' color='error' className={classes.errorIcon} />
                         <FormattedMessage
@@ -50,7 +61,7 @@ const ErrorList = (props) => {
                             + ' was unable to complete your request.'}
                         />
                     </Typography>
-                </>
+                </Root>)
             );
         case '401':
             return (

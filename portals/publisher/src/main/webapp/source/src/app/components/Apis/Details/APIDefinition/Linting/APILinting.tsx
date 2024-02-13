@@ -12,6 +12,7 @@
  * associated services.
  */
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Spectral,
     Document,
@@ -27,7 +28,23 @@ import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import makeStyles from '@mui/styles/makeStyles';
+const PREFIX = 'APILinting';
+
+const classes = {
+    activeButton: `${PREFIX}-activeButton`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.activeButton}`]: {
+        "&:selected": {
+            backgroundColor: theme.palette.background.default,
+        }
+    }
+}));
 
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };
@@ -62,17 +79,9 @@ export const spectralSeverityMap: { [key: number]: JSX.Element } = {
     3: <HelpOutlineIcon style={{ color: green[500] }} />,
 };
 
-const useStyles = makeStyles((theme) => ({
-    activeButton: {
-        "&:selected": {
-            backgroundColor: theme.palette.background.default,
-        }
-    }
-}));
-
 export const APILinting = (props: APILintingProps) => {
     const { document: apiDocument, setIsSwaggerUI, linterResults, setLinterResults } = props;
-    const classes = useStyles();
+
     const [isSwaggerUIButtonSelected, setIsSwaggerUIButtonSelected] = useState<boolean>(true);
 
     useEffect(() => {
@@ -99,7 +108,7 @@ export const APILinting = (props: APILintingProps) => {
         });
     }
     return (
-        <Box ml={3}>
+        <StyledBox ml={3}>
             {linterResults === null && (
                 <FormattedMessage
                     id="Apis.Details.APIDefinition.Linting.APILinting.loading"
@@ -147,7 +156,7 @@ export const APILinting = (props: APILintingProps) => {
                     </ToggleButton>
                 </ToggleButtonGroup>
             )}
-        </Box>
+        </StyledBox>
     );
 };
 

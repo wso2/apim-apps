@@ -17,20 +17,65 @@
  */
 
 import React, { FC } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import { Accordion, AccordionSummary } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import makeStyles from '@mui/styles/makeStyles';
 import Utils from 'AppData/Utils';
 import Badge from '@mui/material/Badge';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import { FormattedMessage } from 'react-intl';
 import PoliciesExpansion from './PoliciesExpansion';
 import type { Policy, PolicySpec } from './Types'
+
+const PREFIX = 'OperationPolicy';
+
+const classes = {
+    wrapper: `${PREFIX}-wrapper`,
+    customButton: `${PREFIX}-customButton`,
+    paperStyles: `${PREFIX}-paperStyles`,
+    highlightSelected: `${PREFIX}-highlightSelected`,
+    contentNoMargin: `${PREFIX}-contentNoMargin`,
+    targetText: `${PREFIX}-targetText`,
+    operationSummaryGrid: `${PREFIX}-operationSummaryGrid`
+};
+
+
+const Root = styled('div')(({ theme }: { theme: any }) => ({
+    [`&.${classes.wrapper}`]: {
+        width: '100%',
+    },
+    [`& .${classes.customButton}`]: {
+        // '&:hover': { backgroundColor },
+        width: theme.spacing(12),
+    },
+    [`& .${classes.paperStyles}`]: {
+        borderBottom: '',
+        width: '100%',
+    },
+    [`& .${classes.contentNoMargin}`]: {
+        margin: theme.spacing(0),
+    },
+    [`& .${classes.targetText}`]: {
+        maxWidth: 300,
+        margin: '0px 20px',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        display: 'inline-block',
+    },
+    [`& .${classes.operationSummaryGrid}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        flexBasis: '100%',
+        maxWidth: '100%',
+    }
+}));
 
 interface OperationPolicyProps {
     target: string;
@@ -50,52 +95,12 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
     operation, highlight, api, target, verb, expandedResource, setExpandedResource,
     policyList, allPolicies, isChoreoConnectEnabled
 }) => {
-    const useStyles = makeStyles((theme: any) => {
-        const backgroundColor = theme.custom.resourceChipColors[verb];
-        return {
-            customButton: {
-                '&:hover': { backgroundColor },
-                backgroundColor,
-                width: theme.spacing(12),
-                color: theme.palette.getContrastText(backgroundColor),
-            },
-            paperStyles: {
-                border: `1px solid ${backgroundColor}`,
-                borderBottom: '',
-                width: '100%',
-            },
-            customDivider: {
-                backgroundColor,
-            },
-            highlightSelected: {
-                backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
-            },
-            contentNoMargin: {
-                margin: theme.spacing(0),
-            },
-            targetText: {
-                maxWidth: 300,
-                margin: '0px 20px',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                display: 'inline-block',
-            },
-            operationSummaryGrid: {
-                display: 'flex',
-                alignItems: 'center',
-                flexBasis: '100%',
-                maxWidth: '100%',
-            }
-        };
-    });
-
-    const classes = useStyles();
-
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
         apiOperation.usedProductIds,
     ) && apiOperation.usedProductIds.length;
+    const theme: any = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[verb];
 
     const handleExpansion = (panel: string) => (event: any, isExpanded: boolean) => {
         setExpandedResource(isExpanded ? panel : null);
@@ -121,15 +126,16 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
     }
 
     return (
-        <>
+        (<Root className={classes.wrapper}>
             <Accordion
                 expanded={expandedResource === verb + target}
                 onChange={handleExpansion(verb + target)}
                 disabled={false}
                 className={classes.paperStyles}
+                sx={{ border: `1px solid ${backgroundColor}` }}
             >
                 <AccordionSummary
-                    className={highlight ? classes.highlightSelected : ''}
+                    sx={highlight ? { backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1) } : { }}
                     disableRipple
                     disableTouchRipple
                     expandIcon={<ExpandMoreIcon />}
@@ -137,7 +143,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                     classes={{ content: classes.contentNoMargin }}
                 >
                     <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
-                        <Grid item md={4} className={classes.operationSummaryGrid}>
+                        <Grid item className={classes.operationSummaryGrid} sx={{ border: '1px solid green c'}}>
                             <Badge
                                 invisible={!operation['x-wso2-new']}
                                 color='error'
@@ -150,6 +156,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                                     aria-label={'HTTP verb ' + verb}
                                     size='small'
                                     className={classes.customButton}
+                                    sx={{ backgroundColor, color: theme.palette.getContrastText(backgroundColor)}}
                                 >
                                     {verb}
                                 </Button>
@@ -177,7 +184,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                         {renderUsedInApiProducts}
                     </Grid>
                 </AccordionSummary>
-                <Divider light className={classes.customDivider} />
+                <Divider light sx={{ backgroundColor }} />
                 <PoliciesExpansion
                     target={target}
                     verb={verb}
@@ -187,7 +194,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                     isAPILevelPolicy={false}
                 />
             </Accordion>
-        </>
+        </Root>)
     );
 };
 

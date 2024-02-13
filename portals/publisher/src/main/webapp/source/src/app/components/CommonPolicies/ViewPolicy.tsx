@@ -17,8 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled, Theme } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Icon from '@mui/material/Icon';
@@ -32,23 +31,33 @@ import { Progress } from 'AppComponents/Shared';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import PolicyViewForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyViewForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    titleWrapper: {
+const PREFIX = 'ViewPolicy';
+
+const classes = {
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    titleGrid: `${PREFIX}-titleGrid`
+};
+
+const StyledGrid = styled(Grid)(({ theme }:{ theme: Theme }) => ({
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.dark,
         marginRight: theme.spacing(1),
     },
-    titleGrid: {
+
+    [`& .${classes.titleGrid}`]: {
         ' & .MuiGrid-item': {
             padding: 0,
             margin: 0,
         },
-    },
+    }
 }));
 
 /**
@@ -56,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @returns {TSX} Policy view UI.
  */
 const ViewPolicy: React.FC = () => {
-    const classes = useStyles();
+
     const history = useHistory();
     const { policyId } = useParams<{ policyId?: string }>();
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
@@ -103,7 +112,7 @@ const ViewPolicy: React.FC = () => {
     }
 
     return (
-        <Grid container spacing={3}>
+        <StyledGrid container spacing={3}>
             <Grid item sm={12} md={12} />
             <Grid item sm={2} md={2} />
             <Grid item sm={12} md={8}>
@@ -137,7 +146,7 @@ const ViewPolicy: React.FC = () => {
                     </Grid>
                 </Grid>
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 };
 

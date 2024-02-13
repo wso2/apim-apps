@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
@@ -28,7 +29,54 @@ import { Link } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import makeStyles from '@mui/styles/makeStyles';
+
+const PREFIX = 'Endpoints';
+
+const classes = {
+    subtitle: `${PREFIX}-subtitle`,
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    notConfigured: `${PREFIX}-notConfigured`,
+    subHeading: `${PREFIX}-subHeading`,
+    textTrim: `${PREFIX}-textTrim`,
+    externalLink: `${PREFIX}-externalLink`
+};
+
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.subtitle}`]: {
+        marginTop: theme.spacing(0),
+    },
+
+    [`& .${classes.expansionPanel}`]: {
+        marginBottom: theme.spacing(1),
+    },
+
+    [`& .${classes.expansionPanelDetails}`]: {
+        flexDirection: 'column',
+    },
+
+    [`& .${classes.notConfigured}`]: {
+        color: 'rgba(0, 0, 0, 0.54)',
+    },
+
+    [`& .${classes.subHeading}`]: {
+        fontSize: '1rem',
+        fontWeight: 400,
+        margin: 0,
+        display: 'inline-flex',
+        lineHeight: 1.5,
+    },
+
+    [`& .${classes.textTrim}`]: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+
+    [`& .${classes.externalLink}`]: {
+        color: theme.palette.primary.dark,
+    }
+}));
 
 const showEndpoint = function (api, type) {
     if (api.endpointConfig) {
@@ -42,35 +90,6 @@ const showEndpoint = function (api, type) {
     return null;
 };
 
-const useStyles = makeStyles((theme) => ({
-    subtitle: {
-        marginTop: theme.spacing(0),
-    },
-    expansionPanel: {
-        marginBottom: theme.spacing(1),
-    },
-    expansionPanelDetails: {
-        flexDirection: 'column',
-    },
-    notConfigured: {
-        color: 'rgba(0, 0, 0, 0.54)',
-    },
-    subHeading: {
-        fontSize: '1rem',
-        fontWeight: 400,
-        margin: 0,
-        display: 'inline-flex',
-        lineHeight: 1.5,
-    },
-    textTrim: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-    externalLink: {
-        color: theme.palette.primary.dark,
-    },
-}));
-
 /**
  *
  *X
@@ -79,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function Endpoints(props) {
     const { api } = props;
-    const classes = useStyles();
+
     const isPrototypedAvailable = api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
 
@@ -100,7 +119,7 @@ function Endpoints(props) {
     };
 
     return (
-        <>
+        (<Root>
             <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded id='endpoints'>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography className={classes.subHeading} variant='h6' component='h4'>
@@ -219,7 +238,7 @@ function Endpoints(props) {
                     </Box>
                 </AccordionDetails>
             </WrappedExpansionPanel>
-        </>
+        </Root>)
     );
 }
 

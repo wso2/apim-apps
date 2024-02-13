@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, { useReducer, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -36,13 +36,22 @@ import ProvideAsyncAPI from 'AppComponents/Apis/Create/AsyncAPI/Steps/ProvideAsy
 import ProvideOpenAPI from '../../Create/OpenAPI/Steps/ProvideOpenAPI';
 import ProvideGraphQL from '../../Create/GraphQL/Steps/ProvideGraphQL';
 
-const useStyles = makeStyles(() => ({
-    importDefinitionDialogHeader: {
+const PREFIX = 'ImportDefinition';
+
+const classes = {
+    importDefinitionDialogHeader: `${PREFIX}-importDefinitionDialogHeader`,
+    buttonIcon: `${PREFIX}-buttonIcon`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.importDefinitionDialogHeader}`]: {
         fontWeight: '600',
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
-    },
+    }
 }));
 
 /**
@@ -54,7 +63,7 @@ const useStyles = makeStyles(() => ({
  */
 export default function ImportDefinition(props) {
     const { setSchemaDefinition, editAndImport } = props;
-    const classes = useStyles();
+
     const [openAPIDefinitionImport, setOpenAPIDefinitionImport] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
     const [api, updateAPI] = useAPI();
@@ -403,7 +412,7 @@ export default function ImportDefinition(props) {
     }
 
     return (
-        <>
+        (<Root>
             {!isAsyncAPI && (
                 <Button
                     size='small'
@@ -462,7 +471,7 @@ export default function ImportDefinition(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Root>)
     );
 }
 

@@ -16,8 +16,8 @@
  * under the License.
  */
 import React, { useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
@@ -32,17 +32,27 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Tooltip from '@mui/material/Tooltip';
 import { isRestricted } from 'AppData/AuthManager';
 
-const useStyles = makeStyles(() => ({
-    formControl: {
+const PREFIX = 'AddPayloadProperty';
+
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    parameterContainer: `${PREFIX}-parameterContainer`,
+    checkBox: `${PREFIX}-checkBox`
+};
+
+const StyledGrid = styled(Grid)(() => ({
+    [`& .${classes.formControl}`]: {
         minWidth: 120,
     },
-    parameterContainer: {
+
+    [`&.${classes.parameterContainer}`]: {
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    checkBox: {
+
+    [`& .${classes.checkBox}`]: {
         color: '#7c7c7c',
-    },
+    }
 }));
 
 /**
@@ -85,7 +95,7 @@ function AddPayloadProperty(props) {
     }
 
     const [property, newPropertyDispatcher] = useReducer(newPropertyReducer, { });
-    const classes = useStyles();
+
 
     /**
      * Get supported data types for properies.
@@ -116,7 +126,7 @@ function AddPayloadProperty(props) {
     }
 
     return (
-        <Grid container direction='row' spacing={1} className={classes.parameterContainer}>
+        <StyledGrid container direction='row' spacing={1} className={classes.parameterContainer}>
             <Grid item xs={2} md={2}>
                 <TextField
                     id='parameter-name'
@@ -255,7 +265,7 @@ function AddPayloadProperty(props) {
                     </Tooltip>
                 </sup>
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 }
 

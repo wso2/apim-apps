@@ -16,19 +16,29 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles((theme) => ({
-    link: {
+const PREFIX = 'GoToDefinitionLink';
+
+const classes = {
+    link: `${PREFIX}-link`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.link}`]: {
         color: theme.palette.primary.dark,
         marginLeft: theme.spacing(2),
         display: 'inline',
-    },
+    }
 }));
 
 /**
@@ -40,16 +50,16 @@ const useStyles = makeStyles((theme) => ({
  */
 export default function GoToDefinitionLink(props) {
     const { api, message } = props;
-    const classes = useStyles();
+
     return (
-        <Box m={1}>
+        <StyledBox m={1}>
             <Link to={`/apis/${api.id}/api definition`}>
                 <Typography className={classes.link} variant='caption'>
                     {message}
                     <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />
                 </Typography>
             </Link>
-        </Box>
+        </StyledBox>
     );
 }
 GoToDefinitionLink.defaultProps = {

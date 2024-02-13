@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -32,11 +32,22 @@ import TableBody from '@mui/material/TableBody';
 import TableHead from '@mui/material/TableHead';
 import Box from '@mui/material/Box';
 
-const useStyles = makeStyles((theme) => ({
-    searchWrapper: {
+const PREFIX = 'UpdateComplexity';
+
+const classes = {
+    searchWrapper: `${PREFIX}-searchWrapper`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.searchWrapper}`]: {
         width: '100%',
         marginBottom: theme.spacing(2),
-    },
+    }
 }));
 
 /**
@@ -45,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {any} HTML representation.
  */
 export default function UpdateComplexity(props) {
-    const classes = useStyles();
+
     const [filterKeyWord, setFilter] = useState('');
     const {
         setList, typelist, list,
@@ -60,7 +71,7 @@ export default function UpdateComplexity(props) {
     };
 
     return (
-        <>
+        (<Root>
             <Grid item md={2}>
                 <Box mt={4} pb={2}>
                     <div className={classes.searchWrapper}>
@@ -179,7 +190,7 @@ export default function UpdateComplexity(props) {
                     </TableBody>
                 </Table>
             </Grid>
-        </>
+        </Root>)
     );
 }
 

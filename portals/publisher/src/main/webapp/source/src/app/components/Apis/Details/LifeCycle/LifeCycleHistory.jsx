@@ -17,9 +17,9 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Person from '@mui/icons-material/Person';
-import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Table from '@mui/material/Table';
@@ -30,22 +30,36 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 
-const styles = (theme) => ({
-    firstCol: {
+const PREFIX = 'LifeCycleHistory';
+
+const classes = {
+    firstCol: `${PREFIX}-firstCol`,
+    personIcon: `${PREFIX}-personIcon`,
+    avatar: `${PREFIX}-avatar`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.firstCol}`]: {
         width: 100,
     },
-    personIcon: {
+
+    [`& .${classes.personIcon}`]: {
         fontSize: theme.typography.fontSize,
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: 25,
         height: 25,
-    },
-});
+    }
+}));
+
 const LifeCycleHistory = (props) => {
-    const { classes } = props;
     return (
-        <Paper>
+        <StyledPaper>
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -84,11 +98,11 @@ const LifeCycleHistory = (props) => {
                     ))}
                 </TableBody>
             </Table>
-        </Paper>
+        </StyledPaper>
     );
 };
 LifeCycleHistory.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     lcHistory: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
-export default withStyles(styles)(LifeCycleHistory);
+export default (LifeCycleHistory);

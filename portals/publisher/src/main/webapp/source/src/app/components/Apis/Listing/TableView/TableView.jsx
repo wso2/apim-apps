@@ -19,8 +19,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from '@mui/material/styles';
-import withStyles from '@mui/styles/withStyles';
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme, styled, useTheme } from '@mui/material/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import queryString from 'query-string';
@@ -37,8 +36,20 @@ import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import SampleAPIProduct from 'AppComponents/Apis/Listing/SampleAPI/SampleAPIProduct';
 import Alert from 'AppComponents/Shared/Alert';
 
-const styles = (theme) => ({
-    contentInside: {
+const PREFIX = 'TableView';
+
+const classes = {
+    contentInside: `${PREFIX}-contentInside`,
+    apiNameLink: `${PREFIX}-apiNameLink`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.contentInside}`]: {
         padding: theme.spacing(3),
         paddingTop: theme.spacing(2),
         '& > div[class^="MuiPaper-root-"]': {
@@ -46,7 +57,8 @@ const styles = (theme) => ({
             backgroundColor: 'transparent',
         },
     },
-    apiNameLink: {
+
+    [`& .${classes.apiNameLink}`]: {
         display: 'flex',
         alignItems: 'center',
         '& span': {
@@ -58,8 +70,8 @@ const styles = (theme) => ({
             marginRight: theme.spacing(),
             fontSize: 18,
         },
-    },
-});
+    }
+}));
 
 /**
  * Table view for api listing
@@ -289,9 +301,7 @@ class TableView extends React.Component {
      * @memberof TableView
      */
     render() {
-        const {
-            intl, isAPIProduct, classes, query,
-        } = this.props;
+        const { intl, isAPIProduct, query } = this.props;
         const {
             loading, totalCount, rowsPerPage, apisAndApiProducts, notFound, listType, page,
         } = this.state;
@@ -459,7 +469,7 @@ class TableView extends React.Component {
         }
         if (apisAndApiProducts.length === 0 && !query) {
             return (
-                <>
+                (<Root>
                     <TopMenu
                         data={apisAndApiProducts}
                         count={totalCount}
@@ -473,7 +483,7 @@ class TableView extends React.Component {
                     ) : (
                         <APILanding />
                     )}
-                </>
+                </Root>)
             );
         }
 
@@ -506,10 +516,7 @@ class TableView extends React.Component {
     }
 }
 
-export default injectIntl(withStyles(styles, { withTheme: true })(TableView));
-
 TableView.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({ formatMessage: PropTypes.func.isRequired }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
     theme: PropTypes.shape({
@@ -521,3 +528,8 @@ TableView.propTypes = {
 TableView.defaultProps = {
     query: '',
 };
+
+export default injectIntl((props) => {
+    const theme = useTheme();
+    return <TableView {...props} theme={theme} />;
+});

@@ -17,33 +17,39 @@
  */
 
 import React, { FC } from 'react';
+import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
+const PREFIX = 'OperationButton';
+
+const classes = {
+    customButton: `${PREFIX}-customButton`
+};
+
+const StyledButton = styled(Button)(({ theme }: { theme: Theme }) => ({
+    const backgroundColor = theme.custom.resourceChipColors[verb];
+    return {
+        [`&.${classes.customButton}`]: {
+            '&:hover': { backgroundColor },
+            backgroundColor,
+            width: theme.spacing(12),
+            color: theme.palette.getContrastText(backgroundColor),
+        }
+    };
+});
 
 interface OperationButtonProps {
     verb: string;
 }
 
 const getStyles = (verb: string) => {
-    const useStyles = makeStyles((theme: any) => {
-        const backgroundColor = theme.custom.resourceChipColors[verb];
-        return {
-            customButton: {
-                '&:hover': { backgroundColor },
-                backgroundColor,
-                width: theme.spacing(12),
-                color: theme.palette.getContrastText(backgroundColor),
-            }
-        };
-    })();
-    return useStyles;
+
 }
 
 const OperationButton: FC<OperationButtonProps> = ({ verb }) => {
 
     const classes = getStyles(verb);
     return (
-        <Button
+        <StyledButton
             disableFocusRipple
             variant='contained'
             aria-label={'HTTP verb ' + verb}
@@ -51,7 +57,7 @@ const OperationButton: FC<OperationButtonProps> = ({ verb }) => {
             className={classes.customButton}
         >
             {verb}
-        </Button>
+        </StyledButton>
     );
 };
 

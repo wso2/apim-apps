@@ -17,7 +17,7 @@
  */
 
 import { Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import Alert from 'AppComponents/Shared/Alert';
 import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
@@ -41,39 +41,55 @@ import { uuidv4 } from './Utils';
 import SaveOperationPolicies from './SaveOperationPolicies';
 import PolicyPanel from './components/PolicyPanel';
 
-const Configurations = require('Config');
+const PREFIX = 'Policies';
 
-const useStyles = makeStyles(() => ({
-    gridItem: {
+const classes = {
+    gridItem: `${PREFIX}-gridItem`,
+    operationListingBox: `${PREFIX}-operationListingBox`,
+    paper: `${PREFIX}-paper`,
+    ccTypography: `${PREFIX}-ccTypography`,
+    flowTabs: `${PREFIX}-flowTabs`,
+    flowTab: `${PREFIX}-flowTab`
+};
+
+const StyledApiOperationContextProvider = styled(ApiOperationContextProvider)(() => ({
+    [`& .${classes.gridItem}`]: {
         display: 'flex',
         width: '100%',
     },
-    operationListingBox: {
+
+    [`& .${classes.operationListingBox}`]: {
         overflowY: 'scroll',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: '2px',
     },
-    ccTypography: {
+
+    [`& .${classes.ccTypography}`]: {
         paddingLeft: '10px',
         marginTop: '20px',
     },
-    flowTabs: {
+
+    [`& .${classes.flowTabs}`]: {
         '& button': {
             minWidth: 50,
         },
     },
-    flowTab: {
+
+    [`& .${classes.flowTab}`]: {
         fontSize: 'smaller',
-    },
+    }
 }));
+
+const Configurations = require('Config');
 
 /**
  * Renders the policy management page.
  * @returns {TSX} Policy management page to render.
  */
 const Policies: React.FC = () => {
-    const classes = useStyles();
+
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
@@ -481,7 +497,7 @@ const Policies: React.FC = () => {
     }
 
     return (
-        <ApiOperationContextProvider value={providerValue}>
+        <StyledApiOperationContextProvider value={providerValue}>
             <DndProvider backend={HTML5Backend}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
@@ -501,7 +517,7 @@ const Policies: React.FC = () => {
                     </Box>
                 )}
                 <Box display='flex' flexDirection='row'>
-                    <Box width='65%' p={1} height='115vh' className={classes.operationListingBox}>
+                    <Box width='65%' p={1} className={classes.operationListingBox}>
                         <Paper className={classes.paper}>
                             <Box p={1}>
                                 <Tabs
@@ -581,7 +597,7 @@ const Policies: React.FC = () => {
                 saveApi={saveApi}
                 updating={updating}
             />
-        </ApiOperationContextProvider>
+        </StyledApiOperationContextProvider>
     );
 };
 

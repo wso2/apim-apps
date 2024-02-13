@@ -16,9 +16,9 @@
  * under the License.
  */
 import React, { lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
@@ -31,26 +31,41 @@ import SwaggerUI from './swaggerUI/SwaggerUI';
 import LinterUI from './LinterUI/LinterUI';
 import { spectralSeverityNames } from "./Linting/Linting"
 
-const styles = () => ({
-    editorPane: {
+const PREFIX = 'SwaggerEditorDrawer';
+
+const classes = {
+    editorPane: `${PREFIX}-editorPane`,
+    editorRoot: `${PREFIX}-editorRoot`,
+    glyphMargin: `${PREFIX}-glyphMargin`,
+    noGlyphMargin: `${PREFIX}-noGlyphMargin`,
+    topMargin: `${PREFIX}-topMargin`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.editorPane}`]: {
         width: '50%',
         height: '100%',
         overflow: 'auto',
     },
-    editorRoot: {
+
+    [`& .${classes.editorRoot}`]: {
         height: '100%',
     },
-    glyphMargin: {
+
+    [`& .${classes.glyphMargin}`]: {
         background: orange[900],
         width: '5px !important'
     },
-    noGlyphMargin: {
+
+    [`& .${classes.noGlyphMargin}`]: {
         background: 'none',
     },
-    topMargin:{
+
+    [`& .${classes.topMargin}`]: {
         paddingTop: '10px',   
     }
-});
+}));
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
@@ -77,7 +92,7 @@ class SwaggerEditorDrawer extends React.Component {
      * @param {string} content : The edited content.
      * */
     componentDidUpdate(prevProps) {
-        const { classes, linterResults } = this.props;
+        const {  linterResults } = this.props;
         const linterDifferences = differenceBy(prevProps.linterResults, linterResults, 'range.start.line');
 
         for (let i=0; i < linterDifferences.length; i++) {
@@ -106,7 +121,6 @@ class SwaggerEditorDrawer extends React.Component {
     }
 
     handleRowClick(line) {
-        const { classes } = this.props;
         const columnIndex = this.editor.getModel().getLineLastNonWhitespaceColumn(line);
         this.editor.revealLinesInCenter(line, line, 0);
         this.editor.setPosition({column: columnIndex, lineNumber: line});
@@ -144,89 +158,91 @@ class SwaggerEditorDrawer extends React.Component {
      * @inheritDoc
      */
     render() {
-        const { classes, language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap, 
+        const { language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap, 
             linterSelectedSeverity } = this.props;
         const swaggerUrl = 'data:text/' + language + ',' + encodeURIComponent(swagger);
-        return <>
-            <Grid container spacing={2} className={classes.editorRoot}>
-                <Grid item className={classes.editorPane}>
-                    <MonacoEditor
-                        language={language}
-                        width='100%'
-                        height='calc(100vh - 51px)'
-                        theme='vs-dark'
-                        value={swagger}
-                        onChange={this.onContentChange}
-                        options={{ glyphMargin: true }}
-                        editorDidMount={this.editorDidMount}
-                    />
-                </Grid>
-                <Grid item className={classes.editorPane}>
-                    {(errors && errors.length > 0) && (
-                        <Box mr={2}>
-                            <InlineMessage type='warning' height='100%'>
-                                <Box>
-                                    <Box onClick={setErrors} position='absolute' right='0' top='0'>
-                                        <IconButton area-label='close' size='large'>
-                                            <CancelIcon />
-                                        </IconButton>
+        return (
+            <Root>
+                <Grid container spacing={2} className={classes.editorRoot}>
+                    <Grid item className={classes.editorPane}>
+                        <MonacoEditor
+                            language={language}
+                            width='100%'
+                            height='calc(100vh - 51px)'
+                            theme='vs-dark'
+                            value={swagger}
+                            onChange={this.onContentChange}
+                            options={{ glyphMargin: true }}
+                            editorDidMount={this.editorDidMount}
+                        />
+                    </Grid>
+                    <Grid item className={classes.editorPane}>
+                        {(errors && errors.length > 0) && (
+                            <Box mr={2}>
+                                <InlineMessage type='warning' height='100%'>
+                                    <Box>
+                                        <Box onClick={setErrors} position='absolute' right='0' top='0'>
+                                            <IconButton area-label='close' size='large'>
+                                                <CancelIcon />
+                                            </IconButton>
+                                        </Box>
+                                        <Typography
+                                            variant='h5'
+                                            component='h3'
+                                            className={classes.head}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.APIDefinition.SwaggerEditorDrawer.title'
+                                                defaultMessage='Failed to Validate OpenAPI File'
+                                            />
+                                        </Typography>
+                                        {errors.map((e) => (
+                                            <Typography component='p' className={classes.content}>
+                                                {e.description}
+                                            </Typography>
+                                        ))}
                                     </Box>
-                                    <Typography
-                                        variant='h5'
-                                        component='h3'
-                                        className={classes.head}
-                                    >
+                                </InlineMessage>
+                            </Box>
+                        )}
+                        { isSwaggerUI && (
+                            <SwaggerUI url={swaggerUrl}/>
+                        )}
+                        { !isSwaggerUI && linterResults.length > 0 && (
+                            <div data-testid='testid-linter-ui'>
+                                <LinterUI
+                                    linterResults={linterResults}
+                                    severityMap={severityMap}
+                                    handleRowClick={(line) => {this.handleRowClick(line)}}
+                                />
+                            </div>
+                        )}
+                        { !isSwaggerUI && linterResults.length === 0 && (
+                            <div className={classes.topMargin}>
+                                <Box alignSelf='center' justifySelf='center' flexDirection='column'>
+                                    <Typography variant='h4'>
                                         <FormattedMessage
-                                            id='Apis.Details.APIDefinition.SwaggerEditorDrawer.title'
-                                            defaultMessage='Failed to Validate OpenAPI File'
+                                            id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.good'
+                                                + 'update.content'}
+                                            defaultMessage='No linting issues found in the definition'
                                         />
                                     </Typography>
-                                    {errors.map((e) => (
-                                        <Typography component='p' className={classes.content}>
-                                            {e.description}
-                                        </Typography>
-                                    ))}
+                                    <Typography variant='h6'>
+                                        <FormattedMessage
+                                            id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.results'
+                                                + 'update.content'}
+                                            defaultMessage='No Linter Results{type} found'
+                                            values={{type: linterSelectedSeverity?
+                                                ` (${spectralSeverityNames[linterSelectedSeverity]})`:''}}
+                                        />
+                                    </Typography>
                                 </Box>
-                            </InlineMessage>
-                        </Box>
-                    )}
-                    { isSwaggerUI && (
-                        <SwaggerUI url={swaggerUrl}/>
-                    )}
-                    { !isSwaggerUI && linterResults.length > 0 && (
-                        <div data-testid='testid-linter-ui'>
-                            <LinterUI
-                                linterResults={linterResults}
-                                severityMap={severityMap}
-                                handleRowClick={(line) => {this.handleRowClick(line)}}
-                            />
-                        </div>
-                    )}
-                    { !isSwaggerUI && linterResults.length === 0 && (
-                        <div className={classes.topMargin}>
-                            <Box alignSelf='center' justifySelf='center' flexDirection='column'>
-                                <Typography variant='h4'>
-                                    <FormattedMessage
-                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.good'
-                                            + 'update.content'}
-                                        defaultMessage='No linting issues found in the definition'
-                                    />
-                                </Typography>
-                                <Typography variant='h6'>
-                                    <FormattedMessage
-                                        id={'Apis.Details.APIDefinition.SwaggerEditorDrawer.linter.no.results'
-                                            + 'update.content'}
-                                        defaultMessage='No Linter Results{type} found'
-                                        values={{type: linterSelectedSeverity?
-                                            ` (${spectralSeverityNames[linterSelectedSeverity]})`:''}}
-                                    />
-                                </Typography>
-                            </Box>
-                        </div>
-                    )}
+                            </div>
+                        )}
+                    </Grid>
                 </Grid>
-            </Grid>
-        </>;
+            </Root>
+        );
     }
 }
 
@@ -239,4 +255,4 @@ SwaggerEditorDrawer.propTypes = {
     setErrors: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(SwaggerEditorDrawer);
+export default (SwaggerEditorDrawer);

@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
@@ -28,16 +29,26 @@ import FormLabel from '@mui/material/FormLabel';
 import Typography from '@mui/material/Typography';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { API_SECURITY_MUTUAL_SSL } from './APISecurity/components/apiSecurityConstants';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'Transports';
+
+const classes = {
+    error: `${PREFIX}-error`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.main,
-    },
+    }
 }));
+
 /**
  *
  *
@@ -48,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Transports(props) {
     const { api, configDispatcher, securityScheme } = props;
     const [apiFromContext] = useAPI();
-    const classes = useStyles();
+
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
     const Validate = () => {
         if (api.transport && api.transport.length === 0) {
@@ -71,7 +82,7 @@ export default function Transports(props) {
         return null; // No errors :-)
     };
     return (
-        <Grid container spacing={1} alignItems='flex-start'>
+        <StyledGrid container spacing={1} alignItems='flex-start'>
             <Grid item>
                 <FormControl component='fieldset'>
                     <FormLabel component='legend'>
@@ -141,7 +152,7 @@ export default function Transports(props) {
                     <Validate />
                 </span>
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 }
 

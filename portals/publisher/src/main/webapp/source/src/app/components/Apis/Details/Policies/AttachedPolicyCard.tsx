@@ -17,12 +17,12 @@
  */
 
 import React, { CSSProperties, FC, useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Alert } from 'AppComponents/Shared';
-import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -35,12 +35,19 @@ import type { AttachedPolicy, PolicySpec } from './Types';
 import PolicyConfigurationEditDrawer from './PolicyConfigurationEditDrawer';
 import ApiOperationContext from './ApiOperationContext';
 
-const useStyles = makeStyles(() => ({
-    actionsBox: {
+const PREFIX = 'AttachedPolicyCard';
+
+const classes = {
+    actionsBox: `${PREFIX}-actionsBox`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.actionsBox}`]: {
         display: 'flex',
         flexDirection: 'column',
         marginTop: '1em',
-    },
+    }
 }));
 
 interface AttachedPolicyCardProps {
@@ -69,7 +76,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     allPolicies,
     isAPILevelPolicy,
 }) => {
-    const classes = useStyles();
+
     const { api } = useContext<any>(ApiContext);
     const { deleteApiOperation } = useContext<any>(ApiOperationContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -176,7 +183,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     };
 
     return (
-        <>
+        (<Root>
             <div
                 ref={setNodeRef}
                 style={style}
@@ -237,7 +244,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
                     isAPILevelPolicy={isAPILevelPolicy}
                 />
             )}
-        </>
+        </Root>)
     );
 };
 

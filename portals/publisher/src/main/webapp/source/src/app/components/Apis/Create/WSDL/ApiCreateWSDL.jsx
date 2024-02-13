@@ -212,7 +212,7 @@ export default function ApiCreateWSDL(props) {
                 </>
             )}
         >
-            <Box>
+            <Box sx={{ mb: 2 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
                     <Step>
                         <StepLabel>Provide WSDL</StepLabel>
@@ -224,10 +224,8 @@ export default function ApiCreateWSDL(props) {
                 </Stepper>
             </Box>
 
-            <Grid container spacing={3}>
-                <Grid item md={12} />
-                <Grid item md={1} />
-                <Grid item md={11}>
+            <Grid container spacing={2}>
+                <Grid item md={12}>
                     {wizardStep === 0 && (
                         <ProvideWSDL
                             onValidate={handleOnValidate}
@@ -244,8 +242,7 @@ export default function ApiCreateWSDL(props) {
                         />
                     )}
                 </Grid>
-                <Grid item md={1} />
-                <Grid item md={9}>
+                <Grid item md={12}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (

@@ -17,8 +17,8 @@
  */
 
 import React, { FC } from 'react';
+import { styled } from '@mui/material/styles';
 import { List, IconButton , Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
@@ -38,8 +38,19 @@ import { green, red } from '@mui/material/colors';
 import { GATEWAY_TYPE_LABELS } from './SourceDetails';
 
 
-const useStyles = makeStyles((theme: Theme) => ({
-    dropZoneWrapper: {
+const PREFIX = 'UploadPolicyDropzone';
+
+const classes = {
+    dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
+    acceptDrop: `${PREFIX}-acceptDrop`,
+    rejectDrop: `${PREFIX}-rejectDrop`,
+    uploadedFileDetails: `${PREFIX}-uploadedFileDetails`,
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.dropZoneWrapper}`]: {
         border: '1px dashed ' + theme.palette.primary.main,
         borderRadius: '5px',
         cursor: 'pointer',
@@ -57,21 +68,25 @@ const useStyles = makeStyles((theme: Theme) => ({
             color: theme.palette.primary.main,
         },
     },
-    acceptDrop: {
+
+    [`& .${classes.acceptDrop}`]: {
         backgroundColor: green[50],
         borderColor: 'green',
     },
-    rejectDrop: {
+
+    [`& .${classes.rejectDrop}`]: {
         backgroundColor: red[50],
         borderColor: 'red',
     },
-    uploadedFileDetails: {
+
+    [`& .${classes.uploadedFileDetails}`]: {
         width: '75%',
     },
-    mandatoryStar: {
+
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
-    },
+    }
 }));
 
 interface UploadPolicyDropzoneProps {
@@ -90,7 +105,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     setPolicyDefinitionFile,
     gateway,
 }) => {
-    const classes = useStyles();
+
 
     const handleDrop = (policyDefinition: any) => {
         setPolicyDefinitionFile(policyDefinition);
@@ -137,69 +152,71 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
         );
     };
 
-    return <>
-        <Box display='flex' flexDirection='row' alignItems='center'>
-            <Box mt={2}>
-                <Typography
-                    color='inherit'
-                    variant='subtitle2'
-                    component='div'
-                >
-                    <FormattedMessage
-                        id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title'
-                        defaultMessage='Upload Policy File for {gateway}'
-                        values={{ gateway }}
-                    />
-                    <sup className={classes.mandatoryStar}>*</sup>
-                    <Tooltip
-                        title={
-                            gateway === GATEWAY_TYPE_LABELS.SYNAPSE
-                                ? 'Regular gateway only supports .j2 and .xml file uploads'
-                                : 'Choreo Connect only supports .gotmpl file uploads'
-                        }
-                        placement='right'
+    return (
+        <Root>
+            <Box display='flex' flexDirection='row' alignItems='center'>
+                <Box mt={2}>
+                    <Typography
+                        color='inherit'
+                        variant='subtitle2'
+                        component='div'
                     >
-                        <IconButton aria-label='policy-file-upload-helper-text' size='large'>
-                            <HelpOutline fontSize='small' />
-                        </IconButton>
-                    </Tooltip>
-                </Typography>
-                <Typography color='inherit' variant='caption' component='p'>
-                    <FormattedMessage
-                        id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.description'
-                        defaultMessage='Policy file contains the business logic of the policy'
-                    />
-                </Typography>
-            </Box>
-        </Box>
-        <Box mt={2} mb={4}>
-            {policyDefinitionFile.length === 0 ? (
-                renderPolicyFileDropzone()
-            ) : (
-                <List className={classes.uploadedFileDetails}>
-                    <ListItem key={policyDefinitionFile[0].path}>
-                        <ListItemAvatar>
-                            <Avatar>
-                                <InsertDriveFile />
-                            </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={`${policyDefinitionFile[0].path}`}
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title'
+                            defaultMessage='Upload Policy File for {gateway}'
+                            values={{ gateway }}
                         />
-                        <ListItemSecondaryAction>
-                            <IconButton
-                                edge='end'
-                                aria-label='delete'
-                                onClick={() => setPolicyDefinitionFile([])}
-                                size='large'>
-                                <DeleteIcon />
+                        <sup className={classes.mandatoryStar}>*</sup>
+                        <Tooltip
+                            title={
+                                gateway === GATEWAY_TYPE_LABELS.SYNAPSE
+                                    ? 'Regular gateway only supports .j2 and .xml file uploads'
+                                    : 'Choreo Connect only supports .gotmpl file uploads'
+                            }
+                            placement='right'
+                        >
+                            <IconButton aria-label='policy-file-upload-helper-text' size='large'>
+                                <HelpOutline fontSize='small' />
                             </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                </List>
-            )}
-        </Box>
-    </>;
+                        </Tooltip>
+                    </Typography>
+                    <Typography color='inherit' variant='caption' component='p'>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.description'
+                            defaultMessage='Policy file contains the business logic of the policy'
+                        />
+                    </Typography>
+                </Box>
+            </Box>
+            <Box mt={2} mb={4}>
+                {policyDefinitionFile.length === 0 ? (
+                    renderPolicyFileDropzone()
+                ) : (
+                    <List className={classes.uploadedFileDetails}>
+                        <ListItem key={policyDefinitionFile[0].path}>
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <InsertDriveFile />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={`${policyDefinitionFile[0].path}`}
+                            />
+                            <ListItemSecondaryAction>
+                                <IconButton
+                                    edge='end'
+                                    aria-label='delete'
+                                    onClick={() => setPolicyDefinitionFile([])}
+                                    size='large'>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    </List>
+                )}
+            </Box>
+        </Root>
+    );
 };
 
 export default UploadPolicyDropzone;

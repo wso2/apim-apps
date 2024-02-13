@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import { Toolbar, AppBar } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -27,21 +27,41 @@ import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
 import ErrorDetails from './ErrorDetails';
 
-const styles = (theme) => {
+const PREFIX = 'AppErrorBoundary';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    typoRoot: `${PREFIX}-typoRoot`,
+    brandLink: `${PREFIX}-brandLink`,
+    toolbar: `${PREFIX}-toolbar`,
+    menuIcon: `${PREFIX}-menuIcon`,
+    errorDisplay: `${PREFIX}-errorDisplay`,
+    errorDisplayContent: `${PREFIX}-errorDisplayContent`,
+    errorTitle: `${PREFIX}-errorTitle`,
+    link: `${PREFIX}-link`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => {
     return {
-        appBar: {
+        [`& .${classes.appBar}`]: {
             position: 'relative',
             background: theme.palette.background.appBar,
         },
-        typoRoot: {
+        [`& .${classes.typoRoot}`]: {
             marginLeft: theme.spacing(3),
             marginRight: theme.spacing(3),
             textTransform: 'capitalize',
         },
-        brandLink: {
+        [`& .${classes.brandLink}`]: {
             color: theme.palette.primary.contrastText,
         },
-        toolbar: {
+        [`& .${classes.toolbar}`]: {
             minHeight: 56,
             [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
                 minHeight: 48,
@@ -50,23 +70,23 @@ const styles = (theme) => {
                 minHeight: 64,
             },
         },
-        menuIcon: {
+        [`& .${classes.menuIcon}`]: {
             color: theme.palette.getContrastText(
                 theme.palette.background.appBar,
             ),
             fontSize: 35,
         },
-        errorDisplay: {
+        [`& .${classes.errorDisplay}`]: {
             display: 'flex',
             flexDirection: 'row',
         },
-        errorDisplayContent: {
+        [`& .${classes.errorDisplayContent}`]: {
             width: 960,
             display: 'flex',
             flexDirection: 'column',
             overflow: 'auto',
         },
-        errorTitle: {
+        [`& .${classes.errorTitle}`]: {
             display: 'flex',
             alignItems: 'center',
             paddingTop: theme.spacing(2),
@@ -75,13 +95,22 @@ const styles = (theme) => {
                 paddingLeft: theme.spacing(2),
             },
         },
-        link: {
+        [`& .${classes.link}`]: {
             color: theme.palette.getContrastText(
                 theme.palette.background.default,
             ),
         },
+        [`& .${classes.contentWrapper}`]: {
+            backgroundColor: '#f1f1f1',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 'calc(100vh - 99px)',
+        },
     };
-};
+});
+
 /**
  * Error boundary for the application.catch JavaScript errors anywhere in their child component tree,
  * log those errors, and display a fallback UI instead of the component tree that crashed.
@@ -123,14 +152,14 @@ class AppErrorBoundary extends React.Component {
     render() {
         // eslint-disable-next-line no-unused-vars
         const { hasError, error, info, isDetailsOpen } = this.state;
-        const { children, classes, theme } = this.props;
+        const { children,  theme } = this.props;
         // eslint-disable-next-line no-unused-vars
         const errorStackStyle = {
             background: '#fff8dc',
         };
         if (hasError) {
             return (
-                <>
+                (<Root>
                     <AppBar className={classes.appBar} position='fixed'>
                         <Toolbar className={classes.toolbar}>
                             <div
@@ -155,14 +184,7 @@ class AppErrorBoundary extends React.Component {
                             </div>
                         </Toolbar>
                     </AppBar>
-                    <Box
-                        bgcolor='#f1f1f1'
-                        flexDirection='column'
-                        justifyContent='flex-start'
-                        alignItems='center'
-                        display='flex'
-                        height={1}
-                    >
+                    <Box className={classes.contentWrapper}>
                         <Box pt={2} display='flex'>
                             <img
                                 src={`${Configurations.app.context}/site/public/images/robo.png`}
@@ -209,7 +231,7 @@ class AppErrorBoundary extends React.Component {
                         />
                     )}
                     <Footer />
-                </>
+                </Root>)
             );
         } else {
             return children;
@@ -219,14 +241,6 @@ class AppErrorBoundary extends React.Component {
 
 AppErrorBoundary.propTypes = {
     children: PropTypes.node.isRequired,
-    classes: PropTypes.shape({
-        appBar: PropTypes.string,
-        toolbar: PropTypes.string,
-        errorDisplay: PropTypes.string,
-        errorDisplayContent: PropTypes.string,
-        errorTitle: PropTypes.string,
-        link: PropTypes.string,
-    }).isRequired,
     theme: PropTypes.shape({
         custom: PropTypes.shape({
             logo: PropTypes.string,
@@ -235,4 +249,7 @@ AppErrorBoundary.propTypes = {
     }).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(AppErrorBoundary);
+export default ((props) => {
+    const theme = useTheme();
+    return <AppErrorBoundary {...props} theme={theme} />;
+});

@@ -17,6 +17,7 @@
  */
 
 import React, { lazy, Suspense, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     CircularProgress,
     Divider,
@@ -25,20 +26,29 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { ArrowDropDown } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "GenResourceMonaco" */));
+const PREFIX = 'MockedOASOperation';
 
-const useStyles = makeStyles((theme) => {
+const classes = {
+    dropdown: `${PREFIX}-dropdown`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => {
     return {
-        dropdown: {
+        [`& .${classes.dropdown}`]: {
             marginRight: theme.spacing(5),
         },
     };
 });
+
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "GenResourceMonaco" */));
 
 /**
  * The OAS mock impl for operation.
@@ -50,7 +60,7 @@ function MockedOASOperation(props) {
     const { operation } = props;
     return <>
         {operation.responses ?
-            <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+            <StyledGrid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                 <Grid item xs={12}>
                     <Typography gutterBottom variant='subtitle1'>
                         <FormattedMessage
@@ -73,7 +83,7 @@ function MockedOASOperation(props) {
                             responseCode={responseCode} />
                     </Grid>
                 ))}
-            </Grid> : <FormattedMessage
+            </StyledGrid> : <FormattedMessage
                 id='Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided'
                 defaultMessage='Responses are not provided in the API definition'
             />
@@ -106,7 +116,7 @@ function MockedOASExample(props) {
     const [selectedExample, setSelectedExample] = useState();
     // in oas3, multiple examples can be provided 
     const [selectedExampleType, setSelectedExampleType] = useState();
-    const classes = useStyles();
+
 
     useEffect(() => {
         if (!isEmptyOAS3Content && selectedMediaType) {

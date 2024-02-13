@@ -17,12 +17,12 @@
  */
 
 import React, { FC, useContext, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
@@ -31,11 +31,17 @@ import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import FlowArrow from './components/FlowArrow';
 import ApiOperationContext from './ApiOperationContext';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    flowSpecificPolicyAttachGrid: {
+const PREFIX = 'PoliciesExpansion';
+
+const classes = {
+    flowSpecificPolicyAttachGrid: `${PREFIX}-flowSpecificPolicyAttachGrid`
+};
+
+const StyledAccordionDetails = styled(AccordionDetails)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.flowSpecificPolicyAttachGrid}`]: {
         marginTop: theme.spacing(1),
         overflowX: 'scroll',
-    },
+    }
 }));
 
 const defaultPolicyForMigration = {
@@ -79,7 +85,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const [responseFlowDroppablePolicyList, setResponseFlowDroppablePolicyList] = useState<string[]>([]);
     const [faultFlowDroppablePolicyList, setFaultFlowDroppablePolicyList] = useState<string[]>([]);
 
-    const classes = useStyles();
+
     const { apiOperations } = useContext<any>(ApiOperationContext);
     const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
     const { api } = useContext<any>(APIContext);
@@ -248,7 +254,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     }, [apiOperations, apiLevelPolicies]);
 
     return (
-        <AccordionDetails>
+        <StyledAccordionDetails>
             <Grid
                 spacing={2}
                 container
@@ -325,7 +331,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     )}
                 </Grid>
             </Grid>
-        </AccordionDetails>
+        </StyledAccordionDetails>
     );
 };
 

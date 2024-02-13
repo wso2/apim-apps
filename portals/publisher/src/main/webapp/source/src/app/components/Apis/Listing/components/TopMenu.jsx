@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -25,36 +26,51 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/icons-material/List';
 import GridOn from '@mui/icons-material/GridOn';
-import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
 import APICreateMenu from './APICreateMenu';
 
-const styles = (theme) => ({
-    button: {
+const PREFIX = 'TopMenu';
+
+const classes = {
+    button: `${PREFIX}-button`,
+    root: `${PREFIX}-root`,
+    mainTitleWrapper: `${PREFIX}-mainTitleWrapper`,
+    APICreateMenu: `${PREFIX}-APICreateMenu`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.button}`]: {
         margin: theme.spacing(1),
         marginBottom: 0,
     },
-    root: {
+
+    [`&.${classes.root}`]: {
         height: 70,
         background: theme.palette.background.paper,
         borderBottom: 'solid 1px ' + theme.palette.grey.A200,
         display: 'flex',
     },
-    mainTitleWrapper: {
+
+    [`& .${classes.mainTitleWrapper}`]: {
         paddingLeft: 35,
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
     },
-    APICreateMenu: {
+
+    [`& .${classes.APICreateMenu}`]: {
         flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
-    },
-});
+    }
+}));
 
 /**
  *
@@ -104,11 +120,11 @@ function getTitleForArtifactType(props, count) {
  */
 function TopMenu(props) {
     const {
-        classes, data, setListType, count, isAPIProduct, listType, showToggle, query,
+        data, setListType, count, isAPIProduct, listType, showToggle, query,
     } = props;
     if (count > 0) {
         return (
-            <div className={classes.root}>
+            <Root className={classes.root}>
                 <div className={classes.mainTitleWrapper}>
                     {data && (
                         <>
@@ -194,7 +210,7 @@ function TopMenu(props) {
                         </ButtonGroup>
                     </Box>
                 )}
-            </div>
+            </Root>
         );
     } else {
         return null;
@@ -214,4 +230,4 @@ TopMenu.propTypes = {
     showToggle: PropTypes.bool.isRequired,
 };
 
-export default withStyles(styles)(TopMenu);
+export default (TopMenu);

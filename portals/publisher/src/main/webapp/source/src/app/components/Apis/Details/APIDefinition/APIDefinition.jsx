@@ -17,9 +17,9 @@
  */
 
 import React, { Suspense, lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import AppContext from 'AppComponents/Shared/AppContext';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import EditRounded from '@mui/icons-material/EditRounded';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
@@ -61,60 +61,78 @@ const EditorDialog = lazy(() => import('./SwaggerEditorDrawer' /* webpackChunkNa
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 const AsyncAPIEditor = lazy(() => import('./AsyncApiEditorDrawer'));
 
-const styles = (theme) => ({
-    titleWrapper: {
+const PREFIX = 'APIDefinition';
+
+// generate classes const with all the class names used in this component
+const classes = {
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    swaggerEditorWrapper: `${PREFIX}-swaggerEditorWrapper`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    buttonWarningColor: `${PREFIX}-buttonWarningColor`,
+    topBar: `${PREFIX}-topBar`,
+    converterWrapper: `${PREFIX}-converterWrapper`,
+    downloadLink: `${PREFIX}-downloadLink`,
+    button: `${PREFIX}-button`,
+    progressLoader: `${PREFIX}-progressLoader`,
+    updateApiWarning: `${PREFIX}-updateApiWarning`,
+    warningIconStyle: `${PREFIX}-warningIconStyle`,
+    activeButton: `${PREFIX}-activeButton`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    swaggerEditorWrapper: {
+    [`& .${classes.swaggerEditorWrapper}`]: {
         height: '100vh',
         overflowY: 'auto',
     },
-    buttonIcon: {
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
     },
-    buttonWarningColor: {
+    [`& .${classes.buttonWarningColor}`]: {
         color: theme.palette.warning.light,
     },
-    topBar: {
+    [`& .${classes.topBar}`]: {
         display: 'flex',
         flexDirection: 'row',
         marginBottom: theme.spacing(2),
     },
-    converterWrapper: {
+    [`& .${classes.converterWrapper}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
         flex: '1',
         fontSize: '0.6964285714285714rem',
     },
-    downloadLink: {
+    [`& .${classes.downloadLink}`]: {
         color: 'black',
     },
-    button: {
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(1),
         '&:hover': {
             'text-decoration': 'none',
         },
     },
-    progressLoader: {
+    [`& .${classes.progressLoader}`]: {
         marginLeft: theme.spacing(1),
     },
-    updateApiWarning: {
+    [`& .${classes.updateApiWarning}`]: {
         marginLeft: theme.spacing(5),
         color: theme.custom.serviceCatalog.onboarding.buttonText,
         borderColor: theme.custom.serviceCatalog.onboarding.buttonText,
     },
-    warningIconStyle: {
+    [`& .${classes.warningIconStyle}`]: {
         color: theme.custom.serviceCatalog.onboarding.buttonText,
     },
-    activeButton: {
+    [`& .${classes.activeButton}`]: {
         "&:selected": {
             backgroundColor: theme.palette.background.default,
         }
     }
-});
+}));
 /**
  * This component holds the functionality of viewing the api definition content of an api. The initial view is a
  * read-only representation of the api definition file.
@@ -712,7 +730,7 @@ class APIDefinition extends React.Component {
         } = this.state;
 
         const {
-            classes, resourceNotFountMessage, api, match,
+            resourceNotFountMessage, api, match,
         } = this.props;
 
         const isApiProduct = match.path.search('/api-products/') !== -1 ;
@@ -748,7 +766,7 @@ class APIDefinition extends React.Component {
 
         // @ts-ignore
         // @ts-ignore
-        return <>
+        return <Root>
             {/* TODO tmkasun: use <Box> component for alignment  */}
             <div className={classes.topBar}>
                 <div className={classes.titleWrapper}>
@@ -1033,7 +1051,7 @@ class APIDefinition extends React.Component {
                     </Grid>
                 </DialogActions>
             </Dialog>
-        </>;
+        </Root>;
     }
 }
 
@@ -1070,4 +1088,4 @@ APIDefinition.propTypes = {
     }).isRequired,
     updateAPI: PropTypes.func.isRequired,
 };
-export default withRouter(injectIntl(withStyles(styles, { withTheme: true })(APIDefinition)));
+export default withRouter(injectIntl((APIDefinition)));

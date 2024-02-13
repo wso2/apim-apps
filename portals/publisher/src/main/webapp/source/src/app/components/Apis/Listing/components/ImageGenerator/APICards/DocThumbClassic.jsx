@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import PropTypes from 'prop-types';
@@ -26,23 +27,34 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
-import makeStyles from '@mui/styles/makeStyles';
 import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
 import LinkIcon from '@mui/icons-material/Link';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
-const useStyles = makeStyles((theme) => ({
-    card: {
+const PREFIX = 'DocThumb';
+
+const classes = {
+    card: `${PREFIX}-card`,
+    thumbHeader: `${PREFIX}-thumbHeader`
+};
+
+const StyledLink = styled(Link)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.card}`]: {
         margin: theme.spacing(3 / 2),
         maxWidth: theme.spacing(32),
         transition: 'box-shadow 0.3s ease-in-out',
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         maxWidth: theme.spacing(16),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-    },
+    }
 }));
 
 
@@ -50,7 +62,7 @@ const DocThumb = (props) => {
     const { doc } = props;
     const [isHover, setIsHover] = useState(false);
     const toggleMouseOver = () => setIsHover(!isHover);
-    const classes = useStyles();
+
     let thumbIcon;
     let PrefixIcon = TextFieldsIcon;
     if (doc.sourceType === 'FILE') {
@@ -60,11 +72,12 @@ const DocThumb = (props) => {
         PrefixIcon = LinkIcon;
     }
     return (
-        <Link
+        <StyledLink
             underline='none'
             component={RouterLink}
             to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'}
             aria-hidden='true'
+            sx={{ border: '2px solid blue'}}
         >
             <Card
                 onMouseOver={toggleMouseOver}
@@ -125,7 +138,7 @@ const DocThumb = (props) => {
                     </Grid>
                 </CardContent>
             </Card>
-        </Link>
+        </StyledLink>
     );
 };
 

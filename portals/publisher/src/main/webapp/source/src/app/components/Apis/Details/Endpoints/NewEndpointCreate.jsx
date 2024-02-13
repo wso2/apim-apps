@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Typography,
     Grid,
@@ -30,15 +31,30 @@ import {
     CardContent,
     CardActions,
 } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
-const styles = (theme) => ({
-    inlineMessageContainer: {
+const PREFIX = 'NewEndpointCreate';
+
+const classes = {
+    inlineMessageContainer: `${PREFIX}-inlineMessageContainer`,
+    endpointTypeCard: `${PREFIX}-endpointTypeCard`,
+    cardContent: `${PREFIX}-cardContent`,
+    content: `${PREFIX}-content`,
+    cardActions: `${PREFIX}-cardActions`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.inlineMessageContainer}`]: {
         marginBottom: theme.spacing(1),
     },
-    endpointTypeCard: {
+
+    [`& .${classes.endpointTypeCard}`]: {
         margin: theme.spacing(1),
         maxWidth: theme.spacing(30),
         transition: 'box-shadow 0.3s ease-in-out',
@@ -46,17 +62,20 @@ const styles = (theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
-    cardContent: {
+
+    [`& .${classes.cardContent}`]: {
         height: theme.spacing(40),
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         marginTop: theme.spacing(1),
     },
-    cardActions: {
+
+    [`& .${classes.cardActions}`]: {
         justifyContent: 'flex-end',
         borderTop: 'solid #e0e0e0 thin',
-    },
-});
+    }
+}));
 
 /**
  * Component to create new endpoint.
@@ -73,7 +92,6 @@ const styles = (theme) => ({
  * */
 function NewEndpointCreate(props) {
     const {
-        classes,
         intl,
         generateEndpointConfig,
         apiType,
@@ -165,72 +183,74 @@ function NewEndpointCreate(props) {
         return type;
     });
 
-    return <>
-        <Typography variant='h4' align='left' className={classes.titleWrapper}>
-            <FormattedMessage
-                id='Apis.Details.Endpoints.NewEndpointCreate.add.endpoints.header'
-                defaultMessage='Select an Endpoint Type to Add'
-            />
-        </Typography>
-        <Grid container justifyContent='flex-start' spacing={2}>
-            {eligibleTypes.map(((type) => {
-                return (
-                    <Grid item className={classes.inlineMessageContainer}>
-                        <Card className={classes.endpointTypeCard}>
-                            <CardContent className={classes.cardContent}>
-                                <Typography variant='h5' component='h3' className={classes.head}>
-                                    {type.name}
-                                </Typography>
-                                <Divider />
-                                <Typography component='p' className={classes.content}>
-                                    {type.description}
-                                </Typography>
-                                {type.options
-                                    ? (
-                                        <div>
-                                            <FormControl component='fieldset' className={classes.formControl}>
-                                                <RadioGroup
-                                                    aria-label='EndpointType'
-                                                    name='endpointType'
-                                                    className={classes.radioGroup}
-                                                    value={endpointImplType}
-                                                    onChange={(event) => { setImplType(event.target.value); }}
-                                                >
-                                                    {type.options.filter((types) => !types.disabled
-                                                        .includes(apiType)).map(((option) => {
-                                                        return (
-                                                            <FormControlLabel
-                                                                value={option.type}
-                                                                control={<Radio color='primary' />}
-                                                                label={option.name}
-                                                            />
-                                                        );
-                                                    }))}
-                                                </RadioGroup>
-                                            </FormControl>
-                                        </div>
-                                    )
-                                    : <div /> }
-                            </CardContent>
-                            <CardActions className={classes.cardActions}>
-                                <Button
-                                    color='primary'
-                                    className={classes.button}
-                                    onClick={() => generateEndpointConfig(type.type, endpointImplType)}
-                                    data-testid={type.name.replace(/\s/g, '').toLowerCase() + '-add-btn'}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.NewEndpointCreate.create.button'
-                                        defaultMessage='Add'
-                                    />
-                                </Button>
-                            </CardActions>
-                        </Card>
-                    </Grid>
-                );
-            }))}
-        </Grid>
-    </>;
+    return (
+        <Root>
+            <Typography variant='h4' align='left' className={classes.titleWrapper}>
+                <FormattedMessage
+                    id='Apis.Details.Endpoints.NewEndpointCreate.add.endpoints.header'
+                    defaultMessage='Select an Endpoint Type to Add'
+                />
+            </Typography>
+            <Grid container justifyContent='flex-start' spacing={2}>
+                {eligibleTypes.map(((type) => {
+                    return (
+                        <Grid item className={classes.inlineMessageContainer}>
+                            <Card className={classes.endpointTypeCard}>
+                                <CardContent className={classes.cardContent}>
+                                    <Typography variant='h5' component='h3' className={classes.head}>
+                                        {type.name}
+                                    </Typography>
+                                    <Divider />
+                                    <Typography component='p' className={classes.content}>
+                                        {type.description}
+                                    </Typography>
+                                    {type.options
+                                        ? (
+                                            <div>
+                                                <FormControl component='fieldset' className={classes.formControl}>
+                                                    <RadioGroup
+                                                        aria-label='EndpointType'
+                                                        name='endpointType'
+                                                        className={classes.radioGroup}
+                                                        value={endpointImplType}
+                                                        onChange={(event) => { setImplType(event.target.value); }}
+                                                    >
+                                                        {type.options.filter((types) => !types.disabled
+                                                            .includes(apiType)).map(((option) => {
+                                                            return (
+                                                                <FormControlLabel
+                                                                    value={option.type}
+                                                                    control={<Radio color='primary' />}
+                                                                    label={option.name}
+                                                                />
+                                                            );
+                                                        }))}
+                                                    </RadioGroup>
+                                                </FormControl>
+                                            </div>
+                                        )
+                                        : <div /> }
+                                </CardContent>
+                                <CardActions className={classes.cardActions}>
+                                    <Button
+                                        color='primary'
+                                        className={classes.button}
+                                        onClick={() => generateEndpointConfig(type.type, endpointImplType)}
+                                        data-testid={type.name.replace(/\s/g, '').toLowerCase() + '-add-btn'}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.NewEndpointCreate.create.button'
+                                            defaultMessage='Add'
+                                        />
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    );
+                }))}
+            </Grid>
+        </Root>
+    );
 }
 
 NewEndpointCreate.propTypes = {
@@ -240,4 +260,4 @@ NewEndpointCreate.propTypes = {
     apiType: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(injectIntl(NewEndpointCreate));
+export default (injectIntl(NewEndpointCreate));

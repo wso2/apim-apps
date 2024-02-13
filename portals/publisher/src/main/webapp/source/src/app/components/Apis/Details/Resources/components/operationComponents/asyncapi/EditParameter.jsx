@@ -17,8 +17,8 @@
  */
 
 import React, { useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -35,20 +35,34 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    form: {
+const PREFIX = 'EditParameter';
+
+const classes = {
+    form: `${PREFIX}-form`,
+    formControl: `${PREFIX}-formControl`,
+    formControlLabel: `${PREFIX}-formControlLabel`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.form}`]: {
         display: 'flex',
         flexDirection: 'column',
         margin: 'auto',
         width: 'fit-content',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         marginTop: theme.spacing(2),
         minWidth: 120,
     },
-    formControlLabel: {
+
+    [`& .${classes.formControlLabel}`]: {
         marginTop: theme.spacing(1),
-    },
+    }
 }));
 
 /**
@@ -86,7 +100,7 @@ export default function EditParameter(props) {
         return nextParameter;
     }
     const [parameter, parameterActionDispatcher] = useReducer(parameterActionReducer, editingParameter);
-    const classes = useStyles();
+
 
     const handleClose = () => {
         setEditingParameter(null);
@@ -106,7 +120,7 @@ export default function EditParameter(props) {
         return null;
     }
     return (
-        <Dialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-parameter'>
+        <StyledDialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-parameter'>
             <DialogTitle id='edit-parameter'>
                 <Typography variant='h6'>
                     <FormattedMessage
@@ -404,7 +418,7 @@ export default function EditParameter(props) {
                     />
                 </Button>
             </DialogActions>
-        </Dialog>
+        </StyledDialog>
     );
 }
 

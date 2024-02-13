@@ -174,7 +174,7 @@ export default function ApiCreateOpenAPI(props) {
                 </>
             )}
         >
-            <Box>
+            <Box sx={{ mb: 2 }}>
                 <Stepper alternativeLabel activeStep={0}>
                     <Step>
                         <StepLabel>
@@ -196,10 +196,8 @@ export default function ApiCreateOpenAPI(props) {
                 </Stepper>
             </Box>
 
-            <Grid container spacing={3}>
-                <Grid item xs={12} />
-                <Grid item xs={1} />
-                <Grid item xs={11}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
                     {wizardStep === 0 && (
                         <ProvideOpenAPI
                             onValidate={handleOnValidate}
@@ -216,8 +214,7 @@ export default function ApiCreateOpenAPI(props) {
                         />
                     )}
                 </Grid>
-                <Grid item xs={1} />
-                <Grid item xs={11}>
+                <Grid item xs={12}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (

@@ -16,8 +16,8 @@
  * under the License.
  */
 import React, { Component } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -33,23 +33,55 @@ import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButt
 import { green } from '@mui/material/colors';
 import BaseThumbnail from '../BaseThumbnail';
 
-const styles = (theme) => ({
-    card: {
+const PREFIX = 'ApiThumbClassic';
+
+const classes = {
+    card: `${PREFIX}-card`,
+    providerText: `${PREFIX}-providerText`,
+    apiDetails: `${PREFIX}-apiDetails`,
+    apiActions: `${PREFIX}-apiActions`,
+    deleteProgress: `${PREFIX}-deleteProgress`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    imageWrapper: `${PREFIX}-imageWrapper`,
+    thumbContent: `${PREFIX}-thumbContent`,
+    thumbLeft: `${PREFIX}-thumbLeft`,
+    thumbRight: `${PREFIX}-thumbRight`,
+    thumbInfo: `${PREFIX}-thumbInfo`,
+    contextBox: `${PREFIX}-contextBox`,
+    imageOverlap: `${PREFIX}-imageOverlap`,
+    row: `${PREFIX}-row`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    thumbBy: `${PREFIX}-thumbBy`,
+    thumbRightBy: `${PREFIX}-thumbRightBy`,
+    thumbRightByLabel: `${PREFIX}-thumbRightByLabel`,
+    ribbon: `${PREFIX}-ribbon`
+};
+
+const StyledCard = styled(Card)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.card}`]: {
         margin: theme.spacing(3 / 2),
         maxWidth: theme.custom.thumbnail.width,
         transition: 'box-shadow 0.3s ease-in-out',
     },
-    providerText: {
+
+    [`& .${classes.providerText}`]: {
         textTransform: 'capitalize',
     },
-    apiDetails: { padding: theme.spacing(1) },
-    apiActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)} 8px` },
-    deleteProgress: {
+
+    [`& .${classes.apiDetails}`]: { padding: theme.spacing(1) },
+    [`& .${classes.apiActions}`]: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)} 8px` },
+
+    [`& .${classes.deleteProgress}`]: {
         color: green[200],
         position: 'absolute',
         marginLeft: '200px',
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: '90%',
         whiteSpace: 'nowrap',
         color: theme.palette.text.secondary,
@@ -59,7 +91,8 @@ const styles = (theme) => ({
         margin: 0,
         'padding-left': '5px',
     },
-    imageWrapper: {
+
+    [`& .${classes.imageWrapper}`]: {
         color: theme.palette.text.secondary,
         backgroundColor: theme.palette.background.paper,
         width: theme.custom.thumbnail.width + theme.spacing(1),
@@ -67,25 +100,30 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    thumbContent: {
+
+    [`& .${classes.thumbContent}`]: {
         width: theme.custom.thumbnail.width - theme.spacing(1),
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(1),
     },
-    thumbLeft: {
+
+    [`& .${classes.thumbLeft}`]: {
         alignSelf: 'flex-start',
         flex: 1,
         width: '25%',
         'padding-left': '5px',
         'padding-right': '65px',
     },
-    thumbRight: {
+
+    [`& .${classes.thumbRight}`]: {
         alignSelf: 'flex-end',
     },
-    thumbInfo: {
+
+    [`& .${classes.thumbInfo}`]: {
         display: 'flex',
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         width: '110px',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -99,31 +137,38 @@ const styles = (theme) => ({
         'padding-bottom': 1.5,
         textAlign: 'left',
     },
-    imageOverlap: {
+
+    [`& .${classes.imageOverlap}`]: {
         position: 'absolute',
         bottom: 1,
         backgroundColor: theme.custom.thumbnail.contentBackgroundColor,
     },
-    row: {
+
+    [`& .${classes.row}`]: {
         display: 'inline-block',
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.palette.text.secondary,
         textDecoration: 'none',
     },
-    thumbBy: {
+
+    [`& .${classes.thumbBy}`]: {
         'padding-left': '5px',
     },
-    thumbRightBy: {
+
+    [`& .${classes.thumbRightBy}`]: {
         'margin-right': '5px',
         height: 18,
         borderRadius: 8,
     },
-    thumbRightByLabel: {
+
+    [`& .${classes.thumbRightByLabel}`]: {
         paddingLeft: 5,
         paddingRight: 5,
     },
-    ribbon: {
+
+    [`& .${classes.ribbon}`]: {
         fontFamily: theme.typography.fontFamily,
         fontSize: '12px',
         fontWeight: 800,
@@ -135,8 +180,8 @@ const styles = (theme) => ({
         zIndex: 3,
         textAlign: 'center',
         textTransform: 'uppercase',
-    },
-});
+    }
+}));
 
 /**
  *
@@ -183,9 +228,7 @@ class APIThumb extends Component {
      * @memberof APIThumb
      */
     render() {
-        const {
-            classes, api, isAPIProduct, theme, updateData,
-        } = this.props;
+        const { api, isAPIProduct, theme, updateData } = this.props;
         const { isHover, loading } = this.state;
         let overviewPath = '';
         if (api.apiType) {
@@ -207,7 +250,7 @@ class APIThumb extends Component {
         }
 
         return (
-            <Card
+            <StyledCard
                 onMouseOver={this.toggleMouseOver}
                 onFocus={this.toggleMouseOver}
                 onMouseOut={this.toggleMouseOver}
@@ -338,13 +381,12 @@ class APIThumb extends Component {
                         </>
                     )}
                 </CardActions>
-            </Card>
+            </StyledCard>
         );
     }
 }
 
 APIThumb.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
@@ -354,4 +396,7 @@ APIThumb.propTypes = {
     updateData: PropTypes.func.isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(APIThumb));
+export default injectIntl((props) => {
+    const theme = useTheme();
+    return <APIThumb {...props} theme={theme} />;
+});

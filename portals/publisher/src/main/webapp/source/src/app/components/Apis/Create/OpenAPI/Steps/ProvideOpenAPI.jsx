@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, { useState, useEffect, useCallback } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
@@ -24,7 +25,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -50,10 +50,21 @@ import {
     getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
 import ValidationResults from './ValidationResults';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'ProvideOpenAPI';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
-    },
+    }
 }));
 
 /**
@@ -67,7 +78,7 @@ export default function ProvideOpenAPI(props) {
     const { apiInputs, inputsDispatcher, onValidate, onLinterLineSelect } = props;
     const isFileInput = apiInputs.inputType === 'file';
     const { inputType, inputValue } = apiInputs;
-    const classes = useStyles();
+
     // If valid value is `null`,that means valid, else an error object will be there
     const [isValid, setValidity] = useState({});
     const [linterResults, setLinterResults] = useState ([]);
@@ -250,135 +261,138 @@ export default function ProvideOpenAPI(props) {
         }
     }
 
-    return <>
-        <Grid container spacing={2}>
-            <Grid item xs={12} md={12}>
-                <FormControl component='fieldset'>
-                    <FormLabel component='legend'>
-                        <>
-                            <sup className={classes.mandatoryStar}>*</sup>
-                            {' '}
-                            <FormattedMessage
-                                id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.type'
-                                defaultMessage='Input Type'
+    return (
+        <Root>
+            <Grid container>
+                <Grid item xs={12} sx={{ mb: 2 }}>
+                    <FormControl component='fieldset'>
+                        <FormLabel component='legend'>
+                            <>
+                                <sup className={classes.mandatoryStar}>*</sup>
+                                {' '}
+                                <FormattedMessage
+                                    id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.type'
+                                    defaultMessage='Input Type'
+                                />
+                            </>
+                        </FormLabel>
+                        <RadioGroup
+                            aria-label='Input Source'
+                            value={apiInputs.inputType}
+                            onChange={(event) => inputsDispatcher({ action: 'inputType', 
+                                value: event.target.value })}
+                        >
+                            <FormControlLabel
+                                disabled={isLinting || isValidating}
+                                value={ProvideOpenAPI.INPUT_TYPES.URL}
+                                control={<Radio color='primary' />}
+                                label='OpenAPI URL'
+                                id='open-api-url-select-radio'
                             />
-                        </>
-                    </FormLabel>
-                    <RadioGroup
-                        aria-label='Input Source'
-                        value={apiInputs.inputType}
-                        onChange={(event) => inputsDispatcher({ action: 'inputType', 
-                            value: event.target.value })}
-                    >
-                        <FormControlLabel
-                            disabled={isLinting || isValidating}
-                            value={ProvideOpenAPI.INPUT_TYPES.URL}
-                            control={<Radio color='primary' />}
-                            label='OpenAPI URL'
-                            id='open-api-url-select-radio'
-                        />
-                        <FormControlLabel
-                            disabled={isLinting || isValidating}
-                            value={ProvideOpenAPI.INPUT_TYPES.FILE}
-                            control={<Radio color='primary' />}
-                            label='OpenAPI File/Archive'
-                            aria-label='OpenAPI File/Archive'
-                            id='open-api-file-select-radio'
-                        />
-                    </RadioGroup>
-                </FormControl>
-            </Grid>
-            <Grid item xs={10} md={11}>
-                {isFileInput ? (
-                    <>
-                        {apiInputs.inputValue ? (
-                            <List>
-                                <ListItem key={apiInputs.inputValue.path}>
-                                    <ListItemAvatar>
-                                        <Avatar>
-                                            <InsertDriveFile />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={`${apiInputs.inputValue.path} -
-                                ${humanFileSize(apiInputs.inputValue.size)}`}
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <IconButton edge='end' aria-label='delete' onClick={reset} size='large'>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            </List>
-                        ) : (
-                            <DropZoneLocal
-                                error={isValid.file}
-                                onDrop={onDrop}
-                                files={apiInputs.inputValue}
-                                accept='.bz,.bz2,.gz,.rar,.tar,.zip,.7z,.json,application/json,.yaml'
-                            >
-                                {isValidating ? (<CircularProgress />)
-                                    : ([
-                                        <FormattedMessage
-                                            id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.dropzone'
-                                            defaultMessage={'Drag & Drop Open API File/Archive '
-                                             + 'here {break} or {break} Browse files'}
-                                            values={{ break: <br /> }}
-                                        />,
-                                        <Button
-                                            color='primary'
-                                            variant='contained'
-                                            id='browse-to-upload-btn'
-                                            onClick={ reset }
-                                        >
+                            <FormControlLabel
+                                disabled={isLinting || isValidating}
+                                value={ProvideOpenAPI.INPUT_TYPES.FILE}
+                                control={<Radio color='primary' />}
+                                label='OpenAPI File/Archive'
+                                aria-label='OpenAPI File/Archive'
+                                id='open-api-file-select-radio'
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                    {isFileInput ? (
+                        <>
+                            {apiInputs.inputValue ? (
+                                <List>
+                                    <ListItem key={apiInputs.inputValue.path}>
+                                        <ListItemAvatar>
+                                            <Avatar>
+                                                <InsertDriveFile />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={`${apiInputs.inputValue.path} -
+                                    ${humanFileSize(apiInputs.inputValue.size)}`}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge='end' aria-label='delete' onClick={reset} size='large'>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                </List>
+                            ) : (
+                                <DropZoneLocal
+                                    error={isValid.file}
+                                    onDrop={onDrop}
+                                    files={apiInputs.inputValue}
+                                    accept='.bz,.bz2,.gz,.rar,.tar,.zip,.7z,.json,application/json,.yaml'
+                                >
+                                    {isValidating ? (<CircularProgress />)
+                                        : ([
                                             <FormattedMessage
-                                                id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.upload'
-                                                defaultMessage='Browse File to Upload'
-                                            />
-                                        </Button>,
-                                    ]
-                                    )}
-                            </DropZoneLocal>
-                        )}
-                    </>
-                ) : (
-                    <TextField
-                        autoFocus
-                        id='outlined-full-width'
-                        label='OpenAPI URL'
-                        placeholder='Enter OpenAPI URL'
-                        fullWidth
-                        margin='normal'
-                        variant='outlined'
-                        onChange={({ target: { value } }) => inputsDispatcher({ action: 'inputValue', value })}
-                        value={apiInputs.inputValue}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        InputProps={{
-                            onBlur: ({ target: { value } }) => {
-                                validateURL(value);
-                            },
-                            endAdornment: urlStateEndAdornment,
-                        }}
-                        // 'Give the URL of OpenAPI endpoint'
-                        helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
-                        error={isInvalidURL}
-                        data-testid='swagger-url-endpoint'
-                    />
-                )}
+                                                id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.dropzone'
+                                                defaultMessage={'Drag & Drop Open API File/Archive '
+                                                 + 'here {break} or {break} Browse files'}
+                                                values={{ break: <br /> }}
+                                            />,
+                                            <Button
+                                                color='primary'
+                                                variant='contained'
+                                                id='browse-to-upload-btn'
+                                                onClick={ reset }
+                                                sx={{ mt: 1 }}
+                                            >
+                                                <FormattedMessage
+                                                    id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.upload'
+                                                    defaultMessage='Browse File to Upload'
+                                                />
+                                            </Button>,
+                                        ]
+                                        )}
+                                </DropZoneLocal>
+                            )}
+                        </>
+                    ) : (
+                        <TextField
+                            autoFocus
+                            id='outlined-full-width'
+                            label='OpenAPI URL'
+                            placeholder='Enter OpenAPI URL'
+                            fullWidth
+                            margin='normal'
+                            variant='outlined'
+                            onChange={({ target: { value } }) => inputsDispatcher({ action: 'inputValue', value })}
+                            value={apiInputs.inputValue}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            InputProps={{
+                                onBlur: ({ target: { value } }) => {
+                                    validateURL(value);
+                                },
+                                endAdornment: urlStateEndAdornment,
+                            }}
+                            // 'Give the URL of OpenAPI endpoint'
+                            helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
+                            error={isInvalidURL}
+                            data-testid='swagger-url-endpoint'
+                        />
+                    )}
+                </Grid>
+                <ValidationResults 
+                    inputValue={inputValue} 
+                    isValidating={isValidating}
+                    isLinting={isLinting}
+                    validationErrors={validationErrors}
+                    linterResults={linterResults}
+                    onLinterLineSelect={onLinterLineSelect}
+                />
+                <Grid item xs={2} md={5} />
             </Grid>
-            <ValidationResults 
-                inputValue={inputValue} 
-                isValidating={isValidating}
-                isLinting={isLinting}
-                validationErrors={validationErrors}
-                linterResults={linterResults}
-                onLinterLineSelect={onLinterLineSelect}
-            />
-            <Grid item xs={2} md={5} />
-        </Grid>
-    </>;
+        </Root>
+    );
 }
 
 ProvideOpenAPI.defaultProps = {

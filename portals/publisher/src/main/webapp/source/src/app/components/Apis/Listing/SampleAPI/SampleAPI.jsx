@@ -17,6 +17,7 @@
  */
 
 import React, { useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
@@ -29,7 +30,6 @@ import AuthManager from 'AppData/AuthManager';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import TaskState from 'AppComponents/Apis/Listing/SampleAPI/components/TaskState';
-import makeStyles from '@mui/styles/makeStyles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material';
 
@@ -39,13 +39,21 @@ import Button from '@mui/material/Button';
 import { getSampleAPIData, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 
 
-const useStyles = makeStyles({
-    modal: {
+const PREFIX = 'SampleAPI';
+
+const classes = {
+    modal: `${PREFIX}-modal`,
+    statusBox: `${PREFIX}-statusBox`
+};
+
+
+const Root = styled('div')({
+    [`& .${classes.modal}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    statusBox: {
+    [`& .${classes.statusBox}`]: {
         outline: 'none',
     },
 });
@@ -79,7 +87,7 @@ const SampleAPI = (props) => {
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, initialTaskStates);
     const [showStatus, setShowStatus] = useState(false);
     const [newSampleAPI, setNewSampleAPI] = useState();
-    const classes = useStyles();
+
     const { data: publisherSettings, isLoading } = usePublisherSettings();
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
@@ -174,192 +182,193 @@ const SampleAPI = (props) => {
         const url = '/apis/' + newSampleAPI.id + '/overview';
         return <Redirect to={url} />;
     }
-    return <>
-        <LandingMenuItem
-            dense={dense}
-            id='itest-id-deploy-sample'
-            onClick={handleDeploySample}
-            disabled={!publisherSettings || isLoading}
-            component='button'
-            helperText={(
+    return (
+        <Root>
+            <LandingMenuItem
+                dense={dense}
+                id='itest-id-deploy-sample'
+                onClick={handleDeploySample}
+                disabled={!publisherSettings || isLoading}
+                component='button'
+                helperText={(
+                    <FormattedMessage
+                        id='Apis.Listing.SampleAPI.SampleAPI.rest.d.sample.content'
+                        defaultMessage={`Sample Pizza Shack
+                                    API`}
+                    />
+                )}
+            >
                 <FormattedMessage
-                    id='Apis.Listing.SampleAPI.SampleAPI.rest.d.sample.content'
-                    defaultMessage={`Sample Pizza Shack
-                                API`}
+                    id={'Apis.Listing.SampleAPI.SampleAPI.'
+                        + 'rest.d.sample.title'}
+                    defaultMessage='Deploy Sample API'
                 />
-            )}
-        >
-            <FormattedMessage
-                id={'Apis.Listing.SampleAPI.SampleAPI.'
-                    + 'rest.d.sample.title'}
-                defaultMessage='Deploy Sample API'
-            />
 
-        </LandingMenuItem>
-
-        <Modal
-            aria-labelledby='transition-modal-title'
-            aria-describedby='transition-modal-description'
-            className={classes.modal}
-            open={showStatus}
-            // onClose={handleClose}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-                timeout: 500,
-            }}
-        >
-            <Fade in={showStatus}>
-                <Box
-                    bgcolor='background.paper'
-                    borderRadius={1}
-                    width={isXsOrBelow ? 4 / 5 : 1 / 4}
-                    className={classes.statusBox}
-                    p={2}
-                >
-                    <Grid
-                        container
-                        direction='row'
-                        justifyContent='center'
-                        alignItems='center'
+            </LandingMenuItem>
+            <Modal
+                aria-labelledby='transition-modal-title'
+                aria-describedby='transition-modal-description'
+                className={classes.modal}
+                open={showStatus}
+                // onClose={handleClose}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                    timeout: 500,
+                }}
+            >
+                <Fade in={showStatus}>
+                    <Box
+                        bgcolor='background.paper'
+                        borderRadius={1}
+                        width={isXsOrBelow ? 4 / 5 : 1 / 4}
+                        className={classes.statusBox}
+                        p={2}
                     >
-                        <TaskState
-                            completed={tasksStatus.create.completed}
-                            errors={tasksStatus.create.errors}
-                            inProgress={tasksStatus.create.inProgress}
-                            completedMessage={(
-                                <FormattedMessage
-                                    id='Apis.Listing.SampleAPI.popup.create.complete'
-                                    defaultMessage='API created successfully!'
-                                />
-                            )}
-                            inProgressMessage={(
-                                <FormattedMessage
-                                    id='Apis.Listing.SampleAPI.popup.create.inprogress'
-                                    defaultMessage='Creating sample API ...'
-                                />
-                            )}
+                        <Grid
+                            container
+                            direction='row'
+                            justifyContent='center'
+                            alignItems='center'
                         >
-                            Create API
-                        </TaskState>
-                        <TaskState
-                            completed={tasksStatus.update.completed}
-                            errors={tasksStatus.update.errors}
-                            inProgress={tasksStatus.update.inProgress}
-                            completedMessage={(
-                                <FormattedMessage
-                                    id='Apis.Listing.SampleAPI.popup.update.complete'
-                                    defaultMessage='API updated successfully!'
-                                />
-                            )}
-                            inProgressMessage={(
-                                <FormattedMessage
-                                    id='Apis.Listing.SampleAPI.popup.update.inprogress'
-                                    defaultMessage='Updating sample API ...'
-                                />
-                            )}
-                        >
-                            Update API
-                        </TaskState>
-                        {!AuthManager.isNotPublisher() && (
-                            <>
-                                <TaskState
-                                    completed={tasksStatus.revision.completed}
-                                    errors={tasksStatus.revision.errors}
-                                    inProgress={tasksStatus.revision.inProgress}
-                                    completedMessage={(
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.popup.revision.complete'
-                                            defaultMessage='API revision created successfully!'
-                                        />
-                                    )}
-                                    inProgressMessage={(
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.popup.revision.inprogress'
-                                            defaultMessage='Creating a revision of sample API ...'
-                                        />
-                                    )}
-                                >
-                                    Revision API
-                                </TaskState>
-                                <TaskState
-                                    completed={tasksStatus.deploy.completed}
-                                    errors={tasksStatus.deploy.errors}
-                                    inProgress={tasksStatus.deploy.inProgress}
-                                    completedMessage={(
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.popup.deploy.complete'
-                                            defaultMessage='API deployed successfully!'
-                                        />
-                                    )}
-                                    inProgressMessage={(
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.popup.deploy.inprogress'
-                                            defaultMessage='Deploying sample API ...'
-                                        />
-                                    )}
-                                >
-                                    Deploying API
-                                </TaskState>
-                                <TaskState
-                                    completed={tasksStatus.publish.completed}
-                                    errors={tasksStatus.publish.errors}
-                                    inProgress={tasksStatus.publish.inProgress}
-                                    completedMessage={(
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.popup.publish.complete'
-                                            defaultMessage='API published successfully!'
-                                        />
-                                    )}
-                                    inProgressMessage={(
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.popup.publish.inprogress'
-                                            defaultMessage='Publishing sample API to developer portal ...'
-                                        />
-                                    )}
-                                >
-                                    Publish API
-                                </TaskState>
-                            </>
-                        )}
-                        {anyErrors && (
-                            <>
-                                <Grid item xs={8} />
-                                <Grid item xs={2}>
-                                    <Button
-                                        onClick={() => {
-                                            setShowStatus(false);
-                                            tasksStatusDispatcher({ name: 'reset' });
-                                        }}
-                                        variant='outlined'
+                            <TaskState
+                                completed={tasksStatus.create.completed}
+                                errors={tasksStatus.create.errors}
+                                inProgress={tasksStatus.create.inProgress}
+                                completedMessage={(
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.popup.create.complete'
+                                        defaultMessage='API created successfully!'
+                                    />
+                                )}
+                                inProgressMessage={(
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.popup.create.inprogress'
+                                        defaultMessage='Creating sample API ...'
+                                    />
+                                )}
+                            >
+                                Create API
+                            </TaskState>
+                            <TaskState
+                                completed={tasksStatus.update.completed}
+                                errors={tasksStatus.update.errors}
+                                inProgress={tasksStatus.update.inProgress}
+                                completedMessage={(
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.popup.update.complete'
+                                        defaultMessage='API updated successfully!'
+                                    />
+                                )}
+                                inProgressMessage={(
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.popup.update.inprogress'
+                                        defaultMessage='Updating sample API ...'
+                                    />
+                                )}
+                            >
+                                Update API
+                            </TaskState>
+                            {!AuthManager.isNotPublisher() && (
+                                <>
+                                    <TaskState
+                                        completed={tasksStatus.revision.completed}
+                                        errors={tasksStatus.revision.errors}
+                                        inProgress={tasksStatus.revision.inProgress}
+                                        completedMessage={(
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.popup.revision.complete'
+                                                defaultMessage='API revision created successfully!'
+                                            />
+                                        )}
+                                        inProgressMessage={(
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.popup.revision.inprogress'
+                                                defaultMessage='Creating a revision of sample API ...'
+                                            />
+                                        )}
                                     >
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.continue.on.close'
-                                            defaultMessage='Close'
-                                        />
-                                    </Button>
-                                </Grid>
-                                {newSampleAPI && (
+                                        Revision API
+                                    </TaskState>
+                                    <TaskState
+                                        completed={tasksStatus.deploy.completed}
+                                        errors={tasksStatus.deploy.errors}
+                                        inProgress={tasksStatus.deploy.inProgress}
+                                        completedMessage={(
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.popup.deploy.complete'
+                                                defaultMessage='API deployed successfully!'
+                                            />
+                                        )}
+                                        inProgressMessage={(
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.popup.deploy.inprogress'
+                                                defaultMessage='Deploying sample API ...'
+                                            />
+                                        )}
+                                    >
+                                        Deploying API
+                                    </TaskState>
+                                    <TaskState
+                                        completed={tasksStatus.publish.completed}
+                                        errors={tasksStatus.publish.errors}
+                                        inProgress={tasksStatus.publish.inProgress}
+                                        completedMessage={(
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.popup.publish.complete'
+                                                defaultMessage='API published successfully!'
+                                            />
+                                        )}
+                                        inProgressMessage={(
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.popup.publish.inprogress'
+                                                defaultMessage='Publishing sample API to developer portal ...'
+                                            />
+                                        )}
+                                    >
+                                        Publish API
+                                    </TaskState>
+                                </>
+                            )}
+                            {anyErrors && (
+                                <>
+                                    <Grid item xs={8} />
                                     <Grid item xs={2}>
-                                        <Link
-                                            underline='none'
-                                            component={RouterLink}
-                                            to={`/apis/${newSampleAPI.id}/overview`}
+                                        <Button
+                                            onClick={() => {
+                                                setShowStatus(false);
+                                                tasksStatusDispatcher({ name: 'reset' });
+                                            }}
+                                            variant='outlined'
                                         >
                                             <FormattedMessage
-                                                id='Apis.Listing.SampleAPI.continue.on.error'
-                                                defaultMessage='Continue'
+                                                id='Apis.Listing.SampleAPI.continue.on.close'
+                                                defaultMessage='Close'
                                             />
-                                        </Link>
+                                        </Button>
                                     </Grid>
-                                )}
-                            </>
-                        )}
-                    </Grid>
-                </Box>
-            </Fade>
-        </Modal>
-    </>;
+                                    {newSampleAPI && (
+                                        <Grid item xs={2}>
+                                            <Link
+                                                underline='none'
+                                                component={RouterLink}
+                                                to={`/apis/${newSampleAPI.id}/overview`}
+                                            >
+                                                <FormattedMessage
+                                                    id='Apis.Listing.SampleAPI.continue.on.error'
+                                                    defaultMessage='Continue'
+                                                />
+                                            </Link>
+                                        </Grid>
+                                    )}
+                                </>
+                            )}
+                        </Grid>
+                    </Box>
+                </Fade>
+            </Modal>
+        </Root>
+    );
 };
 
 export default SampleAPI;

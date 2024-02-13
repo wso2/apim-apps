@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
@@ -29,7 +30,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AuthorizationHeader from 'AppComponents/Apis/Details/Configuration/components/AuthorizationHeader.jsx';
 import ApiKeyHeader from "AppComponents/Apis/Details/Configuration/components/ApiKeyHeader";
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import Radio from '@mui/material/Radio';
@@ -49,26 +49,45 @@ import {
     API_SECURITY_MUTUAL_SSL,
 } from './apiSecurityConstants';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'ApplicationLevel';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    bottomSpace: `${PREFIX}-bottomSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    bottomSpace: {
+
+    [`& .${classes.bottomSpace}`]: {
         marginBottom: theme.spacing(4),
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -83,7 +102,7 @@ export default function ApplicationLevel(props) {
         haveMultiLevelSecurity, securityScheme, configDispatcher, api,
     } = props;
     const [apiFromContext] = useAPI();
-    const classes = useStyles();
+
     let mandatoryValue = null;
     let hasResourceWithSecurity;
     if (apiFromContext.apiType === API.CONSTS.APIProduct) {
@@ -114,7 +133,7 @@ export default function ApplicationLevel(props) {
     }
 
     return (
-        <>
+        (<Root>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} id='applicationLevel'>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -261,7 +280,7 @@ export default function ApplicationLevel(props) {
                     </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
-        </>
+        </Root>)
     );
 }
 

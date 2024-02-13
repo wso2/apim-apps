@@ -17,9 +17,9 @@
  */
 
 import React, {useState, useRef, useContext} from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
@@ -33,33 +33,45 @@ import Api from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 
-const styles = {
-    appBar: {
+const PREFIX = 'Edit';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    flex: `${PREFIX}-flex`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    splitWrapper: `${PREFIX}-splitWrapper`,
+    docName: `${PREFIX}-docName`,
+    button: `${PREFIX}-button`,
+    editMetaButton: `${PREFIX}-editMetaButton`
+};
+
+const Root = styled('div')({
+    [`& .${classes.appBar}`]: {
         position: 'relative',
     },
-    flex: {
+    [`& .${classes.flex}`]: {
         flex: 1,
     },
-    popupHeader: {
+    [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    splitWrapper: {
+    [`& .${classes.splitWrapper}`]: {
         padding: 0,
     },
-    docName: {
+    [`& .${classes.docName}`]: {
         alignItems: 'center',
         display: 'flex',
     },
-    button: {
+    [`& .${classes.button}`]: {
         height: 30,
         marginLeft: 30,
     },
-    editMetaButton: {
+    [`& .${classes.editMetaButton}`]: {
         whiteSpace: 'nowrap',
     },
-};
+});
 
 function Transition(props) {
     return <Slide direction='up' {...props} />;
@@ -124,9 +136,9 @@ function Edit(props) {
             });
     };
 
-    const { classes, docId, apiId, docName } = props;
+    const {  docId, apiId, docName } = props;
     return (
-        <div>
+        <Root>
             <Button
                 onClick={toggleOpen}
                 disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
@@ -177,7 +189,7 @@ function Edit(props) {
                     />
                 </div>
             </Dialog>
-        </div>
+        </Root>
     );
 }
 Edit.propTypes = {
@@ -192,4 +204,4 @@ Edit.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Edit));
+export default injectIntl((Edit));

@@ -29,11 +29,49 @@ import {
     Checkbox,
     ListItemText,
 } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+
+const PREFIX = 'AdvanceEndpointConfig';
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    subTitle: `${PREFIX}-subTitle`,
+    configContainer: `${PREFIX}-configContainer`,
+    configSubContainer: `${PREFIX}-configSubContainer`,
+    textField: `${PREFIX}-textField`,
+    advanceDialogActions: `${PREFIX}-advanceDialogActions`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.formControl}`]: {
+        width: '500px',
+    },
+    [`& .${classes.subTitle}`]: {
+        fontSize: '1rem',
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    [`& .${classes.configContainer}`]: {
+        paddingTop: '10px',
+    },
+    [`& .${classes.configSubContainer}`]: {
+        paddingBottom: '10px',
+        marginTop: '5px',
+        padding: '5px',
+    },
+    [`& .${classes.textField}`]: {
+        marginRight: theme.spacing(1),
+        width: '45%',
+    },
+    [`& .${classes.advanceDialogActions}`]: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
+}));
 
 const itemHeight = 48;
 const itemPaddingTop = 8;
@@ -44,33 +82,6 @@ const MenuProps = {
         },
     },
 };
-const styles = (theme) => ({
-    formControl: {
-        width: '500px',
-    },
-    subTitle: {
-        fontSize: '1rem',
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    configContainer: {
-        paddingTop: '10px',
-    },
-    configSubContainer: {
-        paddingBottom: '10px',
-        marginTop: '5px',
-        padding: '5px',
-    },
-    textField: {
-        marginRight: theme.spacing(1),
-        width: '45%',
-    },
-    advanceDialogActions: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-    },
-});
 
 /**
  * The component for advanced endpoint configurations.
@@ -80,7 +91,6 @@ const styles = (theme) => ({
 function AdvanceEndpointConfig(props) {
     const { api } = useContext(APIContext);
     const {
-        classes,
         intl,
         advanceConfig,
         isSOAPEndpoint,
@@ -293,269 +303,272 @@ function AdvanceEndpointConfig(props) {
     };
 
     return (
-        <Grid container direction='column' className={classes.configContainer}>
-            {(isSOAPEndpoint) ? (
+        <Root>
+            <Grid container direction='column' className={classes.configContainer}>
+                {(isSOAPEndpoint) ? (
+                    <Grid item container className={classes.configSubContainer}>
+                        <Typography className={classes.subTitle}>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.message.content'
+                                defaultMessage='Message Content'
+                            />
+                        </Typography>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel htmlFor='err-code-select'>
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.format.select'
+                                    defaultMessage='Format'
+                                />
+                            </InputLabel>
+                            <Select
+                                autoWidth={false}
+                                value={advanceConfigObj.format}
+                                onChange={(event) => handleConfigFieldChange(event, 'format')}
+                                input={<Input id='err-code-select' />}
+                                MenuProps={MenuProps}
+                            >
+                                {messageTypes.map((messageType) => (
+                                    <MenuItem key={messageType.key} value={messageType.key}>
+                                        {messageType.value}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
+                            <InputLabel htmlFor='err-code-select'>
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.optimize.select'
+                                    defaultMessage='Optimize'
+                                />
+                            </InputLabel>
+                            <Select
+                                autoWidth={false}
+                                value={advanceConfigObj.optimize}
+                                onChange={(event) => handleConfigFieldChange(event, 'optimize')}
+                                input={<Input id='err-code-select' />}
+                                MenuProps={MenuProps}
+                            >
+                                {optimizeOptions.map((option) => (
+                                    <MenuItem key={option.key} value={option.key}>
+                                        {option.value}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Divider />
+                    </Grid>
+                ) : (<div />)}
+                <Grid item container className={classes.configSubContainer}>
+                    <Typography className={classes.subTitle}>
+                        <FormattedMessage id='Endpoint.Suspension.State' defaultMessage='Endpoint Suspension State' />
+                    </Typography>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel htmlFor='err-code-select'>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.error.code'
+                                defaultMessage='Error Code'
+                            />
+                        </InputLabel>
+                        <Select
+                            multiple
+                            autoWidth={false}
+                            value={advanceConfigObj.suspendErrorCode}
+                            onChange={(event) => handleConfigFieldChange(event, 'suspendErrorCode')}
+                            input={<Input id='err-code-select' />}
+                            MenuProps={MenuProps}
+                            variant='outlined'
+                            renderValue={(allSelected) => 
+                                allSelected.map(selected => errorCodes.find(code => code.key === selected).value)}
+                        >
+                            {errorCodes.map((code) => (
+                                <MenuItem key={code.key} value={code.key}>
+                                    <Checkbox checked={advanceConfigObj.suspendErrorCode.indexOf(code.key) > -1}
+                                        color='primary'
+                                    />
+                                    <ListItemText primary={code.value} />
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        className={classes.textField}
+                        id='initial-duration-input'
+                        value={advanceConfigObj.suspendDuration}
+                        onKeyDown={(event) => validateNumber(event)}
+                        onChange={(event) => handleConfigFieldChange(event, 'suspendDuration')}
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.initial.duration.ms'
+                                defaultMessage='Initial Duration (ms)'
+                            />
+                        )}
+                        margin='normal'
+                        type='number'
+                    />
+                    <TextField
+                        className={classes.textField}
+                        id='max-duration-input'
+                        value={advanceConfigObj.suspendMaxDuration}
+                        onKeyDown={(event) => validateNumber(event)}
+                        onChange={(event) => handleConfigFieldChange(event, 'suspendMaxDuration')}
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.max.duration.ms'
+                                defaultMessage='Max Duration (ms)'
+                            />
+                        )}
+                        margin='normal'
+                        type='number'
+                    />
+                    <TextField
+                        className={classes.textField}
+                        value={advanceConfigObj.factor}
+                        onKeyDown={(event) => validateNumber(event)}
+                        onChange={(event) => handleConfigFieldChange(event, 'factor')}
+                        id='factor-input'
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.factor'
+                                defaultMessage='Factor'
+                            />
+                        )}
+                        type='number'
+                        margin='normal'
+                    />
+                </Grid>
+                <Divider />
                 <Grid item container className={classes.configSubContainer}>
                     <Typography className={classes.subTitle}>
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.message.content'
-                            defaultMessage='Message Content'
+                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.endpoint.timeout.state'
+                            defaultMessage='Endpoint Timeout State'
                         />
                     </Typography>
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor='err-code-select'>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.format.select'
-                                defaultMessage='Format'
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.error.code'
+                                defaultMessage='Error Code'
                             />
                         </InputLabel>
                         <Select
+                            multiple
                             autoWidth={false}
-                            value={advanceConfigObj.format}
-                            onChange={(event) => handleConfigFieldChange(event, 'format')}
+                            value={advanceConfigObj.retryErroCode}
+                            onChange={(event) => handleConfigFieldChange(event, 'retryErroCode')}
                             input={<Input id='err-code-select' />}
                             MenuProps={MenuProps}
+                            renderValue={(allSelected) => 
+                                allSelected.map(selected => errorCodes.find(code => code.key === selected).value)}
                         >
-                            {messageTypes.map((messageType) => (
-                                <MenuItem key={messageType.key} value={messageType.key}>
-                                    {messageType.value}
+                            {errorCodes.map((code) => (
+                                <MenuItem key={code.key} value={code.key}>
+                                    <Checkbox checked={advanceConfigObj.retryErroCode.indexOf(code.key) > -1}         
+                                        color='primary'
+                                    />
+                                    <ListItemText primary={code.value} />
                                 </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
+                    <TextField
+                        className={classes.textField}
+                        id='retries-input'
+                        value={advanceConfigObj.retryTimeOut}
+                        onKeyDown={(event) => validateNumber(event)}
+                        onChange={(event) => handleConfigFieldChange(event, 'retryTimeOut')}
+                        label={(
+                            <FormattedMessage
+                                id={'Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.retries.before' 
+                                    + '.suspension'}
+                                defaultMessage='Retries Before Suspension'
+                            />
+                        )}
+                        type='number'
+                        margin='normal'
+                    />
+                    <TextField
+                        className={classes.textField}
+                        id='retry-delay-input'
+                        value={advanceConfigObj.retryDelay}
+                        onKeyDown={(event) => validateNumber(event)}
+                        onChange={(event) => handleConfigFieldChange(event, 'retryDelay')}
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.retry.delay.ms'
+                                defaultMessage='Retry Delay (ms)'
+                            />
+                        )}
+                        type='number'
+                        margin='normal'
+                    />
+                </Grid>
+                <Divider />
+                <Grid item container className={classes.configSubContainer}>
+                    <Typography className={classes.subTitle}>
+                        <FormattedMessage id='Connection.Timeout' defaultMessage='Connection Timeout' />
+                    </Typography>
                     <FormControl className={classes.formControl}>
                         <InputLabel htmlFor='err-code-select'>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.optimize.select'
-                                defaultMessage='Optimize'
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.action'
+                                defaultMessage='Action'
                             />
                         </InputLabel>
                         <Select
                             autoWidth={false}
-                            value={advanceConfigObj.optimize}
-                            onChange={(event) => handleConfigFieldChange(event, 'optimize')}
+                            value={advanceConfigObj.actionSelect}
+                            onChange={(event) => handleConfigFieldChange(event, 'actionSelect')}
                             input={<Input id='err-code-select' />}
                             MenuProps={MenuProps}
                         >
-                            {optimizeOptions.map((option) => (
-                                <MenuItem key={option.key} value={option.key}>
-                                    {option.value}
+                            {actionItems.map((item) => (
+                                <MenuItem key={item.key} value={item.key}>
+                                    {item.value}
                                 </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
-                    <Divider />
+                    <TextField
+                        className={classes.textField}
+                        id='duration-input'
+                        value={advanceConfigObj.actionDuration}
+                        onKeyDown={(event) => validateNumber(event)}
+                        onChange= {(event) => handleConfigFieldChange(event, 'actionDuration')}
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.duration.ms'
+                                defaultMessage='Duration (ms)'
+                            />
+                        )}
+                        type='number'
+                        margin='normal'
+                    />
                 </Grid>
-            ) : (<div />)}
-            <Grid item container className={classes.configSubContainer}>
-                <Typography className={classes.subTitle}>
-                    <FormattedMessage id='Endpoint.Suspension.State' defaultMessage='Endpoint Suspension State' />
-                </Typography>
-                <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor='err-code-select'>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.error.code'
-                            defaultMessage='Error Code'
-                        />
-                    </InputLabel>
-                    <Select
-                        multiple
-                        autoWidth={false}
-                        value={advanceConfigObj.suspendErrorCode}
-                        onChange={(event) => handleConfigFieldChange(event, 'suspendErrorCode')}
-                        input={<Input id='err-code-select' />}
-                        MenuProps={MenuProps}
-                        variant='outlined'
-                        renderValue={(allSelected) => 
-                            allSelected.map(selected => errorCodes.find(code => code.key === selected).value)}
+                <Grid className={classes.advanceDialogActions}>
+                    <Button
+                        onClick={() => onSaveAdvanceConfig(advanceConfigObj)}
+                        color='primary'
+                        autoFocus
+                        disabled={isRestricted(['apim:api_create'], api)}
+                        variant='contained'
+                        style={{ marginRight: '10px' }}
+                        id='endpoint-configuration-submit-btn'
                     >
-                        {errorCodes.map((code) => (
-                            <MenuItem key={code.key} value={code.key}>
-                                <Checkbox checked={advanceConfigObj.suspendErrorCode.indexOf(code.key) > -1}         
-                                    color='primary'
-                                />
-                                <ListItemText primary={code.value} />
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <TextField
-                    className={classes.textField}
-                    id='initial-duration-input'
-                    value={advanceConfigObj.suspendDuration}
-                    onKeyDown={(event) => validateNumber(event)}
-                    onChange={(event) => handleConfigFieldChange(event, 'suspendDuration')}
-                    label={(
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.initial.duration.ms'
-                            defaultMessage='Initial Duration (ms)'
+                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.config.save.button'
+                            defaultMessage='Save'
                         />
-                    )}
-                    margin='normal'
-                    type='number'
-                />
-                <TextField
-                    className={classes.textField}
-                    id='max-duration-input'
-                    value={advanceConfigObj.suspendMaxDuration}
-                    onKeyDown={(event) => validateNumber(event)}
-                    onChange={(event) => handleConfigFieldChange(event, 'suspendMaxDuration')}
-                    label={(
+                    </Button>
+                    <Button onClick={onCancel}>
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.max.duration.ms'
-                            defaultMessage='Max Duration (ms)'
+                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.cancel.button'
+                            defaultMessage='Close'
                         />
-                    )}
-                    margin='normal'
-                    type='number'
-                />
-                <TextField
-                    className={classes.textField}
-                    value={advanceConfigObj.factor}
-                    onKeyDown={(event) => validateNumber(event)}
-                    onChange={(event) => handleConfigFieldChange(event, 'factor')}
-                    id='factor-input'
-                    label={(
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.factor'
-                            defaultMessage='Factor'
-                        />
-                    )}
-                    type='number'
-                    margin='normal'
-                />
+                    </Button>
+                </Grid>
             </Grid>
-            <Divider />
-            <Grid item container className={classes.configSubContainer}>
-                <Typography className={classes.subTitle}>
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.endpoint.timeout.state'
-                        defaultMessage='Endpoint Timeout State'
-                    />
-                </Typography>
-                <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor='err-code-select'>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.error.code'
-                            defaultMessage='Error Code'
-                        />
-                    </InputLabel>
-                    <Select
-                        multiple
-                        autoWidth={false}
-                        value={advanceConfigObj.retryErroCode}
-                        onChange={(event) => handleConfigFieldChange(event, 'retryErroCode')}
-                        input={<Input id='err-code-select' />}
-                        MenuProps={MenuProps}
-                        renderValue={(allSelected) => 
-                            allSelected.map(selected => errorCodes.find(code => code.key === selected).value)}
-                    >
-                        {errorCodes.map((code) => (
-                            <MenuItem key={code.key} value={code.key}>
-                                <Checkbox checked={advanceConfigObj.retryErroCode.indexOf(code.key) > -1}         
-                                    color='primary'
-                                />
-                                <ListItemText primary={code.value} />
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <TextField
-                    className={classes.textField}
-                    id='retries-input'
-                    value={advanceConfigObj.retryTimeOut}
-                    onKeyDown={(event) => validateNumber(event)}
-                    onChange={(event) => handleConfigFieldChange(event, 'retryTimeOut')}
-                    label={(
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.retries.before.suspension'
-                            defaultMessage='Retries Before Suspension'
-                        />
-                    )}
-                    type='number'
-                    margin='normal'
-                />
-                <TextField
-                    className={classes.textField}
-                    id='retry-delay-input'
-                    value={advanceConfigObj.retryDelay}
-                    onKeyDown={(event) => validateNumber(event)}
-                    onChange={(event) => handleConfigFieldChange(event, 'retryDelay')}
-                    label={(
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.retry.delay.ms'
-                            defaultMessage='Retry Delay (ms)'
-                        />
-                    )}
-                    type='number'
-                    margin='normal'
-                />
-            </Grid>
-            <Divider />
-            <Grid item container className={classes.configSubContainer}>
-                <Typography className={classes.subTitle}>
-                    <FormattedMessage id='Connection.Timeout' defaultMessage='Connection Timeout' />
-                </Typography>
-                <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor='err-code-select'>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.action'
-                            defaultMessage='Action'
-                        />
-                    </InputLabel>
-                    <Select
-                        autoWidth={false}
-                        value={advanceConfigObj.actionSelect}
-                        onChange={(event) => handleConfigFieldChange(event, 'actionSelect')}
-                        input={<Input id='err-code-select' />}
-                        MenuProps={MenuProps}
-                    >
-                        {actionItems.map((item) => (
-                            <MenuItem key={item.key} value={item.key}>
-                                {item.value}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <TextField
-                    className={classes.textField}
-                    id='duration-input'
-                    value={advanceConfigObj.actionDuration}
-                    onKeyDown={(event) => validateNumber(event)}
-                    onChange= {(event) => handleConfigFieldChange(event, 'actionDuration')}
-                    label={(
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.duration.ms'
-                            defaultMessage='Duration (ms)'
-                        />
-                    )}
-                    type='number'
-                    margin='normal'
-                />
-            </Grid>
-            <Grid className={classes.advanceDialogActions}>
-                <Button
-                    onClick={() => onSaveAdvanceConfig(advanceConfigObj)}
-                    color='primary'
-                    autoFocus
-                    disabled={isRestricted(['apim:api_create'], api)}
-                    variant='contained'
-                    style={{ marginRight: '10px' }}
-                    id='endpoint-configuration-submit-btn'
-                >
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.config.save.button'
-                        defaultMessage='Save'
-                    />
-                </Button>
-                <Button onClick={onCancel}>
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.cancel.button'
-                        defaultMessage='Close'
-                    />
-                </Button>
-            </Grid>
-        </Grid>
+        </Root>
     );
 }
 
@@ -576,4 +589,4 @@ AdvanceEndpointConfig.propTypes = {
     onCancel: PropTypes.func.isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(AdvanceEndpointConfig));
+export default injectIntl(AdvanceEndpointConfig);

@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, { useState } from "react";
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, List, ListItem, 
     ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
@@ -26,8 +26,15 @@ import APILintingSummary from "AppComponents/Apis/Details/APIDefinition/Linting/
 import {  
     spectralSeverityMap as severityMap } from "../../../Details/APIDefinition/Linting/Linting"
 
-const useStyles = makeStyles(() => ({
-    importDefinitionDialogHeader: {
+const PREFIX = 'ValidationResults';
+
+const classes = {
+    importDefinitionDialogHeader: `${PREFIX}-importDefinitionDialogHeader`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.importDefinitionDialogHeader}`]: {
         fontWeight: 600,
     }
 }));
@@ -46,10 +53,10 @@ export default function ValidationResults(props: APILintingProps) {
     const [expandValidationErrors, setExpandValidationErrors] = useState(true);
     const [expandLinterResults, setExpandLinterResults] = useState(false);
     const [linterSelectedSeverity, setLinterSelectedSeverity] = useState(-1);
-    const classes = useStyles();
+
 
     return (
-        <>
+        (<Root>
             <Grid item xs={10} md={11}>
                 <List>
                     {inputValue && isValidating && (
@@ -163,6 +170,6 @@ export default function ValidationResults(props: APILintingProps) {
                     </Accordion>
                 </Grid>
             )}
-        </>
+        </Root>)
     );
 }

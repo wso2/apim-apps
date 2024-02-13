@@ -17,6 +17,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
@@ -26,7 +27,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import API from 'AppData/api';
 import Radio from '@mui/material/Radio';
@@ -34,29 +34,50 @@ import RadioGroup from '@mui/material/RadioGroup';
 import { isRestricted } from 'AppData/AuthManager';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'KeyManager';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`,
+    keyManagerSelect: `${PREFIX}-keyManagerSelect`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         margin: '-7px auto',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
     },
-    keyManagerSelect: {
+
+    [`& .${classes.keyManagerSelect}`]: {
         minWidth: 180,
-    },
+    }
 }));
 
 /**
@@ -71,7 +92,7 @@ export default function KeyManager(props) {
         configDispatcher,
         api: { keyManagers, securityScheme },
     } = props;
-    const classes = useStyles();
+
     const handleChange = (event) => {
         const newKeyManagers = [...keyManagers];
         const { target: { checked, name } } = event;
@@ -93,7 +114,7 @@ export default function KeyManager(props) {
     }, []);
     if (!securityScheme.includes('oauth2')) {
         return (
-            <>
+            (<Root>
                 <Typography className={classes.subHeading} variant='subtitle2' component='h5'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.KeyManager.configuration'
@@ -108,7 +129,7 @@ export default function KeyManager(props) {
                         />
                     </Typography>
                 </Box>
-            </>
+            </Root>)
         );
     }
     return (

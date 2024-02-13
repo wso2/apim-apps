@@ -17,17 +17,26 @@
  */
 
 import React, { FC } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Box from '@mui/material/Box';
 
-const useStyles = makeStyles(() => ({
-    arrowColor: {
+const PREFIX = 'FlowArrow';
+
+const classes = {
+    arrowColor: `${PREFIX}-arrowColor`,
+    iconSize: `${PREFIX}-iconSize`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.arrowColor}`]: {
         backgroundColor: 'black',
         opacity: 0.4,
     },
-    iconSize: {
+
+    [`& .${classes.iconSize}`]: {
         fontSize: '2em',
         color: 'black',
         opacity: 0.4,
@@ -45,10 +54,10 @@ interface FlowArrowProps {
  * @returns {TSX} Tab panel.
  */
 const FlowArrow: FC<FlowArrowProps> = ({ arrowDirection }) => {
-    const classes = useStyles();
+
 
     return (
-        <>
+        (<Root>
             {arrowDirection === 'left'
                 ?  (
                     <Box display='flex' flexDirection='row' alignItems='center' pl={2} pt={1}>
@@ -66,7 +75,7 @@ const FlowArrow: FC<FlowArrowProps> = ({ arrowDirection }) => {
                     </Box>
                 )
             }
-        </>
+        </Root>)
     );
 }
 

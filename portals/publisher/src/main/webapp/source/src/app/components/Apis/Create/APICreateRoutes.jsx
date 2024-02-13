@@ -17,8 +17,9 @@
  */
 import React from 'react';
 
+import { styled } from '@mui/material/styles';
+
 import { Route, Switch } from 'react-router-dom';
-import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 
@@ -31,11 +32,17 @@ import ApiCreateWebSocket from './WebSocket/ApiCreateWebSocket';
 import APICreateStreamingAPI from './StreamingAPI/APICreateStreamingAPI';
 import APICreateAsyncAPI from './AsyncAPI/ApiCreateAsyncAPI';
 
-const styles = {
-    content: {
+const PREFIX = 'APICreateRoutes';
+
+const classes = {
+    content: `${PREFIX}-content`
+};
+
+const Root = styled('div')({
+    [`&.${classes.content}`]: {
         flexGrow: 1,
     },
-};
+});
 
 /**
  *
@@ -44,10 +51,9 @@ const styles = {
  * @param {*} props
  * @returns @inheritdoc
  */
-function APICreateRoutes(props) {
-    const { classes } = props;
+function APICreateRoutes() {
     return (
-        <div className={classes.content}>
+        <Root className={classes.content}>
             <Switch>
                 <Route path='/apis/create/rest' component={APICreateDefault} />
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
@@ -60,7 +66,7 @@ function APICreateRoutes(props) {
                 <Route path='/apis/create/asyncapi' component={APICreateAsyncAPI} />
                 <Route component={ResourceNotFound} />
             </Switch>
-        </div>
+        </Root>
     );
 }
 
@@ -68,4 +74,4 @@ APICreateRoutes.propTypes = {
     classes: PropTypes.shape({ content: PropTypes.string }).isRequired,
 };
 
-export default withStyles(styles)(APICreateRoutes);
+export default (APICreateRoutes);

@@ -199,6 +199,7 @@ export default class Protected extends Component {
         if (!theme) {
             return (<Progress />);
         }
+
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={createTheme(adaptV4Theme(defaultTheme))}>

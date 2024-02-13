@@ -17,6 +17,7 @@
  */
 
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl, defineMessages } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
@@ -34,7 +35,6 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import Tooltip from '@mui/material/Tooltip';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
@@ -48,21 +48,57 @@ import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeVali
 import AuthManager from 'AppData/AuthManager';
 import Invoice from './Invoice';
 
-const styles = (theme) => ({
-    heading: {
+const PREFIX = 'SubscriptionsTable';
+
+const classes = {
+    heading: `${PREFIX}-heading`,
+    button: `${PREFIX}-button`,
+    headline: `${PREFIX}-headline`,
+    popupHeadline: `${PREFIX}-popupHeadline`,
+    table: `${PREFIX}-table`,
+    searchDiv: `${PREFIX}-searchDiv`,
+    searchRoot: `${PREFIX}-searchRoot`,
+    searchInput: `${PREFIX}-searchInput`,
+    searchIconButton: `${PREFIX}-searchIconButton`,
+    noDataMessage: `${PREFIX}-noDataMessage`,
+    tableColumnSize: `${PREFIX}-tableColumnSize`,
+    tableColumnSize2: `${PREFIX}-tableColumnSize2`,
+    dialogColumnSize: `${PREFIX}-dialogColumnSize`,
+    dialog: `${PREFIX}-dialog`,
+    invoiceTable: `${PREFIX}-invoiceTable`,
+    uniqueCell: `${PREFIX}-uniqueCell`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    typography: `${PREFIX}-typography`,
+    root: `${PREFIX}-root`,
+    InfoToolTip: `${PREFIX}-InfoToolTip`,
+    subscriberHeader: `${PREFIX}-subscriberHeader`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.heading}`]: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(2),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         margin: theme.spacing(1),
     },
-    headline: { paddingTop: theme.spacing(1.25), paddingLeft: theme.spacing(2.5) },
-    popupHeadline: {
+
+    [`& .${classes.headline}`]: { paddingTop: theme.spacing(1.25), paddingLeft: theme.spacing(2.5) },
+
+    [`& .${classes.popupHeadline}`]: {
         alignItems: 'center',
         borderBottom: '2px solid #40E0D0',
         textAlign: 'center',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         '& td': {
             fontSize: theme.typography.fontSize,
         },
@@ -70,12 +106,14 @@ const styles = (theme) => ({
             fontSize: theme.typography.fontSize * 1.2,
         },
     },
-    searchDiv: {
+
+    [`& .${classes.searchDiv}`]: {
         float: 'right',
         paddingTop: theme.spacing(1.25),
         paddingRight: theme.spacing(1.25),
     },
-    searchRoot: {
+
+    [`& .${classes.searchRoot}`]: {
         paddingTop: theme.spacing(0.25),
         paddingBottom: theme.spacing(0.25),
         paddingRight: theme.spacing(0.5),
@@ -85,56 +123,71 @@ const styles = (theme) => ({
         width: theme.spacing(50),
         borderBottom: '1px solid #E8E8E8',
     },
-    searchInput: {
+
+    [`& .${classes.searchInput}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    searchIconButton: {
+
+    [`& .${classes.searchIconButton}`]: {
         padding: theme.spacing(1.25),
     },
-    noDataMessage: {
+
+    [`& .${classes.noDataMessage}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         color: '#888888',
         width: '100%',
+        fontFamily: theme.typography.fontFamily,
     },
-    tableColumnSize: {
+
+    [`& .${classes.tableColumnSize}`]: {
         width: '14%',
     },
-    tableColumnSize2: {
+
+    [`& .${classes.tableColumnSize2}`]: {
         width: '30%',
     },
-    dialogColumnSize: {
+
+    [`& .${classes.dialogColumnSize}`]: {
         width: '50%',
     },
-    dialog: {
+
+    [`& .${classes.dialog}`]: {
         float: 'center',
         alignItems: 'center',
     },
-    invoiceTable: {
+
+    [`& .${classes.invoiceTable}`]: {
         '& td': {
             fontSize: theme.typography.fontSize * 1.5,
         },
     },
-    uniqueCell: {
+
+    [`& .${classes.uniqueCell}`]: {
         borderTop: '1px solid #000000',
         fontWeight: 'bold',
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
         marginTop: theme.spacing(3),
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         marginBottom: theme.spacing(3),
     },
-    typography: {
+
+    [`& .${classes.typography}`]: {
         padding: theme.spacing(2),
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         flexGrow: 1,
     },
-    InfoToolTip: {
+
+    [`& .${classes.InfoToolTip}`]: {
         backgroundColor: theme.custom.disableColor,
         color: theme.palette.getContrastText(theme.custom.disableColor),
         fontSize: theme.typography.fontSize,
@@ -143,12 +196,13 @@ const styles = (theme) => ({
         borderRadius: theme.shape.borderRadius,
         padding: theme.spacing(2),
     },
-    subscriberHeader: {
+
+    [`& .${classes.subscriberHeader}`]: {
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
-    },
-});
+    }
+}));
 
 const subscriptionStatus = {
     BLOCKED: 'BLOCKED',
@@ -283,7 +337,6 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     getSubscriptionBlockingButtons(state, subscriptionId) {
-        const { classes } = this.props;
         if (state === subscriptionStatus.PROD_BLOCKED) {
             return (
                 <dev>
@@ -647,7 +700,6 @@ class SubscriptionsTable extends Component {
      * Render claims based on the claim object
      */
     renderClaims(claimsObject) {
-        const { classes } = this.props;
         if (claimsObject) {
             return (
                 <div className={classes.root}>
@@ -701,7 +753,7 @@ class SubscriptionsTable extends Component {
             subscriptions, page, rowsPerPage, totalSubscription, rowsPerPageOptions, emptyColumnHeight,
             subscriberClaims,
         } = this.state;
-        const { classes, api } = this.props;
+        const {  api } = this.props;
         if (!subscriptions) {
             return (
                 <Grid container direction='row' justifyContent='center' alignItems='center'>
@@ -754,13 +806,13 @@ class SubscriptionsTable extends Component {
                                             tooltip: classes.InfoToolTip,
                                         }}
                                         title={(
-                                            <>
+                                            (<Root>
                                                 {subscriberClaims && (
                                                     <div>
                                                         {this.renderClaims(claimsObject)}
                                                     </div>
                                                 )}
-                                            </>
+                                            </Root>)
                                         )}
                                     >
                                         <Grid container direction='row' alignItems='center' spacing={1}>
@@ -943,7 +995,7 @@ class SubscriptionsTable extends Component {
         }
         const Tip = names ? React.Fragment : Tooltip;
         return (
-            <>
+            <Root>
                 <div className={classes.heading}>
                     <Typography variant='h4'>
                         <FormattedMessage
@@ -991,7 +1043,7 @@ class SubscriptionsTable extends Component {
                             </div>
                         )}
                 </Paper>
-            </>
+            </Root>
         );
     }
 }
@@ -1004,4 +1056,4 @@ SubscriptionsTable.propTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(SubscriptionsTable));
+export default injectIntl((SubscriptionsTable));

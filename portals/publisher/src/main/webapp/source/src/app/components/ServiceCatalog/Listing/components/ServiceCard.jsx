@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -20,8 +20,21 @@ import DeleteServiceButton from 'AppComponents/ServiceCatalog/Listing/Delete';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
 
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'ServiceCard';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    media: `${PREFIX}-media`,
+    typeIcon: `${PREFIX}-typeIcon`,
+    usageChip: `${PREFIX}-usageChip`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         width: theme.spacing(25),
         height: theme.spacing(35),
         backgroundColor: theme.palette.background.paper,
@@ -29,21 +42,24 @@ const useStyles = makeStyles((theme) => ({
             cursor: 'pointer',
         },
     },
-    media: {
+
+    [`& .${classes.media}`]: {
         height: 0,
         paddingTop: '56.25%', // 16:9
         backgroundColor: '#F6F7F9',
         backgroundSize: 'contain',
         boxShadow: '0px 1px 3px #00000033',
     },
-    typeIcon: {
+
+    [`& .${classes.typeIcon}`]: {
         width: theme.spacing(3),
         height: theme.spacing(3),
     },
-    usageChip: {
+
+    [`& .${classes.usageChip}`]: {
         width: theme.spacing(5),
         // boxShadow: theme.shadows[1], // Lowest shadow
-    },
+    }
 }));
 
 /**
@@ -52,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
  */
 export default function ServiceCard(props) {
     const { service, onDelete } = props;
-    const classes = useStyles();
+
     const theme = useTheme();
     const [raised, setRaised] = React.useState(false);
     /**
@@ -77,7 +93,7 @@ export default function ServiceCard(props) {
         ASYNC_API: asyncapi,
     }), []);
     return (
-        <Paper
+        <StyledPaper
             elevation={raised ? 3 : 1}
             classes={{ root: classes.root }}
             onMouseOver={() => setRaised(true)}
@@ -215,6 +231,6 @@ export default function ServiceCard(props) {
                     </Grid>
                 </Box>
             </Link>
-        </Paper>
+        </StyledPaper>
     );
 }

@@ -17,9 +17,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -31,45 +30,36 @@ import DialogTitle from '@mui/material/DialogTitle';
 import API from 'AppData/api';
 import UsageViewAPI from './UsageViewAPI';
 
-const styles = {
-    appBar: {
-        position: 'relative',
-    },
-    flex: {
-        flex: 1,
-    },
-    popupHeader: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    splitWrapper: {
-        padding: 0,
-    },
-    docName: {
-        alignItems: 'center',
-        display: 'flex',
-    },
-    button: {
-        height: 30,
-        marginLeft: 30,
-    },
+const PREFIX = 'Usage';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    flex: `${PREFIX}-flex`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    splitWrapper: `${PREFIX}-splitWrapper`,
+    docName: `${PREFIX}-docName`,
+    button: `${PREFIX}-button`,
+    root: `${PREFIX}-root`,
+    usageDialogHeader: `${PREFIX}-usageDialogHeader`,
+    buttonIcon: `${PREFIX}-buttonIcon`
 };
 
-const useStyles = makeStyles(() => ({
-    root: {
+const Root = styled('div')(() => ({
+    [`&.${classes.root}`]: {
         width: '100%',
         flexDirection: 'row',
         display: 'flex',
     },
-    usageDialogHeader: {
+
+    [`& .${classes.usageDialogHeader}`]: {
         fontWeight: '600',
         fontSize: 'h6.fontSize',
         marginRight: 10,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
-    },
+    }
 }));
 
 /**
@@ -78,7 +68,7 @@ const useStyles = makeStyles(() => ({
 * @returns {any} Returns the rendered UI for scope usage.
 */
 function Usage(props) {
-    const classes = useStyles();
+
     const [open, setOpen] = useState(false);
     const [usage, setUsage] = useState({});
     const { scopeName, scopeId, usageCount } = props;
@@ -96,7 +86,7 @@ function Usage(props) {
     };
 
     const dialogTitle = (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Typography compnent='div' variant='h5' className={classes.usageDialogHeader}>
                 <FormattedMessage
                     id='Scopes.Usage.Usage.usage'
@@ -106,7 +96,7 @@ function Usage(props) {
             <Typography compnent='div' variant='h5' className={classes.usageDialogHeader}>
                 {scopeName}
             </Typography>
-        </div>
+        </Root>
     );
     const dialogContent = (
         <UsageViewAPI scopeUsage={usage} />
@@ -151,4 +141,4 @@ Usage.propTypes = {
     fetchScopeData: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Usage));
+export default injectIntl((Usage));

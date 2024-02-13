@@ -15,6 +15,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Dialog,
     DialogContent,
@@ -29,7 +30,6 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -42,51 +42,82 @@ import Collapse from '@mui/material/Collapse';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { getEndpointTypeProperty } from './endpointUtils';
 
-const styles = (theme) => ({
-    endpointTypeSelect: {
+const PREFIX = 'LoadbalanceFailoverConfig';
+
+const classes = {
+    endpointTypeSelect: `${PREFIX}-endpointTypeSelect`,
+    configHeaderContainer: `${PREFIX}-configHeaderContainer`,
+    generalConfigContent: `${PREFIX}-generalConfigContent`,
+    secondaryHeading: `${PREFIX}-secondaryHeading`,
+    heading: `${PREFIX}-heading`,
+    endpointConfigSection: `${PREFIX}-endpointConfigSection`,
+    generalConfigPanel: `${PREFIX}-generalConfigPanel`,
+    endpointsTypeSelectWrapper: `${PREFIX}-endpointsTypeSelectWrapper`,
+    lbConfigBtn: `${PREFIX}-lbConfigBtn`,
+    endpointName: `${PREFIX}-endpointName`,
+    wrapper: `${PREFIX}-wrapper`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.endpointTypeSelect}`]: {
         width: '50%',
         marginTop: theme.spacing(1),
     },
-    configHeaderContainer: {
+
+    [`& .${classes.configHeaderContainer}`]: {
         display: 'flex',
         justifyContent: 'space-between',
     },
-    generalConfigContent: {
+
+    [`& .${classes.generalConfigContent}`]: {
         boxShadow: 'inset -1px 2px 3px 0px #c3c3c3',
     },
-    secondaryHeading: {
+
+    [`& .${classes.secondaryHeading}`]: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
         display: 'flex',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
         fontWeight: '900',
     },
-    endpointConfigSection: {
+
+    [`& .${classes.endpointConfigSection}`]: {
         padding: '10px',
     },
-    generalConfigPanel: {
+
+    [`& .${classes.generalConfigPanel}`]: {
         width: '100%',
     },
-    endpointsTypeSelectWrapper: {
+
+    [`& .${classes.endpointsTypeSelectWrapper}`]: {
         display: 'flex',
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    lbConfigBtn: {
+
+    [`& .${classes.lbConfigBtn}`]: {
         position: 'relative',
         top: '10px',
     },
-    endpointName: {
+
+    [`& .${classes.endpointName}`]: {
         fontWeight: 600,
     },
-    wrapper: {
+
+    [`& .${classes.wrapper}`]: {
         width: '100%',
-    },
-});
+    }
+}));
 
 const endpointTypes = [
     { key: 'none', value: 'None' },
@@ -103,7 +134,6 @@ const endpointTypes = [
 function LoadbalanceFailoverConfig(props) {
     const {
         epConfig,
-        classes,
         endpointsDispatcher,
         toggleAdvanceConfig,
         toggleESConfig,
@@ -217,178 +247,180 @@ function LoadbalanceFailoverConfig(props) {
         handleEndpointCategorySelect(event);
     };
 
-    return <>
-        <Accordion
-            expanded={isConfigExpanded || endpointType === 'load_balance' || endpointType === 'failover'}
-            onChange={() => setConfigExpand(!isConfigExpanded)}
-            className={classes.generalConfigPanel}
-        >
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls='panel1bh-content'
-                id='panel1bh-header'
-                className={classes.configHeaderContainer}
+    return (
+        <Root>
+            <Accordion
+                expanded={isConfigExpanded || endpointType === 'load_balance' || endpointType === 'failover'}
+                onChange={() => setConfigExpand(!isConfigExpanded)}
+                className={classes.generalConfigPanel}
             >
-                <Typography className={classes.secondaryHeading}>
-                    {getEndpointTypeHeading()}
-                </Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.generalConfigContent}>
-                {(!epConfig.production_endpoints && !epConfig.sandbox_endpoints)
-                    ? (
-                        <InlineMessage>
-                            <div className={classes.contentWrapper}>
-                                <Typography component='p' className={classes.content}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.LoadbalanceFailoverConfig.no.endpoints.message'
-                                        defaultMessage='Add Production/ Sandbox endpoints to configure.'
-                                    />
-                                </Typography>
-                            </div>
-                        </InlineMessage>
-                    )
-                    : (
-                        <Grid container item xs={12}>
-                            <Grid xs={12} className={classes.endpointsTypeSelectWrapper}>
-                                <TextField
-                                    disabled={isRestricted(['apim:api_create'], api)}
-                                    id='certificateEndpoint'
-                                    label={(
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls='panel1bh-content'
+                    id='panel1bh-header'
+                    className={classes.configHeaderContainer}
+                >
+                    <Typography className={classes.secondaryHeading}>
+                        {getEndpointTypeHeading()}
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails className={classes.generalConfigContent}>
+                    {(!epConfig.production_endpoints && !epConfig.sandbox_endpoints)
+                        ? (
+                            <InlineMessage>
+                                <div className={classes.contentWrapper}>
+                                    <Typography component='p' className={classes.content}>
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.LoadbalanceFailoverConfig.endpoint.type'
-                                            defaultMessage='Endpoint Type'
+                                            id='Apis.Details.Endpoints.LoadbalanceFailoverConfig.no.endpoints.message'
+                                            defaultMessage='Add Production/ Sandbox endpoints to configure.'
                                         />
-                                    )}
-                                    value={endpointType}
-                                    placeholder='Endpoint'
-                                    onChange={handleEndpointTypeSelect}
-                                    margin='normal'
-                                    variant='outlined'
-                                    select
-                                    className={classes.endpointTypeSelect}
-                                >
-                                    {endpointTypes.map((type) => {
-                                        return <MenuItem
-                                            value={type.key}
-                                            id={'config-type-' + type.key}
-                                        >
-                                            {type.value}
-                                        </MenuItem>;
-                                    })}
-                                </TextField>
-                                <div className={classes.lpConfigWrapper}>
-                                    <IconButton
-                                        className={classes.lbConfigBtn}
-                                        disabled={epConfig.endpoint_type !== 'load_balance'}
-                                        aria-label='Delete'
-                                        onClick={() => setLBConfigOpen(true)}
-                                        size='large'>
-                                        <Icon>
-                                            settings
-                                        </Icon>
-                                    </IconButton>
+                                    </Typography>
                                 </div>
+                            </InlineMessage>
+                        )
+                        : (
+                            <Grid container item xs={12}>
+                                <Grid xs={12} className={classes.endpointsTypeSelectWrapper}>
+                                    <TextField
+                                        disabled={isRestricted(['apim:api_create'], api)}
+                                        id='certificateEndpoint'
+                                        label={(
+                                            <FormattedMessage
+                                                id='Apis.Details.Endpoints.LoadbalanceFailoverConfig.endpoint.type'
+                                                defaultMessage='Endpoint Type'
+                                            />
+                                        )}
+                                        value={endpointType}
+                                        placeholder='Endpoint'
+                                        onChange={handleEndpointTypeSelect}
+                                        margin='normal'
+                                        variant='outlined'
+                                        select
+                                        className={classes.endpointTypeSelect}
+                                    >
+                                        {endpointTypes.map((type) => {
+                                            return <MenuItem
+                                                value={type.key}
+                                                id={'config-type-' + type.key}
+                                            >
+                                                {type.value}
+                                            </MenuItem>;
+                                        })}
+                                    </TextField>
+                                    <div className={classes.lpConfigWrapper}>
+                                        <IconButton
+                                            className={classes.lbConfigBtn}
+                                            disabled={epConfig.endpoint_type !== 'load_balance'}
+                                            aria-label='Delete'
+                                            onClick={() => setLBConfigOpen(true)}
+                                            size='large'>
+                                            <Icon>
+                                                settings
+                                            </Icon>
+                                        </IconButton>
+                                    </div>
+                                </Grid>
+                                <Grid xs={12} container spacing={2}>
+                                    <Collapse className={classes.wrapper} in={endpointType !== 'none'}>
+                                        {epConfig.production_endpoints
+                                    && (
+                                        <Grid xs={12} className={classes.endpointsWrapperLeft}>
+                                            <Typography className={classes.endpointName}>
+                                                {epConfig.endpoint_type === 'failover'
+                                                    ? (
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.'
+                                                            + 'LoadbalanceFailoverConfig.production.'
+                                                            + 'failover.endpoint'}
+                                                            defaultMessage='Production Failover Endpoints'
+                                                        />
+                                                    )
+                                                    : (
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.LoadbalanceFailoverConfig.'
+                                                    + 'production.loadbalance.endpoint'}
+                                                            defaultMessage='Production Loadbalanced Endpoints'
+                                                        />
+                                                    )}
+                                            </Typography>
+                                            <EndpointListing
+                                                apiEndpoints={epConfig.production_endpoints}
+                                                failOvers={epConfig.production_failovers}
+                                                epType={epConfig.endpoint_type}
+                                                addNewEndpoint={addEndpoint}
+                                                removeEndpoint={removeEndpoint}
+                                                editEndpoint={editEndpoint}
+                                                setAdvancedConfigOpen={toggleAdvanceConfig}
+                                                setESConfigOpen={toggleESConfig}
+                                                category='production_endpoints'
+                                                apiId={api.id}
+                                            />
+                                        </Grid>
+                                    )}
+                                        {epConfig.sandbox_endpoints
+                                    && (
+                                        <Grid xs={12} className={classes.endpointsWrapperRight}>
+                                            <Typography className={classes.endpointName}>
+                                                {epConfig.endpoint_type === 'failover'
+                                                    ? (
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.'
+                                                            + 'LoadbalanceFailoverConfig.sandbox.'
+                                                            + 'failover.endpoint'}
+                                                            defaultMessage='Sandbox Failover Endpoints'
+                                                        />
+                                                    )
+                                                    : (
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.LoadbalanceFailoverConfig.'
+                                                    + 'sandbox.loadbalance.endpoint'}
+                                                            defaultMessage='Sandbox Loadbalanced Endpoints'
+                                                        />
+                                                    )}
+                                            </Typography>
+                                            <EndpointListing
+                                                apiEndpoints={epConfig.sandbox_endpoints}
+                                                failOvers={epConfig.sandbox_failovers}
+                                                epType={epConfig.endpoint_type}
+                                                addNewEndpoint={addEndpoint}
+                                                removeEndpoint={removeEndpoint}
+                                                editEndpoint={editEndpoint}
+                                                setAdvancedConfigOpen={toggleAdvanceConfig}
+                                                setESConfigOpen={toggleESConfig}
+                                                category='sandbox_endpoints'
+                                                apiId={api.id}
+                                            />
+                                        </Grid>
+                                    )}
+                                    </Collapse>
+                                </Grid>
                             </Grid>
-                            <Grid xs={12} container spacing={2}>
-                                <Collapse className={classes.wrapper} in={endpointType !== 'none'}>
-                                    {epConfig.production_endpoints
-                                && (
-                                    <Grid xs={12} className={classes.endpointsWrapperLeft}>
-                                        <Typography className={classes.endpointName}>
-                                            {epConfig.endpoint_type === 'failover'
-                                                ? (
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Endpoints.'
-                                                        + 'LoadbalanceFailoverConfig.production.'
-                                                        + 'failover.endpoint'}
-                                                        defaultMessage='Production Failover Endpoints'
-                                                    />
-                                                )
-                                                : (
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Endpoints.LoadbalanceFailoverConfig.'
-                                                + 'production.loadbalance.endpoint'}
-                                                        defaultMessage='Production Loadbalanced Endpoints'
-                                                    />
-                                                )}
-                                        </Typography>
-                                        <EndpointListing
-                                            apiEndpoints={epConfig.production_endpoints}
-                                            failOvers={epConfig.production_failovers}
-                                            epType={epConfig.endpoint_type}
-                                            addNewEndpoint={addEndpoint}
-                                            removeEndpoint={removeEndpoint}
-                                            editEndpoint={editEndpoint}
-                                            setAdvancedConfigOpen={toggleAdvanceConfig}
-                                            setESConfigOpen={toggleESConfig}
-                                            category='production_endpoints'
-                                            apiId={api.id}
-                                        />
-                                    </Grid>
-                                )}
-                                    {epConfig.sandbox_endpoints
-                                && (
-                                    <Grid xs={12} className={classes.endpointsWrapperRight}>
-                                        <Typography className={classes.endpointName}>
-                                            {epConfig.endpoint_type === 'failover'
-                                                ? (
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Endpoints.'
-                                                        + 'LoadbalanceFailoverConfig.sandbox.'
-                                                        + 'failover.endpoint'}
-                                                        defaultMessage='Sandbox Failover Endpoints'
-                                                    />
-                                                )
-                                                : (
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Endpoints.LoadbalanceFailoverConfig.'
-                                                + 'sandbox.loadbalance.endpoint'}
-                                                        defaultMessage='Sandbox Loadbalanced Endpoints'
-                                                    />
-                                                )}
-                                        </Typography>
-                                        <EndpointListing
-                                            apiEndpoints={epConfig.sandbox_endpoints}
-                                            failOvers={epConfig.sandbox_failovers}
-                                            epType={epConfig.endpoint_type}
-                                            addNewEndpoint={addEndpoint}
-                                            removeEndpoint={removeEndpoint}
-                                            editEndpoint={editEndpoint}
-                                            setAdvancedConfigOpen={toggleAdvanceConfig}
-                                            setESConfigOpen={toggleESConfig}
-                                            category='sandbox_endpoints'
-                                            apiId={api.id}
-                                        />
-                                    </Grid>
-                                )}
-                                </Collapse>
-                            </Grid>
-                        </Grid>
-                    )}
-            </AccordionDetails>
-        </Accordion>
-        <Dialog open={isLBConfigOpen}>
-            <DialogTitle>
-                <Typography className={classes.configDialogHeader}>
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.LoadbalanceFailoverConfig.load.balance.configuration.title'
-                        defaultMessage='Load Balance Configurations'
+                        )}
+                </AccordionDetails>
+            </Accordion>
+            <Dialog open={isLBConfigOpen}>
+                <DialogTitle>
+                    <Typography className={classes.configDialogHeader}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.LoadbalanceFailoverConfig.load.balance.configuration.title'
+                            defaultMessage='Load Balance Configurations'
+                        />
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <LoadBalanceConfig
+                        handleLBConfigChange={handleLBConfigChange}
+                        closeLBConfigDialog={() => setLBConfigOpen(false)}
+                        algoCombo={epConfig.algoCombo}
+                        algoClassName={epConfig.algoClassName}
+                        sessionTimeOut={epConfig.sessionTimeOut}
+                        failOver={epConfig.failOver}
+                        sessionManagement={epConfig.sessionManagement}
                     />
-                </Typography>
-            </DialogTitle>
-            <DialogContent>
-                <LoadBalanceConfig
-                    handleLBConfigChange={handleLBConfigChange}
-                    closeLBConfigDialog={() => setLBConfigOpen(false)}
-                    algoCombo={epConfig.algoCombo}
-                    algoClassName={epConfig.algoClassName}
-                    sessionTimeOut={epConfig.sessionTimeOut}
-                    failOver={epConfig.failOver}
-                    sessionManagement={epConfig.sessionManagement}
-                />
-            </DialogContent>
-        </Dialog>
-    </>;
+                </DialogContent>
+            </Dialog>
+        </Root>
+    );
 }
 
 LoadbalanceFailoverConfig.propTypes = {
@@ -404,4 +436,4 @@ LoadbalanceFailoverConfig.propTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(LoadbalanceFailoverConfig));
+export default injectIntl((LoadbalanceFailoverConfig));

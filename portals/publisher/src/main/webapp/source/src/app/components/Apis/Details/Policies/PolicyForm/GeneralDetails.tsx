@@ -17,8 +17,8 @@
  */
 
 import React, { FC } from 'react';
+import { styled } from '@mui/material/styles';
 import { Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -31,15 +31,23 @@ import { FormattedMessage } from 'react-intl';
 import FormControl from '@mui/material/FormControl';
 import { ACTIONS } from './PolicyCreateForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    mandatoryStar: {
+const PREFIX = 'GeneralDetails';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    formGroup: `${PREFIX}-formGroup`
+};
+
+const StyledBox = styled(Box)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    formGroup: {
+
+    [`& .${classes.formGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
-    },
+    }
 }));
 
 interface GeneralDetailsProps {
@@ -66,7 +74,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
     dispatch,
     isViewMode,
 }) => {
-    const classes = useStyles();
+
 
     // Validates whether atleast one flow (i.e. request, response or fault) is selected
     // True if none of the flows are selected.
@@ -125,7 +133,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
     };
 
     return (
-        <Box display='flex' flexDirection='row' mt={1}>
+        <StyledBox display='flex' flexDirection='row' mt={1}>
             <Box width='40%'>
                 <Typography color='inherit' variant='subtitle2' component='div'>
                     <FormattedMessage
@@ -408,7 +416,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </StyledBox>
     );
 };
 

@@ -17,8 +17,8 @@
  */
 
 import React, { FC, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Grid, Typography , Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { useDrop } from 'react-dnd';
 import clsx from 'clsx';
 import { green, red } from '@mui/material/colors';
@@ -27,8 +27,20 @@ import AttachedPolicyList from './AttachedPolicyList';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
 
 
-const useStyles = makeStyles((theme: Theme) => ({
-    dropzoneDiv: {
+const PREFIX = 'PolicyDropzone';
+
+const classes = {
+    dropzoneDiv: `${PREFIX}-dropzoneDiv`,
+    acceptDrop: `${PREFIX}-acceptDrop`,
+    rejectDrop: `${PREFIX}-rejectDrop`,
+    alignLeft: `${PREFIX}-alignLeft`,
+    alignRight: `${PREFIX}-alignRight`,
+    alignCenter: `${PREFIX}-alignCenter`
+};
+
+
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.dropzoneDiv}`]: {
         border: '1px dashed',
         borderColor: theme.palette.primary.main,
         height: '8rem',
@@ -42,23 +54,28 @@ const useStyles = makeStyles((theme: Theme) => ({
         alignItems: 'center',
         overflowX: 'scroll',
     },
-    acceptDrop: {
+
+    [`& .${classes.acceptDrop}`]: {
         backgroundColor: green[50],
         borderColor: 'green',
     },
-    rejectDrop: {
+
+    [`& .${classes.rejectDrop}`]: {
         backgroundColor: red[50],
         borderColor: 'red',
     },
-    alignLeft: {
+
+    [`& .${classes.alignLeft}`]: {
         justifyContent: 'left',
     },
-    alignRight: {
+
+    [`& .${classes.alignRight}`]: {
         justifyContent: 'right',
     },
-    alignCenter: {
+
+    [`& .${classes.alignCenter}`]: {
         justifyContent: 'center',
-    },
+    }
 }));
 
 interface PolicyDropzoneProps {
@@ -91,7 +108,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     allPolicies,
     isAPILevelPolicy,
 }) => {
-    const classes = useStyles();
+
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
 
     const [{ canDrop }, drop] = useDrop({
@@ -103,7 +120,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     });
 
     return (
-        <>
+        (<Root>
             <Grid container>
                 <div
                     ref={drop}
@@ -148,7 +165,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
                     isAPILevelPolicy={isAPILevelPolicy}
                 />
             )}
-        </>
+        </Root>)
     );
 };
 
