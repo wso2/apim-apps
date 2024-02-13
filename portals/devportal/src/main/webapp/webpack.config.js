@@ -98,6 +98,10 @@ module.exports = function (env, argv) {
                     target: 'https://localhost:9443/devportal',
                     secure: false,
                 },
+                '/site/public/theme': {
+                    target: 'https://localhost:9443/devportal',
+                    secure: false,
+                },
                 '/api/am': {
                     target: 'https://localhost:9443',
                     secure: false,
