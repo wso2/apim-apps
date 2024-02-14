@@ -17,6 +17,7 @@
  */
 
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -30,52 +31,51 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import AuthManager from 'AppData/AuthManager';
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    fullHeight: {
+const PREFIX = 'AppsTableContent';
+
+const classes = {
+    head: `${PREFIX}-head`,
+    body: `${PREFIX}-body`,
+    root: `${PREFIX}-root`,
+    root2: `${PREFIX}-root2`,
+    fullHeight: `${PREFIX}-fullHeight`,
+    tableRow: `${PREFIX}-tableRow`,
+    appOwner: `${PREFIX}-appOwner`,
+    appName: `${PREFIX}-appName`,
+};
+
+const StyledTableBody = styled(TableBody)((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.fullHeight}`]: {
         height: '100%',
     },
-    tableRow: {
+
+    [`& .${classes.tableRow}`]: {
         height: theme.spacing(5),
         '& td': {
             padding: theme.spacing(0.5),
         },
     },
-    appOwner: {
+
+    [`& .${classes.appOwner}`]: {
         pointerEvents: 'none',
     },
-    appName: {
+
+    [`& .${classes.appName}`]: {
         '& a': {
             color: '#1b9ec7 !important',
         },
     },
-});
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    body: {
-        fontSize: 14,
-    },
-    root: {
-        padding: `0 0 0  ${theme.spacing(2)}`,
-    },
-}))(TableCell);
+}));
 
-const StyledTableRow = withStyles((theme) => ({
-    root: {
-        '&:nth-of-type(odd)': {
-            backgroundColor: theme.palette.background.default,
-        },
-    },
-}))(TableRow);
+const StyledTableCell = TableCell;
+
+const StyledTableRow = TableRow;
 /**
  *
  *
@@ -105,7 +105,7 @@ class AppsTableContent extends Component {
      */
     render() {
         const {
-            apps, toggleDeleteConfirmation, classes,
+            apps, toggleDeleteConfirmation,
         } = this.props;
         const { notFound } = this.state;
         let appsTableData = [];
@@ -121,13 +121,28 @@ class AppsTableContent extends Component {
             return <ResourceNotFound />;
         }
         return (
-            <TableBody className={classes.fullHeight}>
+            <StyledTableBody className={classes.fullHeight}>
                 {appsTableData
                     .map((app) => {
                         const isAppOwner = app.owner.toLowerCase() === AuthManager.getUser().name.toLowerCase();
                         return (
-                            <StyledTableRow className={classes.tableRow} key={app.applicationId} data-testid={'row-' + app.name}>
-                                <StyledTableCell align='left' className={classes.appName}>
+                            <StyledTableRow
+                                className={classes.tableRow}
+                                key={app.applicationId}
+                                data-testid={'row-' + app.name}
+                                classes={{
+                                    root: classes.root2,
+                                }}
+                            >
+                                <StyledTableCell
+                                    align='left'
+                                    className={classes.appName}
+                                    classes={{
+                                        head: classes.head,
+                                        body: classes.body,
+                                        root: classes.root,
+                                    }}
+                                >
                                     {app.status === this.APPLICATION_STATES.APPROVED
                                         || app.status === this.APPLICATION_STATES.DELETE_PENDING ? (
                                             <Link to={'/applications/' + app.applicationId}>{app.name}</Link>
@@ -135,9 +150,34 @@ class AppsTableContent extends Component {
                                             app.name
                                         )}
                                 </StyledTableCell>
-                                <StyledTableCell align='left'>{app.owner.toLowerCase()}</StyledTableCell>
-                                <StyledTableCell align='left'>{app.throttlingPolicy}</StyledTableCell>
-                                <StyledTableCell align='left'>
+                                <StyledTableCell
+                                    align='left'
+                                    classes={{
+                                        head: classes.head,
+                                        body: classes.body,
+                                        root: classes.root,
+                                    }}
+                                >
+                                    {app.owner.toLowerCase()}
+                                </StyledTableCell>
+                                <StyledTableCell
+                                    align='left'
+                                    classes={{
+                                        head: classes.head,
+                                        body: classes.body,
+                                        root: classes.root,
+                                    }}
+                                >
+                                    {app.throttlingPolicy}
+                                </StyledTableCell>
+                                <StyledTableCell
+                                    align='left'
+                                    classes={{
+                                        head: classes.head,
+                                        body: classes.body,
+                                        root: classes.root,
+                                    }}
+                                >
                                     {app.status === this.APPLICATION_STATES.APPROVED && (
                                         <Typography variant='subtitle1' component='label' gutterBottom>
                                             <FormattedMessage
@@ -184,8 +224,24 @@ class AppsTableContent extends Component {
                                         </Typography>
                                     )}
                                 </StyledTableCell>
-                                <StyledTableCell align='left'>{app.subscriptionCount}</StyledTableCell>
-                                <StyledTableCell align='left'>
+                                <StyledTableCell
+                                    align='left'
+                                    classes={{
+                                        head: classes.head,
+                                        body: classes.body,
+                                        root: classes.root,
+                                    }}
+                                >
+                                    {app.subscriptionCount}
+                                </StyledTableCell>
+                                <StyledTableCell
+                                    align='left'
+                                    classes={{
+                                        head: classes.head,
+                                        body: classes.body,
+                                        root: classes.root,
+                                    }}
+                                >
                                     <ScopeValidation
                                         resourcePath={resourcePaths.SINGLE_APPLICATION}
                                         resourceMethod={resourceMethods.PUT}
@@ -258,7 +314,7 @@ class AppsTableContent extends Component {
                             </StyledTableRow>
                         );
                     })}
-            </TableBody>
+            </StyledTableBody>
         );
     }
 }
@@ -266,4 +322,4 @@ AppsTableContent.propTypes = {
     toggleDeleteConfirmation: PropTypes.func.isRequired,
     apps: PropTypes.instanceOf(Map).isRequired,
 };
-export default withStyles(styles)(AppsTableContent);
+export default (AppsTableContent);

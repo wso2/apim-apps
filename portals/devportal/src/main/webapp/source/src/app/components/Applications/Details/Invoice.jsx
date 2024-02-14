@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
@@ -28,10 +29,20 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
-import withStyles from '@mui/styles/withStyles';
 
-const styles = (theme) => ({
-    dialogWrapper: {
+const PREFIX = 'Invoice';
+
+const classes = {
+    dialogWrapper: `${PREFIX}-dialogWrapper`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.dialogWrapper}`]: {
         '& span,& p , & h5, & label, & td, & li': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
@@ -39,7 +50,7 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-});
+}));
 
 const columns = ['Name', 'Value'];
 
@@ -62,7 +73,7 @@ const options = {
  */
 function Invoice(props) {
     const {
-        subscriptionId, classes, tiers,
+        subscriptionId, tiers,
     } = props;
     const [showPopup, setShowPopup] = useState(false);
     const [showErrorPopup, setShowErrorPopup] = useState(false);
@@ -106,7 +117,7 @@ function Invoice(props) {
     };
 
     return (
-        <>
+        <Root>
             <Button
                 color='grey'
                 onClick={handlePopup}
@@ -167,7 +178,7 @@ function Invoice(props) {
                     </DialogActions>
                 </Dialog>
             )}
-        </>
+        </Root>
     );
 }
 Invoice.defaultProps = {
@@ -178,4 +189,4 @@ Invoice.propTypes = {
     tiers: PropTypes.arrayOf(PropTypes.string),
 };
 
-export default withStyles(styles)(Invoice);
+export default (Invoice);

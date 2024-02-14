@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { matchPath } from 'react-router';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -35,71 +35,100 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import CancelIcon from '@mui/icons-material/Cancel';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
-dayjs.extend(relativeTime);
+const PREFIX = 'WebHookDetails';
 
-const useStyles = makeStyles((theme) => (
+const classes = {
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    userNotificationPaper: `${PREFIX}-userNotificationPaper`,
+    titleSub: `${PREFIX}-titleSub`,
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    listWrapper: `${PREFIX}-listWrapper`,
+    subscriptionRow: `${PREFIX}-subscriptionRow`,
+    callbackurl: `${PREFIX}-callbackurl`,
+    subscriptionTimestamp: `${PREFIX}-subscriptionTimestamp`,
+    SubscriptionHeader: `${PREFIX}-SubscriptionHeader`,
+};
+
+const Root = styled('div')((
     {
-        buttonIcon: {
-            marginRight: 10,
+        theme,
+    },
+) => ({
+    [`& .${classes.buttonIcon}`]: {
+        marginRight: 10,
+    },
+
+    [`& .${classes.paper}`]: {
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+    },
+
+    [`& .${classes.grid}`]: {
+        marginTop: theme.spacing(4),
+        marginBottom: theme.spacing(4),
+        paddingRight: theme.spacing(2),
+        justifyContent: 'center',
+    },
+
+    [`& .${classes.userNotificationPaper}`]: {
+        padding: theme.spacing(2),
+    },
+
+    [`& .${classes.titleSub}`]: {
+        marginLeft: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+    },
+
+    [`&.${classes.root}`]: {
+        padding: theme.spacing(3),
+        '& h5': {
+            color: theme.palette.getContrastText(theme.palette.background.default),
         },
-        paper: {
-            margin: theme.spacing(1),
-            padding: theme.spacing(1),
+    },
+
+    [`& .${classes.titleWrapper}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        paddingBottom: theme.spacing(2),
+        '& h5': {
+            marginRight: theme.spacing(1),
         },
-        grid: {
-            marginTop: theme.spacing(4),
-            marginBottom: theme.spacing(4),
-            paddingRight: theme.spacing(2),
-            justifyContent: 'center',
-        },
-        userNotificationPaper: {
-            padding: theme.spacing(2),
-        },
-        titleSub: {
-            marginLeft: theme.spacing(2),
-            paddingTop: theme.spacing(2),
-            paddingBottom: theme.spacing(2),
-        },
-        root: {
-            padding: theme.spacing(3),
-            '& h5': {
-                color: theme.palette.getContrastText(theme.palette.background.default),
-            },
-        },
-        titleWrapper: {
-            display: 'flex',
-            alignItems: 'center',
-            paddingBottom: theme.spacing(2),
-            '& h5': {
-                marginRight: theme.spacing(1),
-            },
-        },
-        listWrapper: {
-            width: '50%',
-        },
-        subscriptionRow: {
-            paddingLeft: '16px',
-        },
-        callbackurl: {
-            fontSize: '12px',
-        },
-        subscriptionTimestamp: {
-            float: 'right',
-        },
-        SubscriptionHeader: {
-            paddingBottom: '0px',
-            paddingLeft: '0px',
-            paddingTop: '0px',
-        },
-    }
-));
+    },
+
+    [`& .${classes.listWrapper}`]: {
+        width: '50%',
+    },
+
+    [`& .${classes.subscriptionRow}`]: {
+        paddingLeft: '16px',
+    },
+
+    [`& .${classes.callbackurl}`]: {
+        fontSize: '12px',
+    },
+
+    [`& .${classes.subscriptionTimestamp}`]: {
+        float: 'right',
+    },
+
+    [`& .${classes.SubscriptionHeader}`]: {
+        paddingBottom: '0px',
+        paddingLeft: '0px',
+        paddingTop: '0px',
+    },
+}));
+
+dayjs.extend(relativeTime);
 
 /**
  * @param {JSON} props props passed from parent
  * @returns {JSX} jsx output
  */
 export default function WebHookDetails(props) {
-    const classes = useStyles();
     const { location: { pathname } } = props;
     const intl = useIntl();
     const match = matchPath(pathname, {
@@ -139,7 +168,7 @@ export default function WebHookDetails(props) {
     }, []);
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <div className={classes.titleWrapper}>
                 <Typography variant='h5' className={classes.keyTitle}>
                     <FormattedMessage
@@ -208,6 +237,6 @@ export default function WebHookDetails(props) {
                     </>
                 ))}
             </List>
-        </div>
+        </Root>
     );
 }

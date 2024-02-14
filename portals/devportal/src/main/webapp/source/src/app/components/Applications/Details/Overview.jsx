@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import classNames from 'classnames';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -16,69 +16,112 @@ import {
 } from '@mui/material';
 import { upperCaseString } from 'AppData/stringFormatter';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'Overview';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    table: `${PREFIX}-table`,
+    leftCol: `${PREFIX}-leftCol`,
+    iconAligner: `${PREFIX}-iconAligner`,
+    iconTextWrapper: `${PREFIX}-iconTextWrapper`,
+    iconEven: `${PREFIX}-iconEven`,
+    iconOdd: `${PREFIX}-iconOdd`,
+    heading: `${PREFIX}-heading`,
+    emptyBox: `${PREFIX}-emptyBox`,
+    summaryRoot: `${PREFIX}-summaryRoot`,
+    actionPanel: `${PREFIX}-actionPanel`,
+    disabledTier: `${PREFIX}-disabledTier`,
+    Paper: `${PREFIX}-Paper`,
+    Paper2: `${PREFIX}-Paper2`,
+    list: `${PREFIX}-list`,
+    urlPaper: `${PREFIX}-urlPaper`,
+    input: `${PREFIX}-input`,
+    avatar: `${PREFIX}-avatar`,
+    iconStyle: `${PREFIX}-iconStyle`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         padding: theme.spacing(3, 2),
         '& td, & th': {
             color: theme.palette.getContrastText(theme.custom.infoBar.background),
         },
         background: theme.custom.infoBar.background,
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         minWidth: '100%',
     },
-    leftCol: {
+
+    [`& .${classes.leftCol}`]: {
         width: 200,
     },
-    iconAligner: {
+
+    [`& .${classes.iconAligner}`]: {
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
-    iconTextWrapper: {
+
+    [`& .${classes.iconTextWrapper}`]: {
         display: 'inline-block',
         paddingLeft: 20,
     },
-    iconEven: {
+
+    [`& .${classes.iconEven}`]: {
         color: theme.custom.infoBar.iconOddColor,
         width: theme.spacing(3),
     },
-    iconOdd: {
+
+    [`& .${classes.iconOdd}`]: {
         color: theme.custom.infoBar.iconOddColor,
         width: theme.spacing(3),
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
         paddingLeft: theme.spacing(1),
     },
-    emptyBox: {
+
+    [`& .${classes.emptyBox}`]: {
         background: '#ffffff55',
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px #fff',
         padding: theme.spacing(2),
         width: '100%',
     },
-    summaryRoot: {
+
+    [`& .${classes.summaryRoot}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    actionPanel: {
+
+    [`& .${classes.actionPanel}`]: {
         justifyContent: 'flex-start',
     },
-    disabledTier: {
+
+    [`& .${classes.disabledTier}`]: {
         color: '#999999',
         fontWeight: '400',
     },
-    Paper: {
+
+    [`& .${classes.Paper}`]: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
     },
-    Paper2: {
+
+    [`& .${classes.Paper2}`]: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         height: '80%',
     },
-    list: {
+
+    [`& .${classes.list}`]: {
         width: '100%',
         maxWidth: 800,
         backgroundColor: theme.palette.background.paper,
@@ -86,7 +129,8 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto',
         maxHeight: 175,
     },
-    urlPaper: {
+
+    [`& .${classes.urlPaper}`]: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
@@ -110,17 +154,20 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 10,
         marginRight: theme.spacing(),
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: 30,
         height: 30,
         background: 'transparent',
         border: `solid 1px ${theme.palette.grey[300]}`,
     },
-    iconStyle: {
+
+    [`& .${classes.iconStyle}`]: {
         cursor: 'pointer',
         margin: '-10px 0',
         padding: '0 0 0 5px',
@@ -137,7 +184,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX} jsx output from render.
  */
 function Overview(props) {
-    const classes = useStyles();
     const [application, setApplication] = useState(null);
     const [tierDescription, setTierDescription] = useState(null);
     const [notFound, setNotFound] = useState(false);
@@ -217,7 +263,7 @@ function Overview(props) {
         }
     };
     return (
-        <>
+        <Root>
             <div className={classes.root}>
                 <Table className={classes.table}>
                     <TableBody>
@@ -443,7 +489,7 @@ function Overview(props) {
                     </div>
                 )}
             </div>
-        </>
+        </Root>
     );
 }
 export default injectIntl(Overview);

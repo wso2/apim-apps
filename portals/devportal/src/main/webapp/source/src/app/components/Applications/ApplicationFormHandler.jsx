@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -31,21 +32,25 @@ import Application from 'AppData/Application';
 import { Link } from 'react-router-dom';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
-import withStyles from '@mui/styles/withStyles';
 import ApplicationCreateBase from './Create/ApplicationCreateBase';
 
-/**
- * Main style object
- *
- * @param {*} theme
- */
-const styles = (theme) => ({
-    button: {
+const PREFIX = 'ApplicationFormHandler';
+
+const classes = {
+    button: `${PREFIX}-button`,
+};
+
+const StyledApplicationCreateBase = styled(ApplicationCreateBase)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.button}`]: {
         '& span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
     },
-});
+}));
 
 /**
  * Component used to handle application creation
@@ -407,7 +412,7 @@ class ApplicationFormHandler extends React.Component {
             throttlingPolicyList, applicationRequest, isNameValid, allAppAttributes, isApplicationSharingEnabled,
             isEdit, applicationOwner,
         } = this.state;
-        const { match: { params }, classes } = this.props;
+        const { match: { params } } = this.props;
 
         const CreatePageTitle = (
             <>
@@ -463,7 +468,7 @@ class ApplicationFormHandler extends React.Component {
             params.application_id && applicationRequest.throttlingPolicy === ''
                 ? <Progress />
                 : (
-                    <ApplicationCreateBase title={isEdit ? EditPageTitle : CreatePageTitle}>
+                    <StyledApplicationCreateBase title={isEdit ? EditPageTitle : CreatePageTitle}>
                         <Box py={4} mb={2} display='flex' justifyContent='center'>
                             <Grid item xs={10} md={9}>
                                 <ApplicationCreateForm
@@ -514,7 +519,7 @@ class ApplicationFormHandler extends React.Component {
                                 </Box>
                             </Grid>
                         </Box>
-                    </ApplicationCreateBase>
+                    </StyledApplicationCreateBase>
                 )
         );
     }
@@ -541,4 +546,4 @@ ApplicationFormHandler.propTypes = {
     }),
 };
 
-export default injectIntl(withStyles(styles)(ApplicationFormHandler));
+export default injectIntl((ApplicationFormHandler));
