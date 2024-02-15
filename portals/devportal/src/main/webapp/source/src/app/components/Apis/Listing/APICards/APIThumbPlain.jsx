@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled, useTheme } from '@mui/material/styles';
 import Icon from '@mui/material/Icon';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -20,23 +19,49 @@ import EmailIcon from '@mui/icons-material/Email';
 
 import getIcon from './ImageUtils';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'APIThumbPlain';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    bullet: `${PREFIX}-bullet`,
+    title: `${PREFIX}-title`,
+    pos: `${PREFIX}-pos`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    contextBox: `${PREFIX}-contextBox`,
+    caption: `${PREFIX}-caption`,
+    imageDisplay: `${PREFIX}-imageDisplay`,
+    typo: `${PREFIX}-typo`,
+    truncate: `${PREFIX}-truncate`,
+    popover: `${PREFIX}-popover`,
+    paper: `${PREFIX}-paper`,
+    ribbon: `${PREFIX}-ribbon`,
+};
+
+const StyledCard = styled(Card)((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
         minWidth: 200,
         marginTop: 10,
     },
-    bullet: {
+
+    [`& .${classes.bullet}`]: {
         display: 'inline-block',
         margin: '0 2px',
         transform: 'scale(0.8)',
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         fontSize: 14,
     },
-    pos: {
+
+    [`& .${classes.pos}`]: {
         marginBottom: 12,
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: '150px',
         color: '#444',
         whiteSpace: 'nowrap',
@@ -46,37 +71,45 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         'padding-left': '5px',
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         maxWidth: 120,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         paddingLeft: '5px',
     },
-    caption: {
+
+    [`& .${classes.caption}`]: {
         color: theme.palette.grey[700],
     },
-    imageDisplay: {
+
+    [`& .${classes.imageDisplay}`]: {
         maxWidth: '40px',
         maxHeight: '40px',
     },
-    typo: {
+
+    [`& .${classes.typo}`]: {
         display: 'flex',
     },
-    truncate: {
+
+    [`& .${classes.truncate}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         maxWidth: '175px',
     },
-    popover: {
+
+    [`& .${classes.popover}`]: {
         pointerEvents: 'none',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(1),
         maxWidth: '300px',
     },
-    ribbon: {
+
+    [`& .${classes.ribbon}`]: {
         fontFamily: theme.typography.fontFamily,
         fontSize: '12px',
         fontWeight: 800,
@@ -89,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'uppercase',
     },
 }));
+
 const windowURL = window.URL || window.webkitURL;
 
 /**
@@ -97,7 +131,7 @@ const windowURL = window.URL || window.webkitURL;
  */
 function APIThumbPlain(props) {
     const theme = useTheme();
-    const classes = useStyles();
+
     const { api, showInfo } = props;
     const { custom: { thumbnail, social: { showRating } } } = theme;
     const {
@@ -198,7 +232,7 @@ function APIThumbPlain(props) {
     };
 
     return (
-        <Card className={classes.root} variant='outlined'>
+        <StyledCard className={classes.root} variant='outlined'>
             <Box mb={2} pl={1}>
                 {api.advertiseInfo && api.advertiseInfo.advertised && (
                     <div className={classes.ribbon}>third party</div>
@@ -468,7 +502,7 @@ function APIThumbPlain(props) {
                     </Box>
                 </Box>
             </CardContent>
-        </Card>
+        </StyledCard>
     );
 }
 
