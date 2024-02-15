@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -27,50 +28,78 @@ import Alert from 'AppComponents/Shared/Alert';
 import Application from 'AppData/Application';
 import API from 'AppData/api';
 import { FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Settings from 'Settings';
 import ButtonPanel from './ButtonPanel';
 
-const useStyles = makeStyles((theme) => ({
-    keyConfigWrapper: {
+const PREFIX = 'generateKeysStep';
+
+const classes = {
+    keyConfigWrapper: `${PREFIX}-keyConfigWrapper`,
+    radioWrapper: `${PREFIX}-radioWrapper`,
+    paper: `${PREFIX}-paper`,
+    subTitle: `${PREFIX}-subTitle`,
+    tabPanel: `${PREFIX}-tabPanel`,
+    hr: `${PREFIX}-hr`,
+    muiFormGroupRoot: `${PREFIX}-muiFormGroupRoot`,
+    table: `${PREFIX}-table`,
+    leftCol: `${PREFIX}-leftCol`,
+    iconAligner: `${PREFIX}-iconAligner`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.keyConfigWrapper}`]: {
         paddingLeft: theme.spacing(4),
         flexDirection: 'column',
     },
-    radioWrapper: {
+
+    [`& .${classes.radioWrapper}`]: {
         flexDirection: 'row',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         background: 'none',
         marginBottom: theme.spacing(2),
         marginTop: theme.spacing(2),
     },
-    subTitle: {
+
+    [`& .${classes.subTitle}`]: {
         fontWeight: 400,
     },
-    tabPanel: {
+
+    [`& .${classes.tabPanel}`]: {
         '& .MuiBox-root': {
             padding: 0,
         },
     },
-    hr: {
+
+    [`& .${classes.hr}`]: {
         border: 'solid 1px #efefef',
     },
-    muiFormGroupRoot: {
+
+    [`& .${classes.muiFormGroupRoot}`]: {
         flexDirection: 'row',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         minWidth: '100%',
         '& td, & th': {
             padding: theme.spacing(),
         },
     },
-    leftCol: {
+
+    [`& .${classes.leftCol}`]: {
         width: 200,
     },
-    iconAligner: {
+
+    [`& .${classes.iconAligner}`]: {
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
@@ -91,7 +120,7 @@ function TabPanel(props) {
             {...other}
         >
             {value === index && (
-                <>{children}</>
+                (<Root>{children}</Root>)
             )}
         </div>
     );
@@ -212,15 +241,13 @@ const generateKeysStep = (props) => {
         });
     };
 
-    const classes = useStyles();
-
     return (
-        <>
-            <Box component='div' marginLeft={4}>
+        <Root>
+            <Box component='div' marginLeft={4} width='180%'>
                 <Grid container spacing={2}>
                     {keyManager && (
                         <>
-                            <Grid item xs={12} md={12} lg={3}>
+                            <Grid item xs={12} md={20} lg={3}>
                                 <Typography color='inherit' variant='subtitle2' component='div'>
                                     <FormattedMessage
                                         defaultMessage='Key Configuration'
@@ -326,7 +353,7 @@ const generateKeysStep = (props) => {
                     </Grid>
                 </Grid>
             </Box>
-        </>
+        </Root>
     );
 };
 
