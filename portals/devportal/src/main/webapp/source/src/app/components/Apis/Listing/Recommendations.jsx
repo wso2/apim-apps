@@ -17,14 +17,15 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import {
+    styled,
     createTheme,
     ThemeProvider,
     StyledEngineProvider,
     adaptV4Theme,
 } from '@mui/material/styles';
-import { withStyles, withTheme } from '@mui/styles';
+import { Link } from 'react-router-dom';
+import { withTheme } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
@@ -38,15 +39,27 @@ import ImageGenerator from './APICards/ImageGenerator';
 import RecommendedApiThumb from './RecommendedApiThumb';
 import { ApiContext } from '../Details/ApiContext';
 
-const styles = (theme) => ({
-    rowImageOverride: {
+const PREFIX = 'Recommendations';
+
+const classes = {
+    rowImageOverride: `${PREFIX}-rowImageOverride`,
+    apiNameLink: `${PREFIX}-apiNameLink`,
+};
+
+const StyledStyledEngineProvider = styled(StyledEngineProvider)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.rowImageOverride}`]: {
         '& .material-icons': {
             marginTop: 5,
             color: `${theme.custom.thumbnail.iconColor} !important`,
             fontSize: `${theme.custom.thumbnail.listViewIconSize}px !important`,
         },
     },
-    apiNameLink: {
+
+    [`& .${classes.apiNameLink}`]: {
         display: 'flex',
         alignItems: 'center',
         '& span': {
@@ -54,7 +67,8 @@ const styles = (theme) => ({
         },
         color: theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
     },
-});
+}));
+
 /**
  * Table view for api listing
  *
@@ -256,7 +270,6 @@ class Recommendations extends React.Component {
                             const artifact = tableViewObj.state.data[tableMeta.rowIndex];
                             const apiName = tableMeta.rowData[2];
                             const apiId = tableMeta.rowData[0];
-                            const { classes } = this.props;
 
                             if (artifact) {
                                 return (
@@ -354,15 +367,15 @@ class Recommendations extends React.Component {
             return null;
         }
         return (
-            <StyledEngineProvider injectFirst>
+            <StyledStyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.getMuiTheme()}>
                     <MUIDataTable title='Recommended APIs for you' data={data} columns={columns} options={options} />
                 </ThemeProvider>
-            </StyledEngineProvider>
+            </StyledStyledEngineProvider>
         );
     }
 }
 
 Recommendations.contextType = ApiContext;
 
-export default withSettings(injectIntl(withTheme(withStyles(styles)(Recommendations))));
+export default withSettings(injectIntl(withTheme((Recommendations))));

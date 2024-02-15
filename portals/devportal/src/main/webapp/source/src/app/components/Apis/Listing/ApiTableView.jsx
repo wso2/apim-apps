@@ -17,14 +17,15 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import {
+    styled,
     createTheme,
     ThemeProvider,
     StyledEngineProvider,
     adaptV4Theme,
 } from '@mui/material/styles';
-import { withStyles, withTheme } from '@mui/styles';
+import { Link } from 'react-router-dom';
+import { withTheme } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import merge from 'lodash.merge';
@@ -46,8 +47,18 @@ import DocThumb from './APICards/DocThumb';
 import { ApiContext } from '../Details/ApiContext';
 import NoApi from './NoApi';
 
-const styles = (theme) => ({
-    apiNameLink: {
+const PREFIX = 'ApiTableView';
+
+const classes = {
+    apiNameLink: `${PREFIX}-apiNameLink`,
+};
+
+const StyledStyledEngineProvider = styled(StyledEngineProvider)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.apiNameLink}`]: {
         display: 'flex',
         alignItems: 'center',
         '& span': {
@@ -60,7 +71,8 @@ const styles = (theme) => ({
             fontSize: `${theme.custom.thumbnail.listViewIconSize}px !important`,
         },
     },
-});
+}));
+
 /**
  * Table view for api listing
  *
@@ -345,7 +357,6 @@ class ApiTableView extends React.Component {
                             const artifact = tableViewObj.state.data[tableMeta.rowIndex];
                             const apiName = tableMeta.rowData[2];
                             const apiId = tableMeta.rowData[0];
-                            const { classes } = this.props;
 
                             if (artifact) {
                                 if (artifact.type === 'DOC') {
@@ -605,15 +616,15 @@ class ApiTableView extends React.Component {
             return <NoApi />;
         }
         return (
-            <StyledEngineProvider injectFirst>
+            <StyledStyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.getMuiTheme()}>
                     <MUIDataTable title='' data={data} columns={columns} options={options} />
                 </ThemeProvider>
-            </StyledEngineProvider>
+            </StyledStyledEngineProvider>
         );
     }
 }
 
 ApiTableView.contextType = ApiContext;
 
-export default withSettings(injectIntl(withTheme(withStyles(styles)(ApiTableView))));
+export default withSettings(injectIntl(withTheme((ApiTableView))));

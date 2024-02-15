@@ -17,21 +17,33 @@
  */
 
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import classNames from 'classnames';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { TagCloud } from 'react-tagcloud';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-    clickablePointer: {
+const PREFIX = 'ApiTagCloud';
+
+const classes = {
+    clickablePointer: `${PREFIX}-clickablePointer`,
+    filterTitle: `${PREFIX}-filterTitle`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.clickablePointer}`]: {
         cursor: 'pointer',
         padding: theme.spacing(1),
     },
-    filterTitle: {
+
+    [`& .${classes.filterTitle}`]: {
         fontWeight: 200,
         paddingLeft: theme.spacing(2),
         background: theme.custom.tagCloud.leftMenu.titleBackground,
@@ -49,7 +61,6 @@ const useStyles = makeStyles((theme) => ({
  * @param {JSON} props @inheritDoc
  */
 function ApiTagCloud(props) {
-    const classes = useStyles();
     const theme = useTheme();
     const {
         custom: {
@@ -82,7 +93,7 @@ function ApiTagCloud(props) {
 
     return (
         apisTagWithoutGroups && (
-            <>
+            <Root>
                 <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'apis-listing-tags-title')}>
                     <FormattedMessage defaultMessage='Tags' id='Apis.Listing.ApiTagCloud.title' />
                 </Typography>
@@ -95,7 +106,7 @@ function ApiTagCloud(props) {
                     className={classes.clickablePointer}
                     onClick={(tag) => handleOnClick(tag)}
                 />
-            </>
+            </Root>
         )
     );
 }
