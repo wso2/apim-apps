@@ -16,15 +16,14 @@
  * under the License.
  */
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
 import Paper from '@mui/material/Paper';
-import { Typography } from '@mui/material';
+import {Typography, useTheme} from '@mui/material';
 import Grid from '@mui/material/Grid/Grid';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import classNames from 'classnames';
 import CircularProgress from '@mui/material/CircularProgress';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
@@ -35,14 +34,35 @@ import API from '../../../../data/api';
 import { ApiContext } from '../ApiContext';
 import AuthManager from '../../../../data/AuthManager';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'CommentsLegacy';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    contentWrapperOverview: `${PREFIX}-contentWrapperOverview`,
+    titleSub: `${PREFIX}-titleSub`,
+    link: `${PREFIX}-link`,
+    verticalSpace: `${PREFIX}-verticalSpace`,
+    loadMoreLink: `${PREFIX}-loadMoreLink`,
+    genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
+    paperProgress: `${PREFIX}-paperProgress`,
+    button: `${PREFIX}-button`
+};
+
+const StyledApiContextConsumer = styled(ApiContext.Consumer)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
         alignItems: 'center',
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         marginRight: theme.spacing(3),
         paddingBottom: theme.spacing(3),
         paddingRight: theme.spacing(2),
@@ -50,55 +70,64 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    contentWrapper: {
-        paddingLeft: theme.spacing(3),
-        marginTop: theme.spacing(1),
+
+    [`& .${classes.contentWrapper}`]: {
+        paddingLeft: theme.spacing(30),
+        marginTop: theme.spacing(10),
     },
-    contentWrapperOverview: {
-        padding: 0,
+
+    [`& .${classes.contentWrapperOverview}`]: {
+        padding: 40,
         width: '100%',
         boxShadow: 'none',
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         cursor: 'pointer',
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    link: {
+
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
-    verticalSpace: {
+
+    [`& .${classes.verticalSpace}`]: {
         marginTop: theme.spacing(0.2),
     },
-    loadMoreLink: {
+
+    [`& .${classes.loadMoreLink}`]: {
         textDecoration: 'none',
     },
-    genericMessageWrapper: {
+
+    [`& .${classes.genericMessageWrapper}`]: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(3),
     },
-    paperProgress: {
+
+    [`& .${classes.paperProgress}`]: {
         padding: theme.spacing(3),
         marginTop: theme.spacing(2),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         textTransform: 'capitalize',
-    },
-});
+    }
+}));
 
 /**
  * Display a comment list
- * @class Comments
+ * @class CommentsLegacy
  * @extends {React.Component}
  */
-class Comments extends Component {
+class CommentsLegacy extends Component {
     static contextType = ApiContext;
 
     /**
-     * Creates an instance of Comments
+     * Creates an instance of CommentsLegacy
      * @param {*} props properies passed by the parent element
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     constructor(props) {
         super(props);
@@ -121,17 +150,17 @@ class Comments extends Component {
 
     /**
      * Gets all the comments for a particular API, when component mounts
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     componentDidMount() {
         let {
-            apiId, theme, match, intl, isOverview, setCount,
+            apiId, match, intl, isOverview, setCount,
         } = this.props;
         if (match) apiId = match.params.apiUuid;
         this.setState({ apiId });
 
         const restApi = new API();
-        const limit = theme.custom.commentsLimit;
+        const limit = this.props.commentsLimit;
         const offset = 0;
 
         restApi
@@ -159,13 +188,12 @@ class Comments extends Component {
 
     /**
      * Handles loading the previous comments
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     handleLoadMoreComments() {
         const { allComments, apiId, comments } = this.state;
-        const { theme } = this.props;
         const restApi = new API();
-        const limit = theme.custom.commentsLimit;
+        const limit = this.props.commentsLimit;
         const offset = comments.length;
 
         restApi
@@ -183,7 +211,7 @@ class Comments extends Component {
 
     /**
      * Handles expanding the comment section
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     handleExpandClick() {
         const { expanded } = this.state;
@@ -193,11 +221,10 @@ class Comments extends Component {
     /**
      * Add comment to the comment list
      * @param {any} comment added comment
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     addComment(comment) {
         const { totalComments, allComments } = this.state;
-        const { theme: { custom: { commentsLimit } } } = this.props;
         const newTotal = totalComments + 1;
 
         this.setState({
@@ -210,7 +237,7 @@ class Comments extends Component {
     /**
      * Update a specific comment in the comment list
      * @param {any} comment updated comment
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     updateComment(comment) {
         const { comments } = this.state;
@@ -231,7 +258,7 @@ class Comments extends Component {
     /**
      * Delete a comment
      * @param {string} commentIdOfCommentToDelete id of deleted commetn
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     onDeleteComment(commentIdOfCommentToDelete) {
         const {
@@ -303,22 +330,25 @@ class Comments extends Component {
     /**
      * Render method of the component
      * @returns {React.Component} Comment html component
-     * @memberof Comments
+     * @memberof CommentsLegacy
      */
     render() {
-        const { classes, isOverview, tenantDomain } = this.props;
+        const { isOverview, tenantDomain } = this.props;
         const {
             comments, allComments, totalComments, showCommentAdd,
         } = this.state;
         const isCrossTenantUser = AuthManager.getUser() && this.isCrossTenant(AuthManager.getUser(), tenantDomain);
         return (
-            <ApiContext.Consumer>
+            <StyledApiContextConsumer>
                 {({ api }) => (
-                    <div
-                        className={classNames(
-                            { [classes.contentWrapper]: !isOverview },
-                            { [classes.contentWrapperOverview]: isOverview },
-                        )}
+                    <Box
+                        sx={(theme) => ({
+                            paddingLeft: isOverview ? null : theme.spacing(3),
+                            marginTop: isOverview ? null : theme.spacing(3),
+                            padding: isOverview ? 40 : null,
+                            width: isOverview ? '100%' : null,
+                            boxShadow: isOverview ? 'none' : null,
+                        })}
                     >
                         {!isOverview && (
                             <div className={classes.root}>
@@ -416,19 +446,35 @@ class Comments extends Component {
                                 </Grid>
                             </div>
                         )}
-                    </div>
+                    </Box>
                 )}
-            </ApiContext.Consumer>
+            </StyledApiContextConsumer>
         );
     }
 }
 
-Comments.defaultProps = {
+CommentsLegacy.defaultProps = {
     setCount: () => { },
 };
-Comments.propTypes = {
+CommentsLegacy.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
     setCount: PropTypes.func,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(withSettings(Comments)));
+function Comments(props) {
+    const { apiId, match, intl, isOverview, setCount, tenantDomain } = props;
+    const theme = useTheme();
+    return (
+        <CommentsLegacy
+            apiId={apiId}
+            match={match}
+            intl={intl}
+            isOverview={isOverview}
+            setCount={setCount}
+            tenantDomain={tenantDomain}
+            commentsLimit={theme.custom.commentsLimit}
+        />
+    );
+}
+
+export default injectIntl((withSettings(Comments)));
