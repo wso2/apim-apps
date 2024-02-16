@@ -27,7 +27,7 @@ import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import WarningIcon from '@mui/icons-material/Warning';
-import makeStyles from '@mui/styles/makeStyles';
+import {styled} from "@mui/material/styles";
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -36,38 +36,60 @@ const variantIcon = {
     info: InfoIcon,
 };
 
-const useStyles1 = makeStyles(theme => ({
-    root: {
-        position: 'relative' /* Overriding the default Snackbar root properties to stack messages */,
-        padding: '5px' /* To add some space between messages when stacking messages */,
+const classes = {
+    root: `${PREFIX}-root`,
+    success: `${PREFIX}-success`,
+    error: `${PREFIX}-error`,
+    info: `${PREFIX}-info`,
+    warning: `${PREFIX}-warning`,
+    icon: `${PREFIX}-icon`,
+    iconVariant: `${PREFIX}-iconVariant`,
+    message: `${PREFIX}-message`
+};
+
+const StyledIconButton = styled(IconButton)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+        position: 'relative',
+        padding: '5px',
     },
-    success: {
+
+    [`& .${classes.success}`]: {
         backgroundColor: green[600],
     },
-    error: {
+
+    [`& .${classes.error}`]: {
         backgroundColor: theme.palette.error.dark,
     },
-    info: {
+
+    [`& .${classes.info}`]: {
         backgroundColor: theme.palette.primary.main,
     },
-    warning: {
+
+    [`& .${classes.warning}`]: {
         backgroundColor: amber[700],
     },
-    icon: {
+
+    [`& .${classes.icon}`]: {
         fontSize: 20,
     },
-    iconVariant: {
+
+    [`& .${classes.iconVariant}`]: {
         opacity: 0.9,
         marginRight: theme.spacing(1),
     },
-    message: {
+
+    [`& .${classes.message}`]: {
         display: 'flex',
         alignItems: 'center',
-    },
+    }
 }));
 
 function MySnackbarContentWrapper(props) {
-    const classes = useStyles1();
+
     const {
         className, message, onClose, variant, ...other
     } = props;
@@ -84,14 +106,14 @@ function MySnackbarContentWrapper(props) {
                 </span>
             }
             action={[
-                <IconButton
+                <StyledIconButton
                     key='close'
                     aria-label='close'
                     color='inherit'
                     onClick={onClose}
                     size="large">
                     <CloseIcon className={classes.icon} />
-                </IconButton>,
+                </StyledIconButton>,
             ]}
             {...other}
         />

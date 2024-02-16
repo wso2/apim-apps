@@ -16,23 +16,33 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Validation from 'AppData/Validation';
 
-// Styles for Grid and Paper elements
-const styles = theme => ({
-    FormControl: {
+const PREFIX = 'ApiKey';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         'margin-bottom': '8px',
         width: '100%',
         padding: '0px 10px',
-    },
-});
+    }
+}));
 
 /**
  * Used to display generate api key in UI
@@ -76,10 +86,10 @@ const tokens = (props) => {
         }
         updateAccessTokenRequest(newRequest);
     };
-    const { classes, intl, accessTokenRequest } = props;
+    const {  intl, accessTokenRequest } = props;
 
     return (
-        <React.Fragment>
+        <Root>
             <FormControl variant="standard" margin='normal' className={classes.FormControl}>
                 <FormControlLabel
                     control={<Checkbox
@@ -132,10 +142,10 @@ const tokens = (props) => {
                 />
                 }
             </FormControl>
-        </React.Fragment>
+        </Root>
     );
 };
 tokens.contextTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
-export default injectIntl(withStyles(styles)(tokens));
+export default injectIntl((tokens));

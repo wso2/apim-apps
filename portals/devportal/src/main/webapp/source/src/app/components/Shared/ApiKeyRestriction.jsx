@@ -16,9 +16,9 @@
  * under the License.
  */
 import React, { useState } from "react";
+import { styled } from '@mui/material/styles';
 import { injectIntl, FormattedMessage } from "react-intl";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import IconButton from "@mui/material/IconButton";
@@ -38,23 +38,38 @@ import FormControl from "@mui/material/FormControl";
 import Typography from "@mui/material/Typography";
 import Validation from 'AppData/Validation';
 
-const styles = (theme) => ({
-  FormControl: {
+const PREFIX = 'ApiKeyRestriction';
+
+const classes = {
+  FormControl: `${PREFIX}-FormControl`,
+  outterBox: `${PREFIX}-outterBox`,
+  Fab: `${PREFIX}-Fab`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+  {
+    theme
+  }
+) => ({
+  [`& .${classes.FormControl}`]: {
     "margin-bottom": theme.spacing(1),
     width: "100%",
     padding: theme.spacing(0, 1),
   },
-  outterBox: {
+
+  [`& .${classes.outterBox}`]: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
     marginLeft: 20,
     borderColor: '#cccccc',
   },
-  Fab: {
+
+  [`& .${classes.Fab}`]: {
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-  },
-});
+  }
+}));
 
 /**
  * Used to display IP address and Http Referer restrictions in generate api key UI
@@ -65,7 +80,6 @@ const apiKeyRestrictions = (props) => {
 
   const {
     intl,
-    classes,
     newIP,
     updateNewIp,
     ipList,
@@ -137,7 +151,7 @@ const apiKeyRestrictions = (props) => {
   };
 
   return (
-    <React.Fragment>
+    <Root>
       <Box border={1} borderRadius="5px" className={classes.outterBox}>
         <Typography variant="body1">
           <FormattedMessage
@@ -372,10 +386,10 @@ const apiKeyRestrictions = (props) => {
           </Box>
         )}
       </Box>
-    </React.Fragment>
+    </Root>
   );
 };
 apiKeyRestrictions.contextTypes = {
   intl: PropTypes.shape({}).isRequired,
 };
-export default injectIntl(withStyles(styles)(apiKeyRestrictions));
+export default injectIntl((apiKeyRestrictions));

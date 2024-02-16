@@ -1,25 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
-import Paper from '@mui/material/Paper';
-import Icon from '@mui/material/Icon';
-import VerticalDivider from './VerticalDivider';
 import { Alert, AlertTitle } from '@mui/material';
-import CircularProgress from "@mui/material/CircularProgress";
 
-/**
- * Main style object
- *
- * @param {*} theme
- */
-const styles = theme => ({
-    root: {
-        width: '100%',
-        '& > * + *': {
-            marginTop: theme.spacing(2),
-        },
-    },
-});
 /**
  *  Renders a inline massage
  *
