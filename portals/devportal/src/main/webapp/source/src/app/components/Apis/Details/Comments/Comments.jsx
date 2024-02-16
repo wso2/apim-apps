@@ -72,12 +72,11 @@ const StyledApiContextConsumer = styled(ApiContext.Consumer)((
     },
 
     [`& .${classes.contentWrapper}`]: {
-        paddingLeft: theme.spacing(30),
-        marginTop: theme.spacing(10),
+        paddingLeft: theme.spacing(3),
+        marginTop: theme.spacing(1),
     },
 
     [`& .${classes.contentWrapperOverview}`]: {
-        padding: 40,
         width: '100%',
         boxShadow: 'none',
     },
@@ -345,7 +344,6 @@ class CommentsLegacy extends Component {
                         sx={(theme) => ({
                             paddingLeft: isOverview ? null : theme.spacing(3),
                             marginTop: isOverview ? null : theme.spacing(3),
-                            padding: isOverview ? 40 : null,
                             width: isOverview ? '100%' : null,
                             boxShadow: isOverview ? 'none' : null,
                         })}

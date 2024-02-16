@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Tooltip from '@mui/material/Tooltip';
 import FileCopy from '@mui/icons-material/FileCopy';
 import Typography from '@mui/material/Typography';
@@ -27,13 +27,24 @@ import IconButton from '@mui/material/IconButton';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import InlineMessage from '../InlineMessage';
 import ViewSecret from './ViewSecret';
-/**
- *
- *
- * @param {*} theme
- */
-const styles = (theme) => ({
-    bootstrapRoot: {
+const PREFIX = 'ViewToken';
+
+const classes = {
+    bootstrapRoot: `${PREFIX}-bootstrapRoot`,
+    bootstrapInput: `${PREFIX}-bootstrapInput`,
+    epWrapper: `${PREFIX}-epWrapper`,
+    secretWrapper: `${PREFIX}-secretWrapper`,
+    prodLabel: `${PREFIX}-prodLabel`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.bootstrapRoot}`]: {
         padding: 0,
         'label + &': {
             marginTop: theme.spacing(3),
@@ -41,7 +52,8 @@ const styles = (theme) => ({
         flex: 1,
         marginRight: theme.spacing(1),
     },
-    bootstrapInput: {
+
+    [`& .${classes.bootstrapInput}`]: {
         borderRadius: 4,
         backgroundColor: theme.custom.apiDetailPages.tokenTextBoxBackground,
         color: theme.palette.getContrastText(theme.custom.apiDetailPages.tokenTextBoxBackground),
@@ -57,32 +69,38 @@ const styles = (theme) => ({
             boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
         },
     },
-    epWrapper: {
+
+    [`& .${classes.epWrapper}`]: {
         display: 'flex',
         marginTop: 20,
     },
-    secretWrapper: {
+
+    [`& .${classes.secretWrapper}`]: {
         display: 'flex',
         marginBottom: 20,
     },
-    prodLabel: {
+
+    [`& .${classes.prodLabel}`]: {
         lineHeight: '30px',
         marginRight: 10,
         width: 100,
         'text-align-last': 'center',
         whiteSpace: 'nowrap',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth - theme.custom.leftMenu.width,
     },
-    root: {
+
+    [`&.${classes.root}`]: {
         marginTop: 20,
         '& span, & h5, & label, & td, & li, & div, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
 
-    },
-});
+    }
+}));
+
 /**
  *
  *
@@ -134,7 +152,7 @@ class ViewToken extends React.Component {
      */
     render() {
         const {
-            classes, token, consumerSecret, isTokenExchange, intl, isResidenceTokenAvailable,
+            token, consumerSecret, isTokenExchange, intl, isResidenceTokenAvailable,
         } = this.props;
         const { tokenCopied } = this.state;
 
@@ -150,7 +168,7 @@ class ViewToken extends React.Component {
             )
         } else {
             return (
-            <div className={classes.root}>
+            <Root className={classes.root}>
                 {consumerSecret && (
                     <div className={classes.secretWrapper}>
                         <ViewSecret secret={{consumerSecret}}/>
@@ -263,7 +281,7 @@ class ViewToken extends React.Component {
                     )}
                     .
                 </FormHelperText>
-            </div>
+            </Root>
         )};
     }
 }
@@ -282,4 +300,4 @@ ViewToken.propTypes = {
     consumerSecret: PropTypes.string,
 };
 
-export default injectIntl(withStyles(styles)(ViewToken));
+export default injectIntl((ViewToken));

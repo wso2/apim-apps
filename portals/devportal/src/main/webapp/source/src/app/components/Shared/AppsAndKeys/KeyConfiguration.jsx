@@ -16,9 +16,9 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
-import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
@@ -37,55 +37,89 @@ import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Validation from 'AppData/Validation';
 import AppConfiguration from './AppConfiguration';
 
-const styles = (theme) => ({
-    FormControl: {
+const PREFIX = 'KeyConfiguration';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    button: `${PREFIX}-button`,
+    quotaHelp: `${PREFIX}-quotaHelp`,
+    checkboxWrapper: `${PREFIX}-checkboxWrapper`,
+    checkboxWrapperColumn: `${PREFIX}-checkboxWrapperColumn`,
+    group: `${PREFIX}-group`,
+    removeHelperPadding: `${PREFIX}-removeHelperPadding`,
+    iconStyle: `${PREFIX}-iconStyle`,
+    iconButton: `${PREFIX}-iconButton`,
+    titleColumn: `${PREFIX}-titleColumn`,
+    keyInfoTable: `${PREFIX}-keyInfoTable`,
+    leftCol: `${PREFIX}-leftCol`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         paddingTop: 0,
         paddingBottom: theme.spacing(2),
         paddingLeft: 0,
         width: '100%',
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: theme.spacing(2),
         width: '100%',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(1),
     },
-    quotaHelp: {
+
+    [`& .${classes.quotaHelp}`]: {
         position: 'relative',
     },
-    checkboxWrapper: {
+
+    [`& .${classes.checkboxWrapper}`]: {
         display: 'flex',
     },
-    checkboxWrapperColumn: {
+
+    [`& .${classes.checkboxWrapperColumn}`]: {
         display: 'flex',
         flexWrap: 'wrap',
         flexDirection: 'row',
         whiteSpace: 'nowrap',
     },
-    group: {
+
+    [`& .${classes.group}`]: {
         flexDirection: 'row',
     },
-    removeHelperPadding: {
+
+    [`& .${classes.removeHelperPadding}`]: {
         '& p': {
             margin: '8px 0px',
         },
     },
-    iconStyle: {
+
+    [`& .${classes.iconStyle}`]: {
         cursor: 'pointer',
         padding: '0 0 0 10px',
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: '0 0 0 10px',
         '& .material-icons': {
             fontSize: 16,
         },
     },
-    titleColumn: {
+
+    [`& .${classes.titleColumn}`]: {
         width: 150,
         fontWeight: 500,
     },
-    keyInfoTable: {
+
+    [`& .${classes.keyInfoTable}`]: {
         marginBottom: 20,
         borderCollapse: 'collapse',
         '& td': {
@@ -93,10 +127,12 @@ const styles = (theme) => ({
             borderBottom: 'solid 1px #cccc',
         },
     },
-    leftCol: {
+
+    [`& .${classes.leftCol}`]: {
         width: 180,
-    },
-});
+    }
+}));
+
 /**
  *
  *
@@ -108,7 +144,7 @@ const KeyConfiguration = (props) => {
     const [callbackHelper, setCallbackHelper] = useState(false);
     const intl = useIntl();
     const {
-        classes, notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError,mode,
+        notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError,mode,
     } = props;
     const {
         selectedGrantTypes, callbackUrl,
@@ -240,7 +276,7 @@ const KeyConfiguration = (props) => {
 
     // Check for additional properties for token endpoint and revoke endpoints.
     return (
-        <>
+        <Root>
             <Box display='flex' alignItems='center'>
                 <Table className={classes.table}>
                     <TableBody>
@@ -455,7 +491,7 @@ const KeyConfiguration = (props) => {
                     </TableBody>
                 </Table>
             </Box>
-        </>
+        </Root>
     );
 };
 KeyConfiguration.defaultProps = {
@@ -480,4 +516,4 @@ KeyConfiguration.propTypes = {
 };
 
 
-export default withStyles(styles)(KeyConfiguration);
+export default (KeyConfiguration);

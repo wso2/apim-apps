@@ -16,32 +16,49 @@
  * under the License.
  */
 import React, { useState, useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { Typography } from '@mui/material';
 import FileCopy from '@mui/icons-material/FileCopy';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import IconButton from "@mui/material/IconButton";
 
-const useStyles = makeStyles(theme => ({
-    code: {
+const PREFIX = 'ViewCurl';
+
+const classes = {
+    code: `${PREFIX}-code`,
+    command: `${PREFIX}-command`,
+    encodeVisible: `${PREFIX}-encodeVisible`,
+    contentWrapper: `${PREFIX}-contentWrapper`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.code}`]: {
         padding: theme.spacing(1),
         marginBottom: theme.spacing(2),
         background: theme.palette.grey[200],
         color: '#da2316',
         flex: 1,
     },
-    command: {
+
+    [`& .${classes.command}`]: {
         color: '#2b62b0',
     },
-    encodeVisible: {
+
+    [`& .${classes.encodeVisible}`]: {
         cursor: 'pointer',
         textDecoration: 'underline',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         display: 'flex',
-    },
+    }
 }));
 
 /**
@@ -49,7 +66,6 @@ const useStyles = makeStyles(theme => ({
  * @param {*} props
  */
 function ViewCurl(props) {
-    const classes = useStyles();
 
     const {
         keys: { consumerKey, consumerSecret },
@@ -76,7 +92,7 @@ function ViewCurl(props) {
     let { tokenEndpoint } = keyManagerConfig;
     if (keyManagerConfig.alias === null ) {
         return (
-            <React.Fragment>
+            <Root>
                 <Typography>
                     <FormattedMessage
                         id='Shared.AppsAndKeys.ViewCurl.help'
@@ -180,11 +196,12 @@ function ViewCurl(props) {
                         </Tooltip>
                     </div>
                 </div>
-            </React.Fragment>
+            </Root>
         );
     } else {
         if (consumerKey === false) {
             return (
+                <Root>
                     <Typography>
                         <FormattedMessage
                             id='Shared.AppsAndKeys.ViewCurl.error'
@@ -192,10 +209,11 @@ function ViewCurl(props) {
                                              order to use the token Exchange Approach. '
                         />
                     </Typography>
+                </Root>
                 )
         } else {
             return (
-                <React.Fragment>
+                <Root>
                     <Typography>
                         <FormattedMessage
                             id='Shared.AppsAndKeys.ViewCurl.TokenExchange.help'
@@ -260,7 +278,7 @@ function ViewCurl(props) {
                             </Tooltip>
                         </div>
                     </div>
-                </React.Fragment>
+                </Root>
             );
         }
     }

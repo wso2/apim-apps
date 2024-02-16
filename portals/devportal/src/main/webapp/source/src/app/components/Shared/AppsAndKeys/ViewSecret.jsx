@@ -16,27 +16,38 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Tooltip from '@mui/material/Tooltip';
 import FileCopy from '@mui/icons-material/FileCopy';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import InlineMessage from '../InlineMessage';
-/**
- *
- *
- * @param {*} theme
- */
-const styles = theme => ({
-    bootstrapRoot: {
+const PREFIX = 'ViewSecret';
+
+const classes = {
+    bootstrapRoot: `${PREFIX}-bootstrapRoot`,
+    bootstrapInput: `${PREFIX}-bootstrapInput`,
+    epWrapper: `${PREFIX}-epWrapper`,
+    prodLabel: `${PREFIX}-prodLabel`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.bootstrapRoot}`]: {
         padding: 0,
         'label + &': {
             marginTop: theme.spacing(3),
         },
     },
-    bootstrapInput: {
+
+    [`& .${classes.bootstrapInput}`]: {
         borderRadius: 4,
         backgroundColor: theme.palette.common.white,
         border: '1px solid #ced4da',
@@ -51,23 +62,28 @@ const styles = theme => ({
             boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
         },
     },
-    epWrapper: {
+
+    [`& .${classes.epWrapper}`]: {
         display: 'flex',
         marginTop: 20,
     },
-    prodLabel: {
+
+    [`& .${classes.prodLabel}`]: {
         lineHeight: '30px',
         marginRight: 10,
         width: 100,
         'text-align-last': 'center',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth - theme.custom.leftMenu.width,
     },
-    root: {
+
+    [`&.${classes.root}`]: {
         marginBottom: 20,
-    },
-});
+    }
+}));
+
 /**
  *
  *
@@ -119,10 +135,10 @@ class ViewSecret extends React.Component {
      * @memberof ViewSecret
      */
     render() {
-        const { classes, secret, intl } = this.props;
+        const {  secret, intl } = this.props;
         const { secretCopied } = this.state;
         return (
-            <div className={classes.root}>
+            <Root className={classes.root}>
                 <InlineMessage type='warning'>
                     <Typography variant='h5' component='h3'>
                         <FormattedMessage
@@ -189,7 +205,7 @@ class ViewSecret extends React.Component {
                         </IconButton>
                     </Tooltip>
                 </div>
-            </div>
+            </Root>
         );
     }
 }
@@ -201,4 +217,4 @@ ViewSecret.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(ViewSecret));
+export default injectIntl((ViewSecret));

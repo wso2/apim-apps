@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -55,8 +55,33 @@ import {
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'TokenManager';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    button: `${PREFIX}-button`,
+    cleanUpButton: `${PREFIX}-cleanUpButton`,
+    cleanUpInfoText: `${PREFIX}-cleanUpInfoText`,
+    tokenSection: `${PREFIX}-tokenSection`,
+    margin: `${PREFIX}-margin`,
+    keyConfigWrapper: `${PREFIX}-keyConfigWrapper`,
+    generateWrapper: `${PREFIX}-generateWrapper`,
+    paper: `${PREFIX}-paper`,
+    muiFormGroupRoot: `${PREFIX}-muiFormGroupRoot`,
+    formControl: `${PREFIX}-formControl`,
+    subTitle: `${PREFIX}-subTitle`,
+    tabPanel: `${PREFIX}-tabPanel`,
+    warningIcon: `${PREFIX}-warningIcon`,
+    leftCol: `${PREFIX}-leftCol`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         padding: theme.spacing(3),
         '& span, & h6, & label, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
@@ -70,62 +95,76 @@ const styles = (theme) => ({
         },
         position: 'relative',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: 0,
         '& span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
         marginRight: theme.spacing(2),
     },
-    cleanUpButton: {
+
+    [`& .${classes.cleanUpButton}`]: {
         marginLeft: 15,
     },
-    cleanUpInfoText: {
+
+    [`& .${classes.cleanUpInfoText}`]: {
         padding: '10px 0px 10px 15px',
     },
-    tokenSection: {
+
+    [`& .${classes.tokenSection}`]: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    margin: {
+
+    [`& .${classes.margin}`]: {
         marginRight: theme.spacing(2),
     },
-    keyConfigWrapper: {
+
+    [`& .${classes.keyConfigWrapper}`]: {
         flexDirection: 'column',
         marginBottom: 0,
     },
-    generateWrapper: {
+
+    [`& .${classes.generateWrapper}`]: {
         padding: '10px 0px',
         marginLeft: theme.spacing(1.25),
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         background: 'none',
         marginBottom: theme.spacing(2),
         marginTop: theme.spacing(2),
     },
-    muiFormGroupRoot: {
+
+    [`& .${classes.muiFormGroupRoot}`]: {
         flexDirection: 'row',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
     },
-    subTitle: {
+
+    [`& .${classes.subTitle}`]: {
         fontWeight: 400,
     },
-    tabPanel: {
+
+    [`& .${classes.tabPanel}`]: {
         paddingLeft: theme.spacing(2),
         '& .MuiBox-root': {
             padding: 0,
         },
     },
-    warningIcon: {
+
+    [`& .${classes.warningIcon}`]: {
         color: '#ff9a00',
         fontSize: 20,
         marginRight: 10,
     },
-    leftCol: {
+
+    [`& .${classes.leftCol}`]: {
         width: 180,
-    },
-});
+    }
+}));
 
 function TabPanel(props) {
     const {
@@ -154,45 +193,6 @@ TabPanel.propTypes = {
     index: PropTypes.any.isRequired,
     value: PropTypes.any.isRequired,
 };
-
-const StyledTabs = withStyles({
-    indicator: {
-        display: 'flex',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-        '& > span': {
-            width: '98%',
-            backgroundColor: '#ffffff',
-        },
-        transition: 'none',
-    },
-    flexContainer: {
-        borderBottom: 'solid 1px #666',
-        backgroundColor: '#efefef',
-        '& button:first-child': {
-            borderLeft: 'none',
-        },
-    },
-})((props) => <Tabs {...props} TabIndicatorProps={{children: <span/>}}/>);
-
-
-const StyledTab = withStyles((theme) => ({
-    root: {
-        textTransform: 'none',
-        color: '#666',
-        fontWeight: theme.typography.fontWeightRegular,
-        fontSize: theme.typography.pxToRem(15),
-        marginRight: theme.spacing(1),
-        '&:focus': {
-            opacity: 1,
-        },
-    },
-    selected: {
-        backgroundColor: '#fff',
-        borderLeft: 'solid 1px #666',
-        borderRight: 'solid 1px #666',
-    },
-}))((props) => <Tab disableRipple {...props} />);
 
 /**
  *  @param {event} event event
@@ -688,7 +688,7 @@ class TokenManager extends React.Component {
      */
     render() {
         const {
-            classes, selectedApp, keyType, summary, selectedApp: { hashEnabled }, isKeyManagerAllowed,
+            selectedApp, keyType, summary, selectedApp: { hashEnabled }, isKeyManagerAllowed,
         } = this.props;
         const {
             keys, keyRequest, isLoading, isKeyJWT, providedConsumerKey,
@@ -697,33 +697,35 @@ class TokenManager extends React.Component {
         } = this.state;
         if (keyManagers && keyManagers.length === 0) {
             return (
-                <div className={classes.root}>
-                    <Box mb={1}>
-                        <Typography variant='h5' className={classes.keyTitle}>
-                            {this.toTitleCase(keyType)}
-                            <FormattedMessage
-                                id='Shared.AppsAndKeyhandleCloses.TokenManager.oauth2.keys.main.title'
-                                defaultMessage=' OAuth2 Keys'
-                            />
-                        </Typography>
-                    </Box>
-                    <InlineMessage type='info' className={classes.dialogContainer}>
-                        <Typography variant='h5' component='h3'>
-                            <FormattedMessage id='Shared.AppsAndKeys.TokenManager.no.km'
-                                              defaultMessage='No Key Managers'/>
-                        </Typography>
-                        <Typography component='p'>
-                            <FormattedMessage
-                                id='Shared.AppsAndKeys.TokenManager.no.km.content'
-                                defaultMessage='No Key Managers active to generate keys.'
-                            />
-                        </Typography>
-                    </InlineMessage>
-                </div>
+                <Root>
+                    <div className={classes.root}>
+                        <Box mb={1}>
+                            <Typography variant='h5' className={classes.keyTitle}>
+                                {this.toTitleCase(keyType)}
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeyhandleCloses.TokenManager.oauth2.keys.main.title'
+                                    defaultMessage=' OAuth2 Keys'
+                                />
+                            </Typography>
+                        </Box>
+                        <InlineMessage type='info' className={classes.dialogContainer}>
+                            <Typography variant='h5' component='h3'>
+                                <FormattedMessage id='Shared.AppsAndKeys.TokenManager.no.km'
+                                                  defaultMessage='No Key Managers'/>
+                            </Typography>
+                            <Typography component='p'>
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.TokenManager.no.km.content'
+                                    defaultMessage='No Key Managers active to generate keys.'
+                                />
+                            </Typography>
+                        </InlineMessage>
+                    </div>
+                </Root>
             );
         }
         if (!keys || !selectedTab || !keyRequest.selectedGrantTypes) {
-            return <Loading />;
+            return <Root><Loading /></Root>;
         }
         const username = AuthManager.getUser().name;
         let isUserOwner = false;
@@ -736,19 +738,21 @@ class TokenManager extends React.Component {
         if (summary) {
             if (keys) {
                 return (
-                    <TokenMangerSummary
-                        keys={keys}
-                        key={key}
-                        keyStates={this.keyStates}
-                        selectedApp={selectedApp}
-                        selectedTab={selectedTab}
-                        keyType={keyType}
-                        isKeyJWT={isKeyJWT}
-                        isUserOwner={isUserOwner}
-                    />
+                    <Root>
+                        <TokenMangerSummary
+                            keys={keys}
+                            key={key}
+                            keyStates={this.keyStates}
+                            selectedApp={selectedApp}
+                            selectedTab={selectedTab}
+                            keyType={keyType}
+                            isKeyJWT={isKeyJWT}
+                            isUserOwner={isUserOwner}
+                        />
+                    </Root>
                 );
             } else {
-                return (<Progress />);
+                return (<Root><Progress /></Root>);
             }
         }
 
@@ -769,7 +773,7 @@ class TokenManager extends React.Component {
 
         if (key && key.keyState === 'APPROVED' && !key.consumerKey) {
             return (
-                <>
+                <Root>
                     <Typography className={classes.cleanUpInfoText} variant='subtitle1'>
                         <FormattedMessage
                             id='Shared.AppsAndKeys.TokenManager.cleanup.text'
@@ -788,14 +792,14 @@ class TokenManager extends React.Component {
                             id='Shared.AppsAndKeys.TokenManager.cleanup'
                         />
                     </Button>
-                </>
+                </Root>
             );
         }
         if (key && (key.keyState === this.keyStates.CREATED || key.keyState === this.keyStates.REJECTED)) {
-            return <WaitingForApproval keyState={key.keyState} states={this.keyStates} />;
+            return <Root><WaitingForApproval keyState={key.keyState} states={this.keyStates} /></Root>;
         }
         return (
-            <>
+            <Root>
                 {(keyManagers && keyManagers.length > 1) && (
                     <AppBar position="static" color="default">
                         <Tabs
@@ -1007,7 +1011,7 @@ class TokenManager extends React.Component {
                                         Token exchange grant flow enable/disable logic
                                         Given that in the key manager selected has the tokenType='EXCHANGE'
                                             If 'Resident Key Manager' disabled we can't proceed with token exchange. So need to show a banner
-                                            If 'Resident Key Manager' enabled, we need to check if the resident key manager 'exchange grant' is selected. 
+                                            If 'Resident Key Manager' enabled, we need to check if the resident key manager 'exchange grant' is selected.
                                             So we need to ask the user to select 'exchange grant' for the 'Resident Key Manager'.
                                             If 'Resident Key Manager' enabled and 'exchange grant' is enabled the token exchange is possible
                                         */}
@@ -1275,7 +1279,7 @@ class TokenManager extends React.Component {
                     </Grid>
                 </div>
                 )}
-            </>
+            </Root>
         );
     }
 }
@@ -1299,4 +1303,4 @@ TokenManager.propTypes = {
     summary: PropTypes.bool,
 };
 
-export default injectIntl(withStyles(styles)(TokenManager));
+export default injectIntl((TokenManager));

@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -44,8 +44,24 @@ import ViewToken from './ViewToken';
 import ViewSecret from './ViewSecret';
 import ViewCurl from './ViewCurl';
 
-const styles = (theme) => ({
-    button: {
+const PREFIX = 'ViewKeys';
+
+const classes = {
+    button: `${PREFIX}-button`,
+    inputWrapper: `${PREFIX}-inputWrapper`,
+    copyWrapper: `${PREFIX}-copyWrapper`,
+    tokenSection: `${PREFIX}-tokenSection`,
+    margin: `${PREFIX}-margin`,
+    dialogWrapper: `${PREFIX}-dialogWrapper`,
+    iconButton: `${PREFIX}-iconButton`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.button}`]: {
         margin: theme.spacing(3),
         color: theme.palette.getContrastText(theme.palette.background.default),
         display: 'flex',
@@ -57,7 +73,8 @@ const styles = (theme) => ({
             display: 'inline-block',
         },
     },
-    inputWrapper: {
+
+    [`& .${classes.inputWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -65,30 +82,35 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    copyWrapper: {
+
+    [`&.${classes.copyWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    tokenSection: {
+
+    [`& .${classes.tokenSection}`]: {
         marginTop: 0,
         marginBottom: theme.spacing(0.5),
     },
-    margin: {
+
+    [`& .${classes.margin}`]: {
         marginRight: theme.spacing(2),
     },
-    dialogWrapper: {
+
+    [`& .${classes.dialogWrapper}`]: {
         '& label,& h5, & label, & td, & li, & input, & h2, & p.MuiTypography-root,& p.MuiFormHelperText-root': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: '0 0 0 10px',
         '& .material-icons': {
             fontSize: 16,
         },
-    },
-});
+    }
+}));
 
 /**
  * Class used to displays in key generation UI
@@ -304,13 +326,13 @@ class ViewKeys extends React.Component {
 
     viewKeyAndSecret = (consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner) => {
         const {
-            classes, intl, selectedApp: { hashEnabled }, keyType,
+            intl, selectedApp: { hashEnabled }, keyType,
         } = this.props;
         const { keyCopied, secretCopied, showCS } = this.state;
         return (
             <>
                 <Grid item xs={6}>
-                    <div className={classes.copyWrapper}>
+                    <Root className={classes.copyWrapper}>
                         <TextField
                             id='consumer-key'
                             value={consumerKey}
@@ -358,7 +380,7 @@ class ViewKeys extends React.Component {
                                 ),
                             }}
                         />
-                    </div>
+                    </Root>
                     <FormControl variant="standard">
                         <FormHelperText id='consumer-key-helper-text'>
                             <FormattedMessage
@@ -369,7 +391,7 @@ class ViewKeys extends React.Component {
                     </FormControl>
                 </Grid>
                 <Grid item xs={6}>
-                    <div className={classes.copyWrapper}>
+                    <Root className={classes.copyWrapper}>
                         {!hashEnabled ? (
                             <TextField
                                 id='consumer-secret'
@@ -439,7 +461,7 @@ class ViewKeys extends React.Component {
                                 />
                             </Button>
                         )}
-                    </div>
+                    </Root>
                     {!hashEnabled && (
                         <FormControl variant="standard">
                             <FormHelperText id='consumer-secret-helper-text'>
@@ -465,7 +487,7 @@ class ViewKeys extends React.Component {
             isKeyJWT, tokenResponse, secretGenResponse, isUpdating,
         } = this.state;
         const {
-            intl, keyType, classes, fullScreen, keys, selectedApp: { tokenType }, selectedGrantTypes, isUserOwner, summary,
+            intl, keyType, fullScreen, keys, selectedApp: { tokenType }, selectedGrantTypes, isUserOwner, summary,
             selectedTab, hashEnabled, keyManagerConfig, initialToken, initialValidityTime, initialScopes, mode,
         } = this.props;
 
@@ -532,7 +554,7 @@ class ViewKeys extends React.Component {
         // Get the grant types for the generated keys
         const { supportedGrantTypes: supportedGrantTypesUnchanged } = keys.get(selectedTab);
         return consumerKey && (
-            <div className={classes.inputWrapper}>
+            <Root className={classes.inputWrapper}>
                 <Grid container spacing={3}>
                     {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner)}
                     <Grid item xs={12}>
@@ -658,7 +680,7 @@ class ViewKeys extends React.Component {
                         )}
                     </Grid>
                 </Grid>
-            </div>
+            </Root>
         );
     }
 }
@@ -676,4 +698,4 @@ ViewKeys.propTypes = {
     mode: PropTypes.string,
 };
 
-export default injectIntl(withStyles(styles)(ViewKeys));
+export default injectIntl((ViewKeys));
