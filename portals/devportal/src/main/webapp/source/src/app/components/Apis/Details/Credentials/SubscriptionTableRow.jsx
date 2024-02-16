@@ -15,67 +15,63 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import React from 'react';
-import { Link as MUILink } from '@mui/material';
+import { Link as MUILink, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
-import withStyles from '@mui/styles/withStyles';
-import classNames from 'classnames';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import TokenManager from 'AppComponents/Shared/AppsAndKeys/TokenManager';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    button: {
-        padding: theme.spacing(1),
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        display: 'flex',
-        alignItems: 'center',
-        fontSize: '11px',
-        cursor: 'pointer',
-        '& span': {
-            paddingLeft: 6,
-            display: 'inline-block',
-        },
-    },
-    actionColumn: {
-        display: 'flex',
-        textAlign: 'right',
-        direction: 'rtl',
-    },
-    td: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        borderBottom: 'solid 1px ' + theme.palette.grey.A200,
-        fontSize: '11px',
-        paddingLeft: theme.spacing(1),
-        height: 35,
-    },
-    selectedWrapper: {
-        borderLeft: 'solid 2px ' + theme.palette.primary.main,
-    },
-});
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 const subscriptionTableRow = (props) => {
     const {
-        classes, loadInfo, handleSubscriptionDelete, isKeyManagerAllowed,
-        theme, selectedAppId, updateSubscriptionData, selectedKeyType, app, applicationOwner, hashEnabled,
+        loadInfo, handleSubscriptionDelete, isKeyManagerAllowed,
+        selectedAppId, updateSubscriptionData, selectedKeyType, app, applicationOwner, hashEnabled,
     } = props;
+    const theme = useTheme();
     return (
         <>
             <tr>
-                <td className={classes.td} id={app.label}>{app.label}</td>
-                <td className={classes.td}>{app.policy}</td>
-                <td className={classes.td}>{app.status}</td>
-                <td className={classes.td}>
-                    <div className={classes.actionColumn}>
+                <td
+                    id={app.label}
+                >
+                    <Typography variant='body2'>
+                        {app.label}
+                    </Typography>
+                </td>
+                <td>
+                    <Typography variant='body2'>
+                        {app.policy}
+                    </Typography>
+                </td>
+                <td>
+                    <Typography variant='body2'>
+                        {app.status}
+                    </Typography>
+                </td>
+                <td>
+                    <Box sx={{
+                        display: 'flex',
+                        textAlign: 'right',
+                        direction: 'rtl',
+                    }}
+                    >
                         <MUILink
-                            className={classes.button}
+                            sx={(themeValue) => ({
+                                padding: themeValue.spacing(1),
+                                color: themeValue.palette.getContrastText(themeValue.palette.background.default),
+                                display: 'flex',
+                                alignItems: 'center',
+                                fontSize: '11px',
+                                cursor: 'pointer',
+                                '& span': {
+                                    paddingLeft: 1,
+                                    display: 'inline-block',
+                                },
+                            })}
                             to={'/applications/' + app.value}
                             id={app.label + '-MA'}
                             aria-labelledby={app.label + '-MA ' + app.label}
@@ -100,7 +96,18 @@ const subscriptionTableRow = (props) => {
                             resourceMethod={resourceMethods.DELETE}
                         >
                             <MUILink
-                                className={classes.button}
+                                sx={(themeValue) => ({
+                                    padding: themeValue.spacing(1),
+                                    color: themeValue.palette.getContrastText(themeValue.palette.background.default),
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    fontSize: '11px',
+                                    cursor: 'pointer',
+                                    '& span': {
+                                        paddingLeft: 1,
+                                        display: 'inline-block',
+                                    },
+                                })}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     handleSubscriptionDelete(
@@ -127,10 +134,17 @@ const subscriptionTableRow = (props) => {
                             </MUILink>
                         </ScopeValidation>
                         <MUILink
-                            className={classNames(classes.button, {
-                                [classes.activeLink]: selectedAppId
-                                            && selectedKeyType === 'PRODUCTION'
-                                            && app.value === selectedAppId,
+                            sx={(themeValue) => ({
+                                padding: themeValue.spacing(1),
+                                color: themeValue.palette.getContrastText(themeValue.palette.background.default),
+                                display: 'flex',
+                                alignItems: 'center',
+                                fontSize: '11px',
+                                cursor: 'pointer',
+                                '& span': {
+                                    paddingLeft: 1,
+                                    display: 'inline-block',
+                                },
                             })}
                             onClick={() => loadInfo('PRODUCTION', app.value)}
                             id={app.label + '-PK'}
@@ -151,10 +165,17 @@ const subscriptionTableRow = (props) => {
                             />
                         </MUILink>
                         <MUILink
-                            className={classNames(classes.button, {
-                                [classes.activeLink]: selectedAppId
-                                            && selectedKeyType === 'SANDBOX'
-                                            && app.value === selectedAppId,
+                            sx={(themeValue) => ({
+                                padding: themeValue.spacing(1),
+                                color: themeValue.palette.getContrastText(themeValue.palette.background.default),
+                                display: 'flex',
+                                alignItems: 'center',
+                                fontSize: '11px',
+                                cursor: 'pointer',
+                                '& span': {
+                                    paddingLeft: 1,
+                                    display: 'inline-block',
+                                },
                             })}
                             onClick={() => loadInfo('SANDBOX', app.value)}
                             id={app.label + '-SB'}
@@ -174,13 +195,16 @@ const subscriptionTableRow = (props) => {
                                 icon='productionkeys'
                             />
                         </MUILink>
-                    </div>
+                    </Box>
                 </td>
             </tr>
             {app.value === selectedAppId && (selectedKeyType === 'PRODUCTION' || selectedKeyType === 'SANDBOX') && (
                 <tr>
                     <td colSpan='4'>
-                        <div className={classes.selectedWrapper}>
+                        <Box sx={(themeValue) => ({
+                            borderLeft: 'solid 2px ' + themeValue.palette.primary.main,
+                        })}
+                        >
                             <TokenManager
                                 isKeyManagerAllowed={isKeyManagerAllowed}
                                 keyType={selectedKeyType}
@@ -192,7 +216,7 @@ const subscriptionTableRow = (props) => {
                                 }}
                                 updateSubscriptionData={updateSubscriptionData}
                             />
-                        </div>
+                        </Box>
                     </td>
                 </tr>
             )}
@@ -224,4 +248,4 @@ subscriptionTableRow.propTypes = {
         subscriptionId: PropTypes.string,
     }).isRequired,
 };
-export default withStyles(styles, { withTheme: true })(subscriptionTableRow);
+export default (subscriptionTableRow);
