@@ -17,22 +17,27 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
-import withStyles from '@mui/styles/withStyles';
+import { styled } from '@mui/material/styles';
 import { API } from '@stoplight/elements';
 import './elements.css';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import YAML from 'js-yaml';
 import Api from 'AppData/api';
 
-const styles = () => ({
-    generatedDocument: {
+const PREFIX = 'GenerateDocument';
+
+const classes = {
+    generatedDocument: `${PREFIX}-generatedDocument`,
+};
+
+const Root = styled('div')(() => ({
+    [`&.${classes.generatedDocument}`]: {
         width: '100%',
         margin: 50,
     },
-});
+}));
 
-function GenerateDocument(props) {
-    const { classes } = props;
+function GenerateDocument() {
     const { api } = useContext(ApiContext);
     const [swagger, updateSwagger] = useState('');
 
@@ -57,7 +62,7 @@ function GenerateDocument(props) {
     }, [api.id]);
 
     return (
-        <div
+        <Root
             className={classes.generatedDocument}
             id='apim_elements'
         >
@@ -67,8 +72,8 @@ function GenerateDocument(props) {
                 router='memory'
                 layout='sidebar'
             />
-        </div>
+        </Root>
     );
 }
 
-export default withStyles(styles)(GenerateDocument);
+export default (GenerateDocument);

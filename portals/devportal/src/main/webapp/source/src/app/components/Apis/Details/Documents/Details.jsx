@@ -16,29 +16,46 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import Icon from '@mui/material/Icon';
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import View from 'AppComponents/Apis/Details/Documents/View';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
-const useStyles = makeStyles((theme) => ({
-    fullView: {
+const PREFIX = 'Details';
+
+const classes = {
+    fullView: `${PREFIX}-fullView`,
+    paper: `${PREFIX}-paper`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    viewWrapper: `${PREFIX}-viewWrapper`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.fullView}`]: {
         cursor: 'pointer',
         position: 'absolute',
         right: 5,
         top: 5,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(2),
         paddingLeft: theme.spacing(4),
         minHeight: 400,
         position: 'relative',
     },
-    popupHeader: {
+
+    [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -46,11 +63,13 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         background: theme.palette.background.paper,
     },
-    viewWrapper: {
+
+    [`& .${classes.viewWrapper}`]: {
         padding: theme.spacing(2),
         marginTop: 50,
     },
 }));
+
 /**
  * Switch routes for documents.
  * @param {JSON} props The props passed down from parents.
@@ -58,14 +77,14 @@ const useStyles = makeStyles((theme) => ({
  */
 export default function Details(props) {
     const { apiId, selectedDoc } = props;
-    const classes = useStyles();
+
     const [open, setOpen] = useState(false);
     const toggleOpen = () => {
         setOpen(!open);
     };
     return (
-        <>
-            <div className={classes.paper}>
+        <Root>
+            <Box className={classes.paper}>
                 {(selectedDoc.sourceType === 'MARKDOWN' || selectedDoc.sourceType === 'INLINE') && (
                     <IconButton
                         onClick={toggleOpen}
@@ -79,18 +98,20 @@ export default function Details(props) {
                     </IconButton>
                 )}
                 <View doc={selectedDoc} apiId={apiId} fullScreen={open} />
-            </div>
+            </Box>
             <Dialog fullScreen open={open} onClose={toggleOpen}>
-                <div className={classes.popupHeader}>
+                <Box className={classes.popupHeader}>
                     <IconButton color='inherit' onClick={toggleOpen} aria-label='Close full screen view' size='large'>
-                        <Icon>close</Icon>
+                        <Typography variant='h4' inline>
+                            <Icon>close</Icon>
+                        </Typography>
                     </IconButton>
-                    <Typography variant='h4'>{selectedDoc.name}</Typography>
-                </div>
-                <div className={classes.viewWrapper}>
+                    {selectedDoc.name}
+                </Box>
+                <Box sx={classes.viewWrapper} paddingLeft={(theme) => (theme.spacing(3))}>
                     <View doc={selectedDoc} apiId={apiId} fullScreen={open} />
-                </div>
+                </Box>
             </Dialog>
-        </>
+        </Root>
     );
 }

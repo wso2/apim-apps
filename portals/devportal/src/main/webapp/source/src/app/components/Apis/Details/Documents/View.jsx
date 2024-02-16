@@ -20,8 +20,8 @@
 import React, {
     useState, useEffect, useContext, Suspense, lazy,
 } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import Icon from '@mui/material/Icon';
 import Button from '@mui/material/Button';
@@ -36,19 +36,37 @@ import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import { ApiContext } from '../ApiContext';
 import Alert from '../../../Shared/Alert';
 
-const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
+const PREFIX = 'View';
 
-const styles = (theme) => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    docTitle: `${PREFIX}-docTitle`,
+    docBadge: `${PREFIX}-docBadge`,
+    button: `${PREFIX}-button`,
+    displayURL: `${PREFIX}-displayURL`,
+    displayURLLink: `${PREFIX}-displayURLLink`,
+    docSummary: `${PREFIX}-docSummary`,
+    fileAvailability: `${PREFIX}-fileAvailability`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
-    docTitle: {
+
+    [`& .${classes.docTitle}`]: {
         fontWeight: 100,
         fontSize: 50,
         color: theme.palette.grey[500],
     },
-    docBadge: {
+
+    [`& .${classes.docBadge}`]: {
         padding: theme.spacing(1),
         background: theme.palette.primary.main,
         position: 'absolute',
@@ -56,29 +74,37 @@ const styles = (theme) => ({
         marginTop: -22,
         color: theme.palette.getContrastText(theme.palette.primary.main),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         padding: theme.spacing(2),
         marginTop: theme.spacing(2),
     },
-    displayURL: {
+
+    [`& .${classes.displayURL}`]: {
         padding: theme.spacing(2),
         marginTop: theme.spacing(2),
         background: theme.palette.grey[200],
         color: theme.palette.getContrastText(theme.palette.grey[200]),
         display: 'flex',
     },
-    displayURLLink: {
+
+    [`& .${classes.displayURLLink}`]: {
         paddingLeft: theme.spacing(2),
     },
-    docSummary: {
+
+    [`& .${classes.docSummary}`]: {
         marginTop: theme.spacing(2),
         color: theme.palette.text.primary,
     },
-    fileAvailability: {
+
+    [`& .${classes.fileAvailability}`]: {
         marginTop: theme.spacing(1),
         marginLeft: theme.spacing(0.8),
     },
-});
+}));
+
+const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
+
 /**
  *
  *
@@ -87,7 +113,7 @@ const styles = (theme) => ({
  */
 function View(props) {
     const {
-        classes, doc, apiId, intl,
+        doc, apiId, intl,
     } = props;
     const { api } = useContext(ApiContext);
     const [code, setCode] = useState('');
@@ -190,7 +216,7 @@ function View(props) {
             });
     };
     return (
-        <>
+        <Root>
             {(doc.summary && doc.otherTypeName !== '_overview') && (
                 <Typography variant='body1' className={classes.docSummary}>
                     {doc.summary}
@@ -257,7 +283,7 @@ function View(props) {
                     />
                 </Typography>
             )}
-        </>
+        </Root>
     );
 }
 
@@ -270,4 +296,4 @@ View.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(View));
+export default injectIntl((View));
