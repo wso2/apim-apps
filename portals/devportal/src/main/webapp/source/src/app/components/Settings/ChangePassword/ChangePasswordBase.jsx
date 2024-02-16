@@ -17,17 +17,29 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles((theme) => ({
-    createTitle: {
+const PREFIX = 'ChangePasswordBase';
+
+const classes = {
+    createTitle: `${PREFIX}-createTitle`,
+    formContent: `${PREFIX}-formContent`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.createTitle}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    formContent: {
+
+    [`& .${classes.formContent}`]: {
         '& span, & div, & p, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         }
@@ -42,9 +54,9 @@ const useStyles = makeStyles((theme) => ({
  */
 function ChangePasswordBase(props) {
     const { title, children } = props;
-    const classes = useStyles();
+
     return (
-        <Box width={1} mt={5}>
+        <StyledBox width={1} mt={5}>
             <Grid justifyContent='center' container spacing={3}>
                 <Grid item sm={6} md={4}>
                     <Grid container spacing={4}>
@@ -57,7 +69,7 @@ function ChangePasswordBase(props) {
                     </Grid>
                 </Grid>
             </Grid>
-        </Box>
+        </StyledBox>
     );
 }
 ChangePasswordBase.propTypes = {
