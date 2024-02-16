@@ -18,39 +18,39 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import { useStyles } from '../ApiChat.styles';
 
-// interface APIChatPoweredByProps {
+interface ApiChatPoweredByProps {
 //   openSampleQueries: () => void;
 //   showSampleQueries?: boolean;
 //   goBack: () => void;
 //   disableGoBack: boolean;
-// }
+}
 
 /**
  * Renders the API Chat powered by section.
  * @returns {TSX} API Chat powered by section to render.
  */
-const ApiChatPoweredBy: React.FC = () => {
+const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
+    // openSampleQueries,
+    // showSampleQueries = false,
+    // goBack,
+    // disableGoBack,
+}) => {
     const classes = useStyles();
     const intl = useIntl();
-    // const {
-    //     openSampleQueries,
-    //     showSampleQueries = false,
-    //     goBack,
-    //     disableGoBack,
-    // } = props;
+
     return (
-        <Box className={classes.poweredBy}>
-            <Box display='flex' flexDirection='column' flexGrow={1} m={3}>
+        <Box className={classes.poweredBy} m={3}>
+            <Box display='flex' flexDirection='column' flexGrow={1}>
                 <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'>
                     {intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.ApiChatPoweredBy.apiChatMainHeader',
                         defaultMessage: 'API Chat',
                     })}
                 </Typography>
-                {/* </Box> */}
                 <Typography variant='body2' color='textSecondary' component='p'>
                     {intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.poweredByText',
@@ -58,49 +58,42 @@ const ApiChatPoweredBy: React.FC = () => {
                     })}
                 </Typography>
             </Box>
-            {/* <Box>
-                {showSampleQueries && (
-                    <Box display='flex'>
-                        <Box mr={3}>
-                            <Button
-                                startIcon={<ArrowLeftLong />}
-                                testId='view-sample-queries'
-                                variant='link'
-                                size='tiny'
-                                onClick={goBack}
-                                disabled={disableGoBack}
-                            >
-                                {intl.formatMessage({
-                                    id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.goBack',
-                                    defaultMessage: 'Go Back',
-                                })}
-                            </Button>
-                        </Box>
-                        <Box>
-                            <Button
-                                testId='view-sample-queries'
-                                variant='link'
-                                size='tiny'
-                                onClick={openSampleQueries}
-                            >
-                                {intl.formatMessage({
-                                    id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.sampleQueries',
-                                    defaultMessage: 'Sample Queries',
-                                })}
-                            </Button>
-                        </Box>
+            <Box>
+                {/* {showSampleQueries && ( */}
+                <Box display='flex'>
+                    <Box mr={3}>
+                        <Button
+                            startIcon={<KeyboardBackspaceIcon />}
+                            id='go-back'
+                            // variant='link'
+                            // size='tiny'
+                            // onClick={goBack}
+                            // disabled={disableGoBack}
+                        >
+                            {intl.formatMessage({
+                                id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.goBack',
+                                defaultMessage: 'Go Back',
+                            })}
+                        </Button>
                     </Box>
-                )}
-            </Box> */}
+                    <Box>
+                        <Button
+                            id='view-sample-queries'
+                            // variant='link'
+                            // size='tiny'
+                            // onClick={openSampleQueries}
+                        >
+                            {intl.formatMessage({
+                                id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.sampleQueries',
+                                defaultMessage: 'Sample Queries',
+                            })}
+                        </Button>
+                    </Box>
+                </Box>
+                {/* )} */}
+            </Box>
         </Box>
     );
 };
-
-// ApiChatPoweredBy.propTypes = {
-//     openSampleQueries: PropTypes.func.isRequired,
-//     goBack: PropTypes.func.isRequired,
-//     disableGoBack: PropTypes.bool.isRequired,
-//     showSampleQueries: PropTypes.bool,
-// };
 
 export default ApiChatPoweredBy;

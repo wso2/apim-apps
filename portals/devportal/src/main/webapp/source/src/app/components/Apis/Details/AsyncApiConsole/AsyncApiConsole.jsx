@@ -26,7 +26,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
-import TryOutController from '../ApiConsole/TryOutController';
+import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';

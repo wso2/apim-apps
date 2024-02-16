@@ -32,7 +32,7 @@ export const useStyles = makeStyles((theme) => createStyles({
     tryAiBannerCont: {
         display: 'flex',
         gridGap: theme.spacing(1.5),
-        maxWidth: theme.spacing(78),
+        maxWidth: theme.spacing(85),
     },
     tryAiBannerImgWrap: {
         flex: `0 0 ${theme.spacing(15)}px`,
@@ -63,11 +63,11 @@ export const useStyles = makeStyles((theme) => createStyles({
             top: 0,
             right: 0,
             boxShadow: `${theme.spacing(2.5)}px ${theme.spacing(-3.75)}px 
-                      0 0 ${theme.palette.common.white}`,
+                      0 0 ${theme.palette.grey[100]}`,
         },
     },
     tryAiBannerContent: {
-        background: theme.palette.common.white,
+        background: theme.palette.grey[100],
         padding: theme.spacing(2),
         borderRadius: theme.spacing(0, 2, 2, 2),
         position: 'relative',
