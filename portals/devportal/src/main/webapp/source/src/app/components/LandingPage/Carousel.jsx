@@ -1,22 +1,41 @@
 import React, { useState } from 'react';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled, useTheme } from '@mui/material/styles';
 import Slide from '@mui/material/Slide';
 import Icon from '@mui/material/Icon';
 import classNames from 'classnames';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import { app } from 'Settings';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'Carousel';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    imageBox: `${PREFIX}-imageBox`,
+    arrows: `${PREFIX}-arrows`,
+    arrowLeft: `${PREFIX}-arrowLeft`,
+    arrowRight: `${PREFIX}-arrowRight`,
+    slideContainer: `${PREFIX}-slideContainer`,
+    slideContentWrapper: `${PREFIX}-slideContentWrapper`,
+    slideContentTitle: `${PREFIX}-slideContentTitle`,
+    slideContentContent: `${PREFIX}-slideContentContent`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
         position: 'relative',
         display: 'flex',
     },
-    imageBox: {
+
+    [`& .${classes.imageBox}`]: {
         width: '100%',
         height: 'auto',
     },
-    arrows: {
+
+    [`& .${classes.arrows}`]: {
         position: 'absolute',
         zIndex: 2,
         display: 'flex',
@@ -31,42 +50,48 @@ const useStyles = makeStyles((theme) => ({
             color: theme.palette.getContrastText('#000000'),
         },
     },
-    arrowLeft: {
+
+    [`& .${classes.arrowLeft}`]: {
         left: 0,
     },
-    arrowRight: {
+
+    [`& .${classes.arrowRight}`]: {
         right: 0,
     },
-    slideContainer: {
+
+    [`& .${classes.slideContainer}`]: {
         width: '100%',
         zIndex: 1,
         display: 'flex',
         flex: 1,
         justifyContent: 'center',
     },
-    slideContentWrapper: {
+
+    [`& .${classes.slideContentWrapper}`]: {
         position: 'absolute',
         background: '#00000044',
         color: theme.palette.getContrastText('#000000'),
         bottom: 0,
         padding: theme.spacing(2),
     },
-    slideContentTitle: {
+
+    [`& .${classes.slideContentTitle}`]: {
         fontWeight: theme.typography.fontWeightLight,
         fontSize: theme.typography.h3.fontSize,
     },
-    slideContentContent: {
+
+    [`& .${classes.slideContentContent}`]: {
         fontWeight: theme.typography.fontWeightLight,
         fontSize: theme.typography.body1.fontSize,
     },
 }));
+
 /**
  * Renders Carousel view..
  * @param {JSON} props Parent pros.
  * @returns {JSX} renders Carousel view.
  */
 function Carousel() {
-    const classes = useStyles();
     const theme = useTheme();
     const [counter, setCounter] = useState(0);
     const [slideDirection, setSlideDirection] = useState('left');
@@ -89,7 +114,7 @@ function Carousel() {
     };
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <div
                 className={classNames(classes.arrowLeft, classes.arrows)}
                 onKeyDown={handleLeftArrow}
@@ -132,7 +157,7 @@ function Carousel() {
                     </div>
                 </Slide>
             ))}
-        </div>
+        </Root>
     );
 }
 
