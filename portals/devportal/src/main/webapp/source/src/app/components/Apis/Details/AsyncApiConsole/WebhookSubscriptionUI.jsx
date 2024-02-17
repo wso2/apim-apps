@@ -26,10 +26,9 @@ import AccordionActions from '@mui/material/AccordionActions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Radio from '@mui/material/Radio';
-import { RadioGroup } from '@mui/material';
+import { RadioGroup, useTheme } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Utils from 'AppData/Utils';
@@ -43,68 +42,8 @@ function WebhookSubscriptionUI(props) {
     const intl = useIntl();
     const verb = props.topic.type.toLowerCase();
     const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
-    const useStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
-        return {
-            bootstrapRoot: {
-                padding: 0,
-                'label + &': {
-                    marginTop: theme.spacing(1),
-                },
-            },
-            bootstrapInput: {
-                borderRadius: 4,
-                backgroundColor: theme.palette.common.white,
-                border: '1px solid #ced4da',
-                padding: '5px 12px',
-                marginTop: '11px',
-                marginBottom: '11px',
-                width: '100%',
-                transition: theme.transitions.create(['border-color', 'box-shadow']),
-                '&:focus': {
-                    borderColor: '#80bdff',
-                    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-                },
-                fontSize: 12,
-            },
-            bootstrapCurl: {
-                borderRadius: 4,
-                backgroundColor: theme.custom.curlGenerator.backgroundColor,
-                color: theme.custom.curlGenerator.color,
-                border: '1px solid #ced4da',
-                padding: '5px 12px',
-                marginTop: '11px',
-                marginBottom: '11px',
-                width: '100%',
-                transition: theme.transitions.create(['border-color', 'box-shadow']),
-                '&:focus': {
-                    borderColor: '#80bdff',
-                    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-                },
-                fontSize: 12,
-                fontFamily: 'monospace',
-                fontWeight: 600,
-            },
-            subscriptionSummary: {
-                backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
-                maxHeight: '40px',
-                borderColor: '#80bdff',
-                '&$expanded': {
-                    maxHeight: '40px',
-                },
-            },
-            customButton: {
-                backgroundColor: '#ffffff',
-                borderColor: backgroundColor,
-                color: backgroundColor,
-                width: theme.spacing(2),
-            },
-            subscription: {
-                marginBottom: '10px',
-                border: `1px solid ${backgroundColor}`,
-            },
-        };
-    });
+    const theme = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
     const { generateGenericWHSubscriptionCurl, topic } = props;
     const initialSubscriptionState = {
         topic: topic.name,
@@ -130,15 +69,24 @@ function WebhookSubscriptionUI(props) {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const classes = useStyles();
-
     return (
-        <Accordion className={classes.subscription}>
+        <Accordion sx={{
+            marginBottom: '10px',
+            border: `1px solid ${backgroundColor}`,
+        }}
+        >
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls='wh-subscription-content'
                 id='wh-subscription-header'
-                className={classes.subscriptionSummary}
+                sx={{
+                    backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
+                    maxHeight: '40px',
+                    borderColor: '#80bdff',
+                    '&$expanded': {
+                        maxHeight: '40px',
+                    },
+                }}
             >
                 <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
                     <Grid item md={11}>
@@ -147,7 +95,12 @@ function WebhookSubscriptionUI(props) {
                                 disableFocusRipple
                                 variant='outlined'
                                 size='small'
-                                className={classes.customButton}
+                                sx={{
+                                    backgroundColor: '#ffffff',
+                                    borderColor: backgroundColor,
+                                    color: backgroundColor,
+                                    width: theme.spacing(2),
+                                }}
                             >
                                 {trimmedVerb.toUpperCase()}
                             </Button>
@@ -182,7 +135,9 @@ function WebhookSubscriptionUI(props) {
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            variant='standard'
+                            variant='outlined'
+                            size='small'
+                            sx={{ width: '50%' }}
                             name='callback'
                             id='standard-full-width'
                             label={intl.formatMessage({
@@ -197,8 +152,27 @@ function WebhookSubscriptionUI(props) {
                             InputProps={{
                                 disableUnderline: true,
                                 classes: {
-                                    root: classes.bootstrapRoot,
-                                    input: classes.bootstrapInput,
+                                    root: {
+                                        padding: 0,
+                                        'label + &': {
+                                            marginTop: theme.spacing(1),
+                                        },
+                                    },
+                                    input: {
+                                        borderRadius: 4,
+                                        backgroundColor: theme.palette.common.white,
+                                        border: '1px solid #ced4da',
+                                        padding: '5px 12px',
+                                        marginTop: '11px',
+                                        marginBottom: '11px',
+                                        width: '100%',
+                                        transition: theme.transitions.create(['border-color', 'box-shadow']),
+                                        '&:focus': {
+                                            borderColor: '#80bdff',
+                                            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+                                        },
+                                        fontSize: 12,
+                                    },
                                 },
                             }}
                             InputLabelProps={{
@@ -210,7 +184,9 @@ function WebhookSubscriptionUI(props) {
                         <>
                             <Grid item xs={6}>
                                 <TextField
-                                    variant='standard'
+                                    variant='outlined'
+                                    size='small'
+                                    sx={{ width: '50%' }}
                                     name='secret'
                                     id='standard-full-width'
                                     label={intl.formatMessage({
@@ -223,8 +199,27 @@ function WebhookSubscriptionUI(props) {
                                     InputProps={{
                                         disableUnderline: true,
                                         classes: {
-                                            root: classes.bootstrapRoot,
-                                            input: classes.bootstrapInput,
+                                            root: {
+                                                padding: 0,
+                                                'label + &': {
+                                                    marginTop: theme.spacing(1),
+                                                },
+                                            },
+                                            input: {
+                                                borderRadius: 4,
+                                                backgroundColor: theme.palette.common.white,
+                                                border: '1px solid #ced4da',
+                                                padding: '5px 12px',
+                                                marginTop: '11px',
+                                                marginBottom: '11px',
+                                                width: '100%',
+                                                transition: theme.transitions.create(['border-color', 'box-shadow']),
+                                                '&:focus': {
+                                                    borderColor: '#80bdff',
+                                                    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+                                                },
+                                                fontSize: 12,
+                                            },
                                         },
                                     }}
                                     InputLabelProps={{
@@ -234,7 +229,9 @@ function WebhookSubscriptionUI(props) {
                             </Grid>
                             <Grid item xs={6}>
                                 <TextField
-                                    variant='standard'
+                                    variant='outlined'
+                                    size='small'
+                                    sx={{ width: '50%' }}
                                     name='lease'
                                     id='standard-full-width'
                                     label={intl.formatMessage({
@@ -247,8 +244,27 @@ function WebhookSubscriptionUI(props) {
                                     InputProps={{
                                         disableUnderline: true,
                                         classes: {
-                                            root: classes.bootstrapRoot,
-                                            input: classes.bootstrapInput,
+                                            root: {
+                                                padding: 0,
+                                                'label + &': {
+                                                    marginTop: theme.spacing(1),
+                                                },
+                                            },
+                                            input: {
+                                                borderRadius: 4,
+                                                backgroundColor: theme.palette.common.white,
+                                                border: '1px solid #ced4da',
+                                                padding: '5px 12px',
+                                                marginTop: '11px',
+                                                marginBottom: '11px',
+                                                width: '100%',
+                                                transition: theme.transitions.create(['border-color', 'box-shadow']),
+                                                '&:focus': {
+                                                    borderColor: '#80bdff',
+                                                    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+                                                },
+                                                fontSize: 12,
+                                            },
                                         },
                                     }}
                                     InputLabelProps={{
@@ -260,7 +276,7 @@ function WebhookSubscriptionUI(props) {
                     )}
                     <Grid item xs={12}>
                         <TextField
-                            variant='standard'
+                            variant='filled'
                             label={intl.formatMessage({
                                 defaultMessage: 'cURL',
                                 id: 'Apis.Details.AsyncApiConsole.Webhooks.curl',
@@ -272,13 +288,34 @@ function WebhookSubscriptionUI(props) {
                             InputProps={{
                                 disableUnderline: true,
                                 classes: {
-                                    root: classes.bootstrapRoot,
-                                    input: classes.bootstrapCurl,
+                                    root: {
+                                        padding: 0,
+                                        'label + &': {
+                                            marginTop: theme.spacing(1),
+                                        },
+                                    },
+                                    input: {
+                                        borderRadius: 4,
+                                        backgroundColor: theme.custom.curlGenerator.backgroundColor,
+                                        color: theme.custom.curlGenerator.color,
+                                        border: '1px solid #ced4da',
+                                        padding: '5px 12px',
+                                        marginTop: '11px',
+                                        marginBottom: '11px',
+                                        width: '100%',
+                                        transition: theme.transitions.create(['border-color', 'box-shadow']),
+                                        '&:focus': {
+                                            borderColor: '#80bdff',
+                                            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+                                        },
+                                        fontSize: 12,
+                                        fontFamily: 'monospace',
+                                        fontWeight: 600,
+                                    },
                                 },
                             }}
                             InputLabelProps={{
                                 shrink: true,
-                                className: classes.bootstrapFormLabel,
                             }}
                         />
                     </Grid>

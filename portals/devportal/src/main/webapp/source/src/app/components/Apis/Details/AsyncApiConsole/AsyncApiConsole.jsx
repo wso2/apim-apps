@@ -17,12 +17,12 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import AuthManager from 'AppData/AuthManager';
 import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
@@ -32,21 +32,38 @@ import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
 import AsyncApiUI from './AsyncApiUI';
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
+const PREFIX = 'AsyncApiConsole';
+
+const classes = {
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    userNotificationPaper: `${PREFIX}-userNotificationPaper`,
+    titleSub: `${PREFIX}-titleSub`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.paper}`]: {
         margin: theme.spacing(1),
         padding: theme.spacing(1),
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(4),
         paddingRight: theme.spacing(2),
         justifyContent: 'center',
     },
-    userNotificationPaper: {
+
+    [`& .${classes.userNotificationPaper}`]: {
         padding: theme.spacing(2),
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
@@ -55,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AsyncApiConsole() {
     const intl = useIntl();
-    const classes = useStyles();
+
     const { api } = useContext(ApiContext);
     const [securitySchemeType, setSecurityScheme] = useState('OAUTH');
     const [selectedEnvironment, setSelectedEnvironment] = useState();
@@ -224,7 +241,7 @@ export default function AsyncApiConsole() {
     };
 
     return (
-        <>
+        <Root>
             <Typography variant='h4' className={classes.titleSub}>
                 <FormattedMessage id='Apis.Details.AsyncApiConsole.AsyncApiConsole.title' defaultMessage='Try Out' />
             </Typography>
@@ -295,7 +312,7 @@ export default function AsyncApiConsole() {
                     accessTokenProvider={accessTokenProvider}
                 />
             </Paper>
-        </>
+        </Root>
     );
 }
 
