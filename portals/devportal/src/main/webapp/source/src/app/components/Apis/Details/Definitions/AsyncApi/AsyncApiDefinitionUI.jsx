@@ -17,32 +17,47 @@
  */
 
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import AsyncApiComponent from '@asyncapi/react-component';
 import '@asyncapi/react-component/lib/styles/fiori.css';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Grid from '@mui/material/Grid';
 import { ApiContext } from '../../ApiContext';
 
-const styles = (theme) => ({
-    titleSub: {
+const PREFIX = 'AsyncApiDefinitionUI';
+
+const classes = {
+    titleSub: `${PREFIX}-titleSub`,
+    editorPane: `${PREFIX}-editorPane`,
+    editorRoot: `${PREFIX}-editorRoot`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(3),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    editorPane: {
+
+    [`& .${classes.editorPane}`]: {
         width: '100%',
         maxHeight: '100vh',
         minHeight: '100vh',
         overflow: 'auto',
     },
-    editorRoot: {
+
+    [`& .${classes.editorRoot}`]: {
         height: '100%',
-    },
-});
+    }
+}));
 
 
 class AsyncApiDefinitionUI extends Component {
@@ -53,12 +68,11 @@ class AsyncApiDefinitionUI extends Component {
     }
 
     render() {
-        const { classes } = this.props;
         // Avoid rendering the 'servers' portion from the AsyncAPI definition.
         const asyncApiDefinition = JSON.parse(this.context.api.apiDefinition);
         delete asyncApiDefinition.servers;
         return (
-            <>
+            <Root>
                 <Typography variant='h4' className={classes.titleSub}>
                     <FormattedMessage
                         id='Apis.Details.Async.Definition.title'
@@ -70,7 +84,7 @@ class AsyncApiDefinitionUI extends Component {
                         <AsyncApiComponent schema={JSON.stringify(asyncApiDefinition)} />
                     </Grid>
                 </Grid>
-            </>
+            </Root>
         );
     }
 }
@@ -79,4 +93,4 @@ AsyncApiDefinitionUI.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(AsyncApiDefinitionUI));
+export default injectIntl((AsyncApiDefinitionUI));
