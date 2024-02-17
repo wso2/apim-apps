@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Accordion from '@mui/material/Accordion';
@@ -32,11 +32,26 @@ import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'QueryComplexityView';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    title: `${PREFIX}-title`,
+    heading: `${PREFIX}-heading`,
+    column: `${PREFIX}-column`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         width: '100%',
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: 'bold',
         flexBasis: '50%',
@@ -46,7 +61,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(4),
         marginRight: theme.spacing(1),
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
         flexBasis: '50%',
@@ -54,7 +70,8 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
-    column: {
+
+    [`& .${classes.column}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
         flexBasis: '33.33%',
@@ -68,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
  */
 
 export default function QueryComplexityView(props) {
-    const classes = useStyles();
     const { api } = useContext(ApiContext);
     const { open, setOpen } = props;
     const [typelist, setTypeList] = useState([]);
@@ -124,7 +140,7 @@ export default function QueryComplexityView(props) {
         return <Progress />;
     }
     return (
-        <>
+        <Root>
             <div>
                 <div className={classes.title} style={{ display: 'flex', position: 'relative' }}>
                     <div>
@@ -171,7 +187,7 @@ export default function QueryComplexityView(props) {
                     </div>
                 </div>
             </div>
-        </>
+        </Root>
     );
 }
 

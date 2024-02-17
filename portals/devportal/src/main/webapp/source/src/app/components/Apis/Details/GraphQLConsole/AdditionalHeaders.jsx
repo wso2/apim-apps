@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -35,45 +35,71 @@ import AddEditAdditionalHeaders from 'AppComponents/Apis/Details/GraphQLConsole/
 import DeleteHeader from 'AppComponents/Apis/Details/GraphQLConsole/DeleteHeader';
 import Divider from '@mui/material/Divider';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'AdditionalHeaders';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    secondaryHeading: `${PREFIX}-secondaryHeading`,
+    table: `${PREFIX}-table`,
+    expandContentRoot: `${PREFIX}-expandContentRoot`,
+    subsubTitle: `${PREFIX}-subsubTitle`,
+    alert: `${PREFIX}-alert`,
+    hr: `${PREFIX}-hr`,
+    descriptionBox: `${PREFIX}-descriptionBox`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
         width: '100%',
         marginBottom: 20,
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
         flex: 1,
         alignItems: 'center',
     },
-    secondaryHeading: {
+
+    [`& .${classes.secondaryHeading}`]: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
         display: 'flex',
         alignItems: 'center',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         marginBottom: 40,
         background: '#efefef',
         '& th': {
             background: '#ccc',
         },
     },
-    expandContentRoot: {
+
+    [`& .${classes.expandContentRoot}`]: {
         flexDirection: 'column',
     },
-    subsubTitle: {
+
+    [`& .${classes.subsubTitle}`]: {
         fontSize: '0.81rem',
     },
-    alert: {
+
+    [`& .${classes.alert}`]: {
         flex: 1,
     },
-    hr: {
+
+    [`& .${classes.hr}`]: {
         border: 'solid 1px #efefef',
         width: '100%',
     },
-    descriptionBox: {
+
+    [`& .${classes.descriptionBox}`]: {
         marginLeft: theme.spacing(1),
     },
 }));
@@ -91,7 +117,6 @@ function getUUID() {
  * @param {JSON} props Provides props from parent
  */
 function AdditionalHeaders(props) {
-    const classes = useStyles();
     const { additionalHeaders, setAdditionalHeaders } = props;
     const [expanded, setExpanded] = React.useState(false);
 
@@ -140,7 +165,7 @@ function AdditionalHeaders(props) {
     };
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -240,7 +265,7 @@ function AdditionalHeaders(props) {
                     <Divider />
                 </AccordionDetails>
             </Accordion>
-        </div>
+        </Root>
     );
 }
 AdditionalHeaders.propTypes = {
