@@ -19,12 +19,11 @@
 import React, {
     useEffect, useState,
 } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
 import TextField from '@mui/material/TextField';
 import {
     Radio, RadioGroup, FormControlLabel, FormControl, CircularProgress, Tooltip,
@@ -48,36 +47,63 @@ import Api from '../../../../data/api';
 import Application from '../../../../data/Application';
 import SelectAppPanel from './SelectAppPanel';
 
-/**
- * @inheritdoc
- * @param {*} theme theme
- */
-const styles = makeStyles((theme) => ({
-    centerItems: {
-        margin: 'auto',
+const PREFIX = 'TryOutController';
+
+const classes = {
+    centerItems: `${PREFIX}-centerItems`,
+    tokenType: `${PREFIX}-tokenType`,
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    tryoutHeading: `${PREFIX}-tryoutHeading`,
+    genKeyButton: `${PREFIX}-genKeyButton`,
+    gatewayEnvironment: `${PREFIX}-gatewayEnvironment`,
+    categoryHeading: `${PREFIX}-categoryHeading`,
+    tooltip: `${PREFIX}-tooltip`,
+    menuItem: `${PREFIX}-menuItem`,
+    warningIcon: `${PREFIX}-warningIcon`,
+    loadMoreLink: `${PREFIX}-loadMoreLink`,
+    link: `${PREFIX}-link`,
+    authHeader: `${PREFIX}-authHeader`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
     },
-    tokenType: {
+) => ({
+    [`& .${classes.centerItems}`]: {
+        margin: 'auto',
+        // width: theme.spacing(100),
+        width: 1200,
+    },
+
+    [`& .${classes.tokenType}`]: {
         margin: 'auto',
         display: 'flex',
         '& .MuiButton-contained.Mui-disabled span.MuiButton-label': {
             color: '#6d6d6d',
         },
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         margin: theme.spacing(1),
         padding: theme.spacing(1),
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(4),
         paddingRight: theme.spacing(2),
         justifyContent: 'center',
     },
-    tryoutHeading: {
+
+    [`& .${classes.tryoutHeading}`]: {
         fontWeight: 400,
         display: 'block',
     },
-    genKeyButton: {
+
+    [`& .${classes.genKeyButton}`]: {
         background: theme.palette.grey[300],
         width: theme.spacing(20),
         height: theme.spacing(5),
@@ -88,35 +114,43 @@ const styles = makeStyles((theme) => ({
             background: theme.palette.grey[50],
         },
     },
-    gatewayEnvironment: {
+
+    [`& .${classes.gatewayEnvironment}`]: {
         marginTop: theme.spacing(4),
     },
-    categoryHeading: {
+
+    [`& .${classes.categoryHeading}`]: {
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(-5),
     },
-    tooltip: {
+
+    [`& .${classes.tooltip}`]: {
         marginLeft: theme.spacing(1),
     },
-    menuItem: {
+
+    [`& .${classes.menuItem}`]: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    warningIcon: {
+
+    [`& .${classes.warningIcon}`]: {
         color: '#ff9a00',
         fontSize: 25,
         marginRight: 10,
     },
-    loadMoreLink: {
+
+    [`& .${classes.loadMoreLink}`]: {
         textDecoration: 'none',
         margin: 'auto',
         display: 'flex',
         justifyContent: 'center',
     },
-    link: {
+
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
-    authHeader: {
+
+    [`& .${classes.authHeader}`]: {
         marginBottom: '20px',
     },
 }));
@@ -139,7 +173,6 @@ function TryOutController(props) {
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
 
-    const classes = styles();
     const [showToken, setShowToken] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -477,7 +510,7 @@ function TryOutController(props) {
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
     return (
-        <>
+        <Root>
             <Grid x={12} md={6} className={classes.centerItems}>
                 <Box>
                     {securitySchemeType !== 'TEST' && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
@@ -937,7 +970,7 @@ function TryOutController(props) {
                     )}
                 </Box>
             </Grid>
-        </>
+        </Root>
     );
 }
 
@@ -950,4 +983,4 @@ TryOutController.propTypes = {
     }).isRequired,
 };
 
-export default withStyles(makeStyles)(TryOutController);
+export default (TryOutController);

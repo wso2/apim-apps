@@ -17,11 +17,11 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Icon from '@mui/material/Icon';
 import AuthManager from 'AppData/AuthManager';
 import Paper from '@mui/material/Paper';
@@ -44,41 +44,60 @@ import SwaggerUI from './SwaggerUI';
 import TryOutController from './TryOutController';
 import Application from '../../../../data/Application';
 
-/**
- * @inheritdoc
- * @param {*} theme theme
- */
-const styles = (theme) => ({
-    iconify: {
+const PREFIX = 'ApiConsole';
+
+const classes = {
+    iconify: `${PREFIX}-iconify`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    userNotificationPaper: `${PREFIX}-userNotificationPaper`,
+    titleSub: `${PREFIX}-titleSub`,
+    swaggerUIPaper: `${PREFIX}-swaggerUIPaper`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.iconify}`]: {
         marginRight: 10,
         font: 24,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         margin: theme.spacing(1),
         padding: theme.spacing(1),
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(4),
         paddingRight: theme.spacing(2),
         justifyContent: 'center',
     },
-    userNotificationPaper: {
+
+    [`& .${classes.userNotificationPaper}`]: {
         padding: theme.spacing(2),
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    swaggerUIPaper: {
+
+    [`& .${classes.swaggerUIPaper}`]: {
         backgroundColor: theme.custom.apiDetailPages.swaggerUIBackground,
     },
-});
+}));
 
 /**
  *
@@ -485,7 +504,6 @@ class ApiConsole extends React.Component {
      * @memberof ApiConsole
      */
     render() {
-        const { classes } = this.props;
         const {
             api, notFound, swagger, securitySchemeType, selectedEnvironment, environments, scopes,
             username, password, productionAccessToken, sandboxAccessToken, selectedKeyType, accessTokenPart,
@@ -538,7 +556,7 @@ class ApiConsole extends React.Component {
             }
         }
         return (
-            <>
+            <Root>
                 <Paper className={classes.paper}>
                     <Grid container className={classes.grid}>
                         {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
@@ -664,7 +682,7 @@ class ApiConsole extends React.Component {
                         securitySchemeType={securitySchemeType}
                     />
                 </Paper>
-            </>
+            </Root>
         );
     }
 }
@@ -682,4 +700,4 @@ ApiConsole.propTypes = {
 
 ApiConsole.contextType = ApiContext;
 
-export default withStyles(styles)(ApiConsole);
+export default (ApiConsole);
