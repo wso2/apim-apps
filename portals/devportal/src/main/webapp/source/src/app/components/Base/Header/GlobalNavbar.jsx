@@ -22,9 +22,8 @@ import { injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import Icon from '@mui/material/Icon';
 import {
-    ListItemIcon, List, ListItem, ListItemText,
+    ListItemIcon, List, ListItem, ListItemText, useTheme,
 } from '@mui/material';
-import withTheme from '@mui/styles/withTheme';
 import AuthManager from 'AppData/AuthManager';
 import CustomIcon from '../../Shared/CustomIcon';
 
@@ -35,8 +34,9 @@ import CustomIcon from '../../Shared/CustomIcon';
  */
 function GlobalNavBar(props) {
     const {
-        classes, theme, intl, drawerView, selected, iconWidth, strokeColorSelected, strokeColor,
+        classes, intl, drawerView, selected, iconWidth, strokeColorSelected, strokeColor,
     } = props;
+    const theme = useTheme();
     const { custom: { landingPage: { active: landingPageActive, activeForAnonymous } } } = theme;
     const isUserFound = AuthManager.getUser();
     React.useEffect(() => {}, [selected]);
@@ -176,4 +176,4 @@ GlobalNavBar.propTypes = {
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default withRouter(withTheme(injectIntl(GlobalNavBar)));
+export default withRouter((injectIntl(GlobalNavBar)));

@@ -15,13 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+/* eslint-disable no-unused-vars */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
-import withStyles from '@mui/styles/withStyles';
 import Paper from '@mui/material/Paper';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import IconButton from '@mui/material/IconButton';
@@ -31,24 +31,46 @@ import {
     renderInput, renderSuggestion, getSuggestions, getSuggestionValue, buildSearchQuery,
 } from './SearchUtils';
 
-const styles = (theme) => ({
-    container: {
+const PREFIX = 'HeaderSearch';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    smContainer: `${PREFIX}-smContainer`,
+    suggestionsContainerOpen: `${PREFIX}-suggestionsContainerOpen`,
+    suggestion: `${PREFIX}-suggestion`,
+    suggestionsList: `${PREFIX}-suggestionsList`,
+    infoButton: `${PREFIX}-infoButton`,
+    emptyContainer: `${PREFIX}-emptyContainer`,
+    InfoToolTip: `${PREFIX}-InfoToolTip`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.container}`]: {
         flexGrow: 0,
     },
-    smContainer: {
+
+    [`& .${classes.smContainer}`]: {
         position: 'absolute',
     },
-    suggestionsContainerOpen: {
+
+    [`& .${classes.suggestionsContainerOpen}`]: {
         display: 'block',
         position: 'absolute',
         width: '517px',
         zIndex: theme.zIndex.modal + 1,
         backgroundColor: theme.custom.appBar.searchInputActiveBackground,
     },
-    suggestion: {
+
+    [`& .${classes.suggestion}`]: {
         display: 'block',
     },
-    suggestionsList: {
+
+    [`& .${classes.suggestionsList}`]: {
         margin: 0,
         padding: 0,
         listStyleType: 'none',
@@ -56,45 +78,17 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.custom.appBar.searchInputBackground),
         },
     },
-    inputRoot: {
-        flexDirection: 'row',
-    },
-    searchBoxWrap: {
-        display: 'flex',
-    },
-    input: {
-        width: '280px',
-        background: theme.custom.appBar.searchInputBackground,
-        color: theme.palette.getContrastText(theme.custom.appBar.searchInputBackground),
-        '-webkit-transition': 'all .35s ease-in-out',
-        transition: 'all .35s ease-in-out',
-        padding: '5px 5px 5px 5px',
-        minHeight: '40px',
-    },
-    inputFocused: {
-        width: '400px',
-        background: theme.custom.appBar.searchInputActiveBackground,
-        color: theme.palette.getContrastText(theme.custom.appBar.searchInputActiveBackground),
-        padding: '5px 5px 5px 5px',
-    },
-    searchBox: {
-        padding: '5px 5px 5px 5px',
-    },
-    selectRoot: {
-        borderRight: '1px solid rgba(0, 0, 0, 0.42)',
-        minHeight: '40px',
-        padding: '5px 5px 5px 15px',
-        background: theme.custom.appBar.searchInputBackground,
-        color: theme.palette.getContrastText(theme.custom.appBar.searchInputBackground),
-    },
-    infoButton: {
+
+    [`& .${classes.infoButton}`]: {
         margin: theme.spacing(1),
         color: theme.palette.getContrastText(theme.custom.appBar.background),
     },
-    emptyContainer: {
+
+    [`& .${classes.emptyContainer}`]: {
         flexGrow: 1,
     },
-    InfoToolTip: {
+
+    [`& .${classes.InfoToolTip}`]: {
         backgroundColor: theme.custom.appBar.searchInputBackground,
         color: theme.palette.getContrastText(theme.custom.appBar.searchInputBackground),
         maxWidth: 500,
@@ -105,11 +99,7 @@ const styles = (theme) => ({
         padding: '15px 10px 0 18px',
         lineHeight: '22px',
     },
-    ariaLabel: {
-        width: 0,
-        height: 0,
-    },
-});
+}));
 
 /**
  * Render search bar in top AppBar
@@ -271,7 +261,7 @@ class HeaderSearch extends React.Component {
      * @memberof HeaderSearch
      */
      render() {
-         const { intl, classes, smSearch } = this.props;
+         const { intl, smSearch } = this.props;
          const {
              searchText, lcstate, isLoading, suggestions,
          } = this.state;
@@ -282,7 +272,7 @@ class HeaderSearch extends React.Component {
              responsiveContainer = classes.smContainer;
          }
          return (
-             <>
+             <Root>
                  <Autosuggest
                      theme={{
                          container: responsiveContainer,
@@ -314,88 +304,8 @@ class HeaderSearch extends React.Component {
                          isLoading,
                      }}
                  />
-                 <Tooltip
-                     interactive
-                     id='searchTooltip'
-                     placement='top'
-                     classes={{
-                         tooltip: classes.InfoToolTip,
-                     }}
-                     title={(
-                         <>
-                             <FormattedMessage
-                                 id='Base.Header.headersearch.HeaderSearch.tooltip.title'
-                                 defaultMessage='Search Options'
-                             />
-                             <ol style={{ marginLeft: '-20px', marginTop: '5px' }}>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option0'
-                                         defaultMessage='Content [ Default ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option1'
-                                         defaultMessage='Name [ Syntax - name:xxxx ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option2'
-                                         defaultMessage='By API Provider [ Syntax - provider:xxxx ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option3'
-                                         defaultMessage='By API Version [ Syntax - version:xxxx ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option4'
-                                         defaultMessage='By Context [ Syntax - context:xxxx ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option5'
-                                         defaultMessage='By Description [ Syntax - description:xxxx ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option6'
-                                         defaultMessage='By Tags [ Syntax - tags:xxxx ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option12'
-                                         defaultMessage='By Api Category [ Syntax - api-category:xxxx ]'
-                                     />
-                                 </li>
-                                 <li>
-                                     <FormattedMessage
-                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option10'
-                                         defaultMessage='By API Properties [Syntax - property_name:property_value]'
-                                     />
-                                 </li>
-                             </ol>
-                         </>
-                     )}
-                 >
-                     <IconButton
-                         className={classNames(classes.infoButton, 'search-tips-icon')}
-                         aria-label='Search Options'
-                         size='large'
-                     >
-                         <InfoIcon />
-                     </IconButton>
-                 </Tooltip>
                  <div className={classes.emptyContainer} />
-             </>
+             </Root>
          );
      }
 }
@@ -416,4 +326,4 @@ HeaderSearch.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withRouter(withStyles(styles)(HeaderSearch)));
+export default injectIntl(withRouter((HeaderSearch)));

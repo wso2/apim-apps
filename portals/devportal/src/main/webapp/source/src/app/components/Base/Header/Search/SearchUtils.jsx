@@ -18,6 +18,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import TextField from '@mui/material/TextField';
@@ -37,9 +38,67 @@ import CircularProgress from '@mui/material/CircularProgress';
 import classNames from 'classnames';
 
 import API from 'AppData/api';
-/* Utility methods defined here are described in
-* react-autosuggest documentation https://github.com/moroshko/react-autosuggest
-*/
+
+const PREFIX = 'SearchUtils';
+
+const classes = {
+    inputRoot: `${PREFIX}-inputRoot`,
+    searchBoxWrap: `${PREFIX}-searchBoxWrap`,
+    input: `${PREFIX}-input`,
+    inputFocused: `${PREFIX}-inputFocused`,
+    searchBox: `${PREFIX}-searchBox`,
+    selectRoot: `${PREFIX}-selectRoot`,
+    ariaLabel: `${PREFIX}-ariaLabel`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.inputRoot}`]: {
+        flexDirection: 'row',
+    },
+
+    [`& .${classes.searchBoxWrap}`]: {
+        display: 'flex',
+    },
+
+    [`& .${classes.input}`]: {
+        width: '280px',
+        background: theme.custom.appBar.searchInputBackground,
+        color: theme.palette.getContrastText(theme.custom.appBar.searchInputBackground),
+        '-webkit-transition': 'all .35s ease-in-out',
+        transition: 'all .35s ease-in-out',
+        padding: '5px 5px 5px 5px',
+        minHeight: '40px',
+    },
+
+    [`& .${classes.inputFocused}`]: {
+        width: '400px',
+        background: theme.custom.appBar.searchInputActiveBackground,
+        color: theme.palette.getContrastText(theme.custom.appBar.searchInputActiveBackground),
+        padding: '5px 5px 5px 5px',
+    },
+
+    [`& .${classes.searchBox}`]: {
+        padding: '5px 5px 5px 5px',
+    },
+
+    [`& .${classes.selectRoot}`]: {
+        borderRight: '1px solid rgba(0, 0, 0, 0.42)',
+        minHeight: '40px',
+        padding: '5px 5px 5px 15px',
+        background: theme.custom.appBar.searchInputBackground,
+        color: theme.palette.getContrastText(theme.custom.appBar.searchInputBackground),
+    },
+
+    [`& .${classes.ariaLabel}`]: {
+        width: 0,
+        height: 0,
+    },
+}));
 
 /**
  *
@@ -48,8 +107,9 @@ import API from 'AppData/api';
  */
 function renderInput(inputProps) {
     const {
-        classes, ref, isLoading, onDropDownChange, ...other
+        ref, isLoading, onDropDownChange, ...other
     } = inputProps;
+
     let loadingAdorment = null;
     if (isLoading) {
         loadingAdorment = (
@@ -59,7 +119,7 @@ function renderInput(inputProps) {
         );
     }
     return (
-        <>
+        <Root>
             <div className={classes.searchBoxWrap}>
                 <InputLabel className={classes.ariaLabel} htmlFor='searchEnvironment'>Environment</InputLabel>
                 <NativeSelect
@@ -104,7 +164,7 @@ function renderInput(inputProps) {
                     }}
                 />
             </div>
-        </>
+        </Root>
     );
 }
 

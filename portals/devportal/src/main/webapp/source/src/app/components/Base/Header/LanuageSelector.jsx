@@ -17,8 +17,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -28,21 +27,37 @@ import { app } from 'Settings';
 import Hidden from '@mui/material/Hidden';
 import Utils from 'AppData/Utils';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
+const PREFIX = 'LanuageSelector';
+
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    selectEmpty: `${PREFIX}-selectEmpty`,
+    listTextSmall: `${PREFIX}-listTextSmall`,
+    langText: `${PREFIX}-langText`,
+};
+
+const StyledFormControl = styled(FormControl)((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.formControl}`]: {
         margin: theme.spacing(1),
         minWidth: theme.custom.languageSwitch.minWidth,
         '& > div:before': {
             borderBottom: 'none',
         },
     },
-    selectEmpty: {
+
+    [`& .${classes.selectEmpty}`]: {
         marginTop: theme.spacing(2),
     },
-    listTextSmall: {
+
+    [`& .${classes.listTextSmall}`]: {
         color: theme.palette.getContrastText(theme.custom.appBar.background),
     },
-    langText: {
+
+    [`& .${classes.langText}`]: {
         textIndent: theme.spacing(1),
     },
 }));
@@ -52,7 +67,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX} selector dropdown
  */
 export default function LanguageSelector() {
-    const classes = useStyles();
     const theme = useTheme();
     const [language, setLanguage] = React.useState(null);
     const { custom: { languageSwitch: { languages, showFlag, showText } } } = theme;
@@ -74,7 +88,7 @@ export default function LanguageSelector() {
     };
 
     return (
-        <FormControl variant='standard' className={classes.formControl}>
+        <StyledFormControl variant='standard' className={classes.formControl}>
             {language && (
                 <Select
                     variant='standard'
@@ -106,6 +120,6 @@ export default function LanguageSelector() {
 
                 </Select>
             )}
-        </FormControl>
+        </StyledFormControl>
     );
 }
