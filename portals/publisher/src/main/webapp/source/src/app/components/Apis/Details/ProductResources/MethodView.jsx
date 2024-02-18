@@ -16,7 +16,7 @@
  * under the License.
  */
 import React from 'react';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import PropTypes from 'prop-types';
 import Configurations from 'Config';

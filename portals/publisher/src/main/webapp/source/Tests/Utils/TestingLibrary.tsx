@@ -31,13 +31,6 @@ import User from "AppData/User";
 import Utils from "AppData/Utils";
 import { MockedUsers, TEMPORARY_MOCKED_SETTINGS } from "./constants";
 
-
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
-
 export const history = createMemoryHistory();
 
 /* ####### Timeout configurations ####### */

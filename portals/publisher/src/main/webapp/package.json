@@ -45,7 +45,6 @@
         "@mui/icons-material": "^5.15.6",
         "@mui/lab": "^5.0.0-alpha.162",
         "@mui/material": "^5.15.6",
-        "@mui/styles": "^5.15.6",
         "@stoplight/elements": "^7.7.9",
         "@stoplight/spectral-core": "^1.16.0",
         "@stoplight/spectral-rulesets": "^1.14.1",

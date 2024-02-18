@@ -17,8 +17,7 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
-import withTheme from '@mui/styles/withTheme';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
@@ -57,7 +56,8 @@ const Root = styled('div')({
  * @param {*} props
  */
 function RenderMethodBase(props) {
-    const { theme, method } = props;
+    const { method } = props;
+    const theme = useTheme();
     const methodLower = method.toLowerCase();
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[methodLower] : null;
     let chipTextColor = '#000000';
@@ -81,7 +81,7 @@ RenderMethodBase.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
+const RenderMethod = RenderMethodBase;
 
 /**
  * Component to show api product resources in overview tab
@@ -120,7 +120,6 @@ class ProductResources extends React.PureComponent {
                                                     {operation.target}
                                                 </Typography>
                                                 <RenderMethod method={operation.verb} />
-
                                             </div>
                                         );
                                     })}

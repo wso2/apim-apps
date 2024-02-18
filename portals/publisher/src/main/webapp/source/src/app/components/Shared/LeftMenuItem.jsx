@@ -17,12 +17,11 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/styles';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 
 const PREFIX = 'LeftMenuItem';
