@@ -79,6 +79,7 @@
   "AdminPages.Gateways.table.header.description": "",
   "AdminPages.Gateways.table.header.displayName": "",
   "AdminPages.Gateways.table.header.gatewayType": "",
+  "AdminPages.Gateways.table.header.type": "",
   "AdminPages.Gateways.table.header.vhosts": "",
   "AdminPages.KeyManager.Delete.form.delete.confirmation.message": "",
   "AdminPages.KeyManagers.Delete.form.delete.successful": "",
