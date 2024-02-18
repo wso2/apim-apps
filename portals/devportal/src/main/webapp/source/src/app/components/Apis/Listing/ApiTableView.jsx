@@ -25,7 +25,6 @@ import {
     adaptV4Theme,
 } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { withTheme } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import merge from 'lodash.merge';
@@ -41,13 +40,14 @@ import Alert from 'AppComponents/Shared/Alert';
 import Icon from '@mui/material/Icon';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import DefaultConfigurations from 'AppData/defaultTheme';
+import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
 import ApiThumb from './ApiThumb';
 import DocThumb from './APICards/DocThumb';
 import { ApiContext } from '../Details/ApiContext';
 import NoApi from './NoApi';
 
-const PREFIX = 'ApiTableView';
+const PREFIX = 'ApiTableViewLegacy';
 
 const classes = {
     apiNameLink: `${PREFIX}-apiNameLink`,
@@ -76,14 +76,14 @@ const StyledStyledEngineProvider = styled(StyledEngineProvider)((
 /**
  * Table view for api listing
  *
- * @class ApiTableView
+ * @class ApiTableViewLegacy
  * @extends {React.Component}
  */
-class ApiTableView extends React.Component {
+class ApiTableViewLegacy extends React.Component {
     /**
      * @inheritdoc
      * @param {*} props properties
-     * @memberof ApiTableView
+     * @memberof ApiTableViewLegacy
      */
     constructor(props) {
         super(props);
@@ -316,7 +316,7 @@ class ApiTableView extends React.Component {
     /**
      * @inheritdoc
      * @returns {Component}x
-     * @memberof ApiTableView
+     * @memberof ApiTableViewLegacy
      */
     render() {
         const { intl, gridView, theme } = this.props;
@@ -625,6 +625,23 @@ class ApiTableView extends React.Component {
     }
 }
 
-ApiTableView.contextType = ApiContext;
+ApiTableViewLegacy.contextType = ApiContext;
 
-export default withSettings(injectIntl(withTheme((ApiTableView))));
+function ApiTableView(props) {
+    const {
+        query, selectedTag, gridView, intl, setTenantDomain,
+    } = props;
+    const theme = useTheme();
+    return (
+        <ApiTableViewLegacy
+            query={query}
+            selectedTag={selectedTag}
+            gridView={gridView}
+            intl={intl}
+            setTenantDomain={setTenantDomain}
+            theme={theme}
+        />
+    );
+}
+
+export default withSettings(injectIntl(ApiTableView));

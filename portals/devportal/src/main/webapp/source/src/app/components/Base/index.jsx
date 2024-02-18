@@ -19,6 +19,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Link, withRouter } from 'react-router-dom';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import AppBar from '@mui/material/AppBar';
@@ -27,11 +28,10 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Hidden from '@mui/material/Hidden';
 import {
-    MenuItem, MenuList,
+    MenuItem, MenuList, useTheme,
 } from '@mui/material';
 import Icon from '@mui/material/Icon';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import Popper from '@mui/material/Popper';
 import Grow from '@mui/material/Grow';
@@ -48,43 +48,83 @@ import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
 import VerticalDivider from '../Shared/VerticalDivider';
 
-const styles = (theme) => {
+const PREFIX = 'index';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    icon: `${PREFIX}-icon`,
+    menuIcon: `${PREFIX}-menuIcon`,
+    userLink: `${PREFIX}-userLink`,
+    publicStore: `${PREFIX}-publicStore`,
+    linkWrapper: `${PREFIX}-linkWrapper`,
+    drawer: `${PREFIX}-drawer`,
+    wrapper: `${PREFIX}-wrapper`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    push: `${PREFIX}-push`,
+    footer: `${PREFIX}-footer`,
+    toolbar: `${PREFIX}-toolbar`,
+    list: `${PREFIX}-list`,
+    drawerStyles: `${PREFIX}-drawerStyles`,
+    listInline: `${PREFIX}-listInline`,
+    reactRoot: `${PREFIX}-reactRoot`,
+    icons: `${PREFIX}-icons`,
+    banner: `${PREFIX}-banner`,
+    listRoot: `${PREFIX}-listRoot`,
+    listRootInline: `${PREFIX}-listRootInline`,
+    listItemTextRoot: `${PREFIX}-listItemTextRoot`,
+    listText: `${PREFIX}-listText`,
+    listTextSmall: `${PREFIX}-listTextSmall`,
+    smallIcon: `${PREFIX}-smallIcon`,
+    links: `${PREFIX}-links`,
+    selected: `${PREFIX}-selected`,
+    selectedText: `${PREFIX}-selectedText`,
+    triangleDown: `${PREFIX}-triangleDown`,
+    listIconRoot: `${PREFIX}-listIconRoot`,
+    listItemRoot: `${PREFIX}-listItemRoot`,
+    logoutLink: `${PREFIX}-logoutLink`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => {
     const pageMaxWidth = theme.custom.page.style === 'fluid' ? 'none' : theme.custom.page.width;
     return {
-        appBar: {
+        [`& .${classes.appBar}`]: {
             position: 'fixed',
             backgroundColor: theme.custom.appBar.background,
             backgroundImage: `url(${app.context}${theme.custom.appBar.backgroundImage})`,
             backgroundRepeat: 'no-repeat',
         },
-        icon: {
+        [`& .${classes.icon}`]: {
             marginRight: theme.spacing(2),
         },
-        menuIcon: {
+        [`& .${classes.menuIcon}`]: {
             color: theme.palette.getContrastText(theme.custom.appBar.background),
             fontSize: 35,
         },
-        userLink: {
+        [`& .${classes.userLink}`]: {
             color: theme.palette.getContrastText(theme.custom.appBar.background),
         },
-        publicStore: {
+        [`& .${classes.publicStore}`]: {
             color: theme.palette.getContrastText(theme.custom.appBar.background),
             minWidth: 'auto',
         },
-        linkWrapper: {
+        [`& .${classes.linkWrapper}`]: {
             display: 'flex',
             marginLeft: 'auto',
         },
         // Page layout styles
-        drawer: {
+        [`& .${classes.drawer}`]: {
             top: 64,
         },
-        wrapper: {
+        [`& .${classes.wrapper}`]: {
             minHeight: '100%',
             marginBottom: -50,
             background: theme.palette.background.default + ' url(' + app.context + theme.custom.backgroundImage + ') repeat left top',
         },
-        contentWrapper: {
+        [`& .${classes.contentWrapper}`]: {
             display: 'flex',
             flexDirection: 'row',
             overflowY: 'auto',
@@ -94,10 +134,10 @@ const styles = (theme) => {
             marginLeft: -4,
             marginTop: 64,
         },
-        push: {
+        [`& .${classes.push}`]: {
             height: 50,
         },
-        footer: {
+        [`& .${classes.footer}`]: {
             background: theme.custom.footer.background,
             color: theme.custom.footer.color,
             paddingLeft: theme.spacing(3),
@@ -105,7 +145,7 @@ const styles = (theme) => {
             alignItems: 'center',
             display: 'flex',
         },
-        toolbar: {
+        [`& .${classes.toolbar}`]: {
             minHeight: 56,
             [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
                 minHeight: 48,
@@ -114,31 +154,31 @@ const styles = (theme) => {
                 minHeight: 64,
             },
         },
-        list: {
+        [`& .${classes.list}`]: {
             width: theme.custom.appBar.drawerWidth,
         },
-        drawerStyles: {
+        [`& .${classes.drawerStyles}`]: {
             top: theme.mixins.toolbar['@media (min-width:600px)'].minHeight,
         },
-        listInline: {
+        [`& .${classes.listInline}`]: {
             '& ul': {
                 display: 'flex',
                 flexDirection: 'row',
             },
         },
-        reactRoot: {
+        [`& .${classes.reactRoot}`]: {
             maxWidth: pageMaxWidth,
             margin: 'auto',
             borderLeft: theme.custom.page.border,
             borderRight: theme.custom.page.border,
         },
-        icons: {
+        [`& .${classes.icons}`]: {
             marginRight: theme.spacing(),
             '&.material-icons': {
                 fontSize: theme.spacing(2),
             },
         },
-        banner: {
+        [`& .${classes.banner}`]: {
             color: theme.custom.banner.color,
             background: theme.custom.banner.background,
             padding: theme.custom.banner.padding,
@@ -148,44 +188,44 @@ const styles = (theme) => {
             distributeContent: theme.custom.banner.textAlign,
             justifyContent: theme.custom.banner.textAlign,
         },
-        listRoot: {
+        [`& .${classes.listRoot}`]: {
             padding: 0,
         },
-        listRootInline: {
+        [`& .${classes.listRootInline}`]: {
             padding: 0,
             display: 'flex',
             [theme.breakpoints.down('md')]: {
                 flexDirection: 'column',
             },
         },
-        listItemTextRoot: {
+        [`& .${classes.listItemTextRoot}`]: {
             padding: 0,
         },
-        listText: {
+        [`& .${classes.listText}`]: {
             color: theme.palette.getContrastText(theme.custom.appBar.background),
         },
-        listTextSmall: {
+        [`& .${classes.listTextSmall}`]: {
             color: theme.palette.getContrastText(theme.custom.appBar.background),
         },
-        smallIcon: {
+        [`& .${classes.smallIcon}`]: {
             marginRight: 5,
             minWidth: 'auto',
         },
-        links: {
+        [`& .${classes.links}`]: {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
         },
-        selected: {
+        [`& .${classes.selected}`]: {
             background: theme.custom.appBar.activeBackground,
             alignItems: 'center',
             textDecoration: 'none',
             color: theme.palette.getContrastText(theme.custom.appBar.activeBackground),
         },
-        selectedText: {
+        [`& .${classes.selectedText}`]: {
             color: theme.palette.getContrastText(theme.custom.appBar.activeBackground),
         },
-        triangleDown: {
+        [`& .${classes.triangleDown}`]: {
             width: 0,
             height: 0,
             borderLeft: '6px solid transparent',
@@ -196,29 +236,29 @@ const styles = (theme) => {
             position: 'absolute',
             bottom: -5,
         },
-        listIconRoot: {
+        [`& .${classes.listIconRoot}`]: {
             minWidth: 'auto',
         },
-        listItemRoot: {
+        [`& .${classes.listItemRoot}`]: {
             padding: `0 ${theme.spacing(1)} 0 ${theme.spacing(1)} `,
             height: 30,
         },
-        logoutLink: {
+        [`& .${classes.logoutLink}`]: {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     };
-};
+});
 
 /**
  *
- * @class Layout
+ * @class LayoutLegacy
  * @extends {React.Component}
  */
-class Layout extends React.Component {
+class LayoutLegacy extends React.Component {
     /**
      * @inheritdoc
      * @param {*} props
-     * @memberof Layout
+     * @memberof LayoutLegacy
      */
     constructor(props) {
         super(props);
@@ -331,7 +371,7 @@ class Layout extends React.Component {
      */
     render() {
         const {
-            classes, theme, children,
+            theme, children,
         } = this.props;
         const {
             custom: {
@@ -383,7 +423,7 @@ class Layout extends React.Component {
             publicTenantStoreVisible = publicTenantStoreActive;
         }
         return (
-            <>
+            <Root>
                 {active && (
                     <div className={classes.banner}>
                         {style === 'text' ? text
@@ -646,15 +686,25 @@ class Layout extends React.Component {
                         </footer>
                     )}
                 </div>
-            </>
+            </Root>
         );
     }
 }
-Layout.contextType = Settings;
+LayoutLegacy.contextType = Settings;
 
-Layout.propTypes = {
+LayoutLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withRouter(withStyles(styles, { withTheme: true })(Layout)));
+function Layout(props) {
+    const theme = useTheme();
+    return (
+        <LayoutLegacy
+            {...props}
+            theme={theme}
+        />
+    );
+}
+
+export default injectIntl(withRouter((Layout)));

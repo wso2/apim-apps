@@ -21,21 +21,15 @@ import React, { Suspense, lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { adaptV4Theme } from '@mui/material/styles';
-import StylesProviderCore from '@mui/styles/StylesProvider';
-import jssPresetCore from '@mui/styles/jssPreset';
-import { StylesProvider as StylesProviderPlain, jssPreset as jssPresetPlain } from '@mui/styles';
 import { IntlProvider } from 'react-intl';
 import Configurations from 'Config';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
-import { create } from 'jss';
-import rtl from 'jss-rtl';
 import {
-    ThemeProvider as ThemeProviderWithMui,
+    ThemeProvider,
     StyledEngineProvider,
     createTheme,
 } from '@mui/material/styles';
-import { ThemeProvider as ThemeProviderPlain } from '@mui/material/styles';
 import Utils from 'AppData/Utils';
 import Settings from 'Settings';
 import DefaultConfigurations from 'AppData/defaultTheme';
@@ -47,14 +41,8 @@ import BrowserRouter from './app/components/Base/CustomRouter/BrowserRouter';
 import AuthManager from './app/data/AuthManager';
 import CONSTS from './app/data/Constants';
 
-const MuiThemeProvider = ThemeProviderPlain || ThemeProviderWithMui;
-const StylesProvider = StylesProviderCore || StylesProviderPlain;
-const jssPreset = jssPresetPlain || jssPresetCore;
-
 const protectedApp = lazy(() => import('./app/ProtectedApp' /* webpackChunkName: "ProtectedApp" */));
 
-// Configure JSS
-const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 /**
  * Root DevPortal component
  *
@@ -346,21 +334,19 @@ class DevPortal extends React.Component {
                         <title>{this.getTitle(theme)}</title>
                     </Helmet>
                     <StyledEngineProvider injectFirst>
-                        <MuiThemeProvider theme={createTheme(adaptV4Theme(theme))}>
-                            <StylesProvider jss={jss}>
-                                {this.loadCustomCSS(theme)}
-                                <BrowserRouter basename={context}>
-                                    <Suspense fallback={<Progress />}>
-                                        <IntlProvider locale={language} messages={messages}>
-                                            <Switch>
-                                                <Route path='/logout' render={() => (<Logout theme={theme} />)} />
-                                                <Route component={protectedApp} />
-                                            </Switch>
-                                        </IntlProvider>
-                                    </Suspense>
-                                </BrowserRouter>
-                            </StylesProvider>
-                        </MuiThemeProvider>
+                        <ThemeProvider theme={createTheme(adaptV4Theme(theme))}>
+                            {this.loadCustomCSS(theme)}
+                            <BrowserRouter basename={context}>
+                                <Suspense fallback={<Progress />}>
+                                    <IntlProvider locale={language} messages={messages}>
+                                        <Switch>
+                                            <Route path='/logout' render={() => (<Logout theme={theme} />)} />
+                                            <Route component={protectedApp} />
+                                        </Switch>
+                                    </IntlProvider>
+                                </Suspense>
+                            </BrowserRouter>
+                        </ThemeProvider>
                     </StyledEngineProvider>
                 </SettingsProvider>
             );

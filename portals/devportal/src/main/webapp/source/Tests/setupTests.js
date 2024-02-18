@@ -17,14 +17,12 @@
  */
 import React from 'react';
 import { shallow, render, mount } from 'enzyme';
-import renderer from 'react-test-renderer';
 
 // Make Enzyme functions available in all test files without importing
 global.React = React;
 global.shallow = shallow;
 global.render = render;
 global.mount = mount;
-global.renderer = renderer;
 if (global.document) {
     // To resolve createRange not defined issue https://github.com/airbnb/enzyme/issues/1626#issuecomment-398588616
     document.createRange = () => ({

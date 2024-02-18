@@ -25,7 +25,6 @@ import {
     adaptV4Theme,
 } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { withTheme } from '@mui/styles';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
@@ -35,11 +34,12 @@ import withSettings from 'AppComponents/Shared/withSettingsContext';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import Alert from 'AppComponents/Shared/Alert';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
 import RecommendedApiThumb from './RecommendedApiThumb';
 import { ApiContext } from '../Details/ApiContext';
 
-const PREFIX = 'Recommendations';
+const PREFIX = 'RecommendationsLegacy';
 
 const classes = {
     rowImageOverride: `${PREFIX}-rowImageOverride`,
@@ -72,14 +72,14 @@ const StyledStyledEngineProvider = styled(StyledEngineProvider)((
 /**
  * Table view for api listing
  *
- * @class Recommendations
+ * @class RecommendationsLegacy
  * @extends {React.Component}
  */
-class Recommendations extends React.Component {
+class RecommendationsLegacy extends React.Component {
     /**
      * @inheritdoc
      * @param {*} props properties
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
      */
     constructor(props) {
         super(props);
@@ -90,14 +90,14 @@ class Recommendations extends React.Component {
     }
 
     /**
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
     */
     componentDidMount() {
         this.getData();
     }
 
     /**
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
      * @param {JSON} prevProps previous props
     */
     componentDidUpdate(prevProps) {
@@ -230,7 +230,7 @@ class Recommendations extends React.Component {
     /**
      * @inheritdoc
      * @returns {Component}x
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
      */
     render() {
         const { intl, gridView } = this.props;
@@ -376,6 +376,23 @@ class Recommendations extends React.Component {
     }
 }
 
-Recommendations.contextType = ApiContext;
+RecommendationsLegacy.contextType = ApiContext;
 
-export default withSettings(injectIntl(withTheme((Recommendations))));
+function Recommendations(props) {
+    const {
+        query, selectedTag, gridView, intl, setTenantDomain,
+    } = props;
+    const theme = useTheme();
+    return (
+        <RecommendationsLegacy
+            query={query}
+            selectedTag={selectedTag}
+            gridView={gridView}
+            intl={intl}
+            setTenantDomain={setTenantDomain}
+            theme={theme}
+        />
+    );
+}
+
+export default withSettings(injectIntl(Recommendations));

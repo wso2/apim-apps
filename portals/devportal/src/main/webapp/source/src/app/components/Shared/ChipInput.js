@@ -3,6 +3,7 @@
  *         Copyright (c) 2014 Call-Em-All (https://github.com/callemall/material-ui)
  */
 import React from 'react'
+import { styled } from '@mui/material/styles';
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import Input from '@mui/material/Input'
@@ -10,25 +11,44 @@ import FilledInput from '@mui/material/FilledInput/FilledInput'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputLabel from '@mui/material/InputLabel'
 import Chip from '@mui/material/Chip'
-import withStyles from '@mui/styles/withStyles'
 import blue from '@mui/material/colors/blue'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import cx from 'classnames'
 
-const variantComponent = {
-    standard: Input,
-    filled: FilledInput,
-    outlined: OutlinedInput
-}
+const PREFIX = 'WAMuiChipInput';
 
-const styles = (theme) => {
+const classes = {
+    root: `${PREFIX}-root`,
+    inputRoot: `${PREFIX}-inputRoot`,
+    input: `${PREFIX}-input`,
+    chipContainer: `${PREFIX}-chipContainer`,
+    outlined: `${PREFIX}-outlined`,
+    standard: `${PREFIX}-standard`,
+    filled: `${PREFIX}-filled`,
+    labeled: `${PREFIX}-labeled`,
+    label: `${PREFIX}-label`,
+    labelShrink: `${PREFIX}-labelShrink`,
+    helperText: `${PREFIX}-helperText`,
+    focused: `${PREFIX}-focused`,
+    disabled: `${PREFIX}-disabled`,
+    underline: `${PREFIX}-underline`,
+    error: `${PREFIX}-error`,
+    chip: `${PREFIX}-chip`,
+    marginDense: `${PREFIX}-marginDense`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => {
     const light = theme.palette.type === 'light'
     const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)'
 
     return {
-        root: {},
-        inputRoot: {
+        [`& .${classes.root}`]: {},
+        [`& .${classes.inputRoot}`]: {
             display: 'inline-flex',
             flexWrap: 'wrap',
             flex: 1,
@@ -44,7 +64,7 @@ const styles = (theme) => {
                 paddingTop: 28
             }
         },
-        input: {
+        [`& .${classes.input}`]: {
             display: 'inline-block',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
@@ -54,7 +74,7 @@ const styles = (theme) => {
             float: 'left',
             flex: 1
         },
-        chipContainer: {
+        [`& .${classes.chipContainer}`]: {
             display: 'flex',
             flexFlow: 'row wrap',
             cursor: 'text',
@@ -64,7 +84,7 @@ const styles = (theme) => {
                 marginTop: 18
             }
         },
-        outlined: {
+        [`& .${classes.outlined}`]: {
             '& input': {
                 height: 16,
                 paddingTop: 4,
@@ -73,8 +93,8 @@ const styles = (theme) => {
                 marginBottom: 4
             }
         },
-        standard: {},
-        filled: {
+        [`& .${classes.standard}`]: {},
+        [`& .${classes.filled}`]: {
             '& input': {
                 height: 22,
                 marginBottom: 4,
@@ -85,8 +105,8 @@ const styles = (theme) => {
                 height: 26
             }
         },
-        labeled: {},
-        label: {
+        [`& .${classes.labeled}`]: {},
+        [`& .${classes.label}`]: {
             top: 4,
             '&$outlined&:not($labelShrink)': {
                 top: 2,
@@ -101,15 +121,15 @@ const styles = (theme) => {
                 }
             }
         },
-        labelShrink: {
+        [`& .${classes.labelShrink}`]: {
             top: 0
         },
-        helperText: {
+        [`& .${classes.helperText}`]: {
             marginBottom: -20
         },
-        focused: {},
-        disabled: {},
-        underline: {
+        [`& .${classes.focused}`]: {},
+        [`& .${classes.disabled}`]: {},
+        [`& .${classes.underline}`]: {
             '&:after': {
                 borderBottom: `2px solid ${theme.palette.primary[light ? 'dark' : 'light']}`,
                 left: 0,
@@ -156,18 +176,24 @@ const styles = (theme) => {
                 borderBottomStyle: 'dotted'
             }
         },
-        error: {
+        [`& .${classes.error}`]: {
             '&:after': {
                 backgroundColor: theme.palette.error.main,
                 transform: 'scaleX(1)' // error is always underlined in red
             }
         },
-        chip: {
+        [`& .${classes.chip}`]: {
             margin: '0 8px 8px 0',
             float: 'left'
         },
-        marginDense: {}
-    }
+        [`& .${classes.marginDense}`]: {}
+    };
+});
+
+const variantComponent = {
+    standard: Input,
+    filled: FilledInput,
+    outlined: OutlinedInput
 }
 
 const keyCodes = {
@@ -491,7 +517,6 @@ class ChipInput extends React.Component {
             blurBehavior,
             children,
             chipRenderer = defaultChipRenderer,
-            classes,
             className,
             clearInputValueOnChange,
             dataSource,
@@ -578,78 +603,80 @@ class ChipInput extends React.Component {
         const InputComponent = variantComponent[variant]
 
         return (
-            <FormControl
-                ref={rootRef}
-                fullWidth={fullWidth}
-                className={cx(className, classes.root, {
-                    [classes.marginDense]: other.margin === 'dense'
-                })}
-                error={error}
-                required={chips.length > 0 ? undefined : required}
-                onClick={this.focus}
-                disabled={disabled}
-                variant={variant}
-                {...other}
-            >
-                {label && (
-                    <InputLabel
-                        htmlFor={id}
-                        classes={{ root: cx(classes[variant], classes.label), shrink: classes.labelShrink }}
-                        shrink={shrinkFloatingLabel}
-                        focused={this.state.isFocused}
-                        variant={variant}
-                        ref={this.labelRef}
-                        required={required}
-                        {...InputLabelProps}
-                    >
-                        {label}
-                    </InputLabel>
-                )}
-                <div
-                    className={cx(
-                        classes[variant],
-                        classes.chipContainer,
-                        {
-                            [classes.focused]: this.state.isFocused,
-                            [classes.underline]: !disableUnderline && variant === 'standard',
-                            [classes.disabled]: disabled,
-                            [classes.labeled]: label != null,
-                            [classes.error]: error
-                        })}
+            <Root>
+                <FormControl
+                    ref={rootRef}
+                    fullWidth={fullWidth}
+                    className={cx(className, classes.root, {
+                        [classes.marginDense]: other.margin === 'dense'
+                    })}
+                    error={error}
+                    required={chips.length > 0 ? undefined : required}
+                    onClick={this.focus}
+                    disabled={disabled}
+                    variant={variant}
+                    {...other}
                 >
-                    {variant === 'standard' && chipComponents}
-                    <InputComponent
-                        ref={this.input}
-                        classes={{
-                            input: cx(classes.input, classes[variant]),
-                            root: cx(classes.inputRoot, classes[variant])
-                        }}
-                        id={id}
-                        value={actualInputValue}
-                        onChange={this.handleUpdateInput}
-                        onKeyDown={this.handleKeyDown}
-                        onKeyPress={this.handleKeyPress}
-                        onKeyUp={this.handleKeyUp}
-                        onFocus={this.handleInputFocus}
-                        onBlur={this.handleInputBlur}
-                        inputRef={this.setActualInputRef}
-                        disabled={disabled}
-                        fullWidth={fullWidthInput}
-                        placeholder={(!hasInput && (shrinkFloatingLabel || label == null)) || alwaysShowPlaceholder ? placeholder : null}
-                        readOnly={readOnly}
-                        {...InputProps}
-                        {...InputMore}
-                    />
-                </div>
-                {helperText && (
-                    <FormHelperText
-                        {...FormHelperTextProps}
-                        className={FormHelperTextProps ? cx(FormHelperTextProps.className, classes.helperText) : classes.helperText}
+                    {label && (
+                        <InputLabel
+                            htmlFor={id}
+                            classes={{ root: cx(classes[variant], classes.label), shrink: classes.labelShrink }}
+                            shrink={shrinkFloatingLabel}
+                            focused={this.state.isFocused}
+                            variant={variant}
+                            ref={this.labelRef}
+                            required={required}
+                            {...InputLabelProps}
+                        >
+                            {label}
+                        </InputLabel>
+                    )}
+                    <div
+                        className={cx(
+                            classes[variant],
+                            classes.chipContainer,
+                            {
+                                [classes.focused]: this.state.isFocused,
+                                [classes.underline]: !disableUnderline && variant === 'standard',
+                                [classes.disabled]: disabled,
+                                [classes.labeled]: label != null,
+                                [classes.error]: error
+                            })}
                     >
-                        {helperText}
-                    </FormHelperText>
-                )}
-            </FormControl>
+                        {variant === 'standard' && chipComponents}
+                        <InputComponent
+                            ref={this.input}
+                            classes={{
+                                input: cx(classes.input, classes[variant]),
+                                root: cx(classes.inputRoot, classes[variant])
+                            }}
+                            id={id}
+                            value={actualInputValue}
+                            onChange={this.handleUpdateInput}
+                            onKeyDown={this.handleKeyDown}
+                            onKeyPress={this.handleKeyPress}
+                            onKeyUp={this.handleKeyUp}
+                            onFocus={this.handleInputFocus}
+                            onBlur={this.handleInputBlur}
+                            inputRef={this.setActualInputRef}
+                            disabled={disabled}
+                            fullWidth={fullWidthInput}
+                            placeholder={(!hasInput && (shrinkFloatingLabel || label == null)) || alwaysShowPlaceholder ? placeholder : null}
+                            readOnly={readOnly}
+                            {...InputProps}
+                            {...InputMore}
+                        />
+                    </div>
+                    {helperText && (
+                        <FormHelperText
+                            {...FormHelperTextProps}
+                            className={FormHelperTextProps ? cx(FormHelperTextProps.className, classes.helperText) : classes.helperText}
+                        >
+                            {helperText}
+                        </FormHelperText>
+                    )}
+                </FormControl>
+            </Root>
         )
     }
 }
@@ -733,7 +760,7 @@ ChipInput.defaultProps = {
     variant: 'standard'
 }
 
-export default withStyles(styles, { name: 'WAMuiChipInput' })(ChipInput)
+export default (ChipInput)
 
 export const defaultChipRenderer = ({ value, text, isFocused, isDisabled, isReadOnly, handleClick, handleDelete, className }, key) => (
     <Chip
