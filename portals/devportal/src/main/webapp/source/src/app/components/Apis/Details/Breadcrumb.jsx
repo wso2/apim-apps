@@ -16,8 +16,8 @@
  * under the License.
  */
 import React, { useEffect, useState, useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory, Link } from 'react-router-dom';
-import makeStyles from '@mui/styles/makeStyles';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Typography from '@mui/material/Typography';
 import { Link as MUILink } from '@mui/material';
@@ -27,22 +27,29 @@ import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { useIntl } from 'react-intl';
 
-const useStyles = makeStyles((theme) => {
-    const mainBack = theme.custom.infoBar.background || '#ffffff';
-    return {
-        root: {
-            paddingTop: theme.spacing(),
-            paddingBottom: theme.spacing(),
-            paddingLeft: theme.spacing(3),
-            background: mainBack,
-            color: theme.palette.getContrastText(mainBack),
-            borderBottom: 'solid 1px ' + theme.palette.grey.A200,
-            '& > * + *': {
-                marginTop: theme.spacing(2),
-            },
+const PREFIX = 'Breadcrumb';
+
+const classes = {
+    root: `${PREFIX}-root`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
+        paddingTop: theme.spacing(),
+        paddingBottom: theme.spacing(),
+        paddingLeft: theme.spacing(3),
+        background: theme.custom.infoBar.background || '#ffffff',
+        color: theme.palette.getContrastText(theme.custom.infoBar.background || '#ffffff'),
+        borderBottom: 'solid 1px ' + theme.palette.grey.A200,
+        '& > * + *': {
+            marginTop: theme.spacing(2),
         },
-    };
-});
+    },
+}));
 
 /**
  * @returns {JSX} breadcrumb
@@ -50,7 +57,7 @@ const useStyles = makeStyles((theme) => {
 export default function Breadcrumb(props) {
     const { api } = useContext(ApiContext);
     const { breadcrumbDocument } = props;
-    const classes = useStyles();
+
     const history = useHistory();
     const intl = useIntl();
     const pages = [
@@ -124,7 +131,7 @@ export default function Breadcrumb(props) {
         detectCurrentMenu();
     }, [breadcrumbDocument]);
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Box display='flex' flexDirection='row' alignItems='center'>
                 <Typography color='textPrimary' component='h1' variant='h6'>{selected.text}</Typography>
                 <VerticalDivider height={15} />
@@ -155,6 +162,6 @@ export default function Breadcrumb(props) {
                 </Breadcrumbs>
             </Box>
 
-        </div>
+        </Root>
     );
 }

@@ -19,7 +19,6 @@
 import React, {
     useReducer, useContext, useState,
 } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -38,29 +37,6 @@ import AuthManager from 'AppData/AuthManager';
 import CONSTANTS from 'AppData/Constants';
 import { ApiContext } from './ApiContext';
 import TaskState from './TaskState';
-
-const useStyles = makeStyles(() => ({
-    tryoutLabel: {
-        whiteSpace: 'nowrap',
-    },
-    modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    statusBox: {
-        outline: 'none',
-        bgcolor: 'background.paper',
-        transform: 'translate(-50%, -50%)',
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        borderRadius: 4,
-    },
-    asyncButton: {
-        minWidth: 120,
-    },
-}));
 
 const keyStates = {
     COMPLETED: 'COMPLETED',
@@ -97,7 +73,6 @@ export default function GoToTryOut() {
     const defaultApplication = defaultApplications.length > 0 ? defaultApplications[0] : null;
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, initialTaskStates);
     const [showStatus, setShowStatus] = useState(false);
-    const classes = useStyles();
     const intl = useIntl();
     const history = useHistory();
     const theme = useTheme();
@@ -244,7 +219,10 @@ export default function GoToTryOut() {
             variant='outlined'
             color='primary'
             size='small'
-            classes={{ root: classes.asyncButton, label: classes.tryoutLabel }}
+            classes={{
+                root: { minWidth: 120 },
+                label: { whiteSpace: 'nowrap' },
+            }}
             onClick={pushToTryout}
         >
             <FormattedMessage
@@ -257,7 +235,9 @@ export default function GoToTryOut() {
             variant='contained'
             color='primary'
             size='medium'
-            className={classes.tryoutLabel}
+            sx={{
+                whiteSpace: 'nowrap',
+            }}
             onClick={pushToTryout}
             aria-label='Go to Try Out page'
         >
@@ -286,7 +266,9 @@ export default function GoToTryOut() {
                 color='primary'
                 size='medium'
                 aria-label='Try Out the API'
-                className={classes.tryoutLabel}
+                sx={{
+                    whiteSpace: 'nowrap',
+                }}
             >
                 <FormattedMessage
                     id='Apis.Details.GoToTryOut.btn.tryout'
@@ -296,7 +278,11 @@ export default function GoToTryOut() {
 
             <Modal
                 aria-label='Preparing to Try Out the API'
-                className={classes.modal}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
                 open={showStatus}
                 // onClose={handleClose}
                 closeAfterTransition
@@ -311,7 +297,15 @@ export default function GoToTryOut() {
                         bgcolor='background.paper'
                         borderRadius='borderRadius'
                         width={isXsOrBelow ? 4 / 5 : 1 / 4}
-                        className={classes.statusBox}
+                        sx={{
+                            outline: 'none',
+                            bgcolor: 'background.paper',
+                            transform: 'translate(-50%, -50%)',
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            borderRadius: 4,
+                        }}
                         p={2}
                     >
                         <Grid

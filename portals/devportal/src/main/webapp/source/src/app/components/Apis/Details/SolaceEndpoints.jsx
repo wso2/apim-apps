@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 import React, { useContext, useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
@@ -30,8 +30,23 @@ import { upperCaseString } from 'AppData/stringFormatter';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'SolaceEndpoints';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    input: `${PREFIX}-input`,
+    avatar: `${PREFIX}-avatar`,
+    iconStyle: `${PREFIX}-iconStyle`,
+    sectionTitle: `${PREFIX}-sectionTitle`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
@@ -55,17 +70,20 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 10,
         marginRight: theme.spacing(),
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: 30,
         height: 30,
         background: 'transparent',
         border: `solid 1px ${theme.palette.grey[300]}`,
     },
-    iconStyle: {
+
+    [`& .${classes.iconStyle}`]: {
         cursor: 'pointer',
         margin: '-10px 0',
         padding: '0 0 0 5px',
@@ -75,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 
-    sectionTitle: {
+    [`& .${classes.sectionTitle}`]: {
         color: '#424242',
         fontSize: '0.85rem',
         marginRight: 20,
@@ -89,7 +107,6 @@ function SolaceEndpoints() {
     const [protocols, setProtocols] = useState(null);
 
     const intl = useIntl();
-    const classes = useStyles();
 
     const onCopy = () => {
         setUrlCopied(true);
@@ -111,7 +128,7 @@ function SolaceEndpoints() {
     }, [api]);
 
     return (
-        <>
+        <Root>
             {(api.gatewayVendor === 'solace') && (
                 <Grid container spacing={2} xs={12}>
                     <Grid item spacing={2} xs={2}>
@@ -229,7 +246,7 @@ function SolaceEndpoints() {
                     </Grid>
                 </Grid>
             )}
-        </>
+        </Root>
     );
 }
 

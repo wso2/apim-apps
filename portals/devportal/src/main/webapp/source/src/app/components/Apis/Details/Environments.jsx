@@ -17,7 +17,7 @@
  * under the License.
  */
 import React, { useContext, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
@@ -35,8 +35,22 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'Environments';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    input: `${PREFIX}-input`,
+    avatar: `${PREFIX}-avatar`,
+    iconStyle: `${PREFIX}-iconStyle`,
+    sectionTitle: `${PREFIX}-sectionTitle`,
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
@@ -60,17 +74,20 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 10,
         marginRight: theme.spacing(),
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: 30,
         height: 30,
         background: 'transparent',
         border: `solid 1px ${theme.palette.grey[300]}`,
     },
-    iconStyle: {
+
+    [`& .${classes.iconStyle}`]: {
         cursor: 'pointer',
         margin: '-10px 0',
         padding: '0 0 0 5px',
@@ -80,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 
-    sectionTitle: {
+    [`& .${classes.sectionTitle}`]: {
         color: '#424242',
         fontSize: '0.85rem',
         marginRight: 20,
@@ -100,7 +117,6 @@ function Environments(props) {
     const [urlCopied, setUrlCopied] = useState(false);
 
     const intl = useIntl();
-    const classes = useStyles();
 
     const onCopy = () => {
         setUrlCopied(true);
@@ -168,7 +184,7 @@ function Environments(props) {
     //     return <Progress />;
     // }
     return (
-        <Box display='flex' flexDirection='column' width='100%'>
+        <StyledBox display='flex' flexDirection='column' width='100%'>
             <Box mr={5} display='flex' area-label='API URL details' alignItems='center' width='100%' flexDirection='row'>
                 {selectedEndpoint && (!advertiseInfo || !advertiseInfo.advertised) && (
                     <>
@@ -478,7 +494,7 @@ function Environments(props) {
                     )}
                 </Box>
             )}
-        </Box>
+        </StyledBox>
     );
 }
 Environments.propTypes = {

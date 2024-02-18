@@ -17,8 +17,8 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import withStyles from '@mui/styles/withStyles';
 import { injectIntl } from 'react-intl';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
@@ -30,18 +30,30 @@ import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import { ApiContext } from './ApiContext';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'Topics';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         marginRight: 20,
         color: theme.palette.getContrastText(theme.custom.infoBar.sliderBackground),
     },
-});
+}));
 
 /**
  * Render topics component
@@ -99,7 +111,7 @@ class Topics extends React.Component {
             return <Progress />;
         }
         return (
-            <Box display='flex' flexDirection='row'>
+            <StyledBox display='flex' flexDirection='row'>
                 <Table>
                     {topics && topics.length !== 0 && topics.map((topic) => (
                         <TableRow style={{ borderStyle: 'hidden', padding: '0px' }} key={topic.name}>
@@ -113,7 +125,7 @@ class Topics extends React.Component {
                         </TableRow>
                     ))}
                 </Table>
-            </Box>
+            </StyledBox>
         );
     }
 }
@@ -126,4 +138,4 @@ Topics.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Topics));
+export default injectIntl((Topics));

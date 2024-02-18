@@ -18,8 +18,8 @@
  * under the License.
  */
 import React, { lazy, Suspense } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import {
@@ -36,6 +36,7 @@ import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { app } from 'Settings';
 import CONSTANTS from 'AppData/Constants';
+import { useTheme } from '@mui/material';
 import CustomIcon from '../../Shared/CustomIcon';
 import LeftMenuItem from '../../Shared/LeftMenuItem';
 import { ResourceNotFound } from '../../Base/Errors/index';
@@ -93,12 +94,29 @@ const LoadableSwitch = withRouter((props) => {
     );
 });
 
-/**
- *
- * @returns style object
- * @param {*} theme
- */
-const styles = (theme) => {
+const PREFIX = 'index';
+
+const classes = {
+    leftMenu: `${PREFIX}-leftMenu`,
+    leftMenuHorizontal: `${PREFIX}-leftMenuHorizontal`,
+    leftMenuVerticalLeft: `${PREFIX}-leftMenuVerticalLeft`,
+    leftMenuVerticalLeftMinView: `${PREFIX}-leftMenuVerticalLeftMinView`,
+    leftMenuVerticalRight: `${PREFIX}-leftMenuVerticalRight`,
+    leftLInkMain: `${PREFIX}-leftLInkMain`,
+    leftLInkMainText: `${PREFIX}-leftLInkMainText`,
+    detailsContent: `${PREFIX}-detailsContent`,
+    content: `${PREFIX}-content`,
+    contentExpandView: `${PREFIX}-contentExpandView`,
+    shiftLeft: `${PREFIX}-shiftLeft`,
+    contentLoader: `${PREFIX}-contentLoader`,
+    contentLoaderRightMenu: `${PREFIX}-contentLoaderRightMenu`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => {
     const {
         custom: {
             leftMenu: { width, position },
@@ -111,7 +129,7 @@ const styles = (theme) => {
     const leftMenuPaddingLeft = position === 'horizontal' ? theme.spacing(3) : 0;
 
     return {
-        leftMenu: {
+        [`& .${classes.leftMenu}`]: {
             backgroundColor: theme.custom.leftMenu.background,
             backgroundImage: `url(${app.context}${theme.custom.leftMenu.backgroundImage})`,
             textAlign: 'left',
@@ -120,7 +138,7 @@ const styles = (theme) => {
             bottom: 0,
             paddingLeft: leftMenuPaddingLeft,
         },
-        leftMenuHorizontal: {
+        [`& .${classes.leftMenuHorizontal}`]: {
             top: theme.custom.infoBar.height,
             width: '100%',
             overflowX: 'auto',
@@ -128,7 +146,7 @@ const styles = (theme) => {
             display: 'flex',
             left: 0,
         },
-        leftMenuVerticalLeft: {
+        [`& .${classes.leftMenuVerticalLeft}`]: {
             width: theme.custom.leftMenu.width,
             [theme.breakpoints.down('md')]: {
                 width: 50,
@@ -137,19 +155,19 @@ const styles = (theme) => {
             left: 0,
             overflowY: 'auto',
         },
-        leftMenuVerticalLeftMinView: {
+        [`& .${classes.leftMenuVerticalLeftMinView}`]: {
             width: 45,
             top: 0,
             left: 0,
             overflowY: 'auto',
         },
-        leftMenuVerticalRight: {
+        [`& .${classes.leftMenuVerticalRight}`]: {
             width: theme.custom.leftMenu.width,
             top: 0,
             right: 0,
             overflowY: 'auto',
         },
-        leftLInkMain: {
+        [`& .${classes.leftLInkMain}`]: {
             borderRight: 'solid 1px ' + theme.custom.leftMenu.background,
             cursor: 'pointer',
             background: theme.custom.leftMenu.rootBackground,
@@ -160,17 +178,17 @@ const styles = (theme) => {
             height: theme.custom.infoBar.height,
             textDecoration: 'none',
         },
-        leftLInkMainText: {
+        [`& .${classes.leftLInkMainText}`]: {
             fontSize: 18,
             color: theme.palette.grey[500],
             textDecoration: 'none',
             paddingLeft: theme.spacing(2),
         },
-        detailsContent: {
+        [`& .${classes.detailsContent}`]: {
             display: 'flex',
             flex: 1,
         },
-        content: {
+        [`& .${classes.content}`]: {
             display: 'flex',
             flex: 1,
             flexGrow: 1,
@@ -184,7 +202,7 @@ const styles = (theme) => {
             paddingBottom: theme.spacing(3),
             overflowX: 'hidden',
         },
-        contentExpandView: {
+        [`& .${classes.contentExpandView}`]: {
             display: 'flex',
             flex: 1,
             flexGrow: 1,
@@ -195,35 +213,36 @@ const styles = (theme) => {
             overflowX: 'hidden',
             minHeight: 'calc(100vh - 114px)',
         },
-        shiftLeft: {
+        [`& .${classes.shiftLeft}`]: {
             marginLeft: 0,
         },
-        contentLoader: {
+        [`& .${classes.contentLoader}`]: {
             paddingTop: theme.spacing(3),
         },
-        contentLoaderRightMenu: {
+        [`& .${classes.contentLoaderRightMenu}`]: {
             paddingRight: theme.custom.leftMenu.width,
         },
     };
-};
+});
+
 /**
  *
  *
- * @class Details
+ * @class DetailsLegacy
  * @extends {React.Component}
  */
-class Details extends React.Component {
+class DetailsLegacy extends React.Component {
     /**
-     *Creates an instance of Details.
+     *Creates an instance of DetailsLegacy.
      * @param {*} props
-     * @memberof Details
+     * @memberof DetailsLegacy
      */
     constructor(props) {
         super(props);
         /**
          *
          *
-         * @memberof Details
+         * @memberof DetailsLegacy
          */
         this.updateSubscriptionData = (callback) => {
             let existingSubscriptions = null;
@@ -331,7 +350,7 @@ class Details extends React.Component {
     }
 
     /**
-     * @memberof Details
+     * @memberof DetailsLegacy
      */
     componentDidMount() {
         this.updateSubscriptionData();
@@ -352,7 +371,7 @@ class Details extends React.Component {
 
     /**
      * @param {string} breadcrumbDocument
-     * @memberof Details
+     * @memberof DetailsLegacy
      */
     setbreadcrumbDocument(breadcrumbDocument) {
         this.setState({ breadcrumbDocument });
@@ -360,14 +379,14 @@ class Details extends React.Component {
 
     /**
      * @param {JSON} api api object
-     * @memberof Details
+     * @memberof DetailsLegacy
      */
     setDetailsAPI(api) {
         this.setState({ api });
     }
 
     /**
-     * @memberof Details
+     * @memberof DetailsLegacy
      */
     handleDrawerClose() {
         this.setState({ open: false });
@@ -405,11 +424,11 @@ class Details extends React.Component {
 
     /**
      * @returns {JSX} rendered outpu
-     * @memberof Details
+     * @memberof DetailsLegacy
      */
     render() {
         const {
-            classes, theme, intl,
+            theme, intl,
         } = this.props;
         const user = AuthManager.getUser();
         const {
@@ -439,220 +458,222 @@ class Details extends React.Component {
         const isAsyncApi = this.isAsyncAPI(api);
 
         return api ? (
-            <ApiContext.Provider value={this.state}>
-                <Helmet>
-                    <title>{`${prefix} ${api.name}${sufix}`}</title>
-                </Helmet>
-                <style>{globalStyle}</style>
-                {!isWidget && (
-                    <nav
-                        role='navigation'
-                        aria-label={intl.formatMessage({
-                            id: 'Apis.Details.index.secondary.navigation',
-                            defaultMessage: 'Secondary Navigation',
-                        })}
-                        className={classNames(
-                            classes.leftMenu,
-                            {
-                                [classes.leftMenuHorizontal]: position === 'horizontal',
-                            },
-                            {
-                                [classes.leftMenuVerticalLeft]: position === 'vertical-left' && open,
-                                [classes.leftMenuVerticalLeftMinView]: position === 'vertical-left' && !open,
+            <Root>
+                <ApiContext.Provider value={this.state}>
+                    <Helmet>
+                        <title>{`${prefix} ${api.name}${sufix}`}</title>
+                    </Helmet>
+                    <style>{globalStyle}</style>
+                    {!isWidget && (
+                        <nav
+                            role='navigation'
+                            aria-label={intl.formatMessage({
+                                id: 'Apis.Details.index.secondary.navigation',
+                                defaultMessage: 'Secondary Navigation',
+                            })}
+                            className={classNames(
+                                classes.leftMenu,
+                                {
+                                    [classes.leftMenuHorizontal]: position === 'horizontal',
+                                },
+                                {
+                                    [classes.leftMenuVerticalLeft]: position === 'vertical-left' && open,
+                                    [classes.leftMenuVerticalLeftMinView]: position === 'vertical-left' && !open,
 
-                            },
-                            {
-                                [classes.leftMenuVerticalRight]: position === 'vertical-right',
-                            },
-                            'left-menu',
-                        )}
-                    >
-                        {rootIconVisible && (
-                            <Link to='/apis' className={classes.leftLInkMain} aria-label='ALL APIs'>
-                                <CustomIcon width={rootIconSize} height={rootIconSize} icon='api' />
-                                {rootIconTextVisible && (
-                                    <Typography className={classes.leftLInkMainText}>
-                                        <FormattedMessage id='Apis.Details.index.all.apis' defaultMessage='ALL APIs' />
-                                    </Typography>
-                                )}
-                            </Link>
-                        )}
-                        <LeftMenuItem
-                            text={<FormattedMessage id='Apis.Details.index.overview' defaultMessage='Overview' />}
-                            route='overview'
-                            iconText='overview'
-                            to={pathPrefix + 'overview'}
-                            open={open}
-                            id='left-menu-overview'
-                        />
-                        {user && showCredentials && (
-                            <>
+                                },
+                                {
+                                    [classes.leftMenuVerticalRight]: position === 'vertical-right',
+                                },
+                                'left-menu',
+                            )}
+                        >
+                            {rootIconVisible && (
+                                <Link to='/apis' className={classes.leftLInkMain} aria-label='ALL APIs'>
+                                    <CustomIcon width={rootIconSize} height={rootIconSize} icon='api' />
+                                    {rootIconTextVisible && (
+                                        <Typography className={classes.leftLInkMainText}>
+                                            <FormattedMessage id='Apis.Details.index.all.apis' defaultMessage='ALL APIs' />
+                                        </Typography>
+                                    )}
+                                </Link>
+                            )}
+                            <LeftMenuItem
+                                text={<FormattedMessage id='Apis.Details.index.overview' defaultMessage='Overview' />}
+                                route='overview'
+                                iconText='overview'
+                                to={pathPrefix + 'overview'}
+                                open={open}
+                                id='left-menu-overview'
+                            />
+                            {user && showCredentials && (
+                                <>
+
+                                    <LeftMenuItem
+                                        text={(
+                                            <FormattedMessage
+                                                id='Apis.Details.index.subscriptions'
+                                                defaultMessage='Subscriptions'
+                                            />
+                                        )}
+                                        route='credentials'
+                                        iconText='credentials'
+                                        to={pathPrefix + 'credentials'}
+                                        open={open}
+                                        id='left-menu-credentials'
+                                    />
+
+                                </>
+                            )}
+                            {showTryout && (api.gatewayVendor === 'wso2'
+                                || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && (
+                                <LeftMenuItem
+                                    text={(
+                                        <FormattedMessage
+                                            id='Apis.Details.index.try.out'
+                                            defaultMessage='Try out'
+                                        />
+                                    )}
+                                    route='test'
+                                    iconText='test'
+                                    to={pathPrefix + 'test'}
+                                    open={open}
+                                    id='left-menu-test'
+                                />
+
+                            )}
+                            {(showSolaceTopics && api.gatewayVendor === 'solace') && (
+                                <LeftMenuItem
+                                    text={(
+                                        <FormattedMessage
+                                            id='Apis.Details.index.solaceTopicsInfo'
+                                            defaultMessage='Solace Info'
+                                        />
+                                    )}
+                                    route='solaceTopicsInfo'
+                                    iconText='test'
+                                    to={pathPrefix + 'solaceTopicsInfo'}
+                                    open={open}
+                                    id='left-menu-solace-info'
+                                />
+                            )}
+                            {isAsyncApi && showAsyncSpecification && (
+                                <LeftMenuItem
+                                    text={(
+                                        <FormattedMessage
+                                            id='Apis.Details.index.definition'
+                                            defaultMessage='Definition'
+                                        />
+                                    )}
+                                    route='definition'
+                                    iconText='Definition'
+                                    to={pathPrefix + 'definition'}
+                                    open={open}
+                                    id='left-menu-definition'
+                                />
+                            )}
+                            {showComments && (
 
                                 <LeftMenuItem
                                     text={(
                                         <FormattedMessage
-                                            id='Apis.Details.index.subscriptions'
-                                            defaultMessage='Subscriptions'
+                                            id='Apis.Details.index.comments'
+                                            defaultMessage='Comments'
                                         />
                                     )}
-                                    route='credentials'
-                                    iconText='credentials'
-                                    to={pathPrefix + 'credentials'}
+                                    route='comments'
+                                    iconText='comments'
+                                    to={pathPrefix + 'comments'}
                                     open={open}
-                                    id='left-menu-credentials'
+                                    id='left-menu-comments'
                                 />
 
-                            </>
-                        )}
-                        {showTryout && (api.gatewayVendor === 'wso2'
-                        || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && (
-                            <LeftMenuItem
-                                text={(
-                                    <FormattedMessage
-                                        id='Apis.Details.index.try.out'
-                                        defaultMessage='Try out'
-                                    />
-                                )}
-                                route='test'
-                                iconText='test'
-                                to={pathPrefix + 'test'}
-                                open={open}
-                                id='left-menu-test'
-                            />
+                            )}
+                            {showDocuments && (
 
-                        )}
-                        {(showSolaceTopics && api.gatewayVendor === 'solace') && (
-                            <LeftMenuItem
-                                text={(
-                                    <FormattedMessage
-                                        id='Apis.Details.index.solaceTopicsInfo'
-                                        defaultMessage='Solace Info'
-                                    />
-                                )}
-                                route='solaceTopicsInfo'
-                                iconText='test'
-                                to={pathPrefix + 'solaceTopicsInfo'}
-                                open={open}
-                                id='left-menu-solace-info'
-                            />
-                        )}
-                        {isAsyncApi && showAsyncSpecification && (
-                            <LeftMenuItem
-                                text={(
-                                    <FormattedMessage
-                                        id='Apis.Details.index.definition'
-                                        defaultMessage='Definition'
-                                    />
-                                )}
-                                route='definition'
-                                iconText='Definition'
-                                to={pathPrefix + 'definition'}
-                                open={open}
-                                id='left-menu-definition'
-                            />
-                        )}
-                        {showComments && (
+                                <LeftMenuItem
+                                    text={(
+                                        <FormattedMessage
+                                            id='Apis.Details.index.documentation'
+                                            defaultMessage='Documents'
+                                        />
+                                    )}
+                                    route='documents'
+                                    iconText='docs'
+                                    to={pathPrefix + 'documents'}
+                                    open={open}
+                                    id='left-menu-documents'
+                                />
 
-                            <LeftMenuItem
-                                text={(
-                                    <FormattedMessage
-                                        id='Apis.Details.index.comments'
-                                        defaultMessage='Comments'
-                                    />
-                                )}
-                                route='comments'
-                                iconText='comments'
-                                to={pathPrefix + 'comments'}
-                                open={open}
-                                id='left-menu-comments'
-                            />
+                            )}
+                            {!isAsyncApi && showSdks && (
 
-                        )}
-                        {showDocuments && (
+                                <LeftMenuItem
+                                    text={<FormattedMessage id='Apis.Details.index.sdk' defaultMessage='SDKs' />}
+                                    route='sdk'
+                                    iconText='sdk'
+                                    to={pathPrefix + 'sdk'}
+                                    open={open}
+                                    id='left-menu-sdk'
+                                />
 
-                            <LeftMenuItem
-                                text={(
-                                    <FormattedMessage
-                                        id='Apis.Details.index.documentation'
-                                        defaultMessage='Documents'
-                                    />
-                                )}
-                                route='documents'
-                                iconText='docs'
-                                to={pathPrefix + 'documents'}
-                                open={open}
-                                id='left-menu-documents'
-                            />
+                            )}
+                            {open ? (
+                                <div
+                                    onClick={this.handleDrawerClose}
+                                    onKeyDown={this.handleDrawerClose}
+                                    style={{
+                                        width: 100, paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
+                                    }}
+                                >
+                                    <ArrowBackIosIcon fontSize='medium' style={{ color: 'white' }} />
+                                </div>
+                            ) : (
+                                <div
+                                    onClick={this.handleDrawerOpen}
+                                    onKeyDown={this.handleDrawerOpen}
+                                    style={{
+                                        paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
+                                    }}
+                                >
+                                    <ArrowForwardIosIcon fontSize='medium' style={{ color: 'white' }} />
+                                </div>
 
-                        )}
-                        {!isAsyncApi && showSdks && (
+                            )}
 
-                            <LeftMenuItem
-                                text={<FormattedMessage id='Apis.Details.index.sdk' defaultMessage='SDKs' />}
-                                route='sdk'
-                                iconText='sdk'
-                                to={pathPrefix + 'sdk'}
-                                open={open}
-                                id='left-menu-sdk'
-                            />
-
-                        )}
-                        {open ? (
-                            <div
-                                onClick={this.handleDrawerClose}
-                                onKeyDown={this.handleDrawerClose}
-                                style={{
-                                    width: 100, paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
-                                }}
-                            >
-                                <ArrowBackIosIcon fontSize='medium' style={{ color: 'white' }} />
-                            </div>
-                        ) : (
-                            <div
-                                onClick={this.handleDrawerOpen}
-                                onKeyDown={this.handleDrawerOpen}
-                                style={{
-                                    paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
-                                }}
-                            >
-                                <ArrowForwardIosIcon fontSize='medium' style={{ color: 'white' }} />
-                            </div>
-
-                        )}
-
-                    </nav>
-                )}
-
-                <div
-                    className={classNames(
-                        { [classes.content]: open },
-                        { [classes.contentExpandView]: !open },
+                        </nav>
                     )}
-                >
-                    <Breadcrumb
-                        breadcrumbDocument={breadcrumbDocument}
-                    />
+
                     <div
                         className={classNames(
-                            { [classes.contentLoader]: position === 'horizontal' },
-                            { [classes.contentLoaderRightMenu]: position === 'vertical-right' },
+                            { [classes.content]: open },
+                            { [classes.contentExpandView]: !open },
                         )}
                     >
-                        <LoadableSwitch
-                            api={api}
-                            updateSubscriptionData={this.updateSubscriptionData}
-                            setbreadcrumbDocument={this.setbreadcrumbDocument}
+                        <Breadcrumb
+                            breadcrumbDocument={breadcrumbDocument}
                         />
+                        <div
+                            className={classNames(
+                                { [classes.contentLoader]: position === 'horizontal' },
+                                { [classes.contentLoaderRightMenu]: position === 'vertical-right' },
+                            )}
+                        >
+                            <LoadableSwitch
+                                api={api}
+                                updateSubscriptionData={this.updateSubscriptionData}
+                                setbreadcrumbDocument={this.setbreadcrumbDocument}
+                            />
+                        </div>
                     </div>
-                </div>
-            </ApiContext.Provider>
+                </ApiContext.Provider>
+            </Root>
         ) : (
             <div className='apim-dual-ring' />
         );
     }
 }
 
-Details.propTypes = {
+DetailsLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
     match: PropTypes.shape({}).isRequired,
@@ -661,4 +682,14 @@ Details.propTypes = {
     }).isRequired,
 };
 
-export default withSettings(injectIntl(withStyles(styles, { withTheme: true })(Details)));
+function Details(props) {
+    const theme = useTheme();
+    return (
+        <DetailsLegacy
+            {...props}
+            theme={theme}
+        />
+    );
+}
+
+export default withSettings(injectIntl((Details)));
