@@ -637,7 +637,7 @@
       "value": "Protocol"
     }
   ],
-  "Apis.Details.\n                                                                                Environments.deploy.vhost": [
+  "Apis.Details.\n                                                                            Environments.deploy.vhost": [
     {
       "type": 0,
       "value": "VHost"
@@ -4199,37 +4199,37 @@
       "value": "VHost"
     }
   ],
-  "Apis.Details.Environments.\n                                                                            Environments.select.table": [
+  "Apis.Details.Environments.\n                                                                        Environments.select.table": [
     {
       "type": 0,
       "value": "Select Revision"
     }
   ],
-  "Apis.Details.Environments.\n                                                        Environments.gateway.deployed.revision": [
+  "Apis.Details.Environments.\n                                                    Environments.gateway.deployed.revision": [
     {
       "type": 0,
       "value": "Deployed Revision"
     }
   ],
-  "Apis.Details.Environments.Environments\n                                                                    .select.table": [
+  "Apis.Details.Environments.Environments\n                                                                .select.table": [
     {
       "type": 0,
       "value": "Select Revision"
     }
   ],
-  "Apis.Details.Environments.Environments\n                                                                    .select.vhost": [
+  "Apis.Details.Environments.Environments\n                                                                .select.vhost": [
     {
       "type": 0,
       "value": "Select Access URL"
     }
   ],
-  "Apis.Details.Environments.Environments\n                                                                .deploy.button": [
+  "Apis.Details.Environments.Environments\n                                                            .deploy.button": [
     {
       "type": 0,
       "value": "Deploy"
     }
   ],
-  "Apis.Details.Environments.Environments.\n                                                                deploy.button": [
+  "Apis.Details.Environments.Environments.\n                                                            deploy.button": [
     {
       "type": 0,
       "value": "Deploy"
@@ -4337,7 +4337,7 @@
       "value": "Display in Developer Portal"
     }
   ],
-  "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": [
+  "Apis.Details.Environments.Environments.gateway\n                                                .deployed.revision": [
     {
       "type": 0,
       "value": "Deployed Revision"
@@ -5431,7 +5431,7 @@
       "value": "Operation"
     }
   ],
-  "Apis.Details.Overview.\n                                                                    CustomizedStepper.Endpoint": [
+  "Apis.Details.Overview.\n                                                                        CustomizedStepper.Endpoint": [
     {
       "type": 0,
       "value": "Endpoint"
@@ -8490,7 +8490,7 @@
   "Base.Footer.Footer.product_details": [
     {
       "type": 0,
-      "value": "WSO2 API-M v4.2.0 | © 2023 WSO2 LLC"
+      "value": "WSO2 API-M v4.3.0 | © 2024 WSO2 LLC"
     }
   ],
   "Base.Header.avatar.Avatar.logout": [

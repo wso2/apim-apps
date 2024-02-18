@@ -278,7 +278,7 @@
   "Apis.Create.streaming.Components.SelectPolicies.business.plans": {
     "defaultMessage": "Protocol"
   },
-  "Apis.Details.\n                                                                                Environments.deploy.vhost": {
+  "Apis.Details.\n                                                                            Environments.deploy.vhost": {
     "defaultMessage": "VHost"
   },
   "Apis.Details.APIDefinition.APIDefinition.api.definition": {
@@ -1992,22 +1992,22 @@
   "Apis.Details.Environments\n                                                                                        .deploy.vhost": {
     "defaultMessage": "VHost"
   },
-  "Apis.Details.Environments.\n                                                                            Environments.select.table": {
+  "Apis.Details.Environments.\n                                                                        Environments.select.table": {
     "defaultMessage": "Select Revision"
   },
-  "Apis.Details.Environments.\n                                                        Environments.gateway.deployed.revision": {
+  "Apis.Details.Environments.\n                                                    Environments.gateway.deployed.revision": {
     "defaultMessage": "Deployed Revision"
   },
-  "Apis.Details.Environments.Environments\n                                                                    .select.table": {
+  "Apis.Details.Environments.Environments\n                                                                .select.table": {
     "defaultMessage": "Select Revision"
   },
-  "Apis.Details.Environments.Environments\n                                                                    .select.vhost": {
+  "Apis.Details.Environments.Environments\n                                                                .select.vhost": {
     "defaultMessage": "Select Access URL"
   },
-  "Apis.Details.Environments.Environments\n                                                                .deploy.button": {
+  "Apis.Details.Environments.Environments\n                                                            .deploy.button": {
     "defaultMessage": "Deploy"
   },
-  "Apis.Details.Environments.Environments.\n                                                                deploy.button": {
+  "Apis.Details.Environments.Environments.\n                                                            deploy.button": {
     "defaultMessage": "Deploy"
   },
   "Apis.Details.Environments.Environments.APIGateways": {
@@ -2061,7 +2061,7 @@
   "Apis.Details.Environments.Environments.display.in.devportal": {
     "defaultMessage": "Display in Developer Portal"
   },
-  "Apis.Details.Environments.Environments.gateway\n                                                    .deployed.revision": {
+  "Apis.Details.Environments.Environments.gateway\n                                                .deployed.revision": {
     "defaultMessage": "Deployed Revision"
   },
   "Apis.Details.Environments.Environments.gateway.accessUrl": {
@@ -2580,7 +2580,7 @@
   "Apis.Details.Operations.operation.operationName": {
     "defaultMessage": "Operation"
   },
-  "Apis.Details.Overview.\n                                                                    CustomizedStepper.Endpoint": {
+  "Apis.Details.Overview.\n                                                                        CustomizedStepper.Endpoint": {
     "defaultMessage": "Endpoint"
   },
   "Apis.Details.Overview.CustomizedStepper.Deploy": {
@@ -4054,7 +4054,7 @@
     "defaultMessage": "Page Not Found"
   },
   "Base.Footer.Footer.product_details": {
-    "defaultMessage": "WSO2 API-M v4.2.0 | © 2023 WSO2 LLC"
+    "defaultMessage": "WSO2 API-M v4.3.0 | © 2024 WSO2 LLC"
   },
   "Base.Header.avatar.Avatar.logout": {
     "defaultMessage": "Logout"

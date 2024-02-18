@@ -89,47 +89,6 @@ const variantIcon = {
     info: InfoIcon,
 };
 
-
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.root}`]: {
-        position: 'relative' /* Overriding the default Snackbar root properties to stack messages */,
-        padding: '5px' /* To add some space between messages when stacking messages */,
-    },
-
-    [`& .${classes.success}`]: {
-        backgroundColor: green[600],
-    },
-
-    [`& .${classes.error}`]: {
-        backgroundColor: theme.palette.error.dark,
-    },
-
-    [`& .${classes.info}`]: {
-        backgroundColor: theme.palette.primary.main,
-    },
-
-    [`& .${classes.warning}`]: {
-        backgroundColor: amber[700],
-    },
-
-    [`& .${classes.icon}`]: {
-        fontSize: 20,
-    },
-
-    [`& .${classes.iconVariant}`]: {
-        opacity: 0.9,
-        marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.message}`]: {
-        display: 'flex',
-        alignItems: 'center',
-    }
-}));
-
 function MySnackbarContentWrapper(props) {
 
     const {
