@@ -67,6 +67,7 @@ const Root = styled('div')((
         theme,
     },
 ) => ({
+    width: '100%',
     [`& .${classes.LeftMenu}`]: {
         backgroundColor: theme.custom.leftMenu.background,
         backgroundImage: `url(${app.context}${theme.custom.leftMenu.backgroundImage})`,
@@ -446,15 +447,12 @@ class Details extends Component {
                     flex: 1,
                     flexDirection: 'column',
                     marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 158) : 0),
-                    marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 70),
                     paddingBottom: theme.spacing(3),
                     overflowX: 'hidden',
                     [theme.breakpoints.down('md')]: {
                         marginLeft: (theme.custom.leftMenu.position === 'vertical-left'
                             ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
-                        marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0) !== 0 && 50,
                     },
-                    width: theme.spacing(165),
                 })}
                 >
                     <InfoBar

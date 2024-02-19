@@ -26,6 +26,7 @@ import Paper from '@mui/material/Paper';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import {
     renderInput, renderSuggestion, getSuggestions, getSuggestionValue, buildSearchQuery,
@@ -50,6 +51,8 @@ const Root = styled('div')((
         theme,
     },
 ) => ({
+    display: 'flex',
+    alignItems: 'center',
     [`& .${classes.container}`]: {
         flexGrow: 0,
     },
@@ -304,7 +307,83 @@ class HeaderSearch extends React.Component {
                          isLoading,
                      }}
                  />
-                 <div className={classes.emptyContainer} />
+                 <Tooltip
+                     interactive
+                     id='searchTooltip'
+                     placement='top'
+                     classes={{
+                         tooltip: classes.InfoToolTip,
+                     }}
+                     title={(
+                         <>
+                             <FormattedMessage
+                                 id='Base.Header.headersearch.HeaderSearch.tooltip.title'
+                                 defaultMessage='Search Options'
+                             />
+                             <ol style={{ marginLeft: '-20px', marginTop: '5px' }}>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option0'
+                                         defaultMessage='Content [ Default ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option1'
+                                         defaultMessage='Name [ Syntax - name:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option2'
+                                         defaultMessage='By API Provider [ Syntax - provider:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option3'
+                                         defaultMessage='By API Version [ Syntax - version:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option4'
+                                         defaultMessage='By Context [ Syntax - context:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option5'
+                                         defaultMessage='By Description [ Syntax - description:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option6'
+                                         defaultMessage='By Tags [ Syntax - tags:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option12'
+                                         defaultMessage='By Api Category [ Syntax - api-category:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option10'
+                                         defaultMessage='By API Properties [Syntax - property_name:property_value]'
+                                     />
+                                 </li>
+                             </ol>
+                         </>
+                     )}
+                 >
+                     <IconButton className={classNames(classes.infoButton, 'search-tips-icon')} aria-label='Search Options'>
+                         <InfoIcon />
+                     </IconButton>
+                 </Tooltip>
+                 <Box sx={{ flexGrow: 1 }} />
              </Root>
          );
      }

@@ -190,6 +190,7 @@ class InfoBar extends React.Component {
                                 sx={(theme) => ({
                                     display: 'inline-grid',
                                     cursor: 'pointer',
+                                    justifyContent: 'center',
                                     '& .material-icons, & span': {
                                         color: theme.palette.getContrastText(theme.custom.infoBar.background),
                                     },
@@ -207,7 +208,7 @@ class InfoBar extends React.Component {
                                 >
                                     <Button
                                         id='edit-application'
-                                        style={{ padding: '4px' }}
+                                        style={{ padding: '4px', display: 'flex', flexDirection: 'column' }}
                                         color='grey'
                                         classes={{
                                             label: {
@@ -250,6 +251,7 @@ class InfoBar extends React.Component {
                                 <Button
                                     id='delete-application'
                                     onClick={this.handleDeleteConfimation}
+                                    style={{ padding: '4px', display: 'flex', flexDirection: 'column' }}
                                     disabled={AuthManager.getUser().name !== applicationOwner
                                         || this.props.application.status === 'DELETE_PENDING'}
                                     color='grey'

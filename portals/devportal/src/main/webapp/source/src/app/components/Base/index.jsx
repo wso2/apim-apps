@@ -43,6 +43,7 @@ import HeaderSearch from 'AppComponents/Base/Header/Search/HeaderSearch';
 import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import { app } from 'Settings';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
+import Box from '@mui/material/Box';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -547,6 +548,7 @@ class LayoutLegacy extends React.Component {
                                 </Hidden>
                                 <VerticalDivider height={32} />
                                 {showSearch && (<HeaderSearch id='headerSearch' />)}
+                                <Box sx={{ flexGrow: 1 }} />
                                 {tenantDomain && customUrlEnabledDomain === 'null' && tenantDomain !== 'INVALID'
                                     && publicTenantStoreVisible && (
                                     <Link

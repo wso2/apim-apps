@@ -17,6 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+/* eslint-disable no-unused-vars */
 import React, { lazy, Suspense } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -129,6 +130,7 @@ const Root = styled('div')((
     const leftMenuPaddingLeft = position === 'horizontal' ? theme.spacing(3) : 0;
 
     return {
+        width: '100%',
         [`& .${classes.leftMenu}`]: {
             backgroundColor: theme.custom.leftMenu.background,
             backgroundImage: `url(${app.context}${theme.custom.leftMenu.backgroundImage})`,
@@ -193,6 +195,7 @@ const Root = styled('div')((
             flex: 1,
             flexGrow: 1,
             flexDirection: 'column',
+            width: '100%',
             marginLeft: shiftToLeft,
             marginRight: shiftToRight,
             [theme.breakpoints.down('md')]: {
@@ -206,6 +209,7 @@ const Root = styled('div')((
             display: 'flex',
             flex: 1,
             flexGrow: 1,
+            width: '100%',
             flexDirection: 'column',
             marginLeft: shiftToLeftMinView,
             marginRight: shiftToRightMinView,
@@ -437,7 +441,7 @@ class DetailsLegacy extends React.Component {
         const {
             custom: {
                 leftMenu: {
-                    rootIconSize, rootIconTextVisible, rootIconVisible, position,
+                    rootIconSize, rootIconTextVisible, rootIconVisible, position, width,
                 },
                 apiDetailPages: {
                     showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification, showSolaceTopics,
@@ -456,6 +460,11 @@ class DetailsLegacy extends React.Component {
         const pageUrl = new URL(window.location);
         const isWidget = pageUrl.searchParams.get('widget');
         const isAsyncApi = this.isAsyncAPI(api);
+        const shiftToLeft = position === 'vertical-left' ? width : 0;
+        const shiftToRight = position === 'vertical-right' ? width : 0;
+        const shiftToLeftMinView = position === 'vertical-left' ? 45 : 0;
+        const shiftToRightMinView = position === 'vertical-right' ? 45 : 0;
+        const leftMenuPaddingLeft = position === 'horizontal' ? theme.spacing(3) : 0;
 
         return api ? (
             <Root>
