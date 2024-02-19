@@ -17,11 +17,11 @@
 */
 
 import React, { CSSProperties, FC } from 'react';
+import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { makeStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -29,12 +29,19 @@ import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Utils from 'AppData/Utils';
 import type { AttachedPolicy, PolicySpec } from './Types';
 
-const useStyles = makeStyles(() => ({
-    actionsBox: {
+const PREFIX = 'AttachedPolicyCardShared';
+
+const classes = {
+    actionsBox: `${PREFIX}-actionsBox`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(() => ({
+    [`& .${classes.actionsBox}`]: {
         display: 'flex',
         flexDirection: 'column',
         marginTop: '1em',
-    },
+    }
 }));
 
 interface AttachedPolicyCardSharedProps {
@@ -71,7 +78,7 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
     setDrawerOpen,
     PolicyConfigurationEditDrawer
 }) => {
-    const classes = useStyles();
+
     const policyColor = Utils.stringToColor(policyObj.displayName);
     const policyBackgroundColor = drawerOpen
         ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)`
@@ -100,7 +107,7 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
         opacity: isDragging ? 0.5 : 1,
     };
     return (
-        <>
+        (<Root>
             <div
                 ref={setNodeRef}
                 style={style}
@@ -161,7 +168,7 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
                     isAPILevelPolicy={isAPILevelPolicy}
                 />
             )}
-        </>
+        </Root>)
     );
 }
 

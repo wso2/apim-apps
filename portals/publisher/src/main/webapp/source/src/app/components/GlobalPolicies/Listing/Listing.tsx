@@ -19,6 +19,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Button,
     Grid,
@@ -34,9 +35,9 @@ import {
     DialogContent,
     DialogActions,
     DialogContentText,
-    useTheme 
+    useTheme,
+    Theme,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Autocomplete from '@mui/lab/Autocomplete';
 import APIMAlert from 'AppComponents/Shared/Alert';
 import Icon from '@mui/material/Icon';
@@ -55,8 +56,25 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import { Link } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
-    table: {
+const PREFIX = 'Listing';
+
+const classes = {
+    table: `${PREFIX}-table`,
+    heading: `${PREFIX}-heading`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    button: `${PREFIX}-button`,
+    icon: `${PREFIX}-icon`,
+    chip: `${PREFIX}-chip`,
+    dialogBackdrop: `${PREFIX}-dialogBackdrop`,
+    dialogPaper: `${PREFIX}-dialogPaper`,
+    noDeployedGateways: `${PREFIX}-noDeployedGateways`,
+    iconSmall: `${PREFIX}-iconSmall`
+};
+
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.table}`]: {
         marginLeft: 'auto',
         marginRight: 'auto',
         '& > td[class^=MUIDataTableBodyCell-cellHide-]': {
@@ -72,11 +90,13 @@ const useStyles = makeStyles((theme) => ({
             minWidth: '150px',
         },
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -84,37 +104,46 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
         marginRight: 'auto',
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         width: '112px',
         height: '37px',
     },
-    icon: {
+
+    [`& .${classes.icon}`]: {
         marginRight: theme.spacing(0.5),
     },
-    chip: {
+
+    [`& .${classes.chip}`]: {
         marginRight: '8px',
         marginBottom: '4px',
         marginTop: '4px',
     },
-    dialogBackdrop: {
+
+    [`& .${classes.dialogBackdrop}`]: {
         backgroundColor: 'rgba(0, 0, 0, 0.08)'
     },
-    dialogPaper: {
+
+    [`& .${classes.dialogPaper}`]: {
         boxShadow: 'none'
     },
-    noDeployedGateways: {
+
+    [`& .${classes.noDeployedGateways}`]: {
         color: 'grey', 
         fontStyle: 'italic'
     },
-    iconSmall: {
+
+    [`& .${classes.iconSmall}`]: {
         fontSize: '16px'
-    },
+    }
 }));
 
 interface Policy {
@@ -152,7 +181,7 @@ interface SelectedGateway {
  * @returns {TSX} - Listing Page.
  */
 const Listing: React.FC = () => {
-    const classes = useStyles();
+
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [selectedGateways, setSelectedGateways] = useState<SelectedGateway[]>([]);
     const [environments, setEnvironments] = useState<Environment[]>([]);
@@ -684,7 +713,7 @@ const Listing: React.FC = () => {
                 customBodyRender: (value: string, tableMeta: any) => {        
                     const policyDescription = tableMeta.rowData[3];          
                     return (
-                        <div>
+                        <Root>
                             <Grid container alignItems='center'>
                                 <Grid item>
                                     {value}
@@ -697,7 +726,7 @@ const Listing: React.FC = () => {
                                     </Tooltip>
                                 </Grid>
                             </Grid>
-                        </div>
+                        </Root>
                     );
                 }
             }      

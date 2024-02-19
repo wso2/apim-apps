@@ -17,17 +17,26 @@
 */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Box from '@mui/material/Box';
 
-const useStyles = makeStyles(() => ({
-    arrowColor: {
+const PREFIX = 'FlowArrowShared';
+
+const classes = {
+    arrowColor: `${PREFIX}-arrowColor`,
+    iconSize: `${PREFIX}-iconSize`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(() => ({
+    [`& .${classes.arrowColor}`]: {
         backgroundColor: 'black',
         opacity: 0.4,
     },
-    iconSize: {
+
+    [`& .${classes.iconSize}`]: {
         fontSize: '2em',
         color: 'black',
         opacity: 0.4,
@@ -39,10 +48,10 @@ interface FlowArrowSharedProps {
 }
 
 const FlowArrowShared: FC<FlowArrowSharedProps> = ({ arrowDirection }) => {
-    const classes = useStyles();
+
 
     return (
-        <>
+        (<Root>
             {arrowDirection === 'left'
                 ?  (
                     <Box display='flex' flexDirection='row' alignItems='center' pl={2} pt={1}>
@@ -60,7 +69,7 @@ const FlowArrowShared: FC<FlowArrowSharedProps> = ({ arrowDirection }) => {
                     </Box>
                 )
             }
-        </>
+        </Root>)
     );
 }
 

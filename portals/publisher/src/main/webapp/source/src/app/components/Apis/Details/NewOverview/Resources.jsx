@@ -17,8 +17,7 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
-import withTheme from '@mui/styles/withTheme';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Chip from '@mui/material/Chip';
 import { FormattedMessage } from 'react-intl';
@@ -39,7 +38,6 @@ const classes = {
     contentWrapper: `${PREFIX}-contentWrapper`,
     subHeading: `${PREFIX}-subHeading`
 };
-
 
 const Root = styled('div')((
     {
@@ -68,7 +66,8 @@ const Root = styled('div')((
 }));
 
 function RenderMethodBase(props) {
-    const { theme, method } = props;
+    const { method } = props;
+    const theme = useTheme();
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[method] : null;
     let chipTextColor = '#000000';
     if (!chipColor) {
@@ -93,7 +92,7 @@ RenderMethodBase.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
+const RenderMethod = RenderMethodBase;
 
 class Resources extends React.Component {
     constructor(props) {

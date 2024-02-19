@@ -16,7 +16,6 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -24,7 +23,6 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import { FormattedMessage } from 'react-intl';
 import AuthManager, { isRestricted } from 'AppData/AuthManager';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import makeStyles from '@mui/styles/makeStyles';
 import Divider from '@mui/material/Divider';
 
 import GlobalNavLink from './GlobalNavLink';

@@ -17,8 +17,7 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
-import withTheme from '@mui/styles/withTheme';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Chip from '@mui/material/Chip';
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -54,7 +53,8 @@ const StyledApiContextConsumer = styled(ApiContext.Consumer)((
  * @param {*} props
  */
 function RenderMethodBase(props) {
-    const { theme, method } = props;
+    const { method } = props;
+    const theme = useTheme();
     const methodLower = method.toLowerCase();
     let chipColor = theme.custom.operationChipColor
         ? theme.custom.operationChipColor[methodLower]
@@ -82,7 +82,7 @@ RenderMethodBase.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
+const RenderMethod = RenderMethodBase;
 /**
  *
  * @param {*} props

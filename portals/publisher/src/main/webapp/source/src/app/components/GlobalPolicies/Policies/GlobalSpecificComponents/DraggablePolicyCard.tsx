@@ -17,7 +17,7 @@
 */
 
 import React, { useState, CSSProperties, useMemo } from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
@@ -32,22 +32,33 @@ import { FormattedMessage } from 'react-intl';
 import { useDrag } from 'react-dnd';
 import type { Policy } from '../Types';
 
-const useStyles = makeStyles(() => ({
-    policyCardText: {
+const PREFIX = 'DraggablePolicyCard';
+
+const classes = {
+    policyCardText: `${PREFIX}-policyCardText`,
+    listItem: `${PREFIX}-listItem`,
+    policyActions: `${PREFIX}-policyActions`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(() => ({
+    [`& .${classes.policyCardText}`]: {
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
-    listItem: {
+
+    [`& .${classes.listItem}`]: {
         maxHeight: '100%',
         overflow: 'auto',
     },
-    policyActions: {
+
+    [`& .${classes.policyActions}`]: {
         visibility: 'hidden',
         '&:hover': {
             visibility: 'inherit',
         },
-    },
+    }
 }));
 
 const style: CSSProperties = {
@@ -75,7 +86,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     isLocalToAPI,
 }) => {
     const [hovered, setHovered] = useState(false);
-    const classes = useStyles();
+
     /**
      * React DnD Library has been used here.
      * React DnD hook to make the policy card draggable.
@@ -113,7 +124,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     }
 
     return (
-        <>
+        (<Root>
             <Box display='flex' flexDirection='row' alignItems='center'>
                 <div ref={drag} style={containerStyle}>
                     <ListItem
@@ -182,7 +193,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                     </ListItem>
                 </div>
             </Box>
-        </>
+        </Root>)
     );
 };
 

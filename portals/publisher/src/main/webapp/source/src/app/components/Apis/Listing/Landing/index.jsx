@@ -63,7 +63,6 @@ const APILanding = () => {
         getGatewayType();
     }, [settings]);
 
-    const { root } = useStyles();
     const {
         graphqlIcon,
         restApiIcon,

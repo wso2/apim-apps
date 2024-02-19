@@ -43,7 +43,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
-import { makeStyles } from '@mui/styles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Configurations from 'Config';
 import Card from '@mui/material/Card';
@@ -443,7 +442,6 @@ const Root = styled('div')((
  * @extends {React.Component}
  */
 export default function Environments() {
-    const classes = useStyles();
     const maxCommentLength = '255';
     const intl = useIntl();
     const { api, updateAPI } = useContext(APIContext);

@@ -24,8 +24,8 @@ import {
     StyledEngineProvider,
     createTheme,
     adaptV4Theme,
+    ThemeProvider as NormalThemeProvider
 } from '@mui/material/styles';
-import { ThemeProvider as NormalThemeProvider } from '@mui/styles';
 // import MaterialDesignCustomTheme from 'AppComponents/Shared/CustomTheme';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Base from 'AppComponents/Base';

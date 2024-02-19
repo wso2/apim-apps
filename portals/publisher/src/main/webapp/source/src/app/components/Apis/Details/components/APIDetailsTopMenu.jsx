@@ -144,8 +144,9 @@ const Root = styled('div')(({ theme }) => ({
 
 const APIDetailsTopMenu = (props) => {
     const {
-        classes, theme, api, isAPIProduct, imageUpdate, intl, openPageSearch, setOpenPageSearch, updateAPI
+        api, isAPIProduct, imageUpdate, intl, openPageSearch, setOpenPageSearch, updateAPI
     } = props;
+    const theme = useTheme();
     const history = useHistory();
     const prevLocation = history.location.pathname;
     const lastIndex = prevLocation.split('/')[3];
@@ -235,7 +236,8 @@ const APIDetailsTopMenu = (props) => {
                                 : `/apis/${api.id}/overview`}
                             className={classes.backLink}
                         >
-                            <Typography id='itest-api-name-version' variant='h4' component='h1' className={classes.apiName}>
+                            <Typography id='itest-api-name-version' variant='h4' component='h1' 
+                                className={classes.apiName}>
                                 {api.name}
                                 {' :'}
                                 {api.version}
@@ -449,8 +451,14 @@ const APIDetailsTopMenu = (props) => {
                 </div>
                 {api.isRevision || isRestricted(['apim:api_create'], api)
                     ? (<div className={classes.revisionWrapper} />)
-                    : (<DeleteApiButton buttonClass={classes.viewInStoreLauncher} api={api} 
-                        isAPIProduct={isAPIProduct} />)}
+                    : (
+                        <DeleteApiButton 
+                            buttonClass={classes.viewInStoreLauncher} 
+                            api={api} 
+                            isAPIProduct={isAPIProduct} 
+                        />
+                    )
+                }
             </div>
         </Root>
     );

@@ -16,11 +16,8 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-
 import { styled } from '@mui/material/styles';
-
 import { Route, Switch } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import APICreateDefault from './Default/APICreateDefault';
@@ -55,8 +52,7 @@ const WithSomeValue = (Component, additionalProps) => (routeProps) => (
  * @param {*} props
  * @returns @inheritdoc
  */
-function APICreateRoutes(props) {
-    const { classes } = props;
+function APICreateRoutes() {
     const { data: settings } = usePublisherSettings();
     const [gateway, setGatewayType] = useState(false);
     
@@ -95,9 +91,5 @@ function APICreateRoutes(props) {
         </Root>
     );
 }
-
-APICreateRoutes.propTypes = {
-    classes: PropTypes.shape({ content: PropTypes.string }).isRequired,
-};
 
 export default (APICreateRoutes);

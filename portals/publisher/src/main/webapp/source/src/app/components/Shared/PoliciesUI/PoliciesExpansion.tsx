@@ -17,20 +17,26 @@
 */
 
 import React, { FC } from 'react';
+import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { Theme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import type { AttachedPolicy, PolicySpec } from './Types';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    flowSpecificPolicyAttachGrid: {
+const PREFIX = 'PoliciesExpansionShared';
+
+const classes = {
+    flowSpecificPolicyAttachGrid: `${PREFIX}-flowSpecificPolicyAttachGrid`
+};
+
+const StyledAccordionDetails = styled(AccordionDetails)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.flowSpecificPolicyAttachGrid}`]: {
         marginTop: theme.spacing(1),
         overflowX: 'scroll',
-    },
+    }
 }));
 
 interface PoliciesExpansionSharedProps {
@@ -70,10 +76,10 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
     FlowArrow,
     PolicyDropzone
 }) => {
-    const classes = useStyles();
+
 
     return (
-        <AccordionDetails>
+        <StyledAccordionDetails>
             <Grid
                 spacing={2}
                 container
@@ -150,7 +156,7 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                     )}
                 </Grid>
             </Grid>
-        </AccordionDetails>
+        </StyledAccordionDetails>
     );
 };
 

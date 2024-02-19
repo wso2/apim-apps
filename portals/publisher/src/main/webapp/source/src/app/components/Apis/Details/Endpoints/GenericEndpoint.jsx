@@ -24,7 +24,6 @@ import {
     InputAdornment,
     TextField,
 } from '@mui/material';
-import { withStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
