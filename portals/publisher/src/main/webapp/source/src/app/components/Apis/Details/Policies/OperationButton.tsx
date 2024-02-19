@@ -17,47 +17,34 @@
  */
 
 import React, { FC } from 'react';
-import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-const PREFIX = 'OperationButton';
-
-const classes = {
-    customButton: `${PREFIX}-customButton`
-};
-
-const StyledButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-    const backgroundColor = theme.custom.resourceChipColors[verb];
-    return {
-        [`&.${classes.customButton}`]: {
-            '&:hover': { backgroundColor },
-            backgroundColor,
-            width: theme.spacing(12),
-            color: theme.palette.getContrastText(backgroundColor),
-        }
-    };
-});
+import { Theme } from '@mui/material';
 
 interface OperationButtonProps {
     verb: string;
 }
 
 const getStyles = (verb: string) => {
-
 }
 
 const OperationButton: FC<OperationButtonProps> = ({ verb }) => {
-
-    const classes = getStyles(verb);
+    const theme:any = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[verb];
     return (
-        <StyledButton
+        <Button
             disableFocusRipple
             variant='contained'
             aria-label={'HTTP verb ' + verb}
             size='small'
-            className={classes.customButton}
+            sx={{
+                backgroundColor,
+                width: theme.spacing(12),
+                color: theme.palette.getContrastText(backgroundColor),
+            }}
         >
             {verb}
-        </StyledButton>
+        </Button>
     );
 };
 
