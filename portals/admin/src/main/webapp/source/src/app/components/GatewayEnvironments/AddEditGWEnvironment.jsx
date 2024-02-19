@@ -536,9 +536,9 @@ function AddEditGWEnvironment(props) {
                         onChange={onChange}
                         disabled={editMode}
                     >
-                        <MenuItem value='hybrid'>hybrid</MenuItem>
-                        <MenuItem value='production'>production</MenuItem>
-                        <MenuItem value='sandbox'>sandbox</MenuItem>
+                        <MenuItem value='hybrid'>Hybrid</MenuItem>
+                        <MenuItem value='production'>Production</MenuItem>
+                        <MenuItem value='sandbox'>Sandbox</MenuItem>
                     </Select>
                     <FormHelperText>Supported Key Type of the Gateway Environment</FormHelperText>
                 </FormControl>
