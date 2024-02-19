@@ -25,6 +25,7 @@ import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import { ApiContext } from '../../ApiContext';
+import Box from '@mui/material/Box';
 
 const PREFIX = 'AsyncApiDefinitionUI';
 
@@ -81,7 +82,10 @@ class AsyncApiDefinitionUI extends Component {
                 </Typography>
                 <Grid container spacing={1} className={classes.editorRoot}>
                     <Grid item className={classes.editorPane}>
-                        <AsyncApiComponent schema={JSON.stringify(asyncApiDefinition)} />
+                        <Box maxWidth={1250}>
+                            <AsyncApiComponent schema={JSON.stringify(asyncApiDefinition)} />
+                        </Box>
+
                     </Grid>
                 </Grid>
             </Root>
