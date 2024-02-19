@@ -21,7 +21,7 @@ import React from 'react';
 import LibraryAdd from '@mui/icons-material/LibraryAdd';
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 

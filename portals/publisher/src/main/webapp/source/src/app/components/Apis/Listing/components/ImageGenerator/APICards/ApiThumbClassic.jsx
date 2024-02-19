@@ -17,7 +17,7 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -28,7 +28,6 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
-import green from '@material-ui/core/colors/green';
 import API from 'AppData/api';
 import Popover from '@material-ui/core/Popover';
 import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
@@ -36,6 +35,7 @@ import Configurations from 'Config';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import EmailIcon from '@material-ui/icons/Email';
 
+import { green } from '@mui/material/colors';
 import BaseThumbnail from '../BaseThumbnail';
 
 const styles = (theme) => ({
@@ -48,7 +48,7 @@ const styles = (theme) => ({
         textTransform: 'capitalize',
     },
     apiDetails: { padding: theme.spacing(1), paddingBottom: 0 },
-    apiActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)}px 8px` },
+    apiActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)} 8px` },
     deleteProgress: {
         color: green[200],
         position: 'absolute',

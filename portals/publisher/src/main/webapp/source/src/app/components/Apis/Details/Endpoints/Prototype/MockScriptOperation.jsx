@@ -23,7 +23,7 @@ import React, {
     useState,
 } from 'react';
 import { Grid, Typography, Button } from '@mui/material';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';

@@ -17,7 +17,7 @@
  */
 import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';

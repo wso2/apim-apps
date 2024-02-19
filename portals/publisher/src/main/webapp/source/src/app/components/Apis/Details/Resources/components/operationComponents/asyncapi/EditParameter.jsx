@@ -18,7 +18,7 @@
 
 import React, { useReducer } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -107,7 +107,7 @@ export default function EditParameter(props) {
     }
     return (
         <Dialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-parameter'>
-            <DialogTitle disableTypography id='edit-parameter'>
+            <DialogTitle id='edit-parameter'>
                 <Typography variant='h6'>
                     <FormattedMessage
                         id='Apis.Details.Resources.components.operationComponents.EditParameter.title'
@@ -120,7 +120,7 @@ export default function EditParameter(props) {
                 </Typography>
             </DialogTitle>
             <DialogContent>
-                <Grid container direction='row' spacing={2} justify='flex-start' alignItems='center'>
+                <Grid container direction='row' spacing={2} justifyContent='flex-start' alignItems='center'>
                     {!disableForSolaceAPI && (
                         <Grid item md={6}>
                             <FormControl

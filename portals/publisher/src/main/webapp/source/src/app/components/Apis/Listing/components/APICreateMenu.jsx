@@ -17,9 +17,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import { useTheme } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => {
             margin: 'auto',
         },
         popover: {
-            [theme.breakpoints.down('sm')]: {
+            [theme.breakpoints.down('md')]: {
                 width: '95vw',
             },
             [theme.breakpoints.up('md')]: {

@@ -18,15 +18,15 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import green from '@material-ui/core/colors/green';
-
 import BaseThumbnail from '../BaseThumbnail';
+
+import { green } from '@mui/material/colors';
 
 const styles = (theme) => ({
     card: {
@@ -38,7 +38,7 @@ const styles = (theme) => ({
         textTransform: 'capitalize',
     },
     docDetails: { padding: theme.spacing(1) },
-    docActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)}px 0px` },
+    docActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)} 0px` },
     deleteProgress: {
         color: green[200],
         position: 'absolute',

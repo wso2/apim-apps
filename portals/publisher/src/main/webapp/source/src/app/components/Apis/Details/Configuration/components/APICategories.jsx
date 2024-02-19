@@ -29,7 +29,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import API from 'AppData/api';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';

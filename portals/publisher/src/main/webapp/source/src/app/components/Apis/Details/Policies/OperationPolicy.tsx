@@ -24,7 +24,7 @@ import Button from '@mui/material/Button';
 import { Accordion, AccordionSummary } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Utils from 'AppData/Utils';
 import Badge from '@mui/material/Badge';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';

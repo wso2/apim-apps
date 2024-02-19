@@ -21,8 +21,8 @@ import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/styles';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 
 const useStyles = makeStyles((theme) => ({

@@ -17,7 +17,8 @@
  */
 
 import React from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';

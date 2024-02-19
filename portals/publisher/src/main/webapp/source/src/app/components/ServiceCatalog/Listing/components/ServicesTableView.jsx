@@ -18,7 +18,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Configurations from 'Config';

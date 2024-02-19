@@ -105,7 +105,7 @@ function Listing() {
             <Grid
                 container
                 direction='column'
-                justify='flex-start'
+                justifyContent='flex-start'
                 alignItems='stretch'
             >
                 <Grid xs={12}>

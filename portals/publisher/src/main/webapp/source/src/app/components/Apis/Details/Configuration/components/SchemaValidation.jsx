@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';

@@ -13,7 +13,7 @@
  */
 import React from 'react';
 import Paper from '@mui/material/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

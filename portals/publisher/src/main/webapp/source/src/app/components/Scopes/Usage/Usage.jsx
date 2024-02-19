@@ -18,7 +18,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import { Typography } from '@mui/material';
 import Button from '@mui/material/Button';

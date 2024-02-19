@@ -17,13 +17,49 @@
  */
 
 import React, { FC, useState } from 'react';
-import { Grid, Typography } from '@mui/material';
-import { Theme, makeStyles } from '@material-ui/core';
+import { Grid, Typography , Theme } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { useDrop } from 'react-dnd';
 import PolicyDropzoneShared from 'AppComponents/Shared/PoliciesUI/PolicyDropzone';
+import clsx from 'clsx';
+import { green, red } from '@mui/material/colors';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
+
+const useStyles = makeStyles((theme: Theme) => ({
+    dropzoneDiv: {
+        border: '1px dashed',
+        borderColor: theme.palette.primary.main,
+        height: '8rem',
+        padding: '0.8rem',
+        width: '100%',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        textAlign: 'center',
+        borderRadius: '0.3em',
+        display: 'flex',
+        alignItems: 'center',
+        overflowX: 'scroll',
+    },
+    acceptDrop: {
+        backgroundColor: green[50],
+        borderColor: 'green',
+    },
+    rejectDrop: {
+        backgroundColor: red[50],
+        borderColor: 'red',
+    },
+    alignLeft: {
+        justifyContent: 'left',
+    },
+    alignRight: {
+        justifyContent: 'right',
+    },
+    alignCenter: {
+        justifyContent: 'center',
+    },
+}));
 
 interface PolicyDropzoneProps {
     policyDisplayStartDirection: string;

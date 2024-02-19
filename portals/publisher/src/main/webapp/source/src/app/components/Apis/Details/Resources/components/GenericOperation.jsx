@@ -28,7 +28,7 @@ import {
     AccordionDetails
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Utils from 'AppData/Utils';
 
 const useStyles = verb => makeStyles((theme) => {
@@ -63,7 +63,7 @@ const useStyles = verb => makeStyles((theme) => {
         },
         title: {
             display: 'inline',
-            margin: `0 ${theme.spacing(5)}px`,
+            margin: `0 ${theme.spacing(5)}`,
         },
     };
 });
@@ -94,52 +94,50 @@ function GenericOperation(props) {
         setIsExpanded(expanded);
     }
 
-    return (
-        <>
-            <Accordion
-                expanded={isExpanded}
-                onChange={handleExpansion}
-                className={classes.paperStyles}
+    return <>
+        <Accordion
+            expanded={isExpanded}
+            onChange={handleExpansion}
+            className={classes.paperStyles}
+        >
+            <AccordionSummary
+                className={classes.highlightSelected}
+                disableRipple
+                disableTouchRipple
+                expandIcon={<ExpandMoreIcon />}
+                id={verb + target}
+                classes={{ content: classes.contentNoMargin }}
             >
-                <AccordionSummary
-                    className={classes.highlightSelected}
-                    disableRipple
-                    disableTouchRipple
-                    expandIcon={<ExpandMoreIcon />}
-                    id={verb + target}
-                    classes={{ content: classes.contentNoMargin }}
-                >
-                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
-                        <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
-                            <Button
-                                disableFocusRipple
-                                variant='contained'
-                                aria-label={'HTTP verb ' + verb}
-                                size='small'
-                                className={classes.customButton}
-                            >
-                                {verb}
-                            </Button>
-                            <Typography
-                                display='inline-block'
-                                variant='h6'
-                                component='div'
-                                gutterBottom
-                                className={classes.targetText}
-                                title={target}
-                            >
-                                {target}
-                            </Typography>
-                        </Grid>
+                <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
+                    <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
+                        <Button
+                            disableFocusRipple
+                            variant='contained'
+                            aria-label={'HTTP verb ' + verb}
+                            size='small'
+                            className={classes.customButton}
+                        >
+                            {verb}
+                        </Button>
+                        <Typography
+                            display='inline-block'
+                            variant='h6'
+                            component='div'
+                            gutterBottom
+                            className={classes.targetText}
+                            title={target}
+                        >
+                            {target}
+                        </Typography>
                     </Grid>
-                </AccordionSummary>
-                <Divider light className={classes.customDivider} />
-                <AccordionDetails>
-                    {children}
-                </AccordionDetails>
-            </Accordion>
-        </>
-    );
+                </Grid>
+            </AccordionSummary>
+            <Divider light className={classes.customDivider} />
+            <AccordionDetails>
+                {children}
+            </AccordionDetails>
+        </Accordion>
+    </>;
 }
 
 GenericOperation.propTypes = {

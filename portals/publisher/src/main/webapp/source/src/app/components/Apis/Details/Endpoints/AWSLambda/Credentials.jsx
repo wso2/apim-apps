@@ -29,7 +29,7 @@ import {
     Collapse,
     Radio,
 } from '@mui/material';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import HelpOutline from '@mui/icons-material/HelpOutline';

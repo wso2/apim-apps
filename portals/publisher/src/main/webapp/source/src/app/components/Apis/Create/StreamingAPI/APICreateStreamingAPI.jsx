@@ -24,7 +24,7 @@ import { Link, useParams } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import API from 'AppData/api';
@@ -366,7 +366,7 @@ const APICreateStreamingAPI = (props) => {
 
     return (
         <APICreateBase title={pageTitle}>
-            <Grid container direction='row' justify='center' alignItems='center' spacing={3}>
+            <Grid container direction='row' justifyContent='center' alignItems='center' spacing={3}>
                 {/* Page error banner */}
                 {pageError && (
                     <Grid item xs={11}>
@@ -442,7 +442,7 @@ const APICreateStreamingAPI = (props) => {
                 </Grid>
                 <Grid item md={1} xs={0} />
                 <Grid item md={11} xs={12}>
-                    <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             <Button
                                 variant='contained'

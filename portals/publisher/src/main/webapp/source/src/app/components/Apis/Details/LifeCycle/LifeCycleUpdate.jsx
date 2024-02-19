@@ -23,7 +23,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';

@@ -23,7 +23,7 @@ import {
     Typography,
     Box,
 } from '@mui/material';
-import { withStyles } from '@material-ui/core';
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';

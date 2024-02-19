@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
 import Button from '@mui/material/Button';
@@ -140,7 +140,7 @@ function APIRateLimiting(props) {
     }
     return (
         <Paper>
-            <Grid container direction='row' spacing={3} justify='flex-start' alignItems='flex-start'>
+            <Grid container direction='row' spacing={3} justifyContent='flex-start' alignItems='flex-start'>
                 <Grid item md={12} xs={12}>
                     <Box ml={1}>
                         <Typography variant='subtitle1' component='h3' gutterBottom>
@@ -151,7 +151,7 @@ function APIRateLimiting(props) {
                                 placement='right-end'
                                 interactive
                             >
-                                <IconButton aria-label='Operations Configuration help text'>
+                                <IconButton aria-label='Operations Configuration help text' size='large'>
                                     <HelpOutline />
                                 </IconButton>
                             </Tooltip>

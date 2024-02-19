@@ -28,7 +28,7 @@ import { Link } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const showEndpoint = function (api, type) {
     if (api.endpointConfig) {

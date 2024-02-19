@@ -29,6 +29,6 @@ const WrappedExpansionPanel = (props) => {
     };
     return (<Accordion expanded={expanded} {...props} onChange={setExpandState} />);
 };
-WrappedExpansionPanel.muiName = 'ExpansionPanel';
+WrappedExpansionPanel.muiName = 'Accordion';
 
 export default WrappedExpansionPanel;

@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// import { unwrap } from '@material-ui/core/test-utils';
+// import { unwrap } from '@mui/material/test-utils';
 import { Typography } from '@mui/material';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import ArrowDropDownCircleOutlined from '@mui/icons-material/ArrowDropDownCircleOutlined';

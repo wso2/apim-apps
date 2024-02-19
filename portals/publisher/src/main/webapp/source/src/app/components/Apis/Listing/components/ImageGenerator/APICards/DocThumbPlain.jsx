@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Icon from '@mui/material/Icon';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';

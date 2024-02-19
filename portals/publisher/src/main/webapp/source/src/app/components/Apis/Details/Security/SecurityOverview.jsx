@@ -29,7 +29,7 @@ import TableHead from '@mui/material/TableHead';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import AddCircle from '@mui/icons-material/AddCircle';
 import Divider from '@mui/material/Divider';
 import { FormattedMessage, injectIntl } from 'react-intl';

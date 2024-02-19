@@ -27,9 +27,9 @@ import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InfoIcon from '@mui/icons-material/Info';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
-import { orange, green } from '@material-ui/core/colors';
+import { orange, green } from '@mui/material/colors';
 import { withRouter } from 'react-router';
 import Fade from '@mui/material/Fade';
 
@@ -113,7 +113,7 @@ function Banner(props) {
                         </Grid>
                     </Grid>
 
-                    <Grid container justify='flex-end' spacing={1}>
+                    <Grid container justifyContent='flex-end' spacing={1}>
                         <Grid item>
                             {!disableActions && (
                                 <>

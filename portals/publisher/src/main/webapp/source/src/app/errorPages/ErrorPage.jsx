@@ -21,7 +21,7 @@ import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import ErrorList from './ErrorList';
 
 const useStyles = makeStyles((theme) => ({

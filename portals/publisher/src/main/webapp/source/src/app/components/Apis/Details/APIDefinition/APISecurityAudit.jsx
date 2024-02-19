@@ -26,7 +26,8 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import Paper from '@mui/material/Paper';
-import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from '@mui/material/styles';
+import withStyles from '@mui/styles/withStyles';
 import { Line } from 'rc-progress';
 import Progress from 'AppComponents/Shared/Progress';
 import { withRouter } from 'react-router';
@@ -197,7 +198,7 @@ class APISecurityAudit extends Component {
             });
     }
 
-    getMuiTheme = () => createMuiTheme({
+    getMuiTheme = () => createTheme(adaptV4Theme({
         typography: {
             useNextVariants: true,
         },
@@ -218,9 +219,9 @@ class APISecurityAudit extends Component {
                 },
             },
         },
-    });
+    }));
 
-    getErrorMuiTheme = () => createMuiTheme({
+    getErrorMuiTheme = () => createTheme(adaptV4Theme({
         typography: {
             useNextVariants: true,
         },
@@ -241,7 +242,7 @@ class APISecurityAudit extends Component {
                 },
             },
         },
-    });
+    }));
 
     /**
      * Get Row data for MUI Table
@@ -921,18 +922,20 @@ class APISecurityAudit extends Component {
                                                 <>
                                                     <div>
                                                         <Typography variant='body1'>
-                                                            <MuiThemeProvider theme={this.getMuiTheme()}>
-                                                                <MUIDataTable
-                                                                    title='Semantic Errors'
-                                                                    data={this.getRowData(
-                                                                        reportObject.semanticErrors.issues,
-                                                                        'OpenAPI Format Requirements',
-                                                                        'error',
-                                                                    )}
-                                                                    columns={errorColumns}
-                                                                    options={options}
-                                                                />
-                                                            </MuiThemeProvider>
+                                                            <StyledEngineProvider injectFirst>
+                                                                <ThemeProvider theme={this.getMuiTheme()}>
+                                                                    <MUIDataTable
+                                                                        title='Semantic Errors'
+                                                                        data={this.getRowData(
+                                                                            reportObject.semanticErrors.issues,
+                                                                            'OpenAPI Format Requirements',
+                                                                            'error',
+                                                                        )}
+                                                                        columns={errorColumns}
+                                                                        options={options}
+                                                                    />
+                                                                </ThemeProvider>
+                                                            </StyledEngineProvider>
                                                         </Typography>
                                                     </div>
                                                 </>
@@ -942,18 +945,20 @@ class APISecurityAudit extends Component {
                                                 <>
                                                     <div>
                                                         <Typography variant='body1'>
-                                                            <MuiThemeProvider theme={this.getErrorMuiTheme()}>
-                                                                <MUIDataTable
-                                                                    title='Structural Errors'
-                                                                    data={this.getRowData(
-                                                                        reportObject.validationErrors.issues,
-                                                                        'OpenAPI Format Requirements',
-                                                                        'error',
-                                                                    )}
-                                                                    columns={errorColumns}
-                                                                    options={options}
-                                                                />
-                                                            </MuiThemeProvider>
+                                                            <StyledEngineProvider injectFirst>
+                                                                <ThemeProvider theme={this.getErrorMuiTheme()}>
+                                                                    <MUIDataTable
+                                                                        title='Structural Errors'
+                                                                        data={this.getRowData(
+                                                                            reportObject.validationErrors.issues,
+                                                                            'OpenAPI Format Requirements',
+                                                                            'error',
+                                                                        )}
+                                                                        columns={errorColumns}
+                                                                        options={options}
+                                                                    />
+                                                                </ThemeProvider>
+                                                            </StyledEngineProvider>
                                                         </Typography>
                                                     </div>
                                                 </>
@@ -963,18 +968,20 @@ class APISecurityAudit extends Component {
                                                 <>
                                                     <div>
                                                         <Typography variant='body1'>
-                                                            <MuiThemeProvider theme={this.getErrorMuiTheme()}>
-                                                                <MUIDataTable
-                                                                    title='Best Practices Issues'
-                                                                    data={this.getRowData(
-                                                                        reportObject.warnings.issues,
-                                                                        'OpenAPI Format Requirements',
-                                                                        'error',
-                                                                    )}
-                                                                    columns={errorColumns}
-                                                                    options={options}
-                                                                />
-                                                            </MuiThemeProvider>
+                                                            <StyledEngineProvider injectFirst>
+                                                                <ThemeProvider theme={this.getErrorMuiTheme()}>
+                                                                    <MUIDataTable
+                                                                        title='Best Practices Issues'
+                                                                        data={this.getRowData(
+                                                                            reportObject.warnings.issues,
+                                                                            'OpenAPI Format Requirements',
+                                                                            'error',
+                                                                        )}
+                                                                        columns={errorColumns}
+                                                                        options={options}
+                                                                    />
+                                                                </ThemeProvider>
+                                                            </StyledEngineProvider>
                                                         </Typography>
                                                     </div>
                                                 </>
@@ -1103,18 +1110,20 @@ class APISecurityAudit extends Component {
                                                 <div>
                                                     <hr />
                                                     <Typography variant='body1'>
-                                                        <MuiThemeProvider theme={this.getMuiTheme()}>
-                                                            <MUIDataTable
-                                                                title='Issues'
-                                                                data={this.getRowData(
-                                                                    reportObject.security.issues,
-                                                                    'Security',
-                                                                    'normal',
-                                                                )}
-                                                                columns={columns}
-                                                                options={options}
-                                                            />
-                                                        </MuiThemeProvider>
+                                                        <StyledEngineProvider injectFirst>
+                                                            <ThemeProvider theme={this.getMuiTheme()}>
+                                                                <MUIDataTable
+                                                                    title='Issues'
+                                                                    data={this.getRowData(
+                                                                        reportObject.security.issues,
+                                                                        'Security',
+                                                                        'normal',
+                                                                    )}
+                                                                    columns={columns}
+                                                                    options={options}
+                                                                />
+                                                            </ThemeProvider>
+                                                        </StyledEngineProvider>
                                                     </Typography>
                                                 </div>
                                             )}
@@ -1230,18 +1239,20 @@ class APISecurityAudit extends Component {
                                                 <div>
                                                     <hr />
                                                     <Typography variant='body1'>
-                                                        <MuiThemeProvider theme={this.getMuiTheme()}>
-                                                            <MUIDataTable
-                                                                title='Issues'
-                                                                data={this.getRowData(
-                                                                    reportObject.data.issues,
-                                                                    'Data Validation',
-                                                                    'normal',
-                                                                )}
-                                                                columns={columns}
-                                                                options={options}
-                                                            />
-                                                        </MuiThemeProvider>
+                                                        <StyledEngineProvider injectFirst>
+                                                            <ThemeProvider theme={this.getMuiTheme()}>
+                                                                <MUIDataTable
+                                                                    title='Issues'
+                                                                    data={this.getRowData(
+                                                                        reportObject.data.issues,
+                                                                        'Data Validation',
+                                                                        'normal',
+                                                                    )}
+                                                                    columns={columns}
+                                                                    options={options}
+                                                                />
+                                                            </ThemeProvider>
+                                                        </StyledEngineProvider>
                                                     </Typography>
                                                 </div>
                                             )}

@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import withStyles from '@material-ui/core/styles/withStyles';
+import withStyles from '@mui/styles/withStyles';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';

@@ -127,7 +127,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                     title='Policy list is dependant on the selected Gateway'
                                     placement='right-start'
                                 >
-                                    <IconButton aria-label='API Gateway selector help text'>
+                                    <IconButton aria-label='API Gateway selector help text' size='large'>
                                         <HelpOutline />
                                     </IconButton>
                                 </Tooltip>

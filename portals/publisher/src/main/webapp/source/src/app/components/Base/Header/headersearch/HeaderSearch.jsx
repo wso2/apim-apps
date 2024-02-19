@@ -20,7 +20,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
@@ -348,7 +348,7 @@ class HeaderSearch extends React.Component {
                         </>
                     )}
                 >
-                    <IconButton className={classes.infoButton}>
+                    <IconButton className={classes.infoButton} size='large'>
                         <InfoIcon />
                     </IconButton>
                 </Tooltip>

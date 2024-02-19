@@ -19,7 +19,7 @@
 import React, { useState } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';

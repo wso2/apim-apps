@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { Grid, Paper, Typography } from '@mui/material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';

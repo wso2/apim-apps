@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -16,7 +17,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
-import grey from '@material-ui/core/colors/grey';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -24,6 +24,7 @@ import AuthManager from 'AppData/AuthManager';
 import Typography from '@mui/material/Typography';
 import LinkIcon from '@mui/icons-material/Link';
 import API from 'AppData/api';
+import { grey } from '@mui/material/colors';
 
 const ColorlibConnector = withStyles((theme) => {
     const completedColor = theme.custom.apis.overview.stepper.completed || theme.palette.success.main;
@@ -255,68 +256,66 @@ export default function CustomizedStepper() {
     function finalLifecycleState(state) {
         switch (state) {
             case 'PUBLISHED':
-                return (
-                    <>
-                        <Grid
-                            container
-                            direction='row'
-                            alignItems='center'
-                            justify='center'
-                        >
+                return <>
+                    <Grid
+                        container
+                        direction='row'
+                        alignItems='center'
+                        justifyContent='center'
+                    >
+                        <Grid item>
+                            <CheckIcon className={classes.iconTrue} />
+                        </Grid>
+                        <Box ml={1}>
                             <Grid item>
-                                <CheckIcon className={classes.iconTrue} />
-                            </Grid>
-                            <Box ml={1}>
-                                <Grid item>
-                                    <Typography variant='h6' component='div'>
+                                <Typography variant='h6' component='div'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Overview.CustomizedStepper.publish'
+                                        defaultMessage=' Published'
+                                    />
+                                    <Box display='inline' pl={0.4} color='text.secondary'>
                                         <FormattedMessage
-                                            id='Apis.Details.Overview.CustomizedStepper.publish'
-                                            defaultMessage=' Published'
+                                            id='Apis.Details.Overview.CustomizedStepper.publish.current.api'
+                                            defaultMessage=' (Current API)'
                                         />
-                                        <Box display='inline' pl={0.4} color='text.secondary'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.publish.current.api'
-                                                defaultMessage=' (Current API)'
-                                            />
-                                        </Box>
+                                    </Box>
+                                </Typography>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Box mt={1} ml={2}>
+                        <a
+                            target='_blank'
+                            className={classes.textLink}
+                            rel='noopener noreferrer'
+                            href={devportalUrl}
+                        >
+                            <Grid
+                                container
+                                direction='row'
+                                alignItems='center'
+                                justifyContent='center'
+                            >
+                                <Grid item>
+                                    <Typography variant='h6' display='inline'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Overview.CustomizedStepper.view.devportal'
+                                            defaultMessage='View in devportal'
+                                        />
                                     </Typography>
                                 </Grid>
-                            </Box>
-                        </Grid>
-                        <Box mt={1} ml={2}>
-                            <a
-                                target='_blank'
-                                className={classes.textLink}
-                                rel='noopener noreferrer'
-                                href={devportalUrl}
-                            >
-                                <Grid
-                                    container
-                                    direction='row'
-                                    alignItems='center'
-                                    justify='center'
-                                >
-                                    <Grid item>
-                                        <Typography variant='h6' display='inline'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.view.devportal'
-                                                defaultMessage='View in devportal'
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Box ml={1}>
-                                            <LaunchIcon
-                                                color='primary'
-                                                fontSize='small'
-                                            />
-                                        </Box>
-                                    </Grid>
+                                <Grid item>
+                                    <Box ml={1}>
+                                        <LaunchIcon
+                                            color='primary'
+                                            fontSize='small'
+                                        />
+                                    </Box>
                                 </Grid>
-                            </a>
-                        </Box>
-                    </>
-                );
+                            </Grid>
+                        </a>
+                    </Box>
+                </>;
             case 'PROTOTYPED':
                 return (
                     <Typography variant='h6' component='div'>
@@ -449,7 +448,7 @@ export default function CustomizedStepper() {
                                     <Grid
                                         container
                                         direction='row'
-                                        justify='center'
+                                        justifyContent='center'
                                     >
                                         <Grid item>
                                             {api ? (
@@ -474,7 +473,7 @@ export default function CustomizedStepper() {
                                             <Grid
                                                 container
                                                 direction='row'
-                                                justify='center'
+                                                justifyContent='center'
                                                 style={{ marginLeft: '2px' }}
                                             >
                                                 <Grid item>
@@ -516,7 +515,7 @@ export default function CustomizedStepper() {
                                             <Grid
                                                 container
                                                 direction='row'
-                                                justify='center'
+                                                justifyContent='center'
                                                 style={{ marginLeft: '2px' }}
                                             >
                                                 <Grid item>
@@ -565,7 +564,7 @@ export default function CustomizedStepper() {
                                         container
                                         direction='row'
                                         alignItems='center'
-                                        justify='center'
+                                        justifyContent='center'
                                     >
                                         <Box mb={1}>
                                             <Grid item>
@@ -616,7 +615,7 @@ export default function CustomizedStepper() {
                                         container
                                         direction='row'
                                         alignItems='center'
-                                        justify='center'
+                                        justifyContent='center'
                                     >
                                         <Box ml={1} mb={1}>
                                             <Grid item>

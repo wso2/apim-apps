@@ -17,7 +17,7 @@
  */
 
 import React, { useState, FC, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import {
     Grid,
     Typography,
@@ -37,25 +37,43 @@ import { Progress } from 'AppComponents/Shared';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 
-const useStyles = makeStyles(theme => ({
-    resetBtn: {
+const PREFIX = 'General';
+
+const classes = {
+    resetBtn: `${PREFIX}-resetBtn`,
+    btn: `${PREFIX}-btn`,
+    drawerInfo: `${PREFIX}-drawerInfo`,
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    formControl: `${PREFIX}-formControl`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.resetBtn}`]: {
         display: 'flex',
         justifyContent: 'right',
         alignItems: 'center',
     },
-    btn: {
+
+    [`& .${classes.btn}`]: {
         marginRight: '1em',
     },
-    drawerInfo: {
+
+    [`& .${classes.drawerInfo}`]: {
         marginBottom: '1em',
     },
-    mandatoryStar: {
+
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         width: '80%',
-    },
+    }
 }));
 
 interface GeneralProps {
@@ -84,7 +102,7 @@ const General: FC<GeneralProps> = ({
     isAPILevelPolicy,
 }) => {
     const intl = useIntl();
-    const classes = useStyles();
+
     const [saving, setSaving] = useState(false);
     const [applyToAll, setApplyToAll] = useState(false);
     const initState: any = {};
@@ -282,7 +300,7 @@ const General: FC<GeneralProps> = ({
     }
 
     return (
-        <Box p={2}>
+        <StyledBox p={2}>
             <form onSubmit={submitForm}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} className={classes.drawerInfo}>
@@ -478,7 +496,7 @@ const General: FC<GeneralProps> = ({
                     </Grid>
                 </Grid>
             </form>
-        </Box>
+        </StyledBox>
     );
 };
 

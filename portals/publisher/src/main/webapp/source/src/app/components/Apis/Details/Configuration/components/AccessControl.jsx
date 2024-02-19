@@ -18,7 +18,7 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
@@ -32,7 +32,7 @@ import base64url from 'base64url';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
 import Chip from '@mui/material/Chip';
-import { red } from '@material-ui/core/colors/';
+import { red } from '@mui/material/colors/';
 import Alert from 'AppComponents/Shared/Alert';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 

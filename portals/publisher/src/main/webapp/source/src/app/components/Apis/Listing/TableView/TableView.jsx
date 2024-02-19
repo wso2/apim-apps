@@ -19,7 +19,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme } from '@mui/material/styles';
+import withStyles from '@mui/styles/withStyles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import queryString from 'query-string';
@@ -188,7 +189,7 @@ class TableView extends React.Component {
             };
         }
         muiTheme = Object.assign(theme, muiTheme, themeAdditions);
-        return createMuiTheme(muiTheme);
+        return createTheme(adaptV4Theme(muiTheme));
     };
 
     // get apisAndApiProducts
@@ -476,32 +477,32 @@ class TableView extends React.Component {
             );
         }
 
-        return (
-            <>
-                <TopMenu
-                    data={apisAndApiProducts}
-                    count={totalCount}
-                    setListType={this.setListType}
-                    isAPIProduct={isAPIProduct}
-                    listType={listType}
-                    showToggle={this.showToggle}
-                    query={query}
-                />
-                <div className={classes.contentInside}>
-                    {loading ? (
-                        <Progress
-                            per={96}
-                            message='Updating page ...'
-                        />
-                    )
-                        : (
-                            <MuiThemeProvider theme={this.getMuiTheme()}>
+        return <>
+            <TopMenu
+                data={apisAndApiProducts}
+                count={totalCount}
+                setListType={this.setListType}
+                isAPIProduct={isAPIProduct}
+                listType={listType}
+                showToggle={this.showToggle}
+                query={query}
+            />
+            <div className={classes.contentInside}>
+                {loading ? (
+                    <Progress
+                        per={96}
+                        message='Updating page ...'
+                    />
+                )
+                    : (
+                        <StyledEngineProvider injectFirst>
+                            <ThemeProvider theme={this.getMuiTheme()}>
                                 <MUIDataTable title='' data={apisAndApiProducts} columns={columns} options={options} />
-                            </MuiThemeProvider>
-                        )}
-                </div>
-            </>
-        );
+                            </ThemeProvider>
+                        </StyledEngineProvider>
+                    )}
+            </div>
+        </>;
     }
 }
 

@@ -30,8 +30,8 @@ import React, {
 
 import Alert from 'AppComponents/Shared/MuiAlert';
 import Api from 'AppData/api';
-import withStyles from '@material-ui/core/styles/withStyles';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CONSTS from 'AppData/Constants';

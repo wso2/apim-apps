@@ -17,7 +17,7 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';

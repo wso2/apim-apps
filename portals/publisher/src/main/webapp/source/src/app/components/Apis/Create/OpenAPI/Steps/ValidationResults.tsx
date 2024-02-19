@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, { useState } from "react";
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, List, ListItem, 
     ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
@@ -148,16 +148,16 @@ export default function ValidationResults(props: APILintingProps) {
                         </AccordionSummary>
                         <AccordionDetails
                             style={{padding:0}}>
-                                <LinterUI
-                                    linterResults={ linterResults.filter(
-                                        (item: any)=> linterSelectedSeverity===-1||
+                            <LinterUI
+                                linterResults={ linterResults.filter(
+                                    (item: any)=> linterSelectedSeverity===-1||
                                             item.severity===Number(linterSelectedSeverity))
-                                    }
-                                    severityMap={ severityMap }
-                                    handleRowClick={ (line: any) => { 
-                                        if(onLinterLineSelect) onLinterLineSelect(line);
-                                    } }
-                                />
+                                }
+                                severityMap={ severityMap }
+                                handleRowClick={ (line: any) => { 
+                                    if(onLinterLineSelect) onLinterLineSelect(line);
+                                } }
+                            />
                         </AccordionDetails>
                         
                     </Accordion>

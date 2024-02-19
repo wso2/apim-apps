@@ -26,7 +26,7 @@ import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';

@@ -48,56 +48,54 @@ function Delete(props) {
         setOpen(!open);
     };
 
-    return (
-        <>
-            {isIconButton ? (
-                <IconButton
-                    id={id}
-                    disableRipple
-                    disableFocusRipple
-                    aria-label={`Delete ${serviceDisplayName}`}
-                    onClick={toggleOpen}
-                >
-                    <DeleteIcon />
-                </IconButton>
-            ) : (
-                <Button id={id} onClick={toggleOpen}>
-                    <Icon>delete_forever</Icon>
-                </Button>
+    return <>
+        {isIconButton ? (
+            <IconButton
+                id={id}
+                disableRipple
+                disableFocusRipple
+                aria-label={`Delete ${serviceDisplayName}`}
+                onClick={toggleOpen}
+                size='large'>
+                <DeleteIcon />
+            </IconButton>
+        ) : (
+            <Button id={id} onClick={toggleOpen}>
+                <Icon>delete_forever</Icon>
+            </Button>
+        )}
+        <ConfirmDialog
+            key='key-dialog'
+            labelCancel={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.cancel'
+                    defaultMessage='Cancel'
+                />
             )}
-            <ConfirmDialog
-                key='key-dialog'
-                labelCancel={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.cancel'
-                        defaultMessage='Cancel'
-                    />
-                )}
-                title={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.confirm'
-                        defaultMessage='Confirm Delete'
-                    />
-                )}
-                message={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.ok.confirm'
-                        defaultMessage='Are you sure you want to delete the service {service} ?'
-                        values={{ service: serviceDisplayName }}
-                    />
-                )}
-                labelOk={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.ok.yes'
-                        defaultMessage='Yes'
-                    />
-                )}
-                idOk='itest-service-card-delete-confirm'
-                callback={runAction}
-                open={open}
-            />
-        </>
-    );
+            title={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.confirm'
+                    defaultMessage='Confirm Delete'
+                />
+            )}
+            message={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.ok.confirm'
+                    defaultMessage='Are you sure you want to delete the service {service} ?'
+                    values={{ service: serviceDisplayName }}
+                />
+            )}
+            labelOk={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.ok.yes'
+                    defaultMessage='Yes'
+                />
+            )}
+            idOk='itest-service-card-delete-confirm'
+            callback={runAction}
+            open={open}
+        />
+    </>;
 }
 Delete.propTypes = {
     serviceDisplayName: PropTypes.string.isRequired,

@@ -19,9 +19,8 @@
 import React from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
-import green from '@material-ui/core/colors/green';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -38,6 +37,7 @@ import APIValidation from 'AppData/APIValidation';
 import AppContext from 'AppComponents/Shared/AppContext';
 import Alert from 'AppComponents/Shared/Alert';
 import Configurations from 'Config';
+import { green } from '@mui/material/colors';
 
 const styles = theme => ({
     button: {
@@ -95,7 +95,7 @@ const styles = theme => ({
         borderRadius: '5px',
         cursor: 'pointer',
         height: 75,
-        padding: `${theme.spacing(2)}px 0px`,
+        padding: `${theme.spacing(2)} 0px`,
         position: 'relative',
         textAlign: 'center',
         width: '100%',

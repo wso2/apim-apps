@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
@@ -173,7 +173,7 @@ function EditableParameterRow(props) {
                             onKeyDown={() => {}}
                             disabled={validateEmpty(newName) || validateEmpty(newValue)}
                             color='inherit'
-                        >
+                            size='large'>
                             <SaveIcon className={classes.buttonIcon} />
                         </IconButton>
                     </>
@@ -185,7 +185,7 @@ function EditableParameterRow(props) {
                         onKeyDown={() => {}}
                         color='inherit'
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    >
+                        size='large'>
                         <EditIcon className={classes.buttonIcon} />
                     </IconButton>
                 )}
@@ -196,7 +196,7 @@ function EditableParameterRow(props) {
                     onKeyDown={() => {}}
                     color='inherit'
                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                >
+                    size='large'>
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>

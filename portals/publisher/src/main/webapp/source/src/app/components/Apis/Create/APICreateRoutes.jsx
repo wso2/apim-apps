@@ -18,7 +18,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { Route, Switch } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';

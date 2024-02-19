@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        [theme.breakpoints.down('md')]: {
+        [theme.breakpoints.down('lg')]: {
             maxWidth: 800,
         },
     },

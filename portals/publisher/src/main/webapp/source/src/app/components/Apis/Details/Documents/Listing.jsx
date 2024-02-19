@@ -20,7 +20,7 @@ import React, { Suspense, lazy } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';

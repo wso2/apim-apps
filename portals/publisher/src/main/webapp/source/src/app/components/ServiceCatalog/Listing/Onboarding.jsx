@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Redirect } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -77,7 +77,7 @@ function Onboarding() {
             <Grid
                 container
                 direction='row'
-                justify='center'
+                justifyContent='center'
                 alignItems='center'
                 spacing={5}
             >

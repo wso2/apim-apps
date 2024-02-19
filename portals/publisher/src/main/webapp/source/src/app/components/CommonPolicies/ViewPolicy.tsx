@@ -17,7 +17,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Icon from '@mui/material/Icon';
