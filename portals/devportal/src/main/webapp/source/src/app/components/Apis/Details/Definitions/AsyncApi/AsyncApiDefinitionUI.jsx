@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 import { styled } from '@mui/material/styles';
 import AsyncApiComponent from '@asyncapi/react-component';
-import '@asyncapi/react-component/lib/styles/fiori.css';
+import "@asyncapi/react-component/styles/default.css";
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
