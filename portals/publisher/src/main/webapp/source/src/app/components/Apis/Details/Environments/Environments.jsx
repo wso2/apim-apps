@@ -42,7 +42,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Configurations from 'Config';
 import Card from '@mui/material/Card';
@@ -1347,7 +1347,7 @@ export default function Environments() {
                                         (o1) => o1.id === allRevisions[revision].id,
                                     ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                                     size='small'
-                                    color='#38536c'
+                                    sx={{ color: '#38536c'}}
                                     startIcon={<DeleteForeverIcon />}
                                 >
                                     <FormattedMessage
@@ -1397,7 +1397,7 @@ export default function Environments() {
                                         (o1) => o1.id === allRevisions[revision].id,
                                     ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                                     size='small'
-                                    color='#38536c'
+                                    sx={{ color: '#38536c'}}
                                     startIcon={<DeleteForeverIcon />}
                                 >
                                     <FormattedMessage

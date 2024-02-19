@@ -137,7 +137,7 @@ function MetaData(props) {
                         </>
                     )}
                     {/* Gateway type */}
-                    {settings && settings.gatewayTypes.length === 2 && (
+                    {settings && settings.gatewayTypes && settings.gatewayTypes.length === 2 && (
                         <>
                             <Grid item xs={12} md={6} lg={4}>
                                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>

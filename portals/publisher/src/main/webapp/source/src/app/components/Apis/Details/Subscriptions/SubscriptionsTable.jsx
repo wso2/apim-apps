@@ -32,7 +32,6 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import TablePagination from '@mui/material/TablePagination';
 import Tooltip from '@mui/material/Tooltip';
 import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
@@ -47,8 +46,8 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeValidation';
 import AuthManager from 'AppData/AuthManager';
-import { Autocomplete } from '@material-ui/lab';
-import { TextField } from '@material-ui/core';
+import { Autocomplete } from '@mui/lab';
+import { TextField } from '@mui/material';
 import Invoice from './Invoice';
 
 const styles = (theme) => ({
@@ -991,20 +990,6 @@ class SubscriptionsTable extends Component {
             selectableRows: 'none',
             rowsPerPageOptions: [5, 10, 25, 50, 100],
             rowsPerPage,
-            customFooter: (count, muiPage, muiRowsPerPage, changeRowsPerPage) => {
-                return (
-                    <TablePagination
-                        rowsPerPageOptions={rowsPerPageOptions}
-                        colSpan={6}
-                        count={totalSubscription}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={this.handleChangePage}
-                        onRowsPerPageChange={(e) => this.handleChangeRowsPerPage(e, changeRowsPerPage)}
-                        ActionsComponent={SubscriptionTablePagination}
-                    />
-                );
-            },
         };
         const subMails = {};
         const emails = subscriberClaims && Object.entries(subscriberClaims).map(([, v]) => {

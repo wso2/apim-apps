@@ -17,11 +17,12 @@
 */
 
 import React, { FC } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import { FormattedMessage } from 'react-intl';
 import type { AttachedPolicy, PolicySpec } from './Types';
 
@@ -72,12 +73,12 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
     const classes = useStyles();
 
     return (
-        <ExpansionPanelDetails>
+        <AccordionDetails>
             <Grid
                 spacing={2}
                 container
                 direction='row'
-                justify='flex-start'
+                justifyContent='flex-start'
                 alignItems='flex-start'
             >
                 <Grid item xs={12} md={12}>
@@ -149,7 +150,7 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                     )}
                 </Grid>
             </Grid>
-        </ExpansionPanelDetails>
+        </AccordionDetails>
     );
 };
 

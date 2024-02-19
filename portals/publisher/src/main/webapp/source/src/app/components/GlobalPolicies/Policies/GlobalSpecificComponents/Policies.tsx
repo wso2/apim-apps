@@ -16,15 +16,16 @@
 * under the License.
 */
 
-import { Card, CardContent, makeStyles, Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import { Card, CardContent, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import React, { useState, useEffect, useMemo, FC } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Icon from '@material-ui/core/Icon';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Icon from '@mui/material/Icon';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { useIntl, FormattedMessage } from 'react-intl';

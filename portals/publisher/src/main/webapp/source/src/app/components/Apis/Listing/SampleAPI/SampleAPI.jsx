@@ -29,9 +29,9 @@ import AuthManager from 'AppData/AuthManager';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import TaskState from 'AppComponents/Apis/Listing/SampleAPI/components/TaskState';
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material';
 
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';

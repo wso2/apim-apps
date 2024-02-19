@@ -25,7 +25,6 @@ import {
     IconButton,
     Tooltip,
     Typography,
-    makeStyles,
     Chip,
     TableCell,
     TableRow,
@@ -36,22 +35,23 @@ import {
     DialogActions,
     DialogContentText,
     useTheme 
-} from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Autocomplete from '@mui/lab/Autocomplete';
 import APIMAlert from 'AppComponents/Shared/Alert';
-import Icon from '@material-ui/core/Icon';
-import CloudOffRoundedIcon from '@material-ui/icons/CloudOffRounded';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import Icon from '@mui/material/Icon';
+import CloudOffRoundedIcon from '@mui/icons-material/CloudOffRounded';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useIntl, FormattedMessage } from 'react-intl';
-import AddCircle from '@material-ui/icons/AddCircle';
+import AddCircle from '@mui/icons-material/AddCircle';
 import MUIDataTable, { MUIDataTableOptions, MUIDataTableColumnDef } from 'mui-datatables';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import { Link } from 'react-router-dom';
 

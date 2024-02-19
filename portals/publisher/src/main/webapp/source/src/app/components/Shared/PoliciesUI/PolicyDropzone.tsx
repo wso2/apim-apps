@@ -17,9 +17,10 @@
 */
 
 import React, { FC } from 'react';
-import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
+import { Grid, Theme, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import green from '@mui/material/colors/green';
+import red from '@mui/material/colors/red';
 import clsx from 'clsx';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 

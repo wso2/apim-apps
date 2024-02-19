@@ -13,11 +13,11 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Api from 'AppData/api';
-import Popover from '@material-ui/core/Popover';
+import Popover from '@mui/material/Popover';
 import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
 import Configurations from 'Config';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import EmailIcon from '@material-ui/icons/Email';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import EmailIcon from '@mui/icons-material/Email';
 
 import getIcon from './ImageUtils';
 

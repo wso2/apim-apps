@@ -17,7 +17,7 @@
 */
 
 import React, { useState, FC, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import {
     Grid,
     Typography,
@@ -31,7 +31,7 @@ import {
     InputLabel,
     FormControl,
     FormHelperText,
-} from '@material-ui/core';
+} from '@mui/material';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
@@ -411,7 +411,7 @@ const General: FC<GeneralProps> = ({
                             )}
                         </Grid>
                     ))}
-                    <Grid item container justify='flex-end' xs={12}>
+                    <Grid item container justifyContent='flex-end' xs={12}>
                         <Button
                             variant='outlined'
                             color='primary'

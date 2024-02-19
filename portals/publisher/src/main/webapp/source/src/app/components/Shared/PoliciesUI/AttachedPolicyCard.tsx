@@ -17,15 +17,15 @@
 */
 
 import React, { CSSProperties, FC } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { makeStyles } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { makeStyles } from '@mui/styles';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Utils from 'AppData/Utils';
 import type { AttachedPolicy, PolicySpec } from './Types';
 

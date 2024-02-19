@@ -29,11 +29,11 @@ import Chip from '@mui/material/Chip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import API from 'AppData/api';
-import Popover from '@material-ui/core/Popover';
+import Popover from '@mui/material/Popover';
 import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
 import Configurations from 'Config';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import EmailIcon from '@material-ui/icons/Email';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import EmailIcon from '@mui/icons-material/Email';
 
 import { green } from '@mui/material/colors';
 import BaseThumbnail from '../BaseThumbnail';

@@ -17,18 +17,18 @@
  */
 
 import React, { useReducer, useContext, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import { Link, useHistory } from 'react-router-dom';
-import FormGroup from '@material-ui/core/FormGroup';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import FormGroup from '@mui/material/FormGroup';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
@@ -271,7 +271,7 @@ export default function RuntimeConfiguration() {
                 <Grid container direction='row' justify='space-around' alignItems='stretch' spacing={8}>
                     <Grid item xs={12} md={7} style={{ marginBottom: 30, position: 'relative' }}>
                         <WrappedExpansionPanel className={classes.expansionPanel} id='applicationLevel'>
-                            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -279,8 +279,8 @@ export default function RuntimeConfiguration() {
                                         defaultMessage='Client Websocket'
                                     />
                                 </Typography>
-                            </ExpansionPanelSummary>
-                            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                            </AccordionSummary>
+                            <AccordionDetails className={classes.expansionPanelDetails}>
                                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -325,7 +325,7 @@ export default function RuntimeConfiguration() {
                                 <span className={classes.error}>
                                     <Validate />
                                 </span>
-                            </ExpansionPanelDetails>
+                            </AccordionDetails>
                         </WrappedExpansionPanel>
                         <APILevelRateLimitingPolicies api={apiConfig} configDispatcher={configDispatcher} />
                         <ArrowForwardIcon className={classes.arrowForwardIcon} />
