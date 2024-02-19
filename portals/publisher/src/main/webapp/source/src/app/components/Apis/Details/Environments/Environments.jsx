@@ -2008,7 +2008,7 @@ export default function Environments() {
                                     container
                                     spacing={3}
                                 >
-                                    {internalGateways && internalGateways.map((row) => (
+                                    {allEnvRevision && internalGateways && internalGateways.map((row) => (
                                         <Grid item xs={4}>
                                             <Card
                                                 style={{
@@ -2580,7 +2580,7 @@ export default function Environments() {
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}
                                         </TableCell>
-                                        {allEnvDeployments[row.name].revision != null ? (
+                                        {allEnvDeployments && allEnvDeployments[row.name].revision != null ? (
                                             <>
                                                 <TableCell align='left' id='gateway-access-url-cell'>
                                                     <div className={classes.primaryEndpoint}>
@@ -2677,16 +2677,18 @@ export default function Environments() {
                                             </>
                                         )}
                                         <TableCell component='th' scope='row'>
-                                            {getDeployedRevisionComponent(row, allEnvRevisionMapping)}
+                                            {allEnvRevisionMapping && 
+                                                getDeployedRevisionComponent(row, allEnvRevisionMapping)}
                                         </TableCell>
                                         <TableCell align='left' style={{ width: '300px' }}>
-                                            {getDeployedRevisionStatusComponent(row, allEnvRevisionMapping)}
+                                            {allEnvRevisionMapping && 
+                                                getDeployedRevisionStatusComponent(row, allEnvRevisionMapping)}
                                         </TableCell>
                                         <TableCell align='left'>
                                             <DisplayDevportal
                                                 name={row.name}
                                                 api={api}
-                                                EnvDeployments={allEnvDeployments[row.name]}
+                                                EnvDeployments={allEnvDeployments && allEnvDeployments[row.name]}
                                             />
                                         </TableCell>
                                     </TableRow>
