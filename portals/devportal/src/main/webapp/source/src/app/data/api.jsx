@@ -932,4 +932,25 @@ export default class API extends Resource {
         });
         return promise;
     }
+
+    // eslint-disable-next-line no-dupe-class-members, require-jsdoc
+    marketplaceChatExecute(query, tenant, chatHistory) {
+        const payload = {
+            message: query,
+            messageList: { messageList: chatHistory },
+            tenantDomain: tenant,
+        };
+        return this.client.then((client) => {
+            // eslint-disable-next-line max-len
+            return client.apis['Marketplace Chat'].marketplaceChatExecute({}, { requestBody: payload }, this._requestMetaData());
+        });
+    }
+
+    // eslint-disable-next-line require-jsdoc
+    getMarketplaceChatApiCount() {
+        console.log(this.client);
+        return this.client.then((client) => {
+            return client.apis['Marketplace Chat'].getMarketplaceChatApiCount(this._requestMetaData());
+        });
+    }
 }

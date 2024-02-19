@@ -22,7 +22,7 @@ import CommonListing from './Listing/CommonListing';
 import TagCloudListing from './Listing/TagCloudListing';
 import Details from './Details/index';
 import { ResourceNotFound } from '../Base/Errors';
-
+import AISearchAssistant from './Chat/AISearchAssistant';
 /**
  * Default API Store overview page
  *
@@ -41,7 +41,11 @@ function Apis() {
                 exact
                 path='/apis'
                 render={(props) => (
-                    <CommonListing {...props} />)}
+                    <>
+                        <CommonListing {...props} />
+                        <AISearchAssistant />
+                    </>
+                )}
             />
             <Route
                 path='/apis/search'
