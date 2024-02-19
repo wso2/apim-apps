@@ -24,12 +24,16 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import FormLabel from '@material-ui/core/FormLabel';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 
@@ -94,6 +98,7 @@ function reducer(state, { field, value }) {
         case 'displayName':
         case 'gatewayType':
         case 'description':
+        case 'type':
         case 'vhosts':
             return { ...state, [field]: value };
         case 'editDetails':
@@ -117,45 +122,40 @@ function AddEditGWEnvironment(props) {
     const defaultVhost = {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
     };
+    const { settings } = useAppContext();
+    const { gatewayTypes } = settings;
     const [initialState, setInitialState] = useState({
         displayName: '',
         description: '',
+        gatewayType: gatewayTypes && gatewayTypes.length > 1 ? 'Regular' : gatewayTypes[0],
+        type: 'hybrid',
         vhosts: [defaultVhost],
     });
     const [editMode, setIsEditMode] = useState(false);
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        name, displayName, description, vhosts,
+        name, displayName, description, vhosts, type, gatewayType,
     } = state;
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const [selectedGatewayType, setValue] = React.useState('');
-    const { settings } = useAppContext();
-    const { gatewayTypes } = settings;
-    const getBorderColor = (gatewayType) => {
-        return selectedGatewayType === gatewayType
+    const getBorderColor = (gatewayTypeNew) => {
+        return gatewayType === gatewayTypeNew
             ? '2px solid #1976D2'
             : '2px solid gray';
-    };
-
-    const handleChange = (event) => {
-        setValue(event.target.value);
     };
 
     useEffect(() => {
         setInitialState({
             displayName: '',
             description: '',
-            selectedGatewayType: '',
+            gatewayType: '',
+            type: 'hybrid',
             vhosts: [defaultVhost],
         });
-        if (gatewayTypes.length === 1) {
-            setValue(gatewayTypes[0]);
-        }
     }, []);
 
     const handleHostValidation = (vhost) => {
@@ -309,7 +309,7 @@ function AddEditGWEnvironment(props) {
             return false;
         }
         const vhostDto = [];
-        if (selectedGatewayType === 'Regular') {
+        if (gatewayType === 'Regular') {
             vhosts.forEach((vhost) => {
                 vhostDto.push({
                     host: vhost.host,
@@ -320,7 +320,7 @@ function AddEditGWEnvironment(props) {
                     wssPort: vhost.wssPort,
                 });
             });
-        } else if (selectedGatewayType === 'APK') {
+        } else if (gatewayType === 'APK') {
             vhosts.forEach((vhost) => {
                 vhostDto.push({
                     host: vhost.host,
@@ -336,12 +336,12 @@ function AddEditGWEnvironment(props) {
         if (dataRow) {
             // assign the update promise to the promiseAPICall
             promiseAPICall = restApi.updateGatewayEnvironment(
-                dataRow.id, name.trim(), displayName, description, selectedGatewayType, vhostDto,
+                dataRow.id, name.trim(), displayName, type, description, gatewayType, vhostDto,
             );
         } else {
             // assign the create promise to the promiseAPICall
-            promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, description,
-                selectedGatewayType, vhostDto);
+            promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
+                gatewayType, vhostDto);
         }
 
         return promiseAPICall.then(() => {
@@ -377,7 +377,9 @@ function AddEditGWEnvironment(props) {
                 name: originalName,
                 displayName: originalDisplayName,
                 description: originalDescription,
+                type: originalType,
                 vhosts: originalVhosts,
+                gatewayType: originalGatewayType,
             } = dataRow;
             setIsEditMode(true);
             dispatch({
@@ -385,6 +387,8 @@ function AddEditGWEnvironment(props) {
                 value: {
                     name: originalName,
                     displayName: originalDisplayName,
+                    type: originalType,
+                    gatewayType: originalGatewayType,
                     description: originalDescription,
                     vhosts: originalVhosts,
                 },
@@ -475,14 +479,15 @@ function AddEditGWEnvironment(props) {
                             row
                             aria-label='gateway-type'
                             name='gateway-type'
-                            value={selectedGatewayType}
-                            onChange={handleChange}
+                            value={gatewayType}
+                            onChange={onChange}
                         >
                             <FormControlLabel
                                 value='Regular'
-                                name='Regular'
+                                name='gatewayType'
                                 className={classes.radioOutline}
                                 control={<Radio />}
+                                disabled={editMode}
                                 label={(
                                     <div>
                                         <span>Regular Gateway</span>
@@ -496,9 +501,10 @@ function AddEditGWEnvironment(props) {
                             />
                             <FormControlLabel
                                 value='APK'
-                                name='APK'
+                                name='gatewayType'
                                 className={classes.radioOutline}
                                 control={<Radio />}
+                                disabled={editMode}
                                 label={(
                                     <div>
                                         <span>APK Gateway</span>
@@ -514,10 +520,32 @@ function AddEditGWEnvironment(props) {
                         </RadioGroup>
                     </FormControl>
                 )}
+                <FormControl
+                    component='fieldset'
+                    variant='outlined'
+                    margin='dense'
+                    style={{ marginTop: '10px', marginBottom: '10px' }}
+                >
+                    <InputLabel id='demo-simple-select-label'>Type</InputLabel>
+                    <Select
+                        labelId='demo-simple-select-label'
+                        id='demo-simple-select'
+                        value={type}
+                        name='type'
+                        label='Type'
+                        onChange={onChange}
+                        disabled={editMode}
+                    >
+                        <MenuItem value='hybrid'>Hybrid</MenuItem>
+                        <MenuItem value='production'>Production</MenuItem>
+                        <MenuItem value='sandbox'>Sandbox</MenuItem>
+                    </Select>
+                    <FormHelperText>Supported Key Type of the Gateway Environment</FormHelperText>
+                </FormControl>
                 <AddEditVhost
                     initialVhosts={vhosts}
                     onVhostChange={onChange}
-                    selectedGatewayType={selectedGatewayType}
+                    gatewayType={gatewayType}
                 />
             </FormControl>
         </FormDialogBase>

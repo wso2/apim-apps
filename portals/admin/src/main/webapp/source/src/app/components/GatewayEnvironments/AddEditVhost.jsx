@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AddEditVhost(props) {
     const intl = useIntl();
-    const { onVhostChange, initialVhosts, selectedGatewayType } = props;
+    const { onVhostChange, initialVhosts, gatewayType } = props;
     const classes = useStyles();
 
     const [userVhosts, setUserVhosts] = useState(initialVhosts);
@@ -225,7 +225,7 @@ function AddEditVhost(props) {
                                             https://${vhost.host || '<HOST>'}:${vhost.httpsPort}/${vhost.httpContext}`
                                         }
                                         <br />
-                                        {selectedGatewayType === 'Regular' && (
+                                        {gatewayType === 'Regular' && (
                                             `ws://${vhost.host || '<HOST>'}:${vhost.wsPort}/ |
                                             wss://${vhost.host || '<HOST>'}:${vhost.wssPort}/`
                                         )}
@@ -292,7 +292,7 @@ function AddEditVhost(props) {
                                                     <Divider variant='middle' className={classes.portDivider} />
                                                 </Grid>
                                                 {/* WS Ports */}
-                                                {selectedGatewayType === 'Regular' && (
+                                                {gatewayType === 'Regular' && (
                                                     <Grid item xs={12}>
                                                         <Grid container spacing={2}>
                                                             <Grid item xs={6} />
@@ -362,7 +362,7 @@ AddEditVhost.defaultProps = {
 
 AddEditVhost.propTypes = {
     onVhostChange: PropTypes.func.isRequired,
-    selectedGatewayType: PropTypes.string.isRequired,
+    gatewayType: PropTypes.string.isRequired,
     initialVhosts: PropTypes.arrayOf(PropTypes.shape({
         host: PropTypes.string.isRequired,
         httpContext: PropTypes.string,
